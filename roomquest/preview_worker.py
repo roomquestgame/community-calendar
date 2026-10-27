@@ -7,6 +7,8 @@ Production publish/approval stays behind RoomQuest's audited Supabase gates.
 from __future__ import annotations
 
 from datetime import date, datetime, timedelta, timezone
+from functools import lru_cache
+from urllib.robotparser import RobotFileParser
 import ipaddress
 import json
 import os
@@ -74,11 +76,42 @@ def validate_public_dns(host: str) -> None:
         raise PreviewError("dns_unavailable") from exc
 
 
+@lru_cache(maxsize=256)
+def robots_allowed(host: str, path: str) -> bool:
+    """Respect publisher crawl restrictions, fail closed on ambiguous responses.
+
+    Never redirect robots requests or fetch private-network destinations.
+    404/410 mean no robots rules; 401/403, 429, network failures deny.
+    """
+    robots_url = "https://" + host + "/robots.txt"
+    try:
+        validate_public_dns(host)
+        opener = build_opener(RejectRedirects())
+        request = Request(robots_url, headers={
+            "User-Agent": "RoomQuestCommunityCalendar/0.1 (community-event research)"
+        })
+        with opener.open(request, timeout=5) as response:
+            raw = response.read(128_001)
+            if response.status != 200 or len(raw) > 128_000:
+                raise PreviewError("robots_unavailable")
+    except HTTPError as exc:
+        if exc.code in (404, 410):
+            return True
+        raise PreviewError("robots_denied") from exc
+    except (URLError, TimeoutError, OSError) as exc:
+        raise PreviewError("robots_unavailable") from exc
+    parser = RobotFileParser()
+    parser.parse(raw.decode("utf-8", errors="replace").splitlines())
+    return parser.can_fetch("RoomQuestCommunityCalendar", "https://" + host + path)
+
+
 def fetch_publisher(url: str, accept: str) -> str:
     if not public_source_url(url):
         raise PreviewError("invalid_source_url")
     parsed = urlparse(url)
     validate_public_dns(parsed.hostname or "")
+    if not robots_allowed(parsed.hostname or "", parsed.path or "/"):
+        raise PreviewError("robots_denied")
     opener = build_opener(RejectRedirects())
     request = Request(url, headers={
         "User-Agent": "RoomQuestCommunityCalendar/0.1 (source-review; bounded)",
@@ -120,7 +153,8 @@ def _future_datetime(value) -> datetime | None:
     return None
 
 
-def _preview(title, start, end, venue, lat, lng, url, identity=""):
+def _preview(title, start, end, venue, lat, lng, url, identity="",
+             category="", address="", city=""):
     future = _future_datetime(start)
     if not future or not isinstance(title, str) or not title.strip():
         return None
@@ -131,6 +165,9 @@ def _preview(title, start, end, venue, lat, lng, url, identity=""):
         "starts_at": future.isoformat(), "ends_at": end_value,
         "venue_name": name, "lat": latitude, "lng": longitude,
         "event_url": url if isinstance(url, str) and public_source_url(url) else None,
+        "category": str(category or "")[:80],
+        "venue_address": str(address or "")[:400],
+        "venue_city": str(city or "")[:120],
         "reason": None if latitude is not None else "missing_verified_venue_geo",
     }
 
@@ -169,7 +206,8 @@ def parse_ics_preview(payload: str) -> list[dict]:
             record = _preview(str(item.get("SUMMARY", "")), started, ended,
                               str(item.get("LOCATION", "")), lat, lng,
                               str(item.get("URL", "")),
-                              str(item.get("UID", "")))
+                              str(item.get("UID", "")),
+                              str(item.get("CATEGORIES", "")))
             if record:
                 results.append(record)
         except (KeyError, ValueError, TypeError):
@@ -198,9 +236,14 @@ def parse_jsonld_preview(payload: str) -> list[dict]:
         geo = venue.get("geo", {}) or {}
         if not isinstance(geo, dict):
             geo = {}
+        address = venue.get("address") or {}
+        if not isinstance(address, dict):
+            address = {}
         record = _preview(str(item.get("name", "")), start, end,
                           venue.get("name"), geo.get("latitude"), geo.get("longitude"),
-                          item.get("url"), item.get("@id", ""))
+                          item.get("url"), item.get("@id", ""),
+                          item.get("keywords", ""),
+                          address.get("streetAddress", ""), address.get("addressLocality", ""))
         if record:
             results.append(record)
     return results
@@ -216,7 +259,9 @@ def parse_growthzone_preview(payload: str, source: dict) -> list[dict]:
     results = []
     for item in scraper._parse_xml(payload)[:500]:
         record = _preview(item.get("title"), item.get("dtstart"), item.get("dtend"),
-                          item.get("location"), None, None, item.get("url"))
+                          item.get("location"), None, None, item.get("url"),
+                          category=item.get("category", ""),
+                          address=item.get("address", ""), city=item.get("city", ""))
         if record:
             results.append(record)
     return results
@@ -240,9 +285,13 @@ def parse_wordpress_preview(payload: str, source: dict) -> list[dict]:
         venue = item.get("venue") or {}
         if not isinstance(venue, dict):
             venue = {}
+        categories = item.get("categories") or []
+        label = ", ".join(str(x.get("name", "")) for x in categories[:3]
+                          if isinstance(x, dict)) if isinstance(categories, list) else ""
         preview = _preview(record.get("title"), record.get("dtstart"), record.get("dtend"),
                            venue.get("venue"), venue.get("geo_lat"), venue.get("geo_lng"),
-                           record.get("url"), item.get("id", ""))
+                           record.get("url"), item.get("id", ""), label,
+                           venue.get("address", ""), venue.get("city", ""))
         if preview:
             results.append(preview)
     return results
@@ -278,6 +327,7 @@ def preview_source(source: dict) -> dict:
         "p_future_count": len(records),
         "p_venue_count": sum(1 for row in records if row["lat"] is not None),
         "p_error": None,
+        "p_events": records[:100],  # private metadata-only staging; not part of the preview RPC
     }
 
 
@@ -289,7 +339,8 @@ def supabase_rpc(path: str, payload: dict):
     security-definer RPCs. The token must never enter a public client or log.
     """
     import urllib.request
-    allowed = {"community_collector_claim_previews", "community_collector_record_preview"}
+    allowed = {"community_collector_claim_previews", "community_collector_record_preview",
+               "community_collector_record_staged_events"}
     if path not in allowed:
         raise PreviewError("unsupported_collector_rpc")
     root = os.environ.get("SUPABASE_URL", "")
@@ -312,17 +363,27 @@ def supabase_rpc(path: str, payload: dict):
 
 def collect_previews(limit=4) -> dict:
     claimed = supabase_rpc("community_collector_claim_previews", {"p_limit": min(4, max(1, int(limit)))})
-    result = {"claimed": len(claimed or []), "complete": 0, "failed": 0}
+    result = {"claimed": len(claimed or []), "complete": 0, "failed": 0,
+              "staged": 0}
     for source in claimed or []:
         try:
             output = preview_source(source)
-            result["complete"] += 1
+            events = output.pop("p_events", [])
+            # Stage privately before closing the claim. This RPC can write ONLY
+            # to community_staged_events; it never approves or publishes events.
+            written = supabase_rpc("community_collector_record_staged_events", {
+                "p_source_key": source["source_key"], "p_events": events
+            })
+            result["staged"] += int(written or 0)
         except (PreviewError, OSError, ValueError) as exc:
             output = {
                 "p_source_key": source["source_key"], "p_samples": [],
                 "p_future_count": 0, "p_venue_count": 0,
                 "p_error": str(exc)[:120] if isinstance(exc, PreviewError) else "source_parse_error",
             }
-            result["failed"] += 1
         supabase_rpc("community_collector_record_preview", output)
+        if output["p_error"] is None:
+            result["complete"] += 1
+        else:
+            result["failed"] += 1
     return result
