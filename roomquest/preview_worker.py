@@ -109,8 +109,9 @@ def robots_allowed(host: str, path: str) -> bool:
 def fetch_publisher(url: str, accept: str) -> str:
     """Use Udell's requests GET and its redirect behavior for approved HTTPS feeds.
 
-    Keep URL/DNS validation, publisher robots rules and bounded downloads; a
-    redirect destination must pass the same checks before the next request.
+    Keep URL/DNS validation and bounded downloads. As in upstream Udell,
+    fetch registered calendar endpoints directly without a robots preflight;
+    destination URLs still pass public-network checks before each redirect.
     """
     if not public_source_url(url):
         raise PreviewError("invalid_source_url")
@@ -125,8 +126,6 @@ def fetch_publisher(url: str, accept: str) -> str:
             if not public_source_url(current):
                 raise PreviewError("invalid_redirect_url")
             validate_public_dns(parsed.hostname or "")
-            if not robots_allowed(parsed.hostname or "", parsed.path or "/"):
-                raise PreviewError("robots_denied")
             try:
                 response = session.get(current, headers=headers, timeout=7,
                                        stream=True, allow_redirects=False)
