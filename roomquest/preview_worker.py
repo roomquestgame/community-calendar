@@ -8,6 +8,8 @@ from __future__ import annotations
 
 from datetime import date, datetime, timedelta, timezone
 from functools import lru_cache
+from concurrent.futures import ThreadPoolExecutor
+from time import monotonic
 from urllib.robotparser import RobotFileParser
 import ipaddress
 import json
@@ -389,29 +391,59 @@ def supabase_rpc(path: str, payload: dict):
         raise PreviewError("database_unavailable") from exc
 
 
+def _process_claimed_source(source: dict) -> dict:
+    """Process a single claimed feed with the existing private staging contract."""
+    try:
+        output = preview_source(source)
+        events = output.pop("p_events", [])
+        written = supabase_rpc("community_collector_record_staged_events", {
+            "p_source_key": source["source_key"], "p_events": events
+        })
+        staged = int(written or 0)
+    except (PreviewError, OSError, ValueError) as exc:
+        output = {
+            "p_source_key": source["source_key"], "p_samples": [],
+            "p_future_count": 0, "p_venue_count": 0,
+            "p_error": str(exc)[:120] if isinstance(exc, PreviewError) else "source_parse_error",
+        }
+        staged = 0
+    supabase_rpc("community_collector_record_preview", output)
+    return {"complete": int(output["p_error"] is None),
+            "failed": int(output["p_error"] is not None), "staged": staged}
+
+
 def collect_previews(limit=4) -> dict:
-    claimed = supabase_rpc("community_collector_claim_previews", {"p_limit": min(4, max(1, int(limit)))})
-    result = {"claimed": len(claimed or []), "complete": 0, "failed": 0,
-              "staged": 0}
+    """Legacy single collector invocation; no behavior change for manual preview."""
+    claimed = supabase_rpc("community_collector_claim_previews",
+                           {"p_limit": min(4, max(1, int(limit)))})
+    result = {"claimed": len(claimed or []), "complete": 0, "failed": 0, "staged": 0}
     for source in claimed or []:
-        try:
-            output = preview_source(source)
-            events = output.pop("p_events", [])
-            # Stage privately before closing the claim. This RPC can write ONLY
-            # to community_staged_events; it never approves or publishes events.
-            written = supabase_rpc("community_collector_record_staged_events", {
-                "p_source_key": source["source_key"], "p_events": events
-            })
-            result["staged"] += int(written or 0)
-        except (PreviewError, OSError, ValueError) as exc:
-            output = {
-                "p_source_key": source["source_key"], "p_samples": [],
-                "p_future_count": 0, "p_venue_count": 0,
-                "p_error": str(exc)[:120] if isinstance(exc, PreviewError) else "source_parse_error",
-            }
-        supabase_rpc("community_collector_record_preview", output)
-        if output["p_error"] is None:
-            result["complete"] += 1
-        else:
-            result["failed"] += 1
+        item = _process_claimed_source(source)
+        for key in ("complete", "failed", "staged"):
+            result[key] += item[key]
+    return result
+
+
+def collect_bulk_previews(max_sources=15, concurrency=3, deadline_seconds=48) -> dict:
+    """Five independently scheduled workers * fifteen = up to 75 / quarter hour.
+
+    Supabase's existing scoped RPC still atomically claims <=4 at a time.
+    No schema/grant/migration changes, URL input, service key, or CI scraper.
+    The hard deadline is below Vercel's function maxDuration=60s.
+    """
+    maximum = min(15, max(1, int(max_sources)))
+    workers = min(3, max(1, int(concurrency)))
+    deadline = monotonic() + max(1, min(48, deadline_seconds))
+    result = {"claimed": 0, "complete": 0, "failed": 0, "staged": 0}
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        while result["claimed"] < maximum and monotonic() < deadline:
+            claim_limit = min(workers, 4, maximum - result["claimed"])
+            claimed = supabase_rpc("community_collector_claim_previews",
+                                   {"p_limit": claim_limit}) or []
+            if not claimed:
+                break
+            result["claimed"] += len(claimed)
+            for item in pool.map(_process_claimed_source, claimed):
+                for key in ("complete", "failed", "staged"):
+                    result[key] += item[key]
     return result
