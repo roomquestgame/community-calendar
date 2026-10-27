@@ -19,8 +19,8 @@ on:
         description: 'Number of months ahead to scrape (default: 3)'
         required: false
         default: '3'
-  schedule:
-    - cron: '0 0 * * *'
+  # RoomQuest fork: nationwide collection will be scheduled by reviewed backend
+  # infrastructure, not daily GitHub Actions. Dispatch here is manual-only.
 
 jobs:
   generate-calendar:
