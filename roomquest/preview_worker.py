@@ -153,7 +153,8 @@ def _future_datetime(value) -> datetime | None:
     return None
 
 
-def _preview(title, start, end, venue, lat, lng, url, identity=""):
+def _preview(title, start, end, venue, lat, lng, url, identity="",
+             category="", address="", city=""):
     future = _future_datetime(start)
     if not future or not isinstance(title, str) or not title.strip():
         return None
@@ -164,6 +165,9 @@ def _preview(title, start, end, venue, lat, lng, url, identity=""):
         "starts_at": future.isoformat(), "ends_at": end_value,
         "venue_name": name, "lat": latitude, "lng": longitude,
         "event_url": url if isinstance(url, str) and public_source_url(url) else None,
+        "category": str(category or "")[:80],
+        "venue_address": str(address or "")[:400],
+        "venue_city": str(city or "")[:120],
         "reason": None if latitude is not None else "missing_verified_venue_geo",
     }
 
@@ -202,7 +206,8 @@ def parse_ics_preview(payload: str) -> list[dict]:
             record = _preview(str(item.get("SUMMARY", "")), started, ended,
                               str(item.get("LOCATION", "")), lat, lng,
                               str(item.get("URL", "")),
-                              str(item.get("UID", "")))
+                              str(item.get("UID", "")),
+                              str(item.get("CATEGORIES", "")))
             if record:
                 results.append(record)
         except (KeyError, ValueError, TypeError):
@@ -231,9 +236,14 @@ def parse_jsonld_preview(payload: str) -> list[dict]:
         geo = venue.get("geo", {}) or {}
         if not isinstance(geo, dict):
             geo = {}
+        address = venue.get("address") or {}
+        if not isinstance(address, dict):
+            address = {}
         record = _preview(str(item.get("name", "")), start, end,
                           venue.get("name"), geo.get("latitude"), geo.get("longitude"),
-                          item.get("url"), item.get("@id", ""))
+                          item.get("url"), item.get("@id", ""),
+                          item.get("keywords", ""),
+                          address.get("streetAddress", ""), address.get("addressLocality", ""))
         if record:
             results.append(record)
     return results
@@ -249,7 +259,9 @@ def parse_growthzone_preview(payload: str, source: dict) -> list[dict]:
     results = []
     for item in scraper._parse_xml(payload)[:500]:
         record = _preview(item.get("title"), item.get("dtstart"), item.get("dtend"),
-                          item.get("location"), None, None, item.get("url"))
+                          item.get("location"), None, None, item.get("url"),
+                          category=item.get("category", ""),
+                          address=item.get("address", ""), city=item.get("city", ""))
         if record:
             results.append(record)
     return results
@@ -273,9 +285,13 @@ def parse_wordpress_preview(payload: str, source: dict) -> list[dict]:
         venue = item.get("venue") or {}
         if not isinstance(venue, dict):
             venue = {}
+        categories = item.get("categories") or []
+        label = ", ".join(str(x.get("name", "")) for x in categories[:3]
+                          if isinstance(x, dict)) if isinstance(categories, list) else ""
         preview = _preview(record.get("title"), record.get("dtstart"), record.get("dtend"),
                            venue.get("venue"), venue.get("geo_lat"), venue.get("geo_lng"),
-                           record.get("url"), item.get("id", ""))
+                           record.get("url"), item.get("id", ""), label,
+                           venue.get("address", ""), venue.get("city", ""))
         if preview:
             results.append(preview)
     return results
