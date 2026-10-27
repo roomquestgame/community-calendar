@@ -22,7 +22,7 @@ from urllib.parse import urlparse
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 from zoneinfo import ZoneInfo
 
-MAX_BODY = 700_000
+MAX_BODY = 3_000_000
 MAX_PREVIEWS = 10
 LOOKAHEAD_DAYS = 60
 ROOMQUEST_DB = "https://drpqjuqghpjivtwznfdj.supabase.co"
@@ -129,7 +129,7 @@ def fetch_publisher(url: str, accept: str) -> str:
                 raise PreviewError("invalid_redirect_url")
             validate_public_dns(parsed.hostname or "")
             try:
-                response = session.get(current, headers=headers, timeout=7,
+                response = session.get(current, headers=headers, timeout=(5, 12),
                                        stream=True, allow_redirects=False)
                 if response.status_code in (301, 302, 303, 307, 308):
                     from urllib.parse import urljoin
