@@ -10,6 +10,24 @@ from scripts.roomquest_catalog import catalog
 
 
 class PreviewSafetyTests(unittest.TestCase):
+    def test_large_official_ical_feed_is_bounded_but_accepted(self):
+        from roomquest.preview_worker import fetch_publisher, MAX_BODY, PreviewError
+        self.assertGreaterEqual(MAX_BODY, 1_240_000)
+        self.assertLessEqual(MAX_BODY, 3_000_000)
+        response = MagicMock(status_code=200, headers={"Content-Length": "1240000"}, encoding="utf-8")
+        response.iter_content.return_value = [b"BEGIN:VCALENDAR", b"A" * 1_239_985]
+        with patch("roomquest.preview_worker.validate_public_dns"), patch(
+                "roomquest.preview_worker.requests.Session") as factory:
+            factory.return_value.__enter__.return_value.get.return_value = response
+            self.assertEqual(len(fetch_publisher("https://calendar.example.org/events.ics", "text/calendar")), 1_240_000)
+        response.iter_content.return_value = [b"x" * (MAX_BODY + 1)]
+        response.headers = {}
+        with patch("roomquest.preview_worker.validate_public_dns"), patch(
+                "roomquest.preview_worker.requests.Session") as factory:
+            factory.return_value.__enter__.return_value.get.return_value = response
+            with self.assertRaisesRegex(PreviewError,"source_too_large"):
+                fetch_publisher("https://calendar.example.org/events.ics", "text/calendar")
+
     def test_unsafe_urls_fail_closed(self):
         blocked = [
             "http://calendar.example.org/events.ics",
