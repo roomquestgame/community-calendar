@@ -1,4 +1,4 @@
-"""Private RoomQuest collector entrypoint. No public user URL or crawl parameters."""
+"""Protected, bounded curator preview endpoint for cron and manual checks."""
 from http.server import BaseHTTPRequestHandler
 import hmac
 import json
@@ -17,11 +17,31 @@ class handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(raw)
 
+    def batch(self):
+        # Never accepts arbitrary URLs or source identifiers from the request.
+        # At most four due preview candidates are claimed from the private DB.
+        try:
+            result = collect_previews(limit=4)
+            return self.reply(200, result)
+        except PreviewError:
+            return self.reply(503, {"error": "collector_unavailable"})
+        except Exception:
+            return self.reply(503, {"error": "collector_failed"})
+
     def do_GET(self):
         if self.path != "/api/preview":
             return self.reply(404, {"error": "not_found"})
+        authorization = self.headers.get("Authorization", "")
+        if authorization:
+            cron_secret = os.environ.get("CRON_SECRET", "")
+            if not cron_secret or not hmac.compare_digest(
+                authorization, "Bearer " + cron_secret
+            ):
+                return self.reply(401, {"error": "unauthorized"})
+            return self.batch()
         return self.reply(200, {"service": "roomquest-community-calendar",
-                                "mode": "admin_preview_only", "scheduled": False})
+                                "mode": "admin_preview_only",
+                                "scheduled": bool(os.environ.get("CRON_SECRET"))})
 
     def do_POST(self):
         if self.path != "/api/preview":
@@ -31,14 +51,6 @@ class handler(BaseHTTPRequestHandler):
             self.headers.get("Authorization", ""), "Bearer " + secret
         ):
             return self.reply(401, {"error": "unauthorized"})
-        # Requests do not contain URLs, source IDs or instructions. The service
-        # claims bounded pre-approved work from the private Supabase queue.
         if self.headers.get("Content-Length", "0") not in ("", "0"):
             return self.reply(400, {"error": "unexpected_body"})
-        try:
-            result = collect_previews(limit=4)
-            return self.reply(200, result)
-        except PreviewError:
-            return self.reply(503, {"error": "collector_unavailable"})
-        except Exception:
-            return self.reply(503, {"error": "collector_failed"})
+        return self.batch()
