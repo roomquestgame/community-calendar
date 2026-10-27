@@ -1,0 +1,19 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "functions": {
+    "api/preview.py": {
+      "maxDuration": 60,
+      "excludeFiles": "{cities/**,docs/**,reports/**,supabase/**,xmlui/**,tests/**,website/**,node_modules/**,**/*.webm,**/*.png,**/*.jpg,**/*.jpeg}"
+    }
+  },
+  "routes": [
+    {
+      "src": "/api/preview",
+      "dest": "/api/preview.py"
+    },
+    {
+      "src": "/.*",
+      "status": 404
+    }
+  ]
+}
