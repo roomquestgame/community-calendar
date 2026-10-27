@@ -1,0 +1,15 @@
+# Collector contains only the actual Python parsers and RoomQuest adapter.
+# No upstream XMLUI, static city calendars or Supabase schema are deployed.
+cities/
+docs/
+reports/
+supabase/
+xmlui/
+website/
+tests/
+node_modules/
+*.webm
+*.mp4
+*.png
+*.jpg
+*.jpeg
