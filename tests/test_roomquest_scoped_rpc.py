@@ -115,6 +115,48 @@ class ScopedSupabaseTests(unittest.TestCase):
             fake.batch.assert_not_called()
             self.assertEqual(fake.reply.call_args.args[0], 401)
 
+    def test_five_workers_have_authenticated_fifteen_source_cap(self):
+        from pathlib import Path
+        from roomquest.preview_worker import collect_bulk_previews
+        settings = json.loads((Path(__file__).parents[1] / "vercel.json").read_text())
+        paths = [job["path"] for job in settings["crons"]]
+        self.assertEqual(paths, [f"/api/preview-{i}" for i in range(1, 6)])
+        self.assertTrue(all(job["schedule"] == "*/15 * * * *"
+                            for job in settings["crons"]))
+        self.assertEqual(len(paths) * 15, 75)
+        for path in paths:
+            fake = handler.__new__(handler)
+            fake.path = path
+            fake.headers = {"Authorization": "Bearer " + "c" * 64}
+            fake.reply = MagicMock()
+            with patch.dict(os.environ, {"CRON_SECRET": "c" * 64}), patch(
+                "api.preview.collect_bulk_previews", return_value={"claimed": 0}
+            ) as bulk:
+                fake.do_GET()
+                bulk.assert_called_once_with(max_sources=15)
+                self.assertEqual(fake.reply.call_args.args[0], 200)
+        with patch("roomquest.preview_worker.supabase_rpc", return_value=[]) as rpc:
+            self.assertEqual(collect_bulk_previews(), {
+                "claimed": 0, "complete": 0, "failed": 0, "staged": 0
+            })
+            rpc.assert_called_once_with("community_collector_claim_previews",
+                                        {"p_limit": 3})
+
+    def test_bulk_worker_handles_fifteen_sources_as_five_claims(self):
+        from roomquest.preview_worker import collect_bulk_previews
+        source_rows = [
+            [{"source_key": f"test_{round_no}_{i}"} for i in range(3)]
+            for round_no in range(5)
+        ]
+        with patch("roomquest.preview_worker.supabase_rpc", side_effect=source_rows) as rpc, patch(
+            "roomquest.preview_worker._process_claimed_source",
+            return_value={"complete": 1, "failed": 0, "staged": 2}
+        ):
+            result = collect_bulk_previews()
+        self.assertEqual(result, {"claimed": 15, "complete": 15,
+                                  "failed": 0, "staged": 30})
+        self.assertEqual(rpc.call_count, 5)
+
     def test_manual_post_rejects_wrong_operator_token(self):
         fake = handler.__new__(handler)
         fake.path = "/api/preview"
