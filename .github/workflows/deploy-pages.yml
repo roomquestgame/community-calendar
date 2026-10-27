@@ -1,8 +1,7 @@
 name: Deploy Pages
 
 on:
-  push:
-    branches: [main]
+  # RoomQuest fork: never auto-publish upstream's separate XMLUI application.
   workflow_dispatch:
 
 permissions:
