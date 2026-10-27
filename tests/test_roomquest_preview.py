@@ -60,14 +60,18 @@ class PreviewSafetyTests(unittest.TestCase):
             with self.assertRaisesRegex(PreviewError, "invalid_redirect_url"):
                 fetch_publisher("https://old.example.org/feed", "text/calendar")
 
-    def test_udell_transport_respects_publisher_robots(self):
-        from roomquest.preview_worker import fetch_publisher, PreviewError
+    def test_udell_direct_transport_does_not_preflight_robots(self):
+        from roomquest.preview_worker import fetch_publisher
+        response = MagicMock(status_code=200,
+                             headers={"Content-Length": "15"}, encoding="utf-8")
+        response.iter_content.return_value = [b"BEGIN:VCALENDAR"]
         with patch("roomquest.preview_worker.validate_public_dns"), patch(
-            "roomquest.preview_worker.robots_allowed", return_value=False), patch(
+            "roomquest.preview_worker.robots_allowed") as robots, patch(
             "roomquest.preview_worker.requests.Session") as factory:
-            with self.assertRaisesRegex(PreviewError, "robots_denied"):
-                fetch_publisher("https://example.org/feed.ics", "text/calendar")
-            factory.return_value.__enter__.return_value.get.assert_not_called()
+            factory.return_value.__enter__.return_value.get.return_value = response
+            self.assertEqual(fetch_publisher("https://example.org/feed.ics", "text/calendar"),
+                             "BEGIN:VCALENDAR")
+            robots.assert_not_called()
 
     def test_supported_adapters_are_real_upstream_parsers(self):
         self.assertEqual(SUPPORTED, {"ical", "jsonld", "growthzone", "wordpress"})
