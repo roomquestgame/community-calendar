@@ -4,9 +4,49 @@
     "api/preview.py": {
       "maxDuration": 60,
       "excludeFiles": "{cities/**,docs/**,reports/**,supabase/**,xmlui/**,tests/**,website/**,node_modules/**,**/*.webm,**/*.png,**/*.jpg,**/*.jpeg}"
+    },
+    "api/preview_1.py": {
+      "maxDuration": 60,
+      "excludeFiles": "{cities/**,docs/**,reports/**,supabase/**,xmlui/**,tests/**,website/**,node_modules/**,**/*.webm,**/*.png,**/*.jpg,**/*.jpeg}"
+    },
+    "api/preview_2.py": {
+      "maxDuration": 60,
+      "excludeFiles": "{cities/**,docs/**,reports/**,supabase/**,xmlui/**,tests/**,website/**,node_modules/**,**/*.webm,**/*.png,**/*.jpg,**/*.jpeg}"
+    },
+    "api/preview_3.py": {
+      "maxDuration": 60,
+      "excludeFiles": "{cities/**,docs/**,reports/**,supabase/**,xmlui/**,tests/**,website/**,node_modules/**,**/*.webm,**/*.png,**/*.jpg,**/*.jpeg}"
+    },
+    "api/preview_4.py": {
+      "maxDuration": 60,
+      "excludeFiles": "{cities/**,docs/**,reports/**,supabase/**,xmlui/**,tests/**,website/**,node_modules/**,**/*.webm,**/*.png,**/*.jpg,**/*.jpeg}"
+    },
+    "api/preview_5.py": {
+      "maxDuration": 60,
+      "excludeFiles": "{cities/**,docs/**,reports/**,supabase/**,xmlui/**,tests/**,website/**,node_modules/**,**/*.webm,**/*.png,**/*.jpg,**/*.jpeg}"
     }
   },
   "routes": [
+    {
+      "src": "/api/preview-5",
+      "dest": "/api/preview_5.py"
+    },
+    {
+      "src": "/api/preview-4",
+      "dest": "/api/preview_4.py"
+    },
+    {
+      "src": "/api/preview-3",
+      "dest": "/api/preview_3.py"
+    },
+    {
+      "src": "/api/preview-2",
+      "dest": "/api/preview_2.py"
+    },
+    {
+      "src": "/api/preview-1",
+      "dest": "/api/preview_1.py"
+    },
     {
       "src": "/api/preview",
       "dest": "/api/preview.py"
@@ -18,7 +58,23 @@
   ],
   "crons": [
     {
-      "path": "/api/preview",
+      "path": "/api/preview-1",
+      "schedule": "*/15 * * * *"
+    },
+    {
+      "path": "/api/preview-2",
+      "schedule": "*/15 * * * *"
+    },
+    {
+      "path": "/api/preview-3",
+      "schedule": "*/15 * * * *"
+    },
+    {
+      "path": "/api/preview-4",
+      "schedule": "*/15 * * * *"
+    },
+    {
+      "path": "/api/preview-5",
       "schedule": "*/15 * * * *"
     }
   ]
