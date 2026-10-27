@@ -282,15 +282,25 @@ def preview_source(source: dict) -> dict:
 
 
 def supabase_rpc(path: str, payload: dict):
+    """Call ONLY the preview-scoped RPCs. The service_role key never leaves Supabase.
+
+    Supabase's publishable API key identifies the project but grants no privileged
+    role. A separate 256-bit, rotated collector token authorizes only these two
+    security-definer RPCs. The token must never enter a public client or log.
+    """
     import urllib.request
+    allowed = {"community_collector_claim_previews", "community_collector_record_preview"}
+    if path not in allowed:
+        raise PreviewError("unsupported_collector_rpc")
     root = os.environ.get("SUPABASE_URL", "")
-    key = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "")
-    if root != ROOMQUEST_DB or not key:
+    key = os.environ.get("SUPABASE_PUBLISHABLE_KEY", "")
+    token = os.environ.get("ROOMQUEST_COLLECTOR_TOKEN", "")
+    if root != ROOMQUEST_DB or not key or len(token) != 64:
         raise PreviewError("collector_not_configured")
     request = urllib.request.Request(root + "/rest/v1/rpc/" + path,
-        data=json.dumps(payload).encode("utf-8"),
-        headers={"apikey": key, "Authorization": "Bearer " + key,
-                 "Content-Type": "application/json", "Accept": "application/json"},
+        data=json.dumps({"p_token": token, **payload}).encode("utf-8"),
+        headers={"apikey": key, "Content-Type": "application/json",
+                 "Accept": "application/json"},
         method="POST")
     try:
         with urllib.request.urlopen(request, timeout=9) as response:
@@ -301,7 +311,7 @@ def supabase_rpc(path: str, payload: dict):
 
 
 def collect_previews(limit=4) -> dict:
-    claimed = supabase_rpc("community_claim_previews", {"p_limit": min(4, max(1, int(limit)))})
+    claimed = supabase_rpc("community_collector_claim_previews", {"p_limit": min(4, max(1, int(limit)))})
     result = {"claimed": len(claimed or []), "complete": 0, "failed": 0}
     for source in claimed or []:
         try:
@@ -314,5 +324,5 @@ def collect_previews(limit=4) -> dict:
                 "p_error": str(exc)[:120] if isinstance(exc, PreviewError) else "source_parse_error",
             }
             result["failed"] += 1
-        supabase_rpc("community_record_preview", output)
+        supabase_rpc("community_collector_record_preview", output)
     return result
