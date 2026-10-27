@@ -6,11 +6,11 @@ import unittest
 from unittest.mock import MagicMock, patch
 
 from api.preview import handler
-from roomquest.preview_worker import PreviewError, ROOMQUEST_DB, supabase_rpc
+from roomquest.preview_worker import PreviewError, ROOMQUEST_DB, supabase_rpc, collect_previews
 
 
 class ScopedSupabaseTests(unittest.TestCase):
-    def test_only_two_preview_rpcs_can_be_invoked(self):
+    def test_only_scoped_private_collection_rpcs_can_be_invoked(self):
         with self.assertRaisesRegex(PreviewError, "unsupported_collector_rpc"):
             supabase_rpc("store_approved_municipal_events", {})
         with self.assertRaisesRegex(PreviewError, "unsupported_collector_rpc"):
@@ -47,6 +47,53 @@ class ScopedSupabaseTests(unittest.TestCase):
         body = json.loads(request.data.decode("utf-8"))
         self.assertEqual(body["p_token"], "a" * 64)
         self.assertEqual(body["p_limit"], 2)
+
+
+    def test_successful_preview_also_stages_event_metadata(self):
+        from unittest.mock import call
+        from datetime import datetime, timedelta, timezone
+        tomorrow = (datetime.now(timezone.utc) + timedelta(days=1)).isoformat()
+        rows = [{"id": "fixture1", "title": "Park Cleanup", "starts_at": tomorrow,
+                 "venue_name": "Fixture Park", "lat": 35.7, "lng": -78.5}]
+        source = {"source_key": "municipal_fixture"}
+        preview = {"p_source_key": source["source_key"], "p_samples": rows,
+                   "p_events": rows, "p_future_count": 1,
+                   "p_venue_count": 1, "p_error": None}
+        with patch("roomquest.preview_worker.preview_source", return_value=preview), patch(
+                "roomquest.preview_worker.supabase_rpc", side_effect=[[source], 1, None]
+        ) as mocked:
+            result = collect_previews()
+        self.assertEqual(result, {"claimed": 1, "complete": 1, "failed": 0, "staged": 1})
+        self.assertEqual(mocked.call_args_list, [
+            call("community_collector_claim_previews", {"p_limit": 4}),
+            call("community_collector_record_staged_events", {
+                "p_source_key": source["source_key"], "p_events": rows
+            }),
+            call("community_collector_record_preview", {
+                "p_source_key": source["source_key"], "p_samples": rows,
+                "p_future_count": 1, "p_venue_count": 1, "p_error": None
+            }),
+        ])
+
+    def test_staging_error_marks_preview_failed_without_publication(self):
+        source = {"source_key": "municipal_fixture"}
+        preview = {"p_source_key": "municipal_fixture", "p_samples": [],
+                   "p_events": [], "p_future_count": 0,
+                   "p_venue_count": 0, "p_error": None}
+        def fake_rpc(name, payload):
+            if name == "community_collector_claim_previews":
+                return [source]
+            if name == "community_collector_record_staged_events":
+                raise PreviewError("database_unavailable")
+            self.assertEqual(name, "community_collector_record_preview")
+            self.assertEqual(payload["p_error"], "database_unavailable")
+            return None
+        with patch("roomquest.preview_worker.preview_source", return_value=preview), patch(
+                "roomquest.preview_worker.supabase_rpc", side_effect=fake_rpc
+        ):
+            result = collect_previews()
+        self.assertEqual(result["failed"], 1)
+        self.assertEqual(result["complete"], 0)
 
     def test_hourly_cron_requires_secret_while_health_remains_safe(self):
         fake = handler.__new__(handler)
