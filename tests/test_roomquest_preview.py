@@ -2,6 +2,7 @@
 import importlib.util
 import json
 import unittest
+from unittest.mock import patch, MagicMock
 from datetime import datetime, timedelta, timezone
 
 from roomquest.preview_worker import _preview, public_source_url, SUPPORTED
@@ -39,6 +40,34 @@ class PreviewSafetyTests(unittest.TestCase):
                              "https://example.org/event/2")
         self.assertEqual(unlocated["reason"], "missing_verified_venue_geo")
         self.assertIsNone(unlocated["lat"])
+
+    def test_udell_redirects_revalidate_every_hop(self):
+        from roomquest.preview_worker import fetch_publisher, PreviewError
+        first = MagicMock(status_code=301, headers={"Location": "https://example.org/events.ics"})
+        last = MagicMock(status_code=200, headers={"Content-Length": "15"}, encoding="utf-8")
+        last.iter_content.return_value = [b"BEGIN:VCALENDAR"]
+        with patch("roomquest.preview_worker.validate_public_dns"), patch(
+            "roomquest.preview_worker.robots_allowed", return_value=True), patch(
+            "roomquest.preview_worker.requests.Session") as factory:
+            factory.return_value.__enter__.return_value.get.side_effect = [first, last]
+            self.assertEqual(fetch_publisher("https://old.example.org/feed", "text/calendar"), "BEGIN:VCALENDAR")
+            self.assertEqual(factory.return_value.__enter__.return_value.get.call_count, 2)
+        with patch("roomquest.preview_worker.validate_public_dns"), patch(
+            "roomquest.preview_worker.robots_allowed", return_value=True), patch(
+            "roomquest.preview_worker.requests.Session") as factory:
+            factory.return_value.__enter__.return_value.get.return_value = MagicMock(
+                status_code=301, headers={"Location": "http://127.0.0.1/secrets"})
+            with self.assertRaisesRegex(PreviewError, "invalid_redirect_url"):
+                fetch_publisher("https://old.example.org/feed", "text/calendar")
+
+    def test_udell_transport_respects_publisher_robots(self):
+        from roomquest.preview_worker import fetch_publisher, PreviewError
+        with patch("roomquest.preview_worker.validate_public_dns"), patch(
+            "roomquest.preview_worker.robots_allowed", return_value=False), patch(
+            "roomquest.preview_worker.requests.Session") as factory:
+            with self.assertRaisesRegex(PreviewError, "robots_denied"):
+                fetch_publisher("https://example.org/feed.ics", "text/calendar")
+            factory.return_value.__enter__.return_value.get.assert_not_called()
 
     def test_supported_adapters_are_real_upstream_parsers(self):
         self.assertEqual(SUPPORTED, {"ical", "jsonld", "growthzone", "wordpress"})

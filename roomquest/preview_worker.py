@@ -14,6 +14,7 @@ import json
 import os
 import re
 import socket
+import requests
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlparse
 from urllib.request import HTTPRedirectHandler, Request, build_opener
@@ -106,30 +107,58 @@ def robots_allowed(host: str, path: str) -> bool:
 
 
 def fetch_publisher(url: str, accept: str) -> str:
+    """Use Udell's requests GET and its redirect behavior for approved HTTPS feeds.
+
+    Keep URL/DNS validation, publisher robots rules and bounded downloads; a
+    redirect destination must pass the same checks before the next request.
+    """
     if not public_source_url(url):
         raise PreviewError("invalid_source_url")
-    parsed = urlparse(url)
-    validate_public_dns(parsed.hostname or "")
-    if not robots_allowed(parsed.hostname or "", parsed.path or "/"):
-        raise PreviewError("robots_denied")
-    opener = build_opener(RejectRedirects())
-    request = Request(url, headers={
-        "User-Agent": "RoomQuestCommunityCalendar/0.1 (source-review; bounded)",
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
         "Accept": accept,
-    })
-    try:
-        with opener.open(request, timeout=7) as response:
-            if response.status != 200 or int(response.headers.get("Content-Length") or 0) > MAX_BODY:
-                raise PreviewError("source_unavailable_or_oversized")
-            raw = response.read(MAX_BODY + 1)
-            if len(raw) > MAX_BODY:
-                raise PreviewError("source_too_large")
-            return raw.decode("utf-8-sig", errors="replace")
-    except HTTPError as exc:
-        raise PreviewError("publisher_http_" + str(exc.code)) from exc
-    except (URLError, TimeoutError, OSError) as exc:
-        raise PreviewError("source_network_error") from exc
-
+    }
+    current = url
+    with requests.Session() as session:
+        for _ in range(5):
+            parsed = urlparse(current)
+            if not public_source_url(current):
+                raise PreviewError("invalid_redirect_url")
+            validate_public_dns(parsed.hostname or "")
+            if not robots_allowed(parsed.hostname or "", parsed.path or "/"):
+                raise PreviewError("robots_denied")
+            try:
+                response = session.get(current, headers=headers, timeout=7,
+                                       stream=True, allow_redirects=False)
+                if response.status_code in (301, 302, 303, 307, 308):
+                    from urllib.parse import urljoin
+                    location = response.headers.get("Location")
+                    response.close()
+                    if not location:
+                        raise PreviewError("redirect_missing_location")
+                    current = urljoin(current, location)
+                    continue
+                if response.status_code != 200:
+                    code = response.status_code
+                    response.close()
+                    raise PreviewError("publisher_http_" + str(code))
+                length = int(response.headers.get("Content-Length") or 0)
+                if length > MAX_BODY:
+                    response.close()
+                    raise PreviewError("source_unavailable_or_oversized")
+                chunks, size = [], 0
+                for chunk in response.iter_content(chunk_size=32768):
+                    size += len(chunk)
+                    if size > MAX_BODY:
+                        response.close()
+                        raise PreviewError("source_too_large")
+                    chunks.append(chunk)
+                encoding = response.encoding or "utf-8-sig"
+                response.close()
+                return b"".join(chunks).decode(encoding, errors="replace")
+            except requests.RequestException as exc:
+                raise PreviewError("source_network_error") from exc
+    raise PreviewError("too_many_redirects")
 
 def _location(venue_name, lat, lng) -> tuple[str, float | None, float | None]:
     name = str(venue_name or "").strip()[:160]
