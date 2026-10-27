@@ -15,5 +15,11 @@
       "src": "/.*",
       "status": 404
     }
+  ],
+  "crons": [
+    {
+      "path": "/api/preview",
+      "schedule": "0 * * * *"
+    }
   ]
 }
