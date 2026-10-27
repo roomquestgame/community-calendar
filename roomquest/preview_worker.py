@@ -7,6 +7,8 @@ Production publish/approval stays behind RoomQuest's audited Supabase gates.
 from __future__ import annotations
 
 from datetime import date, datetime, timedelta, timezone
+from functools import lru_cache
+from urllib.robotparser import RobotFileParser
 import ipaddress
 import json
 import os
@@ -74,11 +76,42 @@ def validate_public_dns(host: str) -> None:
         raise PreviewError("dns_unavailable") from exc
 
 
+@lru_cache(maxsize=256)
+def robots_allowed(host: str, path: str) -> bool:
+    """Respect publisher crawl restrictions, fail closed on ambiguous responses.
+
+    Never redirect robots requests or fetch private-network destinations.
+    404/410 mean no robots rules; 401/403, 429, network failures deny.
+    """
+    robots_url = "https://" + host + "/robots.txt"
+    try:
+        validate_public_dns(host)
+        opener = build_opener(RejectRedirects())
+        request = Request(robots_url, headers={
+            "User-Agent": "RoomQuestCommunityCalendar/0.1 (community-event research)"
+        })
+        with opener.open(request, timeout=5) as response:
+            raw = response.read(128_001)
+            if response.status != 200 or len(raw) > 128_000:
+                raise PreviewError("robots_unavailable")
+    except HTTPError as exc:
+        if exc.code in (404, 410):
+            return True
+        raise PreviewError("robots_denied") from exc
+    except (URLError, TimeoutError, OSError) as exc:
+        raise PreviewError("robots_unavailable") from exc
+    parser = RobotFileParser()
+    parser.parse(raw.decode("utf-8", errors="replace").splitlines())
+    return parser.can_fetch("RoomQuestCommunityCalendar", "https://" + host + path)
+
+
 def fetch_publisher(url: str, accept: str) -> str:
     if not public_source_url(url):
         raise PreviewError("invalid_source_url")
     parsed = urlparse(url)
     validate_public_dns(parsed.hostname or "")
+    if not robots_allowed(parsed.hostname or "", parsed.path or "/"):
+        raise PreviewError("robots_denied")
     opener = build_opener(RejectRedirects())
     request = Request(url, headers={
         "User-Agent": "RoomQuestCommunityCalendar/0.1 (source-review; bounded)",
@@ -278,6 +311,7 @@ def preview_source(source: dict) -> dict:
         "p_future_count": len(records),
         "p_venue_count": sum(1 for row in records if row["lat"] is not None),
         "p_error": None,
+        "p_events": records[:100],  # private metadata-only staging; not part of the preview RPC
     }
 
 
@@ -289,7 +323,8 @@ def supabase_rpc(path: str, payload: dict):
     security-definer RPCs. The token must never enter a public client or log.
     """
     import urllib.request
-    allowed = {"community_collector_claim_previews", "community_collector_record_preview"}
+    allowed = {"community_collector_claim_previews", "community_collector_record_preview",
+               "community_collector_record_staged_events"}
     if path not in allowed:
         raise PreviewError("unsupported_collector_rpc")
     root = os.environ.get("SUPABASE_URL", "")
@@ -312,17 +347,27 @@ def supabase_rpc(path: str, payload: dict):
 
 def collect_previews(limit=4) -> dict:
     claimed = supabase_rpc("community_collector_claim_previews", {"p_limit": min(4, max(1, int(limit)))})
-    result = {"claimed": len(claimed or []), "complete": 0, "failed": 0}
+    result = {"claimed": len(claimed or []), "complete": 0, "failed": 0,
+              "staged": 0}
     for source in claimed or []:
         try:
             output = preview_source(source)
-            result["complete"] += 1
+            events = output.pop("p_events", [])
+            # Stage privately before closing the claim. This RPC can write ONLY
+            # to community_staged_events; it never approves or publishes events.
+            written = supabase_rpc("community_collector_record_staged_events", {
+                "p_source_key": source["source_key"], "p_events": events
+            })
+            result["staged"] += int(written or 0)
         except (PreviewError, OSError, ValueError) as exc:
             output = {
                 "p_source_key": source["source_key"], "p_samples": [],
                 "p_future_count": 0, "p_venue_count": 0,
                 "p_error": str(exc)[:120] if isinstance(exc, PreviewError) else "source_parse_error",
             }
-            result["failed"] += 1
         supabase_rpc("community_collector_record_preview", output)
+        if output["p_error"] is None:
+            result["complete"] += 1
+        else:
+            result["failed"] += 1
     return result
