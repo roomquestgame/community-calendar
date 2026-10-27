@@ -4,7 +4,7 @@ import hmac
 import json
 import os
 
-from roomquest.preview_worker import PreviewError, collect_previews
+from roomquest.preview_worker import PreviewError, collect_previews, collect_bulk_previews
 
 
 class handler(BaseHTTPRequestHandler):
@@ -21,7 +21,7 @@ class handler(BaseHTTPRequestHandler):
         # Never accepts arbitrary URLs or source identifiers from the request.
         # At most four due preview candidates are claimed from the private DB.
         try:
-            result = collect_previews(limit=4)
+            result = collect_bulk_previews(max_sources=15) if self.path in {f'/api/preview-{i}' for i in range(1,6)} else collect_previews(limit=4)
             return self.reply(200, result)
         except PreviewError:
             return self.reply(503, {"error": "collector_unavailable"})
@@ -29,7 +29,7 @@ class handler(BaseHTTPRequestHandler):
             return self.reply(503, {"error": "collector_failed"})
 
     def do_GET(self):
-        if self.path != "/api/preview":
+        if self.path != "/api/preview" and self.path not in {f"/api/preview-{i}" for i in range(1,6)}:
             return self.reply(404, {"error": "not_found"})
         authorization = self.headers.get("Authorization", "")
         if authorization:
