@@ -81,6 +81,11 @@ def endpoint(e):
 
 def priority(e):
     text = " ".join(str(e.get(k) or "") for k in ("name", "_metro", "geocode_suffix", "base_url")).lower()
+    venue = e.get("venue") if isinstance(e.get("venue"), dict) else {}
+    # Richmond District in San Francisco is broader-US coverage, not Virginia.
+    # Catalog names alone must not assign another state's publisher to an area.
+    if str(venue.get("region") or "").upper() == "CA" or "san francisco" in text:
+        return 3
     if any(s in text for s in ("raleigh", "wake county", "dncr.nc", "durham", "apex, nc", "holly springs, nc")):
         return 0
     if any(s in text for s in ("south hill", "mecklenburg", "chase city")):

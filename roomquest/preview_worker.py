@@ -21,6 +21,7 @@ import socket
 import requests
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlparse
+from urllib.parse import urljoin
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 from zoneinfo import ZoneInfo
 
@@ -222,7 +223,7 @@ def _future_datetime(value) -> datetime | None:
 
 
 def _preview(title, start, end, venue, lat, lng, url, identity="",
-             category="", address="", city="", *, allow_ongoing=False):
+             category="", address="", city="", image=None, *, allow_ongoing=False):
     future = _future_datetime(start)
     if future is None and allow_ongoing and isinstance(start, datetime) and start.tzinfo and isinstance(end, datetime) and end.tzinfo:
         now = datetime.now(timezone.utc)
@@ -240,11 +241,12 @@ def _preview(title, start, end, venue, lat, lng, url, identity="",
         "category": str(category or "")[:80],
         "venue_address": str(address or "")[:400],
         "venue_city": str(city or "")[:120],
+        **({"image_url": event_image(image, url if isinstance(url, str) else "")} if image is not None else {}),
         "reason": None if latitude is not None else "missing_verified_venue_geo",
     }
 
 
-def parse_ics_preview(payload: str, *, allow_ongoing=False) -> list[dict]:
+def parse_ics_preview(payload: str, *, allow_ongoing=False, include_images=True) -> list[dict]:
     """Use upstream combine_ics recurrence expansion and icalendar VEVENT parsing."""
     from icalendar import Calendar
     from scripts.combine_ics import expand_rrules
@@ -279,12 +281,70 @@ def parse_ics_preview(payload: str, *, allow_ongoing=False) -> list[dict]:
                               str(item.get("LOCATION", "")), lat, lng,
                               str(item.get("URL", "")),
                               str(item.get("UID", "")),
-                              str(item.get("CATEGORIES", "")), allow_ongoing=allow_ongoing)
+                              calendar_categories(item), image=calendar_image(item) if include_images else None,
+                              allow_ongoing=allow_ongoing)
             if record:
                 results.append(record)
         except (KeyError, ValueError, TypeError):
             continue
     return results
+
+
+def event_image(value, base_url="") -> str | None:
+    """Select a public event image candidate; the media worker validates its bytes."""
+    if isinstance(value, list):
+        return next((u for x in value[:5] if (u := event_image(x, base_url))), None)
+    if isinstance(value, dict):
+        value = value.get("contentUrl") or value.get("url") or value.get("@id")
+    if not isinstance(value, str):
+        return None
+    value = urljoin(base_url, value.strip())
+    if not public_source_url(value):
+        return None
+    path = urlparse(value).path.lower()
+    if path.endswith(('.svg', '.pdf', '.ics', '.html')) or re.search(r'(^|/)(favicon|logo|avatar|pixel|tracking)[._/-]', path):
+        return None
+    return value
+
+
+def calendar_image(item) -> str | None:
+    base = str(item.get("URL", ""))
+    for field in ("IMAGE", "X-IMAGE", "X-WP-IMAGES-URL", "ATTACH"):
+        values = item.get(field, [])
+        for value in values if isinstance(values, list) else [values]:
+            mime = str(getattr(value, 'params', {}).get('FMTTYPE', '')).lower()
+            if field == 'ATTACH' and not (mime.startswith('image/') or re.search(r'\.(png|jpe?g|webp|gif|avif)(\?|$)', str(value), re.I)):
+                continue
+            if candidate := event_image(str(value), base):
+                return candidate
+    from bs4 import BeautifulSoup
+    for field in ("X-ALT-DESC", "DESCRIPTION"):
+        html = str(item.get(field, ""))[:50_000]
+        if '<img' in html.lower():
+            for image in BeautifulSoup(html, 'html.parser').select('img[src]')[:5]:
+                if candidate := event_image(image.get('src'), base):
+                    return candidate
+    return None
+
+
+def calendar_categories(item) -> str:
+    """Decode vCategory values rather than storing their Python object repr."""
+    values = item.get("CATEGORIES", [])
+    values = values if isinstance(values, list) else [values]
+    labels = []
+    for value in values:
+        for label in getattr(value, "cats", [value]):
+            text = str(label).strip()
+            if text and text not in labels:
+                labels.append(text)
+    return ", ".join(labels)[:80]
+
+
+def postal_address(address: dict) -> str:
+    """Keep locality/state/postcode from structured publisher venue addresses."""
+    return ", ".join(str(address.get(k) or "").strip() for k in
+                     ("streetAddress", "addressLocality", "addressRegion", "postalCode")
+                     if address.get(k))[:400]
 
 
 def parse_jsonld_preview(payload: str) -> list[dict]:
@@ -315,7 +375,7 @@ def parse_jsonld_preview(payload: str) -> list[dict]:
                           venue.get("name"), geo.get("latitude"), geo.get("longitude"),
                           item.get("url"), item.get("@id", ""),
                           item.get("keywords", ""),
-                          address.get("streetAddress", ""), address.get("addressLocality", ""))
+                          postal_address(address), address.get("addressLocality", ""), image=item.get("image"))
         if record:
             results.append(record)
     return results
@@ -363,7 +423,9 @@ def parse_wordpress_preview(payload: str, source: dict) -> list[dict]:
         preview = _preview(record.get("title"), record.get("dtstart"), record.get("dtend"),
                            venue.get("venue"), venue.get("geo_lat"), venue.get("geo_lng"),
                            record.get("url"), item.get("id", ""), label,
-                           venue.get("address", ""), venue.get("city", ""))
+                           ", ".join(str(venue.get(k) or "").strip() for k in
+                                     ("address", "city", "state", "zip") if venue.get(k)),
+                           venue.get("city", ""), image=item.get("image"))
         if preview:
             results.append(preview)
     return results
@@ -372,14 +434,16 @@ def parse_wordpress_preview(payload: str, source: dict) -> list[dict]:
 SUPPORTED = {"ical", "jsonld", "growthzone", "wordpress"}
 
 
-def preview_source(source: dict) -> dict:
+def preview_source(source: dict, *, deadline_at=None) -> dict:
     if source.get("source_key", "").startswith("municipal_mapsee_"):
         from roomquest.mapsee_adapter import profiles, collect
         profile = profiles().get(source["source_key"])
         if not profile or profile["url"] != source.get("feed_url"):
             raise PreviewError("unregistered_mapsee_source")
         try:
-            deadline = monotonic() + 20
+            deadline = min(monotonic() + 20, deadline_at - 8 if deadline_at is not None else float("inf"))
+            if monotonic() >= deadline:
+                raise PreviewError("collection_deadline")
             records = collect(source, profile, lambda url, accept: fetch_publisher(
                 url, accept, respect_robots=True, deadline_at=deadline))
         except (ValueError, TypeError, KeyError, OverflowError) as exc:
@@ -435,7 +499,8 @@ def supabase_rpc(path: str, payload: dict):
     """
     import urllib.request
     allowed = {"community_collector_claim_previews", "community_collector_record_preview",
-               "community_collector_record_staged_events", "community_collector_geocoder"}
+               "community_collector_record_staged_events", "community_collector_geocoder",
+               "community_collector_venues", "community_collector_media"}
     if path not in allowed:
         raise PreviewError("unsupported_collector_rpc")
     root = os.environ.get("SUPABASE_URL", "")
@@ -456,11 +521,12 @@ def supabase_rpc(path: str, payload: dict):
         raise PreviewError("database_unavailable") from exc
 
 
-def _process_claimed_source(source: dict) -> dict:
+def _process_claimed_source(source: dict, *, deadline_at=None) -> dict:
     """Process a single claimed feed with the existing private staging contract."""
     try:
-        deadline = monotonic() + 43
-        output = preview_source(source)
+        deadline = min(monotonic() + 43, deadline_at or float("inf"))
+        output = (preview_source(source, deadline_at=deadline - 4)
+                  if source.get("source_key", "").startswith("municipal_mapsee_") else preview_source(source))
         events = output.pop("p_events", [])
         staged = 0
         # Existing token/RPC accepts at most 100 facts. Large Mapsee sources use
@@ -506,7 +572,7 @@ def collect_previews(limit=4) -> dict:
 
 
 def collect_bulk_previews(max_sources=15, concurrency=3, deadline_seconds=48) -> dict:
-    """Five independently scheduled workers * fifteen = up to 75 / quarter hour.
+    """Five independently scheduled workers * fifteen = up to 75 / interval.
 
     Supabase's existing scoped RPC still atomically claims <=4 at a time.
     No schema/grant/migration changes, URL input, service key, or CI scraper.
@@ -516,16 +582,27 @@ def collect_bulk_previews(max_sources=15, concurrency=3, deadline_seconds=48) ->
     workers = min(3, max(1, int(concurrency)))
     deadline = monotonic() + max(1, min(48, deadline_seconds))
     result = {"claimed": 0, "complete": 0, "failed": 0, "staged": 0}
+    mapsee_batch = False
+    retried_cooldown = False
     with ThreadPoolExecutor(max_workers=workers) as pool:
         while result["claimed"] < maximum and monotonic() < deadline:
             claim_limit = min(workers, 4, maximum - result["claimed"])
             claimed = supabase_rpc("community_collector_claim_previews",
                                    {"p_limit": claim_limit}) or []
             if not claimed:
+                # A completed Mapsee publisher lease has a short DB cooldown.
+                # Give it one bounded chance before ending this scheduled slot.
+                if mapsee_batch and not retried_cooldown and monotonic() + 2 < deadline:
+                    sleep(1.1)
+                    retried_cooldown = True
+                    continue
                 break
+            mapsee_batch = any(s.get("source_key", "").startswith("municipal_mapsee_") for s in claimed)
+            retried_cooldown = False
             result["claimed"] += len(claimed)
-            for item in pool.map(_process_claimed_source, claimed):
+            for item in pool.map(lambda source: _process_claimed_source(source, deadline_at=deadline + 3), claimed):
                 for key in ("complete", "failed", "staged"):
                     result[key] += item[key]
     return result
+
 

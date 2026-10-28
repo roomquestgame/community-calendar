@@ -72,6 +72,8 @@ def record(title, start, end, venue, street, city, url, identity, category="", l
     if str(lat) in {"0","0.0"} and str(lng) in {"0","0.0"}:lat=lng=None
     out = _preview(plain(title), begins, ends, plain(venue) or plain(street),
                    lat,lng,url,str(identity or ""),plain(category),plain(street),plain(city),allow_ongoing=True)
+    if out is not None:
+        out.pop("image_url",None)
     if out is not None and not out.get("event_url"):
         raise ValueError("event_link_missing")
     return out
@@ -236,12 +238,13 @@ def parse_ics(payload,source):
     # parser bound honest instead of silently calling a truncated feed empty.
     if len(events)>1000:
         raise ValueError("source_record_limit")
-    result=parse_ics_preview(payload,allow_ongoing=True)
+    result=parse_ics_preview(payload,allow_ongoing=True,include_images=False)
     if not result and unsupported:raise ValueError(unsupported[0])
     # A feed URL is an actual publisher link when its VEVENT omits URL. Never
     # fabricate a detail URL, venue, publisher host, description or image.
     categories={str(e.get("UID", "")): ", ".join(c.to_ical().decode("utf-8",errors="replace") for c in (e.get("CATEGORIES") if isinstance(e.get("CATEGORIES"),list) else [e.get("CATEGORIES")]) if c is not None) for e in events}
     for e in result:
+        e.pop("image_url",None)
         e["category"]=categories.get(e["id"].split("__",1)[0],"")
         if not e.get("event_url"):e["event_url"]=source["url"]
         if not e.get("venue_address") and e.get("venue_name"):e["venue_address"]=e["venue_name"]

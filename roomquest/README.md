@@ -1,5 +1,28 @@
 # RoomQuest community collector
 
+## Unified venue resolution batch (October 27, 2026)
+
+The existing minute job rotates dedicated geocoding, venue-resolution (then geocoding with remaining budget), and event-photo batches over three minutes. Each invocation stays within its existing 45-second budget. It claims one source-scoped venue
+identity and examines at most two publisher/event pages for exact-event JSON-LD location evidence
+or matched-venue structured/contact addresses. It may follow a publisher-local venue/contact link.
+Generic rooms, conflicting locations and unavailable evidence go to the real Admin Data venue queue.
+No external search subscription, new geocoder, extra Cron, or service-role credential is introduced.
+
+The companion RoomQuestGame migration `20261028120000` stores verified addresses/evidence for reuse,
+preserves raw publisher room/address text, invalidates changed venue signatures, adds protected
+administrator review and reuses existing address/quota caches for every matching future occurrence.
+Deploy that migration before this worker. Older address-only geocoding continues to use the same
+reservation ledger and exact provider-evidence checks. Only verified locations enter normal nearby
+discovery; the separate Events directory section is removed in the app batch.
+
+ICS CATEGORIES now decodes to real publisher labels, and structured addresses retain city/state/ZIP.
+Run `python -m pytest tests/test_roomquest* tests/test_forward_geocoder.py tests/test_venue_resolver.py`.
+The 16 new fixtures cover evidence identity, conflicting addresses, bounded/publisher-local lookup,
+room labels, complete address extraction and real iCalendar category decoding. Existing minute
+cadence is unchanged; its old five-minute test expectation has been corrected.
+
+The photo worker remains scoped to the original 400 feeds. The separate Mapsee eligibility migration explicitly extends the shared venue resolver; this collector release alone does not enroll sources in geocoding. The separately merged Mapsee collector adapters, cadence and bounded staging are preserved.
+
 This adapter preserves the upstream Python scrapers and supplies restricted RoomQuest ingestion and forward geocoding. The original 400 Jon Udell feeds remain intact. The Mapsee extension adds a pinned, positively identified US catalog through the same collector and normal Events process.
 
 ## Server configuration
@@ -10,7 +33,7 @@ Geocoding additionally requires the existing Sensitive Production GEOCODIO_API_K
 
 ## Ingestion
 
-The existing five preview Cron jobs run every five minutes and claim up to four sources each. The worker preserves future factual title/time, publisher attribution, original link and supplied venue details. It uses the upstream recurrence expansion and supported ICS, JSON-LD, Tribe and GrowthZone adapters, with existing robots, HTTPS, DNS/IP, response-size, timeout and no-redirect safeguards. Its two existing token-scoped preview RPCs write private staging metadata and diagnostics. The separately scheduled Supabase factual publication job writes eligible factual records to existing external_events; verified coordinates enter normal Events/Home/Map discovery. No copied publisher descriptions/images, fictional hosts or RSVPs are created.
+The existing five preview Cron jobs run every five minutes and claim up to four sources each. The worker preserves future factual title/time, publisher attribution, original link and supplied venue details. It uses the upstream recurrence expansion and supported ICS, JSON-LD, Tribe and GrowthZone adapters, with existing robots, HTTPS, DNS/IP, response-size, timeout and no-redirect safeguards. Its two existing token-scoped preview RPCs write private staging metadata and diagnostics. The separately scheduled Supabase factual publication job writes eligible factual records to existing external_events; verified coordinates enter normal Events/Home/Map discovery. Publisher descriptions, fictional hosts and RSVPs are not created. Original-cohort event image URLs use the bounded photo pipeline below.
 
 ## Forward Geocoder
 
@@ -32,6 +55,23 @@ Deploy RoomQuest PR #285 through its protected database workflow first; it recon
 
 Run focused tests locally with python -m pytest tests/test_roomquest* tests/test_forward_geocoder.py. The main repository also runs rollback-only SQL authorization, address/cache, discovery, refresh/provider-regression and concurrent quota tests. Review actual Vercel usage when changing schedule frequency. Upstream GitHub Actions remain disabled, and the ignored-build command skips nonproduction builds. Health and batch responses expose aggregate counters only; operational queue/usage status requires the restricted collector token or a privileged database operator.
 
+
+## Public event photos
+
+Owner explicitly authorized automatic photos without a separate source-image permission approval
+step. Feed image attachments and publisher JSON-LD/WordPress image fields are staged privately.
+The photo phase also checks exact event-page JSON-LD, event-matched Open Graph and featured images.
+It claims at most three source/event identities, validates public HTTPS/DNS/redirects, MIME and
+image-file signatures, reads only a 4 KB prefix, and rejects logos/tiny tracking pixels/oversized files.
+Successful URL evidence is cached for seven days and reused across refreshes and recurring events.
+Pictures display through existing normal event cards; unavailable pictures keep the existing fallback.
+Deploy companion migration 130000 before this worker. The existing minute Cron and all Geocodio
+reservation/cost limits remain intact; no files are copied to Storage or new search service added.
+
+Photo tests: `python -m pytest tests/test_event_media.py`. Focused venue/photo suite: 67 tests plus ten
+subtests; the combined suite also includes the Mapsee regressions. Inherited upstream Actions stay disabled; local validation and the main RoomQuest SQL CI
+cover this coordinated release. PR #289 is our separate “Fix Three Event Bugs” work, not attributed
+to Awet.
 
 ## Mapsee catalog extension (October 27, 2026)
 
@@ -57,3 +97,10 @@ three and the outer deadline 48 seconds. Geocoding retains its separate one-minu
 Cron and unchanged shared quota. The production source registry, collection and
 publication evidence are recorded in `RoomQuestGame/docs/mapsee-rollout.md`; a
 committed catalog or local test is not evidence that those feeds work in production.
+
+
+Mapsee scheduling carries the remaining job deadline into fetch/staging, permits
+one short retry for a publisher lease cooldown, and retains the 15-source/three-worker
+cap. The catalog priority metadata distinguishes 17 Raleigh/Wake/Durham sources and
+30 Richmond/Petersburg sources; Richmond District in San Francisco remains broader
+US coverage. The combined local suite passes 163 tests plus ten subtests.
