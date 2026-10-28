@@ -115,13 +115,13 @@ class ScopedSupabaseTests(unittest.TestCase):
             fake.batch.assert_not_called()
             self.assertEqual(fake.reply.call_args.args[0], 401)
 
-    def test_five_workers_have_authenticated_fifteen_source_cap(self):
+    def test_five_workers_keep_authenticated_fifteen_source_cap(self):
         from pathlib import Path
         from roomquest.preview_worker import collect_bulk_previews
         settings = json.loads((Path(__file__).parents[1] / "vercel.json").read_text())
         paths = [job["path"] for job in settings["crons"] if job["path"].startswith("/api/preview-")]
         self.assertEqual(paths, [f"/api/preview-{i}" for i in range(1, 6)])
-        self.assertTrue(all(job["schedule"] == "*/15 * * * *"
+        self.assertTrue(all(job["schedule"] == "*/5 * * * *"
                             for job in settings["crons"] if job["path"].startswith("/api/preview-")))
         self.assertEqual(len(paths) * 15, 75)
         for path in paths:
