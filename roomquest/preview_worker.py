@@ -370,7 +370,7 @@ def supabase_rpc(path: str, payload: dict):
     """
     import urllib.request
     allowed = {"community_collector_claim_previews", "community_collector_record_preview",
-               "community_collector_record_staged_events"}
+               "community_collector_record_staged_events", "community_collector_geocoder"}
     if path not in allowed:
         raise PreviewError("unsupported_collector_rpc")
     root = os.environ.get("SUPABASE_URL", "")
@@ -384,7 +384,7 @@ def supabase_rpc(path: str, payload: dict):
                  "Accept": "application/json"},
         method="POST")
     try:
-        with urllib.request.urlopen(request, timeout=9) as response:
+        with urllib.request.urlopen(request, timeout=4 if path == "community_collector_geocoder" else 9) as response:
             raw = response.read(150_000)
             return json.loads(raw.decode()) if raw else None
     except (HTTPError, URLError, ValueError) as exc:
@@ -447,3 +447,4 @@ def collect_bulk_previews(max_sources=15, concurrency=3, deadline_seconds=48) ->
                 for key in ("complete", "failed", "staged"):
                     result[key] += item[key]
     return result
+

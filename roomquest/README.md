@@ -1,29 +1,29 @@
-# RoomQuest curator preview worker
+# RoomQuest community collector
 
-This is a narrowly scoped integration on top of Jon Udell's preserved Python community-calendar scrapers. It previews candidate calendars and writes up to 100 **future event metadata records per source into private** `community_staged_events`, plus preview diagnostics. It never publishes events, creates native hosts, or approves publisher rights. Robots restrictions and approved server-side sources are enforced before fetching.
+This adapter preserves the upstream Python scrapers and supplies restricted RoomQuest ingestion and forward geocoding. Current scope is the original 400 Jon Udell community-calendar feeds. No Mapsee or additional catalog is enabled by this work.
 
-## Runtime configuration (Vercel production, server-side only)
+## Server configuration
 
-- `SUPABASE_URL`: `https://drpqjuqghpjivtwznfdj.supabase.co`
-- `SUPABASE_PUBLISHABLE_KEY`: the public/publishable RoomQuest project API key (not a service-role key)
-- `ROOMQUEST_COLLECTOR_TOKEN`: 64 hex characters; SHA-256 hash stored only in Supabase private `rq_curator_private.preview_credentials`
-- `ROOMQUEST_PREVIEW_SECRET`: 64-hex manual-operator request token
-- `CRON_SECRET`: 64-hex Vercel Cron GET bearer token
+Vercel Production uses SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY and ROOMQUEST_COLLECTOR_TOKEN. The token's SHA-256 hash lives in Supabase's private preview_credentials table. Never configure a Supabase service-role key here. Existing CRON_SECRET authenticates scheduled GET requests; ROOMQUEST_PREVIEW_SECRET authenticates bounded operator POST requests. Never print, download or commit these secrets.
 
-**Never configure `SUPABASE_SERVICE_ROLE_KEY` in Vercel.** The Python worker can invoke exactly `community_collector_claim_previews` and `community_collector_record_preview`, gated in SQL by the scoped collector token. Admin-only RPCs and all event publication paths are separate.
+Geocoding additionally requires the existing Sensitive Production GEOCODIO_API_KEY and explicit FORWARD_GEOCODER_ENABLED=true. VERCEL_ENV must be production and the private database settings row must also be enabled. Public health GET reports booleans only. The key is sent only in a Geocodio Authorization header, never a URL or log.
 
-## Operation
+## Ingestion
 
-- On Admin → Data → Sources, an administrator stages a publisher and chooses **Preview**. This sets `preview_status=queued`; no fetching runs in the user browser.
-- Vercel Cron invokes `GET /api/preview` **every 15 minutes** using `Authorization: Bearer <CRON_SECRET>`. Every invocation claims up to 4 due sources from Supabase, with atomic `SKIP LOCKED` locks. Claims stuck over 20 minutes can be retried.
-- A separate `POST /api/preview` with `ROOMQUEST_PREVIEW_SECRET` supports bounded manual checks. No URL or source key can be provided to the endpoint.
-- Plain unauthenticated `GET /api/preview` reports a minimal health summary only and does not fetch sources.
-- The worker uses Udell's calendar recurrence expansion and ICS, JSON-LD, WordPress Tribe and GrowthZone parsers. It preserves future event start/end, provenance, category hints, and explicitly provided venue details, including unresolved locations for private review. Other platform adapters remain explicitly unsupported; adding a calendar catalog entry does not imply it works.
-- Any retrieved event must have a true future timestamp. Venue geocoordinates come only from structured publisher event data, never from the city coverage centroid; events lacking GEO are flagged for curation.
-- Preview records and staged event metadata remain private. Stage record writes use only the collector's restricted RPC token. Live public events require separately validated publisher permission and an independently deployed/scheduled municipal publication worker.
+The existing five preview Cron jobs run every 15 minutes and claim up to four sources each. The worker preserves future factual title/time, publisher attribution, original link and supplied venue details. It uses the upstream recurrence expansion and supported ICS, JSON-LD, Tribe and GrowthZone adapters, with existing robots, HTTPS, DNS/IP, response-size, timeout and no-redirect safeguards. Its two existing token-scoped preview RPCs write private staging metadata and diagnostics. The separately scheduled Supabase factual publication job publishes eligible directory listings; geocoding is not a publication prerequisite. No copied publisher descriptions/images, fictional hosts or RSVPs are created.
 
-Test locally with `python -m pytest tests/`. Review Vercel usage before changing hourly frequency; automatic GitHub Actions in this fork remain disabled.
+## Forward Geocoder
 
-## Scale and limitations
+Vercel Cron invokes GET /api/geocode every five minutes using its existing CRON_SECRET bearer convention. POST uses ROOMQUEST_PREVIEW_SECRET. Neither accepts caller-supplied addresses, URLs, IDs or a body. An unauthenticated GET is health only; unauthorized invocation cannot start work.
 
-The initial ingest target is the 400 Udell U.S. feeds, but new source catalogs may be registered in batches without requiring a predefined area. Each cron run claims no more than four sources and fetches them sequentially with publisher robots, DNS/IP, HTTPS, response-size, timeout and no-redirect safeguards. The 15-minute cadence is deliberate and can be lowered again if Vercel usage or publisher throttling requires it. This is not a general-purpose web crawler or authorization to republish publisher content. The collector currently supports four adapter types; other Mapsee configurations remain candidates until integrated. Event locations without verified coordinates stay private/held until matched to genuine event venues.\n
+roomquest/forward_geocoder.py calls only the new community_collector_geocoder RPC for claim/reserve/submit/fail/status. Its public invoker reaches an unexposed token-validating gateway; no private function is called through public REST. The collector cannot edit settings or arbitrary events. Each unique complete US physical address has one durable private queue/cache row. New and previously imported original-cohort facts enter the same pipeline. Venue-only or incomplete addresses remain directory-visible without a map pin.
+
+The worker claims one address at a time, reserves a quota slot before every outbound request, uses Geocodio /v2/geocode with an eight-second timeout, and processes at most ten requests within a 45-second budget inside the 60-second Vercel function limit. It never retries HTTP automatically. Durable transient retries back off and stop after five attempts; ambiguous matches stop, 429 pauses until the next UTC day, and provider-auth errors pause for an hour. A crash leaves an expiring lease and a consumed reservation.
+
+The database serializes reservations across all workers and enforces both a server UTC-day and rolling 25-hour-plus-30-second cap of at most 2,300 attempted requests, including failures and retries. Quota exhaustion stops processing automatically. No paid-overage, batch-geocoding or field-append feature is activated. Rooftop/point matches require score >=0.9, exact event street/city/state and US country evidence, valid coordinates and no conflicting close candidate. Publisher headquarters/region never substitutes for an event venue. Cached verified coordinates and provider evidence are retained for reuse, written to existing external_events.location, and preserved by the factual-refresh trigger. Native events and other providers are excluded.
+
+## Release and checks
+
+Deploy RoomQuest PR #285 through its protected database workflow first; it reconciles the explicitly audited history records and applies the disabled geocoder migration without bypassing schema gates. Verify the private cohort is exactly 400. Start with database daily_cap=3 and enabled=true, then deploy this collector with the Production switch enabled. Confirm key presence through metadata/health, actual Cron requests, ledger/provider evidence, correct geographic discovery and refresh persistence before raising the database cap to 2300. See RoomQuestGame/docs/udell-geocoding-rollout.md for the complete runbook. A READY deployment alone is not processing evidence.
+
+Run focused tests locally with python -m pytest tests/test_roomquest* tests/test_forward_geocoder.py. The main repository also runs rollback-only SQL authorization, address/cache, discovery, refresh/provider-regression and concurrent quota tests. Review actual Vercel usage when changing schedule frequency. Upstream GitHub Actions remain disabled, and the ignored-build command skips nonproduction builds. Health and batch responses expose aggregate counters only; operational queue/usage status requires the restricted collector token or a privileged database operator.
