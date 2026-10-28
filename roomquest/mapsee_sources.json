@@ -708,21 +708,6 @@
    "config": {}
   },
   {
-   "file": "tribe_sources.json",
-   "entry": "sites/1079",
-   "name": "Richmond District Neighborhood Center",
-   "type": "tribe",
-   "country": "US",
-   "country_evidence": "explicit_country",
-   "url": "https://richmondsf.org",
-   "canonical_url": "https://richmondsf.org/",
-   "source_key": "municipal_mapsee_1edd350fdfc18e25448761fc",
-   "disposition": "candidate",
-   "platform_adapter": "wordpress",
-   "priority": 2,
-   "config": {}
-  },
-  {
    "file": "ics_sources.json",
    "entry": "entries/2520",
    "name": "801 Labs",
@@ -37355,6 +37340,21 @@
    "url": "https://restoncommunitycenter.com",
    "canonical_url": "https://restoncommunitycenter.com/",
    "source_key": "municipal_mapsee_f805b83dcb7b49a7b56ca68a",
+   "disposition": "candidate",
+   "platform_adapter": "wordpress",
+   "priority": 3,
+   "config": {}
+  },
+  {
+   "file": "tribe_sources.json",
+   "entry": "sites/1079",
+   "name": "Richmond District Neighborhood Center",
+   "type": "tribe",
+   "country": "US",
+   "country_evidence": "explicit_country",
+   "url": "https://richmondsf.org",
+   "canonical_url": "https://richmondsf.org/",
+   "source_key": "municipal_mapsee_1edd350fdfc18e25448761fc",
    "disposition": "candidate",
    "platform_adapter": "wordpress",
    "priority": 3,

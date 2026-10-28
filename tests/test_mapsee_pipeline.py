@@ -8,7 +8,7 @@ from unittest.mock import MagicMock, patch
 from roomquest import preview_worker as worker
 from roomquest.mapsee_adapter import (parse_ics, parse_jsonld, parse_localist,
     parse_open_data, parse_squarespace, parse_tribe, profiles, collect, timestamp)
-from scripts.mapsee_catalog import build, canonical_url, country_evidence
+from scripts.mapsee_catalog import build, canonical_url, country_evidence, priority
 
 
 class MapseeTests(unittest.TestCase):
@@ -33,6 +33,8 @@ class MapseeTests(unittest.TestCase):
         self.assertEqual(country_evidence({"venue":{"country":"GB"},"name":"Durham"})[0],"GB")
         self.assertEqual(canonical_url("https://www.EXAMPLE.org/feed/?b=2&a=1&utm_source=test"),"https://example.org/feed?a=1&b=2")
         self.assertNotEqual(canonical_url("https://example.org/feed?calendar=1"),canonical_url("https://example.org/feed?calendar=2"))
+        self.assertEqual(priority({"name":"Richmond District Neighborhood Center", "_metro":"San Francisco, United States", "venue":{"region":"CA"}}),3)
+        self.assertEqual(priority({"name":"Chesterfield County Parks, VA", "geocode_suffix":", Chesterfield, Virginia"}),2)
 
     def test_ics_facts_only_and_real_recurring_occurrences(self):
         rows=parse_ics(self.ics("RRULE:FREQ=DAILY;COUNT=3\r\n"),{"url":"https://publisher.example.org/feed.ics"})
@@ -104,6 +106,13 @@ class MapseeTests(unittest.TestCase):
                 worker.preview_source({"source_key":p["source_key"],"feed_url":"https://other.example.org/"})
             fetch.assert_not_called()
 
+    def test_expired_scheduled_deadline_does_not_start_another_fetch(self):
+        p=next(iter(profiles().values()))
+        with patch("roomquest.preview_worker.fetch_publisher") as fetch:
+            with self.assertRaisesRegex(worker.PreviewError,"collection_deadline"):
+                worker.preview_source({"source_key":p["source_key"],"feed_url":p["url"]},deadline_at=worker.monotonic()-1)
+            fetch.assert_not_called()
+
     def test_honest_agent_and_robots_are_required_only_for_new_catalog(self):
         response=MagicMock(status_code=200,headers={},encoding="utf-8")
         response.iter_content.return_value=[b"BEGIN:VCALENDAR"]
@@ -131,6 +140,15 @@ class MapseeTests(unittest.TestCase):
             output=worker._process_claimed_source({"source_key":"municipal_mapsee_fixture"})
             self.assertEqual(output["staged"],219)
             self.assertEqual([len(call.args[1]["p_events"]) for call in rpc.call_args_list[:3]],[100,100,19])
+
+    def test_publisher_cooldown_does_not_end_a_mapsee_slot_early(self):
+        source={"source_key":"municipal_mapsee_fixture"}
+        with patch.object(worker,"supabase_rpc",side_effect=[[source],[],[source]]),patch.object(
+                worker,"_process_claimed_source",return_value={"complete":1,"failed":0,"staged":1}),patch.object(
+                worker,"sleep") as pause:
+            result=worker.collect_bulk_previews(max_sources=2)
+        self.assertEqual(result["claimed"],2)
+        pause.assert_called_once_with(1.1)
 
 
 if __name__=="__main__":unittest.main()

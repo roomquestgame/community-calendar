@@ -21,7 +21,7 @@ The 16 new fixtures cover evidence identity, conflicting addresses, bounded/publ
 room labels, complete address extraction and real iCalendar category decoding. Existing minute
 cadence is unchanged; its old five-minute test expectation has been corrected.
 
-The venue and photo workers in this batch remain scoped to the original 400 feeds. The separately merged Mapsee collector adapters, cadence and bounded staging are preserved.
+The photo worker remains scoped to the original 400 feeds. The separate Mapsee eligibility migration explicitly extends the shared venue resolver; this collector release alone does not enroll sources in geocoding. The separately merged Mapsee collector adapters, cadence and bounded staging are preserved.
 
 This adapter preserves the upstream Python scrapers and supplies restricted RoomQuest ingestion and forward geocoding. The original 400 Jon Udell feeds remain intact. The Mapsee extension adds a pinned, positively identified US catalog through the same collector and normal Events process.
 
@@ -98,3 +98,9 @@ Cron and unchanged shared quota. The production source registry, collection and
 publication evidence are recorded in `RoomQuestGame/docs/mapsee-rollout.md`; a
 committed catalog or local test is not evidence that those feeds work in production.
 
+
+Mapsee scheduling carries the remaining job deadline into fetch/staging, permits
+one short retry for a publisher lease cooldown, and retains the 15-source/three-worker
+cap. The catalog priority metadata distinguishes 17 Raleigh/Wake/Durham sources and
+30 Richmond/Petersburg sources; Richmond District in San Francisco remains broader
+US coverage. The combined local suite passes 163 tests plus ten subtests.

@@ -72,6 +72,8 @@ def record(title, start, end, venue, street, city, url, identity, category="", l
     if str(lat) in {"0","0.0"} and str(lng) in {"0","0.0"}:lat=lng=None
     out = _preview(plain(title), begins, ends, plain(venue) or plain(street),
                    lat,lng,url,str(identity or ""),plain(category),plain(street),plain(city),allow_ongoing=True)
+    if out is not None:
+        out.pop("image_url",None)
     if out is not None and not out.get("event_url"):
         raise ValueError("event_link_missing")
     return out
@@ -242,6 +244,7 @@ def parse_ics(payload,source):
     # fabricate a detail URL, venue, publisher host, description or image.
     categories={str(e.get("UID", "")): ", ".join(c.to_ical().decode("utf-8",errors="replace") for c in (e.get("CATEGORIES") if isinstance(e.get("CATEGORIES"),list) else [e.get("CATEGORIES")]) if c is not None) for e in events}
     for e in result:
+        e.pop("image_url",None)
         e["category"]=categories.get(e["id"].split("__",1)[0],"")
         if not e.get("event_url"):e["event_url"]=source["url"]
         if not e.get("venue_address") and e.get("venue_name"):e["venue_address"]=e["venue_name"]
@@ -293,4 +296,3 @@ def collect(source,profile,fetch):
     result=sorted(unique.values(),key=lambda e:(e["starts_at"],e["title"]))
     if result and not any(e.get("venue_name") or e.get("venue_address") for e in result):raise ValueError("venue_extraction_unavailable")
     return result
-

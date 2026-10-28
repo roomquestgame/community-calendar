@@ -434,14 +434,16 @@ def parse_wordpress_preview(payload: str, source: dict) -> list[dict]:
 SUPPORTED = {"ical", "jsonld", "growthzone", "wordpress"}
 
 
-def preview_source(source: dict) -> dict:
+def preview_source(source: dict, *, deadline_at=None) -> dict:
     if source.get("source_key", "").startswith("municipal_mapsee_"):
         from roomquest.mapsee_adapter import profiles, collect
         profile = profiles().get(source["source_key"])
         if not profile or profile["url"] != source.get("feed_url"):
             raise PreviewError("unregistered_mapsee_source")
         try:
-            deadline = monotonic() + 20
+            deadline = min(monotonic() + 20, deadline_at - 8 if deadline_at is not None else float("inf"))
+            if monotonic() >= deadline:
+                raise PreviewError("collection_deadline")
             records = collect(source, profile, lambda url, accept: fetch_publisher(
                 url, accept, respect_robots=True, deadline_at=deadline))
         except (ValueError, TypeError, KeyError, OverflowError) as exc:
@@ -519,11 +521,12 @@ def supabase_rpc(path: str, payload: dict):
         raise PreviewError("database_unavailable") from exc
 
 
-def _process_claimed_source(source: dict) -> dict:
+def _process_claimed_source(source: dict, *, deadline_at=None) -> dict:
     """Process a single claimed feed with the existing private staging contract."""
     try:
-        deadline = monotonic() + 43
-        output = preview_source(source)
+        deadline = min(monotonic() + 43, deadline_at or float("inf"))
+        output = (preview_source(source, deadline_at=deadline - 4)
+                  if source.get("source_key", "").startswith("municipal_mapsee_") else preview_source(source))
         events = output.pop("p_events", [])
         staged = 0
         # Existing token/RPC accepts at most 100 facts. Large Mapsee sources use
@@ -569,7 +572,7 @@ def collect_previews(limit=4) -> dict:
 
 
 def collect_bulk_previews(max_sources=15, concurrency=3, deadline_seconds=48) -> dict:
-    """Five independently scheduled workers * fifteen = up to 75 / quarter hour.
+    """Five independently scheduled workers * fifteen = up to 75 / interval.
 
     Supabase's existing scoped RPC still atomically claims <=4 at a time.
     No schema/grant/migration changes, URL input, service key, or CI scraper.
@@ -579,15 +582,25 @@ def collect_bulk_previews(max_sources=15, concurrency=3, deadline_seconds=48) ->
     workers = min(3, max(1, int(concurrency)))
     deadline = monotonic() + max(1, min(48, deadline_seconds))
     result = {"claimed": 0, "complete": 0, "failed": 0, "staged": 0}
+    mapsee_batch = False
+    retried_cooldown = False
     with ThreadPoolExecutor(max_workers=workers) as pool:
         while result["claimed"] < maximum and monotonic() < deadline:
             claim_limit = min(workers, 4, maximum - result["claimed"])
             claimed = supabase_rpc("community_collector_claim_previews",
                                    {"p_limit": claim_limit}) or []
             if not claimed:
+                # A completed Mapsee publisher lease has a short DB cooldown.
+                # Give it one bounded chance before ending this scheduled slot.
+                if mapsee_batch and not retried_cooldown and monotonic() + 2 < deadline:
+                    sleep(1.1)
+                    retried_cooldown = True
+                    continue
                 break
+            mapsee_batch = any(s.get("source_key", "").startswith("municipal_mapsee_") for s in claimed)
+            retried_cooldown = False
             result["claimed"] += len(claimed)
-            for item in pool.map(_process_claimed_source, claimed):
+            for item in pool.map(lambda source: _process_claimed_source(source, deadline_at=deadline + 3), claimed):
                 for key in ("complete", "failed", "staged"):
                     result[key] += item[key]
     return result
