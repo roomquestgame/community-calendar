@@ -18,4 +18,5 @@ dependencies = [
 # Vercel uses pyproject.toml when this file exists, so runtime parser dependencies
 # MUST be declared above (requirements.txt alone is not installed).
 [tool.vercel]
-entrypoint = "api.preview:handler"
+entrypoint = "api.index:handler"
+
