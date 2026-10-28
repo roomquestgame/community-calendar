@@ -1,5 +1,23 @@
 # RoomQuest community collector
 
+## Staggered collection closeout (October 28, 2026)
+
+The same five preview jobs now start at successive minute offsets, each still
+once every five minutes: preview-1 at minute 0 modulo 5 through preview-5 at 4.
+That preserves 60 collection invocations per hour and all source/thread/deadline,
+authentication, retry and shared Geocodio limits, while avoiding five simultaneous
+collection starts. The existing geocoder still runs every minute. This is load
+smoothing, not evidence that the remaining production SQL timeouts are fixed.
+
+Before this change, main PR #314 / migration 330000 deployed successfully via
+protected run 40711215340 (131 aligned versions, 82 SQL suites). The 11:05 a.m.
+Eastern publication succeeded in 101.518s, 11:10 failed at 120.148s, and 11:15
+succeeded in 112.547s. Some actual geocoder runs still returned 503; photo runs
+continued. Backend discovery and cached Colma/Durham/Richmond points passed, with
+one reservation per tracked address. Production must be verified after READY;
+no monitoring-only completion is claimed here. See the main repository's
+`docs/mapsee-closeout-20261028.md` for the operating handoff.
+
 ## Unified venue resolution batch (October 27, 2026)
 
 The existing minute job rotates dedicated geocoding, venue-resolution (then geocoding with remaining budget), and event-photo batches over three minutes. Each invocation stays within its existing 45-second budget. It claims one source-scoped venue
@@ -33,7 +51,7 @@ Geocoding additionally requires the existing Sensitive Production GEOCODIO_API_K
 
 ## Ingestion
 
-The existing five preview Cron jobs run every five minutes and claim up to four sources each. The worker preserves future factual title/time, publisher attribution, original link and supplied venue details. It uses the upstream recurrence expansion and supported ICS, JSON-LD, Tribe and GrowthZone adapters, with existing robots, HTTPS, DNS/IP, response-size, timeout and no-redirect safeguards. Its two existing token-scoped preview RPCs write private staging metadata and diagnostics. The separately scheduled Supabase factual publication job writes eligible factual records to existing external_events; verified coordinates enter normal Events/Home/Map discovery. Publisher descriptions, fictional hosts and RSVPs are not created. Original-cohort event image URLs use the bounded photo pipeline below.
+The existing five preview Cron jobs run every five minutes at successive minute offsets and claim up to four sources each. The worker preserves future factual title/time, publisher attribution, original link and supplied venue details. It uses the upstream recurrence expansion and supported ICS, JSON-LD, Tribe and GrowthZone adapters, with existing robots, HTTPS, DNS/IP, response-size, timeout and no-redirect safeguards. Its two existing token-scoped preview RPCs write private staging metadata and diagnostics. The separately scheduled Supabase factual publication job writes eligible factual records to existing external_events; verified coordinates enter normal Events/Home/Map discovery. Publisher descriptions, fictional hosts and RSVPs are not created. Original-cohort event image URLs use the bounded photo pipeline below.
 
 ## Forward Geocoder
 

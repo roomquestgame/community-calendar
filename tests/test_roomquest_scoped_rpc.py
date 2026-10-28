@@ -121,8 +121,22 @@ class ScopedSupabaseTests(unittest.TestCase):
         settings = json.loads((Path(__file__).parents[1] / "vercel.json").read_text())
         paths = [job["path"] for job in settings["crons"] if job["path"].startswith("/api/preview-")]
         self.assertEqual(paths, [f"/api/preview-{i}" for i in range(1, 6)])
-        self.assertTrue(all(job["schedule"] == "*/5 * * * *"
-                            for job in settings["crons"] if job["path"].startswith("/api/preview-")))
+        collection_jobs = [job for job in settings["crons"]
+                           if job["path"].startswith("/api/preview-")]
+        # Preserve each slot's 12 hourly runs while limiting collection starts
+        # to one per minute instead of five simultaneous database writers.
+        starts = [0] * 60
+        for job in collection_jobs:
+            minute, *other_fields = job["schedule"].split()
+            self.assertEqual(other_fields, ["*"] * 4)
+            bounds, step = minute.split("/")
+            first, last = map(int, bounds.split("-"))
+            minutes = list(range(first, last + 1, int(step)))
+            self.assertEqual(len(minutes), 12)
+            self.assertEqual(int(step), 5)
+            for value in minutes:
+                starts[value] += 1
+        self.assertEqual(starts, [1] * 60)
         self.assertEqual(len(paths) * 15, 75)
         for path in paths:
             fake = handler.__new__(handler)

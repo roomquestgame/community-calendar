@@ -71,23 +71,23 @@
   "crons": [
     {
       "path": "/api/preview-1",
-      "schedule": "*/5 * * * *"
+      "schedule": "0-59/5 * * * *"
     },
     {
       "path": "/api/preview-2",
-      "schedule": "*/5 * * * *"
+      "schedule": "1-59/5 * * * *"
     },
     {
       "path": "/api/preview-3",
-      "schedule": "*/5 * * * *"
+      "schedule": "2-59/5 * * * *"
     },
     {
       "path": "/api/preview-4",
-      "schedule": "*/5 * * * *"
+      "schedule": "3-59/5 * * * *"
     },
     {
       "path": "/api/preview-5",
-      "schedule": "*/5 * * * *"
+      "schedule": "4-59/5 * * * *"
     },
     {
       "path": "/api/geocode",
