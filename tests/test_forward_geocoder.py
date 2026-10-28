@@ -100,7 +100,7 @@ class ValidationTests(unittest.TestCase):
 class WorkerTests(unittest.TestCase):
     def test_production_cron_route_and_execution_budget(self):
         config = json.loads((Path(__file__).parents[1] / "vercel.json").read_text())
-        self.assertIn({"path": "/api/geocode", "schedule": "*/5 * * * *"}, config["crons"])
+        self.assertIn({"path": "/api/geocode", "schedule": "* * * * *"}, config["crons"])
         self.assertIn({"src": "/api/geocode", "dest": "/api/geocode.py"}, config["routes"])
         self.assertEqual(config["functions"]["api/geocode.py"]["maxDuration"], 60)
 

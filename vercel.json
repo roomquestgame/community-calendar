@@ -3,35 +3,35 @@
   "functions": {
     "api/preview.py": {
       "maxDuration": 60,
-      "excludeFiles": "{cities/**,docs/**,reports/**,supabase/**,xmlui/**,tests/**,website/**,node_modules/**,**/*.webm,**/*.png,**/*.jpg,**/*.jpeg}"
+      "excludeFiles": "{roomquest/catalogs/**,cities/**,docs/**,reports/**,supabase/**,xmlui/**,tests/**,website/**,node_modules/**,**/*.webm,**/*.png,**/*.jpg,**/*.jpeg}"
     },
     "api/preview_1.py": {
       "maxDuration": 60,
-      "excludeFiles": "{cities/**,docs/**,reports/**,supabase/**,xmlui/**,tests/**,website/**,node_modules/**,**/*.webm,**/*.png,**/*.jpg,**/*.jpeg}"
+      "excludeFiles": "{roomquest/catalogs/**,cities/**,docs/**,reports/**,supabase/**,xmlui/**,tests/**,website/**,node_modules/**,**/*.webm,**/*.png,**/*.jpg,**/*.jpeg}"
     },
     "api/preview_2.py": {
       "maxDuration": 60,
-      "excludeFiles": "{cities/**,docs/**,reports/**,supabase/**,xmlui/**,tests/**,website/**,node_modules/**,**/*.webm,**/*.png,**/*.jpg,**/*.jpeg}"
+      "excludeFiles": "{roomquest/catalogs/**,cities/**,docs/**,reports/**,supabase/**,xmlui/**,tests/**,website/**,node_modules/**,**/*.webm,**/*.png,**/*.jpg,**/*.jpeg}"
     },
     "api/preview_3.py": {
       "maxDuration": 60,
-      "excludeFiles": "{cities/**,docs/**,reports/**,supabase/**,xmlui/**,tests/**,website/**,node_modules/**,**/*.webm,**/*.png,**/*.jpg,**/*.jpeg}"
+      "excludeFiles": "{roomquest/catalogs/**,cities/**,docs/**,reports/**,supabase/**,xmlui/**,tests/**,website/**,node_modules/**,**/*.webm,**/*.png,**/*.jpg,**/*.jpeg}"
     },
     "api/preview_4.py": {
       "maxDuration": 60,
-      "excludeFiles": "{cities/**,docs/**,reports/**,supabase/**,xmlui/**,tests/**,website/**,node_modules/**,**/*.webm,**/*.png,**/*.jpg,**/*.jpeg}"
+      "excludeFiles": "{roomquest/catalogs/**,cities/**,docs/**,reports/**,supabase/**,xmlui/**,tests/**,website/**,node_modules/**,**/*.webm,**/*.png,**/*.jpg,**/*.jpeg}"
     },
     "api/preview_5.py": {
       "maxDuration": 60,
-      "excludeFiles": "{cities/**,docs/**,reports/**,supabase/**,xmlui/**,tests/**,website/**,node_modules/**,**/*.webm,**/*.png,**/*.jpg,**/*.jpeg}"
+      "excludeFiles": "{roomquest/catalogs/**,cities/**,docs/**,reports/**,supabase/**,xmlui/**,tests/**,website/**,node_modules/**,**/*.webm,**/*.png,**/*.jpg,**/*.jpeg}"
     },
     "api/geocode.py": {
       "maxDuration": 60,
-      "excludeFiles": "{cities/**,docs/**,reports/**,supabase/**,xmlui/**,tests/**,website/**,node_modules/**,**/*.webm,**/*.png,**/*.jpg,**/*.jpeg}"
+      "excludeFiles": "{roomquest/catalogs/**,cities/**,docs/**,reports/**,supabase/**,xmlui/**,tests/**,website/**,node_modules/**,**/*.webm,**/*.png,**/*.jpg,**/*.jpeg}"
     },
     "api/index.py": {
       "maxDuration": 60,
-      "excludeFiles": "{cities/**,docs/**,reports/**,supabase/**,xmlui/**,tests/**,website/**,node_modules/**,**/*.webm,**/*.png,**/*.jpg,**/*.jpeg}"
+      "excludeFiles": "{roomquest/catalogs/**,cities/**,docs/**,reports/**,supabase/**,xmlui/**,tests/**,website/**,node_modules/**,**/*.webm,**/*.png,**/*.jpg,**/*.jpeg}"
     }
   },
   "routes": [
@@ -71,23 +71,23 @@
   "crons": [
     {
       "path": "/api/preview-1",
-      "schedule": "*/15 * * * *"
+      "schedule": "*/5 * * * *"
     },
     {
       "path": "/api/preview-2",
-      "schedule": "*/15 * * * *"
+      "schedule": "*/5 * * * *"
     },
     {
       "path": "/api/preview-3",
-      "schedule": "*/15 * * * *"
+      "schedule": "*/5 * * * *"
     },
     {
       "path": "/api/preview-4",
-      "schedule": "*/15 * * * *"
+      "schedule": "*/5 * * * *"
     },
     {
       "path": "/api/preview-5",
-      "schedule": "*/15 * * * *"
+      "schedule": "*/5 * * * *"
     },
     {
       "path": "/api/geocode",
