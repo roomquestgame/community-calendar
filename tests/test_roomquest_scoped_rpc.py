@@ -119,10 +119,10 @@ class ScopedSupabaseTests(unittest.TestCase):
         from pathlib import Path
         from roomquest.preview_worker import collect_bulk_previews
         settings = json.loads((Path(__file__).parents[1] / "vercel.json").read_text())
-        paths = [job["path"] for job in settings["crons"]]
+        paths = [job["path"] for job in settings["crons"] if job["path"].startswith("/api/preview-")]
         self.assertEqual(paths, [f"/api/preview-{i}" for i in range(1, 6)])
         self.assertTrue(all(job["schedule"] == "*/15 * * * *"
-                            for job in settings["crons"]))
+                            for job in settings["crons"] if job["path"].startswith("/api/preview-")))
         self.assertEqual(len(paths) * 15, 75)
         for path in paths:
             fake = handler.__new__(handler)
@@ -171,3 +171,4 @@ class ScopedSupabaseTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+

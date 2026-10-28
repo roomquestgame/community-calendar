@@ -24,9 +24,17 @@
     "api/preview_5.py": {
       "maxDuration": 60,
       "excludeFiles": "{cities/**,docs/**,reports/**,supabase/**,xmlui/**,tests/**,website/**,node_modules/**,**/*.webm,**/*.png,**/*.jpg,**/*.jpeg}"
+    },
+    "api/geocode.py": {
+      "maxDuration": 60,
+      "excludeFiles": "{cities/**,docs/**,reports/**,supabase/**,xmlui/**,tests/**,website/**,node_modules/**,**/*.webm,**/*.png,**/*.jpg,**/*.jpeg}"
     }
   },
   "routes": [
+    {
+      "src": "/api/geocode",
+      "dest": "/api/geocode.py"
+    },
     {
       "src": "/api/preview-5",
       "dest": "/api/preview_5.py"
@@ -76,6 +84,11 @@
     {
       "path": "/api/preview-5",
       "schedule": "*/15 * * * *"
+    },
+    {
+      "path": "/api/geocode",
+      "schedule": "*/5 * * * *"
     }
-  ]
+  ],
+  "ignoreCommand": "if [ \"$VERCEL_ENV\" = \"production\" ]; then exit 1; else exit 0; fi"
 }
