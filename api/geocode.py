@@ -4,7 +4,7 @@ import hmac
 import json
 import os
 
-from roomquest.forward_geocoder import run_batch
+from roomquest.venue_resolver import run_pipeline as run_batch
 
 
 class handler(BaseHTTPRequestHandler):
@@ -49,3 +49,4 @@ class handler(BaseHTTPRequestHandler):
         if self.path != "/api/geocode":
             return self.reply(404, {"error": "not_found"})
         return self.invoke("ROOMQUEST_PREVIEW_SECRET")
+

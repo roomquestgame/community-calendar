@@ -1,5 +1,26 @@
 # RoomQuest community collector
 
+## Unified venue resolution batch (October 27, 2026)
+
+The existing minute job rotates dedicated geocoding, venue-resolution (then geocoding with remaining budget), and event-photo batches over three minutes. Each invocation stays within its existing 45-second budget. It claims one source-scoped venue
+identity and examines at most two publisher/event pages for exact-event JSON-LD location evidence
+or matched-venue structured/contact addresses. It may follow a publisher-local venue/contact link.
+Generic rooms, conflicting locations and unavailable evidence go to the real Admin Data venue queue.
+No external search subscription, new geocoder, extra Cron, or service-role credential is introduced.
+
+The companion RoomQuestGame migration `20261028120000` stores verified addresses/evidence for reuse,
+preserves raw publisher room/address text, invalidates changed venue signatures, adds protected
+administrator review and reuses existing address/quota caches for every matching future occurrence.
+Deploy that migration before this worker. Older address-only geocoding continues to use the same
+reservation ledger and exact provider-evidence checks. Only verified locations enter normal nearby
+discovery; the separate Events directory section is removed in the app batch.
+
+ICS CATEGORIES now decodes to real publisher labels, and structured addresses retain city/state/ZIP.
+Run `python -m pytest tests/test_roomquest* tests/test_forward_geocoder.py tests/test_venue_resolver.py`.
+The 16 new fixtures cover evidence identity, conflicting addresses, bounded/publisher-local lookup,
+room labels, complete address extraction and real iCalendar category decoding. Existing minute
+cadence is unchanged; its old five-minute test expectation has been corrected.
+
 This adapter preserves the upstream Python scrapers and supplies restricted RoomQuest ingestion and forward geocoding. Current scope is the original 400 Jon Udell community-calendar feeds. No Mapsee or additional catalog is enabled by this work.
 
 ## Server configuration
@@ -31,3 +52,21 @@ The database serializes reservations across all workers and enforces both a serv
 Deploy RoomQuest PR #285 through its protected database workflow first; it reconciles the explicitly audited history records and applies the disabled geocoder migration without bypassing schema gates. Verify the private cohort is exactly 400. Start with database daily_cap=3 and enabled=true, then deploy this collector with the Production switch enabled. Confirm key presence through metadata/health, actual Cron requests, ledger/provider evidence, correct geographic discovery and refresh persistence before raising the database cap to 2300. See RoomQuestGame/docs/udell-geocoding-rollout.md for the complete runbook. A READY deployment alone is not processing evidence.
 
 Run focused tests locally with python -m pytest tests/test_roomquest* tests/test_forward_geocoder.py. The main repository also runs rollback-only SQL authorization, address/cache, discovery, refresh/provider-regression and concurrent quota tests. Review actual Vercel usage when changing schedule frequency. Upstream GitHub Actions remain disabled, and the ignored-build command skips nonproduction builds. Health and batch responses expose aggregate counters only; operational queue/usage status requires the restricted collector token or a privileged database operator.
+
+
+## Public event photos
+
+Owner explicitly authorized automatic photos without a separate source-image permission approval
+step. Feed image attachments and publisher JSON-LD/WordPress image fields are staged privately.
+The photo phase also checks exact event-page JSON-LD, event-matched Open Graph and featured images.
+It claims at most three source/event identities, validates public HTTPS/DNS/redirects, MIME and
+image-file signatures, reads only a 4 KB prefix, and rejects logos/tiny tracking pixels/oversized files.
+Successful URL evidence is cached for seven days and reused across refreshes and recurring events.
+Pictures display through existing normal event cards; unavailable pictures keep the existing fallback.
+Deploy companion migration 130000 before this worker. The existing minute Cron and all Geocodio
+reservation/cost limits remain intact; no files are copied to Storage or new search service added.
+
+Photo tests: `python -m pytest tests/test_event_media.py`. Full focused suite: 67 tests plus ten
+subtests. Inherited upstream Actions stay disabled; local validation and the main RoomQuest SQL CI
+cover this coordinated release. PR #289 is our separate “Fix Three Event Bugs” work, not attributed
+to Awet.
