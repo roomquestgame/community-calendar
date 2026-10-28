@@ -28,6 +28,10 @@
     "api/geocode.py": {
       "maxDuration": 60,
       "excludeFiles": "{cities/**,docs/**,reports/**,supabase/**,xmlui/**,tests/**,website/**,node_modules/**,**/*.webm,**/*.png,**/*.jpg,**/*.jpeg}"
+    },
+    "api/index.py": {
+      "maxDuration": 60,
+      "excludeFiles": "{cities/**,docs/**,reports/**,supabase/**,xmlui/**,tests/**,website/**,node_modules/**,**/*.webm,**/*.png,**/*.jpg,**/*.jpeg}"
     }
   },
   "routes": [

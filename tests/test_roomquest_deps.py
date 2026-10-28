@@ -12,5 +12,6 @@ def test_vercel_function_has_real_parser_dependencies():
         "requests", "lxml", "pytz", "jinja2",
     }
     assert required.issubset(deps), f"Missing Python runtime dependencies: {required - deps}"
-    assert config["tool"]["vercel"]["entrypoint"] == "api.preview:handler"
+    assert config["tool"]["vercel"]["entrypoint"] == "api.index:handler"
     assert "anthropic" not in deps, "AI is disabled for lightweight RoomQuest source previews"
+
