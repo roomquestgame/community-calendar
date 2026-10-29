@@ -129,7 +129,13 @@ def geocode(address: str, key: str, *, reservation: dict, opener=None) -> dict |
 
 
 def rpc(action: str, payload: dict | None = None):
-    return supabase_rpc(RPC, {"p_action": action, "p_payload": payload or {}}, timeout=12)
+    try:
+        result = supabase_rpc(RPC, {"p_action": action, "p_payload": payload or {}}, timeout=12)
+        print("geocoder_rpc_ok", action)
+        return result
+    except Exception as exc:
+        print("geocoder_rpc_failed", action, type(exc).__name__, str(exc)[:80])
+        raise
 
 
 def run_batch(*, max_requests: int = 10, deadline_seconds: int = 45,
