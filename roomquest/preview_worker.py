@@ -499,7 +499,7 @@ def supabase_rpc(path: str, payload: dict, *, timeout: float = 4):
     """
     import urllib.request
     allowed = {"community_collector_claim_previews", "community_collector_record_preview",
-               "community_collector_record_staged_events", "community_collector_geocoder",
+               "community_collector_record_staged_events", "community_collector_geocoder", "community_collector_geocoder_claim",
                "community_collector_venues", "community_collector_media"}
     if path not in allowed:
         raise PreviewError("unsupported_collector_rpc")
