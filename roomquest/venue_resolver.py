@@ -264,7 +264,8 @@ def run_pipeline() -> dict:
     try:
         remaining = max(1, int(45 - (monotonic() - start)))
         result["geocoder"] = geocode_batch(deadline_seconds=remaining)
-    except Exception:
+    except Exception as exc:
+        print("geocoder_stage_failed", type(exc).__name__, str(exc)[:120])
         result["geocoder"] = {"stop_reason": "stage_failed"}
 
     if phase == 2:
