@@ -490,7 +490,7 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
     }
 
 
-def supabase_rpc(path: str, payload: dict):
+def supabase_rpc(path: str, payload: dict, *, timeout: float = 4):
     """Call ONLY the preview-scoped RPCs. The service_role key never leaves Supabase.
 
     Supabase's publishable API key identifies the project but grants no privileged
@@ -514,7 +514,7 @@ def supabase_rpc(path: str, payload: dict):
                  "Accept": "application/json"},
         method="POST")
     try:
-        with urllib.request.urlopen(request, timeout=4) as response:
+        with urllib.request.urlopen(request, timeout=timeout) as response:
             raw = response.read(150_000)
             return json.loads(raw.decode()) if raw else None
     except (HTTPError, URLError, ValueError) as exc:
