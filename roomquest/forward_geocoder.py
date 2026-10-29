@@ -130,7 +130,12 @@ def geocode(address: str, key: str, *, reservation: dict, opener=None) -> dict |
 
 def rpc(action: str, payload: dict | None = None):
     try:
-        result = supabase_rpc(RPC, {"p_action": action, "p_payload": payload or {}}, timeout=12)
+        if action == "claim":
+            result = supabase_rpc("community_collector_geocoder_claim",
+                                  {"p_limit": (payload or {}).get("limit", 1)},
+                                  timeout=12)
+        else:
+            result = supabase_rpc(RPC, {"p_action": action, "p_payload": payload or {}}, timeout=12)
         print("geocoder_rpc_ok", action)
         return result
     except Exception as exc:
