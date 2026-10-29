@@ -250,18 +250,32 @@ def run_batch(*, database=None, resolver=None, clock=None, deadline_seconds=15) 
 
 
 def run_pipeline() -> dict:
-    """Reuse the existing minute Cron and the shared geocoder quota/deadline."""
+    """Run geocoding first; optional venue/photo stages cannot block it."""
     from roomquest.forward_geocoder import run_batch as geocode_batch
     from roomquest.event_media import run_batch as photo_batch
     from datetime import datetime, timezone
+
     start = monotonic()
-    # Keep guaranteed coordinate/venue throughput while the photo backlog drains;
-    # all three stages use the existing minute job and their own durable caches.
     phase = int(datetime.now(timezone.utc).timestamp() // 60) % 3
+    result = {"phase": ("photos" if phase == 2 else "venues" if phase == 1 else "geocoder")}
+
+    # Geocoding is the critical path. Keep it first and isolate failures so an
+    # optional worker cannot turn the entire cron request into a 503.
+    try:
+        remaining = max(1, int(45 - (monotonic() - start)))
+        result["geocoder"] = geocode_batch(deadline_seconds=remaining)
+    except Exception:
+        result["geocoder"] = {"stop_reason": "stage_failed"}
+
     if phase == 2:
-        return {"photos": photo_batch(), "phase": "photos"}
-    if phase == 0:
-        return {"geocoder": geocode_batch(), "phase": "geocoder"}
-    venues = run_batch()
-    remaining = max(1, int(45 - (monotonic() - start)))
-    return {"venues": venues, "geocoder": geocode_batch(deadline_seconds=remaining)}
+        try:
+            result["photos"] = photo_batch()
+        except Exception:
+            result["photos"] = {"stop_reason": "stage_failed"}
+    elif phase == 1:
+        try:
+            result["venues"] = run_batch()
+        except Exception:
+            result["venues"] = {"stop_reason": "stage_failed"}
+
+    return result
