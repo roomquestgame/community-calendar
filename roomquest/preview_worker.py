@@ -463,7 +463,7 @@ def parse_wordpress_preview(payload: str, source: dict) -> list[dict]:
     return results
 
 
-SUPPORTED = {"ical", "jsonld", "growthzone", "wordpress"}
+SUPPORTED = {"ical", "jsonld", "growthzone", "wordpress", "squarespace"}
 
 
 def preview_source(source: dict, *, deadline_at=None) -> dict:
@@ -497,13 +497,20 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         raise PreviewError("adapter_requires_configuration")
     url = source.get("feed_url", "")
     accept = "text/calendar" if adapter == "ical" else (
-        "application/json" if adapter == "wordpress" else "text/html,application/xml"
+        "application/json" if adapter in {"wordpress", "squarespace"} else "text/html,application/xml"
     )
     chambermaster = source.get("source_key", "").startswith("municipal_chambermaster_")
-    payload = fetch_publisher(url, accept, respect_robots=True, deadline_at=deadline_at) if chambermaster else fetch_publisher(url, accept)
+    if adapter == "squarespace":
+        from roomquest.squarespace import SOURCES
+        if url not in SOURCES:
+            raise PreviewError("unregistered_squarespace_source")
+    payload = fetch_publisher(url, accept, respect_robots=True, deadline_at=deadline_at) if chambermaster or adapter == "squarespace" else fetch_publisher(url, accept)
     try:
         if adapter == "ical":
             events = parse_ics_preview(payload)
+        elif adapter == "squarespace":
+            from roomquest.squarespace import parse
+            events = parse(payload, source)
         elif adapter == "jsonld":
             events = parse_jsonld_preview(payload)
         elif adapter == "growthzone":
