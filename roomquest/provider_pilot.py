@@ -17,11 +17,11 @@ def pilot_sources():
     return sources
 
 
-def collect_pilot():
+def collect_pilot(*, only_chambermaster=False):
     # No claim RPC, settings write, geocoder call or publication. The existing
     # staging RPC refuses sources without a live, operator-created source lease.
     deadline = monotonic() + 45
-    sources = pilot_sources()
+    sources = pilot_sources()[:1] if only_chambermaster else pilot_sources()
     def run(source):
         return {"source_key": source["source_key"],
                 **_process_claimed_source(source, deadline_at=deadline)}

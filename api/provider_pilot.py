@@ -20,7 +20,7 @@ class handler(BaseHTTPRequestHandler):
         return self.pilot_reply(404, {'error': 'not_found'})
 
     def do_POST(self):
-        if self.path != '/api/provider-pilot':
+        if self.path not in ('/api/provider-pilot', '/api/provider-pilot/orangeburg'):
             return self.pilot_reply(404, {'error': 'not_found'})
         secret = os.environ.get('ROOMQUEST_PREVIEW_SECRET', '')
         if not secret or not hmac.compare_digest(self.headers.get('Authorization', ''), 'Bearer ' + secret):
@@ -28,7 +28,7 @@ class handler(BaseHTTPRequestHandler):
         if self.headers.get('Content-Length', '0') not in ('', '0') or self.headers.get('Transfer-Encoding'):
             return self.pilot_reply(400, {'error': 'unexpected_body'})
         try:
-            return self.pilot_reply(200, collect_pilot())
+            return self.pilot_reply(200, collect_pilot(only_chambermaster=self.path.endswith('/orangeburg')))
         except Exception:
             return self.pilot_reply(503, {'error': 'pilot_unavailable'})
 
