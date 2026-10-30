@@ -115,29 +115,16 @@ class ScopedSupabaseTests(unittest.TestCase):
             fake.batch.assert_not_called()
             self.assertEqual(fake.reply.call_args.args[0], 401)
 
-    def test_five_workers_keep_authenticated_fifteen_source_cap(self):
+    def test_paused_workers_keep_authenticated_fifteen_source_cap(self):
         from pathlib import Path
         from roomquest.preview_worker import collect_bulk_previews
         settings = json.loads((Path(__file__).parents[1] / "vercel.json").read_text())
-        paths = [job["path"] for job in settings["crons"] if job["path"].startswith("/api/preview-")]
-        self.assertEqual(paths, [f"/api/preview-{i}" for i in range(1, 6)])
-        collection_jobs = [job for job in settings["crons"]
-                           if job["path"].startswith("/api/preview-")]
-        # Preserve each slot's 12 hourly runs while limiting collection starts
-        # to one per minute instead of five simultaneous database writers.
-        starts = [0] * 60
-        for job in collection_jobs:
-            minute, *other_fields = job["schedule"].split()
-            self.assertEqual(other_fields, ["*"] * 4)
-            bounds, step = minute.split("/")
-            first, last = map(int, bounds.split("-"))
-            minutes = list(range(first, last + 1, int(step)))
-            self.assertEqual(len(minutes), 12)
-            self.assertEqual(int(step), 5)
-            for value in minutes:
-                starts[value] += 1
-        self.assertEqual(starts, [1] * 60)
-        self.assertEqual(len(paths) * 15, 75)
+        # Community schedules are paused; their protected routes still exist.
+        paths = [f"/api/preview-{i}" for i in range(1, 6)]
+        registered = {route["src"] for route in settings["routes"]}
+        self.assertTrue(all(path in registered for path in paths))
+        self.assertFalse(any(job["path"].startswith("/api/preview-")
+                             for job in settings["crons"]))
         for path in paths:
             fake = handler.__new__(handler)
             fake.path = path

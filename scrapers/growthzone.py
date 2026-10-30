@@ -50,6 +50,13 @@ KNOWN_SITES = {
         'timezone': 'America/New_York',
         'location': 'Apex, NC',
     },
+    'orangeburgchamber': {
+        'name': 'Orangeburg County Chamber of Commerce',
+        'api_url': 'https://business.orangeburgchamber.com/api/events',
+        'base_url': 'https://business.orangeburgchamber.com',
+        'timezone': 'America/New_York',
+        # A regional publisher has no single default event venue.
+    },
     # Add more chambers as discovered
 }
 

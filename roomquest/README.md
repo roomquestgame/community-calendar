@@ -1,3 +1,36 @@
+## ChamberMaster provider — prepared, not activated (October 29, 2026)
+
+Ben approved one separately managed ChamberMaster API provider with Orangeburg
+as its first source. `/api/chambermaster` uses the existing operator/Cron secrets
+and the scoped collector token; callers cannot choose URLs or source IDs. It
+claims one chamber from the new protected registry gateway and stages facts
+through the existing RPCs. The public XML schedule is parsed by Udell's actual
+GrowthZone code; bounded event-specific iCalendar exports supply event venue
+text, with matching EventID and exact start time required. No chamber-wide
+coordinates, descriptions, photos, geocoder grants or native events are added.
+
+Deploy the companion `20261030091253_chambermaster_provider_registry` migration
+and validate its exact token-gated wrapper/security exception before invoking
+this endpoint. The global provider and Orangeburg source begin disabled/pending;
+no collection Cron is added. Admin API health shows the separately managed
+provider and source controls reuse the existing Data registry. A successful
+private preview is not public geographic publication. The existing community
+publisher job remains paused. See [provider contract](../docs/chambermaster-provider.md).
+
+Local validation on October 30: 83 Python tests and 10 subtests passed.
+The full current-main app source passed typecheck, lint (six existing warnings),
+238 unit tests and 31 integration/configuration tests. All 152 migrations replayed
+in local PostgreSQL/PostGIS (PGlite/PostGIS 3.6), followed by ChamberMaster,
+community, curator, Localist, map/discovery, geocoder, RLS and Udell SQL suites.
+Authorization, disabled/idle behavior, valid-token claims, private staging,
+source approval/pause/restrictions, duplicate leases and daily budget are covered.
+This local replay does not replace CI's PostgreSQL 16/PostGIS 3.4 or the required
+fresh production-schema rehearsal. Final-head CI, production-schema rehearsal,
+merge, database release, collector deployment and live preview remain pending.
+The GitHub connector cannot dispatch workflows; no deployment credentials are
+available locally. Do not bypass the manual release or repair unrelated migration
+history. The new migration is 20261030091253_chambermaster_provider_registry.
+
 # RoomQuest community collector
 
 ## Staggered collection closeout (October 28, 2026)
