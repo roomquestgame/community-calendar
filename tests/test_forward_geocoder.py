@@ -34,8 +34,13 @@ class ValidationTests(unittest.TestCase):
     def test_real_v2_street_components(self):
         self.assertIsNotNone(g.verify(response(), ADDRESS))
 
-    def test_wrong_city_state_number_street_and_old_v1_state_fail(self):
-        for field, value in [("city", "Durham"), ("state_province", "FL"),
+    def test_live_postal_locality_difference_preserves_street_and_state(self):
+        r = response()
+        r["results"][0]["address_components"]["city"] = "Durham"
+        self.assertIsNotNone(g.verify(r, ADDRESS))
+
+    def test_wrong_state_number_street_and_old_v1_state_fail(self):
+        for field, value in [("state_province", "FL"),
                              ("number", "111"), ("street", "Jonesville")]:
             r = response()
             r["results"][0]["address_components"][field] = value
