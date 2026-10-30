@@ -1,0 +1,19 @@
+{
+  "provider": "chambermaster",
+  "adapter": "growthzone",
+  "version": 1,
+  "sources": [
+    {
+      "source_key": "municipal_chambermaster_orangeburg_sc",
+      "publisher_name": "Orangeburg County Chamber of Commerce",
+      "feed_url": "https://business.orangeburgchamber.com/api/events",
+      "homepage": "https://www.orangeburgchamber.com/news-events",
+      "timezone": "America/New_York",
+      "state_code": "SC",
+      "enabled": false,
+      "status": "validated_api_locations_pending",
+      "transport": "xml",
+      "requires_api_key": false
+    }
+  ]
+}

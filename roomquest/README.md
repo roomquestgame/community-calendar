@@ -1,3 +1,28 @@
+## ChamberMaster provider — prepared, not activated (October 29, 2026)
+
+Ben approved one separately managed ChamberMaster API provider with Orangeburg
+as its first source. `/api/chambermaster` uses the existing operator/Cron secrets
+and the scoped collector token; callers cannot choose URLs or source IDs. It
+claims one chamber from the new protected registry gateway and stages facts
+through the existing RPCs. The public XML schedule is parsed by Udell's actual
+GrowthZone code; bounded event-specific iCalendar exports supply event venue
+text, with matching EventID and exact start time required. No chamber-wide
+coordinates, descriptions, photos, geocoder grants or native events are added.
+
+Deploy the companion `20261030024648_chambermaster_provider_registry` migration
+and validate its exact token-gated wrapper/security exception before invoking
+this endpoint. The global provider and Orangeburg source begin disabled/pending;
+no collection Cron is added. Admin API health shows the separately managed
+provider and source controls reuse the existing Data registry. A successful
+private preview is not public geographic publication. The existing community
+publisher job remains paused. See [provider contract](../docs/chambermaster-provider.md).
+
+Local focused checks: 60 passed, 10 subtests passed. The broader pre-existing
+scoped-RPC test still expects five disabled preview Cron entries; this batch
+does not restore them. The new registry/queue SQL passes an isolated PostgreSQL
+fixture, not a full live-schema/PostGIS rehearsal. CI, merge, guarded database
+release, collector deployment and live preview remain pending.
+
 # RoomQuest community collector
 
 ## Staggered collection closeout (October 28, 2026)

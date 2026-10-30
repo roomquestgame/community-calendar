@@ -388,10 +388,42 @@ def parse_growthzone_preview(payload: str, source: dict) -> list[dict]:
     from scrapers.growthzone import GrowthZoneScraper
     scraper = GrowthZoneScraper({"api_url": source["feed_url"],
                                  "timezone": source["timezone"], "name": "RoomQuest source"})
+    import xml.etree.ElementTree as ET
+    from urllib.parse import quote
+    try:
+        root = ET.fromstring(payload)
+    except ET.ParseError as exc:
+        raise PreviewError("invalid_calendar_payload") from exc
+    if root.tag != "ArrayOfEventDisplay":
+        raise PreviewError("not_growthzone_events_api")
+    parsed_url = urlparse(source["feed_url"])
+    base_url = f"https://{parsed_url.netloc}"
     results = []
-    for item in scraper._parse_xml(payload)[:500]:
+    for element in root.findall("EventDisplay")[:500]:
+        # The public XML schedule does not supply precise locations. Leave them
+        # unresolved; never use the chamber's address or city as a default.
+        if (element.findtext("Status") or "").upper() != "APPROVED":
+            continue
+        if (element.findtext("IsAllDayEvent") or "").lower() == "true":
+            continue  # this pathway requires a genuine timed start
+        event_id = element.findtext("EventID") or ""
+        slug = element.findtext("Slug") or ""
+        if not re.fullmatch(r"[0-9]{1,20}", event_id) or not slug:
+            continue
+        item = scraper._parse_event(element)
+        if not item:
+            continue
+        from roomquest.mapsee_adapter import timestamp
+        item["dtstart"] = timestamp(element.findtext("StartDate"), source["timezone"])
+        item["dtend"] = timestamp(element.findtext("EndDate"), source["timezone"])
+        if item["dtend"] is not None and item["dtend"] <= item["dtstart"]:
+            continue
+        # Some API slugs already end in EventID, others do not. The public
+        # detail route requires it; a year suffix alone must not become an ID.
+        suffix = slug if slug.endswith("-" + event_id) else slug + "-" + event_id
+        item["url"] = base_url + "/events/details/" + quote(suffix, safe="-")
         record = _preview(item.get("title"), item.get("dtstart"), item.get("dtend"),
-                          item.get("location"), None, None, item.get("url"),
+                          item.get("location"), None, None, item.get("url"), event_id,
                           category=item.get("category", ""),
                           address=item.get("address", ""), city=item.get("city", ""))
         if record:
@@ -467,14 +499,19 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
     accept = "text/calendar" if adapter == "ical" else (
         "application/json" if adapter == "wordpress" else "text/html,application/xml"
     )
-    payload = fetch_publisher(url, accept)
+    chambermaster = source.get("source_key", "").startswith("municipal_chambermaster_")
+    payload = fetch_publisher(url, accept, respect_robots=True, deadline_at=deadline_at) if chambermaster else fetch_publisher(url, accept)
     try:
         if adapter == "ical":
             events = parse_ics_preview(payload)
         elif adapter == "jsonld":
             events = parse_jsonld_preview(payload)
         elif adapter == "growthzone":
-            events = parse_growthzone_preview(payload, source)
+            if chambermaster:
+                from roomquest.chambermaster import collect
+                events = collect(source, payload, min(monotonic() + 34, deadline_at or float("inf")))
+            else:
+                events = parse_growthzone_preview(payload, source)
         else:
             events = parse_wordpress_preview(payload, source)
     except (ValueError, TypeError, KeyError) as exc:
@@ -498,7 +535,7 @@ def supabase_rpc(path: str, payload: dict, *, timeout: float = 4):
     security-definer RPCs. The token must never enter a public client or log.
     """
     import urllib.request
-    allowed = {"community_collector_claim_previews", "community_collector_record_preview",
+    allowed = {"community_collector_claim_previews", "community_collector_claim_chambermaster", "community_collector_record_preview",
                "community_collector_record_staged_events", "community_collector_geocoder", "community_collector_geocoder_claim",
                "community_collector_venues", "community_collector_media"}
     if path not in allowed:
@@ -526,7 +563,7 @@ def _process_claimed_source(source: dict, *, deadline_at=None) -> dict:
     try:
         deadline = min(monotonic() + 43, deadline_at or float("inf"))
         output = (preview_source(source, deadline_at=deadline - 4)
-                  if source.get("source_key", "").startswith("municipal_mapsee_") else preview_source(source))
+                  if source.get("source_key", "").startswith(("municipal_mapsee_", "municipal_chambermaster_")) else preview_source(source))
         events = output.pop("p_events", [])
         staged = 0
         # Existing token/RPC accepts at most 100 facts. Large Mapsee sources use
