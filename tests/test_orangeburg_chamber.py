@@ -153,3 +153,37 @@ def test_detail_collection_bounds_concurrency_and_finishes_the_snapshot():
                  ET.tostring(root,encoding='unicode'),monotonic()+5,fetcher)
     assert len(rows)==5 and calls==5
     assert 1 < maximum <= 3
+
+
+@pytest.mark.parametrize('reason', ['source_network_error','source_fetch_deadline','publisher_rate_limited'])
+def test_unavailable_optional_venue_keeps_verified_xml_identity_and_time(reason):
+    from roomquest.chambermaster import collect
+    from time import monotonic
+    xml, start = payload()
+    def unavailable(*args, **kwargs):
+        raise PreviewError(reason)
+    [row] = collect({**SOURCE,'source_key':'municipal_chambermaster_fixture'}, xml, monotonic()+5, unavailable)
+    assert row['id']=='7490'
+    assert datetime.fromisoformat(row['starts_at'])==start.replace(tzinfo=ZoneInfo(SOURCE['timezone']))
+    assert row['venue_address']=='' and row['lat'] is None and row['lng'] is None
+    assert row['reason']=='publisher_venue_details_unavailable'
+
+
+def test_detail_deadline_retains_entire_xml_schedule_without_more_fetches():
+    from roomquest.chambermaster import collect
+    from time import monotonic
+    from unittest.mock import Mock
+    xml, _ = payload();fetcher=Mock()
+    rows=collect({**SOURCE,'source_key':'municipal_chambermaster_fixture'},xml,monotonic()-1,fetcher)
+    assert len(rows)==1 and rows[0]['lat'] is None
+    fetcher.assert_not_called()
+
+
+def test_optional_venue_fallback_does_not_bypass_publisher_robots():
+    from roomquest.chambermaster import collect
+    from time import monotonic
+    xml, _ = payload()
+    def denied(*args, **kwargs):
+        raise PreviewError('robots_denied')
+    with pytest.raises(PreviewError,match='^robots_denied$'):
+        collect({**SOURCE,'source_key':'municipal_chambermaster_fixture'},xml,monotonic()+5,denied)

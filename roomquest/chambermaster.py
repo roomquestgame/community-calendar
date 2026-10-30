@@ -24,11 +24,19 @@ def collect(source, payload, deadline_at, fetcher=fetch_publisher):
     if len(records) > MAX_DETAILS:
         raise PreviewError('chambermaster_detail_limit')
     def enrich(row):
+        # The XML schedule is the complete event snapshot. ICS supplies optional
+        # venue evidence: unavailable details must never erase valid timed events
+        # or invent a map pin. Conflicting identity/time and robots denials fail.
         if monotonic() >= deadline_at:
-            raise PreviewError('collection_deadline')
+            return {**row, 'reason': 'publisher_venue_details_unavailable'}
         detail = row['event_url'].replace('/events/details/', '/events/addtocalendar/') + '?format=ICal'
-        calendar = Calendar.from_ical(fetcher(detail, 'text/calendar',
-                                            respect_robots=True, deadline_at=deadline_at))
+        try:
+            raw = fetcher(detail, 'text/calendar', respect_robots=True, deadline_at=deadline_at)
+        except PreviewError as exc:
+            if str(exc) in {'source_network_error', 'source_fetch_deadline', 'publisher_rate_limited'}:
+                return {**row, 'reason': 'publisher_venue_details_unavailable'}
+            raise
+        calendar = Calendar.from_ical(raw)
         matches = [event for event in calendar.walk('VEVENT')
                    if str(event.get('UID', '')).split('.')[-1] == row['id']]
         if len(matches) != 1:
