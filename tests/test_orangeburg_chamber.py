@@ -124,3 +124,32 @@ def test_manual_endpoint_auth_and_no_public_url_input():
             handler.do_POST(h)
             batch.assert_called_once_with()
             h.chambermaster_reply.assert_called_with(200,{'claimed':0})
+
+
+def test_detail_collection_bounds_concurrency_and_finishes_the_snapshot():
+    from roomquest.chambermaster import collect
+    from time import monotonic, sleep
+    from threading import Lock
+    xml, start = payload()
+    root = ET.fromstring(xml)
+    for event_id in range(7491,7495):
+        extra = ET.fromstring(xml).find('EventDisplay')
+        extra.find('EventID').text = str(event_id)
+        root.append(extra)
+    stamp = start.replace(tzinfo=ZoneInfo(SOURCE['timezone'])).astimezone(ZoneInfo('UTC')).strftime('%Y%m%dT%H%M%SZ')
+    active = maximum = calls = 0
+    lock = Lock()
+    def fetcher(url, accept, **kwargs):
+        nonlocal active, maximum, calls
+        with lock:
+            active += 1; maximum = max(maximum, active); calls += 1
+        sleep(.01)
+        event_id = url.split('?')[0].rsplit('-',1)[1]
+        with lock:
+            active -= 1
+        return ('BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nUID:e.3204.'+event_id+
+                '\nDTSTART:'+stamp+'\nLOCATION:Fixture Hall\nEND:VEVENT\nEND:VCALENDAR')
+    rows=collect({**SOURCE,'source_key':'municipal_chambermaster_fixture'},
+                 ET.tostring(root,encoding='unicode'),monotonic()+5,fetcher)
+    assert len(rows)==5 and calls==5
+    assert 1 < maximum <= 3

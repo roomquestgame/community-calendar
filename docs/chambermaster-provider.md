@@ -66,17 +66,24 @@ verified inactive and remains unchanged.
 
 ## Validation
 
-- 60 focused Python checks and 10 subtests pass, including gateway routing,
-  calendar identity/time matching, limits, operator authentication and existing
-  venue/geocoder behaviors.
-- One pre-existing broader-suite test expects five preview Cron entries although
-  current main intentionally has none. This batch does not restore those jobs.
-- New registry and queue SQL executes in an isolated PostgreSQL fixture covering
-  admin/token denial, disabled/idle behavior, claims, source pause and budget
-  exhaustion. Full fresh-chain/PostGIS tests and production-schema rehearsal
-  remain required before release.
-- Protected publisher transport cannot run end-to-end in this workspace because
-  direct DNS resolution is unavailable. Live XML and two iCalendar exports were
-  fetched separately through the environment HTTP transport; the actual parser
-  produced 18 future linked facts and zero source coordinates. No live geographic
-  publication is established by this result.
+Local validation on October 30: 83 Python tests and 10 subtests passed.
+The full current-main app source passed typecheck, lint (six existing warnings),
+238 unit tests and 31 integration/configuration tests. All 152 migrations replayed
+in local PostgreSQL/PostGIS (PGlite/PostGIS 3.6), followed by ChamberMaster,
+community, curator, Localist, map/discovery, geocoder, RLS and Udell SQL suites.
+Authorization, disabled/idle behavior, valid-token claims, private staging,
+source approval/pause/restrictions, duplicate leases and daily budget are covered.
+This local replay does not replace CI's PostgreSQL 16/PostGIS 3.4 or the required
+fresh production-schema rehearsal. Final-head CI, production-schema rehearsal,
+merge, database release, collector deployment and live preview remain pending.
+The GitHub connector cannot dispatch workflows; no deployment credentials are
+available locally. Do not bypass the manual release or repair unrelated migration
+history. The new migration is 20261030091253_chambermaster_provider_registry.
+
+The five protected preview routes remain registered, but their paused Cron
+entries stay absent. The obsolete test expectation was updated to assert this
+current deployment contract. Per-event detail requests use at most three
+concurrent workers, retaining publisher transport pacing and the same deadline.
+Direct protected publisher fetches cannot run end-to-end in this workspace.
+The actual public XML and two ICS exports were independently retrieved; no live
+private intake or geographic publication is established by those responses.
