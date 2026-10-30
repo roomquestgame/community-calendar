@@ -45,12 +45,44 @@ def canonical(value: str) -> str:
     return ",".join(re.sub(r"\s+", " ", x.strip()) for x in value.split(","))
 
 
-def result_address(item: dict) -> str:
+def result_address_parts(item: dict) -> tuple[str, str, str, str]:
+    """Return normalized street, city, state, and postal code separately."""
     c = item.get("address_components") or {}
     street = " ".join(str(c.get(k) or "") for k in
                       ("number", "predirectional", "street", "suffix", "postdirectional"))
-    return canonical(street + "," + str(c.get("city") or "") +
-                     "," + str(c.get("state_province") or ""))
+    city = str(c.get("city") or "")
+    state = str(c.get("state_province") or "")
+    postal = re.sub(r"[^0-9-]", "", str(c.get("zip") or c.get("postal_code") or ""))
+    return canonical(street), canonical(city), canonical(state), postal
+
+
+def expected_address_parts(address: str) -> tuple[str, str, str, str]:
+    parts = [part.strip() for part in str(address or "").split(",")]
+    street = canonical(parts[0] if parts else "")
+    city = canonical(parts[1] if len(parts) > 1 else "")
+    state_zip = parts[2] if len(parts) > 2 else ""
+    state_match = re.match(r"\\s*([A-Za-z]{2})(?:\\s+(\\d{5}(?:-\\d{4})?))?\\s*$", state_zip)
+    state = canonical(state_match.group(1) if state_match else state_zip)
+    postal = state_match.group(2) if state_match and state_match.group(2) else ""
+    return street, city, state, postal
+
+
+def address_matches(item: dict, address: str) -> bool:
+    """Allow postal locality/municipality differences while preserving street/state checks."""
+    result_street, result_city, result_state, result_postal = result_address_parts(item)
+    expected_street, expected_city, expected_state, expected_postal = expected_address_parts(address)
+
+    if not expected_street or not expected_state:
+        return False
+    if result_street != expected_street or result_state != expected_state:
+        return False
+
+    # If both sides provide ZIP codes, require them to agree. The current queue
+    # normally stores normalized addresses without ZIP, so city is supporting
+    # context rather than an absolute equality gate.
+    if expected_postal and result_postal and expected_postal != result_postal:
+        return False
+    return bool(result_city or expected_city)
 
 
 def coordinates(item: dict) -> tuple[float, float]:
@@ -82,11 +114,11 @@ def verify(payload: dict, address: str) -> dict | None:
         if (not math.isfinite(score) or not 0.9 <= score <= 1
                 or first.get("accuracy_type") not in {"rooftop", "point"}
                 or first.get("address_components", {}).get("country") not in {"US", "USA"}
-                or result_address(first) != canonical(address)):
+                or not address_matches(first, address)):
             return None
         for other in rows[1:]:
             if float(other.get("accuracy") or 0) > score - 0.2:
-                if result_address(other) != canonical(address) or distance_m(first, other) > 50:
+                if not address_matches(other, address) or distance_m(first, other) > 50:
                     return None
         # Only provider evidence needed for verification is retained.
         fields = {"address_components", "location", "accuracy", "accuracy_type",
