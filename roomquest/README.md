@@ -1,3 +1,7 @@
+## Deployed provider pilot — October 30, 2026
+
+The approved Orangeburg, Frazier and Mission Garden collectors are deployed and their controlled intake is verified: 18, 10 and six privately staged events, respectively. Orangeburg has 14 venue addresses but zero coordinates; all 18 remain held. Udell publisher job 33 stays inactive; no collection Cron, publication cohort or provider activation was added. Read [the verified release receipt](../docs/provider-release-20261030.md) before older prepared/pending notes below. The applied companion migrations are 20261030101923 and 20261030101930, released by app database deploy 41045737873.
+
 ## Selected Squarespace JSON calendars — October 30, 2026
 
 Ben approved Frazier History Museum and Mission Garden only, following the
