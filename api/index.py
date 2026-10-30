@@ -9,7 +9,7 @@ class handler(PreviewHandler, GeocoderHandler, ChamberMasterHandler, PilotHandle
     """Reuse both handlers' authentication without introducing public inputs."""
 
     def do_GET(self):
-        if self.path == "/api/provider-pilot":
+        if self.path in ("/api/provider-pilot", "/api/provider-pilot/orangeburg"):
             return PilotHandler.do_GET(self)
         if self.path == "/api/chambermaster":
             return ChamberMasterHandler.do_GET(self)
@@ -18,7 +18,7 @@ class handler(PreviewHandler, GeocoderHandler, ChamberMasterHandler, PilotHandle
         return PreviewHandler.do_GET(self)
 
     def do_POST(self):
-        if self.path == "/api/provider-pilot":
+        if self.path in ("/api/provider-pilot", "/api/provider-pilot/orangeburg"):
             return PilotHandler.do_POST(self)
         if self.path == "/api/chambermaster":
             return ChamberMasterHandler.do_POST(self)

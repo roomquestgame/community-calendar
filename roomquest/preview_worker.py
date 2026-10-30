@@ -521,6 +521,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                 events = parse_growthzone_preview(payload, source)
         else:
             events = parse_wordpress_preview(payload, source)
+    except PreviewError:
+        raise
     except (ValueError, TypeError, KeyError) as exc:
         raise PreviewError("invalid_calendar_payload") from exc
     unique = {((row.get("id") or row.get("title") or ""), row["starts_at"]): row for row in events}
