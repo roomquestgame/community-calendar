@@ -91,8 +91,8 @@ class PreviewSafetyTests(unittest.TestCase):
                              "BEGIN:VCALENDAR")
             robots.assert_not_called()
 
-    def test_supported_adapters_are_real_upstream_parsers(self):
-        self.assertEqual(SUPPORTED, {"ical", "jsonld", "growthzone", "wordpress"})
+    def test_supported_adapters_include_reviewed_json_calendars(self):
+        self.assertEqual(SUPPORTED, {"ical", "jsonld", "growthzone", "wordpress", "squarespace"})
 
     def test_udell_raleigh_inventory_is_staged_only(self):
         rows, skipped = catalog("raleighdurham")
