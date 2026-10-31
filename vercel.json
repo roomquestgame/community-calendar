@@ -76,11 +76,19 @@
       "dest": "/api/preview.py"
     },
     {
+      "src": "/api/demand-preview",
+      "dest": "/api/preview.py"
+    },
+    {
       "src": "/.*",
       "status": 404
     }
   ],
   "crons": [
+    {
+      "path": "/api/demand-preview",
+      "schedule": "*/2 * * * *"
+    },
     {
       "path": "/api/geocode",
       "schedule": "* * * * *"

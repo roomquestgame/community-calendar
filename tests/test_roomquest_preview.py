@@ -10,6 +10,18 @@ from scripts.roomquest_catalog import catalog
 
 
 class PreviewSafetyTests(unittest.TestCase):
+
+    def test_demand_worker_only_claims_requested_source(self):
+        from roomquest.preview_worker import collect_demand_previews
+        source = {"source_key": "fixture_ical", "feed_url": "https://example.org/a.ics"}
+        with patch("roomquest.preview_worker.supabase_rpc", return_value=[source]) as rpc, patch(
+                "roomquest.preview_worker._process_claimed_source",
+                return_value={"complete": 1, "failed": 0, "staged": 2}) as process:
+            self.assertEqual(collect_demand_previews(),
+                             {"claimed": 1, "complete": 1, "failed": 0, "staged": 2})
+            rpc.assert_called_once_with("community_collector_claim_demand_preview", {})
+            process.assert_called_once_with(source)
+
     def test_large_official_ical_feed_is_bounded_but_accepted(self):
         from roomquest.preview_worker import fetch_publisher, MAX_BODY, PreviewError
         self.assertGreaterEqual(MAX_BODY, 1_240_000)
