@@ -544,7 +544,7 @@ def supabase_rpc(path: str, payload: dict, *, timeout: float = 4):
     security-definer RPCs. The token must never enter a public client or log.
     """
     import urllib.request
-    allowed = {"community_collector_claim_previews", "community_collector_claim_chambermaster", "community_collector_record_preview",
+    allowed = {"community_collector_claim_previews", "community_collector_claim_demand_preview", "community_collector_claim_chambermaster", "community_collector_record_preview",
                "community_collector_record_staged_events", "community_collector_geocoder", "community_collector_geocoder_claim",
                "community_collector_venues", "community_collector_media"}
     if path not in allowed:
@@ -616,6 +616,16 @@ def collect_previews(limit=4) -> dict:
             result[key] += item[key]
     return result
 
+
+def collect_demand_previews() -> dict:
+    """Refresh at most one source requested by the iCal publisher."""
+    claimed = supabase_rpc("community_collector_claim_demand_preview", {})
+    result = {"claimed": len(claimed or []), "complete": 0, "failed": 0, "staged": 0}
+    for source in claimed or []:
+        item = _process_claimed_source(source)
+        for key in ("complete", "failed", "staged"):
+            result[key] += item[key]
+    return result
 
 def collect_bulk_previews(max_sources=15, concurrency=3, deadline_seconds=48) -> dict:
     """Five independently scheduled workers * fifteen = up to 75 / interval.
