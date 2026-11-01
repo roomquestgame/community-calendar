@@ -1,0 +1,22 @@
+name: RoomQuest Provider Tests
+on:
+  pull_request:
+    types: [labeled]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  provider-tests:
+    if: github.event_name == 'workflow_dispatch' || (github.event.label.name == 'ci:validate' && !github.event.pull_request.draft)
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: '3.12'
+      - run: pip install -r requirements-dev.txt
+      - run: python -m pytest tests/test_wordpress_adapter.py tests/test_mapsee_pipeline.py tests/test_roomquest_preview.py -q
