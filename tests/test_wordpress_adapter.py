@@ -1,0 +1,71 @@
+import json,unittest
+from datetime import datetime,timedelta,timezone
+from unittest.mock import patch
+from urllib.parse import urlsplit,parse_qs
+from roomquest.wordpress_adapter import collect
+from roomquest.preview_worker import preview_source,PreviewError
+
+def event(i=1):
+ start=datetime.now(timezone.utc)+timedelta(days=2)
+ return {'id':i,'title':'Public concert','utc_start_date':start.isoformat(),'utc_end_date':(start+timedelta(hours=2)).isoformat(),
+ 'url':'https://venue.example.org/event/'+str(i),'venue':{'venue':'Hall','address':'12 Main St','city':'Raleigh','state':'NC','geo_lat':35.8,'geo_lng':-78.6},'categories':[{'name':'Music'}]}
+
+class WordPressTests(unittest.TestCase):
+ def test_endpoint_preserves_filters_and_does_not_duplicate_path(self):
+  calls=[]
+  def fetch(url,accept):
+   calls.append(url);return json.dumps({'events':[event()], 'total_pages':1})
+  rows=collect({'feed_url':'https://venue.example.org/wp-json/tribe/events/v1/events/?organizer=12&per_page=50'},fetch)
+  u=urlsplit(calls[0]);q=parse_qs(u.query)
+  self.assertEqual(u.path.count('/wp-json/'),1);self.assertEqual(q['organizer'],['12']);self.assertEqual(q['per_page'],['100'])
+  self.assertEqual(rows[0]['id'],'1');self.assertEqual(rows[0]['lat'],35.8)
+ def test_root_and_complete_pagination(self):
+  calls=[]
+  def fetch(url,accept):
+   calls.append(url);p=int(parse_qs(urlsplit(url).query)['page'][0]);return json.dumps({'events':[event(p)],'total_pages':2,'next_rest_url':'http://127.0.0.1/' if p==1 else None})
+  rows=collect({'feed_url':'https://venue.example.org'},fetch)
+  self.assertEqual(len(rows),2);self.assertEqual(len(calls),2);self.assertTrue(all(urlsplit(u).hostname=='venue.example.org' for u in calls))
+ def test_over_budget_is_failure(self):
+  with self.assertRaisesRegex(ValueError,'pagination_limit'):
+   collect({'feed_url':'https://venue.example.org'},lambda *_:json.dumps({'events':[event()],'total_pages':6}))
+ def test_successful_empty_remains_healthy(self):
+  self.assertEqual(collect({'feed_url':'https://venue.example.org'},lambda *_:json.dumps({'events':[],'total_pages':0})),[])
+ def test_invalid_event_is_not_confirmed_empty(self):
+  e=event();e['utc_end_date']='2001-01-01T00:00:00Z'
+  with self.assertRaisesRegex(ValueError,'invalid_event_end'):
+   collect({'feed_url':'https://venue.example.org'},lambda *_:json.dumps({'events':[e]}))
+ def test_missing_geometry_keeps_actual_venue_for_shared_cache(self):
+  e=event();e['venue'].pop('geo_lat');e['venue'].pop('geo_lng')
+  rows=collect({'feed_url':'https://venue.example.org'},lambda *_:json.dumps({'events':[e]}))
+  self.assertIsNone(rows[0]['lat']);self.assertIn('Raleigh',rows[0]['venue_address'])
+ def test_registered_mapsee_dispatch_uses_wordpress_family(self):
+  source={'source_key':'municipal_mapsee_fixture','feed_url':'https://venue.example.org','kind':'json','platform_adapter':'wordpress'}
+  with patch('roomquest.mapsee_adapter.profiles',return_value={source['source_key']:{'url':source['feed_url'],'type':'tribe'}}),patch('roomquest.preview_worker.fetch_publisher',return_value=json.dumps({'events':[event()],'total_pages':1})) as fetch:
+   result=preview_source(source);self.assertEqual(result['p_source_key'],source['source_key']);self.assertEqual(len(result['p_events']),1);self.assertTrue(fetch.call_args.kwargs['respect_robots'])
+ def test_unregistered_mapsee_cannot_fetch(self):
+  with patch('roomquest.mapsee_adapter.profiles',return_value={}),patch('roomquest.preview_worker.fetch_publisher') as fetch:
+   with self.assertRaisesRegex(PreviewError,'unregistered_mapsee_source'):preview_source({'source_key':'municipal_mapsee_bad','feed_url':'https://venue.example.org','kind':'json','platform_adapter':'wordpress'})
+   fetch.assert_not_called()
+ def test_all_checkpoints_precede_success(self):
+  from roomquest.preview_worker import _process_claimed_source
+  source={'source_key':'municipal_mapsee_fixture','feed_url':'https://venue.example.org','kind':'json','platform_adapter':'wordpress'}
+  def fetch(url,*args,**kwargs):
+   page=int(parse_qs(urlsplit(url).query)['page'][0])
+   return json.dumps({'events':[event(i) for i in range((page-1)*100,page*100)],'total_pages':2})
+  def rpc(name,payload):
+   return len(payload['p_events']) if name.endswith('record_staged_events') else None
+  with patch('roomquest.mapsee_adapter.profiles',return_value={source['source_key']:{'url':source['feed_url'],'type':'tribe'}}),patch('roomquest.preview_worker.fetch_publisher',side_effect=fetch),patch('roomquest.preview_worker.supabase_rpc',side_effect=rpc) as db:
+   result=_process_claimed_source(source)
+   self.assertEqual(result,{'complete':1,'failed':0,'staged':200})
+   self.assertEqual([c.args[0] for c in db.call_args_list],['community_collector_record_staged_events']*2+['community_collector_record_preview'])
+   self.assertEqual(db.call_args_list[-1].args[1]['p_future_count'],200)
+ def test_failed_checkpoint_never_reports_complete(self):
+  from roomquest.preview_worker import _process_claimed_source
+  source={'source_key':'municipal_mapsee_fixture'}
+  output={'p_source_key':source['source_key'],'p_events':[{'title':str(i)} for i in range(101)],'p_error':None}
+  with patch('roomquest.preview_worker.preview_source',return_value=output),patch('roomquest.preview_worker.supabase_rpc',side_effect=[100,PreviewError('database_unavailable'),None]) as db:
+   result=_process_claimed_source(source)
+   self.assertEqual(result['failed'],1);self.assertEqual(result['complete'],0)
+   self.assertEqual(db.call_args_list[-1].args[1]['p_error'],'database_unavailable')
+
+if __name__=='__main__':unittest.main()

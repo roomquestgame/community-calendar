@@ -467,6 +467,28 @@ SUPPORTED = {"ical", "jsonld", "growthzone", "wordpress", "squarespace"}
 
 
 def preview_source(source: dict, *, deadline_at=None) -> dict:
+    # WordPress is a collection family; Mapsee remains catalog provenance.
+    if source.get("platform_adapter") == "wordpress" and source.get("kind") == "json":
+        from roomquest.wordpress_adapter import collect as collect_wordpress
+        if source.get("source_key", "").startswith("municipal_mapsee_"):
+            from roomquest.mapsee_adapter import profiles
+            profile = profiles().get(source["source_key"])
+            if not profile or profile["type"] != "tribe" or profile["url"] != source.get("feed_url"):
+                raise PreviewError("unregistered_mapsee_source")
+        deadline = min(monotonic() + 20, deadline_at - 8 if deadline_at is not None else float("inf"))
+        try:
+            records = collect_wordpress(source, lambda url, accept: fetch_publisher(
+                url, accept, respect_robots=True, deadline_at=deadline), deadline_at=deadline)
+        except (ValueError, TypeError, KeyError, OverflowError) as exc:
+            reason = str(exc)
+            raise PreviewError(reason if re.fullmatch(r"[a-z_]{3,100}", reason) else "invalid_calendar_payload") from exc
+        samples = records[:MAX_PREVIEWS]
+        while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
+            samples.pop()
+        return {"p_source_key": source["source_key"], "p_samples": samples,
+                "p_future_count": len(records),
+                "p_venue_count": sum(1 for row in records if row["lat"] is not None),
+                "p_error": None, "p_events": records}
     if source.get("source_key", "").startswith("municipal_mapsee_"):
         from roomquest.mapsee_adapter import profiles, collect
         profile = profiles().get(source["source_key"])
@@ -660,5 +682,6 @@ def collect_bulk_previews(max_sources=15, concurrency=3, deadline_seconds=48) ->
                 for key in ("complete", "failed", "staged"):
                     result[key] += item[key]
     return result
+
 
 

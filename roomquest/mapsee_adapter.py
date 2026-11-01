@@ -253,6 +253,9 @@ def parse_ics(payload,source):
 
 def collect(source,profile,fetch):
     """At most five requests/500 facts; truncation is a failure, never healthy empty."""
+    if profile["type"] == "tribe":
+        from roomquest.wordpress_adapter import collect as collect_wordpress
+        return collect_wordpress(source, fetch)
     kind=profile["type"];base=source["feed_url"];config=profile.get("config") or {}
     if kind not in SUPPORTED_TYPES:raise ValueError("unsupported_mapsee_adapter")
     deadline=monotonic()+35;records=[]
@@ -260,7 +263,6 @@ def collect(source,profile,fetch):
         if monotonic()>deadline:raise ValueError("collection_deadline")
         now=datetime.now(timezone.utc)
         if kind=="localist":url=base.rstrip("/")+"/api/2/events?"+urlencode({"pp":100,"page":page,"days":60,"distinct":"true"})
-        elif kind=="tribe":url=base.rstrip("/")+"/wp-json/tribe/events/v1/events?"+urlencode({"per_page":100,"page":page,"start_date":now.date().isoformat(),"end_date":(now+timedelta(days=60)).date().isoformat()})
         elif kind=="squarespace":url=base+("&" if "?" in base else "?")+"format=json"
         elif kind=="opendata":
             local_now=now.astimezone(ZoneInfo(config["timezone"])) if config.get("timezone") else now
@@ -276,8 +278,6 @@ def collect(source,profile,fetch):
         data=json.loads(payload)
         if kind=="localist":
             records.extend(parse_localist(data));last=page>=int((data.get("page") or {}).get("total",1))
-        elif kind=="tribe":
-            records.extend(parse_tribe(data));last=not data.get("next_rest_url") and page>=int(data.get("total_pages",1))
         elif kind=="squarespace":
             records.extend(parse_squarespace(data,base));last=not (data.get("pagination") or {}).get("nextPage")
             if not last:raise ValueError("pagination_requires_cursor")
@@ -296,3 +296,4 @@ def collect(source,profile,fetch):
     result=sorted(unique.values(),key=lambda e:(e["starts_at"],e["title"]))
     if result and not any(e.get("venue_name") or e.get("venue_address") for e in result):raise ValueError("venue_extraction_unavailable")
     return result
+
