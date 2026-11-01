@@ -152,19 +152,8 @@ def parse_jsonld(payload,base=""):
 
 
 def parse_squarespace(data,base):
-    if isinstance(data,dict) and isinstance(data.get("upcoming"),list):
-        data={**data,"items":data["upcoming"]}
-    if not isinstance(data,dict) or not isinstance(data.get("items"),list):
-        raise ValueError("unsupported_squarespace_payload")
-    from urllib.parse import urljoin
-    out=[]
-    for e in data["items"]:
-        v=e.get("location") or {};v=v if isinstance(v,dict) else {}
-        street=", ".join(plain(v[k]) for k in ("addressLine1","addressLine2") if v.get(k))
-        r=record(e.get("title"),e.get("startDate"),e.get("endDate"),v.get("addressTitle"),street,"",urljoin(base,e.get("fullUrl") or e.get("urlId") or ""),
-                 e.get("id"),", ".join(str(x) for x in e.get("categories",[])),v.get("mapLat"),v.get("mapLng"))
-        if r:out.append(r)
-    return out
+    from roomquest.squarespace import parse_registered
+    return parse_registered(data, base)
 
 
 def parse_open_data(data,config):
@@ -256,6 +245,9 @@ def collect(source,profile,fetch):
     if profile["type"] == "tribe":
         from roomquest.wordpress_adapter import collect as collect_wordpress
         return collect_wordpress(source, fetch)
+    if profile["type"] == "squarespace":
+        from roomquest.squarespace import collect as collect_squarespace
+        return collect_squarespace(source, fetch)
     kind=profile["type"];base=source["feed_url"];config=profile.get("config") or {}
     if kind not in SUPPORTED_TYPES:raise ValueError("unsupported_mapsee_adapter")
     deadline=monotonic()+35;records=[]
@@ -263,7 +255,6 @@ def collect(source,profile,fetch):
         if monotonic()>deadline:raise ValueError("collection_deadline")
         now=datetime.now(timezone.utc)
         if kind=="localist":url=base.rstrip("/")+"/api/2/events?"+urlencode({"pp":100,"page":page,"days":60,"distinct":"true"})
-        elif kind=="squarespace":url=base+("&" if "?" in base else "?")+"format=json"
         elif kind=="opendata":
             local_now=now.astimezone(ZoneInfo(config["timezone"])) if config.get("timezone") else now
             where=str(config.get("where") or "").replace("{now}",local_now.strftime("%Y-%m-%dT%H:%M:%S")).replace("{today}",local_now.date().isoformat())
@@ -278,9 +269,6 @@ def collect(source,profile,fetch):
         data=json.loads(payload)
         if kind=="localist":
             records.extend(parse_localist(data));last=page>=int((data.get("page") or {}).get("total",1))
-        elif kind=="squarespace":
-            records.extend(parse_squarespace(data,base));last=not (data.get("pagination") or {}).get("nextPage")
-            if not last:raise ValueError("pagination_requires_cursor")
         else:
             records.extend(parse_open_data(data,{**config,"publisher_url":base}));last=len(data)<500
         if len(records)>MAX_RECORDS:raise ValueError("source_record_limit")

@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 import json
 import math
 import re
-from urllib.parse import urljoin, urlsplit
+from urllib.parse import urljoin, urlsplit, urlunsplit, parse_qsl, urlencode
 from zoneinfo import ZoneInfo
 
 from roomquest.mapsee_adapter import plain, timestamp
@@ -20,6 +20,112 @@ SOURCES = {
 }
 
 
+def check_pagination(data, *, upcoming):
+    """Only a proven past-archive cursor can be omitted from a full snapshot."""
+    paging = data.get('pagination') or {}
+    if not isinstance(paging, dict):
+        raise ValueError('invalid_squarespace_pagination')
+    if not paging.get('nextPage'):
+        return
+    cursor = paging.get('nextPageOffset')
+    past = data.get('past')
+    now = datetime.now(timezone.utc).timestamp() * 1000
+    if (not upcoming or isinstance(cursor, bool) or not isinstance(cursor, (int, float))
+            or not math.isfinite(cursor) or cursor >= now or not isinstance(past, list)
+            or not any(isinstance(e, dict) and e.get('publishOn') == cursor
+                       and not isinstance(e.get('endDate'), bool)
+                       and isinstance(e.get('endDate'), (int, float))
+                       and math.isfinite(e['endDate']) and e['endDate'] < now
+                       for e in past)):
+        raise ValueError('pagination_requires_review')
+
+
+def collect(source, fetch):
+    """One JSON snapshot, shared by registered catalogs and curated sources.
+
+    No archive crawl, per-event requests, location search or response next links.
+    An ambiguous/incomplete snapshot fails instead of inventing removals.
+    """
+    base = source['feed_url']
+    root = urlsplit(base)
+    query = dict(parse_qsl(root.query, keep_blank_values=True))
+    if query.get('format', 'json') != 'json' or 'offset' in query:
+        raise ValueError('unsupported_squarespace_endpoint')
+    query['format'] = 'json'
+    url = urlunsplit((root.scheme, root.netloc, root.path, urlencode(query), ''))
+    payload = fetch(url, 'application/json')
+    if base in SOURCES:
+        return parse(payload, source)  # Retain reviewed timezone/state/location checks.
+    return parse_registered(json.loads(payload), base)
+
+
+def parse_registered(data, base):
+    """Preserve Mapsee factual identities and reuse shared record normalization."""
+    from roomquest.mapsee_adapter import record
+    if not isinstance(data, dict):
+        raise ValueError('unsupported_squarespace_payload')
+    if 'upcoming' in data and not isinstance(data['upcoming'], list):
+        raise ValueError('unsupported_squarespace_payload')
+    upcoming = isinstance(data.get('upcoming'), list)
+    rows = data.get('upcoming') if upcoming else data.get('items')
+    if not isinstance(rows, list):
+        raise ValueError('unsupported_squarespace_payload')
+    if len(rows) > 500:
+        raise ValueError('source_record_limit')
+    check_pagination(data, upcoming=upcoming)
+    out = {}
+    for e in rows:
+        if not isinstance(e, dict):
+            raise ValueError('invalid_calendar_record')
+        if e.get('cancelled') is True or (e.get('workflowState') is not None and e['workflowState'] != 1):
+            continue
+        if e.get('allDay') or e.get('allDayEvent'):
+            continue
+        if not isinstance(e.get('id'), str) or not e['id'].strip():
+            raise ValueError('event_identity_missing')
+        for key in ('startDate', 'endDate'):
+            value = e.get(key)
+            if key == 'endDate' and value is None:
+                continue  # Retain explicit missing end; never estimate an end.
+            if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value):
+                raise ValueError('event_time_missing')
+        v = e.get('location') or {}
+        if not isinstance(v, dict):
+            raise ValueError('invalid_event_location')
+        street = ', '.join(plain(v[k]) for k in ('addressLine1', 'addressLine2') if v.get(k))
+        lat, lng = v.get('mapLat'), v.get('mapLng')
+        marker = (v.get('markerLat'), v.get('markerLng'))
+        if marker[0] is not None and marker[1] is not None:
+            conflict = False
+            if lat is not None and lng is not None:
+                try:
+                    conflict = not all(math.isclose(float(a), float(b), rel_tol=0, abs_tol=1e-7)
+                                       for a, b in zip((lat, lng), marker))
+                except (TypeError, ValueError, OverflowError):
+                    conflict = True
+            if conflict:
+                lat = lng = None  # Conflicting evidence is held for location review.
+            else:
+                lat, lng = marker
+        if isinstance(lat, bool) or isinstance(lng, bool):
+            lat = lng = None
+        path = e.get('fullUrl') or e.get('urlId')
+        if not isinstance(path, str) or not path.strip():
+            raise ValueError('event_link_missing')
+        row = record(e.get('title'), e.get('startDate'), e.get('endDate'),
+                     v.get('addressTitle'), street, '', urljoin(base, path), e['id'],
+                     ', '.join(str(x) for x in e.get('categories', [])), lat, lng)
+        if row:
+            key = (row['id'], row['starts_at'])
+            if key in out and out[key] != row:
+                raise ValueError('conflicting_event_occurrence')
+            out[key] = row
+    result = sorted(out.values(), key=lambda e: (e['starts_at'], e['title']))
+    if result and not any(e.get('venue_name') or e.get('venue_address') for e in result):
+        raise ValueError('venue_extraction_unavailable')
+    return result
+
+
 def parse(payload, source):
     from roomquest.preview_worker import _preview
     base = source.get('feed_url')
@@ -34,21 +140,7 @@ def parse(payload, source):
     rows = data['upcoming']
     if len(rows) > 100:
         raise ValueError('source_record_limit')
-    paging = data.get('pagination') or {}
-    if paging.get('nextPage'):
-        # Squarespace's cursor here pages the separate past archive. Require
-        # explicit evidence that it is a past record, never ignore an unknown
-        # cursor or fetch the archive repeatedly as if it were future pages.
-        cursor = paging.get('nextPageOffset')
-        past = data.get('past')
-        if (not isinstance(cursor, (int, float)) or not math.isfinite(cursor)
-                or cursor >= datetime.now(timezone.utc).timestamp() * 1000
-                or not isinstance(past, list)
-                or not any(isinstance(e, dict) and e.get('publishOn') == cursor
-                           and isinstance(e.get('endDate'), (int, float))
-                           and e['endDate'] < datetime.now(timezone.utc).timestamp() * 1000
-                           for e in past)):
-            raise ValueError('pagination_requires_review')
+    check_pagination(data, upcoming=True)
     out = {}
     for event in rows:
         if not isinstance(event, dict):
@@ -103,3 +195,4 @@ def parse(payload, source):
                 raise ValueError('conflicting_event_occurrence')
             out[key] = record
     return sorted(out.values(), key=lambda e: (e['starts_at'], e['id']))
+
