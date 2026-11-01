@@ -19,4 +19,4 @@ jobs:
         with:
           python-version: '3.12'
       - run: pip install -r requirements-dev.txt
-      - run: python -m pytest tests/test_wordpress_adapter.py tests/test_mapsee_pipeline.py tests/test_roomquest_preview.py tests/test_squarespace_pilot.py tests/test_squarespace_family.py -q
+      - run: python -m pytest tests/test_wordpress_adapter.py tests/test_mapsee_pipeline.py tests/test_roomquest_preview.py tests/test_squarespace_pilot.py tests/test_squarespace_family.py tests/test_jsonld_family.py -q

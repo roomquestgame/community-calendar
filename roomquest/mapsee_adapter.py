@@ -133,22 +133,8 @@ def parse_tribe(data):
 
 
 def parse_jsonld(payload,base=""):
-    from scrapers.lib.jsonld import extract_jsonld_blocks, extract_events_from_blocks
-    from urllib.parse import urljoin
-    blocks=extract_jsonld_blocks(payload)
-    if not blocks:raise ValueError("unsupported_jsonld_payload")
-    events=extract_events_from_blocks(blocks);out=[]
-    if not events and not re.search(r"\bno (?:upcoming )?events(?: found| scheduled)?\b",payload,re.I):
-        raise ValueError("unsupported_jsonld_event_shape")
-    for e in events:
-        if str(e.get("eventStatus","")).endswith(("EventCancelled","EventPostponed")):continue
-        v=e.get("location") or {};v=next((x for x in v if isinstance(x,dict)),{}) if isinstance(v,list) else v
-        if not isinstance(v,dict) or v.get("@type")=="VirtualLocation":continue
-        a=v.get("address") or {};g=v.get("geo") or {};g=g if isinstance(g,dict) else {}
-        r=record(e.get("name"),e.get("startDate"),e.get("endDate"),v.get("name"),address(a),a.get("addressLocality","") if isinstance(a,dict) else "",
-                 urljoin(base,e.get("url") or e.get("@id") or ""),e.get("@id") or e.get("url"),e.get("keywords",""),g.get("latitude"),g.get("longitude"))
-        if r:out.append(r)
-    return out
+    from roomquest.jsonld_adapter import parse
+    return parse(payload, base)
 
 
 def parse_squarespace(data,base):
@@ -248,6 +234,9 @@ def collect(source,profile,fetch):
     if profile["type"] == "squarespace":
         from roomquest.squarespace import collect as collect_squarespace
         return collect_squarespace(source, fetch)
+    if profile["type"] == "jsonld":
+        from roomquest.jsonld_adapter import collect as collect_jsonld
+        return collect_jsonld(source, fetch)
     kind=profile["type"];base=source["feed_url"];config=profile.get("config") or {}
     if kind not in SUPPORTED_TYPES:raise ValueError("unsupported_mapsee_adapter")
     deadline=monotonic()+35;records=[]
@@ -265,7 +254,6 @@ def collect(source,profile,fetch):
         else:url=base
         payload=fetch(url,"text/calendar" if kind=="ics" else "application/json,text/html")
         if kind=="ics":records=parse_ics(payload,profile);break
-        if kind=="jsonld":records=parse_jsonld(payload,base);break
         data=json.loads(payload)
         if kind=="localist":
             records.extend(parse_localist(data));last=page>=int((data.get("page") or {}).get("total",1))
