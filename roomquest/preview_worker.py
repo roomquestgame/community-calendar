@@ -467,6 +467,24 @@ SUPPORTED = {"ical", "jsonld", "growthzone", "wordpress", "squarespace"}
 
 
 def preview_source(source: dict, *, deadline_at=None) -> dict:
+    from roomquest.community_formats import SOURCES as format_sources
+    if (source.get("source_key") in format_sources or source.get("platform_adapter") == "library" or
+            (source.get("platform_adapter") == "wordpress" and source.get("kind") == "rss")):
+        from roomquest.community_formats import collect
+        deadline = min(monotonic() + 20, deadline_at - 8 if deadline_at is not None else float("inf"))
+        try:
+            records = collect(source, lambda url, accept: fetch_publisher(
+                url, accept, respect_robots=True, deadline_at=deadline))
+        except (ValueError, TypeError, KeyError, OverflowError) as exc:
+            reason = str(exc)
+            raise PreviewError(reason if re.fullmatch(r"[a-z_]{3,100}", reason) else "invalid_calendar_payload") from exc
+        samples = records[:MAX_PREVIEWS]
+        while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
+            samples.pop()
+        return {"p_source_key": source["source_key"], "p_samples": samples,
+                "p_future_count": len(records),
+                "p_venue_count": sum(1 for row in records if row["lat"] is not None),
+                "p_error": None, "p_events": records}
     # WordPress is a collection family; Mapsee remains catalog provenance.
     if source.get("platform_adapter") == "wordpress" and source.get("kind") == "json":
         from roomquest.wordpress_adapter import collect as collect_wordpress
@@ -640,7 +658,7 @@ def _process_claimed_source(source: dict, *, deadline_at=None) -> dict:
     try:
         deadline = min(monotonic() + 43, deadline_at or float("inf"))
         output = (preview_source(source, deadline_at=deadline - 4)
-                  if source.get("source_key", "").startswith(("municipal_mapsee_", "municipal_chambermaster_")) else preview_source(source))
+                  if (source.get("source_key", "").startswith(("municipal_mapsee_", "municipal_chambermaster_")) or source.get("platform_adapter") == "library" or (source.get("platform_adapter") == "wordpress" and source.get("kind") == "rss")) else preview_source(source))
         events = output.pop("p_events", [])
         staged = 0
         # Existing token/RPC accepts at most 100 facts. Large Mapsee sources use
