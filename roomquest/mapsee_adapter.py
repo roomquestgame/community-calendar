@@ -15,6 +15,7 @@ import re
 from time import monotonic
 from urllib.parse import urlencode, urlsplit
 from zoneinfo import ZoneInfo
+from roomquest import socrata_adapter
 
 MAX_RECORDS = 500
 MAX_PAGES = 5
@@ -168,25 +169,9 @@ def parse_squarespace(data,base):
 
 
 def parse_open_data(data,config):
-    if not isinstance(data,list):raise ValueError("unsupported_open_data_payload")
-    mapping=config.get("map") or {};out=[]
-    if not all(k in mapping for k in ("title","start")):raise ValueError("unsupported_open_data_mapping")
-    for e in data:
-        get=lambda k:e.get(mapping[k]) if k in mapping else None
-        lat,lng=get("lat"),get("lon")
-        geo=get("geo")
-        if isinstance(geo,dict):lat,lng=geo.get("latitude"),geo.get("longitude")
-        point=get("latlon")
-        if isinstance(point,str):
-            match=re.fullmatch(r"\s*([-+0-9.]+)\s*,\s*([-+0-9.]+)\s*",point)
-            if match:lat,lng=match.groups()
-            match=re.fullmatch(r"\s*POINT\s*\(\s*([-+0-9.]+)\s+([-+0-9.]+)\s*\)\s*",point,re.I)
-            if match:lng,lat=match.groups()
-        # Keep the dataset's actual URL if a public structured-data record has
-        # no individual link. Never synthesize a publisher/event detail path.
-        r=record(get("title"),get("start"),get("end"),get("venue"),get("address"),get("city"),get("url") or config.get("publisher_url"),get("id"),get("category"),lat,lng,config.get("timezone"))
-        if r:out.append(r)
-    return out
+    # Preserve this public helper while routing the dataset through the shared
+    # Socrata mapping and the existing common record/location validation.
+    return socrata_adapter.parse_open_data(data,config,record)
 
 
 def parse_ics(payload,source):
@@ -262,13 +247,7 @@ def collect(source,profile,fetch):
         if kind=="localist":url=base.rstrip("/")+"/api/2/events?"+urlencode({"pp":100,"page":page,"days":60,"distinct":"true"})
         elif kind=="tribe":url=base.rstrip("/")+"/wp-json/tribe/events/v1/events?"+urlencode({"per_page":100,"page":page,"start_date":now.date().isoformat(),"end_date":(now+timedelta(days=60)).date().isoformat()})
         elif kind=="squarespace":url=base+("&" if "?" in base else "?")+"format=json"
-        elif kind=="opendata":
-            local_now=now.astimezone(ZoneInfo(config["timezone"])) if config.get("timezone") else now
-            where=str(config.get("where") or "").replace("{now}",local_now.strftime("%Y-%m-%dT%H:%M:%S")).replace("{today}",local_now.date().isoformat())
-            params={"$limit":500,"$offset":(page-1)*500}
-            if where:params["$where"]=where
-            if config.get("order"):params["$order"]=config["order"]
-            url=base+("&" if "?" in base else "?")+urlencode(params)
+        elif kind=="opendata":url=socrata_adapter.page_url(base,config,page,now)
         else:url=base
         payload=fetch(url,"text/calendar" if kind=="ics" else "application/json,text/html")
         if kind=="ics":records=parse_ics(payload,profile);break
@@ -296,3 +275,4 @@ def collect(source,profile,fetch):
     result=sorted(unique.values(),key=lambda e:(e["starts_at"],e["title"]))
     if result and not any(e.get("venue_name") or e.get("venue_address") for e in result):raise ValueError("venue_extraction_unavailable")
     return result
+
