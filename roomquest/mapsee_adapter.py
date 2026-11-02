@@ -105,7 +105,7 @@ def parse_localist(data):
     return out
 
 
-def parse_tribe(data):
+def parse_tribe(data, *, strict_public=False):
     # The same upstream Tribe parser used by Udell, with UTC dates and complete
     # event addresses retained rather than inferred from the publisher's city.
     from scrapers.lib.tribe_events import TribeEventsScraper
@@ -114,7 +114,11 @@ def parse_tribe(data):
         raise ValueError("unsupported_wordpress_payload")
     for e in data["events"]:
         if not isinstance(e,dict):raise ValueError("unsupported_wordpress_payload")
+        if strict_public and e.get("status") != "publish":continue
         if e.get("status") in {"cancelled","canceled","trash"}:continue
+        if strict_public and e.get("event_status") in ("cancelled", "canceled", "postponed"):continue
+        if strict_public and any(e.get(k) in (True, 1, "1", "true") for k in
+               ("hide_from_listings", "is_virtual", "virtual", "all_day")):continue
         tz=e.get("timezone"); start=e.get("utc_start_date");end=e.get("utc_end_date")
         if start:start=timestamp(start,"UTC").isoformat()
         if end:end=timestamp(end,"UTC").isoformat()
@@ -125,10 +129,15 @@ def parse_tribe(data):
             if not parsed:continue
             start=parsed["dtstart"].isoformat();end=parsed["dtend"].isoformat() if parsed.get("dtend") else None
         venue=e.get("venue") or {}; venue=venue if isinstance(venue,dict) else {}
-        street=address({"street":venue.get("address"),"city":venue.get("city"),"state":venue.get("state") or venue.get("province"),"zip":venue.get("zip")})
+        if strict_public and re.search(r"\b(zoom|online|virtual)\b", plain(venue.get("venue")), re.I):continue
+        street=address({"street":venue.get("address"),"city":venue.get("city"),"state":venue.get("state") or venue.get("stateprovince") or venue.get("province"),"zip":venue.get("zip")})
         r=record(e.get("title"),start,end,venue.get("venue"),street,venue.get("city"),e.get("url"),e.get("id"),
                  ", ".join(x.get("name","") for x in e.get("categories",[]) if isinstance(x,dict)),venue.get("geo_lat"),venue.get("geo_lng"),tz)
-        if r:out.append(r)
+        if r:
+            if strict_public and tz:
+                ZoneInfo(tz)  # Validate publisher timezone before preserving it.
+                r["timezone"] = tz
+            out.append(r)
     return out
 
 

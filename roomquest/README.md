@@ -228,3 +228,7 @@ one short retry for a publisher lease cooldown, and retains the 15-source/three-
 cap. The catalog priority metadata distinguishes 17 Raleigh/Wake/Durham sources and
 30 Richmond/Petersburg sources; Richmond District in San Francisco remains broader
 US coverage. The combined local suite passes 163 tests plus ten subtests.
+
+## Parks search-demand cutover (November 2, 2026)
+
+Madison County and Nebraska use the shared WordPress JSON route and normal demand claim. No new cron or city collector is added. The worker propagates its deadline; these two sources require published, visible, physical, timed listings and retain publisher timezones and addresses. Database migration 20261102095858 owns coverage routing, stable JSON identities, cached geocoding and durable publication continuation. Deploy this collector before the database registration and final Edge-default cutover. Verify with normal area searches, never manually seeded previews/events. Local WordPress/Mapsee/preview suites: 35 tests and 10 subtests pass.
