@@ -133,13 +133,13 @@ class MapseeTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,"pagination_limit"):
             collect({"feed_url":p["url"]},p,lambda *_:json.dumps({"events":[],"page":{"total":10}}))
 
-    def test_large_sources_use_existing_hundred_record_rpc_in_batches(self):
+    def test_large_sources_use_small_batches_with_existing_rpc(self):
         rows=[{"id":str(i)} for i in range(219)]
         result={"p_source_key":"municipal_mapsee_fixture","p_samples":[],"p_events":rows,"p_future_count":219,"p_venue_count":0,"p_error":None}
-        with patch.object(worker,"preview_source",return_value=result),patch.object(worker,"supabase_rpc",side_effect=[100,100,19,None]) as rpc:
+        with patch.object(worker,"preview_source",return_value=result),patch.object(worker,"supabase_rpc",side_effect=[20]*10+[19,None]) as rpc:
             output=worker._process_claimed_source({"source_key":"municipal_mapsee_fixture"})
             self.assertEqual(output["staged"],219)
-            self.assertEqual([len(call.args[1]["p_events"]) for call in rpc.call_args_list[:3]],[100,100,19])
+            self.assertEqual([len(call.args[1]["p_events"]) for call in rpc.call_args_list[:-1]],[20]*10+[19])
 
     def test_publisher_cooldown_does_not_end_a_mapsee_slot_early(self):
         source={"source_key":"municipal_mapsee_fixture"}

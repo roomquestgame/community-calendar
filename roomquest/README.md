@@ -232,3 +232,11 @@ US coverage. The combined local suite passes 163 tests plus ten subtests.
 ## Parks search-demand cutover (November 2, 2026)
 
 Madison County and Nebraska use the shared WordPress JSON route and normal demand claim. No new cron or city collector is added. The worker propagates its deadline; these two sources require published, visible, physical, timed listings and retain publisher timezones and addresses. Database migration 20261102095858 owns coverage routing, stable JSON identities, cached geocoding and durable publication continuation. Deploy this collector before the database registration and final Edge-default cutover. Verify with normal area searches, never manually seeded previews/events. Local WordPress/Mapsee/preview suites: 35 tests and 10 subtests pass.
+
+## Temporary database failures (November 2, 2026)
+
+Staging transactions contain at most 20 events. Socket/OSError failures from Supabase RPCs report database_unavailable; partial snapshots never report completion or publish. Existing source, robots, parser and venue validation remain in place.
+
+Companion RoomQuestGame migration 20261102145352 makes database_unavailable, staging_deadline and collector_not_configured retryable with 1–15 minute backoff under existing area/validation interest. It preserves feed approval and previous data, and keeps the finish call from shortening backoff. The collector change alone does not prevent database disposition holds until that migration is deployed through GitHub. Sixth & I has a narrowly reviewed, normal-search recovery in that migration; no collector code resets source holds.
+
+Local validation: 139 tests and 25 subtests pass, including multi-batch completion, partial failures, transport classification and category ticket completion. GitHub validation and production deployment verification are separate release steps.
