@@ -1,4 +1,5 @@
 """One Vercel Python entrypoint for the restricted collector routes."""
+from api.category_demand import handler as CategoryHandler
 from api.geocode import handler as GeocoderHandler
 from api.preview import handler as PreviewHandler
 from api.chambermaster import handler as ChamberMasterHandler
@@ -9,6 +10,8 @@ class handler(PreviewHandler, GeocoderHandler, ChamberMasterHandler, PilotHandle
     """Reuse both handlers' authentication without introducing public inputs."""
 
     def do_GET(self):
+        if self.path == "/api/category-demand":
+            return CategoryHandler.do_GET(self)
         if self.path in ("/api/provider-pilot", "/api/provider-pilot/orangeburg"):
             return PilotHandler.do_GET(self)
         if self.path == "/api/chambermaster":
@@ -18,6 +21,8 @@ class handler(PreviewHandler, GeocoderHandler, ChamberMasterHandler, PilotHandle
         return PreviewHandler.do_GET(self)
 
     def do_POST(self):
+        if self.path == "/api/category-demand":
+            return CategoryHandler.do_POST(self)
         if self.path in ("/api/provider-pilot", "/api/provider-pilot/orangeburg"):
             return PilotHandler.do_POST(self)
         if self.path == "/api/chambermaster":
