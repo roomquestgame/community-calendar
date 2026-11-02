@@ -38,7 +38,8 @@ def collect(source, fetch, *, deadline_at=None):
         if len(payload['events']) > 100:
             raise ValueError('source_record_limit')
         # Never follow response next links; rebuild only this registered URL.
-        rows.extend(parse_tribe(payload))
+        rows.extend(parse_tribe(payload, strict_public=source.get("source_key") in
+                                  ("madison_county_parks_ia", "nebraska_game_parks")))
         if len(rows) > MAX_RECORDS:
             raise ValueError('source_record_limit')
         total_pages = payload.get('total_pages', 1)
@@ -59,3 +60,4 @@ def collect(source, fetch, *, deadline_at=None):
     if result and not any(e.get('venue_name') or e.get('venue_address') for e in result):
         raise ValueError('venue_extraction_unavailable')
     return result
+

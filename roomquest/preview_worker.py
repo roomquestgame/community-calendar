@@ -680,7 +680,7 @@ def _process_claimed_source(source: dict, *, deadline_at=None) -> dict:
     try:
         deadline = min(monotonic() + 43, deadline_at or float("inf"))
         output = (preview_source(source, deadline_at=deadline - 4)
-                  if (source.get("source_key", "").startswith(("municipal_mapsee_", "municipal_chambermaster_")) or source.get("platform_adapter") in ("library", "ical") or (source.get("platform_adapter") == "wordpress" and source.get("kind") == "rss")) else preview_source(source))
+                  if (source.get("source_key", "").startswith(("municipal_mapsee_", "municipal_chambermaster_")) or source.get("platform_adapter") in ("library", "ical") or (source.get("platform_adapter") == "wordpress" and source.get("kind") in ("rss", "json"))) else preview_source(source))
         events = output.pop("p_events", [])
         staged = 0
         # Existing token/RPC accepts at most 100 facts. Large Mapsee sources use

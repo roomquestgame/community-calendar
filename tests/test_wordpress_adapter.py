@@ -68,4 +68,21 @@ class WordPressTests(unittest.TestCase):
    self.assertEqual(result['failed'],1);self.assertEqual(result['complete'],0)
    self.assertEqual(db.call_args_list[-1].args[1]['p_error'],'database_unavailable')
 
+class ParksTests(unittest.TestCase):
+ def test_parks_preserve_timezone_and_address_but_reject_nonpublic_records(self):
+  source={'source_key':'nebraska_game_parks','feed_url':'https://calendar.outdoornebraska.gov/wp-json/tribe/events/v1/events'}
+  good=event();good.update(status='publish',timezone='America/Denver')
+  good['venue']['stateprovince']=good['venue'].pop('state')
+  bad=[dict(good,**patch) for patch in ({'status':'draft'},{'is_virtual':True},{'hide_from_listings':True},{'event_status':'cancelled'},{'all_day':True})]
+  rows=collect(source,lambda *_:json.dumps({'events':[good]+bad,'total_pages':1}))
+  self.assertEqual(len(rows),1);self.assertEqual(rows[0]['timezone'],'America/Denver')
+  self.assertIn('NC',rows[0]['venue_address']);self.assertEqual(rows[0]['lat'],35.8)
+ def test_custom_json_source_receives_worker_deadline(self):
+  from roomquest.preview_worker import _process_claimed_source
+  source={'source_key':'madison_county_parks_ia','kind':'json','platform_adapter':'wordpress'}
+  with patch('roomquest.preview_worker.preview_source',return_value={'p_source_key':source['source_key'],'p_events':[],'p_error':None}) as preview,patch('roomquest.preview_worker.supabase_rpc'):
+   _process_claimed_source(source)
+   self.assertIn('deadline_at',preview.call_args.kwargs)
+
 if __name__=='__main__':unittest.main()
+
