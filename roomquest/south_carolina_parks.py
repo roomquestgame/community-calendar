@@ -76,13 +76,15 @@ def normalize(event, park, page):
         if row:
             row['timezone'] = TIMEZONE
             rows.append(row)
+    if len(rows) > 500:
+        raise ValueError('source_record_limit')
     return rows
 
 
 def collect(source, fetch, *, deadline_at=None):
     key = source.get('source_key', '')
     match = re.fullmatch(r'south_carolina_parks_([1-9][0-9]{0,9})', key)
-    if not match or source.get('feed_url') != ROOT + '/api/events':
+    if not match or source.get('feed_url') != ROOT + '/api/events#park=' + match[1]:
         raise ValueError('unregistered_south_carolina_park')
     park_id = int(match[1])
     deadline = min(monotonic() + 30, deadline_at or float('inf'))
@@ -107,4 +109,6 @@ def collect(source, fetch, *, deadline_at=None):
         if type(event.get('id')) is not int or event['id'] <= 0:
             raise ValueError('invalid_park_event_id')
         rows.extend(normalize(event, matches[0], get(f"/products/{event['id']}", 'text/html')))
+    if len(rows) > 500:
+        raise ValueError('source_record_limit')
     return rows

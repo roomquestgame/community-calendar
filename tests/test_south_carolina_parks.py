@@ -39,7 +39,7 @@ def test_park_join_and_missing_session_fail_closed():
 
 
 def test_custom_family_preserves_transport_error_and_never_uses_wordpress():
-    source = {'source_key':'south_carolina_parks_1831', 'kind':'json', 'platform_adapter':'south_carolina_parks', 'feed_url':sc.ROOT+'/api/events'}
+    source = {'source_key':'south_carolina_parks_1831', 'kind':'json', 'platform_adapter':'south_carolina_parks', 'feed_url':sc.ROOT+'/api/events#park=1831'}
     with patch.object(worker, 'fetch_publisher', side_effect=worker.PreviewError('publisher_http_403')), patch('roomquest.wordpress_adapter.collect') as wp:
         with pytest.raises(worker.PreviewError, match='publisher_http_403'): worker.preview_source(source)
         wp.assert_not_called()
