@@ -61,13 +61,13 @@ def address(value):
                        value.get("postalCode") or value.get("zip")) if v)
 
 
-def record(title, start, end, venue, street, city, url, identity, category="", lat=None, lng=None, tz=None):
+def record(title, start, end, venue, street, city, url, identity, category="", lat=None, lng=None, tz=None, *, publisher_geo=False):
     from roomquest.preview_worker import _preview
     if not plain(title):raise ValueError("event_title_missing")
     if not start:raise ValueError("event_time_missing")
     begins=timestamp(start,tz);ends=timestamp(end,tz)
     if ends and ends<begins:raise ValueError("invalid_event_end")
-    if not re.search(r"\b[0-9]{1,6}\s+[A-Za-z]",plain(street)) or not re.search(r",[^,]+,\s*[A-Z]{2}\b",plain(street)):
+    if not publisher_geo and (not re.search(r"\b[0-9]{1,6}\s+[A-Za-z]",plain(street)) or not re.search(r",[^,]+,\s*[A-Z]{2}\b",plain(street))):
         lat=lng=None
     if str(lat) in {"0","0.0"} and str(lng) in {"0","0.0"}:lat=lng=None
     out = _preview(plain(title), begins, ends, plain(venue) or plain(street),
@@ -105,6 +105,22 @@ def parse_localist(data):
     return out
 
 
+def tribe_timezone(value):
+    """WordPress permits fixed UTC offsets as well as IANA timezone names."""
+    match = re.fullmatch(r"UTC([+-])(\d{1,2})(?:(?:\.(\d+))|(?::(\d{2})))?", str(value or ""))
+    if not match:
+        return ZoneInfo(value), value
+    sign, hours, fraction, minutes = match.groups()
+    offset = int(hours) * 60 + (round(float('0.' + fraction) * 60) if fraction else int(minutes or 0))
+    if offset > 14 * 60 or (minutes and int(minutes) >= 60):
+        raise ValueError('timezone_unresolved')
+    offset *= 1 if sign == '+' else -1
+    # UTC timestamps remain authoritative. Fractional offsets have no generic
+    # IANA identifier, so normalize their instants and display zone to UTC.
+    name = 'UTC' if offset == 0 or offset % 60 else 'Etc/GMT' + ('-' if offset > 0 else '+') + str(abs(offset) // 60)
+    return timezone(timedelta(minutes=offset)), name
+
+
 def parse_tribe(data, *, strict_public=False):
     # The same upstream Tribe parser used by Udell, with UTC dates and complete
     # event addresses retained rather than inferred from the publisher's city.
@@ -119,24 +135,23 @@ def parse_tribe(data, *, strict_public=False):
         if strict_public and e.get("event_status") in ("cancelled", "canceled", "postponed"):continue
         if strict_public and any(e.get(k) in (True, 1, "1", "true") for k in
                ("hide_from_listings", "is_virtual", "virtual", "all_day")):continue
-        tz=e.get("timezone"); start=e.get("utc_start_date");end=e.get("utc_end_date")
+        tz=e.get("timezone"); zone, tz_name=tribe_timezone(tz) if tz else (None, None); start=e.get("utc_start_date");end=e.get("utc_end_date")
         if start:start=timestamp(start,"UTC").isoformat()
         if end:end=timestamp(end,"UTC").isoformat()
         if not start:
             # Reuse the existing parser only with explicit publisher timezone.
             if not tz:raise ValueError("timezone_unresolved")
-            parsed=parser._parse_event(e,ZoneInfo(tz))
+            parsed=parser._parse_event(e,zone)
             if not parsed:continue
             start=parsed["dtstart"].isoformat();end=parsed["dtend"].isoformat() if parsed.get("dtend") else None
         venue=e.get("venue") or {}; venue=venue if isinstance(venue,dict) else {}
         if strict_public and re.search(r"\b(zoom|online|virtual)\b", plain(venue.get("venue")), re.I):continue
         street=address({"street":venue.get("address"),"city":venue.get("city"),"state":venue.get("state") or venue.get("stateprovince") or venue.get("province"),"zip":venue.get("zip")})
         r=record(e.get("title"),start,end,venue.get("venue"),street,venue.get("city"),e.get("url"),e.get("id"),
-                 ", ".join(x.get("name","") for x in e.get("categories",[]) if isinstance(x,dict)),venue.get("geo_lat"),venue.get("geo_lng"),tz)
+                 ", ".join(x.get("name","") for x in e.get("categories",[]) if isinstance(x,dict)),venue.get("geo_lat"),venue.get("geo_lng"),tz, publisher_geo=strict_public)
         if r:
             if strict_public and tz:
-                ZoneInfo(tz)  # Validate publisher timezone before preserving it.
-                r["timezone"] = tz
+                r["timezone"] = tz_name
             out.append(r)
     return out
 

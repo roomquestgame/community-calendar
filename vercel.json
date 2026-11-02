@@ -32,9 +32,17 @@
     "api/index.py": {
       "maxDuration": 60,
       "excludeFiles": "{roomquest/catalogs/**,cities/**,docs/**,reports/**,supabase/**,xmlui/**,tests/**,website/**,node_modules/**,**/*.webm,**/*.png,**/*.jpg,**/*.jpeg}"
+    },
+    "api/category_demand.py": {
+      "maxDuration": 60,
+      "excludeFiles": "{roomquest/catalogs/**,cities/**,docs/**,reports/**,supabase/**,xmlui/**,tests/**,website/**,node_modules/**,**/*.webm,**/*.png,**/*.jpg,**/*.jpeg}"
     }
   },
   "routes": [
+    {
+      "src": "/api/category-demand",
+      "dest": "/api/category_demand.py"
+    },
     {
       "src": "/api/provider-pilot/orangeburg",
       "dest": "/api/index.py"
@@ -85,10 +93,6 @@
     }
   ],
   "crons": [
-    {
-      "path": "/api/demand-preview",
-      "schedule": "*/2 * * * *"
-    },
     {
       "path": "/api/geocode",
       "schedule": "* * * * *"

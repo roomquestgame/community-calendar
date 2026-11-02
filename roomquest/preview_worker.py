@@ -652,7 +652,7 @@ def supabase_rpc(path: str, payload: dict, *, timeout: float = 4):
     security-definer RPCs. The token must never enter a public client or log.
     """
     import urllib.request
-    allowed = {"community_collector_claim_previews", "community_collector_claim_demand_preview", "community_collector_claim_chambermaster", "community_collector_record_preview",
+    allowed = {"community_collector_claim_category", "community_collector_publish_category", "community_collector_finish_category", "community_collector_claim_previews", "community_collector_claim_demand_preview", "community_collector_claim_chambermaster", "community_collector_record_preview",
                "community_collector_record_staged_events", "community_collector_geocoder", "community_collector_geocoder_claim",
                "community_collector_venues", "community_collector_media"}
     if path not in allowed:
@@ -679,8 +679,7 @@ def _process_claimed_source(source: dict, *, deadline_at=None) -> dict:
     """Process a single claimed feed with the existing private staging contract."""
     try:
         deadline = min(monotonic() + 43, deadline_at or float("inf"))
-        output = (preview_source(source, deadline_at=deadline - 4)
-                  if (source.get("source_key", "").startswith(("municipal_mapsee_", "municipal_chambermaster_")) or source.get("platform_adapter") in ("library", "ical") or (source.get("platform_adapter") == "wordpress" and source.get("kind") in ("rss", "json"))) else preview_source(source))
+        output = preview_source(source, deadline_at=deadline - 4)
         events = output.pop("p_events", [])
         staged = 0
         # Existing token/RPC accepts at most 100 facts. Large Mapsee sources use
