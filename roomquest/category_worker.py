@@ -22,7 +22,7 @@ def collect_category(category, ticket):
             result.update(_process_claimed_source(source, deadline_at=started + 39))
             if result['failed']:
                 return result
-        # A source-bound 60-row publication call, with a shared database cap.
+        # A source-bound ten-row publication call, with a shared database cap.
         # Remaining rows retain their checkpoint and dispatch a continuation.
         published = supabase_rpc('community_collector_publish_category', args, timeout=12)
         result['publication'] = published
