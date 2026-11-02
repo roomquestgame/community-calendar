@@ -68,4 +68,3 @@ def parse(payload, source, *, legacy=False):
         if not e.get("venue_address") and e.get("venue_name"):e["venue_address"]=e["venue_name"]
     if len(result)>500:raise ValueError("source_record_limit")
     return result
-
