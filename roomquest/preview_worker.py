@@ -467,6 +467,27 @@ SUPPORTED = {"ical", "jsonld", "growthzone", "wordpress", "squarespace"}
 
 
 def preview_source(source: dict, *, deadline_at=None) -> dict:
+    if source.get("kind", "ical") == "ical" and source.get("platform_adapter") == "ical":
+        from roomquest.ics_adapter import parse
+        mapsee = source.get("source_key", "").startswith("municipal_mapsee_")
+        if mapsee:
+            from roomquest.mapsee_adapter import profiles
+            profile = profiles().get(source["source_key"])
+            if not profile or profile["type"] != "ics" or profile["url"] != source.get("feed_url"):
+                raise PreviewError("unregistered_mapsee_source")
+        deadline = min(monotonic() + 20, deadline_at - 8 if deadline_at is not None else float("inf"))
+        try:
+            payload = fetch_publisher(source["feed_url"], "text/calendar", respect_robots=mapsee, deadline_at=deadline)
+            records = parse(payload, {"url": source["feed_url"]}, legacy=not mapsee)
+        except (ValueError, TypeError, KeyError, OverflowError) as exc:
+            reason = str(exc)
+            raise PreviewError(reason if re.fullmatch(r"[a-z_]{3,100}", reason) else "invalid_calendar_payload") from exc
+        samples = records[:MAX_PREVIEWS]
+        while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
+            samples.pop()
+        return {"p_source_key": source["source_key"], "p_samples": samples,
+                "p_future_count": len(records), "p_venue_count": sum(r["lat"] is not None for r in records),
+                "p_error": None, "p_events": records}
     from roomquest.community_formats import SOURCES as format_sources
     if (source.get("source_key") in format_sources or source.get("platform_adapter") == "library" or
             (source.get("platform_adapter") == "wordpress" and source.get("kind") == "rss")):
@@ -593,7 +614,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
     payload = fetch_publisher(url, accept, respect_robots=True, deadline_at=deadline_at) if chambermaster or adapter == "squarespace" else fetch_publisher(url, accept)
     try:
         if adapter == "ical":
-            events = parse_ics_preview(payload)
+            from roomquest.ics_adapter import parse
+            events = parse(payload, {"url": url}, legacy=True)
         elif adapter == "squarespace":
             from roomquest.squarespace import parse
             events = parse(payload, source)
@@ -658,7 +680,7 @@ def _process_claimed_source(source: dict, *, deadline_at=None) -> dict:
     try:
         deadline = min(monotonic() + 43, deadline_at or float("inf"))
         output = (preview_source(source, deadline_at=deadline - 4)
-                  if (source.get("source_key", "").startswith(("municipal_mapsee_", "municipal_chambermaster_")) or source.get("platform_adapter") == "library" or (source.get("platform_adapter") == "wordpress" and source.get("kind") == "rss")) else preview_source(source))
+                  if (source.get("source_key", "").startswith(("municipal_mapsee_", "municipal_chambermaster_")) or source.get("platform_adapter") in ("library", "ical") or (source.get("platform_adapter") == "wordpress" and source.get("kind") == "rss")) else preview_source(source))
         events = output.pop("p_events", [])
         staged = 0
         # Existing token/RPC accepts at most 100 facts. Large Mapsee sources use
