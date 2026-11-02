@@ -1,0 +1,9 @@
+# Nebraska parks feed diagnosis — November 2, 2026
+
+The authenticated area search at 13:58:01 UTC consumed the reviewed retry and dispatched the WordPress category. Madison completed at 13:58:09 and published two events. Nebraska failed at 13:58:11 with invalid_calendar_payload and returned to its review hold. No manual queue, source-release, event or address writes were used for this diagnosis.
+
+An ephemeral, nonpersistent Vercel Sandbox in yul1 requested the registered Nebraska Tribe JSON endpoint with the collector's User-Agent and Accept headers. It returned HTTP 403, Content-Type text/html, and a Just a moment challenge page instead of JSON. The sandbox had no database credentials, allowed network access only to calendar.outdoornebraska.gov, and was stopped afterward. This reproduces publisher access denial from Vercel; the original production exception was not retained, so the historical response cannot be proven independently.
+
+Confirmed collector defect: PreviewError subclasses ValueError. Family exception handlers caught safe publisher_http_403 (also 429/503) and replaced it with invalid_calendar_payload because their generic parser-message allowlist rejects digits. Preserve already-classified PreviewError before generic parser normalization across the six family handlers. Unknown parser messages remain sanitized; no challenge body, secret, arbitrary URL or traceback is stored publicly.
+
+Validation: 56 Python tests and 25 subtests pass, including HTTP errors through four family paths, failure recording with zero staging, and sanitization of raw parser messages. No source holds, demand windows, quotas, timers or publication rules change. Nebraska stays paused and its prior retry stays consumed. Do not retry automatically or try other identities/regions/proxies to bypass the challenge. Restoring the feed needs publisher-approved machine access or an officially supported alternative feed, followed by a reviewed workflow release.
