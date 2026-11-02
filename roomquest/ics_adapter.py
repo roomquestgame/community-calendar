@@ -58,12 +58,30 @@ def parse(payload, source, *, legacy=False):
     if not result and unsupported:raise ValueError(unsupported[0])
     # A feed URL is an actual publisher link when its VEVENT omits URL. Never
     # fabricate a detail URL, venue, publisher host, description or image.
-    categories={str(e.get("UID", "")): ", ".join(c.to_ical().decode("utf-8",errors="replace") for c in (e.get("CATEGORIES") if isinstance(e.get("CATEGORIES"),list) else [e.get("CATEGORIES")]) if c is not None) for e in events}
+    # Retain the actual publisher labels separately from the legacy single text
+    # category. VEVENT CATEGORIES can be a multi-valued vCategory or repeated.
+    # Bound the labels before they enter our JSON staging contract.
+    categories = {}
+    for event in events:
+        labels = []
+        raw = event.get("CATEGORIES")
+        for value in (raw if isinstance(raw, list) else [raw]):
+            if value is None:
+                continue
+            for label in getattr(value, "cats", []):
+                cleaned = str(label).strip()
+                if cleaned and cleaned not in labels:
+                    labels.append(cleaned[:100])
+                if len(labels) >= 20:
+                    break
+        categories[str(event.get("UID", ""))] = labels
+
     for e in result:
         if legacy:
             continue
         e.pop("image_url",None)
-        e["category"]=categories.get(e["id"].split("__",1)[0],"")
+        e["publisher_categories"]=categories.get(e["id"].split("__",1)[0], [])
+        e["category"]=", ".join(e["publisher_categories"])[:80]
         if not e.get("event_url"):e["event_url"]=source["url"]
         if not e.get("venue_address") and e.get("venue_name"):e["venue_address"]=e["venue_name"]
     if len(result)>500:raise ValueError("source_record_limit")
