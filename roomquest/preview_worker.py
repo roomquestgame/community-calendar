@@ -479,6 +479,9 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         try:
             payload = fetch_publisher(source["feed_url"], "text/calendar", respect_robots=mapsee, deadline_at=deadline)
             records = parse(payload, {"url": source["feed_url"]}, legacy=not mapsee)
+        except PreviewError:
+            # Transport errors are already safe, bounded codes (including HTTP digits).
+            raise
         except (ValueError, TypeError, KeyError, OverflowError) as exc:
             reason = str(exc)
             raise PreviewError(reason if re.fullmatch(r"[a-z_]{3,100}", reason) else "invalid_calendar_payload") from exc
@@ -496,6 +499,9 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         try:
             records = collect(source, lambda url, accept: fetch_publisher(
                 url, accept, respect_robots=True, deadline_at=deadline))
+        except PreviewError:
+            # Transport errors are already safe, bounded codes (including HTTP digits).
+            raise
         except (ValueError, TypeError, KeyError, OverflowError) as exc:
             reason = str(exc)
             raise PreviewError(reason if re.fullmatch(r"[a-z_]{3,100}", reason) else "invalid_calendar_payload") from exc
@@ -518,6 +524,9 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         try:
             records = collect_wordpress(source, lambda url, accept: fetch_publisher(
                 url, accept, respect_robots=True, deadline_at=deadline), deadline_at=deadline)
+        except PreviewError:
+            # Transport errors are already safe, bounded codes (including HTTP digits).
+            raise
         except (ValueError, TypeError, KeyError, OverflowError) as exc:
             reason = str(exc)
             raise PreviewError(reason if re.fullmatch(r"[a-z_]{3,100}", reason) else "invalid_calendar_payload") from exc
@@ -541,6 +550,9 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         try:
             records = collect_jsonld(source, lambda url, accept: fetch_publisher(
                 url, accept, respect_robots=True, deadline_at=deadline))
+        except PreviewError:
+            # Transport errors are already safe, bounded codes (including HTTP digits).
+            raise
         except (ValueError, TypeError, KeyError, OverflowError) as exc:
             reason = str(exc)
             raise PreviewError(reason if re.fullmatch(r"[a-z_]{3,100}", reason) else "invalid_calendar_payload") from exc
@@ -564,6 +576,9 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         try:
             records = collect_squarespace(source, lambda url, accept: fetch_publisher(
                 url, accept, respect_robots=True, deadline_at=deadline))
+        except PreviewError:
+            # Transport errors are already safe, bounded codes (including HTTP digits).
+            raise
         except (ValueError, TypeError, KeyError, OverflowError) as exc:
             reason = str(exc)
             raise PreviewError(reason if re.fullmatch(r"[a-z_]{3,100}", reason) else "invalid_calendar_payload") from exc
@@ -585,6 +600,9 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                 raise PreviewError("collection_deadline")
             records = collect(source, profile, lambda url, accept: fetch_publisher(
                 url, accept, respect_robots=True, deadline_at=deadline))
+        except PreviewError:
+            # Transport errors are already safe, bounded codes (including HTTP digits).
+            raise
         except (ValueError, TypeError, KeyError, OverflowError) as exc:
             reason = str(exc)
             if re.fullmatch(r"[a-z_]{3,100}", reason):
