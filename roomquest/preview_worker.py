@@ -27,6 +27,7 @@ from zoneinfo import ZoneInfo
 
 MAX_BODY = 3_000_000
 MAX_PREVIEWS = 10
+STAGING_BATCH_SIZE = 20
 LOOKAHEAD_DAYS = 60
 ROOMQUEST_DB = "https://drpqjuqghpjivtwznfdj.supabase.co"
 _robots_delays = {}
@@ -706,7 +707,7 @@ def supabase_rpc(path: str, payload: dict, *, timeout: float = 4):
         with urllib.request.urlopen(request, timeout=timeout) as response:
             raw = response.read(150_000)
             return json.loads(raw.decode()) if raw else None
-    except (HTTPError, URLError, ValueError) as exc:
+    except (HTTPError, URLError, ValueError, OSError) as exc:
         raise PreviewError("database_unavailable") from exc
 
 
@@ -717,12 +718,12 @@ def _process_claimed_source(source: dict, *, deadline_at=None) -> dict:
         output = preview_source(source, deadline_at=deadline - 4)
         events = output.pop("p_events", [])
         staged = 0
-        # Existing token/RPC accepts at most 100 facts. Large Mapsee sources use
-        # several bounded calls; only a wholly completed source becomes healthy.
+        # Keep each transaction below the API statement budget. Completion is
+        # recorded only after every bounded batch has been accepted.
         batches, batch, size = [], [], 2
         for event in events:
             event_size = len(json.dumps(event, ensure_ascii=False)) + 2
-            if batch and (len(batch) >= 100 or size + event_size > 150_000):
+            if batch and (len(batch) >= STAGING_BATCH_SIZE or size + event_size > 150_000):
                 batches.append(batch)
                 batch, size = [], 2
             batch.append(event)

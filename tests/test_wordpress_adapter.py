@@ -57,7 +57,7 @@ class WordPressTests(unittest.TestCase):
   with patch('roomquest.mapsee_adapter.profiles',return_value={source['source_key']:{'url':source['feed_url'],'type':'tribe'}}),patch('roomquest.preview_worker.fetch_publisher',side_effect=fetch),patch('roomquest.preview_worker.supabase_rpc',side_effect=rpc) as db:
    result=_process_claimed_source(source)
    self.assertEqual(result,{'complete':1,'failed':0,'staged':200})
-   self.assertEqual([c.args[0] for c in db.call_args_list],['community_collector_record_staged_events']*2+['community_collector_record_preview'])
+   self.assertEqual([c.args[0] for c in db.call_args_list],['community_collector_record_staged_events']*10+['community_collector_record_preview'])
    self.assertEqual(db.call_args_list[-1].args[1]['p_future_count'],200)
  def test_failed_checkpoint_never_reports_complete(self):
   from roomquest.preview_worker import _process_claimed_source
