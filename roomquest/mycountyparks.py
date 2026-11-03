@@ -289,19 +289,33 @@ def _location(main):
         raise ValueError("mycountyparks_event_venue_requires_address")
     venue = clean(paragraph.find("strong").get_text(" ", strip=True))
     lines = [clean(line) for line in paragraph.get_text("\n", strip=True).splitlines() if clean(line)]
-    city_matches = [(index, re.fullmatch(r"(.+?)[,\s]+(?:IA|Iowa)(?:\s+IA)?\s+(\d{5}(?:-\d{4})?)", line, re.I))
-                    for index, line in enumerate(lines)]
+    state_postal = r"(?:IA|Iowa)(?:\s+IA)?\s+(\d{5}(?:-\d{4})?)"
+    # A complete numeric street line may also end in city/state/ZIP. Only the
+    # separately published city line supplies the city used for normalization.
+    city_matches = [(index, re.fullmatch(r"([A-Za-z][A-Za-z .'-]*?)[,\s]+" + state_postal, line, re.I))
+                    for index, line in enumerate(lines) if index > 0]
     city_matches = [(index, match) for index, match in city_matches if match]
     if not venue or not city_matches:
+        raise ValueError("mycountyparks_event_venue_requires_address")
+    if len({(clean(match.group(1)).casefold(), match.group(2)) for _, match in city_matches}) != 1:
         raise ValueError("mycountyparks_event_venue_requires_address")
     index, match = city_matches[0]
     city, postal = clean(match.group(1)).strip(" ,"), match.group(2)
     street_parts = lines[1:index]
     if not street_parts or not re.match(r"^\d{1,6}[A-Za-z]?\s+[A-Za-z0-9]", street_parts[0]):
         raise ValueError("mycountyparks_event_venue_requires_address")
+    for part_index, part in enumerate(street_parts):
+        suffix = re.search(r"\b" + state_postal + r"$", part, re.I)
+        if suffix:
+            # Story repeats its full city suffix; Linn can publish an explicit
+            # empty city field (", , IA ZIP"). Neither may contradict the ZIP
+            # or replace a different named city from this Location paragraph.
+            repeated = re.fullmatch(r"(.+?)(?:[,\s]+" + re.escape(city) + r",?\s+|,\s*,\s*)"
+                                    + state_postal, part, re.I)
+            if suffix.group(1) != postal or repeated is None:
+                raise ValueError("mycountyparks_event_venue_requires_address")
+            street_parts[part_index] = repeated.group(1).rstrip(" ,")
     street = ", ".join(street_parts)
-    # A few pages repeat the city/postcode on both street and city lines.
-    street = re.sub(r"\s+" + re.escape(city) + r",?\s+IA\s+" + re.escape(postal) + r"$", "", street, flags=re.I)
     return venue, f"{street}, {city}, IA {postal}", city
 
 
