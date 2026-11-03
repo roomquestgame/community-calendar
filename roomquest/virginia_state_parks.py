@@ -46,7 +46,7 @@ def normal_name(value):
 
 def label(lines, title):
     for index, value in enumerate(lines):
-        match = re.fullmatch(re.escape(title) + r"\s*:\s*(.*)", value, re.I)
+        match = re.fullmatch(re.escape(title) + r"\s*:?\s*(.*)", value, re.I)
         if match:
             if match.group(1).strip():
                 return clean(match.group(1))
