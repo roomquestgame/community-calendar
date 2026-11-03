@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       mycountyparks_live:
-        description: 'Read-only live scrape of the four MyCountyParks pilot counties (no database writes)'
+        description: 'Read-only live audit of all 99 MyCountyParks county calendars (no database writes)'
         type: boolean
         required: false
         default: false
@@ -15,7 +15,7 @@ jobs:
   provider-tests:
     if: github.event_name == 'workflow_dispatch' || (github.event.label.name == 'ci:validate' && !github.event.pull_request.draft)
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
@@ -25,10 +25,16 @@ jobs:
         with:
           python-version: '3.12'
       - run: pip install -r requirements-dev.txt
-      - run: python -m pytest tests/test_wordpress_adapter.py tests/test_mapsee_pipeline.py tests/test_roomquest_preview.py tests/test_squarespace_pilot.py tests/test_squarespace_family.py tests/test_jsonld_family.py tests/test_community_formats.py tests/test_ics_family.py tests/test_transient_staging.py tests/test_category_worker.py tests/test_category_entrypoint.py tests/test_preview_transport_errors.py tests/test_virginia_state_parks_html.py tests/test_virginia_offsite_addresses.py tests/test_virginia_relative_event_links.py tests/test_mycountyparks.py tests/test_mycountyparks_integration.py tests/test_publisher_robots_cache.py -q
+      - run: python -m pytest tests/test_wordpress_adapter.py tests/test_mapsee_pipeline.py tests/test_roomquest_preview.py tests/test_squarespace_pilot.py tests/test_squarespace_family.py tests/test_jsonld_family.py tests/test_community_formats.py tests/test_ics_family.py tests/test_transient_staging.py tests/test_category_worker.py tests/test_category_entrypoint.py tests/test_preview_transport_errors.py tests/test_virginia_state_parks_html.py tests/test_virginia_offsite_addresses.py tests/test_virginia_relative_event_links.py tests/test_mycountyparks.py tests/test_mycountyparks_integration.py tests/test_mycountyparks_cli.py tests/test_publisher_robots_cache.py -q
       - name: Read-only MyCountyParks live verification
+        id: mycountyparks_audit
         if: github.event_name == 'workflow_dispatch' && inputs.mycountyparks_live
-        run: |
-          for county in iowa linn story johnson; do
-            python scripts/scrape_mycountyparks.py --county "$county" --timeout 30 --output "$RUNNER_TEMP/mycountyparks-$county.json"
-          done
+        run: python scripts/scrape_mycountyparks.py --all-counties --timeout 30 --overall-timeout 900 --output "$RUNNER_TEMP/mycountyparks-audit.json"
+      - name: Preserve public MyCountyParks audit results
+        if: always() && steps.mycountyparks_audit.outcome != 'skipped'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: mycountyparks-audit-${{ github.sha }}
+          path: ${{ runner.temp }}/mycountyparks-audit.json
+          if-no-files-found: error
+          retention-days: 14

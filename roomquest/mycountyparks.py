@@ -28,7 +28,6 @@ MAX_EVENT_PAGES = 25
 LOOKAHEAD_DAYS = 60
 MAX_DESCRIPTION = 2000
 MAX_COST_TEXT = 240
-PILOT_COUNTIES = ("story", "linn", "johnson", "iowa")
 
 # Names and URL slugs observed in the publisher's own county directory.
 _COUNTY_NAMES = (
@@ -76,10 +75,8 @@ def registered_calendar_url(county):
 
 
 def source_for_county(county_slug):
-    """CLI convenience for the four reviewed pilot sources; no enrollment here."""
+    """One known publisher county; backend enrollment and demand are separate."""
     key = _county_key(county_slug)
-    if key not in PILOT_COUNTIES:
-        raise ValueError("mycountyparks_county_not_in_pilot")
     return {"source_key": "mycountyparks_ia_" + key, "kind": "html",
             "platform_adapter": "html", "feed_url": registered_calendar_url(key)}
 
@@ -91,8 +88,6 @@ def source_county(source):
     key = match.group(1)
     if key not in COUNTIES:
         raise ValueError("mycountyparks_county_unregistered")
-    if key not in PILOT_COUNTIES:
-        raise ValueError("mycountyparks_county_not_in_pilot")
     if source.get("feed_url") != registered_calendar_url(key):
         raise ValueError("unregistered_html_calendar")
     return key
@@ -158,7 +153,11 @@ def parse_schedule(value):
         if str(exc) in {"timezone_ambiguous", "timezone_nonexistent"}:
             raise
         raise ValueError("mycountyparks_event_schedule_invalid") from exc
-    if end is not None and end <= start:
+    if end == start:
+        # Some publisher listings repeat the start as the end (Floyd 29962).
+        # That provides no usable duration; retain the start and unknown end.
+        end = None
+    if end is not None and end < start:
         # A time-only range gives no evidence for an overnight or multi-day end.
         raise ValueError("mycountyparks_event_end_invalid")
     return start, end

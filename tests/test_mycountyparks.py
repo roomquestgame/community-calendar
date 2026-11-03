@@ -17,8 +17,9 @@ NOW = datetime(2026, 11, 3, 9, tzinfo=mcp.TZ)
 
 
 def entry(event_id="1001", *, title="Nature Walk", county="Linn", when="NOV 14 2026 10:00 AM - 2:00 PM"):
+    slug = county.replace("'", "").replace(" ", "-")
     return {"id": event_id, "title": title, "county": county, "date": when,
-            "url": mcp.ROOT + f"/County/{county.replace(' ', '-')}/Park/Parent-Park/Events/{event_id}/Nature-Walk"}
+            "url": mcp.ROOT + f"/County/{slug}/Park/Parent-Park/Events/{event_id}/Nature-Walk"}
 
 
 def listing(*entries, total=None, county=None):
@@ -82,25 +83,42 @@ def parsed(item=None):
     return mcp.parse_listing(listing(item), item["county"])[0][0]
 
 
-def test_pilot_sources_and_county_directory_have_exact_registered_urls():
+def test_all_county_sources_have_exact_registered_identities():
     assert len(mcp.COUNTIES) == 99
-    for county in mcp.PILOT_COUNTIES:
+    sources = []
+    for county in mcp.COUNTIES:
         source = mcp.source_for_county(county)
         assert mcp.source_county(source) == county
-        assert source["feed_url"] == mcp.ROOT + f"/County/{county.title()}/Events"
-    assert mcp.registered_calendar_url("obrien") == mcp.ROOT + "/County/OBrien/Events"
-    assert mcp.registered_calendar_url("black_hawk") == mcp.ROOT + "/County/Black-Hawk/Events"
-    with pytest.raises(ValueError, match="not_in_pilot"):
-        mcp.source_for_county("madison")
+        assert source["source_key"] == "mycountyparks_ia_" + county
+        assert source["kind"] == source["platform_adapter"] == "html"
+        sources.append(source)
+    assert len({source["feed_url"] for source in sources}) == 99
+    with pytest.raises(ValueError, match="county_unregistered"):
+        mcp.source_for_county("not_an_iowa_county")
+
+
+@pytest.mark.parametrize("county,slug", [
+    ("iowa", "Iowa"), ("madison", "Madison"), ("floyd", "Floyd"),
+    ("obrien", "OBrien"), ("black_hawk", "Black-Hawk"),
+    ("buena_vista", "Buena-Vista"), ("cerro_gordo", "Cerro-Gordo"),
+    ("des_moines", "Des-Moines"), ("palo_alto", "Palo-Alto"),
+    ("van_buren", "Van-Buren"),
+])
+def test_verified_calendar_route_spellings(county, slug):
+    assert mcp.source_for_county(county)["feed_url"] == mcp.ROOT + f"/County/{slug}/Events"
 
 
 @pytest.mark.parametrize("updates", [
     {"source_key": "arbitrary_linn"}, {"source_key": "mycountyparks_ia_unknown"},
-    {"source_key": "mycountyparks_ia_madison", "feed_url": mcp.ROOT + "/County/Madison/Events"},
+    {"source_key": "mycountyparks_ia_o_brien", "feed_url": mcp.ROOT + "/County/OBrien/Events"},
+    {"source_key": "mycountyparks_ia_blackhawk", "feed_url": mcp.ROOT + "/County/Black-Hawk/Events"},
     {"kind": "json"}, {"platform_adapter": "wordpress"},
     {"feed_url": "https://evil.example/County/Linn/Events"},
     {"feed_url": mcp.ROOT + "/County/Story/Events"},
     {"feed_url": mcp.ROOT + "/County/Linn/Events?anything=1"},
+    {"feed_url": mcp.ROOT + "/County/Linn/Events/"},
+    {"feed_url": mcp.ROOT + "/County/Linn/Events#calendar"},
+    {"feed_url": "http://www.mycountyparks.com/County/Linn/Events"},
 ])
 def test_source_scope_rejected_before_fetch(updates):
     fetch = Mock(side_effect=AssertionError("must not fetch"))
@@ -135,13 +153,54 @@ def test_schedule_uses_listing_wall_time_and_chicago_dst():
     ("FEB 30 2027 10:00 AM", "schedule_invalid"),
     ("NOV 14 2026 25:00 PM", "schedule_invalid"),
     ("NOV 14 2026", "schedule_invalid"),
-    ("NOV 14 2026 10:00 AM - 10:00 AM", "end_invalid"),
     ("NOV 14 2026 11:00 PM - 1:00 AM", "end_invalid"),
     ("NOV 14 2026 10:00 AM - NOV 15 2026 2:00 PM", "schedule_invalid"),
 ])
 def test_ambiguous_missing_and_malformed_schedules_are_not_guessed(when, reason):
     with pytest.raises(ValueError, match=reason):
         mcp.parse_schedule(when)
+
+
+def test_floyd_repeated_end_time_retains_published_start_and_unknown_end():
+    # Observed listing and detail header on 2026-11-03; the detail has no end.
+    item = entry("29962", county="Floyd", title="Evergreen Wreath & Porch Pot Workshop",
+                 when="NOV 29 2026 2:00 PM\r\n - 2:00 PM")
+    item["url"] = (mcp.ROOT + "/County/Floyd/Park/Tosanak-Recreation-Area/Events/29962/"
+                   "Evergreen-Wreath-Porch-Pot-Workshop")
+    html = detail(item, when="NOV 29 2026 2:00 PM",
+                  venue="Learning Center - Tosanak Recreation Area",
+                  street="2543 Glass Road", city="Marble Rock IA 50468")
+    event = parsed(item)
+    assert event.start.isoformat() == "2026-11-29T14:00:00-06:00" and event.end is None
+    result = mcp.parse_event(html, event, now=datetime(2026, 11, 29, 16, tzinfo=mcp.TZ))
+    assert result["starts_at"] == "2026-11-29T20:00:00+00:00"
+    assert result["ends_at"] is None
+    assert result["venue_address"] == "2543 Glass Road, Marble Rock, IA 50468"
+    assert result["lat"] is None and result["lng"] is None
+    assert mcp.parse_event(html, event, now=datetime(2026, 11, 29, 17, tzinfo=mcp.TZ)) is None
+
+
+def test_only_zero_duration_end_is_treated_as_missing():
+    start, end = mcp.parse_schedule("NOV 29 2026 2:00 PM - 3:00 PM")
+    assert end - start == timedelta(hours=1)
+    with pytest.raises(ValueError, match="end_invalid"):
+        mcp.parse_schedule("NOV 29 2026 2:00 PM - 1:00 PM")
+
+
+@pytest.mark.parametrize("county,key", [
+    ("Mahaska", "mahaska"), ("Buena Vista", "buena_vista"),
+    ("O'Brien", "obrien"), ("Des Moines", "des_moines"),
+])
+def test_nonpilot_counties_use_the_same_address_and_time_contract(county, key):
+    item = entry(county=county)
+    fetch = Mock(side_effect=[listing(item), detail(item)])
+    result = mcp.collect(mcp.source_for_county(key), fetch, now=NOW)
+    assert len(result) == 1 and result[0]["id"] == f"mycountyparks:{key}:1001"
+    assert result[0]["starts_at"] == "2026-11-14T16:00:00+00:00"
+    assert result[0]["venue_address"] == "940 14th Avenue SE, Cedar Rapids, IA 52403"
+    assert result[0]["timezone"] == "America/Chicago"
+    assert result[0]["lat"] is None and result[0]["lng"] is None
+    assert fetch.call_count == 2
 
 
 @pytest.mark.parametrize("url", [
@@ -372,6 +431,14 @@ def test_explicit_zero_count_is_empty_and_does_not_fetch_another_page():
         mcp.parse_listing('<div id="partialViewContainer"><input id="hdnTotalCount" value="0"></div>', "linn")
     with pytest.raises(ValueError, match="county_mismatch"):
         mcp.parse_listing(listing(county="Story"), "linn")
+
+
+def test_all_counties_can_report_a_verified_empty_calendar_without_detail_fetches():
+    for county, name in mcp.COUNTIES.items():
+        fetch = Mock(return_value=listing(county=name))
+        assert mcp.collect(mcp.source_for_county(county), fetch, now=NOW) == []
+        assert fetch.call_count == 1
+        assert parse_qs(urlsplit(fetch.call_args.args[0]).query)["EventSearchModel.CountyName"] == [name]
 
 
 def test_collection_paginates_without_losing_sessions_or_fetching_expired_details():
