@@ -30,8 +30,66 @@ def test_registered_pilot_calendar_uses_official_guid_and_60_day_window():
     assert query == {"park": [official_id], "start": ["11/03/2026"], "end": ["01/02/2027"]}
     assert "srchloc" not in query
     other = va.catalog()["do"]
+    assert va.registered_calendar_url(other) == va.CALENDAR + "?park=all"
     with pytest.raises(ValueError, match="unverified_park_calendar_identifier"):
-        va.registered_calendar_url(other)
+        va.listing_url(other)
+
+
+def test_all_46_parks_have_a_registered_on_demand_bootstrap_url():
+    parks = va.catalog()
+    assert len(parks) == 46
+    assert sum("dcr_calendar_id" in park for park in parks.values()) == 1
+    assert all(va.registered_calendar_url(park).startswith(va.CALENDAR + "?park=")
+               for park in parks.values())
+
+
+def test_unverified_park_guid_uses_only_official_selector_and_per_park_listing():
+    park = va.catalog()["do"]
+    guid = "2013-10-18-21-10-41-00002"
+    listing = ('<select name="park"><option value="all">All parks</option>'
+        f'<option value="{guid}">Douthat State Park</option>'
+        '<option value="2013-10-18-21-10-41-00019">Occoneechee State Park</option></select>')
+    event_id = "2026-10-22-12-01-31-000002-abc"
+    filtered = (f'<h3>Park: Douthat State Park</h3><article>'
+        f'<a href="/state-parks/event?id={event_id}">View Details</a></article>')
+    details = PAGE.replace("Occoneechee State Park", "Douthat State Park")
+    calls = []
+    def fetch(url, accept):
+        calls.append(url)
+        if url == va.CALENDAR + "?park=all":
+            return listing
+        if "/events?" in url:
+            return filtered
+        return details
+    source = {"source_key": "virginia_state_parks_do", "kind": "html",
+              "platform_adapter": "html", "feed_url": va.CALENDAR + "?park=all"}
+    with patch.object(va, "record", return_value={"title": "Douthat hike"}):
+        result = va.collect(source, fetch)
+    assert len(result) == 1
+    assert len(calls) == 3
+    assert calls[0] == va.CALENDAR + "?park=all"
+    assert "park=" + guid in calls[1]
+    assert calls[2].endswith("id=" + event_id)
+
+
+def test_missing_ambiguous_or_wrong_park_picker_fails_closed():
+    park = va.catalog()["do"]
+    guid = "2013-10-18-21-10-41-00002"
+    with pytest.raises(ValueError, match="missing_or_ambiguous"):
+        va.discover_calendar_id("<select name='park'><option value='all'>All</option></select>", park)
+    with pytest.raises(ValueError, match="missing_or_ambiguous"):
+        va.discover_calendar_id(
+            f'<select name="park"><option value="{guid}">Pocahontas State Park</option></select>',
+            park)
+    with pytest.raises(ValueError, match="missing_or_ambiguous"):
+        va.discover_calendar_id(
+            f'<select name="park"><option value="{guid}">Douthat State Park</option></select>'
+            f'<select id="park"><option value="2013-10-18-21-10-41-00003">Douthat State Park</option></select>',
+            park)
+    with pytest.raises(ValueError, match="missing_or_ambiguous"):
+        va.discover_calendar_id(
+            '<select name="park"><option value="javascript:alert(1)">Douthat State Park</option></select>',
+            park)
 
 
 def test_park_filtered_heading_allows_cards_without_repeated_park_name():
