@@ -6,6 +6,8 @@ its opt-in ongoing-event behavior has separate integration coverage.
 from dataclasses import replace
 from datetime import date, datetime, timedelta, timezone
 from html import escape
+import json
+from pathlib import Path
 from unittest.mock import Mock
 from urllib.parse import parse_qs, urlsplit
 
@@ -14,6 +16,9 @@ import pytest
 from roomquest import mycountyparks as mcp
 
 NOW = datetime(2026, 11, 3, 9, tzinfo=mcp.TZ)
+LIVE_CASES = json.loads((Path(__file__).parent / "fixtures/mycountyparks_live_compatibility.json").read_text())["events"]
+TIME_CONFLICT_CASES = [case for case in LIVE_CASES if case["issue"] == "midnight_noon"]
+HYPHENATED_ADDRESS_CASES = [case for case in LIVE_CASES if case["issue"] == "hyphenated_street"]
 
 
 def entry(event_id="1001", *, title="Nature Walk", county="Linn", when="NOV 14 2026 10:00 AM - 2:00 PM"):
@@ -81,6 +86,11 @@ def record_spy(monkeypatch):
 def parsed(item=None):
     item = item or entry()
     return mcp.parse_listing(listing(item), item["county"])[0][0]
+
+
+def live_entry(case):
+    return {"id": case["id"], "title": case["title"], "county": case["county"],
+            "date": case["listing_date"], "url": case["url"]}
 
 
 def test_all_county_sources_have_exact_registered_identities():
@@ -187,6 +197,102 @@ def test_only_zero_duration_end_is_treated_as_missing():
         mcp.parse_schedule("NOV 29 2026 2:00 PM - 1:00 PM")
 
 
+@pytest.mark.parametrize("case", TIME_CONFLICT_CASES, ids=lambda case: case["county_key"] + case["id"])
+def test_observed_midnight_noon_conflicts_are_never_normalized(case, record_spy):
+    events, total = mcp.parse_listing(case["listing_html"], case["county_key"])
+    assert total == 1 and events[0].end is None
+    assert events[0].start.time().isoformat() == "00:00:00"
+    with pytest.raises(ValueError, match="^mycountyparks_event_midnight_noon_conflict$"):
+        mcp.parse_event(case["detail_html"], events[0], now=NOW)
+    record_spy.assert_not_called()
+
+
+@pytest.mark.parametrize("case", TIME_CONFLICT_CASES, ids=lambda case: case["county_key"] + case["id"])
+def test_observed_conflict_is_withheld_while_verified_county_record_is_kept(case, capsys, record_spy):
+    valid = entry("9991", county=case["county"])
+    fetch = Mock(side_effect=[listing(live_entry(case), valid), case["detail_html"], detail(valid)])
+    rows = mcp.collect(mcp.source_for_county(case["county_key"]), fetch, now=NOW)
+    assert len(rows) == 1 and rows[0]["id"] == f"mycountyparks:{case['county_key']}:9991"
+    assert rows[0]["starts_at"] == "2026-11-14T16:00:00+00:00"
+    assert rows[0]["ends_at"] == "2026-11-14T20:00:00+00:00"
+    assert fetch.call_count == 3 and record_spy.call_count == 1
+    assert (f"mycountyparks_time_unresolved {case['county_key']} {case['id']} "
+            "mycountyparks_event_midnight_noon_conflict") in capsys.readouterr().err
+
+
+def test_all_conflicted_source_is_not_a_healthy_empty_result(record_spy):
+    case = TIME_CONFLICT_CASES[0]
+    fetch = Mock(side_effect=[case["listing_html"], case["detail_html"]])
+    with pytest.raises(ValueError, match="^mycountyparks_event_evidence_unavailable$"):
+        mcp.collect(mcp.source_for_county(case["county_key"]), fetch, now=NOW)
+    assert fetch.call_count == 2
+    record_spy.assert_not_called()
+
+
+def test_mixed_conflicted_and_missing_address_source_is_not_healthy_empty(record_spy, capsys):
+    case = TIME_CONFLICT_CASES[0]
+    missing = entry("9992", county=case["county"])
+    fetch = Mock(side_effect=[listing(live_entry(case), missing), case["detail_html"],
+                             detail(missing, street="P.O. Box 123")])
+    with pytest.raises(ValueError, match="^mycountyparks_event_evidence_unavailable$"):
+        mcp.collect(mcp.source_for_county(case["county_key"]), fetch, now=NOW)
+    errors = capsys.readouterr().err
+    assert "mycountyparks_time_unresolved mahaska 29691" in errors
+    assert "mycountyparks_address_unresolved mahaska 9992" in errors
+    record_spy.assert_not_called()
+
+
+@pytest.mark.parametrize("updates,reason", [
+    (None, "event_structure_unverified"),
+    ({"event_id": "9999"}, "event_identity_mismatch"),
+    ({"title": "Unrelated public program"}, "event_title_mismatch"),
+    ({"when": "NOV 14 2026 11:00 AM"}, "event_schedule_mismatch"),
+    ({"summary": ""}, "event_summary_missing"),
+])
+def test_unknown_detail_errors_still_abort_after_verified_and_withheld_items(updates, reason, record_spy):
+    case = TIME_CONFLICT_CASES[0]
+    valid, broken = entry("9991", county=case["county"]), entry("9992", county=case["county"])
+    broken_html = "<html>Unrecognized structure</html>" if updates is None else detail(broken, **updates)
+    fetch = Mock(side_effect=[listing(valid, live_entry(case), broken), detail(valid),
+                             case["detail_html"], broken_html])
+    with pytest.raises(ValueError, match=reason):
+        mcp.collect(mcp.source_for_county(case["county_key"]), fetch, now=NOW)
+    assert record_spy.call_count == 1
+
+
+@pytest.mark.parametrize("reason", ["publisher_http_503", "mycountyparks_event_midnight_noon_conflict"])
+def test_transport_errors_cannot_be_classified_as_verified_record_exclusions(reason):
+    case = TIME_CONFLICT_CASES[0]
+    valid = entry("9991", county=case["county"])
+    fetch = Mock(side_effect=[listing(valid, live_entry(case)), detail(valid), ValueError(reason)])
+    with pytest.raises(ValueError, match="^" + reason + "$"):
+        mcp.collect(mcp.source_for_county(case["county_key"]), fetch, now=NOW)
+
+
+@pytest.mark.parametrize("listing_time,detail_time", [
+    ("DEC 01 2026 12:00 AM", "DEC 01 2026 1:00 PM"),
+    ("DEC 01 2026 12:00 AM - 1:00 AM", "DEC 01 2026 12:00 PM"),
+    ("DEC 01 2026 12:00 AM", "DEC 01 2026 12:00 PM - 1:00 PM"),
+    ("DEC 01 2026 12:00 PM", "DEC 01 2026 12:00 AM"),
+    ("DEC 01 2026 12:00 AM", "DEC 02 2026 12:00 PM"),
+    ("DEC 01 2026 12:01 AM", "DEC 01 2026 12:00 PM"),
+    ("DEC 01 2026 12:00 AM", "DEC 01 2026 12:01 PM"),
+])
+def test_other_schedule_mismatches_remain_fatal(listing_time, detail_time, record_spy):
+    item = entry(when=listing_time)
+    with pytest.raises(ValueError, match="^mycountyparks_event_schedule_mismatch$"):
+        mcp.parse_event(detail(item, when=detail_time), parsed(item), now=NOW)
+    record_spy.assert_not_called()
+
+
+@pytest.mark.parametrize("clock,utc_hour", [("12:00 AM", "06"), ("12:00 PM", "18")])
+def test_matching_midnight_or_noon_evidence_keeps_its_published_start(clock, utc_hour):
+    item = entry(when="NOV 14 2026 " + clock)
+    result = mcp.parse_event(detail(item, when=item["date"]), parsed(item), now=NOW)
+    assert result["starts_at"] == f"2026-11-14T{utc_hour}:00:00+00:00"
+    assert result["ends_at"] is None
+
+
 @pytest.mark.parametrize("county,key", [
     ("Mahaska", "mahaska"), ("Buena Vista", "buena_vista"),
     ("O'Brien", "obrien"), ("Des Moines", "des_moines"),
@@ -236,6 +342,58 @@ def test_detail_keeps_actual_address_and_never_parent_coordinates(record_spy):
     assert record_spy.call_args.kwargs["publisher_geo"] is False
     assert record_spy.call_args.kwargs["retain_until_end"] is True
     assert "Unrelated title" not in result["description"]
+
+
+@pytest.mark.parametrize("case", HYPHENATED_ADDRESS_CASES, ids=lambda case: case["id"])
+def test_observed_mitchell_hyphenated_address_is_preserved_without_coordinates(case, record_spy):
+    events, total = mcp.parse_listing(case["listing_html"], "mitchell")
+    result = mcp.parse_event(case["detail_html"], events[0], now=NOW)
+    assert total == 1
+    assert result["venue_name"] == "Milton R. Owen Nature Center"
+    assert result["venue_address"] == "1879-3 Highway 9, Osage, IA 50461"
+    assert result["venue_city"] == "Osage"
+    assert result["lat"] is None and result["lng"] is None
+    assert result["ends_at"] is None
+    assert result["starts_at"] == events[0].start.astimezone(timezone.utc).isoformat()
+    assert result["location_provenance"] == "publisher_event_street_pending_geocode"
+    assert record_spy.call_args.kwargs["publisher_geo"] is False
+
+
+def test_both_observed_mitchell_events_can_complete_collection():
+    fetch = Mock(side_effect=[listing(*(live_entry(case) for case in HYPHENATED_ADDRESS_CASES))]
+                            + [case["detail_html"] for case in HYPHENATED_ADDRESS_CASES])
+    rows = mcp.collect(mcp.source_for_county("mitchell"), fetch, now=NOW)
+    assert {row["id"] for row in rows} == {"mycountyparks:mitchell:29817", "mycountyparks:mitchell:29815"}
+    assert all(row["venue_address"] == "1879-3 Highway 9, Osage, IA 50461" for row in rows)
+    assert all(row["lat"] is None and row["lng"] is None for row in rows)
+    assert fetch.call_count == 3
+
+
+@pytest.mark.parametrize("street", ["1-2 Main Street", "123456-123456 Main Street", "1879A Highway 9"])
+def test_supported_numeric_house_number_bounds_and_existing_letter_suffix_are_preserved(street):
+    result = mcp.parse_event(detail(street=street, city="Osage IA 50461"), parsed(), now=NOW)
+    assert result["venue_address"] == street + ", Osage, IA 50461"
+
+
+@pytest.mark.parametrize("street", [
+    "1234567-3 Highway 9", "1879-1234567 Highway 9", "1879--3 Highway 9",
+    "1879-3-2 Highway 9", "1879 -3 Highway 9", "1879-3",
+])
+def test_malformed_or_unbounded_hyphenated_numbers_are_not_addresses(street, record_spy):
+    with pytest.raises(ValueError, match="venue_requires_address"):
+        mcp.parse_event(detail(street=street, city="Osage IA 50461"), parsed(), now=NOW)
+    record_spy.assert_not_called()
+
+
+@pytest.mark.parametrize("street,city", [
+    ("1879-3 Highway 9", "Osage IA"),
+    ("1879-3 Highway 9", "Osage MN 50461"),
+    ("1879-3 Highway 9, St. Ansgar, IA 50461", "Osage IA 50461"),
+    ("1879-3 Highway 9, Osage, IA 50462", "Osage IA 50461"),
+])
+def test_hyphenated_numbers_still_require_complete_consistent_city_state_and_zip(street, city):
+    with pytest.raises(ValueError, match="venue_requires_address"):
+        mcp.parse_event(detail(street=street, city=city), parsed(), now=NOW)
 
 
 @pytest.mark.parametrize("event_id,county,location_html,venue,address,city", [

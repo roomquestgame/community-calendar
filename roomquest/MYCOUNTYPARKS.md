@@ -98,10 +98,23 @@ nor the workflow creates a recurring poll or a statewide background timer.
   remain errors. Missing ends stay null. Only this adapter opts into retaining
   an ongoing event until its end, or three hours after its start when the end
   is missing.
+- Withhold the observed same-date conflict where the listing says midnight,
+  the detail header says noon, and neither has a usable end. Neither time is
+  selected as authoritative. The event's county, ID and title must still match;
+  every other schedule mismatch remains a source error. Diagnostics identify
+  the county, event ID and conflict reason.
 - Read the actual Location street address. Always leave coordinates null for
   the existing address cache/Geocodio path. County discovery anchors must never
-  become event pins. One missing address may be withheld; an all-unresolved
-  source is an error. Diagnostics identify withheld event IDs.
+  become event pins. Preserve published numeric hyphenated house numbers such
+  as Mitchell's `1879-3 Highway 9`, along with the full city/state/ZIP checks.
+  One missing address may be withheld; a source with no trustworthy records
+  because of missing addresses or the recognized time conflict is an error.
+  Diagnostics identify withheld event IDs.
+- A successful complete snapshot contains the trustworthy records after these
+  explicit data-quality exclusions. Complete-snapshot reconciliation may
+  withdraw a previously published record that now has this time conflict or
+  lacks usable address evidence. Fetch failures, incomplete pages and unknown
+  structure/identity errors still fail the entire source snapshot.
 - Preserve source IDs and distinct session times. Combine only explicitly
   labeled carving-tool registration alternatives at the exact same venue and
   time. A group keeps its identity if one option disappears. Preserve prices,
@@ -130,6 +143,14 @@ nor the workflow creates a recurring poll or a statewide background timer.
   2 p.m. The normalized event retains that start and a null end. Its published
   Location is the Learning Center at Tosanak Recreation Area, 2543 Glass Road,
   Marble Rock; no park coordinates supply the event pin.
+- Mahaska 29691, Marion 29435 and Marshall 29831 list midnight but display noon
+  on their detail pages without a usable end. Their prose describes flexible
+  bird counts or a month-long self-guided activity, so it does not establish
+  one reliable start. These records are withheld; other verified county events
+  can still be collected.
+- Mitchell 29817 and 29815 explicitly publish Milton R. Owen Nature Center,
+  `1879-3 Highway 9`, Osage, IA 50461. The hyphenated number is retained exactly;
+  it is not a missing address and does not supply a verified map pin.
 
 Local cached-page tests establish parsing, not production network access.
 Verify the optional live run, deployed collector, source registration, shared
