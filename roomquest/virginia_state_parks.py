@@ -20,7 +20,7 @@ TZ = ZoneInfo("America/New_York")
 MAX_EVENT_PAGES = 10
 MAX_LISTING_LINKS = 200
 DATE = re.compile(r"\b((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?\s+\d{1,2},?\s+20\d{2})\b", re.I)
-CLOCK = r"\d{1,2}(?::\d{2})?\s*[ap]\\.?m\\.?"
+CLOCK = r"\d{1,2}(?::\d{2})?\s*[ap]\.?m\.?"
 TIMES = re.compile(rf"({CLOCK})\s*(?:-|–|—|to)\s*({CLOCK})", re.I)
 EVENT_ID = re.compile(r"^[A-Za-z0-9-]{10,90}$")
 OFFSITE = re.compile(r"\b(town hall|municipal building|civic center|city hall)\b", re.I)
@@ -75,7 +75,7 @@ def parse_event(html, url, park):
     main_address = label(lines, "Main Park Address")
     if normal_name(park["name"]) not in normal_name(main_address or text):
         # One long name has abbreviated punctuation in the historical DCR directory.
-        if not ("shenandoah river state park" in normal_name(main_address or text) and park["code"] == "SH"):
+        if not (normal_name("Shenandoah River State Park") in normal_name(main_address or text) and park["code"] == "SH"):
             raise ValueError("event_park_mismatch")
     where = label(lines, "Program Location") or label(lines, "Meeting Location")
     if where and OFFSITE.search(where):
