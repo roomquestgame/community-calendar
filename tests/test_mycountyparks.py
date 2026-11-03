@@ -38,18 +38,22 @@ def listing(*entries, total=None, county=None):
 def detail(item=None, *, title=None, event_id=None, county=None,
            summary="Explore local wildlife during this guided public program.",
            venue="Bender Pool", street="940 14th Avenue SE", city="Cedar Rapids IA 52403",
-           registration="Reservations are not required for this event.", cost="", when=None):
+           registration="Reservations are not required for this event.", cost="", when=None,
+           location_html=None):
     item = item or entry()
     title, event_id, county = title or item["title"], event_id or item["id"], county or item["county"]
     when = when or item["date"].split(" - ")[0]
     price = f'<hr><h3>Cost</h3><p>{escape(cost)}</p>' if cost else ''
+    if location_html is None:
+        location_html = (f'<p><strong>{escape(venue)}</strong><br>{escape(street)}<br>'
+                         f'{escape(city)}<br>Parent Park<br>Contact staff</p>')
     return ('<html><main id="main-content"><header class="detail-header">'
             f'<h1>{escape(title)}</h1><p class="date">{escape(when)}</p>'
             f'<a id="print" data-county="{escape(county)}" data-event-id="{event_id}">Print</a>'
             f'<a id="lnkOutlook" href="/Event/AddToOutLook?eventId={event_id}">Add to Outlook</a>'
             '</header><section><div id="sidebar-affix"><div class="small-type">'
             '<h2>Location</h2><div id="map">Parent park map</div><br>'
-            f'<p><strong>{escape(venue)}</strong><br>{escape(street)}<br>{escape(city)}<br>Parent Park<br>Contact staff</p>'
+            + location_html +
             '</div><div>' + registration + '</div></div>'
             '<div class="col small-type"><h2>Event Summary</h2><p>' + escape(summary) + '</p>'
             + price + '<hr><h2>Category</h2><p>Programs</p><hr></div></section>'
@@ -173,6 +177,86 @@ def test_detail_keeps_actual_address_and_never_parent_coordinates(record_spy):
     assert record_spy.call_args.kwargs["publisher_geo"] is False
     assert record_spy.call_args.kwargs["retain_until_end"] is True
     assert "Unrelated title" not in result["description"]
+
+
+@pytest.mark.parametrize("event_id,county,location_html,venue,address,city", [
+    ("29917", "Story", '<p><strong>McFarland Park Conservation Center</strong><br/>'
+     '56461 180th St   Ames, IA 50010 <br/>Ames, IA 50010 <br/>McFarland Park <br/></p>',
+     "McFarland Park Conservation Center", "56461 180th St, Ames, IA 50010", "Ames"),
+    ("29919", "Story", '<p><strong>McFarland Park Conservation Center</strong><br/>'
+     '56461 180th St   Ames, IA 50010 <br/>Ames, IA 50010 <br/>McFarland Park <br/></p>',
+     "McFarland Park Conservation Center", "56461 180th St, Ames, IA 50010", "Ames"),
+    ("29428", "Linn", '<p><strong>Pinicon Ridge Park - Eagle View Shelter</strong><br/>'
+     '4729 Horseshoe Falls Rd, , IA 52214 <br/>Central City IA 52214 <br/>Pinicon Ridge Park <br/>'
+     'Conservation Education Team Naturalist, Chuck Ungs 319-892-6485</p>',
+     "Pinicon Ridge Park - Eagle View Shelter", "4729 Horseshoe Falls Rd, Central City, IA 52214", "Central City"),
+])
+def test_published_repeated_address_layouts(event_id, county, location_html, venue, address, city, record_spy):
+    # Location paragraphs observed on these publisher event pages on 2026-11-03.
+    item = entry(event_id, county=county)
+    result = mcp.parse_event(detail(item, location_html=location_html), parsed(item), now=NOW)
+    assert result["venue_name"] == venue
+    assert result["venue_address"] == address
+    assert result["venue_city"] == city
+    assert result["lat"] is None and result["lng"] is None
+    assert record_spy.call_args.kwargs["publisher_geo"] is False
+
+
+@pytest.mark.parametrize("street", [
+    "56461 180th St Nevada, IA 50010",
+    "56461 180th St, West Ames, IA 50010",
+    "56461 180th St Ames, IA 50011",
+    "56461 180th St, , IA 50011",
+])
+def test_conflicting_repeated_city_or_postal_code_is_not_combined(street, record_spy):
+    with pytest.raises(ValueError, match="venue_requires_address"):
+        mcp.parse_event(detail(street=street, city="Ames, IA 50010"), parsed(), now=NOW)
+    record_spy.assert_not_called()
+
+
+def test_normalized_address_cannot_lose_its_street_name(record_spy):
+    with pytest.raises(ValueError, match="venue_requires_address"):
+        mcp.parse_event(detail(street="56461 Ames, IA 50010", city="Ames, IA 50010"), parsed(), now=NOW)
+    record_spy.assert_not_called()
+
+
+def test_matching_comma_delimited_city_is_normalized():
+    result = mcp.parse_event(detail(street="56461 180th St, Ames, IA 50010", city="Ames, IA 50010"),
+                             parsed(), now=NOW)
+    assert result["venue_address"] == "56461 180th St, Ames, IA 50010"
+
+
+def test_conflicting_separate_city_lines_are_not_chosen_arbitrarily(record_spy):
+    location_html = ('<p><strong>Event Center</strong><br>56461 180th St<br>'
+                     'Ames, IA 50010<br>Nevada, IA 50201<br>Parent Park</p>')
+    with pytest.raises(ValueError, match="venue_requires_address"):
+        mcp.parse_event(detail(location_html=location_html), parsed(), now=NOW)
+    record_spy.assert_not_called()
+
+
+def test_multiline_street_directions_are_preserved():
+    location_html = ('<p><strong>Event Center</strong><br>56461 180th St<br>'
+                     'Use the south entrance<br>Ames, IA 50010<br>Parent Park</p>')
+    result = mcp.parse_event(detail(location_html=location_html), parsed(), now=NOW)
+    assert result["venue_address"] == "56461 180th St, Use the south entrance, Ames, IA 50010"
+
+
+@pytest.mark.parametrize("event_id,location_html", [
+    ("29738", '<p><strong>Knight Prairie Pavilion</strong><br/>F.W. Kent Park<br/>'
+     'Oxford IA 52245<br/>JOHNSON COUNTY EDUCATION PROGRAMS<br/>'
+     'Email kmorrow@johnsoncountyiowa.gov for questions.</p>'),
+    ("29805", '<p>F. W. Kent Park<br/>Oxford IA 52322<br/>'
+     'JOHNSON COUNTY EDUCATION PROGRAMS<br/>Michelle Wiegand<br/>'
+     'mwiegand@johnsoncountyiowa.gov<br/>319-645-2315</p>'),
+])
+def test_published_johnson_locations_without_streets_remain_skipped(event_id, location_html):
+    item, verified = entry(event_id, county="Johnson"), entry("9999", county="Johnson")
+    unresolved = detail(item, location_html=location_html)
+    with pytest.raises(ValueError, match="venue_requires_address"):
+        mcp.parse_event(unresolved, parsed(item), now=NOW)
+    fetch = Mock(side_effect=[listing(item, verified), unresolved, detail(verified)])
+    result = mcp.collect(mcp.source_for_county("johnson"), fetch, now=NOW)
+    assert len(result) == 1 and result[0]["id"].endswith(":9999")
 
 
 def test_current_missing_end_is_retained_for_three_hours_without_inventing_end():
