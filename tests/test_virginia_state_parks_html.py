@@ -30,7 +30,7 @@ def test_registered_pilot_calendar_uses_official_guid_and_60_day_window():
     assert query == {"park": [official_id], "start": ["11/03/2026"], "end": ["01/02/2027"]}
     assert "srchloc" not in query
     other = va.catalog()["do"]
-    assert va.registered_calendar_url(other) == va.CALENDAR + "?park=all"
+    assert va.registered_calendar_url(other) == va.CALENDAR + "?eventtype=all&srchloc=DO"
     with pytest.raises(ValueError, match="unverified_park_calendar_identifier"):
         va.listing_url(other)
 
@@ -39,8 +39,9 @@ def test_all_46_parks_have_a_registered_on_demand_bootstrap_url():
     parks = va.catalog()
     assert len(parks) == 46
     assert sum("dcr_calendar_id" in park for park in parks.values()) == 1
-    assert all(va.registered_calendar_url(park).startswith(va.CALENDAR + "?park=")
+    assert all(va.registered_calendar_url(park).startswith(va.CALENDAR + "?")
                for park in parks.values())
+    assert len(set(va.registered_calendar_url(park) for park in parks.values())) == 46
 
 
 def test_unverified_park_guid_uses_only_official_selector_and_per_park_listing():
@@ -62,7 +63,7 @@ def test_unverified_park_guid_uses_only_official_selector_and_per_park_listing()
             return filtered
         return details
     source = {"source_key": "virginia_state_parks_do", "kind": "html",
-              "platform_adapter": "html", "feed_url": va.CALENDAR + "?park=all"}
+              "platform_adapter": "html", "feed_url": va.registered_calendar_url(park)}
     with patch.object(va, "record", return_value={"title": "Douthat hike"}):
         result = va.collect(source, fetch)
     assert len(result) == 1
