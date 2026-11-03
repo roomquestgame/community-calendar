@@ -7,7 +7,7 @@ from unittest.mock import Mock, patch
 
 def test_central_entrypoint_dispatches_category_get_and_post():
     modules = {}
-    for name in ('geocode', 'preview', 'chambermaster', 'provider_pilot', 'category_demand'):
+    for name in ('geocode', 'preview', 'chambermaster', 'provider_pilot', 'category_demand', 'html_demand'):
         module = ModuleType('api.'+name)
         module.handler = type(name+'Handler', (), {'do_GET': Mock(), 'do_POST': Mock()})
         modules[module.__name__] = module
@@ -18,6 +18,11 @@ def test_central_entrypoint_dispatches_category_get_and_post():
     h=object.__new__(entry.handler);h.path='/api/category-demand'
     h.do_GET();h.do_POST()
     modules['api.category_demand'].handler.do_GET.assert_called_once_with(h)
+    modules['api.category_demand'].handler.do_POST.assert_called_once_with(h)
+    modules['api.preview'].handler.do_POST.assert_not_called()
+    h.path='/api/html-demand';h.do_GET();h.do_POST()
+    modules['api.html_demand'].handler.do_GET.assert_called_once_with(h)
+    modules['api.html_demand'].handler.do_POST.assert_called_once_with(h)
     modules['api.category_demand'].handler.do_POST.assert_called_once_with(h)
     modules['api.preview'].handler.do_POST.assert_not_called()
     h.path='/api/demand-preview';h.do_POST()
