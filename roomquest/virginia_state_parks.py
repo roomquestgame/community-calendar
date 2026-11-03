@@ -196,7 +196,10 @@ def registered_calendar_url(park):
     """Use the vetted GUID, or the official all-parks calendar as lookup only."""
     official_id = park.get("dcr_calendar_id")
     if official_id is None:
-        return CALENDAR + "?park=all"
+        # Unique historical per-source registry identity. The old srchloc
+        # parameter is NOT trusted as a park filter: collect() instead
+        # resolves the official GUID through DCR's park picker.
+        return CALENDAR + "?eventtype=all&srchloc=" + park["code"]
     if not isinstance(official_id, str) or not EVENT_ID.fullmatch(official_id):
         raise ValueError("unverified_park_calendar_identifier")
     return CALENDAR + "?park=" + official_id
