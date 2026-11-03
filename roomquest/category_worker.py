@@ -3,7 +3,7 @@ from time import monotonic
 from roomquest.preview_worker import PreviewError, supabase_rpc, _process_claimed_source
 
 CATEGORIES = frozenset(('ical', 'wordpress', 'jsonld', 'squarespace', 'library',
-                        'rss', 'localist', 'socrata', 'chambermaster', 'parks'))
+                        'rss', 'localist', 'socrata', 'chambermaster', 'parks', 'html'))
 
 
 def collect_category(category, ticket):
