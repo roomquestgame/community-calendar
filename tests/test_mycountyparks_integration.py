@@ -45,20 +45,23 @@ def test_future_events_keep_existing_normalization():
     assert normalized(start, None) == normalized(start, None, retain_until_end=True)
 
 
-def test_mycountyparks_dispatch_uses_its_own_host_and_common_shape():
+@pytest.mark.parametrize("county", ["iowa", "mahaska", "black_hawk", "obrien"])
+def test_mycountyparks_dispatch_uses_its_own_host_and_common_shape(county):
     from roomquest import mycountyparks as adapter
-    source = adapter.source_for_county("iowa")
+    source = adapter.source_for_county(county)
     row = normalized(datetime.now(timezone.utc) + timedelta(days=1), None)
+    outer_deadline = worker.monotonic() + 35
 
     def collect(source_arg, fetch, *, deadline_at):
         assert source_arg == source
         assert deadline_at > worker.monotonic()
+        assert deadline_at <= outer_deadline - 5
         fetch(source_arg["feed_url"], "text/html")
         return [row]
 
     with patch.object(adapter, "collect", side_effect=collect), \
             patch.object(worker, "fetch_publisher", return_value="html") as fetch:
-        result = worker.preview_source(source)
+        result = worker.preview_source(source, deadline_at=outer_deadline)
     assert result["p_events"] == [row]
     assert result["p_future_count"] == 1 and result["p_venue_count"] == 0
     assert result["p_error"] is None
@@ -70,6 +73,20 @@ def test_unknown_html_source_cannot_dispatch_to_publisher():
     with patch.object(worker, "fetch_publisher") as fetch:
         with pytest.raises(worker.PreviewError, match="unregistered_html_source"):
             worker.preview_source({"kind": "html", "platform_adapter": "html", "source_key": "unregistered"})
+    fetch.assert_not_called()
+
+
+@pytest.mark.parametrize("source_key,url", [
+    ("mycountyparks_ia_unknown", "https://www.mycountyparks.com/County/Unknown/Events"),
+    ("mycountyparks_ia_mahaska", "https://www.mycountyparks.com/County/Marion/Events"),
+    ("mycountyparks_ia_mahaska", "https://www.mycountyparks.com/County/Mahaska/Events?redirect=1"),
+    ("mycountyparks_ia_mahaska", "https://example.org/County/Mahaska/Events"),
+])
+def test_expanded_dispatch_still_validates_catalog_identity_before_network(source_key, url):
+    source = {"kind": "html", "platform_adapter": "html", "source_key": source_key, "feed_url": url}
+    with patch.object(worker, "fetch_publisher") as fetch:
+        with pytest.raises(worker.PreviewError, match="county_unregistered|unregistered_html_calendar"):
+            worker.preview_source(source)
     fetch.assert_not_called()
 
 
