@@ -240,3 +240,14 @@ Staging transactions contain at most 20 events. Socket/OSError failures from Sup
 Companion RoomQuestGame migration 20261102145352 makes database_unavailable, staging_deadline and collector_not_configured retryable with 1–15 minute backoff under existing area/validation interest. It preserves feed approval and previous data, and keeps the finish call from shortening backoff. The collector change alone does not prevent database disposition holds until that migration is deployed through GitHub. Sixth & I has a narrowly reviewed, normal-search recovery in that migration; no collector code resets source holds.
 
 Local validation: 139 tests and 25 subtests pass, including multi-batch completion, partial failures, transport classification and category ticket completion. GitHub validation and production deployment verification are separate release steps.
+
+## ChamberMate demand adapter (November 3, 2026)
+
+`chambermate.py` adds ChamberMate's public JSON calendar to the existing
+`chambermate` category-demand lane and shared factual intake. The Clarksville
+pilot uses one bounded request, explicit UTC overlap dates, complete-snapshot
+counts, source-bound event IDs, individual publisher category labels, and actual
+event addresses. Online/phone records stay unlocated; physical venue review,
+cached/shared geocoding, publication, and classification remain downstream.
+There is no new timer or per-event detail crawl. See [CHAMBERMATE.md](CHAMBERMATE.md)
+for source registration, the public contract, limits, and focused tests.
