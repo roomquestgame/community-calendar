@@ -530,6 +530,27 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         return {"p_source_key": source["source_key"], "p_samples": samples,
                 "p_future_count": len(records), "p_venue_count": 0,
                 "p_error": None, "p_events": records}
+    # Independent HTML collector family; currently only the vetted DCR park adapter.
+    if source.get("platform_adapter") == "html" and source.get("kind") == "html":
+        from roomquest.virginia_state_parks import collect as collect_html_parks
+        deadline = min(monotonic() + 36, deadline_at - 5 if deadline_at is not None else float("inf"))
+        try:
+            records = collect_html_parks(
+                source, lambda url, accept: fetch_publisher(
+                    url, accept, respect_robots=True, deadline_at=deadline
+                ), deadline_at=deadline)
+        except PreviewError:
+            raise
+        except (ValueError, TypeError, KeyError, OverflowError) as exc:
+            reason = str(exc)
+            raise PreviewError(reason if re.fullmatch(r"[a-z_]{3,100}", reason) else "invalid_html_event_payload") from exc
+        samples = records[:MAX_PREVIEWS]
+        while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
+            samples.pop()
+        return {"p_source_key": source["source_key"], "p_samples": samples,
+                "p_future_count": len(records),
+                "p_venue_count": sum(1 for row in records if row["lat"] is not None),
+                "p_error": None, "p_events": records}
     # WordPress is a collection family; Mapsee remains catalog provenance.
     if source.get("platform_adapter") == "wordpress" and source.get("kind") == "json":
         from roomquest.wordpress_adapter import collect as collect_wordpress
