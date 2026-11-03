@@ -1,3 +1,12 @@
+## MyCountyParks county pilot — November 3, 2026
+
+The HTML family now has an explicit MyCountyParks dispatcher alongside Virginia
+State Parks. [The MyCountyParks scraper](MYCOUNTYPARKS.md) reads county-filtered
+listings and actual event street addresses with Beautiful Soup. It shares the
+HTML worker and address-resolution pipeline. Four county registrations are
+prepared as pending sources; source activation and production publication are
+separate verification steps. Existing Virginia source behavior is preserved.
+
 ## All 46 Virginia park sources: demand-only activation
 
 The 46 reviewed park sources are enabled in the corresponding RoomQuestGame migration after their parser changes deploy, but **collection still requires real, expiring user-area demand**. All 46 registered `feed_url` strings remain unique: the original two-letter `srchloc=XX` values for 45 parks are retained only as source identities, not relied upon for filtering. No statewide cron, poller or prefetch is introduced. Occoneechee's verified DCR park GUID stays immutable; the 45 other parks use DCR's actual public `?park=all` calendar as a **lookup-only** endpoint, read the requested park's unique GUID from the `select name/id=park` options, then fetch the exact park-specific `park=<GUID>&start=<date>&end=<date>` listing with the existing 60-day window and ten-detail-page bound. The bootstrap does not ingest statewide event details, and only one demanded park's own details can be staged. Ambiguous/unavailable/changed park picker fields abort that source rather than guessing another park or substituting arbitrary coordinates.

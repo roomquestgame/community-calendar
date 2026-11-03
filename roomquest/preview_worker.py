@@ -86,12 +86,13 @@ def validate_public_dns(host: str) -> None:
         raise PreviewError("dns_unavailable") from exc
 
 
-@lru_cache(maxsize=256)
-def robots_allowed(host: str, path: str) -> bool:
-    """Respect publisher crawl restrictions, fail closed on ambiguous responses.
+@lru_cache(maxsize=128)
+def _robots_rules(host: str, time_bucket: int):
+    """Read each publisher's rules once per five-minute cache window.
 
     Never redirect robots requests or fetch private-network destinations.
     404/410 mean no robots rules; 401/403, 429, network failures deny.
+    Cache the rules, not a path's decision: every event path is still checked.
     """
     robots_url = "https://" + host + "/robots.txt"
     try:
@@ -106,14 +107,21 @@ def robots_allowed(host: str, path: str) -> bool:
                 raise PreviewError("robots_unavailable")
     except HTTPError as exc:
         if exc.code in (404, 410):
-            return True
+            _robots_delays[host] = 1
+            return None
         raise PreviewError("robots_denied") from exc
     except (URLError, TimeoutError, OSError) as exc:
         raise PreviewError("robots_unavailable") from exc
     parser = RobotFileParser()
-    parser.parse(raw.decode("utf-8", errors="replace").splitlines())
+    parser.parse(raw.decode("utf-8-sig", errors="replace").splitlines())
     _robots_delays[host] = parser.crawl_delay("RoomQuestCommunityCalendar") or parser.crawl_delay("*") or 1
-    return parser.can_fetch("RoomQuestCommunityCalendar", "https://" + host + path)
+    return parser
+
+
+def robots_allowed(host: str, path: str) -> bool:
+    """Evaluate the current path against cached, publisher-specific rules."""
+    parser = _robots_rules(host, int(monotonic() // 300))
+    return parser is None or parser.can_fetch("RoomQuestCommunityCalendar", "https://" + host + path)
 
 
 def pace_publisher(host: str, deadline: float) -> None:
@@ -226,9 +234,15 @@ def _future_datetime(value) -> datetime | None:
 
 
 def _preview(title, start, end, venue, lat, lng, url, identity="",
-             category="", address="", city="", image=None, *, allow_ongoing=False):
+             category="", address="", city="", image=None, *, allow_ongoing=False,
+             retain_until_end=False):
     future = _future_datetime(start)
-    if future is None and allow_ongoing and isinstance(start, datetime) and start.tzinfo and isinstance(end, datetime) and end.tzinfo:
+    if future is None and allow_ongoing and retain_until_end and isinstance(start, datetime) and start.tzinfo:
+        now = datetime.now(timezone.utc)
+        expires = end if isinstance(end, datetime) and end.tzinfo else start + timedelta(hours=3)
+        if start <= now < expires:
+            future = start.astimezone(timezone.utc)
+    elif future is None and allow_ongoing and isinstance(start, datetime) and start.tzinfo and isinstance(end, datetime) and end.tzinfo:
         now = datetime.now(timezone.utc)
         if now-timedelta(hours=24) <= start <= now and end >= now+timedelta(minutes=60):
             future = start.astimezone(timezone.utc)
@@ -532,15 +546,23 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         return {"p_source_key": source["source_key"], "p_samples": samples,
                 "p_future_count": len(records), "p_venue_count": 0,
                 "p_error": None, "p_events": records}
-    # Independent HTML collector family; currently only the vetted DCR park adapter.
+    # Independent HTML family with explicit, publisher-specific dispatch.
     if source.get("platform_adapter") == "html" and source.get("kind") == "html":
-        from roomquest.virginia_state_parks import collect as collect_html_parks
+        source_key = str(source.get("source_key", ""))
+        if source_key.startswith("mycountyparks_ia_"):
+            from roomquest.mycountyparks import collect as collect_html
+            allowed_hosts = ("www.mycountyparks.com",)
+        elif source_key.startswith("virginia_state_parks_"):
+            from roomquest.virginia_state_parks import collect as collect_html
+            allowed_hosts = ("www.dcr.virginia.gov",)
+        else:
+            raise PreviewError("unregistered_html_source")
         deadline = min(monotonic() + 36, deadline_at - 5 if deadline_at is not None else float("inf"))
         try:
-            records = collect_html_parks(
+            records = collect_html(
                 source, lambda url, accept: fetch_publisher(
                     url, accept, respect_robots=True, deadline_at=deadline,
-                    allowed_hosts=("www.dcr.virginia.gov",)
+                    allowed_hosts=allowed_hosts,
                 ), deadline_at=deadline)
         except PreviewError:
             raise

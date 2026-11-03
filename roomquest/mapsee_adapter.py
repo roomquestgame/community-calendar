@@ -61,7 +61,7 @@ def address(value):
                        value.get("postalCode") or value.get("zip")) if v)
 
 
-def record(title, start, end, venue, street, city, url, identity, category="", lat=None, lng=None, tz=None, *, publisher_geo=False):
+def record(title, start, end, venue, street, city, url, identity, category="", lat=None, lng=None, tz=None, *, publisher_geo=False, retain_until_end=False):
     from roomquest.preview_worker import _preview
     if not plain(title):raise ValueError("event_title_missing")
     if not start:raise ValueError("event_time_missing")
@@ -71,7 +71,8 @@ def record(title, start, end, venue, street, city, url, identity, category="", l
         lat=lng=None
     if str(lat) in {"0","0.0"} and str(lng) in {"0","0.0"}:lat=lng=None
     out = _preview(plain(title), begins, ends, plain(venue) or plain(street),
-                   lat,lng,url,str(identity or ""),plain(category),plain(street),plain(city),allow_ongoing=True)
+                   lat,lng,url,str(identity or ""),plain(category),plain(street),plain(city),
+                   allow_ongoing=True, retain_until_end=retain_until_end)
     if out is not None:
         out.pop("image_url",None)
     if out is not None and not out.get("event_url"):
