@@ -204,6 +204,7 @@ def test_published_repeated_address_layouts(event_id, county, location_html, ven
 
 @pytest.mark.parametrize("street", [
     "56461 180th St Nevada, IA 50010",
+    "56461 180th St, West Ames, IA 50010",
     "56461 180th St Ames, IA 50011",
     "56461 180th St, , IA 50011",
 ])
@@ -211,6 +212,18 @@ def test_conflicting_repeated_city_or_postal_code_is_not_combined(street, record
     with pytest.raises(ValueError, match="venue_requires_address"):
         mcp.parse_event(detail(street=street, city="Ames, IA 50010"), parsed(), now=NOW)
     record_spy.assert_not_called()
+
+
+def test_normalized_address_cannot_lose_its_street_name(record_spy):
+    with pytest.raises(ValueError, match="venue_requires_address"):
+        mcp.parse_event(detail(street="56461 Ames, IA 50010", city="Ames, IA 50010"), parsed(), now=NOW)
+    record_spy.assert_not_called()
+
+
+def test_matching_comma_delimited_city_is_normalized():
+    result = mcp.parse_event(detail(street="56461 180th St, Ames, IA 50010", city="Ames, IA 50010"),
+                             parsed(), now=NOW)
+    assert result["venue_address"] == "56461 180th St, Ames, IA 50010"
 
 
 def test_conflicting_separate_city_lines_are_not_chosen_arbitrarily(record_spy):

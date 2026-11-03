@@ -302,7 +302,7 @@ def _location(main):
     index, match = city_matches[0]
     city, postal = clean(match.group(1)).strip(" ,"), match.group(2)
     street_parts = lines[1:index]
-    if not street_parts or not re.match(r"^\d{1,6}[A-Za-z]?\s+[A-Za-z0-9]", street_parts[0]):
+    if not street_parts:
         raise ValueError("mycountyparks_event_venue_requires_address")
     for part_index, part in enumerate(street_parts):
         suffix = re.search(r"\b" + state_postal + r"$", part, re.I)
@@ -310,11 +310,20 @@ def _location(main):
             # Story repeats its full city suffix; Linn can publish an explicit
             # empty city field (", , IA ZIP"). Neither may contradict the ZIP
             # or replace a different named city from this Location paragraph.
+            before_state = part[:suffix.start()].rstrip()
+            if before_state.endswith(","):
+                before_state = before_state[:-1].rstrip()
+            if "," in before_state:
+                embedded_city = clean(before_state.rsplit(",", 1)[1])
+                if embedded_city and embedded_city.casefold() != city.casefold():
+                    raise ValueError("mycountyparks_event_venue_requires_address")
             repeated = re.fullmatch(r"(.+?)(?:[,\s]+" + re.escape(city) + r",?\s+|,\s*,\s*)"
                                     + state_postal, part, re.I)
             if suffix.group(1) != postal or repeated is None:
                 raise ValueError("mycountyparks_event_venue_requires_address")
             street_parts[part_index] = repeated.group(1).rstrip(" ,")
+    if not re.match(r"^\d{1,6}[A-Za-z]?\s+[A-Za-z0-9]", street_parts[0]):
+        raise ValueError("mycountyparks_event_venue_requires_address")
     street = ", ".join(street_parts)
     return venue, f"{street}, {city}, IA {postal}", city
 
