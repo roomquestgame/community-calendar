@@ -193,19 +193,47 @@ def parse_event(html, url, park):
 
 
 def registered_calendar_url(park):
-    """Only known official DCR park identifiers are approved for HTML collection."""
+    """Use the vetted GUID, or the official all-parks calendar as lookup only."""
     official_id = park.get("dcr_calendar_id")
+    if official_id is None:
+        return CALENDAR + "?park=all"
     if not isinstance(official_id, str) or not EVENT_ID.fullmatch(official_id):
         raise ValueError("unverified_park_calendar_identifier")
     return CALENDAR + "?park=" + official_id
 
 
-def listing_url(park, *, today=None):
-    """DCR's real calendar uses a park GUID and an explicit date window."""
+def discover_calendar_id(html, park):
+    """Read a park's GUID from DCR's actual calendar select; never guess it."""
+    soup = BeautifulSoup(html, "html.parser")
+    target = normal_name(park["name"])
+    matches = set()
+    for select in soup.select("select"):
+        signature = normal_name(" ".join([
+            select.get("name", ""), select.get("id", ""),
+            select.get("aria-label", ""),
+        ]))
+        if "park" not in signature:
+            continue
+        for option in select.select("option[value]"):
+            if normal_name(option.get_text(" ", strip=True)) != target:
+                continue
+            value = clean(option.get("value"))
+            if EVENT_ID.fullmatch(value) and value.lower() != "all":
+                matches.add(value)
+    if len(matches) != 1:
+        raise ValueError("park_calendar_identifier_missing_or_ambiguous")
+    return next(iter(matches))
+
+
+def listing_url(park, *, today=None, calendar_id=None):
+    """Filter event listing to exactly one park in the next 60-day window."""
+    official_id = calendar_id or park.get("dcr_calendar_id")
+    if not isinstance(official_id, str) or not EVENT_ID.fullmatch(official_id):
+        raise ValueError("unverified_park_calendar_identifier")
     begin = today or datetime.now(TZ).date()
     until = begin + timedelta(days=60)
     return CALENDAR + "?" + urlencode({
-        "park": park["dcr_calendar_id"],
+        "park": official_id,
         "start": begin.strftime("%m/%d/%Y"),
         "end": until.strftime("%m/%d/%Y"),
     })
@@ -272,7 +300,16 @@ def collect(source, fetch, *, deadline_at=None):
     if source.get("feed_url") != expected:
         raise ValueError("unregistered_html_calendar")
     deadline = min(time.monotonic() + 32, deadline_at or float("inf"))
-    page = fetch(listing_url(park), "text/html")
+    calendar_id = park.get("dcr_calendar_id")
+    if calendar_id is None:
+        # The state's own park picker provides stable official GUIDs. Fetch
+        # this bootstrap page only for the demanded park; never scan statewide
+        # event details or guess a code from another park's calendar.
+        bootstrap = fetch(CALENDAR + "?park=all", "text/html")
+        if time.monotonic() >= deadline:
+            raise ValueError("collection_deadline")
+        calendar_id = discover_calendar_id(bootstrap, park)
+    page = fetch(listing_url(park, calendar_id=calendar_id), "text/html")
     if time.monotonic() >= deadline:
         raise ValueError("collection_deadline")
     links, all_count = discover(page, park)
