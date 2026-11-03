@@ -1,0 +1,421 @@
+{
+  "schema_version": 1,
+  "source": "Owner-reviewed Virginia State Parks addresses and Geocodio corrections, November 2 2026",
+  "source_file_sha256": "9b39f7eb7a50f5d39bfb38d66a248770789072234f9899b2b066c6d8c8202747",
+  "parks": [
+    {
+      "code": "CL",
+      "name": "Claytor Lake State Park",
+      "address": "6620 Ben H. Bolen Dr., Dublin, VA 24084",
+      "lat": 37.057182,
+      "lng": -80.620266,
+      "precision": "rooftop",
+      "origin": "geocodio"
+    },
+    {
+      "code": "GH",
+      "name": "Grayson Highlands State Park",
+      "address": "829 Grayson Highland Ln., Mouth of Wilson, VA 24363",
+      "lat": 36.612985,
+      "lng": -81.481351,
+      "precision": "rooftop",
+      "origin": "geocodio"
+    },
+    {
+      "code": "HM",
+      "name": "Hungry Mother State Park",
+      "address": "2854 Park Blvd., Marion, VA 24354",
+      "lat": 36.883025,
+      "lng": -81.52608,
+      "precision": "rooftop",
+      "origin": "geocodio"
+    },
+    {
+      "code": "NR",
+      "name": "New River Trail State Park",
+      "address": "116 Orphanage Dr., Max Meadows, VA 24360",
+      "lat": 36.883783,
+      "lng": -80.852914,
+      "precision": "rooftop",
+      "origin": "geocodio"
+    },
+    {
+      "code": "ST",
+      "name": "Shot Tower State Park",
+      "address": "116 Orphanage Dr., Max Meadows, VA 24360",
+      "lat": 36.883783,
+      "lng": -80.852914,
+      "precision": "rooftop",
+      "origin": "geocodio"
+    },
+    {
+      "code": "BC",
+      "name": "Bear Creek Lake State Park",
+      "address": "22 Bear Creek Lake Rd., Cumberland, VA 23040",
+      "lat": 37.53192,
+      "lng": -78.273234,
+      "precision": "rooftop",
+      "origin": "geocodio"
+    },
+    {
+      "code": "HB",
+      "name": "High Bridge Trail State Park",
+      "address": "1466 Camp Paradise Road, Rice, VA 23966",
+      "lat": 37.306624,
+      "lng": -78.313474,
+      "precision": "rooftop",
+      "origin": "geocodio"
+    },
+    {
+      "code": "HL",
+      "name": "Holliday Lake State Park",
+      "address": "2759 State Park Rd., Appomattox, VA 24522",
+      "lat": 37.395301,
+      "lng": -78.639898,
+      "precision": "rooftop",
+      "origin": "geocodio"
+    },
+    {
+      "code": "JR",
+      "name": "James River State Park",
+      "address": "104 Green Hill Dr., Gladstone, VA 24553",
+      "lat": 37.623063,
+      "lng": -78.796575,
+      "precision": "park_reference_point",
+      "origin": "dcr_official"
+    },
+    {
+      "code": "PO",
+      "name": "Pocahontas State Park",
+      "address": "10301 State Park Rd., Chesterfield, VA 23832",
+      "lat": 37.370495,
+      "lng": -77.575489,
+      "precision": "rooftop",
+      "origin": "geocodio"
+    },
+    {
+      "code": "PW",
+      "name": "Powhatan State Park",
+      "address": "4616 Powhatan State Park Rd., Powhatan, VA 23139",
+      "lat": 37.659728,
+      "lng": -77.922978,
+      "precision": "park_reference_point",
+      "origin": "dcr_official"
+    },
+    {
+      "code": "SC",
+      "name": "Sailor's Creek Battlefield State Park",
+      "address": "6541 Saylers Creek Rd., Rice, VA 23966",
+      "lat": 37.298094,
+      "lng": -78.228405,
+      "precision": "rooftop",
+      "origin": "geocodio"
+    },
+    {
+      "code": "TL",
+      "name": "Twin Lakes State Park",
+      "address": "788 Twin Lakes Rd., Green Bay, VA 23942",
+      "lat": 37.175599,
+      "lng": -78.278652,
+      "precision": "rooftop",
+      "origin": "geocodio"
+    },
+    {
+      "code": "BI",
+      "name": "Belle Isle State Park",
+      "address": "1632 Belle Isle Rd., Lancaster, VA 22503",
+      "lat": 37.779874,
+      "lng": -76.592388,
+      "precision": "rooftop",
+      "origin": "geocodio"
+    },
+    {
+      "code": "CA",
+      "name": "Caledon State Park",
+      "address": "11617 Caledon Rd., King George, VA 22485",
+      "lat": 38.334284,
+      "lng": -77.142628,
+      "precision": "rooftop",
+      "origin": "geocodio"
+    },
+    {
+      "code": "MA",
+      "name": "Machicomoco State Park",
+      "address": "3601 Timberneck Farm Road, Hayes, VA 23072",
+      "lat": 37.312194,
+      "lng": -76.53912,
+      "precision": "rooftop",
+      "origin": "geocodio"
+    },
+    {
+      "code": "WE",
+      "name": "Westmoreland State Park",
+      "address": "145 Cliff Road, Montross, VA 22520",
+      "lat": 38.170202,
+      "lng": -76.863931,
+      "precision": "rooftop",
+      "origin": "geocodio"
+    },
+    {
+      "code": "KP",
+      "name": "Kiptopeke State Park",
+      "address": "3540 Kiptopeke Dr., Cape Charles, VA 23310",
+      "lat": 37.174661,
+      "lng": -75.973554,
+      "precision": "street_center",
+      "origin": "geocodio"
+    },
+    {
+      "code": "CP",
+      "name": "Chippokes State Park",
+      "address": "695 Chippokes Park Rd., Surry, VA 23883",
+      "lat": 37.145995,
+      "lng": -76.738548,
+      "precision": "rooftop",
+      "origin": "geocodio"
+    },
+    {
+      "code": "FC",
+      "name": "False Cape State Park",
+      "address": "4001 Sandpiper Rd., Virginia Beach, VA 23456",
+      "lat": 36.620308,
+      "lng": -75.900248,
+      "precision": "rooftop",
+      "origin": "geocodio"
+    },
+    {
+      "code": "FL",
+      "name": "First Landing State Park",
+      "address": "2500 Shore Dr., Virginia Beach, VA 23451",
+      "lat": 36.905063,
+      "lng": -76.017499,
+      "precision": "rooftop",
+      "origin": "geocodio"
+    },
+    {
+      "code": "YR",
+      "name": "York River State Park",
+      "address": "9801 York River Park Rd., Williamsburg, VA 23188",
+      "lat": 37.414648,
+      "lng": -76.713562,
+      "precision": "rooftop",
+      "origin": "geocodio"
+    },
+    {
+      "code": "BK",
+      "name": "Breaks Interstate Park",
+      "address": "627 Commission Cir, Breaks, VA 24607",
+      "lat": 37.285817,
+      "lng": -82.294573,
+      "precision": "user_supplied_park_point",
+      "origin": "owner_review"
+    },
+    {
+      "code": "CR",
+      "name": "Clinch River State Park",
+      "address": "Alt. Rt US-58, Sugar Hill Loop, St. Paul, VA 24283",
+      "lat": 36.90516,
+      "lng": -82.32016,
+      "precision": "user_supplied_park_point",
+      "origin": "owner_review"
+    },
+    {
+      "code": "NT",
+      "name": "Natural Tunnel State Park",
+      "address": "1420 Natural Tunnel Pkwy., Duffield, VA 24244",
+      "lat": 36.701769,
+      "lng": -82.748155,
+      "precision": "rooftop",
+      "origin": "geocodio"
+    },
+    {
+      "code": "SW",
+      "name": "Southwest Virginia Museum",
+      "address": "10 West First St. N., Big Stone Gap, VA 24219",
+      "lat": 36.863641,
+      "lng": -82.780102,
+      "precision": "rooftop",
+      "origin": "geocodio"
+    },
+    {
+      "code": "WR",
+      "name": "Wilderness Road State Park",
+      "address": "8051 Wilderness Rd., Ewing, VA 24248",
+      "lat": 36.630444,
+      "lng": -83.524508,
+      "precision": "rooftop",
+      "origin": "geocodio"
+    },
+    {
+      "code": "CB",
+      "name": "Culpeper Battlefields State Park",
+      "address": "9465 General Winder Road, Rapidan, VA 22733",
+      "lat": 38.404854,
+      "lng": -78.07039,
+      "precision": "rooftop",
+      "origin": "geocodio"
+    },
+    {
+      "code": "LA",
+      "name": "Lake Anna State Park",
+      "address": "6800 Lawyers Rd., Spotsylvania, VA 22551",
+      "lat": 38.143154,
+      "lng": -77.813892,
+      "precision": "rooftop",
+      "origin": "geocodio"
+    },
+    {
+      "code": "LE",
+      "name": "Leesylvania State Park",
+      "address": "2001 Daniel K. Ludwig Dr., Woodbridge, VA 22191",
+      "lat": 38.602227,
+      "lng": -77.264853,
+      "precision": "rooftop",
+      "origin": "geocodio"
+    },
+    {
+      "code": "MN",
+      "name": "Mason Neck State Park",
+      "address": "7301 High Point Rd., Lorton, VA 22079",
+      "lat": 38.6329,
+      "lng": -77.198604,
+      "precision": "rooftop",
+      "origin": "geocodio"
+    },
+    {
+      "code": "SK",
+      "name": "Sky Meadows State Park",
+      "address": "11012 Edmonds Ln., Delaplane, VA 20144",
+      "lat": 38.991147,
+      "lng": -77.965712,
+      "precision": "rooftop",
+      "origin": "geocodio"
+    },
+    {
+      "code": "SN",
+      "name": "Sweet Run State Park",
+      "address": "11661 Harpers Ferry Road, Hillsboro, VA 20132",
+      "lat": 39.294048,
+      "lng": -77.725424,
+      "precision": "rooftop",
+      "origin": "geocodio"
+    },
+    {
+      "code": "WW",
+      "name": "Widewater State Park",
+      "address": "101 Widewater State Park Road, Stafford, VA 22554",
+      "lat": 38.408136,
+      "lng": -77.325589,
+      "precision": "rooftop",
+      "origin": "geocodio"
+    },
+    {
+      "code": "SH",
+      "name": "Raymond R. Andy Guest Jr. Shenandoah River State Park",
+      "address": "350 Daughter of Stars Dr., Bentonville, VA 22610",
+      "lat": 38.844909,
+      "lng": -78.301566,
+      "precision": "rooftop",
+      "origin": "geocodio"
+    },
+    {
+      "code": "SE",
+      "name": "Seven Bends State Park",
+      "address": "2111 South Hollingsworth Road, Woodstock, VA 22664",
+      "lat": 38.855209,
+      "lng": -78.491074,
+      "precision": "rooftop",
+      "origin": "geocodio"
+    },
+    {
+      "code": "FS",
+      "name": "Fairy Stone State Park",
+      "address": "967 Fairystone Lake Dr., Stuart, VA 24171",
+      "lat": 36.792561,
+      "lng": -80.11676,
+      "precision": "rooftop",
+      "origin": "geocodio"
+    },
+    {
+      "code": "OC",
+      "name": "Occoneechee State Park",
+      "address": "1192 Occoneechee Park Rd., Clarksville, VA 23927",
+      "lat": 36.623813,
+      "lng": -78.526959,
+      "precision": "rooftop",
+      "origin": "geocodio"
+    },
+    {
+      "code": "SB",
+      "name": "Staunton River Battlefield State Park",
+      "address": "1035 Fort Hill Trail, Randolph, VA 23962",
+      "lat": 36.883759,
+      "lng": -78.706257,
+      "precision": "rooftop",
+      "origin": "geocodio"
+    },
+    {
+      "code": "SR",
+      "name": "Staunton River State Park",
+      "address": "1170 Staunton Trail, Scottsburg, VA 24589",
+      "lat": 36.700035,
+      "lng": -78.668621,
+      "precision": "rooftop",
+      "origin": "geocodio"
+    },
+    {
+      "code": "DO",
+      "name": "Douthat State Park",
+      "address": "14239 Douthat State Park Rd., Millboro, VA 24460",
+      "lat": 37.896204,
+      "lng": -79.80139,
+      "precision": "rooftop",
+      "origin": "geocodio"
+    },
+    {
+      "code": "FA",
+      "name": "Falling Spring Falls",
+      "address": "US-220, Hot Springs, VA 24445",
+      "lat": 37.86762,
+      "lng": -79.94783,
+      "precision": "user_supplied_feature_point",
+      "origin": "owner_review"
+    },
+    {
+      "code": "GP",
+      "name": "Green Pastures Recreation Area",
+      "address": "201 Green Pasture Trail, Clifton Forge, VA 24422",
+      "lat": 37.792272,
+      "lng": -79.704046,
+      "precision": "rooftop",
+      "origin": "geocodio"
+    },
+    {
+      "code": "HA",
+      "name": "Hayfields State Park",
+      "address": "524 Hayfields Lane, McDowell, VA 24458",
+      "lat": 38.261848,
+      "lng": -79.552874,
+      "precision": "rooftop",
+      "origin": "geocodio"
+    },
+    {
+      "code": "NB",
+      "name": "Natural Bridge State Park",
+      "address": "6477 South Lee Highway, Natural Bridge, VA 24578",
+      "lat": 37.628499,
+      "lng": -79.543789,
+      "precision": "rooftop",
+      "origin": "geocodio"
+    },
+    {
+      "code": "SM",
+      "name": "Smith Mountain Lake State Park",
+      "address": "1235 State Park Rd., Huddleston, VA 24104",
+      "lat": 37.091616,
+      "lng": -79.592518,
+      "precision": "rooftop",
+      "origin": "geocodio"
+    }
+  ]
+}
