@@ -1,3 +1,13 @@
+## Offsite events within search radius — November 3, 2026
+
+Ben confirmed that a 100-mile Boydton area search should include the Friends of Occoneechee State Park Monthly Meeting in Clarksville. DCR lists the Nov 4, 2026 6–7 PM meeting at Clarksville Town Hall, **321 Virginia Ave, Clarksville, VA 23927** (Chamber Room), not at the park address. The first HTML adapter had a hard skip for `Town Hall` locations, which was incorrect for a listing with a publisher-provided physical street address.
+
+The parser now extracts a complete venue-specific street address only from the publisher's own event description. Such an offsite event is retained as **Clarksville Town Hall**, with `latitude/longitude=null` pending the existing on-demand shared address cache. It must never be pinned to the unrelated park coordinates. If an offsite listing lacks a verified full street address, only that event remains withheld, not the other park events. In-park events keep using the original approved park coordinates.
+
+The matching RoomQuestGame migration extends the existing `wait_for_community_address` and `resume_community_addresses` checks to explicitly approved supported HTML sources while preserving existing demand, source, rights, and snapshot guards. It does not create new jobs, a second geocoding table, or automatic event imports.
+
+Source `virginia_state_parks_oc` remains pending/unreviewed until the current collector code, the earlier official DCR calendar GUID URL correction, and this offsite fix are validated/deployed and the first live park is deliberately approved.
+
 ## Occoneechee first-pilot correction — November 3, 2026
 
 The initial 46 registrations used `eventtype=all&srchloc=<park code>`, but official DCR park-filtered calendar links use a **long park GUID** under `park=<GUID>` plus a date window. The first vetted identifier is Occoneechee (`2013-10-18-21-10-41-00019`). The approved source URL and parser identity will be kept in sync through separate PRs; the parser appends a 60-day `start`/`end` window at request time. Other parks remain **pending** and will not be collected until their official identifiers, usage terms, and parser results are validated.
