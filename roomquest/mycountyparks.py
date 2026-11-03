@@ -321,7 +321,9 @@ def _location(main):
             if suffix.group(1) != postal or repeated is None:
                 raise ValueError("mycountyparks_event_venue_requires_address")
             street_parts[part_index] = repeated.group(1).rstrip(" ,")
-    if not re.match(r"^\d{1,6}[A-Za-z]?\s+[A-Za-z0-9]", street_parts[0]):
+    # Mitchell publishes "1879-3 Highway 9". Preserve the complete bounded
+    # numeric house number; this is address evidence, never a coordinate.
+    if not re.match(r"^\d{1,6}(?:[A-Za-z]|-\d{1,6})?\s+[A-Za-z0-9]", street_parts[0]):
         raise ValueError("mycountyparks_event_venue_requires_address")
     street = ", ".join(street_parts)
     return venue, f"{street}, {city}, IA {postal}", city
@@ -397,6 +399,14 @@ def parse_event(html, event, *, now=None):
         raise ValueError("mycountyparks_event_title_mismatch")
     start, detail_end = parse_schedule(date_tag.get_text(" ", strip=True))
     if start != event.start or (detail_end is not None and detail_end != event.end):
+        # Three observed untimed programs list midnight but show noon in the
+        # detail header. Neither time is reliable. Classify only this exact
+        # same-date/no-end conflict for withholding; never choose either time.
+        if (event.end is None and detail_end is None
+                and event.start.date() == start.date()
+                and event.start.time().isoformat() == "00:00:00"
+                and start.time().isoformat() == "12:00:00"):
+            raise ValueError("mycountyparks_event_midnight_noon_conflict")
         raise ValueError("mycountyparks_event_schedule_mismatch")
     current = now or datetime.now(TZ)
     if current.tzinfo is None:
@@ -519,20 +529,30 @@ def collect(source, fetch, *, deadline_at=None, today=None, now=None):
         raise ValueError("mycountyparks_listing_incomplete")
     if len(listings) > MAX_EVENT_PAGES:
         raise ValueError("mycountyparks_detail_limit")
-    records, unresolved = [], 0
+    records, unresolved, time_conflicts = [], 0, 0
     for event in listings:
+        html = request(event.url)
         try:
-            item = parse_event(request(event.url), event, now=current)
+            item = parse_event(html, event, now=current)
         except ValueError as exc:
-            if str(exc) != "mycountyparks_event_venue_requires_address":
+            reason = str(exc)
+            if reason == "mycountyparks_event_venue_requires_address":
+                unresolved += 1
+                print("mycountyparks_address_unresolved", county, event.event_id, reason, file=sys.stderr)
+            elif reason == "mycountyparks_event_midnight_noon_conflict":
+                time_conflicts += 1
+                print("mycountyparks_time_unresolved", county, event.event_id, reason, file=sys.stderr)
+            else:
                 raise
-            unresolved += 1
-            print("mycountyparks_address_unresolved", county, event.event_id, file=sys.stderr)
             continue
         if item:
             records.append(item)
-    if unresolved and not records:
-        raise ValueError("venue_extraction_unavailable")
+    if not records:
+        if time_conflicts:
+            raise ValueError("mycountyparks_event_evidence_unavailable")
+        if unresolved:
+            raise ValueError("venue_extraction_unavailable")
     print("mycountyparks_collection", county, "listed", expected_total, "details", len(listings),
-          "unresolved_addresses", unresolved, "records", len(records), file=sys.stderr)
+          "unresolved_addresses", unresolved, "time_conflicts", time_conflicts,
+          "records", len(records), file=sys.stderr)
     return combine_registration_options(records)

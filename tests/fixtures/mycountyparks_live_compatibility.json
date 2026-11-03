@@ -1,0 +1,66 @@
+{
+  "observed_on": "2026-11-03",
+  "fixture_note": "Exact title, schedule and Location fragments from the official linked pages. Listing totals/wrappers and the neutral summary are reduced test scaffolding; no original summary prose or session tokens are included.",
+  "events": [
+    {
+      "county": "Mahaska",
+      "county_key": "mahaska",
+      "id": "29691",
+      "url": "/County/Mahaska/Park/Caldwell-Park/Events/29691/Birding-with-Ella-Mahaska-Christmas-Bird-Count",
+      "title": "Birding with Ella \"Mahaska Christmas Bird Count\"",
+      "issue": "midnight_noon",
+      "listing_date": "DEC 19 2026 12:00 AM",
+      "detail_date": "DEC 19 2026 12:00 PM",
+      "listing_html": "<div id=\"countyData\" data-countyname=\"Mahaska\"></div><div id=\"partialViewContainer\"><div class=\"auto-grid-4\"><div class=\"swiper-slide\"><a class=\"event-link\" href=\"/County/Mahaska/Park/Caldwell-Park/Events/29691/Birding-with-Ella-Mahaska-Christmas-Bird-Count\" data-county=\"Mahaska\"><p class=\"date\">\n                            DEC 19 2026 <i class=\"fa-solid fa-circle\"></i>\n                            12:00 AM\n                        </p><h3>  \n                            Birding with Ella \"Mahaska Christmas Bird Count\"\n                        </h3></a></div></div><input id=\"hdnTotalCount\" value=\"1\"></div>",
+      "detail_html": "<main id=\"main-content\"><header class=\"detail-header\"><h1>Birding with Ella \"Mahaska Christmas Bird Count\"</h1><p class=\"date\">\n                                DEC 19 2026 <i class=\"fa-solid fa-circle\"></i>\n                                12:00 PM\n                            </p><a id=\"print\" data-county=\"Mahaska\" data-event-id=\"29691\">Print</a></header><section><div id=\"sidebar-affix\"><h2>Location</h2><p>\n<strong>Location Assigned After Registration</strong>\n<br/>\n2342 Highway 92  <br/>\nOskaloosa IA 52577                                    <br/>\nCaldwell Park                                    <br/>\nPhone: (641) 673-9327\r\nEmail: paulson@mahaskacountyia.gov                            </p></div><div><h2>Event Summary</h2><p>Public outdoor education program.</p><hr><h2>Category</h2><p>Programs</p></div></section></main>"
+    },
+    {
+      "county": "Marion",
+      "county_key": "marion",
+      "id": "29435",
+      "url": "/County/Marion/Park/Cordova-Park/Events/29435/Snowflake-Stroll",
+      "title": "Snowflake Stroll",
+      "issue": "midnight_noon",
+      "listing_date": "DEC 01 2026 12:00 AM",
+      "detail_date": "DEC 01 2026 12:00 PM",
+      "listing_html": "<div id=\"countyData\" data-countyname=\"Marion\"></div><div id=\"partialViewContainer\"><div class=\"auto-grid-4\"><div class=\"swiper-slide\"><a class=\"event-link\" href=\"/County/Marion/Park/Cordova-Park/Events/29435/Snowflake-Stroll\" data-county=\"Marion\"><p class=\"date\">\n                            DEC 01 2026 <i class=\"fa-solid fa-circle\"></i>\n                            12:00 AM\n                        </p><h3>  \n                            Snowflake Stroll\n                        </h3></a></div></div><input id=\"hdnTotalCount\" value=\"1\"></div>",
+      "detail_html": "<main id=\"main-content\"><header class=\"detail-header\"><h1>Snowflake Stroll</h1><p class=\"date\">\n                                DEC 01 2026 <i class=\"fa-solid fa-circle\"></i>\n                                12:00 PM\n                            </p><a id=\"print\" data-county=\"Marion\" data-event-id=\"29435\">Print</a></header><section><div id=\"sidebar-affix\"><h2>Location</h2><p>\n<strong>Cordova Park Karr Trail </strong>\n<br/>\n1378 Highway G-28  <br/>\nOtley IA 50214                                    <br/>\nCordova Park                                    <br/>\nkjohlasszalkowski@marioncoutyiowa.gov                            </p></div><div><h2>Event Summary</h2><p>Public outdoor education program.</p><hr><h2>Category</h2><p>Programs</p></div></section></main>"
+    },
+    {
+      "county": "Marshall",
+      "county_key": "marshall",
+      "id": "29831",
+      "url": "/County/Marshall/Park/GrimesFarm-Conservation-Center-and-Recreation-Area/Events/29831/Christmas-Bird-Count",
+      "title": "Christmas Bird Count",
+      "issue": "midnight_noon",
+      "listing_date": "DEC 17 2026 12:00 AM",
+      "detail_date": "DEC 17 2026 12:00 PM",
+      "listing_html": "<div id=\"countyData\" data-countyname=\"Marshall\"></div><div id=\"partialViewContainer\"><div class=\"auto-grid-4\"><div class=\"swiper-slide\"><a class=\"event-link\" href=\"/County/Marshall/Park/GrimesFarm-Conservation-Center-and-Recreation-Area/Events/29831/Christmas-Bird-Count\" data-county=\"Marshall\"><p class=\"date\">\n                            DEC 17 2026 <i class=\"fa-solid fa-circle\"></i>\n                            12:00 AM\n                        </p><h3>  \n                            Christmas Bird Count\n                        </h3></a></div></div><input id=\"hdnTotalCount\" value=\"1\"></div>",
+      "detail_html": "<main id=\"main-content\"><header class=\"detail-header\"><h1>Christmas Bird Count</h1><p class=\"date\">\n                                DEC 17 2026 <i class=\"fa-solid fa-circle\"></i>\n                                12:00 PM\n                            </p><a id=\"print\" data-county=\"Marshall\" data-event-id=\"29831\">Print</a></header><section><div id=\"sidebar-affix\"><h2>Location</h2><p>\n<strong>Throughout the county</strong>\n<br/>\n2349 233rd St  <br/>\nMarshalltown IA 50158                                    <br/>\nGrimesFarm Conservation Center and Recreation Area                                    <br/>\n</p></div><div><h2>Event Summary</h2><p>Public outdoor education program.</p><hr><h2>Category</h2><p>Programs</p></div></section></main>"
+    },
+    {
+      "county": "Mitchell",
+      "county_key": "mitchell",
+      "id": "29817",
+      "url": "/County/Mitchell/Park/Milton-R-Owen-Nature-Center/Events/29817/Field-to-Frame-Feather-Art",
+      "title": "Field to Frame: Feather Art",
+      "issue": "hyphenated_street",
+      "listing_date": "NOV 15 2026 2:00 PM",
+      "detail_date": "NOV 15 2026 2:00 PM",
+      "listing_html": "<div id=\"countyData\" data-countyname=\"Mitchell\"></div><div id=\"partialViewContainer\"><div class=\"auto-grid-4\"><div class=\"swiper-slide\"><a class=\"event-link\" href=\"/County/Mitchell/Park/Milton-R-Owen-Nature-Center/Events/29817/Field-to-Frame-Feather-Art\" data-county=\"Mitchell\"><p class=\"date\">\n                            NOV 15 2026 <i class=\"fa-solid fa-circle\"></i>\n                            2:00 PM\n                        </p><h3>  \n                            Field to Frame: Feather Art\n                        </h3></a></div></div><input id=\"hdnTotalCount\" value=\"1\"></div>",
+      "detail_html": "<main id=\"main-content\"><header class=\"detail-header\"><h1>Field to Frame: Feather Art</h1><p class=\"date\">\n                                NOV 15 2026 <i class=\"fa-solid fa-circle\"></i>\n                                2:00 PM\n                            </p><a id=\"print\" data-county=\"Mitchell\" data-event-id=\"29817\">Print</a></header><section><div id=\"sidebar-affix\"><h2>Location</h2><p>\n<strong>Milton R. Owen Nature Center</strong>\n<br/>\n1879-3 Highway 9  <br/>\nOsage IA 50461                                    <br/>\nMilton R. Owen Nature Center                                    <br/>\n</p></div><div><h2>Event Summary</h2><p>Public outdoor education program.</p><hr><h2>Category</h2><p>Programs</p></div></section></main>"
+    },
+    {
+      "county": "Mitchell",
+      "county_key": "mitchell",
+      "id": "29815",
+      "url": "/County/Mitchell/Park/Milton-R-Owen-Nature-Center/Events/29815/Foraged-Wreath-Swag-Making-Workshop",
+      "title": "Foraged Wreath/Swag Making Workshop",
+      "issue": "hyphenated_street",
+      "listing_date": "NOV 29 2026 1:00 PM",
+      "detail_date": "NOV 29 2026 1:00 PM",
+      "listing_html": "<div id=\"countyData\" data-countyname=\"Mitchell\"></div><div id=\"partialViewContainer\"><div class=\"auto-grid-4\"><div class=\"swiper-slide\"><a class=\"event-link\" href=\"/County/Mitchell/Park/Milton-R-Owen-Nature-Center/Events/29815/Foraged-Wreath-Swag-Making-Workshop\" data-county=\"Mitchell\"><p class=\"date\">\n                            NOV 29 2026 <i class=\"fa-solid fa-circle\"></i>\n                            1:00 PM\n                        </p><h3>  \n                            Foraged Wreath/Swag Making Workshop\n                        </h3></a></div></div><input id=\"hdnTotalCount\" value=\"1\"></div>",
+      "detail_html": "<main id=\"main-content\"><header class=\"detail-header\"><h1>Foraged Wreath/Swag Making Workshop</h1><p class=\"date\">\n                                NOV 29 2026 <i class=\"fa-solid fa-circle\"></i>\n                                1:00 PM\n                            </p><a id=\"print\" data-county=\"Mitchell\" data-event-id=\"29815\">Print</a></header><section><div id=\"sidebar-affix\"><h2>Location</h2><p>\n<strong>Milton R. Owen Nature Center</strong>\n<br/>\n1879-3 Highway 9  <br/>\nOsage IA 50461                                    <br/>\nMilton R. Owen Nature Center                                    <br/>\nChelsea Ewen Rowcliffe (641) 330-0765                            </p></div><div><h2>Event Summary</h2><p>Public outdoor education program.</p><hr><h2>Category</h2><p>Programs</p></div></section></main>"
+    }
+  ]
+}
