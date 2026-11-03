@@ -1,3 +1,11 @@
+## Occoneechee first-pilot correction — November 3, 2026
+
+The initial 46 registrations used `eventtype=all&srchloc=<park code>`, but official DCR park-filtered calendar links use a **long park GUID** under `park=<GUID>` plus a date window. The first vetted identifier is Occoneechee (`2013-10-18-21-10-41-00019`). The approved source URL and parser identity will be kept in sync through separate PRs; the parser appends a 60-day `start`/`end` window at request time. Other parks remain **pending** and will not be collected until their official identifiers, usage terms, and parser results are validated.
+
+The first upcoming meeting is off-site at Clarksville Town Hall. An unverified offsite location is now skipped per event instead of failing the entire source, while unexpected parse or transport errors still fail the snapshot rather than silently removing previously published events. The existing reviewed park address and pin are used for actual in-park activities, not offsite meetings.
+
+**Do not activate the pilot yet:** its source is pending/unreviewed, and the live DCR HTTP/robots response and first complete staging/publishing cycle have not yet been verified. The HTML worker path remains `/api/html-demand`, separate from other collector routes.
+
 # HTML Collector — Virginia State Parks pilot (November 2, 2026)
 
 ## Scope and isolation
