@@ -343,7 +343,8 @@
       "lat": 36.623813,
       "lng": -78.526959,
       "precision": "rooftop",
-      "origin": "geocodio"
+      "origin": "geocodio",
+      "dcr_calendar_id": "2013-10-18-21-10-41-00019"
     },
     {
       "code": "SB",

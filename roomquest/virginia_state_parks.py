@@ -9,7 +9,7 @@ import re
 from datetime import datetime, timedelta
 from functools import lru_cache
 from importlib import resources
-from urllib.parse import parse_qs, urljoin, urlparse
+from urllib.parse import parse_qs, urlencode, urljoin, urlparse
 from zoneinfo import ZoneInfo
 from bs4 import BeautifulSoup
 from roomquest.mapsee_adapter import record
@@ -135,10 +135,35 @@ def parse_event(html, url, park):
     return item
 
 
+def registered_calendar_url(park):
+    """Only known official DCR park identifiers are approved for HTML collection."""
+    official_id = park.get("dcr_calendar_id")
+    if not isinstance(official_id, str) or not EVENT_ID.fullmatch(official_id):
+        raise ValueError("unverified_park_calendar_identifier")
+    return CALENDAR + "?park=" + official_id
+
+
+def listing_url(park, *, today=None):
+    """DCR's real calendar uses a park GUID and an explicit date window."""
+    begin = today or datetime.now(TZ).date()
+    until = begin + timedelta(days=60)
+    return CALENDAR + "?" + urlencode({
+        "park": park["dcr_calendar_id"],
+        "start": begin.strftime("%m/%d/%Y"),
+        "end": until.strftime("%m/%d/%Y"),
+    })
+
+
 def discover(html, park):
     soup = BeautifulSoup(html, "html.parser")
     found, seen, all_count = [], set(), 0
     target = normal_name(park["name"])
+    # A park-filtered DCR listing may place the park heading outside the cards.
+    filtered_park_heading = any(
+        normal_name(node.get_text(" ", strip=True))
+        == normal_name("Park: " + park["name"])
+        for node in soup.select("h1,h2,h3,h4")
+    )
     for link in soup.select('a[href*="/state-parks/event"]'):
         url = urljoin(CALENDAR, link.get("href", ""))
         parsed = urlparse(url)
@@ -148,9 +173,9 @@ def discover(html, park):
         all_count += 1
         # Use only event links in a card/context that actually names this park;
         # never fetch every statewide detail page for a single regional search.
-        card_matches = False
+        card_matches = filtered_park_heading
         node = link
-        for _ in range(6):
+        for _ in range(6 if not filtered_park_heading else 0):
             node = node.parent
             if node is None or node.name in ("body", "html", "main", "section"):
                 break  # Never let another park's nearby card supply identity.
@@ -186,11 +211,11 @@ def collect(source, fetch, *, deadline_at=None):
     park = catalog().get(match.group(1))
     if not park:
         raise ValueError("park_code_missing")
-    expected = CALENDAR + "?eventtype=all&srchloc=" + park["code"]
+    expected = registered_calendar_url(park)
     if source.get("feed_url") != expected:
         raise ValueError("unregistered_html_calendar")
     deadline = min(time.monotonic() + 32, deadline_at or float("inf"))
-    page = fetch(expected, "text/html")
+    page = fetch(listing_url(park), "text/html")
     if time.monotonic() >= deadline:
         raise ValueError("collection_deadline")
     links, all_count = discover(page, park)
@@ -204,7 +229,16 @@ def collect(source, fetch, *, deadline_at=None):
         # Redirect resolution is owned by the existing vetted HTTP transport;
         # any off-domain redirect will be rejected there.
         detail = fetch(url, "text/html")
-        item = parse_event(detail, url, park)
+        try:
+            item = parse_event(detail, url, park)
+        except ValueError as exc:
+            if str(exc) != "offsite_venue_requires_address":
+                raise  # Unexpected parser errors must not publish partial snapshots.
+            # Off-site events await their own verified venue coordinates. One
+            # municipal meeting must not block the other valid park sessions.
+            print("virginia_parks_offsite_skipped", source_key,
+                  parse_qs(urlparse(url).query).get("id", [""])[0])
+            continue
         if item:
             records.append(item)
     return records
