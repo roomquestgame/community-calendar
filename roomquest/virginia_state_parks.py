@@ -152,12 +152,17 @@ def discover(html, park):
         node = link
         for _ in range(6):
             node = node.parent
-            if node is None:
-                break
+            if node is None or node.name in ("body", "html", "main", "section"):
+                break  # Never let another park's nearby card supply identity.
+            classes = " ".join(node.get("class", []))
+            boundary = (node.name in ("article", "li")
+                or re.search(r"(event|card|result|teaser)", classes, re.I))
             text = clean(node.get_text(" ", strip=True))
-            if len(text) > 1400:
+            if boundary:
+                card_matches = len(text) <= 1400 and target in normal_name(text)
                 break
-            if target in normal_name(text):
+            # Some DCR templates use a small unclassified div per event.
+            if node.name == "div" and len(text) <= 350 and target in normal_name(text):
                 card_matches = True
                 break
         if not card_matches or eid in seen:
