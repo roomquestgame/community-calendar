@@ -1,6 +1,8 @@
 """No network or Supabase calls: HTML collector parsing, source isolation, route."""
 import io
 import json
+from datetime import date
+from urllib.parse import parse_qs, urlparse
 from unittest.mock import patch
 import pytest
 from roomquest import virginia_state_parks as va
@@ -18,7 +20,48 @@ PARK = va.catalog()["oc"]
 CAL_LINK = va.ROOT + "/state-parks/event?id=" + ID
 SOURCE = {"source_key":"virginia_state_parks_oc", "kind":"html",
           "platform_adapter":"html",
-          "feed_url":va.CALENDAR+"?eventtype=all&srchloc=OC"}
+          "feed_url":va.registered_calendar_url(PARK)}
+
+
+def test_registered_pilot_calendar_uses_official_guid_and_60_day_window():
+    official_id = "2013-10-18-21-10-41-00019"
+    assert va.registered_calendar_url(PARK) == va.CALENDAR + "?park=" + official_id
+    query = parse_qs(urlparse(va.listing_url(PARK, today=date(2026, 11, 3))).query)
+    assert query == {"park": [official_id], "start": ["11/03/2026"], "end": ["01/02/2027"]}
+    assert "srchloc" not in query
+    other = va.catalog()["do"]
+    with pytest.raises(ValueError, match="unverified_park_calendar_identifier"):
+        va.registered_calendar_url(other)
+
+
+def test_park_filtered_heading_allows_cards_without_repeated_park_name():
+    alt = "2026-10-21-10-44-02-561449-03v"
+    html = (f'<h3>Park: Occoneechee State Park</h3>'
+        f'<article><a href="/state-parks/event?id={ID}">View Details</a></article>'
+        f'<article><a href="/state-parks/event?id={alt}">View Details</a></article>')
+    links, total = va.discover(html, PARK)
+    assert links == [CAL_LINK, va.ROOT + "/state-parks/event?id=" + alt]
+    assert total == 2
+
+
+def test_out_of_park_meeting_does_not_block_park_events():
+    offsite_id = "2026-10-10-15-06-23-053520-hfq"
+    calendar_html = (
+        '<h3>Park: Occoneechee State Park</h3>'
+        f'<article><a href="/state-parks/event?id={offsite_id}">Meeting</a></article>'
+        f'<article><a href="/state-parks/event?id={ID}">Hike</a></article>')
+    seen = []
+    def fake_fetch(url, accept):
+        seen.append(url)
+        if "/events?" in url:
+            return calendar_html
+        return PAGE.replace("Terrace Gardens", "Clarksville Town Hall") if offsite_id in url else PAGE
+    with patch.object(va, "record", return_value={"id": "hike", "title": "Plantation Discovery Hike"}):
+        records = va.collect(SOURCE, fake_fetch)
+    assert len(records) == 1
+    assert records[0]["title"] == "Plantation Discovery Hike"
+    assert len(seen) == 3
+    assert "park=2013-10-18-21-10-41-00019" in seen[0]
 
 
 def test_catalog_contains_46_reviewed_parks():
@@ -82,7 +125,7 @@ def test_exact_html_adapter_dispatch_does_not_use_wordpress_or_ics():
         result=worker.preview_source(SOURCE)
     assert result["p_future_count"]==1
     assert result["p_events"][0]["description"].startswith("Meeting Location:")
-    assert paths==[SOURCE["feed_url"],CAL_LINK]
+    assert paths==[va.listing_url(PARK),CAL_LINK]
     wordpress.assert_not_called()
 
 
