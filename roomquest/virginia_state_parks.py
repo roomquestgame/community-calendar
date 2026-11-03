@@ -67,25 +67,33 @@ def label(lines, title):
 
 
 def meeting_street_address(paragraphs, meeting_location):
-    """A physical address must occur in the publisher's venue-specific prose.
+    """Accept an address attached directly to the named meeting venue.
 
-    Never take the unrelated main park address or a third-party address from
-    elsewhere on the page as the meeting destination.
+    A paragraph can describe several locations. Matching a venue name somewhere
+    in that paragraph is not sufficient evidence for using its first address.
+    Conflicting addresses stay unresolved; no park-coordinate substitution.
     """
-    target = normal_name(meeting_location)
-    if not target:
+    if not clean(meeting_location):
         return None
+    name = re.compile(re.escape(clean(meeting_location)), re.I)
+    addresses = {}
     for paragraph in paragraphs:
-        if target not in normal_name(paragraph):
-            continue
-        for match in STREET_ADDRESS.finditer(paragraph):
-            # The street must be introduced as this location's address. A
-            # paragraph may also advertise a different future stop/office.
-            lead = paragraph[max(0, match.start() - 48):match.start()]
-            if not re.search(r"(?:\blocated\s+at|\baddress\s*(?::|is|at)|\bat|[,(:])\s*$", lead, re.I):
+        for venue in name.finditer(paragraph):
+            tail = paragraph[venue.end():]
+            match = STREET_ADDRESS.search(tail)
+            if not match:
                 continue
-            return clean(match.group(0))
-    return None
+            # Only punctuation and an explicit address introducer may separate
+            # the venue name and its street. Reject travel/shipping prose.
+            bridge = tail[:match.start()]
+            if not re.fullmatch(
+                r"[\s,:(-]*(?:(?:is\s+)?(?:located\s+at|address(?:\s+is)?\s*:?|at)\s*)?",
+                bridge, re.I,
+            ):
+                continue
+            address = clean(match.group(0))
+            addresses[normal_name(address)] = address
+    return next(iter(addresses.values())) if len(addresses) == 1 else None
 
 
 def parse_event(html, url, park):
@@ -148,6 +156,13 @@ def parse_event(html, url, park):
         raise ValueError("event_end_invalid")
 
     desc = next((t for t in paragraphs if len(t) > 55 and not t.startswith("Know Before You Go")), "")
+    if offsite:
+        # Keep the venue/room instructions even when the first long paragraph
+        # is only an introduction to the sponsoring organization.
+        venue_paragraph = next((t for t in paragraphs
+            if meeting_street_address([t], where) == alternate_address), "")
+        if venue_paragraph and venue_paragraph != desc:
+            desc = venue_paragraph + ("\n\n" + desc if desc else "")
     if where and where.lower() not in desc.lower():
         desc = "Meeting Location: " + where + ("\n\n" + desc if desc else "")
     venue_name = where if offsite else park["name"]
