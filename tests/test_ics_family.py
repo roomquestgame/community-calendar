@@ -33,3 +33,16 @@ def test_failed_checkpoint_stays_failed():
   result=_process_claimed_source(source('udell_fixture'))
  assert result['failed']==1 and result['complete']==0
  assert rpc.call_args.args[1]['p_error']=='database_unavailable'
+
+
+def test_publisher_categories_are_preserved_as_individual_labels():
+    events = parse(feed(), {}, legacy=False)
+    assert len(events) == 1
+    assert events[0]["publisher_categories"] == ["Arts", "Community"]
+    assert events[0]["category"] == "Arts, Community"
+
+
+def test_missing_publisher_categories_remain_empty_not_inferred():
+    events = parse(feed().replace('CATEGORIES:Arts,Community' + chr(13) + chr(10), ''), {}, legacy=False)
+    assert events[0]["publisher_categories"] == []
+    assert events[0]["category"] == ""
