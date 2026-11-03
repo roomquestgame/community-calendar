@@ -1,3 +1,11 @@
+## All 46 Virginia park sources: demand-only activation
+
+The 46 reviewed park sources are enabled in the corresponding RoomQuestGame migration after their parser changes deploy, but **collection still requires real, expiring user-area demand**. No statewide cron, poller or prefetch is introduced. Occoneechee's verified DCR park GUID stays immutable; the 45 other parks use DCR's actual public `?park=all` calendar as a **lookup-only** endpoint, read the requested park's unique GUID from the `select name/id=park` options, then fetch the exact park-specific `park=<GUID>&start=<date>&end=<date>` listing with the existing 60-day window and ten-detail-page bound. The bootstrap does not ingest statewide event details, and only one demanded park's own details can be staged. Ambiguous/unavailable/changed park picker fields abort that source rather than guessing another park or substituting arbitrary coordinates.
+
+The source registry keeps `rights_status=unreviewed` to avoid falsely asserting agency permission; robots/HTTP access checks remain in the vetted fetch transport, which may still block some parks. Operational approval does not imply DCR permission or guarantee a successful publisher response. Offsite activities keep venue-specific addresses and shared Geocodio continuation.
+
+**Deployment order:** pass collector Python/provider CI; merge+deploy the collector to Vercel production; then pass database PR tests, fresh-schema rehearsal and deploy the all-parks activation migration via GitHub. Finally trace a Boydton/Occoneechee search and other regional park search, checking source request, HTTP response, event counts, and user-facing results. A 403 or missing selector remains a named source error, never silent zero-event success.
+
 ## Offsite events within search radius — November 3, 2026
 
 Ben confirmed that a 100-mile Boydton area search should include the Friends of Occoneechee State Park Monthly Meeting in Clarksville. DCR lists the Nov 4, 2026 6–7 PM meeting at Clarksville Town Hall, **321 Virginia Ave, Clarksville, VA 23927** (Chamber Room), not at the park address. The first HTML adapter had a hard skip for `Town Hall` locations, which was incorrect for a listing with a publisher-provided physical street address.
