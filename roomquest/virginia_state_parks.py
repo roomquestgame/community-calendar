@@ -247,18 +247,31 @@ def discover(html, park):
     found, seen, all_count = [], set(), 0
     target = normal_name(park["name"])
     # A park-filtered DCR listing may place the park heading outside the cards.
+    headings = [clean(node.get_text(" ", strip=True))
+                for node in soup.select("h1,h2,h3,h4")]
     filtered_park_heading = any(
-        normal_name(node.get_text(" ", strip=True))
-        == normal_name("Park: " + park["name"])
-        for node in soup.select("h1,h2,h3,h4")
+        normal_name(heading) == normal_name("Park: " + park["name"])
+        for heading in headings
     )
-    for link in soup.select('a[href*="/state-parks/event"]'):
-        url = urljoin(CALENDAR, link.get("href", ""))
-        parsed = urlparse(url)
-        eid = parse_qs(parsed.query).get("id", [""])[0]
-        if parsed.hostname != "www.dcr.virginia.gov" or parsed.path != "/state-parks/event" or not EVENT_ID.fullmatch(eid):
+    for link in soup.select("a[href]"):
+        # Live DCR cards use page-relative event?id=..., unlike our original
+        # root-relative fixtures. Resolve first, then validate the full URL.
+        try:
+            url = urljoin(CALENDAR, link.get("href", ""))
+            parsed = urlparse(url)
+            ids = parse_qs(parsed.query).get("id", [])
+            if (parsed.scheme != "https" or parsed.hostname != "www.dcr.virginia.gov"
+                    or parsed.username is not None or parsed.password is not None
+                    or parsed.port not in (None, 443)
+                    or parsed.path != "/state-parks/event" or len(ids) != 1
+                    or not EVENT_ID.fullmatch(ids[0])):
+                continue
+            eid = ids[0]
+        except (TypeError, ValueError):
             continue
         all_count += 1
+        if all_count > MAX_LISTING_LINKS:
+            raise ValueError("calendar_listing_too_large")
         # Use only event links in a card/context that actually names this park;
         # never fetch every statewide detail page for a single regional search.
         card_matches = filtered_park_heading
@@ -281,11 +294,16 @@ def discover(html, park):
         if not card_matches or eid in seen:
             continue
         seen.add(eid)
-        found.append(ROOT + "/state-parks/event?id=" + eid)
-        if len(found) >= MAX_EVENT_PAGES:
-            break
-    if all_count > MAX_LISTING_LINKS:
-        raise ValueError("calendar_listing_too_large")
+        if len(found) < MAX_EVENT_PAGES:
+            found.append(ROOT + "/state-parks/event?id=" + eid)
+    if not found:
+        # A successful HTTP response is not proof of an empty calendar. DCR
+        # explicitly states '(0) Events Found' under the selected park heading.
+        # Missing links on any other page must be reported as a parser failure.
+        counts = {int(value) for heading in headings for value in re.findall(
+            r"\(\s*(\d+)\s*\)\s*Events?\s+Found\b", heading, re.I)}
+        if all_count or not filtered_park_heading or counts != {0}:
+            raise ValueError("park_listing_structure_unverified")
     return found, all_count
 
 
@@ -316,9 +334,8 @@ def collect(source, fetch, *, deadline_at=None):
     if time.monotonic() >= deadline:
         raise ValueError("collection_deadline")
     links, all_count = discover(page, park)
-    if all_count and not links:
-        # An unrecognized HTML listing is NOT a healthy empty source.
-        raise ValueError("park_listing_structure_unverified")
+    print("virginia_parks_listing", source_key, "links", all_count,
+          "selected", len(links))
     records = []
     for url in links:
         if time.monotonic() >= deadline:
@@ -338,4 +355,5 @@ def collect(source, fetch, *, deadline_at=None):
             continue
         if item:
             records.append(item)
+    print("virginia_parks_records", source_key, len(records))
     return records
