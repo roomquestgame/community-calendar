@@ -86,6 +86,34 @@ def test_extracts_meeting_location_and_known_park_address():
     assert "2026-11-07T12:30:00-05:00" in record.call_args.args[2]
 
 
+def test_offsite_clarksville_town_hall_uses_actual_venue_not_park_pin():
+    html = PAGE.replace("Terrace Gardens", "Clarksville Town Hall").replace(
+        "Explore the history of the Occoneechee Plantation on this one-mile guided hike around the Plantation Trail and natural history.",
+        "The Friends group meets at the Clarksville Town Hall (located at 321 Virginia Ave, Clarksville, VA 23927) in the Chamber Room. Everyone is welcome."
+    )
+    with patch.object(va, "record", return_value={"id": "townhall", "lat": None, "lng": None}) as normalized:
+        result = va.parse_event(html, CAL_LINK, PARK)
+    assert result["location_provenance"] == "publisher_offsite_street_pending_geocode"
+    assert "321 Virginia Ave, Clarksville, VA 23927" in result["description"]
+    assert normalized.call_args.args[3] == "Clarksville Town Hall"
+    assert normalized.call_args.args[4] == "321 Virginia Ave, Clarksville, VA 23927"
+    assert normalized.call_args.args[5] == "Clarksville"
+    assert normalized.call_args.kwargs["lat"] is None
+    assert normalized.call_args.kwargs["lng"] is None
+    assert not normalized.call_args.kwargs["publisher_geo"]
+
+
+def test_unrelated_publisher_address_is_not_used_for_offsite_location():
+    html = PAGE.replace("Terrace Gardens", "Clarksville Town Hall").replace(
+        "Explore the history of the Occoneechee Plantation on this one-mile guided hike around the Plantation Trail and natural history.",
+        "The activity meets at Clarksville Town Hall, and organizers will visit 123 Other Rd, Richmond, VA 23220 later. The venue itself has no confirmed street address."
+    )
+    # If the publisher's paragraph mentions the meeting location and another
+    # unrelated street address, we should not borrow an arbitrary destination.
+    with pytest.raises(ValueError, match="offsite_venue_requires_address"):
+        va.parse_event(html, CAL_LINK, PARK)
+
+
 def test_skips_offsite_meeting_with_unresolved_address():
     html=PAGE.replace("Terrace Gardens","Clarksville Town Hall")
     with pytest.raises(ValueError, match="offsite_venue_requires_address"):
