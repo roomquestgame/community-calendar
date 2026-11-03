@@ -78,8 +78,12 @@ def meeting_street_address(paragraphs, meeting_location):
     for paragraph in paragraphs:
         if target not in normal_name(paragraph):
             continue
-        match = STREET_ADDRESS.search(paragraph)
-        if match:
+        for match in STREET_ADDRESS.finditer(paragraph):
+            # The street must be introduced as this location's address. A
+            # paragraph may also advertise a different future stop/office.
+            lead = paragraph[max(0, match.start() - 48):match.start()]
+            if not re.search(r"(?:\\blocated\\s+at|\\baddress\\s*(?::|is|at)|\\bat|[,(:])\\s*$", lead, re.I):
+                continue
             return clean(match.group(0))
     return None
 
