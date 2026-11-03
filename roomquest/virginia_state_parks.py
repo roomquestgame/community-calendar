@@ -25,6 +25,16 @@ TIMES = re.compile(rf"({CLOCK})\s*(?:-|–|—|to)\s*({CLOCK})", re.I)
 EVENT_ID = re.compile(r"^[A-Za-z0-9-]{10,90}$")
 OFFSITE = re.compile(r"\b(town hall|municipal building|civic center|city hall)\b", re.I)
 
+# A publisher-supplied meeting street address is evidence of the actual venue.
+# Extract it from the event description, NOT from the unrelated park address.
+STREET_ADDRESS = re.compile(
+    r"\b\d{1,6}\s+[A-Za-z][A-Za-z0-9.'/-]*"
+    r"(?:\s+[A-Za-z0-9][A-Za-z0-9.'/-]*){0,7},\s*"
+    r"[A-Za-z][A-Za-z .'-]{1,65},\s*VA\s*\d{5}(?:-\d{4})?\b",
+    re.I,
+)
+
+
 
 def clean(value):
     return re.sub(r"\s+", " ", str(value)).strip(" \t:") if value else ""
@@ -56,6 +66,24 @@ def label(lines, title):
     return ""
 
 
+def meeting_street_address(paragraphs, meeting_location):
+    """A physical address must occur in the publisher's venue-specific prose.
+
+    Never take the unrelated main park address or a third-party address from
+    elsewhere on the page as the meeting destination.
+    """
+    target = normal_name(meeting_location)
+    if not target:
+        return None
+    for paragraph in paragraphs:
+        if target not in normal_name(paragraph):
+            continue
+        match = STREET_ADDRESS.search(paragraph)
+        if match:
+            return clean(match.group(0))
+    return None
+
+
 def parse_event(html, url, park):
     """Extract actual DCR fields; park catalog supplies the approved park-level GPS."""
     soup = BeautifulSoup(html, "html.parser")
@@ -78,8 +106,11 @@ def parse_event(html, url, park):
         if not (normal_name("Shenandoah River State Park") in normal_name(main_address or text) and park["code"] == "SH"):
             raise ValueError("event_park_mismatch")
     where = label(lines, "Program Location") or label(lines, "Meeting Location")
-    if where and OFFSITE.search(where):
-        # A meeting at an off-site building cannot be pinned to the park office.
+    paragraphs = [clean(t.get_text(" ", strip=True)) for t in section.select("p")]
+    alternate_address = meeting_street_address(paragraphs, where)
+    offsite = bool(alternate_address) or bool(where and OFFSITE.search(where))
+    if offsite and not alternate_address:
+        # Do not guess or substitute the park entrance for a separate venue.
         raise ValueError("offsite_venue_requires_address")
     when_match = re.search(r"\bWhen\b[\s\S]{0,240}", text, re.I)
     when_text = when_match.group(0) if when_match else text
@@ -112,26 +143,33 @@ def parse_event(html, url, park):
     if end <= start:
         raise ValueError("event_end_invalid")
 
-    paragraphs = [clean(t.get_text(" ", strip=True)) for t in section.select("p")]
     desc = next((t for t in paragraphs if len(t) > 55 and not t.startswith("Know Before You Go")), "")
     if where and where.lower() not in desc.lower():
         desc = "Meeting Location: " + where + ("\n\n" + desc if desc else "")
-    parts = [clean(p) for p in park["address"].split(",")]
+    venue_name = where if offsite else park["name"]
+    street = alternate_address if offsite else park["address"]
+    parts = [clean(p) for p in street.split(",")]
     city = parts[-2] if len(parts) >= 3 else ""
     page_id = parse_qs(urlparse(url).query).get("id", [""])[0]
     if not EVENT_ID.fullmatch(page_id):
         raise ValueError("invalid_event_id")
-    # Already reviewed park GPS is used only as a park-level destination; provenance
-    # travels with its registered park source and the reviewed address cache.
-    item = record(title, start.isoformat(), end.isoformat(), park["name"],
-                  park["address"], city, ROOT + "/state-parks/event?id=" + page_id,
+    # In-park events use the reviewed park pin. Offsite activities use the
+    # publisher's actual street address, never the unrelated park coordinates.
+    # The shared demand-gated address cache/geocoder fills their GPS later.
+    item = record(title, start.isoformat(), end.isoformat(), venue_name,
+                  street, city, ROOT + "/state-parks/event?id=" + page_id,
                   "vsp:" + park["code"].lower() + ":" + page_id,
-                  lat=park["lat"], lng=park["lng"], tz="America/New_York", publisher_geo=True)
+                  lat=None if offsite else park["lat"],
+                  lng=None if offsite else park["lng"], tz="America/New_York",
+                  publisher_geo=not offsite)
     if item is None:
         return None  # Outside normal forward discovery window.
     item["description"] = desc[:2000] if desc else None
     item["park_code"] = park["code"]
-    item["location_provenance"] = "owner_reviewed_park_cache"
+    item["location_provenance"] = (
+        "publisher_offsite_street_pending_geocode" if offsite
+        else "owner_reviewed_park_cache"
+    )
     return item
 
 
