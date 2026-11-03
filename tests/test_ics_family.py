@@ -43,6 +43,6 @@ def test_publisher_categories_are_preserved_as_individual_labels():
 
 
 def test_missing_publisher_categories_remain_empty_not_inferred():
-    events = parse(feed().replace("CATEGORIES:Arts,Community\\r\\n", ""), {}, legacy=False)
+    events = parse(feed().replace('CATEGORIES:Arts,Community' + chr(13) + chr(10), ''), {}, legacy=False)
     assert events[0]["publisher_categories"] == []
     assert events[0]["category"] == ""
