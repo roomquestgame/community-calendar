@@ -127,6 +127,58 @@ the host deadline and reviewed source state. This batch adds no automatic releas
 or new admin UI for that exceptional hold. No new timer or scheduling service is
 needed; the existing demand queue enforces the persisted deadline.
 
+## Short waits before the next HTML collection
+
+The Oskaloosa trace exposed a handoff gap: a worker could finish 36 or 525
+milliseconds before its recorded publisher pause ended. Finish immediately
+wakes the queue, but that wake correctly finds the host ineligible. Work then
+waits for another trigger, usually the existing minute recovery job.
+
+After the HTML preview v2 RPC succeeds, the collector now records a private
+monotonic handoff deadline. It starts the estimate **after the RPC response**
+and adds the greater of the recorded crawl delay, Retry-After, or one second.
+That one-second minimum also covers the backend's independent recent-preview
+guard when no publisher delay was advertised. Starting after the response is
+conservative: it cannot shorten the server's recorded pause. This local state
+is not part of the RPC payload or the returned HTTP result.
+
+After publication, HTML outcomes `complete` and `source_error` retain their
+existing lease for the remaining wait only if it is positive and at most two
+seconds. The worker also reserves the five-second finish timeout and a
+three-second response/overhead margin inside the configured 60-second
+invocation budget. Publication that already consumed the pause adds no wait.
+The existing finish RPC runs exactly once, including if the local wait is
+interrupted, so its normal wake can observe an eligible host.
+
+The wait occurs outside a database transaction. A longer remaining pause is
+never clamped to two seconds; unbounded holds and insufficient runtime budget
+use the existing recovery behavior. Failed or busy publication, publication
+continuations and other collector categories retain their existing finish
+behavior. Database demand, publisher holds, one-host exclusion, worker capacity
+and source retry eligibility remain authoritative. No queue mutation, new
+endpoint, timer, background demand or additional publisher request is introduced.
+
+This follow-up requires only the already-deployed preview v2 and finish
+contracts. It can deploy independently of the separate nearby-source ordering
+and Map completion changes. It fixes the evidenced short-pause gap, not the
+ordering of county requests or the time taken by a publisher's required long
+pause.
+
+Fake-clock regressions reproduce both observed subsecond gaps, including the
+one-second guard with zero advertised delay. They verify post-record timing,
+short and elapsed waits, longer Retry-After preservation, unbounded holds,
+invocation budget, error outcomes, finish-once behavior and unchanged response
+data. Runtime validation results for this follow-up are recorded in its release
+receipt after the current-head provider suite and deployment checks.
+
+Local preflight on collector base `d6ca540bbcfab64105eacfe2bd2916d03c11baad`
+passed all 75 focused staging/category tests and the exact provider CI list:
+**648 tests plus 25 subtests passed in 3.83 seconds** on Python 3.12.14. The
+initial full run found one missing Raleigh catalog file in the partial local
+snapshot; restoring that unchanged, SHA-verified fixture produced the clean
+rerun. These are local results, not a production deployment or new live-search
+latency measurement. No live publisher was fetched for preflight.
+
 ## Narrow Virginia schedule correction
 
 The official indexed page for [2026 Festival of Trees](https://www.dcr.virginia.gov/state-parks/event?id=2026-10-29-11-23-23-287887-qd6)

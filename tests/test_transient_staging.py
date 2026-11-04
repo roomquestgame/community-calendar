@@ -137,3 +137,66 @@ def test_separate_collection_does_not_inherit_another_publishers_wait():
         w._process_claimed_source(source)
     assert rpc.call_args.args[1]['p_publisher_retry_after_seconds'] == 0
     assert rpc.call_args.args[1]['p_publisher_wait_unbounded'] is False
+
+
+@pytest.mark.parametrize('crawl_delay,retry_after,wait', [(0, None, 1), (2.1, None, 3), (1, '60', 60)])
+def test_html_handoff_starts_only_after_pacing_is_persisted(crawl_delay, retry_after, wait):
+    from roomquest.publisher_pacing import observe_crawl_delay, observe_retry_after
+    source = {'source_key': 'fixture', 'kind': 'html', 'platform_adapter': 'html'}
+    clock, handoff = [100.0], {}
+
+    def collect(*_args, **_kwargs):
+        observe_crawl_delay(crawl_delay)
+        observe_retry_after(retry_after)
+        return output(0)
+
+    def rpc(path, data, **_kwargs):
+        assert handoff == {}
+        assert 'publisher_handoff' not in data and 'ready_at' not in data
+        if path == 'community_collector_record_preview_v2':
+            clock[0] = 103.0  # Recording and its response consumed time.
+        return 0
+
+    with patch.object(w, 'monotonic', side_effect=lambda: clock[0]), \
+            patch.object(w, 'preview_source', side_effect=collect), \
+            patch.object(w, 'supabase_rpc', side_effect=rpc):
+        result = w._process_claimed_source(source, publisher_handoff=handoff)
+    assert handoff == {'ready_at': 103.0 + wait}
+    assert result == {'complete': 1, 'failed': 0, 'staged': 0}
+
+
+def test_failed_pacing_record_cannot_supply_a_handoff():
+    source = {'source_key': 'fixture', 'kind': 'html', 'platform_adapter': 'html'}
+    handoff = {}
+    with patch.object(w, 'preview_source', return_value=output(0)), \
+            patch.object(w, 'supabase_rpc', side_effect=[0, w.PreviewError('database_unavailable')]):
+        with pytest.raises(w.PreviewError, match='database_unavailable'):
+            w._process_claimed_source(source, publisher_handoff=handoff)
+    assert handoff == {}
+
+
+def test_unbounded_publisher_wait_has_no_short_handoff():
+    from roomquest.publisher_pacing import observe_retry_after
+    source = {'source_key': 'fixture', 'kind': 'html', 'platform_adapter': 'html'}
+    handoff = {}
+
+    def collect(*_args, **_kwargs):
+        observe_retry_after('86401')
+        return output(0)
+
+    with patch.object(w, 'preview_source', side_effect=collect), \
+            patch.object(w, 'supabase_rpc') as rpc:
+        result = w._process_claimed_source(source, publisher_handoff=handoff)
+    assert handoff == {}
+    assert result['failed'] == 1 and result['error_code'] == 'publisher_wait_requires_review'
+    assert rpc.call_args.args[1]['p_publisher_wait_unbounded'] is True
+
+
+def test_non_html_preview_does_not_create_a_publisher_handoff():
+    handoff = {}
+    with patch.object(w, 'preview_source', return_value=output(0)), \
+            patch.object(w, 'supabase_rpc', return_value=0) as rpc:
+        result = w._process_claimed_source({'source_key': 'fixture'}, publisher_handoff=handoff)
+    assert handoff == {}
+    assert result == {'complete': 1, 'failed': 0, 'staged': 0}
+    assert rpc.call_args.args[0] == 'community_collector_record_preview'

@@ -3,6 +3,31 @@ import pytest
 from roomquest import category_worker as w
 from roomquest.preview_worker import PreviewError
 
+
+@pytest.fixture(autouse=True)
+def clock(monkeypatch):
+    from roomquest import preview_worker as preview
+
+    class Clock:
+        now = 100.0
+
+        def __init__(self):
+            self.waits = []
+
+        def monotonic(self):
+            return self.now
+
+        def sleep(self, seconds):
+            self.waits.append(seconds)
+            self.now += seconds
+
+    value = Clock()
+    monkeypatch.setattr(w, 'monotonic', value.monotonic)
+    monkeypatch.setattr(preview, 'monotonic', value.monotonic)
+    monkeypatch.setattr(w, 'sleep', value.sleep)
+    return value
+
+
 @pytest.mark.parametrize('category', sorted(w.CATEGORIES))
 def test_categories_claim_only_own_ticket(category):
     with patch.object(w, 'supabase_rpc', side_effect=[None, True]) as rpc:
@@ -152,3 +177,181 @@ def test_http_rejects_untrusted_payload_before_claim():
         h=object.__new__(module.handler);h.path='/api/category-demand';h.headers={'Content-Length':str(len(raw))};h.rfile=io.BytesIO(raw)
         with patch.object(h,'reply') as reply, patch.object(module,'collect_category') as collect:
             h.do_POST();assert reply.call_args.args[0]==400;collect.assert_not_called()
+
+
+@pytest.mark.parametrize('remaining', [0.036, 0.525])
+@pytest.mark.parametrize('crawl_delay', [0, 1, 2])
+def test_html_finishes_after_the_publisher_is_runnable(clock, remaining, crawl_delay):
+    """A subsecond gap must not defer a ready host to minute recovery."""
+    from roomquest import preview_worker as preview
+    from roomquest.publisher_pacing import observe_crawl_delay
+    calls, host_ready = [], []
+    interval = max(1, crawl_delay)
+
+    def rpc(path, data, **kwargs):
+        calls.append((path, dict(data), clock.now))
+        if path == 'community_collector_claim_category':
+            return {'action': 'collect', 'source_key': 'fixture',
+                    'kind': 'html', 'platform_adapter': 'html'}
+        if path == 'community_collector_record_staged_events':
+            return 0
+        if path == 'community_collector_record_preview_v2':
+            # Model both the durable publisher wait and the independent
+            # one-second recent-preview guard, using server record time.
+            host_ready.append(clock.now + interval)
+            assert data['p_publisher_crawl_delay_seconds'] == crawl_delay
+            return None
+        if path == 'community_collector_publish_category':
+            clock.now += interval - remaining
+            return {'outcome': 'complete'}
+        assert path == 'community_collector_finish_category'
+        assert clock.now >= host_ready[0]
+        assert kwargs['timeout'] == 5
+        return True
+
+    def collect(*_args, **_kwargs):
+        observe_crawl_delay(crawl_delay)
+        return {'p_source_key': 'fixture', 'p_samples': [], 'p_future_count': 0,
+                'p_venue_count': 0, 'p_error': None, 'p_events': []}
+
+    with patch.object(w, 'supabase_rpc', side_effect=rpc), \
+            patch.object(preview, 'supabase_rpc', side_effect=rpc), \
+            patch.object(preview, 'preview_source', side_effect=collect):
+        result = w.collect_category('html', 'ticket')
+
+    assert clock.waits == pytest.approx([remaining])
+    assert result == {'category': 'html', 'claimed': 1, 'complete': 1,
+                      'failed': 0, 'staged': 0, 'publication': {'outcome': 'complete'}}
+    assert [path for path, _, _ in calls] == [
+        'community_collector_claim_category', 'community_collector_record_staged_events',
+        'community_collector_record_preview_v2', 'community_collector_publish_category',
+        'community_collector_finish_category']
+    assert all('ready_at' not in data and 'publisher_handoff' not in data
+               for _, data, _ in calls)
+
+
+@pytest.mark.parametrize('recorded_wait,publication_seconds,expected_wait', [
+    (1, 1.5, None),   # Publication already consumed the whole pause.
+    (2, 0, 2),       # The full short-wait cap still fits the invocation.
+    (3, 0, None),    # Never shorten a longer interval into the two-second cap.
+    (60, 0.5, None),
+    (3, 2.5, 0.5),   # Most of a longer pause may have elapsed during publication.
+])
+def test_html_waits_only_for_short_remaining_intervals(
+        clock, recorded_wait, publication_seconds, expected_wait):
+    def process(_source, *, publisher_handoff, **_kwargs):
+        publisher_handoff['ready_at'] = clock.now + recorded_wait
+        return {'complete': 1, 'failed': 0, 'staged': 0}
+
+    def rpc(path, _data, **_kwargs):
+        if path == 'community_collector_claim_category':
+            return {'action': 'collect'}
+        if path == 'community_collector_publish_category':
+            clock.now += publication_seconds
+            return {'outcome': 'complete'}
+        return True
+
+    with patch.object(w, 'supabase_rpc', side_effect=rpc), \
+            patch.object(w, '_process_claimed_source', side_effect=process):
+        w.collect_category('html', 'ticket')
+    assert clock.waits == ([] if expected_wait is None else [expected_wait])
+
+
+def test_html_reserves_finish_and_response_budget_before_waiting(clock):
+    calls = []
+
+    def process(_source, *, publisher_handoff, **_kwargs):
+        clock.now += 52
+        publisher_handoff['ready_at'] = clock.now + 1
+        return {'complete': 1, 'failed': 0, 'staged': 0}
+
+    def rpc(path, data, **kwargs):
+        calls.append((path, data, kwargs))
+        if path == 'community_collector_claim_category':
+            return {'action': 'collect'}
+        return {'outcome': 'complete'}
+
+    with patch.object(w, 'supabase_rpc', side_effect=rpc), \
+            patch.object(w, '_process_claimed_source', side_effect=process):
+        w.collect_category('html', 'ticket')
+    assert clock.waits == []
+    assert calls[-1] == ('community_collector_finish_category',
+                         {'p_category': 'html', 'p_ticket': 'ticket', 'p_outcome': 'complete'},
+                         {'timeout': 5})
+
+
+def test_recorded_source_error_handoff_keeps_error_outcome(clock):
+    from roomquest import preview_worker as preview
+    calls = []
+
+    def rpc(path, data, **_kwargs):
+        calls.append((path, data))
+        if path == 'community_collector_claim_category':
+            return {'action': 'collect', 'source_key': 'fixture',
+                    'kind': 'html', 'platform_adapter': 'html'}
+        return True
+
+    with patch.object(w, 'supabase_rpc', side_effect=rpc), \
+            patch.object(preview, 'supabase_rpc', side_effect=rpc), \
+            patch.object(preview, 'preview_source', side_effect=PreviewError('event_schedule_missing')):
+        result = w.collect_category('html', 'ticket')
+    assert clock.waits == [1]
+    assert result['failed'] == 1
+    assert calls[-1][1]['p_outcome'] == 'source_error'
+    assert not any(path == 'community_collector_publish_category' for path, _ in calls)
+
+
+@pytest.mark.parametrize('publication_outcome', ['busy', 'idle'])
+def test_html_busy_publication_keeps_existing_finish_behavior(clock, publication_outcome):
+    def process(_source, *, publisher_handoff, **_kwargs):
+        publisher_handoff['ready_at'] = clock.now + 1
+        return {'complete': 1, 'failed': 0, 'staged': 0}
+
+    with patch.object(w, 'supabase_rpc', side_effect=[
+            {'action': 'collect'}, {'outcome': publication_outcome}, True]) as rpc, \
+            patch.object(w, '_process_claimed_source', side_effect=process):
+        w.collect_category('html', 'ticket')
+    assert clock.waits == []
+    assert rpc.call_args.args[1]['p_outcome'] == 'busy'
+
+
+def test_html_publication_failure_does_not_wait_and_finishes_once(clock):
+    def process(_source, *, publisher_handoff, **_kwargs):
+        publisher_handoff['ready_at'] = clock.now + 1
+        return {'complete': 1, 'failed': 0, 'staged': 0}
+
+    with patch.object(w, 'supabase_rpc', side_effect=[
+            {'action': 'collect'}, PreviewError('database_unavailable'), True]) as rpc, \
+            patch.object(w, '_process_claimed_source', side_effect=process):
+        with pytest.raises(PreviewError, match='database_unavailable'):
+            w.collect_category('html', 'ticket')
+    assert clock.waits == []
+    assert sum(call.args[0] == 'community_collector_finish_category'
+               for call in rpc.call_args_list) == 1
+    assert rpc.call_args.args[1]['p_outcome'] == 'failed'
+
+
+def test_interrupted_html_wait_still_finishes_once(clock):
+    def process(_source, *, publisher_handoff, **_kwargs):
+        publisher_handoff['ready_at'] = clock.now + 1
+        return {'complete': 1, 'failed': 0, 'staged': 0}
+
+    with patch.object(w, 'supabase_rpc', side_effect=[
+            {'action': 'collect'}, {'outcome': 'complete'}, True]) as rpc, \
+            patch.object(w, '_process_claimed_source', side_effect=process), \
+            patch.object(w, 'sleep', side_effect=RuntimeError('interrupted')):
+        with pytest.raises(RuntimeError, match='interrupted'):
+            w.collect_category('html', 'ticket')
+    assert sum(call.args[0] == 'community_collector_finish_category'
+               for call in rpc.call_args_list) == 1
+
+
+@pytest.mark.parametrize('category', ['html', 'wordpress'])
+def test_publish_continuation_has_no_collection_handoff(clock, category):
+    with patch.object(w, 'supabase_rpc', side_effect=[
+            {'action': 'publish'}, {'outcome': 'continued'}, True]) as rpc, \
+            patch.object(w, '_process_claimed_source') as process:
+        w.collect_category(category, 'ticket')
+    process.assert_not_called()
+    assert clock.waits == []
+    assert rpc.call_args.args[1]['p_outcome'] == 'complete'

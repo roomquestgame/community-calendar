@@ -1,9 +1,29 @@
 """Independent demand lanes. Credentials and one-use tickets stay server-side."""
-from time import monotonic
+from time import monotonic, sleep
 from roomquest.preview_worker import PreviewError, supabase_rpc, _process_claimed_source
 
 CATEGORIES = frozenset(('ical', 'wordpress', 'jsonld', 'squarespace', 'library',
                         'rss', 'localist', 'socrata', 'chambermaster', 'chambermate', 'parks', 'html'))
+
+MAX_HANDOFF_WAIT_SECONDS = 2
+FINISH_TIMEOUT_SECONDS = 5
+# api/html_demand.py and api/category_demand.py both have maxDuration=60.
+# Preserve additional time for response handling and invocation overhead.
+INVOCATION_BUDGET_SECONDS = 60
+FINISH_MARGIN_SECONDS = 3
+
+
+def _wait_for_html_handoff(handoff, started):
+    ready_at = handoff.get('ready_at')
+    if ready_at is None:
+        return
+    remaining = ready_at - monotonic()
+    if (0 < remaining <= MAX_HANDOFF_WAIT_SECONDS
+            and ready_at + FINISH_TIMEOUT_SECONDS + FINISH_MARGIN_SECONDS
+            <= started + INVOCATION_BUDGET_SECONDS):
+        # Keep the existing host lease for a short wait outside any database
+        # transaction. Longer waits still use the normal recovery mechanism.
+        sleep(remaining)
 
 
 def collect_category(category, ticket):
@@ -17,9 +37,13 @@ def collect_category(category, ticket):
         return {'outcome': 'idle'}
     outcome = 'failed'
     result = {'category': category, 'claimed': 1}
+    publisher_handoff = {}
     try:
         if source['action'] == 'collect':
-            result.update(_process_claimed_source(source, deadline_at=started + 39))
+            process_args = {'deadline_at': started + 39}
+            if category == 'html':
+                process_args['publisher_handoff'] = publisher_handoff
+            result.update(_process_claimed_source(source, **process_args))
             if result['failed']:
                 if category == 'html' and result.get('failure_scope') == 'source':
                     # The recorded source hold/retry owns its next attempt.
@@ -33,4 +57,10 @@ def collect_category(category, ticket):
         outcome = 'busy' if published.get('outcome') in ('busy', 'idle') else 'complete'
         return result
     finally:
-        supabase_rpc('community_collector_finish_category', {**args, 'p_outcome': outcome}, timeout=5)
+        try:
+            if category == 'html' and outcome in ('complete', 'source_error'):
+                _wait_for_html_handoff(publisher_handoff, started)
+        finally:
+            # Finish exactly once even if the local wait is interrupted.
+            supabase_rpc('community_collector_finish_category',
+                         {**args, 'p_outcome': outcome}, timeout=FINISH_TIMEOUT_SECONDS)
