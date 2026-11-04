@@ -1,3 +1,25 @@
+## Bellevue Times first-page collection — November 4, 2026
+
+The exact `bellevue_times_ne` source has a bounded first-page HTML adapter.
+[BELLEVUE_TIMES.md](BELLEVUE_TIMES.md) documents occurrence timestamps, reviewed
+venue addresses, per-event evidence holds, and the required backend pairing.
+Ben authorized reading the accessible first page only: one request, at most
+30 publisher cards, and a 30-second budget. Diagnostics explicitly label
+`collection_scope=first_page` and report the publisher total and omitted later
+coverage. Malformed or incomplete first-page responses still fail. Existing
+MyCountyParks and Virginia dispatch and behavior remain unchanged.
+
+The captured page reports 61 upcoming cards, while page 2 and page 3 return
+HTTP 403 / Cloudflare validation. Those later pages are outside this mode's
+coverage and are never requested. First-page collection may run on approved
+user demand with the companion backend protection: **absence from this limited
+page must not cancel or hide previously seen events that moved to later pages**.
+Normal expiry/freshness remains in place. The offline result of 28 distinct
+address-backed records is not evidence of a live production pull. Full-calendar
+access is not required for this mode, and no challenge is bypassed.
+Optional image URLs are adapter candidate metadata only; this HTML publication
+path keeps public `image_url` null and does not add media promotion.
+
 ## MyCountyParks county pilot — November 3, 2026
 
 The HTML family now has an explicit MyCountyParks dispatcher alongside Virginia
