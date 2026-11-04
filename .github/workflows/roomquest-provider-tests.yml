@@ -9,6 +9,11 @@ on:
         type: boolean
         required: false
         default: false
+      virginia_live:
+        description: 'Read-only capture of two reviewed DCR event pages with production publisher guards'
+        type: boolean
+        required: false
+        default: false
 permissions:
   contents: read
 jobs:
@@ -38,3 +43,17 @@ jobs:
           path: ${{ runner.temp }}/mycountyparks-audit.json
           if-no-files-found: error
           retention-days: 14
+      - name: Check bounded Virginia diagnostic
+        run: python -m pytest tests/test_virginia_html_audit.py -q
+      - name: Read-only Virginia event HTML capture
+        id: virginia_audit
+        if: github.event_name == 'workflow_dispatch' && inputs.virginia_live
+        run: python scripts/capture_virginia_event_html.py --output-dir "$RUNNER_TEMP/virginia-event-html-audit"
+      - name: Preserve public Virginia HTML evidence
+        if: always() && steps.virginia_audit.outcome != 'skipped' && steps.virginia_audit.outcome != ''
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: virginia-event-html-audit-${{ github.sha }}
+          path: ${{ runner.temp }}/virginia-event-html-audit
+          if-no-files-found: error
+          retention-days: 7
