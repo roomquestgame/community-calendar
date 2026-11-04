@@ -549,15 +549,20 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
     # Independent HTML family with explicit, publisher-specific dispatch.
     if source.get("platform_adapter") == "html" and source.get("kind") == "html":
         source_key = str(source.get("source_key", ""))
+        html_budget = 36
         if source_key.startswith("mycountyparks_ia_"):
             from roomquest.mycountyparks import collect as collect_html
             allowed_hosts = ("www.mycountyparks.com",)
         elif source_key.startswith("virginia_state_parks_"):
             from roomquest.virginia_state_parks import collect as collect_html
             allowed_hosts = ("www.dcr.virginia.gov",)
+        elif source_key == "bellevue_times_ne":
+            from roomquest.bellevue_times import collect as collect_html
+            allowed_hosts = ("bellevuetimes.com",)
+            html_budget = 30
         else:
             raise PreviewError("unregistered_html_source")
-        deadline = min(monotonic() + 36, deadline_at - 5 if deadline_at is not None else float("inf"))
+        deadline = min(monotonic() + html_budget, deadline_at - 5 if deadline_at is not None else float("inf"))
         try:
             records = collect_html(
                 source, lambda url, accept: fetch_publisher(

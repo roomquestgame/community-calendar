@@ -1,3 +1,22 @@
+## Bellevue Times held pilot — November 4, 2026
+
+The exact `bellevue_times_ne` source now has a bounded list-only HTML adapter.
+[BELLEVUE_TIMES.md](BELLEVUE_TIMES.md) documents occurrence timestamps, reviewed
+venue addresses, per-event evidence holds, and the release gate. Collection
+requires all declared pages (at most three / 90 cards) within 30 seconds; a
+blocked later page cannot produce a successful partial snapshot. Existing
+MyCountyParks and Virginia dispatch and behavior are unchanged.
+
+**Keep this source pending and ineligible for automatic collection:** page 1
+reports 61 upcoming cards, while page 2 and page 3 return HTTP 403 / Cloudflare
+validation. This is an access hold,
+not a robots-denial finding. The offline first-page result of 28 distinct
+address-backed records is not a live full pull. Activation requires accessible
+publisher data or a publisher-approved crawler exception and verified complete
+collection through the existing transport; do not bypass the challenge.
+Optional image URLs are adapter candidate metadata only; this HTML publication
+path keeps public `image_url` null and does not add media promotion.
+
 ## MyCountyParks county pilot — November 3, 2026
 
 The HTML family now has an explicit MyCountyParks dispatcher alongside Virginia
