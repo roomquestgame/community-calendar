@@ -1,4 +1,4 @@
-"""Offline evidence, identity, venue and whole-snapshot failure tests."""
+"""Offline evidence, venues and explicitly limited first-page collection."""
 from dataclasses import replace
 from datetime import datetime, timedelta, timezone
 from html import escape
@@ -64,12 +64,12 @@ def record_spy(monkeypatch):
     return spy
 
 
-def test_actual_first_page_is_an_audit_not_a_complete_snapshot(capsys):
+def test_actual_first_page_is_collected_with_explicit_limited_scope(capsys):
     page = bt.parse_listing(CAPTURE)
     assert len(page.cards) == 30 and page.total == 61
-    assert page.date_anchor == "2026-11-03"
-    assert page.next_url == bt.CALENDAR + "?bcc_view=list&bcc_date=2026-11-03&bcc_page=2"
-    rows = bt.normalize_cards(page.cards, now=NOW)
+    fetch = Mock(return_value=CAPTURE)
+    rows = bt.collect(SOURCE, fetch, now=NOW)
+    fetch.assert_called_once_with(bt.CALENDAR, "text/html")
     assert len(rows) == 28
     assert len({row["id"] for row in rows}) == 28
     assert all(row["lat"] is None and row["lng"] is None for row in rows)
@@ -77,7 +77,10 @@ def test_actual_first_page_is_an_audit_not_a_complete_snapshot(capsys):
     assert all("bcc_return" not in row["event_url"] for row in rows)
     logs = [json.loads(line) for line in capsys.readouterr().err.splitlines()]
     assert logs[-1] == {"event": "bellevue_times_normalized", "source_key": bt.SOURCE_KEY,
-                        "listed": 30, "held": 1, "duplicates": 1, "records": 28}
+                        "collection_scope": "first_page", "publisher_total": 61,
+                        "first_page_count": 30, "has_more": True,
+                        "held": 1, "duplicates": 1, "records": 28}
+    assert all(log["collection_scope"] == "first_page" for log in logs)
     assert logs[0]["reason"] == "bellevue_times_spanish_storytime_time_conflict"
     assert logs[1]["reason"] == "verified_parade_counterpart"
 
@@ -259,24 +262,26 @@ def test_no_image_cards_and_untrusted_image_urls_do_not_change_event_count():
         assert len(rows) == 1 and "image_url" not in rows[0]
 
 
-def test_complete_three_page_snapshot_fetches_only_list_links(record_spy):
-    fetch = Mock(side_effect=[listing(batch(1, 30), total=61),
-                              listing(batch(31, 30), total=61, page=2),
-                              listing(batch(61, 1), total=61, page=3)])
+@pytest.mark.parametrize("publisher_total", [30, 31, 61, 91, 1000])
+def test_first_page_bound_does_not_fetch_the_rest_of_calendar(publisher_total, record_spy, capsys):
+    fetch = Mock(side_effect=[listing(batch(1, 30), total=publisher_total),
+                              AssertionError("later pages are outside collection scope")])
     rows = bt.collect(SOURCE, fetch, now=NOW)
-    assert len(rows) == 61 and record_spy.call_count == 61
-    assert [call.args for call in fetch.call_args_list] == [
-        (bt.CALENDAR, "text/html"),
-        (bt.CALENDAR + "?bcc_view=list&bcc_date=2026-11-03&bcc_page=2", "text/html"),
-        (bt.CALENDAR + "?bcc_view=list&bcc_date=2026-11-03&bcc_page=3", "text/html")]
+    assert len(rows) == 30 and record_spy.call_count == 30
+    fetch.assert_called_once_with(bt.CALENDAR, "text/html")
+    diagnostic = json.loads(capsys.readouterr().err.splitlines()[-1])
+    assert diagnostic["publisher_total"] == publisher_total
+    assert diagnostic["first_page_count"] == 30
+    assert diagnostic["has_more"] is (publisher_total > 30)
+    assert diagnostic["collection_scope"] == "first_page"
 
 
-def test_second_page_transport_failure_never_normalizes_partial_first_page(record_spy):
+def test_first_page_http_failure_is_an_error_not_partial_success(record_spy):
     from roomquest.preview_worker import PreviewError
-    fetch = Mock(side_effect=[CAPTURE, PreviewError("publisher_http_403")])
+    fetch = Mock(side_effect=PreviewError("publisher_http_403"))
     with pytest.raises(PreviewError, match="^publisher_http_403$"):
         bt.collect(SOURCE, fetch, now=NOW)
-    assert fetch.call_count == 2
+    fetch.assert_called_once_with(bt.CALENDAR, "text/html")
     record_spy.assert_not_called()
 
 
@@ -288,21 +293,24 @@ def test_second_page_transport_failure_never_normalizes_partial_first_page(recor
     bt.CALENDAR + "?bcc_view=list&bcc_date=2026-11-03&bcc_page=2&redirect=1",
     bt.CALENDAR + "?bcc_view=list&bcc_date=2026-02-30&bcc_page=2",
 ])
-def test_pagination_never_follows_unverified_next_links(next_url, record_spy):
+def test_later_page_links_are_never_dereferenced_even_when_untrusted(next_url, record_spy):
     fetch = Mock(return_value=listing(batch(1, 30), total=31, next_url=next_url))
-    with pytest.raises(ValueError, match="pagination_unverified"):
-        bt.collect(SOURCE, fetch, now=NOW)
-    assert fetch.call_count == 1
-    record_spy.assert_not_called()
+    rows = bt.collect(SOURCE, fetch, now=NOW)
+    assert len(rows) == 30 and record_spy.call_count == 30
+    fetch.assert_called_once_with(bt.CALENDAR, "text/html")
 
 
 @pytest.mark.parametrize("payload,reason", [
-    (listing(batch(1, 30), total=91), "pagination_limit"),
     (listing(batch(1, 29), total=30), "listing_count_mismatch"),
+    (listing(batch(1, 29), total=61), "listing_count_mismatch"),
+    (listing(batch(1, 31), total=61), "listing_count_mismatch"),
+    (listing(batch(1, 30), total=61, page=2), "listing_count_unverified"),
+    (listing(batch(1, 30), total=61).replace("Showing 1–30", "Showing 2–31"), "listing_count_mismatch"),
     (listing([entry(), entry()]), "listing_identity_repeated"),
     ("<html><h1>Just a moment...</h1></html>", "listing_structure_unverified"),
-    (CAPTURE.replace('class="bcc-page-next"', 'class="unrecognized-next"'), "listing_incomplete"),
     (listing([entry()]).replace("Showing 1–1 of 1 upcoming events", "No data"), "listing_count_unverified"),
+    (listing(batch(1, 29) + [entry(slug="invalid-last", occurrence="20260230T100000")], total=61),
+     "event_url_unverified"),
 ])
 def test_incomplete_or_unrecognized_listing_never_looks_like_success(payload, reason, record_spy):
     with pytest.raises(ValueError, match=reason):
@@ -310,17 +318,16 @@ def test_incomplete_or_unrecognized_listing_never_looks_like_success(payload, re
     record_spy.assert_not_called()
 
 
-@pytest.mark.parametrize("second,reason", [
-    (listing(batch(31, 30), total=62, page=2), "listing_total_changed"),
-    (listing(batch(1, 30), total=61, page=2), "listing_page_repeated"),
-    (listing(batch(31, 30), total=61, page=2,
-             next_url=bt.CALENDAR + "?bcc_view=list&bcc_date=2026-11-04&bcc_page=3"), "pagination_unverified"),
-])
-def test_moving_or_repeated_page_aborts_entire_snapshot(second, reason, record_spy):
-    fetch = Mock(side_effect=[listing(batch(1, 30), total=61), second])
-    with pytest.raises(ValueError, match=reason):
-        bt.collect(SOURCE, fetch, now=NOW)
-    assert fetch.call_count == 2
+def test_missing_next_link_does_not_change_complete_first_page_scope():
+    html = CAPTURE.replace('class="bcc-page-next"', 'class="unrecognized-next"')
+    fetch = Mock(return_value=html)
+    assert len(bt.collect(SOURCE, fetch, now=NOW)) == 28
+    fetch.assert_called_once_with(bt.CALENDAR, "text/html")
+
+
+def test_direct_normalization_cannot_accidentally_expand_beyond_first_page(record_spy):
+    with pytest.raises(ValueError, match="first_page_limit"):
+        bt.normalize_cards([card()] * 31, now=NOW)
     record_spy.assert_not_called()
 
 

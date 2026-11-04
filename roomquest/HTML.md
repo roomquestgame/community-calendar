@@ -1,19 +1,22 @@
-## Bellevue Times held pilot — November 4, 2026
+## Bellevue Times first-page collection — November 4, 2026
 
-The exact `bellevue_times_ne` source now has a bounded list-only HTML adapter.
+The exact `bellevue_times_ne` source has a bounded first-page HTML adapter.
 [BELLEVUE_TIMES.md](BELLEVUE_TIMES.md) documents occurrence timestamps, reviewed
-venue addresses, per-event evidence holds, and the release gate. Collection
-requires all declared pages (at most three / 90 cards) within 30 seconds; a
-blocked later page cannot produce a successful partial snapshot. Existing
-MyCountyParks and Virginia dispatch and behavior are unchanged.
+venue addresses, per-event evidence holds, and the required backend pairing.
+Ben authorized reading the accessible first page only: one request, at most
+30 publisher cards, and a 30-second budget. Diagnostics explicitly label
+`collection_scope=first_page` and report the publisher total and omitted later
+coverage. Malformed or incomplete first-page responses still fail. Existing
+MyCountyParks and Virginia dispatch and behavior remain unchanged.
 
-**Keep this source pending and ineligible for automatic collection:** page 1
-reports 61 upcoming cards, while page 2 and page 3 return HTTP 403 / Cloudflare
-validation. This is an access hold,
-not a robots-denial finding. The offline first-page result of 28 distinct
-address-backed records is not a live full pull. Activation requires accessible
-publisher data or a publisher-approved crawler exception and verified complete
-collection through the existing transport; do not bypass the challenge.
+The captured page reports 61 upcoming cards, while page 2 and page 3 return
+HTTP 403 / Cloudflare validation. Those later pages are outside this mode's
+coverage and are never requested. First-page collection may run on approved
+user demand with the companion backend protection: **absence from this limited
+page must not cancel or hide previously seen events that moved to later pages**.
+Normal expiry/freshness remains in place. The offline result of 28 distinct
+address-backed records is not evidence of a live production pull. Full-calendar
+access is not required for this mode, and no challenge is bypassed.
 Optional image URLs are adapter candidate metadata only; this HTML publication
 path keeps public `image_url` null and does not add media promotion.
 

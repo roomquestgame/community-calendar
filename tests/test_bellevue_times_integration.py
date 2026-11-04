@@ -57,11 +57,22 @@ def test_exact_registration_guard_runs_before_any_network(updates):
     fetch.assert_not_called()
 
 
-def test_actual_first_page_then_cloudflare_failure_is_not_staged_or_marked_healthy():
-    with patch.object(worker, "fetch_publisher", side_effect=[CAPTURE, worker.PreviewError("publisher_http_403")]) as fetch, \
+def test_actual_first_page_succeeds_without_attempting_blocked_later_pages():
+    with patch.object(worker, "datetime", FrozenDateTime), patch.object(bt, "datetime", FrozenDateTime), \
+            patch.object(worker, "fetch_publisher", side_effect=[CAPTURE, worker.PreviewError("publisher_http_403")]) as fetch:
+        result = worker.preview_source(SOURCE)
+    fetch.assert_called_once()
+    assert fetch.call_args.args == (bt.CALENDAR, "text/html")
+    assert result["p_error"] is None and result["p_future_count"] == 28
+    assert len(result["p_events"]) == 28
+    assert result["p_venue_count"] == 0
+
+
+def test_first_page_cloudflare_failure_is_not_staged_or_marked_healthy():
+    with patch.object(worker, "fetch_publisher", side_effect=worker.PreviewError("publisher_http_403")) as fetch, \
             patch.object(worker, "supabase_rpc", return_value=True) as rpc:
         result = worker._process_claimed_source({**SOURCE, "id": 123})
-    assert fetch.call_count == 2
+    assert fetch.call_count == 1
     assert result["failed"] == 1
     assert all(call.args[0] != "community_collector_record_staged_events" for call in rpc.call_args_list)
     preview = next(call.args[1] for call in rpc.call_args_list if call.args[0] == "community_collector_record_preview")
@@ -69,14 +80,18 @@ def test_actual_first_page_then_cloudflare_failure_is_not_staged_or_marked_healt
     assert preview["p_samples"] == [] and preview["p_future_count"] == 0
 
 
-def test_parser_error_is_named_and_never_staged():
-    with patch.object(worker, "fetch_publisher", return_value="<h1>Just a moment...</h1>"), \
+@pytest.mark.parametrize("html,reason", [
+    ("<h1>Just a moment...</h1>", "bellevue_times_listing_structure_unverified"),
+    (CAPTURE.replace("Showing 1–30 of 61", "Showing 1–29 of 61"), "bellevue_times_listing_count_mismatch"),
+])
+def test_incomplete_first_page_is_named_and_never_staged(html, reason):
+    with patch.object(worker, "fetch_publisher", return_value=html), \
             patch.object(worker, "supabase_rpc", return_value=True) as rpc:
         result = worker._process_claimed_source({**SOURCE, "id": 123})
     assert result["failed"] == 1
     assert all(call.args[0] != "community_collector_record_staged_events" for call in rpc.call_args_list)
     preview = next(call.args[1] for call in rpc.call_args_list if call.args[0] == "community_collector_record_preview")
-    assert preview["p_error"] == "bellevue_times_listing_structure_unverified"
+    assert preview["p_error"] == reason
 
 
 def test_other_html_families_keep_their_original_hosts_and_budgets():

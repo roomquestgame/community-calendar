@@ -1,9 +1,10 @@
-"""Bounded, list-only Bellevue Times collection; enrollment remains on hold.
+"""Bounded, first-page-only Bellevue Times collection.
 
 The custom Bellevue Community Calendar exposes occurrence wall times in links
-and human-readable schedules on each list card. Both must agree. All pages
-must complete before records are returned. Network/robots/Cloudflare decisions
-belong to the shared transport; this module has no alternate fetch mechanism.
+and human-readable schedules on each list card. Both must agree. All cards on
+the first page must be accounted for; later pages are outside collection scope.
+The backend must not infer cancellation from absence on this limited page.
+Network/robots decisions belong to the shared transport, without alternatives.
 """
 from __future__ import annotations
 
@@ -26,8 +27,7 @@ HOST = "bellevuetimes.com"
 CALENDAR = "https://bellevuetimes.com/events/"
 TZ = ZoneInfo("America/Chicago")
 PAGE_SIZE = 30
-MAX_PAGES = 3
-MAX_RECORDS = PAGE_SIZE * MAX_PAGES
+COLLECTION_SCOPE = "first_page"
 MAX_SECONDS = 30
 LOOKAHEAD_DAYS = 60
 MAX_DESCRIPTION = 2000
@@ -124,8 +124,6 @@ class Card:
 class Page:
     cards: tuple[Card, ...]
     total: int
-    next_url: str | None
-    date_anchor: str | None
 
 
 def source_identity(source):
@@ -168,24 +166,6 @@ def event_identity(href):
         raise ValueError("bellevue_times_event_url_unverified") from None
 
 
-def _next_url(href, page_number, date_anchor):
-    try:
-        parsed = _publisher_url(href)
-        pairs = parse_qsl(parsed.query, keep_blank_values=True, strict_parsing=True)
-        fields = dict(pairs)
-        if (parsed.path != "/events/" or len(pairs) != 3 or len(fields) != 3
-                or set(fields) != {"bcc_view", "bcc_date", "bcc_page"}
-                or fields["bcc_view"] != "list" or fields["bcc_page"] != str(page_number + 1)
-                or not re.fullmatch(r"20\d{2}-\d{2}-\d{2}", fields["bcc_date"])
-                or (date_anchor is not None and date_anchor != fields["bcc_date"])):
-            raise ValueError
-        date.fromisoformat(fields["bcc_date"])
-        # Keep the publisher's bcc_date anchor; never synthesize a later page.
-        return parsed.geturl(), fields["bcc_date"]
-    except (TypeError, ValueError):
-        raise ValueError("bellevue_times_pagination_unverified") from None
-
-
 def _image_url(card):
     image = card.select_one(".bcc-card-image[style]")
     match = re.fullmatch(r"\s*background-image\s*:\s*url\(['\"]?([^)'\"]+)['\"]?\)\s*;?\s*",
@@ -202,38 +182,27 @@ def _image_url(card):
     return None
 
 
-def parse_listing(html, *, page_number=1, date_anchor=None):
-    if type(page_number) is not int or not 1 <= page_number <= MAX_PAGES:
-        raise ValueError("bellevue_times_pagination_limit")
+def parse_listing(html):
+    """Verify the complete first page, without treating it as the full calendar."""
     soup = BeautifulSoup(html, "html.parser")
     lists, paginations = soup.select("main.bcc-event-list"), soup.select(".bcc-list-pagination")
     if len(lists) != 1 or len(paginations) != 1:
         raise ValueError("bellevue_times_listing_structure_unverified")
     counts = paginations[0].select(".bcc-pagination-count")
     currents = paginations[0].select('.bcc-page-number.is-current[aria-current="page"]')
-    if len(counts) != 1 or len(currents) != 1 or clean(currents[0].get_text()) != str(page_number):
+    if len(counts) != 1 or len(currents) != 1 or clean(currents[0].get_text()) != "1":
         raise ValueError("bellevue_times_listing_count_unverified")
     count = re.fullmatch(r"Showing (\d{1,5})[–-](\d{1,5}) of (\d{1,5}) upcoming events",
                          clean(counts[0].get_text(" ", strip=True)))
     if not count:
         raise ValueError("bellevue_times_listing_count_unverified")
     first, last, total = map(int, count.groups())
-    if total > MAX_RECORDS:
-        raise ValueError("bellevue_times_pagination_limit")
     cards = lists[0].find_all("article", class_="bcc-event-card", recursive=False)
-    expected = max(0, min(PAGE_SIZE, total - (page_number - 1) * PAGE_SIZE))
-    if (len(cards) != expected or first != ((page_number - 1) * PAGE_SIZE + 1 if total else 0)
-            or last != min(total, page_number * PAGE_SIZE) or (total and not expected)):
+    expected = min(PAGE_SIZE, total)
+    if len(cards) != expected or first != (1 if total else 0) or last != expected:
         raise ValueError("bellevue_times_listing_count_mismatch")
-    next_links = paginations[0].select("a.bcc-page-next[href]")
-    more = page_number * PAGE_SIZE < total
-    if len(next_links) != int(more):
-        raise ValueError("bellevue_times_listing_incomplete")
-    next_url = None
-    if more:
-        if page_number == MAX_PAGES:
-            raise ValueError("bellevue_times_pagination_limit")
-        next_url, date_anchor = _next_url(next_links[0]["href"], page_number, date_anchor)
+    # Next/numbered links are outside scope and never dereferenced. Their
+    # availability is unrelated to completeness of these first-page cards.
     results, seen = [], set()
     for card in cards:
         links, schedules = card.select("h2 a[href]"), card.select(".bcc-card-date")
@@ -253,7 +222,7 @@ def parse_listing(html, *, page_number=1, date_anchor=None):
                             clean(summaries[0].get_text(" ", strip=True)) if summaries else "",
                             clean(primary.get_text(" ", strip=True)) if primary else "",
                             _image_url(card)))
-    return Page(tuple(results), total, next_url, date_anchor)
+    return Page(tuple(results), total)
 
 
 def _day(value):
@@ -395,12 +364,15 @@ def _active(start, end, current):
 
 
 def _log(kind, **fields):
-    print(json.dumps({"event": "bellevue_times_" + kind, "source_key": SOURCE_KEY, **fields},
+    print(json.dumps({"event": "bellevue_times_" + kind, "source_key": SOURCE_KEY,
+                      "collection_scope": COLLECTION_SCOPE, **fields},
                      ensure_ascii=False, sort_keys=True), file=sys.stderr)
 
 
-def normalize_cards(cards, *, now=None):
-    """Normalize a verified snapshot; exposed separately for offline audits."""
+def normalize_cards(cards, *, now=None, publisher_total=None):
+    """Normalize verified first-page cards; exposed separately for offline audits."""
+    if len(cards) > PAGE_SIZE:
+        raise ValueError("bellevue_times_first_page_limit")
     current = now or datetime.now(TZ)
     if current.tzinfo is None:
         raise ValueError("bellevue_times_now_timezone_missing")
@@ -457,42 +429,27 @@ def normalize_cards(cards, *, now=None):
             # public image null; this adapter does not grant media permission.
             item["image_url"] = card.image_url
         records.append(item)
-    _log("normalized", listed=len(cards), held=holds, duplicates=duplicates, records=len(records))
+    _log("normalized", first_page_count=len(cards), publisher_total=publisher_total,
+         has_more=publisher_total > len(cards) if publisher_total is not None else None,
+         held=holds, duplicates=duplicates, records=len(records))
     if not records and holds:
         raise ValueError("bellevue_times_event_evidence_unavailable")
     return sorted(records, key=lambda item: (item["starts_at"], item["title"], item["id"]))
 
 
 def collect(source, fetch, *, deadline_at=None, now=None):
-    """One complete bounded listing, or an error; never a partial successful pull."""
+    """One complete first page or an error; never request or imply later pages."""
     source_identity(source)
     deadline = min(monotonic() + MAX_SECONDS, deadline_at if deadline_at is not None else float("inf"))
-    cards, seen, expected_total, anchor = [], set(), None, None
-    url = CALENDAR
-    for page_number in range(1, MAX_PAGES + 1):
-        if monotonic() >= deadline:
-            raise ValueError("collection_deadline")
-        html = fetch(url, "text/html")
-        if monotonic() >= deadline:
-            raise ValueError("collection_deadline")
-        page = parse_listing(html, page_number=page_number, date_anchor=anchor)
-        if expected_total is None:
-            expected_total = page.total
-        elif expected_total != page.total:
-            raise ValueError("bellevue_times_listing_total_changed")
-        for card in page.cards:
-            if card.url in seen:
-                raise ValueError("bellevue_times_listing_page_repeated")
-            seen.add(card.url)
-            cards.append(card)
-        if page.next_url is None:
-            break
-        url, anchor = page.next_url, page.date_anchor
-    if len(cards) != expected_total:
-        raise ValueError("bellevue_times_listing_incomplete")
     if monotonic() >= deadline:
         raise ValueError("collection_deadline")
-    records = normalize_cards(cards, now=now)
+    html = fetch(CALENDAR, "text/html")
+    if monotonic() >= deadline:
+        raise ValueError("collection_deadline")
+    page = parse_listing(html)
+    if monotonic() >= deadline:
+        raise ValueError("collection_deadline")
+    records = normalize_cards(page.cards, now=now, publisher_total=page.total)
     if monotonic() >= deadline:
         raise ValueError("collection_deadline")
     return records

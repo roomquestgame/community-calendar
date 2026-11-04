@@ -1,21 +1,34 @@
-# Bellevue Times community calendar — held pilot
+# Bellevue Times community calendar — first-page collection
 
-## Access status and release gate
+## Authorized scope and coverage limitation
 
-**Keep `bellevue_times_ne` pending and ineligible for automatic collection.**
-Pending source approval prevents demand collection. On November 4, 2026, the first
-calendar page was readable and reported **61 upcoming entries across three
-pages**. The published page 2 and page 3 links returned **HTTP 403 / Cloudflare
-validation**. Ben also observed the validation challenge. This is an HTTP access
-hold, not evidence of a robots denial and not a successful complete collection.
+Ben authorized collecting the accessible **first page only** on November 4,
+2026. This mode covers at most the **first 30 upcoming publisher cards**. The
+captured first page reported **61 upcoming entries across three pages**; page 2
+and page 3 returned **HTTP 403 / Cloudflare validation**, which Ben also observed.
+Those later pages are outside collection scope. Their access restriction limits
+coverage and does not prevent approved demand collection of the first page.
 
-The adapter and offline tests can ship while that hold remains. Activation
-requires an accessible publisher feed/API or a publisher-approved crawler
-exception, followed by a complete read through the shared transport and review
-of staging, venue resolution, classification and publication. Do not bypass
-Cloudflare, spoof a browser agent, retry through another transport, or mark the
-first page as a complete snapshot. No live collector run, source activation or
-public event import is part of the offline adapter change.
+The adapter makes one request to the registered calendar URL. It never requests
+page 2, page 3, or event detail pages. A successful collection means the first
+page was completely validated; it does not mean the complete calendar was read.
+Missing or invalid cards within that page, first-page HTTP errors, and expired
+request deadlines still fail the source. No Cloudflare challenge is bypassed,
+no browser user agent is substituted, and no alternate transport is used.
+
+**Required backend pairing:** deploy the exact-source reconciliation protection
+for `bellevue_times_ne` with this collector mode. Absence from the first page
+must not cancel or hide an event that moved to a later page. Existing event
+expiry and freshness policies still apply. Approved collection remains driven
+by real user-area demand through the existing HTML lane. Full-calendar access
+is not an activation prerequisite for this limited mode. The offline tests
+below are not evidence of a live pull or production publication.
+
+**Release order:** first deploy this collector and confirm its deployment is
+ready. Then deploy the companion backend change that atomically applies the
+exact-source absence protection and approved, demand-only registration. Do not
+approve the source against the earlier full-calendar collector or before the
+backend retention guard is in place.
 
 ## Exact registration and existing pipeline
 
@@ -27,17 +40,20 @@ public event import is part of the offline adapter change.
 | Time zone | `America/Chicago` |
 | HTTP hostname allowlist | `bellevuetimes.com` |
 | Worker | Existing `POST /api/html-demand`, existing HTML demand lane |
-| Bounds | Three list pages, 90 listed cards, at most 30 seconds |
+| Collection scope | `first_page` |
+| Bounds | One list page, at most 30 listed cards, at most 30 seconds |
 
 `roomquest/bellevue_times.py` has an exact-source branch in `preview_worker`.
 It does not change the MyCountyParks or Virginia State Parks dispatch, their
 deadlines, registrations or parsing. There is no new route, dependency, timer,
 geocoder table, or direct write to public events. The normal approved-source,
-real-demand, rights, snapshot, staging, address-cache and EVE7 publishing gates
-still apply. Source registration, source coverage and any reviewed address-cache
-imports belong to the separate RoomQuestGame backend change.
+real-demand, rights, staging, address-cache and EVE7 publishing gates still
+apply. The snapshot represents the validated first page only. Source
+registration, coverage, exact-source absence-reconciliation protection and any
+reviewed address-cache imports belong to the separate RoomQuestGame backend
+change. Other sources retain their full-snapshot reconciliation behavior.
 
-## Publisher evidence and completeness
+## Publisher evidence and first-page completeness
 
 The publisher uses Bellevue Community Calendar, observed version `0.10.8`.
 Server-rendered cards are selected with `main.bcc-event-list >
@@ -45,23 +61,31 @@ article.bcc-event-card`. Each card supplies its own `h2 a` occurrence link,
 `.bcc-card-date`, `.bcc-card-venue`, `.bcc-card-summary`, primary category and
 optional image. Cards without an image remain eligible.
 
-The adapter reads only list pages. It follows the actual `.bcc-page-next` link,
-preserving its `bcc_date` anchor, and validates the page number, hostname, path,
-query fields, count interval and unchanged total. Repeated occurrences, a
-changed total/anchor, missing next links, unfamiliar structure, a fourth page,
-or more than 90 cards fail the source. A truly empty result requires an explicit
-verified zero count. No successful result is returned until every declared card
-has been accounted for. Event-specific evidence holds are counted separately
-after all pages have been read.
+The adapter verifies that the publisher marks page 1 as current. It requires
+exactly `min(30, publisher_total)` complete card structures and a matching count
+interval: for example, “Showing 1–30 of 61 upcoming events” must contain 30 cards.
+Every occurrence link is validated before normalization. Missing, extra or
+repeated cards, an unexpected page number, an invalid occurrence URL, or an
+unfamiliar page structure fail the source. A truly empty result requires an
+explicit verified zero count. Event-specific evidence holds are counted only
+after the whole first page has been parsed.
+
+Next-page and numbered links are never dereferenced. A missing or inaccessible
+next link does not affect completeness of the first page. Publisher totals may
+exceed 90, while returned candidates remain bounded to 30. Structured diagnostics
+label every event with `collection_scope="first_page"`; the normalization summary
+also reports `publisher_total`, `first_page_count`, `has_more`, `held`,
+`duplicates`, and `records`. This distinguishes limited coverage from incomplete
+network responses without changing the preview API.
 
 The shared `fetch_publisher` retains its robots checks, crawl-delay pacing,
 actual RoomQuest user agent, public-HTTPS/DNS restrictions, pinned redirect
 hosts, response-size limits, encoding checks and bounded deadlines. HTTP 403
-remains `publisher_http_403`. A failure on page 2 after a readable page 1 causes
-no staging call and no healthy preview. The transport is never asked to fetch
-event detail pages, images, REST posts, or arbitrary calendar URLs.
+on the first-page request remains `publisher_http_403` and causes no staging call
+or healthy preview. The transport is never asked to fetch later pages, event
+details, images, REST posts, or arbitrary calendar URLs.
 
-The list-only design fits the existing 30-second effective collection budget
+The one-page design fits the existing 30-second effective collection budget
 while respecting the observed 10-second publisher crawl delay. It cannot promise
 that a slow or challenged publisher will finish within that budget; those runs
 fail and retain their named error.
@@ -162,8 +186,9 @@ same wording naming Bellevue Public Library still uses its reviewed address.
 
 `tests/fixtures/bellevue_times_page1.html` contains only the captured list cards
 and pagination from the November 4, 2026 first-page response. It deliberately
-retains the reported total of 61 and the page 2 link. It must not be used as a
-successful complete-source fixture. Independent offline normalization yields:
+retains the reported total of 61 and the page 2 link. It represents a complete
+first-page collection while explicitly showing that later entries exist.
+Offline collection requests that fixture once and yields:
 
 | First-page outcome | Count |
 | --- | ---: |
@@ -173,22 +198,29 @@ successful complete-source fixture. Independent offline normalization yields:
 | Distinct address-backed records | 28 |
 
 These 28 are parser diagnostics, **not staged or published production events**.
-Structured stderr diagnostics identify each held/duplicate occurrence and report
-listed, held, duplicate and normalized counts. No preview API contract changes
-are needed. If all potentially usable entries lack evidence, the source fails
-as `bellevue_times_event_evidence_unavailable`, rather than healthy zero.
+Structured stderr diagnostics identify each held/duplicate occurrence and label
+the `first_page` scope, 30 listed cards, 61 publisher entries, and `has_more=true`.
+No preview API contract changes are needed. If all potentially usable entries
+lack evidence, the source fails as `bellevue_times_event_evidence_unavailable`,
+rather than healthy zero.
 
 The focused suites are `tests/test_bellevue_times.py` and
 `tests/test_bellevue_times_integration.py`, included explicitly in the provider
 CI workflow. They cover the captured evidence, recurring IDs, date-only/midnight
 rules, DST, descriptions/categories, address overrides/holds, exact registration,
-three-page completeness, deadlines, Cloudflare-shaped HTML, no-staging on page-2
-403, robots/host transport options, and unchanged HTML-family dispatch. Synthetic
-complete pages are test fixtures only; no later live page has been substituted
-or treated as accessible.
+first-page completeness and one-request scope, deadlines, Cloudflare-shaped
+HTML, no-staging on first-page 403 or malformed cards, robots/host transport
+options, and unchanged HTML-family dispatch. Synthetic pages are test fixtures
+only; later live pages are neither requested nor treated as accessible.
 
 Local validation on November 4, 2026 ran the exact provider CI pytest list:
-**534 tests and 25 subtests passed** across all 23 listed test files in 2.72
-seconds (3.10 seconds wall time). The sparse checkout's missing, unchanged
-Raleigh catalog fixture was restored from HEAD before the successful run. The
-optional live audit was not invoked.
+**542 tests and 25 subtests passed** across all 23 listed test files in 2.74
+seconds (3.11 seconds wall time). The optional live audit workflow was not run.
+
+One read-only live first-page preview through the unchanged shared transport was
+attempted at **2026-11-04 01:34:53 UTC**, with a wrapper allowing only one call
+to the exact registered calendar URL and forbidding database RPCs. It stopped
+with `dns_unavailable` before publisher HTTP. No retry, alternate fetch, later
+page, staging or publication occurred. This workspace result does not establish
+that the publisher's first page is blocked; live transport availability remains
+to be verified from the deployed environment.
