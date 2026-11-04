@@ -1,3 +1,19 @@
+## HTML worker errors and publisher pacing — November 4, 2026
+
+[HTML_WORKERS.md](HTML_WORKERS.md) describes the coordinated two-slot HTML
+release: one active publisher host at a time, source failures isolated from lane
+failures, and durable crawl-delay/Retry-After metadata recorded before release.
+The collector preserves failed counters and named errors; incomplete pages do
+not become successful empty results. Source-error release applies only to HTML.
+The release also adds strict primary-When multi-date schedule support for the
+verified Natural Bridge format, with safe failing-event diagnostics.
+
+**Deploy the additive backend contract first, then the collector.** The new
+HTML-only `record_preview_v2` call preserves publisher waits atomically. Waits
+that exceed a day or cannot be represented require an explicit reviewed release;
+they are not silently shortened. Existing RPCs and other category outcomes
+remain compatible. Bellevue Times retains its strict first-page scope.
+
 ## Bellevue Times first-page collection — November 4, 2026
 
 The exact `bellevue_times_ne` source has a bounded first-page HTML adapter.

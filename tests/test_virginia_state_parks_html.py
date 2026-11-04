@@ -1,7 +1,7 @@
 """No network or Supabase calls: HTML collector parsing, source isolation, route."""
 import io
 import json
-from datetime import date
+from datetime import date, timedelta, timezone
 from urllib.parse import parse_qs, urlparse
 from unittest.mock import patch
 import pytest
@@ -143,6 +143,87 @@ def test_extracts_meeting_location_and_known_park_address():
     assert record.call_args.args[4] == PARK["address"]
     assert "2026-11-07T11:00:00-05:00" in record.call_args.args[1]
     assert "2026-11-07T12:30:00-05:00" in record.call_args.args[2]
+
+
+def test_natural_bridge_published_multiday_schedule_uses_both_explicit_dates():
+    # Official indexed page, retrieved 2026-11-04; direct page GET returned403.
+    # https://www.dcr.virginia.gov/state-parks/event?id=2026-10-29-11-23-23-287887-qd6
+    schedule = "Nov. 13, 2026 10:00 a.m. - Dec. 31, 2026 5:00 p.m."
+    html = PAGE.replace("Occoneechee State Park", "Natural Bridge State Park").replace(
+        "Nov. 7, 2026. 11:00 a.m. - 12:30 p.m.", schedule).replace(
+        "Plantation Discovery Hike", "2026 Festival of Trees")
+    with patch.object(va, "record", return_value={"id": "festival"}) as normalized:
+        va.parse_event(html, va.ROOT + "/state-parks/event?id=2026-10-29-11-23-23-287887-qd6", va.catalog()["nb"])
+    assert normalized.call_args.args[1] == "2026-11-13T10:00:00-05:00"
+    assert normalized.call_args.args[2] == "2026-12-31T17:00:00-05:00"
+    assert normalized.call_count == 1  # One published span, no invented daily sessions.
+
+
+def test_explicit_multiday_schedule_preserves_dst_offset_change():
+    start, end = va.parse_schedule("Oct. 31, 2026 11:00 p.m. - Nov. 1, 2026 2:30 a.m.")
+    assert start.utcoffset() == timedelta(hours=-4)
+    assert end.utcoffset() == timedelta(hours=-5)
+    assert end.astimezone(timezone.utc) - start.astimezone(timezone.utc) == timedelta(hours=4, minutes=30)
+
+
+@pytest.mark.parametrize("schedule,reason", [
+    ("Nov. 13, 2026 10:00 a.m. - Nov. 12, 2026 5:00 p.m.", "event_end_invalid"),
+    ("Nov. 13, 2026. 11:00 p.m. - 1:00 a.m.", "event_end_invalid"),
+    ("Nov. 13, 2026. 10:00 a.m. - 10:00 a.m.", "event_end_invalid"),
+    ("Feb. 30, 2026 10:00 a.m. - Mar. 1, 2026 5:00 p.m.", "event_date_invalid"),
+    ("Nov. 13, 2026 25:00 a.m. - Dec. 31, 2026 5:00 p.m.", "event_time_invalid"),
+    ("Nov. 13, 2026 10:00 a.m. - Dec. 31, 2026", "event_schedule_missing"),
+    ("Nov. 13, 2026. All day", "event_schedule_missing"),
+    ("Nov. 13, 2026. 10:00 a.m.", "event_schedule_missing"),
+    ("Nov. 13, 2026 10:00 a.m. - Dec. 31, 2026 5:00 p.m. or 6:00 p.m.", "event_schedule_missing"),
+    ("Nov. 1, 2026. 1:30 a.m. - 2:30 a.m.", "timezone_ambiguous"),
+    ("Mar. 8, 2026. 2:30 a.m. - 3:30 a.m.", "timezone_nonexistent"),
+])
+def test_contradictory_or_incomplete_schedules_are_never_guessed(schedule, reason):
+    with pytest.raises(ValueError, match="^" + reason + "$"):
+        va.parse_schedule(schedule)
+
+
+@pytest.mark.parametrize("html,reason", [
+    (PAGE.replace("<h2>When</h2>", "<h2>Other information</h2>"), "event_schedule_missing"),
+    (PAGE.replace("Nov. 7, 2026. 11:00 a.m. - 12:30 p.m.", "Time to be confirmed")
+         .replace("</main>", "<h2>Additional dates</h2><div>Nov. 8, 2026. 1:00 p.m. - 2:00 p.m.</div></main>"),
+     "event_schedule_missing"),
+    (PAGE.replace("</main>", "<h2>When</h2><div>Nov. 8, 2026. 1:00 p.m. - 2:00 p.m.</div></main>"),
+     "event_schedule_ambiguous"),
+])
+def test_primary_when_cannot_be_replaced_by_prose_or_additional_dates(html, reason):
+    with patch.object(va, "record") as normalized:
+        with pytest.raises(ValueError, match="^" + reason + "$"):
+            va.parse_event(html, CAL_LINK, PARK)
+    normalized.assert_not_called()
+
+
+def test_additional_dates_do_not_override_primary_same_day_schedule():
+    html = PAGE.replace("</main>", "<h2>Additional dates</h2><div>Nov. 8, 2026. 1:00 p.m. - 2:00 p.m.</div></main>")
+    with patch.object(va, "record", return_value={"id": "primary"}) as normalized:
+        va.parse_event(html, CAL_LINK, PARK)
+    assert normalized.call_args.args[1] == "2026-11-07T11:00:00-05:00"
+    assert normalized.call_args.args[2] == "2026-11-07T12:30:00-05:00"
+
+
+def test_bad_later_detail_logs_safe_identity_and_never_stages_partial_records(capsys):
+    bad_id = "2026-10-29-11-23-23-287887-qd6"
+    listing = ('<h3>Park: Occoneechee State Park</h3>'
+               f'<a href="/state-parks/event?id={ID}">First</a>'
+               f'<a href="/state-parks/event?id={bad_id}">Second</a>')
+    invalid = PAGE.replace("Nov. 7, 2026. 11:00 a.m. - 12:30 p.m.", "Unspecified publisher time")
+    with patch.object(worker, "fetch_publisher", side_effect=[listing, PAGE, invalid]), \
+            patch.object(va, "record", return_value={"id": "first"}), \
+            patch.object(worker, "supabase_rpc", return_value=True) as rpc:
+        result = worker._process_claimed_source(SOURCE)
+    assert result["complete"] == 0 and result["failed"] == 1 and result["staged"] == 0
+    assert result["failure_scope"] == "source" and result["error_code"] == "event_schedule_missing"
+    assert all(call.args[0] != "community_collector_record_staged_events" for call in rpc.call_args_list)
+    error = json.loads(capsys.readouterr().err.splitlines()[-1])
+    assert error == {"event": "virginia_parks_event_error", "source_key": "virginia_state_parks_oc",
+                     "event_id": bad_id, "error_code": "event_schedule_missing"}
+    assert "Unspecified publisher time" not in repr(error)
 
 
 def test_offsite_clarksville_town_hall_uses_actual_venue_not_park_pin():

@@ -33,7 +33,9 @@ class TransportErrorTests(unittest.TestCase):
         with patch('roomquest.preview_worker.fetch_publisher', side_effect=PreviewError('publisher_http_403')), \
              patch('roomquest.preview_worker.supabase_rpc') as rpc:
             result = _process_claimed_source(self.source)
-        self.assertEqual(result, {'complete': 0, 'failed': 1, 'staged': 0})
+        self.assertEqual(result, {'complete': 0, 'failed': 1, 'staged': 0,
+                                 'failure_scope': 'source', 'error_kind': 'access',
+                                 'error_code': 'publisher_http_403'})
         rpc.assert_called_once()
         self.assertEqual(rpc.call_args.args[0], 'community_collector_record_preview')
         self.assertEqual(rpc.call_args.args[1]['p_error'], 'publisher_http_403')

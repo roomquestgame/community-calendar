@@ -75,7 +75,7 @@ def test_first_page_cloudflare_failure_is_not_staged_or_marked_healthy():
     assert fetch.call_count == 1
     assert result["failed"] == 1
     assert all(call.args[0] != "community_collector_record_staged_events" for call in rpc.call_args_list)
-    preview = next(call.args[1] for call in rpc.call_args_list if call.args[0] == "community_collector_record_preview")
+    preview = next(call.args[1] for call in rpc.call_args_list if call.args[0] == "community_collector_record_preview_v2")
     assert preview["p_error"] == "publisher_http_403"
     assert preview["p_samples"] == [] and preview["p_future_count"] == 0
 
@@ -90,7 +90,7 @@ def test_incomplete_first_page_is_named_and_never_staged(html, reason):
         result = worker._process_claimed_source({**SOURCE, "id": 123})
     assert result["failed"] == 1
     assert all(call.args[0] != "community_collector_record_staged_events" for call in rpc.call_args_list)
-    preview = next(call.args[1] for call in rpc.call_args_list if call.args[0] == "community_collector_record_preview")
+    preview = next(call.args[1] for call in rpc.call_args_list if call.args[0] == "community_collector_record_preview_v2")
     assert preview["p_error"] == reason
 
 
