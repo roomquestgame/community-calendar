@@ -1,6 +1,6 @@
 """Infrastructure errors must remain retryable and partial snapshots unpublished."""
 from copy import deepcopy
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 import pytest
 from roomquest import preview_worker as w
 from roomquest import category_worker
@@ -200,3 +200,28 @@ def test_non_html_preview_does_not_create_a_publisher_handoff():
     assert handoff == {}
     assert result == {'complete': 1, 'failed': 0, 'staged': 0}
     assert rpc.call_args.args[0] == 'community_collector_record_preview'
+
+
+def test_optional_phase_observer_distinguishes_fetch_stage_and_record():
+    phases = []
+    with patch.object(w, 'preview_source', return_value=output(1)), \
+            patch.object(w, 'supabase_rpc', side_effect=[1, None]):
+        result = w._process_claimed_source({'source_key': 'fixture'},
+            observe_phase=lambda phase, **details: phases.append((phase, details)))
+    assert result == {'complete': 1, 'failed': 0, 'staged': 1}
+    assert phases[0] == ('fetch', {'operation': None, 'error': None})
+    assert ('stage', {'operation': 'community_collector_record_staged_events', 'error': None}) in phases
+    assert phases[-1] == ('record', {'operation': 'community_collector_record_preview', 'error': None})
+
+
+@pytest.mark.parametrize('source_error', [None, w.PreviewError('robots_denied')])
+def test_broken_observer_cannot_change_staging_or_recorded_source_outcome(source_error):
+    observer = Mock(side_effect=RuntimeError('diagnostic sink failure'))
+    with patch.object(w, 'preview_source', return_value=output(1), side_effect=source_error), \
+            patch.object(w, 'supabase_rpc', side_effect=[1, None] if source_error is None else [None]) as rpc:
+        result = w._process_claimed_source({'source_key': 'fixture'}, observe_phase=observer)
+    assert result['complete'] == int(source_error is None)
+    assert result['failed'] == int(source_error is not None)
+    assert rpc.call_args.args[0] == 'community_collector_record_preview'
+    assert rpc.call_args.args[1]['p_error'] == (None if source_error is None else 'robots_denied')
+    observer.assert_called()
