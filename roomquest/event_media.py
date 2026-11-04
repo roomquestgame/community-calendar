@@ -96,8 +96,16 @@ def probe_image(url: str) -> tuple[str, str] | None:
 def resolve_photo(claim: dict, *, fetcher=None, probe=None, clock=None, deadline=None):
     fetcher, probe, clock = fetcher or fetch_page, probe or probe_image, clock or monotonic
     deadline = deadline if deadline is not None else clock() + 20
-    candidate = event_image(claim.get('candidate_url'), claim['event_url'])
+    raw_candidate = claim.get('candidate_url')
+    if isinstance(raw_candidate, str):
+        raw_candidate = raw_candidate.strip() or None
+    candidate = event_image(raw_candidate, claim['event_url'])
     if not candidate:
+        # HTML candidates were selected from the source's already-fetched
+        # event page. A missing/rejected candidate is not permission to crawl
+        # that page again or substitute its generic Open Graph artwork.
+        if claim.get('candidate_only') is True:
+            return None
         if clock() + 9 >= deadline:
             return None
         candidate = extract_photo(fetcher(claim['event_url']), claim['event_url'], claim['title'])
@@ -117,7 +125,9 @@ def run_batch(*, database=None, resolver=None, clock=None, deadline_seconds=38):
         return stats
     database, resolver, clock = database or rpc, resolver or resolve_photo, clock or monotonic
     deadline = clock() + min(38, max(1, deadline_seconds))
-    claims = database('claim', {'limit': 3}) or []
+    # The backend releases candidate-only VA work only to a deployed worker
+    # that supports it; old workers retain their existing legacy claim path.
+    claims = database('claim', {'limit': 3, 'candidate_only_version': 'publisher_event_html_v1'}) or []
     def process(claim):
         try:
             return claim, resolver(claim, deadline=deadline), None

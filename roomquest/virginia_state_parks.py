@@ -1,6 +1,7 @@
 """First HTML adapter: official Virginia DCR State Parks events.
 Independent from ICS / WordPress / JSON-LD collectors. No arbitrary URLs,
-page images, guessed sessions or full-state scheduled crawling.
+guessed sessions or full-state scheduled crawling. Event photo candidates use
+only the detail HTML already fetched; a separate worker verifies their bytes.
 """
 from __future__ import annotations
 
@@ -10,7 +11,7 @@ import sys
 from datetime import datetime, timedelta
 from functools import lru_cache
 from importlib import resources
-from urllib.parse import parse_qs, urlencode, urljoin, urlparse
+from urllib.parse import parse_qs, unquote, urlencode, urljoin, urlparse
 from zoneinfo import ZoneInfo
 from bs4 import BeautifulSoup, Tag
 from roomquest.collector_errors import safe_error_code
@@ -21,6 +22,16 @@ CALENDAR = ROOT + "/state-parks/events"
 TZ = ZoneInfo("America/New_York")
 MAX_EVENT_PAGES = 10
 MAX_LISTING_LINKS = 200
+IMAGE_EXTRACTOR_VERSION = "publisher_event_html_v1"
+NON_EVENT_IMAGE = re.compile(
+    r"(?:^|[^a-z0-9])(?:maps?|logo|logos|favicon|icon|avatar|pixel|tracking|"
+    r"navigation|breadcrumb|social|banner|header|footer|sidebar)(?:[^a-z0-9]|$)"
+    r"|location of .+ (?:in|within) virginia", re.I,
+)
+NON_EVENT_SECTION = re.compile(
+    r"^(?:know before you go|other events|related events|upcoming events|"
+    r"park information|contact us|directions|location map)\b", re.I,
+)
 DATE_TEXT = r"(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?\s+\d{1,2},?\s+20\d{2}"
 CLOCK = r"\d{1,2}(?::\d{2})?\s*[ap]\.?m\.?"
 SCHEDULE = re.compile(rf"^({DATE_TEXT})\.?\s+({CLOCK})\s*(?:-|–|—|to)\s*"
@@ -55,6 +66,131 @@ def catalog():
 
 def normal_name(value):
     return re.sub(r"[^a-z0-9]", "", str(value).lower())
+
+
+def event_photo_candidate(soup, section, url, title):
+    """Select unverified event imagery, never the page's generic first image.
+
+    Structured data must identify this event. Inline images must be in the
+    event's content after its When heading (or explicitly mark itemprop=image),
+    with descriptive publisher text. Ambiguous images fail closed. No network
+    access occurs here; the media worker validates URLs, redirects and bytes.
+    """
+    # Local import avoids the preview worker's provider-dispatch import cycle.
+    from roomquest.preview_worker import event_image
+
+    def candidate(value, description=""):
+        if isinstance(value, str) and not value.strip():
+            return None
+        try:
+            image = event_image(value, url)
+            if not image or NON_EVENT_IMAGE.search(unquote(urlparse(image).path) + " " + description):
+                return None
+        except (ValueError, TypeError):
+            # An optional malformed image must not discard valid event facts.
+            return None
+        return image
+
+    def same_event(value):
+        if not isinstance(value, str):
+            return False
+        try:
+            parsed = urlparse(urljoin(url, value))
+        except (ValueError, TypeError):
+            return False
+        return (parsed.scheme == "https" and parsed.netloc == urlparse(url).netloc
+                and parsed.path.rstrip("/") == "/state-parks/event"
+                and parse_qs(parsed.query).get("id") == parse_qs(urlparse(url).query).get("id"))
+
+    structured = set()
+    for script in soup.select('script[type="application/ld+json"]')[:30]:
+        try:
+            pending = [json.loads(script.string or script.get_text())]
+        except (ValueError, TypeError, RecursionError):
+            continue
+        # Bound graph traversal even when unrelated structured data is large.
+        for _ in range(200):
+            if not pending:
+                break
+            node = pending.pop()
+            if isinstance(node, list):
+                pending.extend(node[:200])
+                continue
+            if not isinstance(node, dict):
+                continue
+            pending.extend(value for value in node.values() if isinstance(value, (dict, list)))
+            kinds = node.get("@type", [])
+            kinds = kinds if isinstance(kinds, list) else [kinds]
+            if not any(str(kind).rsplit("/", 1)[-1].endswith("Event") for kind in kinds):
+                continue
+            if normal_name(node.get("name")) != normal_name(title):
+                continue
+            if any(not same_event(node[key]) for key in ("url", "@id") if node.get(key)):
+                continue
+            values = node.get("image", [])
+            values = values if isinstance(values, list) else [values]
+            for value in values[:5]:
+                description = " ".join(str(value.get(key, "")) for key in ("caption", "name", "description")) if isinstance(value, dict) else ""
+                if image := candidate(value, description):
+                    structured.add(image)
+    if structured:
+        return next(iter(structured)) if len(structured) == 1 else None
+
+    inline = set()
+    in_event, after_when = False, False
+    for tag in section.find_all(["h1", "h2", "h3", "h4", "h5", "h6", "img"]):
+        if tag.name != "img":
+            heading = clean(tag.get_text(" ", strip=True))
+            if tag.name == "h1":
+                if in_event:
+                    break
+                in_event = normal_name(heading) == normal_name(title)
+            if in_event and NON_EVENT_SECTION.search(heading):
+                break
+            if in_event and heading.casefold() == "when":
+                after_when = True
+            continue
+        if not in_event or not (after_when or "image" in str(tag.get("itemprop", "")).split()):
+            continue
+        excluded = False
+        for ancestor in [tag, *tag.parents]:
+            if not isinstance(ancestor, Tag):
+                continue
+            signature = " ".join([str(ancestor.get("id", "")), " ".join(ancestor.get("class", []))])
+            if (ancestor.name in ("header", "nav", "footer", "aside")
+                    or ancestor.get("role") in ("navigation", "banner", "complementary", "contentinfo")
+                    or ancestor.has_attr("hidden") or ancestor.get("aria-hidden") == "true"
+                    or NON_EVENT_IMAGE.search(signature)
+                    or re.search(r"(?:^|[ _-])(?:related|recommended)(?:[ _-]|$)", signature, re.I)):
+                excluded = True
+                break
+            if ancestor.name == "a" and ancestor.get("href"):
+                try:
+                    linked = urlparse(urljoin(url, ancestor["href"]))
+                except (ValueError, TypeError):
+                    excluded = True
+                    break
+                if linked.path.rstrip("/").endswith("/event") and not same_event(ancestor["href"]):
+                    excluded = True
+                    break
+        if excluded:
+            continue
+        figure = tag.find_parent("figure")
+        caption = figure.find("figcaption") if figure else None
+        description = clean(" ".join([clean(tag.get("alt")),
+            clean(caption.get_text(" ", strip=True)) if caption else ""]))
+        if len(description) < 20 or len(re.findall(r"[A-Za-z]+", description)) < 3:
+            continue
+        try:
+            if any(tag.get(key) is not None and int(tag[key]) < minimum for key, minimum in (("width", 160), ("height", 90))):
+                continue
+        except (ValueError, TypeError):
+            continue
+        # src is the publisher's displayed image. Do not infer a lazy URL or
+        # choose an arbitrary member of a gallery/srcset.
+        if image := candidate(tag.get("src"), description):
+            inline.add(image)
+    return next(iter(inline)) if len(inline) == 1 else None
 
 
 def label(lines, title):
@@ -214,6 +350,12 @@ def parse_event(html, url, park):
         "publisher_offsite_street_pending_geocode" if offsite
         else "owner_reviewed_park_cache"
     )
+    item["image_extractor_version"] = IMAGE_EXTRACTOR_VERSION
+    evidence_url = ROOT + "/state-parks/event?id=" + page_id
+    if image := event_photo_candidate(soup, section, evidence_url, title):
+        item["image_url"] = image
+        item["image_provenance"] = IMAGE_EXTRACTOR_VERSION
+        item["image_evidence_url"] = evidence_url
     return item
 
 
