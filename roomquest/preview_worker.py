@@ -843,13 +843,14 @@ def supabase_rpc(path: str, payload: dict, *, timeout: float = 4):
         raise PreviewError("database_unavailable") from exc
 
 
-def _process_claimed_source(source: dict, *, deadline_at=None) -> dict:
+def _process_claimed_source(source: dict, *, deadline_at=None, publisher_handoff=None) -> dict:
     """Process a single claimed feed with the existing private staging contract."""
     with capture_publisher_pacing() as pacing:
-        return _process_claimed_source_with_pacing(source, pacing, deadline_at=deadline_at)
+        return _process_claimed_source_with_pacing(
+            source, pacing, deadline_at=deadline_at, publisher_handoff=publisher_handoff)
 
 
-def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None):
+def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, publisher_handoff=None):
     phase, failure = "collection", {}
     try:
         deadline = min(monotonic() + 43, deadline_at or float("inf"))
@@ -891,6 +892,14 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None):
     html = source.get("kind") == "html" and source.get("platform_adapter") == "html"
     if html:
         supabase_rpc("community_collector_record_preview_v2", {**output, **pacing_rpc_fields(pacing)})
+        if publisher_handoff is not None and not pacing["wait_unbounded"]:
+            # The server starts its durable wait while recording the preview.
+            # Starting our estimate after the RPC returns cannot shorten it.
+            # The separate recent-preview host guard also requires one second,
+            # even when the publisher did not advertise a delay. This local
+            # handoff state never enters an RPC payload or response result.
+            publisher_handoff["ready_at"] = monotonic() + max(
+                1, pacing["crawl_delay_seconds"], pacing["retry_after_seconds"])
     else:
         supabase_rpc("community_collector_record_preview", output)
     return {"complete": int(output["p_error"] is None),
