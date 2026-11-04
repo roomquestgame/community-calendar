@@ -8,12 +8,17 @@ but returned only `complete`/`failed`/`staged` counters. `category_worker` there
 finished every unsuccessful source with the same `failed` outcome used for a
 database or worker failure. That applied a lane failure cooldown.
 
-The companion backend change provides two bounded HTML worker slots, fair
-publisher selection and one active canonical publisher host at a time. This
-collector change distinguishes recorded source errors from worker failures and
-persists publisher pacing evidence before releasing a slot. It adds no route,
-scheduling service, timer, arbitrary URL input, or unbounded concurrency.
-Collection still requires approved sources and live, expiring demand.
+The companion backend change provides three bounded HTML worker slots with fair
+publisher selection. Each slot can collect one independent publisher, allowing
+up to three publishers at once while retaining one active fetch per canonical
+publisher host. The shared publication cap remains two concurrent operations.
+The existing deployment and demand callbacks serve all sources; this adds no
+per-site deployment or cron. Collection remains on demand only and requires
+approved sources and live, expiring demand.
+
+This collector change distinguishes recorded source errors from worker failures
+and persists publisher pacing evidence before releasing a slot. It adds no
+route, scheduling service, timer, arbitrary URL input, or unbounded concurrency.
 
 Bellevue Times remains strictly `first_page`: one registered calendar request,
 at most 30 publisher cards, complete validation of that page, and its existing
