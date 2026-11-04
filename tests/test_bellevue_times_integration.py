@@ -36,12 +36,32 @@ def test_dispatch_uses_existing_robots_transport_own_host_and_thirty_second_limi
     assert row["reason"] == "missing_verified_venue_geo"
     assert row["description"] == "A library activity."
     assert row["category"] == "Kids Activities"
+    assert row["publisher_categories"] == ["Kids Activities"]
     assert row["timezone"] == "America/Chicago"
     assert fetch.call_args.args == (bt.CALENDAR, "text/html")
     assert fetch.call_args.kwargs["respect_robots"] is True
     assert fetch.call_args.kwargs["allowed_hosts"] == ("bellevuetimes.com",)
     assert before < fetch.call_args.kwargs["deadline_at"] <= worker.monotonic() + 30
     assert fetch.call_args.kwargs["deadline_at"] <= outer_deadline - 5
+
+
+def test_raw_publisher_evidence_survives_the_existing_staging_and_preview_contract():
+    summary = "Adults 21+ only. Tickets are $10; this is a free-for-all craft session."
+    html = listing([entry(labels=("Family Activity", "Adults Only", "Paid Admission"), summary=summary)])
+    with patch.object(worker, "datetime", FrozenDateTime), patch.object(bt, "datetime", FrozenDateTime), \
+            patch.object(worker, "fetch_publisher", return_value=html) as fetch, \
+            patch.object(worker, "supabase_rpc", return_value=1) as rpc:
+        result = worker._process_claimed_source({**SOURCE, "id": 123})
+    assert result == {"complete": 1, "failed": 0, "staged": 1}
+    fetch.assert_called_once()
+    staged = next(call.args[1]["p_events"] for call in rpc.call_args_list
+                  if call.args[0] == "community_collector_record_staged_events")
+    preview = next(call.args[1] for call in rpc.call_args_list
+                   if call.args[0] == "community_collector_record_preview_v2")
+    assert preview["p_samples"] == staged
+    assert staged[0]["publisher_categories"] == ["Family Activity", "Adults Only", "Paid Admission"]
+    assert staged[0]["category"] == "Family Activity"
+    assert staged[0]["description"] == summary
 
 
 @pytest.mark.parametrize("updates", [
