@@ -10,6 +10,7 @@ from roomquest.preview_worker import event_image, calendar_image
 CLAIM = {'media_key': 'fixture', 'lease_id': 'fixture-lease', 'title': 'Community concert',
          'event_url': 'https://venue.example.org/event/concert', 'candidate_url': None}
 PHOTO = 'https://cdn.example.org/concert-poster.jpg'
+PLATE = 'https://www.dcr.virginia.gov/state-parks/image/vsp-plate.jpg'
 
 
 class PhotoTests(unittest.TestCase):
@@ -46,7 +47,7 @@ class PhotoTests(unittest.TestCase):
 
     def test_candidate_only_never_recrawls_missing_or_rejected_candidates(self):
         for candidate in [None, '', '  ', 'http://example.org/photo.jpg', 'https://127.0.0.1/photo.jpg',
-                          'https://example.org/logo.png']:
+                          'https://example.org/logo.png', PLATE]:
             fetch = MagicMock(); probe = MagicMock()
             result = m.resolve_photo({**CLAIM, 'candidate_only': True, 'candidate_url': candidate},
                                      fetcher=fetch, probe=probe, clock=lambda: 0, deadline=30)
@@ -63,6 +64,22 @@ class PhotoTests(unittest.TestCase):
         result = m.resolve_photo({**CLAIM, 'candidate_only': True, 'candidate_url': PHOTO},
                                  fetcher=fetch, probe=probe, clock=lambda: 0, deadline=30)
         self.assertEqual(result, {'image_url': PHOTO, 'mime_type': 'image/jpeg', 'evidence_url': CLAIM['event_url']})
+
+    def test_candidate_only_rejects_generic_final_redirect_result(self):
+        fetch = MagicMock()
+        result = m.resolve_photo({**CLAIM, 'candidate_only': True, 'candidate_url': PHOTO},
+                                 fetcher=fetch, probe=lambda _: (PLATE, 'image/jpeg'), clock=lambda: 0, deadline=30)
+        self.assertIsNone(result)
+        fetch.assert_not_called()
+
+    def test_candidate_only_stops_before_fetching_generic_redirect_target(self):
+        response = MagicMock(); response.status_code = 302
+        response.headers = {'Location': PLATE}; response.__enter__.return_value = response
+        session = MagicMock(); session.get.return_value = response; session.__enter__.return_value = session
+        with patch.object(m.requests, 'Session', return_value=session), patch.object(m, 'validate_public_dns'):
+            self.assertIsNone(m.resolve_photo({**CLAIM, 'candidate_only': True, 'candidate_url': PHOTO},
+                                             clock=lambda: 0, deadline=30))
+        session.get.assert_called_once()
 
     def test_legacy_claim_keeps_event_page_fallback(self):
         fetch = MagicMock(return_value='<h1>Community concert</h1><meta property="og:image" content="'+PHOTO+'">')
@@ -104,7 +121,7 @@ class PhotoTests(unittest.TestCase):
             result=m.run_batch(database=db,resolver=lambda *a,**kw:None)
         self.assertEqual(result['unavailable'],1)
         self.assertEqual([x[0] for x in calls],['claim','fail'])
-        self.assertEqual(calls[0][1], {'limit': 3, 'candidate_only_version': 'publisher_event_html_v1'})
+        self.assertEqual(calls[0][1], {'limit': 3, 'candidate_only_version': 'publisher_event_html_v2'})
         self.assertEqual(calls[-1][1]['lease_id'],CLAIM['lease_id'])
 
     def test_network_probe_bounds_content_and_validates_magic(self):

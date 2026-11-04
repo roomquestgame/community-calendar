@@ -22,15 +22,17 @@ CALENDAR = ROOT + "/state-parks/events"
 TZ = ZoneInfo("America/New_York")
 MAX_EVENT_PAGES = 10
 MAX_LISTING_LINKS = 200
-IMAGE_EXTRACTOR_VERSION = "publisher_event_html_v1"
+IMAGE_EXTRACTOR_VERSION = "publisher_event_html_v2"
 NON_EVENT_IMAGE = re.compile(
     r"(?:^|[^a-z0-9])(?:maps?|logo|logos|favicon|icon|avatar|pixel|tracking|"
-    r"navigation|breadcrumb|social|banner|header|footer|sidebar)(?:[^a-z0-9]|$)"
+    r"navigation|breadcrumb|social|banner|header|footer|sidebar|"
+    r"licen[cs]e|licen[cs]e[-_ ]?plates?|vsp[-_ ]?plates?)(?:[^a-z0-9]|$)"
     r"|location of .+ (?:in|within) virginia", re.I,
 )
 NON_EVENT_SECTION = re.compile(
     r"^(?:know before you go|other events|related events|upcoming events|"
-    r"park information|contact us|directions|location map)\b", re.I,
+    r"park information|contact us|directions|location map|documents|other details|"
+    r"event types|additional dates|add to calendar)\b", re.I,
 )
 DATE_TEXT = r"(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?\s+\d{1,2},?\s+20\d{2}"
 CLOCK = r"\d{1,2}(?::\d{2})?\s*[ap]\.?m\.?"
@@ -68,28 +70,32 @@ def normal_name(value):
     return re.sub(r"[^a-z0-9]", "", str(value).lower())
 
 
+def event_photo_url(value, base_url="", description=""):
+    """The same safe, non-boilerplate URL policy for extraction and verification."""
+    from roomquest.preview_worker import event_image
+
+    if isinstance(value, str) and not value.strip():
+        return None
+    try:
+        image = event_image(value, base_url)
+        if not image or NON_EVENT_IMAGE.search(unquote(urlparse(image).path) + " " + description):
+            return None
+    except (ValueError, TypeError):
+        # An optional malformed image must not discard valid event facts.
+        return None
+    return image
+
+
 def event_photo_candidate(soup, section, url, title):
     """Select unverified event imagery, never the page's generic first image.
 
-    Structured data must identify this event. Inline images must be in the
-    event's content after its When heading (or explicitly mark itemprop=image),
-    with descriptive publisher text. Ambiguous images fail closed. No network
+    Structured data must identify this event. Inline images must be in DCR's
+    unique event_description container, with descriptive publisher text.
+    Ambiguous images fail closed. No network
     access occurs here; the media worker validates URLs, redirects and bytes.
     """
-    # Local import avoids the preview worker's provider-dispatch import cycle.
-    from roomquest.preview_worker import event_image
-
     def candidate(value, description=""):
-        if isinstance(value, str) and not value.strip():
-            return None
-        try:
-            image = event_image(value, url)
-            if not image or NON_EVENT_IMAGE.search(unquote(urlparse(image).path) + " " + description):
-                return None
-        except (ValueError, TypeError):
-            # An optional malformed image must not discard valid event facts.
-            return None
-        return image
+        return event_photo_url(value, url, description)
 
     def same_event(value):
         if not isinstance(value, str):
@@ -136,6 +142,12 @@ def event_photo_candidate(soup, section, url, title):
     if structured:
         return next(iter(structured)) if len(structured) == 1 else None
 
+    # Captured DCR pages put both event content and generic promotional cards
+    # inside main. Only this publisher-owned description holds event imagery.
+    descriptions = section.select("div#event_description")
+    if len(descriptions) != 1:
+        return None
+    description_container = descriptions[0]
     inline = set()
     in_event, after_when = False, False
     for tag in section.find_all(["h1", "h2", "h3", "h4", "h5", "h6", "img"]):
@@ -150,7 +162,8 @@ def event_photo_candidate(soup, section, url, title):
             if in_event and heading.casefold() == "when":
                 after_when = True
             continue
-        if not in_event or not (after_when or "image" in str(tag.get("itemprop", "")).split()):
+        if (not in_event or tag.find_parent("div", id="event_description") is not description_container
+                or not (after_when or "image" in str(tag.get("itemprop", "")).split())):
             continue
         excluded = False
         for ancestor in [tag, *tag.parents]:

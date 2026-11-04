@@ -1,0 +1,29 @@
+{
+  "workflow_run_id": 41924318791,
+  "workflow_commit": "9b81a7f598600f47afc0e2b669323141be7a672d",
+  "archive_sha256": "3e0794a919d66b4c7e339cc60d38fd83f1662d08ef3cb654841f6863b842d31b",
+  "derivation": "Retained captured main#startContent and descendants; removed only the selectors listed below. BeautifulSoup serialized the retained original DOM. Image attributes, event_description/event_default_text containers, maps, promotional cards, and heading order are preserved. These are compact excerpts of fetched publisher responses, not synthetic pages.",
+  "removed_selectors": "script,style,noscript,#calendar_link,#enewsletter_sign_up,#new_breadcrumb",
+  "pages": [
+    {
+      "fixture": "archery-club.html",
+      "source_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-25-09-24-08-914874-7iv",
+      "observed_at": "2026-11-04T22:20:23.132826+00:00",
+      "full_response_sha256": "417e9376f181b2311b2bede86de03a2b393a7e2bd87a5197017e5e54c72af135",
+      "full_response_bytes": 37162,
+      "fixture_sha256": "3fc2e96cfa3441ef1e80cedc0727f979e400d3390904dec40205c6858ad9af8b",
+      "fixture_bytes": 3442,
+      "original_v1_candidate": "https://www.dcr.virginia.gov/state-parks/image/vsp-plate.jpg"
+    },
+    {
+      "fixture": "widewater-volunteers.html",
+      "source_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-09-08-13-24-45-158426-gse",
+      "observed_at": "2026-11-04T22:20:24.769100+00:00",
+      "full_response_sha256": "7b021a47bb21d5dbb6b76a1002d2a8907674c333c8d6c9103c3c60e281675185",
+      "full_response_bytes": 45026,
+      "fixture_sha256": "3afd8cca10d15601a71af4ca9401107f38f3704eff6624a7e88ab64cc608633d",
+      "fixture_bytes": 5462,
+      "original_v1_candidate": null
+    }
+  ]
+}

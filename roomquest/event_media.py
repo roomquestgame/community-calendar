@@ -65,13 +65,14 @@ def image_signature(data: bytes, mime: str) -> bool:
     return mime == 'image/avif' and data[4:8] == b'ftyp' and b'avif' in data[8:32]
 
 
-def probe_image(url: str) -> tuple[str, str] | None:
+def probe_image(url: str, *, candidate_validator=None) -> tuple[str, str] | None:
     current = url
     deadline = monotonic() + 8
     with requests.Session() as session:
         for _ in range(3):
             remaining = deadline - monotonic()
-            if remaining < 1 or not event_image(current):
+            if (remaining < 1 or not event_image(current)
+                    or candidate_validator is not None and not candidate_validator(current)):
                 return None
             validate_public_dns(urlparse(current).hostname or '')
             with session.get(current, timeout=(min(2, remaining), min(5, remaining)), stream=True,
@@ -94,12 +95,16 @@ def probe_image(url: str) -> tuple[str, str] | None:
 
 
 def resolve_photo(claim: dict, *, fetcher=None, probe=None, clock=None, deadline=None):
-    fetcher, probe, clock = fetcher or fetch_page, probe or probe_image, clock or monotonic
+    fetcher, clock = fetcher or fetch_page, clock or monotonic
     deadline = deadline if deadline is not None else clock() + 20
+    candidate_validator = None
+    if claim.get('candidate_only') is True:
+        from roomquest.virginia_state_parks import event_photo_url
+        candidate_validator = event_photo_url
     raw_candidate = claim.get('candidate_url')
     if isinstance(raw_candidate, str):
         raw_candidate = raw_candidate.strip() or None
-    candidate = event_image(raw_candidate, claim['event_url'])
+    candidate = (candidate_validator or event_image)(raw_candidate, claim['event_url'])
     if not candidate:
         # HTML candidates were selected from the source's already-fetched
         # event page. A missing/rejected candidate is not permission to crawl
@@ -111,7 +116,9 @@ def resolve_photo(claim: dict, *, fetcher=None, probe=None, clock=None, deadline
         candidate = extract_photo(fetcher(claim['event_url']), claim['event_url'], claim['title'])
     if not candidate or clock() + 8 >= deadline:
         return None
-    verified = probe(candidate)
+    verified = probe(candidate) if probe is not None else probe_image(candidate, candidate_validator=candidate_validator)
+    if verified and candidate_validator is not None and not candidate_validator(verified[0]):
+        return None
     return {'image_url': verified[0], 'mime_type': verified[1], 'evidence_url': claim['event_url']} if verified else None
 
 
@@ -127,7 +134,7 @@ def run_batch(*, database=None, resolver=None, clock=None, deadline_seconds=38):
     deadline = clock() + min(38, max(1, deadline_seconds))
     # The backend releases candidate-only VA work only to a deployed worker
     # that supports it; old workers retain their existing legacy claim path.
-    claims = database('claim', {'limit': 3, 'candidate_only_version': 'publisher_event_html_v1'}) or []
+    claims = database('claim', {'limit': 3, 'candidate_only_version': 'publisher_event_html_v2'}) or []
     def process(claim):
         try:
             return claim, resolver(claim, deadline=deadline), None

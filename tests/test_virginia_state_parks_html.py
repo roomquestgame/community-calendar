@@ -2,6 +2,7 @@
 import io
 import json
 from datetime import date, timedelta, timezone
+from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 from unittest.mock import patch
 import pytest
@@ -14,7 +15,8 @@ PAGE = """<html><body><main><h1>Plantation Discovery Hike</h1>
 <h2>Where</h2><div>Program Location:</div><div>Terrace Gardens</div>
 <div>Main Park Address:</div><div>Occoneechee State Park, 1192 Occoneechee Park Rd., Clarksville, VA 23927.</div>
 <h2>When</h2><div>Nov. 7, 2026. 11:00 a.m. - 12:30 p.m.</div>
-<p>Explore the history of the Occoneechee Plantation on this one-mile guided hike around the Plantation Trail and natural history.</p>
+<div id="event_description"><p>Explore the history of the Occoneechee Plantation on this one-mile guided hike around the Plantation Trail and natural history.</p>
+<!-- event_photo_fixture --></div>
 </main></body></html>"""
 PARK = va.catalog()["oc"]
 CAL_LINK = va.ROOT + "/state-parks/event?id=" + ID
@@ -27,19 +29,72 @@ SOURCE = {"source_key":"virginia_state_parks_oc", "kind":"html",
 PHOTO = va.ROOT + "/state-parks/blog/volunteers-trail.jpg"
 PHOTO_TAG = '<img src="/state-parks/blog/volunteers-trail.jpg" alt="Three volunteers maintaining a trail together" width="900" height="600">'
 MAP_TAG = '<img src="/state-parks/images/ww.png" alt="Location of Widewater State Park in Virginia">'
+# This exact asset was incorrectly selected in production; this surrounding
+# regression markup is synthetic until the permitted publisher audit is read.
+PLATE_URL = va.ROOT + "/state-parks/image/vsp-plate.jpg"
+PLATE_TAG = '<img src="/state-parks/image/vsp-plate.jpg" alt="Get a Virginia State Parks license plate">'
+CAPTURED_FIXTURES = Path(__file__).parent / "fixtures" / "virginia_state_parks"
+WIDEWATER_PHOTO = "https://www.flickr.com/photo_download.gne?id=55197366730&secret=a76ef0bacd&size=w&source=photoPageEngagement"
 
 
 def photo_record(content="", *, page=PAGE):
     with patch.object(va, "record", return_value={"id": "fixture"}):
-        return va.parse_event(page.replace("</main>", content + "</main>"), CAL_LINK, PARK)
+        return va.parse_event(page.replace("<!-- event_photo_fixture -->", content), CAL_LINK, PARK)
 
 
 def test_event_content_photo_excludes_the_generic_park_location_map():
     item = photo_record(MAP_TAG + PHOTO_TAG)
     assert item["image_url"] == PHOTO
-    assert item["image_provenance"] == "publisher_event_html_v1"
-    assert item["image_extractor_version"] == "publisher_event_html_v1"
+    assert item["image_provenance"] == "publisher_event_html_v2"
+    assert item["image_extractor_version"] == "publisher_event_html_v2"
     assert item["image_evidence_url"] == CAL_LINK
+
+
+def test_live_observed_license_plate_asset_is_never_an_event_photo():
+    assert "image_url" not in photo_record(PLATE_TAG)
+    assert photo_record(PHOTO_TAG + PLATE_TAG)["image_url"] == PHOTO
+    event = {"@type": "Event", "name": "Plantation Discovery Hike", "url": CAL_LINK, "image": PLATE_URL}
+    markup = '<script type="application/ld+json">' + json.dumps(event) + '</script>'
+    assert "image_url" not in photo_record(markup)
+
+
+@pytest.mark.parametrize("heading", ["Documents", "Other details", "Event types", "Additional dates", "Add to calendar"])
+def test_event_details_boundary_excludes_unrelated_page_tail_artwork(heading):
+    assert "image_url" not in photo_record('<h2>' + heading + '</h2>' + PHOTO_TAG)
+    assert photo_record(PHOTO_TAG + '<h2>' + heading + '</h2>' + PLATE_TAG)["image_url"] == PHOTO
+
+
+@pytest.mark.parametrize("name,park_code,expected", [
+    ("archery-club", "bc", None), ("widewater-volunteers", "ww", WIDEWATER_PHOTO),
+])
+def test_captured_publisher_dom_selects_only_the_real_event_photo(name, park_code, expected):
+    provenance = json.loads((CAPTURED_FIXTURES / "provenance.json").read_text())
+    evidence = next(page for page in provenance["pages"] if page["fixture"] == name + ".html")
+    html = (CAPTURED_FIXTURES / evidence["fixture"]).read_text()
+    with patch.object(va, "record", return_value={"id": "captured-event"}):
+        item = va.parse_event(html, evidence["source_url"], va.catalog()[park_code])
+    assert item.get("image_url") == expected
+    assert item["image_extractor_version"] == "publisher_event_html_v2"
+    if expected:
+        assert item["image_evidence_url"] == evidence["source_url"]
+    else:
+        assert "image_provenance" not in item
+
+
+@pytest.mark.parametrize("change", ["missing_container", "duplicate_container", "outside_container"])
+def test_real_photo_requires_the_unique_captured_event_description_container(change):
+    html = (CAPTURED_FIXTURES / "widewater-volunteers.html").read_text()
+    soup = va.BeautifulSoup(html, "html.parser")
+    description = soup.select_one("#event_description")
+    if change == "missing_container":
+        description["id"] = "unrecognized_description"
+    elif change == "duplicate_container":
+        description.insert_after(va.BeautifulSoup(str(description), "html.parser"))
+    else:
+        description.insert_after(description.find("img").extract())
+    with patch.object(va, "record", return_value={"id": "captured-event"}):
+        item = va.parse_event(str(soup), CAL_LINK, va.catalog()["ww"])
+    assert "image_url" not in item
 
 
 @pytest.mark.parametrize("content", ["", MAP_TAG,
@@ -57,7 +112,7 @@ def test_event_content_photo_excludes_the_generic_park_location_map():
 ])
 def test_missing_map_and_boilerplate_images_have_version_but_no_candidate(content):
     item = photo_record(content)
-    assert item["image_extractor_version"] == "publisher_event_html_v1"
+    assert item["image_extractor_version"] == "publisher_event_html_v2"
     assert not {"image_url", "image_provenance", "image_evidence_url"}.intersection(item)
 
 
@@ -70,7 +125,8 @@ def test_inline_candidate_keeps_shared_safe_url_validation(image_url):
 def test_inline_images_must_belong_to_event_body_and_are_not_first_image_fallback():
     before = PAGE.replace("<h2>When</h2>", PHOTO_TAG + "<h2>When</h2>")
     assert "image_url" not in photo_record(page=before)
-    assert photo_record(page=before.replace('<img ', '<img itemprop="image" '))["image_url"] == PHOTO
+    assert "image_url" not in photo_record(page=before.replace('<img ', '<img itemprop="image" '))
+    assert photo_record(PHOTO_TAG.replace('<img ', '<img itemprop="image" '))["image_url"] == PHOTO
     ambiguous = PHOTO_TAG + PHOTO_TAG.replace("volunteers-trail.jpg", "other-photo.jpg")
     assert "image_url" not in photo_record(ambiguous)
     assert photo_record(PHOTO_TAG + PHOTO_TAG)["image_url"] == PHOTO
@@ -118,7 +174,7 @@ def test_photo_extraction_reuses_exact_listing_and_detail_fetches():
     calls = []
     def fetch(url, accept):
         calls.append(url)
-        return listing if "/events?" in url else PAGE.replace("</main>", MAP_TAG + PHOTO_TAG + "</main>")
+        return listing if "/events?" in url else PAGE.replace("<!-- event_photo_fixture -->", MAP_TAG + PHOTO_TAG)
     with patch.object(va, "record", return_value={"id": "fixture"}), patch("roomquest.event_media.probe_image") as probe:
         items = va.collect(SOURCE, fetch)
     assert calls == [va.listing_url(PARK), CAL_LINK]
@@ -131,18 +187,18 @@ def test_empty_successful_va_preview_carries_parser_capability():
         output = worker.preview_source(SOURCE)
     assert output["p_events"] == []
     assert output["p_future_count"] == 0
-    assert output["p_parser_capability"] == "publisher_event_html_v1"
+    assert output["p_parser_capability"] == "publisher_event_html_v2"
 
 
 def test_va_completion_uses_v3_and_does_not_certify_failed_staging():
     output = {"p_source_key": SOURCE["source_key"], "p_samples": [], "p_future_count": 0,
               "p_venue_count": 0, "p_error": None, "p_events": [],
-              "p_parser_capability": "publisher_event_html_v1"}
+              "p_parser_capability": "publisher_event_html_v2"}
     with patch.object(worker, "preview_source", return_value=dict(output)), \
          patch.object(worker, "supabase_rpc", return_value=0) as rpc:
         assert worker._process_claimed_source(SOURCE)["complete"] == 1
     assert rpc.call_args.args[0] == "community_collector_record_preview_v3"
-    assert rpc.call_args.args[1]["p_parser_capability"] == "publisher_event_html_v1"
+    assert rpc.call_args.args[1]["p_parser_capability"] == "publisher_event_html_v2"
 
     def fail_staging(path, payload):
         if path == "community_collector_record_staged_events":

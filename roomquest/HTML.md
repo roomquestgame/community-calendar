@@ -3,13 +3,15 @@
 Ben approved adding event photos to all 46 registered Virginia park adapters,
 including Widewater, and releasing the collector/database pair to production.
 Beautiful Soup selects a photo candidate from the event detail HTML already
-fetched. Matching Event structured data or one descriptive image in the event
-content can qualify; location maps, logos, unrelated events, site artwork,
+fetched. Matching Event structured data or one descriptive image in the unique
+publisher `div#event_description` can qualify; location maps, logos, unrelated events, site artwork,
 unsafe URLs and ambiguous galleries cannot. Optional malformed image metadata
-does not discard valid event facts. Fixtures are explicitly synthetic; actual
-publisher candidate output and publication must be verified after release.
+does not discard valid event facts. Real Archery Club and Widewater HTML was
+captured in [the bounded read-only diagnostic](https://github.com/roomquestgame/community-calendar/actions/runs/41924318791);
+compact fixtures retain the actual event container and generic page artwork,
+with complete source provenance under `tests/fixtures/virginia_state_parks/`.
 
-Every VA record carries `image_extractor_version=publisher_event_html_v1`.
+Every VA record carries `image_extractor_version=publisher_event_html_v2`.
 A candidate also carries `image_url`, matching `image_provenance`, and its
 canonical event-page `image_evidence_url`. The separate existing media worker
 validates the candidate's URL, redirects, content type and image bytes. A VA
@@ -18,7 +20,7 @@ generic Open Graph artwork. No photo is required for an event to publish.
 
 **Deploy the additive backend first, then this collector.** Virginia completion
 uses `community_collector_record_preview_v3` with the existing publisher pacing
-fields and `p_parser_capability=publisher_event_html_v1` on success, including a
+fields and `p_parser_capability=publisher_event_html_v2` on success, including a
 genuine empty result. Other HTML providers keep v2. The backend binds photo
 eligibility to the original successful source snapshot and its existing policy
 (96 hours by default), fences late results, and refreshes older VA snapshots
@@ -26,10 +28,19 @@ only through existing real demand and source controls. Its narrow Virginia
 media path leaves the disabled legacy photo workload unchanged. There is no
 new statewide crawler, scheduler, mobile binary or OTA requirement.
 
-Local collector validation: all **730 tests and 25 subtests** in the complete
-provider workflow plus media suite passed; independent review regression cases
-cover malformed URLs, related-event links and conflicting map captions.
-Coordinated PRs record final CI, deployment and production readback receipts.
+The initial v1 production acceptance found the generic DCR license-plate image
+outside the event description but within `main`. The collector was rolled back
+before any photo was published. V2 narrows the inline content boundary and
+rejects license-plate candidates, redirect targets before fetching them, and
+final verified URLs. The additive backend correction retires v1 evidence and
+only corrected v2 readiness can initiate the existing demand-gated repair.
+
+Local validation: **745 tests and 25 subtests** passed. Independent replay of
+the full and compact real captures selects the Widewater volunteer photograph
+and no Archery club logo. The optional `virginia_live` workflow input is false
+by default and captures only two fixed official pages through the existing
+publisher guards; it writes no database data and fetches no images. Coordinated
+PRs record required CI, final deployment and real image/publication readbacks.
 
 ## HTML worker errors and publisher pacing — November 4, 2026
 
