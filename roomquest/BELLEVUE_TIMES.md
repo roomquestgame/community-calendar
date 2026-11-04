@@ -118,11 +118,23 @@ fail and retain their named error.
   captured parade's missing-location `-2` card is dropped only when the located
   counterpart with matching title and occurrence is in the same snapshot. A
   missing counterpart stays held. Different places or end times do not merge.
-- Descriptions are bounded factual card summaries; categories are the publisher's
-  primary labels for the existing classification flow. No publication date,
+- Descriptions retain the factual card summary, bounded to 2,000 characters.
+  The existing `category` remains the primary human publisher label;
+  `publisher_categories` separately preserves explicit `.bcc-terms` card badges
+  in publisher order, deduplicated without case sensitivity and bounded to
+  20 labels of 100 characters each. Page navigation terms are excluded. No publication date,
   RSS `pubDate`, prose date, generated blurb or invented session becomes event
   timing. Optional safe publisher-hosted image URLs are normalized candidate
   metadata only; they are not fetched by this adapter.
+
+The adapter preserves evidence for shared classification without inventing
+price, audience or holiday fields. Missing labels stay empty; venue names and
+event titles do not generate labels. Both positive and negative publisher
+evidence survive: for example, an audience badge can coexist with an adult-only
+or paid-admission badge. The captured Gem Jam summary says “free-for-all,” and
+Avenue Q's summary ends with a pay-what-you-can fragment; neither establishes
+unconditional free admission. Existing `record()` and `_preview()` behavior,
+occurrence IDs, schedules, venues and first-page collection bounds are unchanged.
 
 ### Image publication remains unavailable for this HTML source
 

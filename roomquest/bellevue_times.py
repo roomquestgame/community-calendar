@@ -31,6 +31,8 @@ COLLECTION_SCOPE = "first_page"
 MAX_SECONDS = 30
 LOOKAHEAD_DAYS = 60
 MAX_DESCRIPTION = 2000
+MAX_PUBLISHER_CATEGORIES = 20
+MAX_PUBLISHER_CATEGORY_LENGTH = 100
 _CLOCK = r"\d{1,2}(?::\d{2})?\s*[ap]m"
 _MONTHS = {}
 for _number, _month in enumerate(("January February March April May June July "
@@ -109,6 +111,7 @@ class Card:
     summary: str
     category: str
     image_url: str | None = None
+    publisher_categories: tuple[str, ...] = ()
 
     @property
     def identity(self):
@@ -182,6 +185,21 @@ def _image_url(card):
     return None
 
 
+def _publisher_categories(card):
+    """Keep explicit card badges as evidence, separately from classification."""
+    labels, seen = [], set()
+    for term in card.select(".bcc-terms .bcc-term, .bcc-terms .bcc-primary-term"):
+        label = clean(term.get_text(" ", strip=True))[:MAX_PUBLISHER_CATEGORY_LENGTH].rstrip()
+        key = label.casefold()
+        if not label or key in seen:
+            continue
+        seen.add(key)
+        labels.append(label)
+        if len(labels) == MAX_PUBLISHER_CATEGORIES:
+            break
+    return tuple(labels)
+
+
 def parse_listing(html):
     """Verify the complete first page, without treating it as the full calendar."""
     soup = BeautifulSoup(html, "html.parser")
@@ -221,7 +239,7 @@ def parse_listing(html):
                             clean(venues[0].get_text(" ", strip=True)) if venues else "",
                             clean(summaries[0].get_text(" ", strip=True)) if summaries else "",
                             clean(primary.get_text(" ", strip=True)) if primary else "",
-                            _image_url(card)))
+                            _image_url(card), publisher_categories=_publisher_categories(card)))
     return Page(tuple(results), total)
 
 
@@ -424,6 +442,7 @@ def normalize_cards(cards, *, now=None, publisher_total=None):
         item["timezone"] = TZ.key
         item["location_provenance"] = provenance
         item["description"] = card.summary[:MAX_DESCRIPTION]
+        item["publisher_categories"] = list(card.publisher_categories)
         if card.image_url:
             # Candidate metadata only: the current HTML publisher leaves the
             # public image null; this adapter does not grant media permission.

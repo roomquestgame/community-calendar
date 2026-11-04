@@ -17,12 +17,15 @@ SOURCE = {"source_key": bt.SOURCE_KEY, "kind": "html", "platform_adapter": "html
 
 def entry(slug="test-program", occurrence="20261114T100000", title="Library program",
           schedule="Saturday, November 14, 2026 · 10:00 am–11:00 am",
-          venue="Bellevue Public Library · Bellevue", summary="A library activity.", image=""):
+          venue="Bellevue Public Library · Bellevue", summary="A library activity.", image="",
+          labels=("Kids Activities",)):
     url = f"{bt.CALENDAR}{slug}/?occurrence={occurrence}&bcc_return_view=list&bcc_return_date=2026-11-03"
+    terms = ''.join(f'<a class="{"bcc-primary-term" if i == 0 else "bcc-term"}">{escape(label)}</a>'
+                    for i, label in enumerate(labels))
     return (f'<article class="bcc-event-card">{image}<div class="bcc-card-body">'
             f'<div class="bcc-card-date">{escape(schedule)}</div>'
             f'<h2><a href="{escape(url)}">{escape(title)}</a></h2>'
-            '<div class="bcc-terms"><a class="bcc-primary-term">Kids Activities</a></div>'
+            f'<div class="bcc-terms">{terms}</div>'
             + (f'<div class="bcc-card-venue">{escape(venue)}</div>' if venue else '')
             + f'<p class="bcc-card-summary">{escape(summary)}</p></div></article>')
 
@@ -359,5 +362,58 @@ def test_factual_description_and_publisher_category_keep_common_contract(record_
     row = bt.normalize_cards([card(summary=summary)], now=NOW)[0]
     assert row["description"] == summary[:bt.MAX_DESCRIPTION]
     assert row["category"] == "Kids Activities"
+    assert row["publisher_categories"] == ["Kids Activities"]
     assert record_spy.call_args.kwargs["retain_until_end"] is True
     assert record_spy.call_args.kwargs["publisher_geo"] is False
+
+
+def test_explicit_card_labels_keep_order_spelling_and_conflicting_evidence():
+    labels = ("Kids Activities", " Family\n Activity ", "kids activities", "STEM & STEAM",
+              "Paid Admission", "Adults Only", "")
+    row = bt.normalize_cards([card(labels=labels)], now=NOW)[0]
+    assert row["category"] == "Kids Activities"
+    assert row["publisher_categories"] == ["Kids Activities", "Family Activity", "STEM & STEAM",
+                                            "Paid Admission", "Adults Only"]
+
+
+def test_publisher_labels_match_gateway_bounds_and_dedupe_after_truncation():
+    prefix = "x" * 100
+    labels = ("Kids Activities", " kids activities ", "", prefix + "a", prefix + "b",
+              *(f"Topic {i}" for i in range(25)))
+    row = bt.normalize_cards([card(labels=labels)], now=NOW)[0]
+    assert row["publisher_categories"] == ["Kids Activities", prefix, *(f"Topic {i}" for i in range(18))]
+    assert len(row["publisher_categories"]) == 20
+    assert max(map(len, row["publisher_categories"])) == 100
+
+
+@pytest.mark.parametrize("summary", [
+    "Admission is free. For children ages 5–10 with an adult.",
+    "Admission is $10. Adults 21+ only. This is a free-for-all.",
+    "",
+])
+def test_labels_and_overlay_flags_are_not_invented_from_title_venue_or_summary(summary):
+    row = bt.normalize_cards([card(title="Free Family Christmas Activity", labels=(), summary=summary)], now=NOW)[0]
+    assert row["publisher_categories"] == []
+    assert row["category"] == ""
+    assert row["description"] == summary
+    assert not {"is_free", "is_kid_friendly", "is_family_friendly", "holiday", "holiday_key"} & row.keys()
+
+
+def test_page_navigation_terms_are_not_event_evidence():
+    html = ('<nav class="bcc-terms"><a class="bcc-term">Free Admission</a></nav>'
+            + listing([entry(labels=())]))
+    row = bt.normalize_cards(bt.parse_listing(html).cards, now=NOW)[0]
+    assert row["publisher_categories"] == []
+
+
+def test_saved_first_page_retains_explicit_audience_price_and_holiday_text():
+    rows = bt.normalize_cards(bt.parse_listing(CAPTURE).cards, now=NOW)
+    assert len(rows) == 28
+    assert all(row["publisher_categories"] == [row["category"]] for row in rows)
+    by_title = {row["title"]: row for row in rows}
+    assert by_title["Bluey Bash"]["publisher_categories"] == ["Family Activity"]
+    assert "children through grade 6" in by_title["Bluey Bash"]["description"]
+    assert "free-for-all" in by_title["Gem Jam: Teen Pop-Up"]["description"]
+    assert by_title["Gem Jam: Teen Pop-Up"]["publisher_categories"] == ["Teen Activities"]
+    assert "Pay-what-you-can" in by_title["Avenue Q: The Musical | SNAP! Productions"]["description"]
+    assert "Veterans Day" in by_title["Nebraska’s Official Veterans Day Parade"]["description"]
