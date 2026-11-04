@@ -1,10 +1,14 @@
 """Publisher rules are cached by host while permissions remain path-specific."""
 from types import SimpleNamespace
 from urllib.error import HTTPError, URLError
+from datetime import datetime, timezone
+from unittest.mock import MagicMock, Mock
 
 import pytest
 
 from roomquest import preview_worker as worker
+from roomquest.publisher_pacing import (capture_publisher_pacing, observe_retry_after,
+                                       pacing_rpc_fields)
 
 
 HOST = "www.mycountyparks.com"
@@ -27,14 +31,25 @@ class RobotsResponse:
 
 
 @pytest.fixture(autouse=True)
-def isolated_rules():
+def isolated_rules(monkeypatch):
+    # All HTTP and clocks in this suite are controlled; record pacing without
+    # introducing real sleeps into fake-origin tests.
+    monkeypatch.setattr(worker, "sleep", Mock())
     worker._robots_rules.cache_clear()
     saved_delays = dict(worker._robots_delays)
+    saved_next = dict(worker._publisher_next)
+    saved_retry = dict(worker._publisher_retry_after)
     worker._robots_delays.clear()
+    worker._publisher_next.clear()
+    worker._publisher_retry_after.clear()
     yield
     worker._robots_rules.cache_clear()
     worker._robots_delays.clear()
     worker._robots_delays.update(saved_delays)
+    worker._publisher_next.clear()
+    worker._publisher_next.update(saved_next)
+    worker._publisher_retry_after.clear()
+    worker._publisher_retry_after.update(saved_retry)
 
 
 def transport(monkeypatch, *answers):
@@ -89,13 +104,17 @@ def test_rules_refresh_after_five_minutes_changes_path_decision(monkeypatch):
     assert len(calls) == 2
 
 
-@pytest.mark.parametrize("code", [401, 403, 429, 500])
-def test_http_failure_denies_collection_and_does_not_cache_success(monkeypatch, code):
+@pytest.mark.parametrize("code,reason", [
+    (401, "robots_denied"), (403, "robots_denied"),
+    (429, "publisher_rate_limited"), (500, "robots_unavailable"),
+    (503, "robots_unavailable"),
+])
+def test_http_failure_fails_closed_without_mislabeling_transient_as_denied(monkeypatch, code, reason):
     failure = HTTPError(ROBOTS_URL, code, "publisher failure", {}, None)
     calls, _dns_checks = transport(monkeypatch, failure, b"User-agent: *\nDisallow: /private/\n")
     monkeypatch.setattr(worker, "monotonic", lambda: 100.0)
 
-    with pytest.raises(worker.PreviewError, match="^robots_denied$"):
+    with pytest.raises(worker.PreviewError, match="^" + reason + "$"):
         worker.robots_allowed(HOST, "/public/event")
     assert worker.robots_allowed(HOST, "/private/event") is False
     assert len(calls) == 2
@@ -147,3 +166,148 @@ def test_private_dns_does_not_fetch_or_allow(monkeypatch):
     with pytest.raises(worker.PreviewError, match="^dns_unavailable$"):
         worker.robots_allowed(HOST, "/public/event")
     assert calls == []
+
+
+@pytest.mark.parametrize("address", ["127.0.0.1", "10.0.0.1", "169.254.169.254", "::1"])
+def test_private_dns_remains_a_policy_block_not_a_transient_outage(monkeypatch, address):
+    monkeypatch.setattr(worker.socket, "getaddrinfo", lambda *_args, **_kwargs: [(None, None, None, None, (address, 443))])
+    with pytest.raises(worker.PreviewError, match="^non_public_dns$"):
+        worker.validate_public_dns("publisher.example")
+
+
+def test_dns_resolver_outage_remains_distinct(monkeypatch):
+    def unavailable(*_args, **_kwargs):
+        raise OSError("private resolver message")
+    monkeypatch.setattr(worker.socket, "getaddrinfo", unavailable)
+    with pytest.raises(worker.PreviewError, match="^dns_unavailable$"):
+        worker.validate_public_dns("publisher.example")
+
+
+def test_cached_rules_copy_crawl_delay_into_each_collection_receipt(monkeypatch):
+    calls, _ = transport(monkeypatch, b"User-agent: *\nDisallow: /private/\nCrawl-delay: 10\n")
+    monkeypatch.setattr(worker, "monotonic", lambda: 100.0)
+    for _ in range(2):
+        with capture_publisher_pacing() as state:
+            assert worker.robots_allowed(HOST, "/public/event") is True
+        assert pacing_rpc_fields(state) == {"p_publisher_crawl_delay_seconds": 10,
+                                            "p_publisher_retry_after_seconds": 0,
+                                            "p_publisher_wait_unbounded": False}
+    assert len(calls) == 1
+
+
+def test_fractional_crawl_delay_rounds_up_and_keeps_group_permissions(monkeypatch):
+    raw = (b"User-agent: OtherBot\nDisallow: /\nCrawl-delay: 90000\n\n"
+           b"User-agent: RoomQuestCommunityCalendar\nDisallow: /private/\nCrawl-delay: 2.1\n\n"
+           b"User-agent: *\nDisallow: /\nCrawl-delay: 30\n")
+    transport(monkeypatch, raw)
+    with capture_publisher_pacing() as state:
+        assert worker.robots_allowed(HOST, "/public/event") is True
+        assert worker.robots_allowed(HOST, "/private/event") is False
+    assert state["crawl_delay_seconds"] == 3 and state["wait_unbounded"] is False
+
+
+@pytest.mark.parametrize("wait", ["86401", "999999999999999999999999", "unparseable"])
+def test_oversized_or_unrepresentable_crawl_wait_requires_review(monkeypatch, wait):
+    transport(monkeypatch, f"User-agent: *\nAllow: /\nCrawl-delay: {wait}\n".encode())
+    with capture_publisher_pacing() as state:
+        with pytest.raises(worker.PreviewError, match="^publisher_wait_requires_review$"):
+            worker.robots_allowed(HOST, "/public/event")
+    assert pacing_rpc_fields(state) == {"p_publisher_crawl_delay_seconds": 0,
+                                       "p_publisher_retry_after_seconds": 0,
+                                       "p_publisher_wait_unbounded": True}
+
+
+@pytest.mark.parametrize("header,expected", [
+    (None, 0), ("0", 0), ("1.2", 2), ("120", 120), ("86400", 86400),
+    ("Wed, 04 Nov 2026 02:32:00 GMT", 120),
+    ("Wed, 04 Nov 2026 02:29:00 GMT", 0),
+])
+def test_retry_after_numeric_and_http_dates_preserve_full_wait(header, expected):
+    now = datetime(2026, 11, 4, 2, 30, tzinfo=timezone.utc)
+    with capture_publisher_pacing() as state:
+        assert observe_retry_after(header, now=now) == (expected, False)
+    assert state["retry_after_seconds"] == expected
+
+
+@pytest.mark.parametrize("header", ["86401", "999999999999999999999999", "not a date",
+                                     "Fri, 06 Nov 2026 02:30:00 GMT", "-1"])
+def test_retry_after_above_bound_or_unrepresentable_is_not_clamped(header):
+    now = datetime(2026, 11, 4, 2, 30, tzinfo=timezone.utc)
+    with capture_publisher_pacing() as state:
+        assert observe_retry_after(header, now=now) == (0, True)
+    assert pacing_rpc_fields(state)["p_publisher_wait_unbounded"] is True
+    assert pacing_rpc_fields(state)["p_publisher_retry_after_seconds"] == 0
+
+
+def test_robots_rate_limit_retains_retry_after_without_allowing_calendar(monkeypatch):
+    failure = HTTPError(ROBOTS_URL, 429, "not logged", {"Retry-After": "600"}, None)
+    calls, _ = transport(monkeypatch, failure)
+    monkeypatch.setattr(worker, "monotonic", lambda: 100.0)
+    with capture_publisher_pacing() as state:
+        with pytest.raises(worker.PreviewError, match="^publisher_rate_limited$"):
+            worker.robots_allowed(HOST, "/public/event")
+    assert state["retry_after_seconds"] == 600
+    assert calls == [(ROBOTS_URL, 5)]
+
+
+def test_robots_retry_after_protects_the_next_robots_get_too(monkeypatch):
+    failure = HTTPError(ROBOTS_URL, 429, "not logged", {"Retry-After": "600"}, None)
+    calls, _ = transport(monkeypatch, failure)
+    monkeypatch.setattr(worker, "monotonic", lambda: 100.0)
+    with capture_publisher_pacing():
+        with pytest.raises(worker.PreviewError, match="^publisher_rate_limited$"):
+            worker.robots_allowed(HOST, "/public/event")
+    with capture_publisher_pacing() as second:
+        with pytest.raises(worker.PreviewError, match="^publisher_rate_limited$"):
+            worker.robots_allowed(HOST, "/public/event")
+    assert second["retry_after_seconds"] == 600
+    assert calls == [(ROBOTS_URL, 5)]
+
+
+def test_new_crawl_delay_separates_robots_and_first_calendar_request(monkeypatch):
+    transport(monkeypatch, b"User-agent: *\nAllow: /\nCrawl-delay: 10\n")
+    monkeypatch.setattr(worker, "monotonic", lambda: 100.0)
+    with capture_publisher_pacing() as state:
+        assert worker.robots_allowed(HOST, "/public/event") is True
+    assert state["crawl_delay_seconds"] == 10
+    assert worker._publisher_next[HOST] >= 110
+    worker.pace_publisher(HOST, 118)
+    worker.sleep.assert_called_once_with(10)
+
+
+def publisher_transport(monkeypatch, status, retry_after):
+    response = SimpleNamespace(status_code=status, headers={"Retry-After": retry_after}, close=Mock())
+    session = MagicMock()
+    session.get.return_value = response
+    factory = MagicMock()
+    factory.return_value.__enter__.return_value = session
+    monkeypatch.setattr(worker.requests, "Session", factory)
+    monkeypatch.setattr(worker, "validate_public_dns", lambda *_: None)
+    monkeypatch.setattr(worker, "robots_allowed", lambda *_: True)
+    monkeypatch.setattr(worker, "monotonic", lambda: 100.0)
+    return response, session
+
+
+def test_publisher_retry_after_blocks_a_following_request_and_survives_new_capture(monkeypatch):
+    response, session = publisher_transport(monkeypatch, 429, "120")
+    with capture_publisher_pacing() as first:
+        with pytest.raises(worker.PreviewError, match="^publisher_http_429$"):
+            worker.fetch_publisher("https://" + HOST + "/events", "text/html", respect_robots=True)
+    assert first["retry_after_seconds"] == 120
+    with capture_publisher_pacing() as second:
+        with pytest.raises(worker.PreviewError, match="^publisher_rate_limited$"):
+            worker.fetch_publisher("https://" + HOST + "/events", "text/html", respect_robots=True)
+    assert second["retry_after_seconds"] == 120
+    assert session.get.call_count == 1
+    response.close.assert_called_once()
+
+
+@pytest.mark.parametrize("status", [200, 429, 503])
+def test_unbounded_publisher_wait_fails_before_payload_parsing(monkeypatch, status):
+    response, session = publisher_transport(monkeypatch, status, "86401")
+    with capture_publisher_pacing() as state:
+        with pytest.raises(worker.PreviewError, match="^publisher_wait_requires_review$"):
+            worker.fetch_publisher("https://" + HOST + "/events", "text/html", respect_robots=True)
+    assert state["wait_unbounded"] is True
+    assert session.get.call_count == 1
+    response.close.assert_called_once()

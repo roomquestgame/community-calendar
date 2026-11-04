@@ -22,6 +22,108 @@ def test_failed_snapshot_is_not_published():
         assert len(rpc.call_args_list)==2
         assert rpc.call_args_list[-1].args[1]['p_outcome']=='failed'
 
+
+@pytest.mark.parametrize('code,kind', [
+    ('event_schedule_missing', 'parse'),
+    ('bellevue_times_listing_count_mismatch', 'parse'),
+    ('robots_denied', 'access'),
+    ('publisher_http_403', 'access'),
+    ('non_public_dns', 'access'),
+    ('publisher_http_429', 'transient'),
+    ('publisher_http_503', 'transient'),
+    ('robots_unavailable', 'transient'),
+    ('dns_unavailable', 'transient'),
+    ('source_network_error', 'transient'),
+    ('collection_deadline', 'transient'),
+    ('unregistered_html_calendar', 'configuration'),
+])
+def test_recorded_html_source_failure_releases_slot_without_publishing(code, kind):
+    from roomquest import preview_worker as preview
+    calls = []
+    def rpc(path, data, **kwargs):
+        calls.append((path, data))
+        if path == 'community_collector_claim_category':
+            return {'action': 'collect', 'source_key': 'virginia_state_parks_nb',
+                    'kind': 'html', 'platform_adapter': 'html'}
+        return True
+    with patch.object(w, 'supabase_rpc', side_effect=rpc), \
+            patch.object(preview, 'supabase_rpc', side_effect=rpc), \
+            patch.object(preview, 'preview_source', side_effect=PreviewError(code)):
+        result = w.collect_category('html', 'ticket')
+    assert result['complete'] == 0 and result['failed'] == 1 and result['staged'] == 0
+    assert result['failure_scope'] == 'source' and result['error_kind'] == kind
+    assert result['error_code'] == code
+    assert [path for path, _ in calls] == [
+        'community_collector_claim_category', 'community_collector_record_preview_v2',
+        'community_collector_finish_category']
+    assert calls[1][1]['p_error'] == code
+    assert calls[-1][1]['p_outcome'] == 'source_error'
+
+
+@pytest.mark.parametrize('category', ['ical', 'wordpress', 'jsonld', 'parks'])
+def test_other_categories_keep_failed_outcome_for_source_failures(category):
+    failure = {'complete': 0, 'failed': 1, 'staged': 0, 'failure_scope': 'source',
+               'error_kind': 'access', 'error_code': 'robots_denied'}
+    with patch.object(w, 'supabase_rpc', side_effect=[{'action': 'collect'}, True]) as rpc, \
+            patch.object(w, '_process_claimed_source', return_value=failure):
+        result = w.collect_category(category, 'ticket')
+    assert result['failed'] == 1
+    assert rpc.call_args_list[-1].args[1]['p_outcome'] == 'failed'
+
+
+def test_failure_to_record_source_error_remains_a_worker_failure():
+    from roomquest import preview_worker as preview
+    calls = []
+    def rpc(path, data, **kwargs):
+        calls.append((path, data))
+        if path == 'community_collector_claim_category':
+            return {'action': 'collect', 'source_key': 'virginia_state_parks_nb',
+                    'kind': 'html', 'platform_adapter': 'html'}
+        if path == 'community_collector_record_preview_v2':
+            raise PreviewError('database_unavailable')
+        return True
+    with patch.object(w, 'supabase_rpc', side_effect=rpc), \
+            patch.object(preview, 'supabase_rpc', side_effect=rpc), \
+            patch.object(preview, 'preview_source', side_effect=PreviewError('event_schedule_missing')):
+        with pytest.raises(PreviewError, match='database_unavailable'):
+            w.collect_category('html', 'ticket')
+    assert calls[-1][1]['p_outcome'] == 'failed'
+    assert not any(path == 'community_collector_publish_category' for path, _ in calls)
+
+
+def test_html_records_pacing_before_releasing_a_source_error_slot():
+    from roomquest import preview_worker as preview
+    from roomquest.publisher_pacing import observe_crawl_delay, observe_retry_after
+    calls = []
+    def rpc(path, data, **kwargs):
+        calls.append((path, data))
+        if path == 'community_collector_claim_category':
+            return {'action': 'collect', 'source_key': 'virginia_state_parks_nb',
+                    'kind': 'html', 'platform_adapter': 'html'}
+        return True
+    def collect(*_args, **_kwargs):
+        observe_crawl_delay(10)
+        observe_retry_after('600')
+        raise PreviewError('publisher_http_429')
+    with patch.object(w, 'supabase_rpc', side_effect=rpc), \
+            patch.object(preview, 'supabase_rpc', side_effect=rpc), \
+            patch.object(preview, 'preview_source', side_effect=collect):
+        result = w.collect_category('html', 'ticket')
+    assert result['failure_scope'] == 'source' and result['error_kind'] == 'transient'
+    assert calls[1][0] == 'community_collector_record_preview_v2'
+    assert calls[1][1]['p_publisher_crawl_delay_seconds'] == 10
+    assert calls[1][1]['p_publisher_retry_after_seconds'] == 600
+    assert calls[1][1]['p_publisher_wait_unbounded'] is False
+    assert calls[-1][1]['p_outcome'] == 'source_error'
+
+
+def test_html_publication_rpc_failure_keeps_worker_recovery():
+    with patch.object(w, 'supabase_rpc', side_effect=[
+        {'action': 'publish'}, PreviewError('database_unavailable'), True]) as rpc:
+        with pytest.raises(PreviewError, match='database_unavailable'):
+            w.collect_category('html', 'ticket')
+    assert rpc.call_args_list[-1].args[1]['p_outcome'] == 'failed'
+
 def test_publication_continuation_does_not_refetch():
     with patch.object(w, 'supabase_rpc', side_effect=[{'action':'publish'}, {'outcome':'busy'}, True]) as rpc, patch.object(w, '_process_claimed_source') as process:
         w.collect_category('jsonld','ticket')

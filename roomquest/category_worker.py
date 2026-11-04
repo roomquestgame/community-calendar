@@ -21,6 +21,10 @@ def collect_category(category, ticket):
         if source['action'] == 'collect':
             result.update(_process_claimed_source(source, deadline_at=started + 39))
             if result['failed']:
+                if category == 'html' and result.get('failure_scope') == 'source':
+                    # The recorded source hold/retry owns its next attempt.
+                    # Release this HTML slot without cooling other publishers.
+                    outcome = 'source_error'
                 return result
         # A source-bound ten-row publication call, with a shared database cap.
         # Remaining rows retain their checkpoint and dispatch a continuation.

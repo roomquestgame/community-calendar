@@ -25,6 +25,10 @@ from urllib.parse import urljoin
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 from zoneinfo import ZoneInfo
 
+from roomquest.collector_errors import failure_details
+from roomquest.publisher_pacing import (capture_publisher_pacing, observe_crawl_delay,
+                                       observe_retry_after, pacing_rpc_fields, robots_crawl_delay)
+
 MAX_BODY = 3_000_000
 MAX_PREVIEWS = 10
 STAGING_BATCH_SIZE = 20
@@ -32,6 +36,7 @@ LOOKAHEAD_DAYS = 60
 ROOMQUEST_DB = "https://drpqjuqghpjivtwznfdj.supabase.co"
 _robots_delays = {}
 _publisher_next = {}
+_publisher_retry_after = {}
 _publisher_lock = Lock()
 
 
@@ -42,6 +47,24 @@ class PreviewError(ValueError):
 class RejectRedirects(HTTPRedirectHandler):
     def redirect_request(self, request, fp, code, msg, headers, newurl):
         raise PreviewError("redirect_blocked")
+
+
+def _observe_retry_after(host, headers):
+    wait, unbounded = observe_retry_after(headers.get("Retry-After") if headers else None)
+    if unbounded:
+        raise PreviewError("publisher_wait_requires_review")
+    if wait:
+        with _publisher_lock:
+            until = monotonic() + wait
+            _publisher_retry_after[host] = max(_publisher_retry_after.get(host, 0), until)
+            _publisher_next[host] = max(_publisher_next.get(host, 0), until)
+
+
+def _reserve_known_crawl_delay(host):
+    wait, unbounded = observe_crawl_delay(_robots_delays.get(host, 1))
+    if not unbounded:
+        with _publisher_lock:
+            _publisher_next[host] = max(_publisher_next.get(host, 0), monotonic() + max(1, wait))
 
 
 def public_source_url(value: str) -> bool:
@@ -82,6 +105,10 @@ def validate_public_dns(host: str) -> None:
         addresses = {record[4][0] for record in info}
         if not addresses or any(not ipaddress.ip_address(ip).is_global for ip in addresses):
             raise PreviewError("non_public_dns")
+    except PreviewError:
+        # PreviewError subclasses ValueError; do not relabel a policy block as
+        # a transient DNS outage and make it eligible for transport retries.
+        raise
     except (OSError, ValueError) as exc:
         raise PreviewError("dns_unavailable") from exc
 
@@ -91,48 +118,75 @@ def _robots_rules(host: str, time_bucket: int):
     """Read each publisher's rules once per five-minute cache window.
 
     Never redirect robots requests or fetch private-network destinations.
-    404/410 mean no robots rules; 401/403, 429, network failures deny.
+    404/410 mean no robots rules; all other HTTP/network failures fail closed.
+    Actual denial and temporary unavailability retain distinct error codes.
     Cache the rules, not a path's decision: every event path is still checked.
     """
     robots_url = "https://" + host + "/robots.txt"
+    attempted = False
     try:
         validate_public_dns(host)
+        # A failed robots response is not cached. Its Retry-After must still
+        # protect another robots GET, not only later calendar requests.
+        pace_publisher(host, monotonic() + 5, reserve=False)
         opener = build_opener(RejectRedirects())
         request = Request(robots_url, headers={
             "User-Agent": "RoomQuestCommunityCalendar/0.1 (community-event research)"
         })
+        attempted = True
         with opener.open(request, timeout=5) as response:
+            _observe_retry_after(host, getattr(response, "headers", {}))
             raw = response.read(128_001)
             if response.status != 200 or len(raw) > 128_000:
                 raise PreviewError("robots_unavailable")
     except HTTPError as exc:
+        _observe_retry_after(host, exc.headers)
         if exc.code in (404, 410):
             _robots_delays[host] = 1
             return None
-        raise PreviewError("robots_denied") from exc
+        if exc.code in (401, 403):
+            raise PreviewError("robots_denied") from exc
+        if exc.code == 429:
+            raise PreviewError("publisher_rate_limited") from exc
+        raise PreviewError("robots_unavailable") from exc
     except (URLError, TimeoutError, OSError) as exc:
         raise PreviewError("robots_unavailable") from exc
+    finally:
+        if attempted:
+            _reserve_known_crawl_delay(host)
     parser = RobotFileParser()
-    parser.parse(raw.decode("utf-8-sig", errors="replace").splitlines())
-    _robots_delays[host] = parser.crawl_delay("RoomQuestCommunityCalendar") or parser.crawl_delay("*") or 1
+    lines = raw.decode("utf-8-sig", errors="replace").splitlines()
+    parser.parse(lines)
+    _robots_delays[host] = robots_crawl_delay(lines, "RoomQuestCommunityCalendar")
+    # The newly learned delay also separates this robots response from the
+    # first calendar request. An oversized value is held before that request.
+    _reserve_known_crawl_delay(host)
     return parser
 
 
 def robots_allowed(host: str, path: str) -> bool:
     """Evaluate the current path against cached, publisher-specific rules."""
     parser = _robots_rules(host, int(monotonic() // 300))
+    _, unbounded = observe_crawl_delay(_robots_delays.get(host, 1))
+    if unbounded:
+        raise PreviewError("publisher_wait_requires_review")
     return parser is None or parser.can_fetch("RoomQuestCommunityCalendar", "https://" + host + path)
 
 
-def pace_publisher(host: str, deadline: float) -> None:
+def pace_publisher(host: str, deadline: float, *, reserve=True) -> None:
     """Honor advertised delay within this worker; DB leases serialize publishers."""
     with _publisher_lock:
         now = monotonic()
+        if host in _publisher_retry_after:
+            _, unbounded = observe_retry_after(max(0, _publisher_retry_after[host] - now))
+            if unbounded:
+                raise PreviewError("publisher_wait_requires_review")
         wait = max(0, _publisher_next.get(host, now) - now)
-        delay = max(1, float(_robots_delays.get(host, 1)))
         if now + wait + 0.2 >= deadline:
             raise PreviewError("publisher_rate_limited")
-        _publisher_next[host] = now + wait + delay
+        if reserve:
+            delay = max(1, float(_robots_delays.get(host, 1)))
+            _publisher_next[host] = now + wait + delay
     if wait:
         sleep(wait)
 
@@ -173,6 +227,12 @@ def fetch_publisher(url: str, accept: str, *, respect_robots: bool = False,
                 timeout = (min(3,remaining/2), min(7,remaining/2)) if respect_robots else (5,12)
                 response = session.get(current, headers=headers, timeout=timeout,
                                        stream=True, allow_redirects=False)
+                if respect_robots:
+                    try:
+                        _observe_retry_after(parsed.netloc, response.headers)
+                    except PreviewError:
+                        response.close()
+                        raise
                 if response.status_code in (301, 302, 303, 307, 308):
                     from urllib.parse import urljoin
                     location = response.headers.get("Location")
@@ -760,7 +820,7 @@ def supabase_rpc(path: str, payload: dict, *, timeout: float = 4):
     security-definer RPCs. The token must never enter a public client or log.
     """
     import urllib.request
-    allowed = {"community_collector_claim_category", "community_collector_publish_category", "community_collector_finish_category", "community_collector_claim_previews", "community_collector_claim_demand_preview", "community_collector_claim_chambermaster", "community_collector_record_preview",
+    allowed = {"community_collector_claim_category", "community_collector_publish_category", "community_collector_finish_category", "community_collector_claim_previews", "community_collector_claim_demand_preview", "community_collector_claim_chambermaster", "community_collector_record_preview", "community_collector_record_preview_v2",
                "community_collector_record_staged_events", "community_collector_geocoder", "community_collector_geocoder_claim",
                "community_collector_venues", "community_collector_media"}
     if path not in allowed:
@@ -785,10 +845,19 @@ def supabase_rpc(path: str, payload: dict, *, timeout: float = 4):
 
 def _process_claimed_source(source: dict, *, deadline_at=None) -> dict:
     """Process a single claimed feed with the existing private staging contract."""
+    with capture_publisher_pacing() as pacing:
+        return _process_claimed_source_with_pacing(source, pacing, deadline_at=deadline_at)
+
+
+def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None):
+    phase, failure = "collection", {}
     try:
         deadline = min(monotonic() + 43, deadline_at or float("inf"))
         output = preview_source(source, deadline_at=deadline - 4)
+        if pacing["wait_unbounded"]:
+            raise PreviewError("publisher_wait_requires_review")
         events = output.pop("p_events", [])
+        phase = "staging"
         staged = 0
         # Keep each transaction below the API statement budget. Completion is
         # recorded only after every bounded batch has been accepted.
@@ -815,9 +884,17 @@ def _process_claimed_source(source: dict, *, deadline_at=None) -> dict:
             "p_error": str(exc)[:120] if isinstance(exc, PreviewError) else "source_parse_error",
         }
         staged = 0
-    supabase_rpc("community_collector_record_preview", output)
+        failure = failure_details(output["p_error"],
+                                  expected_source_error=isinstance(exc, PreviewError), phase=phase)
+    # A failed result is returned only after its source error/hold has been
+    # recorded. If this RPC fails, the exception remains a worker failure.
+    html = source.get("kind") == "html" and source.get("platform_adapter") == "html"
+    if html:
+        supabase_rpc("community_collector_record_preview_v2", {**output, **pacing_rpc_fields(pacing)})
+    else:
+        supabase_rpc("community_collector_record_preview", output)
     return {"complete": int(output["p_error"] is None),
-            "failed": int(output["p_error"] is not None), "staged": staged}
+            "failed": int(output["p_error"] is not None), "staged": staged, **failure}
 
 
 def collect_previews(limit=4) -> dict:

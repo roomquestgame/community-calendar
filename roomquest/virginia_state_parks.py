@@ -6,22 +6,25 @@ from __future__ import annotations
 
 import json
 import re
+import sys
 from datetime import datetime, timedelta
 from functools import lru_cache
 from importlib import resources
 from urllib.parse import parse_qs, urlencode, urljoin, urlparse
 from zoneinfo import ZoneInfo
-from bs4 import BeautifulSoup
-from roomquest.mapsee_adapter import record
+from bs4 import BeautifulSoup, Tag
+from roomquest.collector_errors import safe_error_code
+from roomquest.mapsee_adapter import record, timestamp
 
 ROOT = "https://www.dcr.virginia.gov"
 CALENDAR = ROOT + "/state-parks/events"
 TZ = ZoneInfo("America/New_York")
 MAX_EVENT_PAGES = 10
 MAX_LISTING_LINKS = 200
-DATE = re.compile(r"\b((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?\s+\d{1,2},?\s+20\d{2})\b", re.I)
+DATE_TEXT = r"(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?\s+\d{1,2},?\s+20\d{2}"
 CLOCK = r"\d{1,2}(?::\d{2})?\s*[ap]\.?m\.?"
-TIMES = re.compile(rf"({CLOCK})\s*(?:-|–|—|to)\s*({CLOCK})", re.I)
+SCHEDULE = re.compile(rf"^({DATE_TEXT})\.?\s+({CLOCK})\s*(?:-|–|—|to)\s*"
+                      rf"(?:({DATE_TEXT})\.?\s+)?({CLOCK})\.?$", re.I)
 EVENT_ID = re.compile(r"^[A-Za-z0-9-]{10,90}$")
 OFFSITE = re.compile(r"\b(town hall|municipal building|civic center|city hall)\b", re.I)
 
@@ -96,6 +99,57 @@ def meeting_street_address(paragraphs, meeting_location):
     return next(iter(addresses.values())) if len(addresses) == 1 else None
 
 
+def primary_when(section):
+    """Read only the value immediately after the unique primary When heading."""
+    headings = [tag for tag in section.find_all(re.compile(r"^h[1-6]$"))
+                if clean(tag.get_text(" ", strip=True)).casefold() == "when"]
+    if len(headings) != 1:
+        raise ValueError("event_schedule_missing" if not headings else "event_schedule_ambiguous")
+    for node in headings[0].next_siblings:
+        text = clean(node.get_text(" ", strip=True)) if isinstance(node, Tag) else clean(str(node))
+        if not text:
+            continue
+        if isinstance(node, Tag) and re.fullmatch(r"h[1-6]", node.name):
+            break
+        return text
+    raise ValueError("event_schedule_missing")
+
+
+def parse_schedule(value):
+    """Accept explicit same-day or start-date/time to end-date/time schedules."""
+    match = SCHEDULE.fullmatch(clean(value))
+    if not match:
+        raise ValueError("event_schedule_missing")
+    start_date, start_clock, end_date, end_clock = match.groups()
+
+    def day(value):
+        date_str = re.sub(r"(?<=\w)\.(?=\s+\d)", "", value).replace(",", "")
+        for fmt in ("%b %d %Y", "%B %d %Y"):
+            try:
+                return datetime.strptime(date_str, fmt).date()
+            except ValueError:
+                continue
+        raise ValueError("event_date_invalid")
+
+    def clock(value):
+        value = re.sub(r"[.\s]", "", value).upper()
+        for fmt in ("%I:%M%p", "%I%p"):
+            try:
+                return datetime.strptime(value, fmt).time()
+            except ValueError:
+                continue
+        raise ValueError("event_time_invalid")
+
+    start_day = day(start_date)
+    end_day = day(end_date) if end_date else start_day
+    start = timestamp(datetime.combine(start_day, clock(start_clock)).isoformat(), TZ.key)
+    end = timestamp(datetime.combine(end_day, clock(end_clock)).isoformat(), TZ.key)
+    if end <= start:
+        # No invented next day for a time-only overnight range.
+        raise ValueError("event_end_invalid")
+    return start, end
+
+
 def parse_event(html, url, park):
     """Extract actual DCR fields; park catalog supplies the approved park-level GPS."""
     soup = BeautifulSoup(html, "html.parser")
@@ -124,36 +178,7 @@ def parse_event(html, url, park):
     if offsite and not alternate_address:
         # Do not guess or substitute the park entrance for a separate venue.
         raise ValueError("offsite_venue_requires_address")
-    when_match = re.search(r"\bWhen\b[\s\S]{0,240}", text, re.I)
-    when_text = when_match.group(0) if when_match else text
-    found_date = DATE.search(when_text) or DATE.search(text)
-    found_times = TIMES.search(when_text) or TIMES.search(text)
-    if not found_date or not found_times:
-        raise ValueError("event_schedule_missing")
-    date_str = re.sub(r"(?<=\w)\.(?=\s+\d)", "", found_date.group(1)).replace(",", "")
-    day = None
-    for fmt in ("%b %d %Y", "%B %d %Y"):
-        try:
-            day = datetime.strptime(date_str, fmt).date()
-            break
-        except ValueError:
-            continue
-    if day is None:
-        raise ValueError("event_date_invalid")
-
-    def clock(value):
-        value = re.sub(r"[.\s]", "", value).upper()
-        for fmt in ("%I:%M%p", "%I%p"):
-            try:
-                return datetime.strptime(value, fmt).time()
-            except ValueError:
-                continue
-        raise ValueError("event_time_invalid")
-
-    start = datetime.combine(day, clock(found_times.group(1)), TZ)
-    end = datetime.combine(day, clock(found_times.group(2)), TZ)
-    if end <= start:
-        raise ValueError("event_end_invalid")
+    start, end = parse_schedule(primary_when(section))
 
     desc = next((t for t in paragraphs if len(t) > 55 and not t.startswith("Know Before You Go")), "")
     if offsite:
@@ -342,10 +367,16 @@ def collect(source, fetch, *, deadline_at=None):
             raise ValueError("collection_deadline")
         # Redirect resolution is owned by the existing vetted HTTP transport;
         # any off-domain redirect will be rejected there.
-        detail = fetch(url, "text/html")
         try:
+            detail = fetch(url, "text/html")
             item = parse_event(detail, url, park)
         except ValueError as exc:
+            # This public event ID and registered source key identify the
+            # failing page without logging publisher bodies or exception text.
+            event_id = parse_qs(urlparse(url).query).get("id", [""])[0]
+            print(json.dumps({"event": "virginia_parks_event_error", "source_key": source_key,
+                              "event_id": event_id if EVENT_ID.fullmatch(event_id) else None,
+                              "error_code": safe_error_code(exc)}, sort_keys=True), file=sys.stderr)
             if str(exc) != "offsite_venue_requires_address":
                 raise  # Unexpected parser errors must not publish partial snapshots.
             # Off-site events await their own verified venue coordinates. One
