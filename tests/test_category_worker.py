@@ -79,7 +79,7 @@ def test_recorded_html_source_failure_releases_slot_without_publishing(code, kin
     assert result['failure_scope'] == 'source' and result['error_kind'] == kind
     assert result['error_code'] == code
     assert [path for path, _ in calls] == [
-        'community_collector_claim_category', 'community_collector_record_preview_v2',
+        'community_collector_claim_category', 'community_collector_record_preview_v3',
         'community_collector_finish_category']
     assert calls[1][1]['p_error'] == code
     assert calls[-1][1]['p_outcome'] == 'source_error'
@@ -104,7 +104,7 @@ def test_failure_to_record_source_error_remains_a_worker_failure():
         if path == 'community_collector_claim_category':
             return {'action': 'collect', 'source_key': 'virginia_state_parks_nb',
                     'kind': 'html', 'platform_adapter': 'html'}
-        if path == 'community_collector_record_preview_v2':
+        if path == 'community_collector_record_preview_v3':
             raise PreviewError('database_unavailable')
         return True
     with patch.object(w, 'supabase_rpc', side_effect=rpc), \
@@ -135,7 +135,7 @@ def test_html_records_pacing_before_releasing_a_source_error_slot():
             patch.object(preview, 'preview_source', side_effect=collect):
         result = w.collect_category('html', 'ticket')
     assert result['failure_scope'] == 'source' and result['error_kind'] == 'transient'
-    assert calls[1][0] == 'community_collector_record_preview_v2'
+    assert calls[1][0] == 'community_collector_record_preview_v3'
     assert calls[1][1]['p_publisher_crawl_delay_seconds'] == 10
     assert calls[1][1]['p_publisher_retry_after_seconds'] == 600
     assert calls[1][1]['p_publisher_wait_unbounded'] is False

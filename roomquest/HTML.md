@@ -1,3 +1,36 @@
+## Virginia State Parks event photos — November 4, 2026
+
+Ben approved adding event photos to all 46 registered Virginia park adapters,
+including Widewater, and releasing the collector/database pair to production.
+Beautiful Soup selects a photo candidate from the event detail HTML already
+fetched. Matching Event structured data or one descriptive image in the event
+content can qualify; location maps, logos, unrelated events, site artwork,
+unsafe URLs and ambiguous galleries cannot. Optional malformed image metadata
+does not discard valid event facts. Fixtures are explicitly synthetic; actual
+publisher candidate output and publication must be verified after release.
+
+Every VA record carries `image_extractor_version=publisher_event_html_v1`.
+A candidate also carries `image_url`, matching `image_provenance`, and its
+canonical event-page `image_evidence_url`. The separate existing media worker
+validates the candidate's URL, redirects, content type and image bytes. A VA
+claim sets `candidate_only=true`, so it cannot recrawl the detail page or use
+generic Open Graph artwork. No photo is required for an event to publish.
+
+**Deploy the additive backend first, then this collector.** Virginia completion
+uses `community_collector_record_preview_v3` with the existing publisher pacing
+fields and `p_parser_capability=publisher_event_html_v1` on success, including a
+genuine empty result. Other HTML providers keep v2. The backend binds photo
+eligibility to the original successful source snapshot and its existing policy
+(96 hours by default), fences late results, and refreshes older VA snapshots
+only through existing real demand and source controls. Its narrow Virginia
+media path leaves the disabled legacy photo workload unchanged. There is no
+new statewide crawler, scheduler, mobile binary or OTA requirement.
+
+Local collector validation: all **730 tests and 25 subtests** in the complete
+provider workflow plus media suite passed; independent review regression cases
+cover malformed URLs, related-event links and conflicting map captions.
+Coordinated PRs record final CI, deployment and production readback receipts.
+
 ## HTML worker errors and publisher pacing — November 4, 2026
 
 [HTML_WORKERS.md](HTML_WORKERS.md) describes the coordinated two-slot HTML
@@ -86,7 +119,7 @@ The first upcoming meeting is off-site at Clarksville Town Hall. An unverified o
 - A specific park source is identified by `virginia_state_parks_<two-letter-code>`, a registered official DCR calendar URL, and `kind='html', platform_adapter='html'`.
 - The collector finds real event links on the park's filtered statewide calendar page, limits itself to at most ten matching detail pages, and rejects unvetted URLs/off-domain redirects.
 - It preserves exact event IDs, the official source URL, eastern start/end instants and local time zone. Description is factual source text; `Program Location` becomes `Meeting Location` within the description, while the park's reviewed street address and coordinates are used for the map.
-- A clearly off-site venue without its own resolved address is held rather than incorrectly pinned to the state park. No publisher images or fabricated sessions are imported.
+- A clearly off-site venue without its own resolved address is held rather than incorrectly pinned to the state park. The initial pilot excluded publisher images; the November 4 photo integration above adds verified event imagery. No sessions are fabricated.
 - Existing `fetch_publisher` provides SSRF protection, TLS verification, robots checks, response size limits, request deadlines, redirect limits and pacing. The new adapter additionally pins DCR to its own official hostname.
 
 ## Launch gates

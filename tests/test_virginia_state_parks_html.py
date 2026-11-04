@@ -22,6 +22,138 @@ SOURCE = {"source_key":"virginia_state_parks_oc", "kind":"html",
           "platform_adapter":"html",
           "feed_url":va.registered_calendar_url(PARK)}
 
+# Synthetic DOM cases exercise the selection contract. These are not a saved
+# production page; production preview evidence is a separate release check.
+PHOTO = va.ROOT + "/state-parks/blog/volunteers-trail.jpg"
+PHOTO_TAG = '<img src="/state-parks/blog/volunteers-trail.jpg" alt="Three volunteers maintaining a trail together" width="900" height="600">'
+MAP_TAG = '<img src="/state-parks/images/ww.png" alt="Location of Widewater State Park in Virginia">'
+
+
+def photo_record(content="", *, page=PAGE):
+    with patch.object(va, "record", return_value={"id": "fixture"}):
+        return va.parse_event(page.replace("</main>", content + "</main>"), CAL_LINK, PARK)
+
+
+def test_event_content_photo_excludes_the_generic_park_location_map():
+    item = photo_record(MAP_TAG + PHOTO_TAG)
+    assert item["image_url"] == PHOTO
+    assert item["image_provenance"] == "publisher_event_html_v1"
+    assert item["image_extractor_version"] == "publisher_event_html_v1"
+    assert item["image_evidence_url"] == CAL_LINK
+
+
+@pytest.mark.parametrize("content", ["", MAP_TAG,
+    '<img src="/images/park-map.jpg" alt="Find our trails and campground amenities">',
+    '<img src="/images/state-logo.jpg" alt="Virginia State Parks official brand artwork">',
+    '<img src="/images/photo.jpg" alt="Park">',
+    PHOTO_TAG.replace('width="900"', 'width="1"'),
+    '<nav>' + PHOTO_TAG + '</nav>', '<header>' + PHOTO_TAG + '</header>',
+    '<aside>' + PHOTO_TAG + '</aside>', '<footer>' + PHOTO_TAG + '</footer>',
+    '<div class="related-events">' + PHOTO_TAG + '</div>',
+    '<div hidden>' + PHOTO_TAG + '</div>',
+    '<h2>Know Before You Go</h2>' + PHOTO_TAG,
+    '<h2>Other Events</h2>' + PHOTO_TAG,
+    '<meta property="og:image" content="' + PHOTO + '">',
+])
+def test_missing_map_and_boilerplate_images_have_version_but_no_candidate(content):
+    item = photo_record(content)
+    assert item["image_extractor_version"] == "publisher_event_html_v1"
+    assert not {"image_url", "image_provenance", "image_evidence_url"}.intersection(item)
+
+
+@pytest.mark.parametrize("image_url", ["http://example.org/photo.jpg", "https://127.0.0.1/photo.jpg",
+    "https://user:password@example.org/photo.jpg", "data:image/jpeg;base64,AAAA", "/images/photo.svg"])
+def test_inline_candidate_keeps_shared_safe_url_validation(image_url):
+    assert "image_url" not in photo_record(PHOTO_TAG.replace("/state-parks/blog/volunteers-trail.jpg", image_url))
+
+
+def test_inline_images_must_belong_to_event_body_and_are_not_first_image_fallback():
+    before = PAGE.replace("<h2>When</h2>", PHOTO_TAG + "<h2>When</h2>")
+    assert "image_url" not in photo_record(page=before)
+    assert photo_record(page=before.replace('<img ', '<img itemprop="image" '))["image_url"] == PHOTO
+    ambiguous = PHOTO_TAG + PHOTO_TAG.replace("volunteers-trail.jpg", "other-photo.jpg")
+    assert "image_url" not in photo_record(ambiguous)
+    assert photo_record(PHOTO_TAG + PHOTO_TAG)["image_url"] == PHOTO
+
+
+@pytest.mark.parametrize("href", ["event?id=2026-01-01-unrelated", "/state-parks/event?id=2026-01-01-unrelated",
+    "/state-parks//event?id=2026-01-01-unrelated", "//state-parks/event?id=2026-01-01-unrelated"])
+def test_inline_photo_linked_to_a_different_event_is_rejected(href):
+    assert "image_url" not in photo_record('<a href="' + href + '">' + PHOTO_TAG + '</a>')
+
+
+def test_map_caption_is_checked_even_when_alt_looks_descriptive():
+    assert "image_url" not in photo_record('<figure>' + PHOTO_TAG +
+        '<figcaption>Location of Widewater State Park in Virginia</figcaption></figure>')
+
+
+def test_malformed_optional_image_url_does_not_discard_event_facts():
+    item = photo_record(PHOTO_TAG.replace("/state-parks/blog/volunteers-trail.jpg", "https://["))
+    assert item["id"] == "fixture" and "image_url" not in item
+    event = {"@type": "Event", "name": "Plantation Discovery Hike", "url": "https://[", "image": PHOTO}
+    markup = '<script type="application/ld+json">' + json.dumps(event) + '</script>'
+    assert "image_url" not in photo_record(markup)
+
+
+def test_matching_structured_event_image_has_priority_over_inline_images():
+    event = {"@type": "Event", "name": "Plantation Discovery Hike", "url": CAL_LINK,
+             "image": {"@type": "ImageObject", "contentUrl": PHOTO}}
+    markup = '<script type="application/ld+json">' + json.dumps({"@graph": [event]}) + '</script>'
+    item = photo_record(markup + PHOTO_TAG.replace("volunteers-trail.jpg", "other-photo.jpg"))
+    assert item["image_url"] == PHOTO
+
+
+@pytest.mark.parametrize("changes", [{"name": "A different event"},
+    {"url": CAL_LINK + "-different"}, {"@id": "https://example.org/unrelated"},
+    {"image": [PHOTO, PHOTO.replace("volunteers-trail.jpg", "other-photo.jpg")]},
+    {"image": {"url": PHOTO, "caption": "Location of Widewater State Park in Virginia"}}])
+def test_mismatched_or_ambiguous_structured_images_are_not_used(changes):
+    event = {"@type": "Event", "name": "Plantation Discovery Hike", "url": CAL_LINK, "image": PHOTO, **changes}
+    markup = '<script type="application/ld+json">' + json.dumps(event) + '</script>'
+    assert "image_url" not in photo_record(markup)
+
+
+def test_photo_extraction_reuses_exact_listing_and_detail_fetches():
+    listing = f'<h3>Park: Occoneechee State Park</h3><a href="/state-parks/event?id={ID}">View Details</a>'
+    calls = []
+    def fetch(url, accept):
+        calls.append(url)
+        return listing if "/events?" in url else PAGE.replace("</main>", MAP_TAG + PHOTO_TAG + "</main>")
+    with patch.object(va, "record", return_value={"id": "fixture"}), patch("roomquest.event_media.probe_image") as probe:
+        items = va.collect(SOURCE, fetch)
+    assert calls == [va.listing_url(PARK), CAL_LINK]
+    assert items[0]["image_url"] == PHOTO
+    probe.assert_not_called()
+
+
+def test_empty_successful_va_preview_carries_parser_capability():
+    with patch.object(va, "collect", return_value=[]):
+        output = worker.preview_source(SOURCE)
+    assert output["p_events"] == []
+    assert output["p_future_count"] == 0
+    assert output["p_parser_capability"] == "publisher_event_html_v1"
+
+
+def test_va_completion_uses_v3_and_does_not_certify_failed_staging():
+    output = {"p_source_key": SOURCE["source_key"], "p_samples": [], "p_future_count": 0,
+              "p_venue_count": 0, "p_error": None, "p_events": [],
+              "p_parser_capability": "publisher_event_html_v1"}
+    with patch.object(worker, "preview_source", return_value=dict(output)), \
+         patch.object(worker, "supabase_rpc", return_value=0) as rpc:
+        assert worker._process_claimed_source(SOURCE)["complete"] == 1
+    assert rpc.call_args.args[0] == "community_collector_record_preview_v3"
+    assert rpc.call_args.args[1]["p_parser_capability"] == "publisher_event_html_v1"
+
+    def fail_staging(path, payload):
+        if path == "community_collector_record_staged_events":
+            raise worker.PreviewError("staging_rejected")
+        assert path == "community_collector_record_preview_v3"
+        assert payload["p_error"] == "staging_rejected"
+        assert "p_parser_capability" not in payload
+    with patch.object(worker, "preview_source", return_value=dict(output)), \
+         patch.object(worker, "supabase_rpc", side_effect=fail_staging):
+        assert worker._process_claimed_source(SOURCE)["failed"] == 1
+
 
 def test_registered_pilot_calendar_uses_official_guid_and_60_day_window():
     official_id = "2013-10-18-21-10-41-00019"

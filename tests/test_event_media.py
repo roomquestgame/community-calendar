@@ -44,6 +44,32 @@ class PhotoTests(unittest.TestCase):
         fetch.assert_not_called();probe.assert_called_once_with(PHOTO)
         self.assertEqual(result['evidence_url'],CLAIM['event_url'])
 
+    def test_candidate_only_never_recrawls_missing_or_rejected_candidates(self):
+        for candidate in [None, '', '  ', 'http://example.org/photo.jpg', 'https://127.0.0.1/photo.jpg',
+                          'https://example.org/logo.png']:
+            fetch = MagicMock(); probe = MagicMock()
+            result = m.resolve_photo({**CLAIM, 'candidate_only': True, 'candidate_url': candidate},
+                                     fetcher=fetch, probe=probe, clock=lambda: 0, deadline=30)
+            self.assertIsNone(result)
+            fetch.assert_not_called(); probe.assert_not_called()
+
+    def test_candidate_only_requires_successful_byte_probe(self):
+        fetch = MagicMock(); probe = MagicMock(return_value=None)
+        result = m.resolve_photo({**CLAIM, 'candidate_only': True, 'candidate_url': PHOTO},
+                                 fetcher=fetch, probe=probe, clock=lambda: 0, deadline=30)
+        self.assertIsNone(result)
+        fetch.assert_not_called(); probe.assert_called_once_with(PHOTO)
+        probe.return_value = (PHOTO, 'image/jpeg')
+        result = m.resolve_photo({**CLAIM, 'candidate_only': True, 'candidate_url': PHOTO},
+                                 fetcher=fetch, probe=probe, clock=lambda: 0, deadline=30)
+        self.assertEqual(result, {'image_url': PHOTO, 'mime_type': 'image/jpeg', 'evidence_url': CLAIM['event_url']})
+
+    def test_legacy_claim_keeps_event_page_fallback(self):
+        fetch = MagicMock(return_value='<h1>Community concert</h1><meta property="og:image" content="'+PHOTO+'">')
+        result = m.resolve_photo(CLAIM, fetcher=fetch, probe=lambda _: (PHOTO, 'image/jpeg'), clock=lambda: 0, deadline=30)
+        fetch.assert_called_once_with(CLAIM['event_url'])
+        self.assertEqual(result['image_url'], PHOTO)
+
     def test_event_page_photo_is_probed_before_publication(self):
         html='<h1>Community concert</h1><meta property="og:image" content="'+PHOTO+'">'
         self.assertIsNone(m.resolve_photo(CLAIM,fetcher=lambda _:html,probe=lambda _:None,clock=lambda:0,deadline=30))
@@ -78,6 +104,7 @@ class PhotoTests(unittest.TestCase):
             result=m.run_batch(database=db,resolver=lambda *a,**kw:None)
         self.assertEqual(result['unavailable'],1)
         self.assertEqual([x[0] for x in calls],['claim','fail'])
+        self.assertEqual(calls[0][1], {'limit': 3, 'candidate_only_version': 'publisher_event_html_v1'})
         self.assertEqual(calls[-1][1]['lease_id'],CLAIM['lease_id'])
 
     def test_network_probe_bounds_content_and_validates_magic(self):
@@ -92,6 +119,25 @@ class PhotoTests(unittest.TestCase):
         self.assertTrue(session.get.call_args.kwargs['stream'])
         self.assertFalse(session.get.call_args.kwargs['allow_redirects'])
         self.assertEqual(session.get.call_args.kwargs['headers']['Range'],'bytes=0-4095')
+
+    def test_probe_validates_redirect_targets_before_requesting_them(self):
+        for redirect in ['http://example.org/photo.jpg', 'https://127.0.0.1/photo.jpg',
+                         'https://user:password@example.org/photo.jpg']:
+            response = MagicMock(); response.status_code = 302
+            response.headers = {'Location': redirect}; response.__enter__.return_value = response
+            session = MagicMock(); session.get.return_value = response; session.__enter__.return_value = session
+            with patch.object(m.requests, 'Session', return_value=session), patch.object(m, 'validate_public_dns') as dns:
+                self.assertIsNone(m.probe_image(PHOTO))
+            session.get.assert_called_once()
+            dns.assert_called_once_with('cdn.example.org')
+
+    def test_probe_redirect_limit_remains_three_requests(self):
+        response = MagicMock(); response.status_code = 302
+        response.headers = {'Location': PHOTO}; response.__enter__.return_value = response
+        session = MagicMock(); session.get.return_value = response; session.__enter__.return_value = session
+        with patch.object(m.requests, 'Session', return_value=session), patch.object(m, 'validate_public_dns'):
+            self.assertIsNone(m.probe_image(PHOTO))
+        self.assertEqual(session.get.call_count, 3)
 
 
 if __name__=='__main__':unittest.main()
