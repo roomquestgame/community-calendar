@@ -355,3 +355,202 @@ def test_publish_continuation_has_no_collection_handoff(clock, category):
     process.assert_not_called()
     assert clock.waits == []
     assert rpc.call_args.args[1]['p_outcome'] == 'complete'
+
+
+def diagnostic_records(caplog):
+    import json
+    return [json.loads(record.getMessage()) for record in caplog.records
+            if record.name == 'roomquest.category_worker']
+
+
+@pytest.mark.parametrize('phase,operation,escapes', [
+    ('claim', 'community_collector_claim_category', True),
+    ('stage', 'community_collector_record_staged_events', False),
+    ('record', 'community_collector_record_preview', True),
+    ('publish', 'community_collector_publish_category', True),
+    ('finish', 'community_collector_finish_category', True),
+])
+def test_rpc_failure_diagnostics_identify_phase_without_changing_outcome(caplog, phase, operation, escapes):
+    from roomquest import preview_worker as preview
+    from urllib.error import HTTPError
+    error = PreviewError('database_unavailable')
+    error.__cause__ = HTTPError('https://private.invalid/?token=private-token', 400,
+                                'private response text', {'Authorization': 'private-header'}, None)
+    calls = []
+
+    def rpc(path, data, **kwargs):
+        calls.append((path, data, kwargs))
+        if path == operation:
+            raise error
+        if path == 'community_collector_claim_category':
+            return {'action': 'collect', 'source_id': 4900, 'source_key': 'private-source-key',
+                    'feed_url': 'https://private.invalid/', 'kind': 'json', 'platform_adapter': 'wordpress'}
+        if path == 'community_collector_record_staged_events':
+            return 1
+        if path == 'community_collector_publish_category':
+            return {'outcome': 'completed', 'published': 1}
+        return True
+
+    output = {'p_source_key': 'private-source-key', 'p_samples': [], 'p_future_count': 1,
+              'p_venue_count': 0, 'p_error': None, 'p_events': [{'id': 'private-event'}]}
+    with patch.object(w, 'supabase_rpc', side_effect=rpc), \
+            patch.object(preview, 'supabase_rpc', side_effect=rpc), \
+            patch.object(preview, 'preview_source', return_value=output):
+        if escapes:
+            with pytest.raises(PreviewError) as caught:
+                w.collect_category('wordpress', 'private-ticket')
+            assert caught.value is error
+        else:
+            result = w.collect_category('wordpress', 'private-ticket')
+            assert result == {'category': 'wordpress', 'claimed': 1, 'complete': 0, 'failed': 1,
+                              'staged': 0, 'failure_scope': 'worker', 'error_kind': 'infrastructure',
+                              'error_code': 'database_unavailable'}
+    records = diagnostic_records(caplog)
+    assert len(records) == 1
+    record = records[0]
+    assert record['phase'] == phase and record['rpc_operation'] == operation
+    assert record['category'] == 'wordpress'
+    assert record['error_code'] == 'database_unavailable' and record['error_type'] == 'PreviewError'
+    assert record['cause_type'] == 'HTTPError' and record['upstream_http_status'] == 400
+    assert record['failure_scope'] == 'worker' and record['error_kind'] == 'infrastructure'
+    assert 0 <= record['elapsed_ms'] <= 120000
+    if phase == 'claim':
+        assert 'source_id' not in record
+    else:
+        assert record['source_id'] == 4900
+    assert 'private' not in caplog.text and 'https://' not in caplog.text
+    assert all(entry.exc_info is None for entry in caplog.records)
+    if phase == 'claim':
+        assert len(calls) == 1  # No unowned ticket finish was added.
+    else:
+        assert calls[-1][0] == 'community_collector_finish_category'
+        assert calls[-1][1]['p_outcome'] == ('complete' if phase == 'finish' else 'failed')
+    if phase in ('claim', 'stage', 'record'):
+        assert not any(path == 'community_collector_publish_category' for path, _, _ in calls)
+
+
+def test_recorded_source_failure_keeps_its_fetch_diagnostic_and_200_result(caplog):
+    from roomquest import preview_worker as preview
+    calls = []
+
+    def rpc(path, data, **kwargs):
+        calls.append((path, data))
+        if path == 'community_collector_claim_category':
+            return {'action': 'collect', 'source_key': 'fixture', 'source_id': 5003,
+                    'kind': 'html', 'platform_adapter': 'html'}
+        return True
+
+    with patch.object(w, 'supabase_rpc', side_effect=rpc), \
+            patch.object(preview, 'supabase_rpc', side_effect=rpc), \
+            patch.object(preview, 'preview_source', side_effect=PreviewError('robots_denied')):
+        result = w.collect_category('html', 'private-ticket')
+    assert result == {'category': 'html', 'claimed': 1, 'complete': 0, 'failed': 1,
+                      'staged': 0, 'failure_scope': 'source', 'error_kind': 'access',
+                      'error_code': 'robots_denied'}
+    records = diagnostic_records(caplog)
+    assert len(records) == 1 and records[0]['phase'] == 'fetch'
+    assert records[0]['source_id'] == 5003 and records[0]['error_code'] == 'robots_denied'
+    assert 'rpc_operation' not in records[0]
+    assert [path for path, _ in calls] == ['community_collector_claim_category',
+        'community_collector_record_preview_v2', 'community_collector_finish_category']
+    assert calls[-1][1]['p_outcome'] == 'source_error'
+
+
+def test_record_and_cleanup_failures_cannot_erase_primary_fetch_evidence(caplog):
+    from roomquest import preview_worker as preview
+    cleanup = RuntimeError('private cleanup detail')
+    calls = []
+
+    def rpc(path, data, **kwargs):
+        calls.append((path, data))
+        if path == 'community_collector_claim_category':
+            return {'action': 'collect', 'source_key': 'fixture', 'source_id': 4900}
+        if path == 'community_collector_record_preview':
+            raise PreviewError('database_unavailable')
+        if path == 'community_collector_finish_category':
+            raise cleanup
+        return True
+
+    with patch.object(w, 'supabase_rpc', side_effect=rpc), \
+            patch.object(preview, 'supabase_rpc', side_effect=rpc), \
+            patch.object(preview, 'preview_source', side_effect=PreviewError('robots_denied')):
+        with pytest.raises(RuntimeError) as caught:
+            w.collect_category('wordpress', 'private-ticket')
+    assert caught.value is cleanup  # Existing finally/exception behavior is unchanged.
+    records = diagnostic_records(caplog)
+    assert [record['phase'] for record in records] == ['fetch', 'record', 'finish']
+    assert [record['error_code'] for record in records] == [
+        'robots_denied', 'database_unavailable', 'unexpected_error']
+    assert all(record['source_id'] == 4900 for record in records)
+    assert calls[-1][1]['p_outcome'] == 'failed'
+    assert 'private' not in caplog.text and all(entry.exc_info is None for entry in caplog.records)
+
+
+@pytest.mark.parametrize('identity', [None, True, 0, -1, '4900', 9223372036854775808])
+def test_old_or_malformed_claim_identity_is_not_logged(caplog, identity):
+    source = {'action': 'publish', 'source_id': identity, 'source_key': 'private-source',
+              'feed_url': 'https://private.invalid/?token=private-token'}
+    with patch.object(w, 'supabase_rpc', side_effect=[source, PreviewError('database_unavailable'), True]):
+        with pytest.raises(PreviewError):
+            w.collect_category('wordpress', 'private-ticket')
+    records = diagnostic_records(caplog)
+    assert len(records) == 1 and 'source_id' not in records[0]
+    assert 'private' not in caplog.text
+
+
+def test_separate_invocations_do_not_share_source_or_error_context(caplog):
+    with patch.object(w, 'supabase_rpc', side_effect=[
+        {'action': 'publish', 'source_id': 4900}, PreviewError('database_unavailable'), True,
+        {'action': 'publish', 'source_id': 5004}, TypeError('private event data'), True]):
+        with pytest.raises(PreviewError):
+            w.collect_category('wordpress', 'first-private-ticket')
+        with pytest.raises(TypeError):
+            w.collect_category('html', 'second-private-ticket')
+    records = diagnostic_records(caplog)
+    assert [(row['category'], row['source_id'], row['error_type']) for row in records] == [
+        ('wordpress', 4900, 'PreviewError'), ('html', 5004, 'TypeError')]
+    assert 'private' not in caplog.text
+
+
+def test_logging_failure_does_not_change_error_or_prevent_finish():
+    error = PreviewError('database_unavailable')
+    with patch.object(w, 'supabase_rpc', side_effect=[{'action': 'publish'}, error, True]) as rpc, \
+            patch.object(w._LOGGER, 'warning', side_effect=RuntimeError('logger unavailable')):
+        with pytest.raises(PreviewError) as caught:
+            w.collect_category('wordpress', 'private-ticket')
+    assert caught.value is error
+    assert rpc.call_args_list[-1].args == ('community_collector_finish_category',
+        {'p_category': 'wordpress', 'p_ticket': 'private-ticket', 'p_outcome': 'failed'})
+
+
+@pytest.mark.parametrize('finish_fails', [False, True])
+def test_interrupted_handoff_diagnostic_preserves_finish_once(clock, caplog, finish_fails):
+    interrupted = RuntimeError('private interrupted handoff detail')
+    finish_error = PreviewError('database_unavailable')
+
+    def process(_source, *, publisher_handoff, observe_phase, **_kwargs):
+        observe_phase('record', operation='community_collector_record_preview_v2')
+        publisher_handoff['ready_at'] = clock.now + 1
+        return {'complete': 1, 'failed': 0, 'staged': 0}
+
+    with patch.object(w, 'supabase_rpc', side_effect=[
+            {'action': 'collect', 'source_id': 4900}, {'outcome': 'complete'},
+            finish_error if finish_fails else True]) as rpc, \
+            patch.object(w, '_process_claimed_source', side_effect=process), \
+            patch.object(w, 'sleep', side_effect=interrupted):
+        with pytest.raises(PreviewError if finish_fails else RuntimeError) as caught:
+            w.collect_category('html', 'private-ticket')
+    assert caught.value is (finish_error if finish_fails else interrupted)
+    assert sum(call.args[0] == 'community_collector_finish_category'
+               for call in rpc.call_args_list) == 1
+    assert rpc.call_args.args[1]['p_outcome'] == 'complete'
+    records = diagnostic_records(caplog)
+    assert len(records) == (2 if finish_fails else 1)
+    assert records[0]['phase'] == 'finish' and 'rpc_operation' not in records[0]
+    assert records[0]['error_type'] == 'RuntimeError'
+    if finish_fails:
+        assert records[1]['phase'] == 'finish'
+        assert records[1]['rpc_operation'] == 'community_collector_finish_category'
+        assert records[1]['error_code'] == 'database_unavailable'
+    assert all(row['source_id'] == 4900 for row in records)
+    assert 'private' not in caplog.text

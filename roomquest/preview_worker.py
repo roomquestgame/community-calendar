@@ -843,22 +843,37 @@ def supabase_rpc(path: str, payload: dict, *, timeout: float = 4):
         raise PreviewError("database_unavailable") from exc
 
 
-def _process_claimed_source(source: dict, *, deadline_at=None, publisher_handoff=None) -> dict:
+def _observe_collection_phase(observer, phase, *, operation=None, error=None):
+    """Optional diagnostics only: an observer cannot fail collection or recording."""
+    if observer is not None:
+        try:
+            observer(phase, operation=operation, error=error)
+        except Exception:
+            pass
+
+
+def _process_claimed_source(source: dict, *, deadline_at=None, publisher_handoff=None,
+                            observe_phase=None) -> dict:
     """Process a single claimed feed with the existing private staging contract."""
     with capture_publisher_pacing() as pacing:
         return _process_claimed_source_with_pacing(
-            source, pacing, deadline_at=deadline_at, publisher_handoff=publisher_handoff)
+            source, pacing, deadline_at=deadline_at, publisher_handoff=publisher_handoff,
+            observe_phase=observe_phase)
 
 
-def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, publisher_handoff=None):
+def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, publisher_handoff=None,
+                                       observe_phase=None):
     phase, failure = "collection", {}
+    operation = None
     try:
+        _observe_collection_phase(observe_phase, "fetch")
         deadline = min(monotonic() + 43, deadline_at or float("inf"))
         output = preview_source(source, deadline_at=deadline - 4)
         if pacing["wait_unbounded"]:
             raise PreviewError("publisher_wait_requires_review")
         events = output.pop("p_events", [])
         phase = "staging"
+        _observe_collection_phase(observe_phase, "stage")
         staged = 0
         # Keep each transaction below the API statement budget. Completion is
         # recorded only after every bounded batch has been accepted.
@@ -872,13 +887,19 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
             size += event_size
         batches.append(batch)
         for batch in batches:
+            operation = None
+            _observe_collection_phase(observe_phase, "stage")
             if monotonic() > deadline - 4:
                 raise PreviewError("staging_deadline")
+            operation = "community_collector_record_staged_events"
+            _observe_collection_phase(observe_phase, "stage", operation=operation)
             written = supabase_rpc("community_collector_record_staged_events", {
                 "p_source_key": source["source_key"], "p_events": batch
             })
             staged += int(written or 0)
     except (PreviewError, OSError, ValueError) as exc:
+        _observe_collection_phase(observe_phase, "fetch" if phase == "collection" else "stage",
+                                  operation=operation, error=exc)
         output = {
             "p_source_key": source["source_key"], "p_samples": [],
             "p_future_count": 0, "p_venue_count": 0,
@@ -890,6 +911,8 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
     # A failed result is returned only after its source error/hold has been
     # recorded. If this RPC fails, the exception remains a worker failure.
     html = source.get("kind") == "html" and source.get("platform_adapter") == "html"
+    _observe_collection_phase(observe_phase, "record", operation=(
+        "community_collector_record_preview_v2" if html else "community_collector_record_preview"))
     if html:
         supabase_rpc("community_collector_record_preview_v2", {**output, **pacing_rpc_fields(pacing)})
         if publisher_handoff is not None and not pacing["wait_unbounded"]:

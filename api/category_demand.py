@@ -2,7 +2,7 @@
 from http.server import BaseHTTPRequestHandler
 import json
 import re
-from roomquest.category_worker import CATEGORIES, collect_category
+from roomquest.category_worker import CATEGORIES, collect_category, report_category_failure
 from roomquest.preview_worker import PreviewError
 
 
@@ -33,9 +33,11 @@ class handler(BaseHTTPRequestHandler):
             return self.reply(400, {'error': 'invalid_dispatch'})
         try:
             return self.reply(200, collect_category(body['category'], body['ticket']))
-        except PreviewError:
+        except PreviewError as error:
+            report_category_failure(body['category'], error)
             return self.reply(503, {'error': 'collector_unavailable'})
-        except Exception:
+        except Exception as error:
+            report_category_failure(body['category'], error)
             return self.reply(503, {'error': 'collector_failed'})
 
     def do_GET(self):
