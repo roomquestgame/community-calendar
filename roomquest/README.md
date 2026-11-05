@@ -1,3 +1,29 @@
+## Dedicated event-image worker — November 5, 2026 (prepared; not deployed)
+
+The candidate-only Virginia image lane now has a ticketed `/api/media-demand`
+entrypoint and an independent bounded runtime. It fills free execution slots
+throughout the run instead of stopping after three candidates on every third
+geocoder tick. Database settings select five workers by default, with a hard
+ceiling of ten, and three requests per publisher host. One active database drain
+lease, candidate-host admission, and a shared redirect-host limiter bound total
+concurrency. Each executor thread reuses its own HTTP Session. No async runtime
+or new HTTP dependency is introduced.
+
+The worker still verifies only a 4 KB prefix of the already extracted publisher
+image and stores its validated URL. It never downloads a full image into storage,
+refetches a Virginia event page, or renews the 96-hour source evidence clock.
+Temporary network errors, HTTP 429/5xx responses, exhausted time and occupied
+host slots defer work instead of recording a permanent missing image. Result
+counts require a database acknowledgement. Fixed counters and elapsed time go
+to structured stdout without tickets, tokens, publisher URLs or event text.
+
+Deploy this backward-compatible collector first. Until the backend explicitly
+reports `dedicated_ready: true`, the existing geocoder photo stage remains the
+fallback. The companion database release owns enabling dispatch after source
+publication commits, bounded continuation, host backoff and recovery. The new
+worker depends on production mode and database admission, not the geocoder flag.
+See [the media protocol and operating limits](MEDIA_WORKER.md).
+
 ## Shared JSON-LD collector — November 1, 2026 (prepared; not deployed)
 
 Ben approved JSON-LD next. Read-only inventory: 89 Mapsee JSON feeds, seven completed (one location gap), 58 unsupported embedded payloads, seven unsupported event shapes, ten unresolved timezones, four invalid payloads, one oversized response, one blocked redirect and one robots denial. Six completed feeds have usable location evidence. Registered/source-ready/collector-complete/public-visible are separate milestones.
@@ -251,3 +277,4 @@ event addresses. Online/phone records stay unlocated; physical venue review,
 cached/shared geocoding, publication, and classification remain downstream.
 There is no new timer or per-event detail crawl. See [CHAMBERMATE.md](CHAMBERMATE.md)
 for source registration, the public contract, limits, and focused tests.
+

@@ -1,6 +1,10 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "functions": {
+    "api/media_demand.py": {
+      "maxDuration": 60,
+      "excludeFiles": "{roomquest/catalogs/**,cities/**,docs/**,reports/**,supabase/**,xmlui/**,tests/**,website/**,node_modules/**,**/*.webm,**/*.png,**/*.jpg,**/*.jpeg}"
+    },
     "api/html_demand.py": {
       "maxDuration": 60,
       "excludeFiles": "{roomquest/catalogs/**,cities/**,docs/**,reports/**,supabase/**,xmlui/**,tests/**,website/**,node_modules/**,**/*.webm,**/*.png,**/*.jpg,**/*.jpeg}"
@@ -43,6 +47,10 @@
     }
   },
   "routes": [
+    {
+      "src": "/api/media-demand",
+      "dest": "/api/media_demand.py"
+    },
     {
       "src": "/api/html-demand",
       "dest": "/api/html_demand.py"
@@ -108,3 +116,4 @@
   ],
   "ignoreCommand": "if [ \"$VERCEL_ENV\" = \"production\" ]; then exit 1; else exit 0; fi"
 }
+

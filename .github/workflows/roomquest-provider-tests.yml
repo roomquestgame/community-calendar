@@ -30,7 +30,7 @@ jobs:
         with:
           python-version: '3.12'
       - run: pip install -r requirements-dev.txt
-      - run: python -m pytest tests/test_wordpress_adapter.py tests/test_mapsee_pipeline.py tests/test_roomquest_preview.py tests/test_squarespace_pilot.py tests/test_squarespace_family.py tests/test_jsonld_family.py tests/test_community_formats.py tests/test_ics_family.py tests/test_transient_staging.py tests/test_category_worker.py tests/test_category_entrypoint.py tests/test_chambermate.py tests/test_chambermate_integration.py tests/test_preview_transport_errors.py tests/test_virginia_state_parks_html.py tests/test_virginia_offsite_addresses.py tests/test_virginia_relative_event_links.py tests/test_mycountyparks.py tests/test_mycountyparks_integration.py tests/test_mycountyparks_cli.py tests/test_bellevue_times.py tests/test_bellevue_times_integration.py tests/test_publisher_robots_cache.py tests/test_event_media.py -q
+      - run: python -m pytest tests/test_wordpress_adapter.py tests/test_mapsee_pipeline.py tests/test_roomquest_preview.py tests/test_squarespace_pilot.py tests/test_squarespace_family.py tests/test_jsonld_family.py tests/test_community_formats.py tests/test_ics_family.py tests/test_transient_staging.py tests/test_category_worker.py tests/test_category_entrypoint.py tests/test_chambermate.py tests/test_chambermate_integration.py tests/test_preview_transport_errors.py tests/test_virginia_state_parks_html.py tests/test_virginia_offsite_addresses.py tests/test_virginia_relative_event_links.py tests/test_mycountyparks.py tests/test_mycountyparks_integration.py tests/test_mycountyparks_cli.py tests/test_bellevue_times.py tests/test_bellevue_times_integration.py tests/test_publisher_robots_cache.py tests/test_event_media.py tests/test_media_demand.py tests/test_media_entrypoint.py tests/test_venue_resolver.py tests/test_roomquest_scoped_rpc.py -q
       - name: Read-only MyCountyParks live verification
         id: mycountyparks_audit
         if: github.event_name == 'workflow_dispatch' && inputs.mycountyparks_live
@@ -57,3 +57,4 @@ jobs:
           path: ${{ runner.temp }}/virginia-event-html-audit
           if-no-files-found: error
           retention-days: 7
+
