@@ -122,7 +122,7 @@ def tribe_timezone(value):
     return timezone(timedelta(minutes=offset)), name
 
 
-def parse_tribe(data, *, strict_public=False):
+def parse_tribe(data, *, strict_public=False, retain_description=False):
     # The same upstream Tribe parser used by Udell, with UTC dates and complete
     # event addresses retained rather than inferred from the publisher's city.
     from scrapers.lib.tribe_events import TribeEventsScraper
@@ -151,6 +151,19 @@ def parse_tribe(data, *, strict_public=False):
         r=record(e.get("title"),start,end,venue.get("venue"),street,venue.get("city"),e.get("url"),e.get("id"),
                  ", ".join(x.get("name","") for x in e.get("categories",[]) if isinstance(x,dict)),venue.get("geo_lat"),venue.get("geo_lng"),tz, publisher_geo=strict_public)
         if r:
+            if retain_description:
+                from bs4 import BeautifulSoup
+                value = e.get("description")
+                if value is not None and not isinstance(value, str):
+                    raise ValueError("invalid_wordpress_description")
+                soup = BeautifulSoup(value or "", "html.parser")
+                for tag in soup.select("script, style, template, noscript"):
+                    tag.decompose()
+                narrative = "\n".join(line.strip() for line in
+                    soup.get_text("\n").splitlines() if line.strip())
+                # Existing JSON publication contract is 2,000 characters.
+                # Missing publisher prose stays empty; never copy title/category.
+                r["description"] = narrative[:2000]
             if strict_public and tz:
                 r["timezone"] = tz_name
             out.append(r)
