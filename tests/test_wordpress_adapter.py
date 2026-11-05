@@ -69,6 +69,31 @@ class WordPressTests(unittest.TestCase):
    self.assertEqual(db.call_args_list[-1].args[1]['p_error'],'database_unavailable')
 
 class ParksTests(unittest.TestCase):
+ def test_madison_narrative_is_clean_bounded_and_source_scoped(self):
+  e=event();e.update(status='publish',description='<p>Learn &amp; build.</p><script>bad()</script><p>Bring tools.</p>')
+  for key in ('madison_county_parks_ia','nebraska_game_parks','municipal_mapsee_fixture'):
+   rows=collect({'source_key':key,'feed_url':'https://venue.example.org'},lambda *_:json.dumps({'events':[e]}))
+   if key=='madison_county_parks_ia':self.assertEqual(rows[0]['description'],'Learn & build.\nBring tools.')
+   else:self.assertNotIn('description',rows[0])
+  e['description']='x'*2100
+  rows=collect({'source_key':'madison_county_parks_ia','feed_url':'https://venue.example.org'},lambda *_:json.dumps({'events':[e]}))
+  self.assertEqual(len(rows[0]['description']),2000)
+ def test_madison_missing_or_malformed_prose_is_not_invented(self):
+  source={'source_key':'madison_county_parks_ia','feed_url':'https://venue.example.org'}
+  for value in (None,''):
+   e=event();e.update(status='publish',description=value)
+   self.assertEqual(collect(source,lambda *_:json.dumps({'events':[e]}))[0]['description'],'')
+  e['description']={'rendered':'wrong API shape'}
+  with self.assertRaisesRegex(ValueError,'invalid_wordpress_description'):
+   collect(source,lambda *_:json.dumps({'events':[e]}))
+ def test_madison_worker_carries_narrative_to_staging_without_extra_fetch(self):
+  source={'source_key':'madison_county_parks_ia','feed_url':'https://venue.example.org','kind':'json','platform_adapter':'wordpress'}
+  e=event();e.update(status='publish',description='<p>Learn basket weaving.</p>')
+  with patch('roomquest.preview_worker.fetch_publisher',return_value=json.dumps({'events':[e]})) as fetch:
+   result=preview_source(source)
+  self.assertEqual(result['p_events'][0]['description'],'Learn basket weaving.')
+  self.assertEqual(result['p_events'][0]['venue_address'],'12 Main St, Raleigh, NC')
+  self.assertEqual(fetch.call_count,1)
  def test_parks_preserve_timezone_and_address_but_reject_nonpublic_records(self):
   source={'source_key':'nebraska_game_parks','feed_url':'https://calendar.outdoornebraska.gov/wp-json/tribe/events/v1/events'}
   good=event();good.update(status='publish',timezone='America/Denver')
