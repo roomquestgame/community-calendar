@@ -69,6 +69,18 @@ class WordPressTests(unittest.TestCase):
    self.assertEqual(db.call_args_list[-1].args[1]['p_error'],'database_unavailable')
 
 class ParksTests(unittest.TestCase):
+ def test_actual_madison_api_timezone_requires_review(self):
+  # Factual fields captured from live API Nov 5; no prose/coordinate fixture.
+  e=event();e.update(status='publish',timezone='UTC+0',
+   start_date='2026-11-17 18:00:00',end_date='2026-11-17 19:00:00',
+   utc_start_date='2026-11-17 18:00:00',utc_end_date='2026-11-17 19:00:00')
+  source={'source_key':'madison_county_parks_ia','feed_url':'https://venue.example.org','timezone':'America/Chicago'}
+  with self.assertRaisesRegex(ValueError,'publisher_timezone_review_required'):
+   collect(source,lambda *_:json.dumps({'events':[e]}))
+  # Its UTC+0 representations are internally consistent, but disagree with
+  # the reviewed Iowa source timezone. No six-hour correction is invented.
+  del source['timezone']
+  self.assertEqual(len(collect(source,lambda *_:json.dumps({'events':[e]}))),1)
  def test_madison_conflicting_local_and_utc_times_fail_without_guessing(self):
   from zoneinfo import ZoneInfo
   source={'source_key':'madison_county_parks_ia','feed_url':'https://venue.example.org'}
