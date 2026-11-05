@@ -152,7 +152,11 @@ def probe_image(url: str, *, candidate_validator=None, deadline=None, clock=None
                                                 retry_after_seconds=delay, attempted=True)
                         if response.status_code not in (200,206):
                             return None
-                        mime = response.headers.get('Content-Type', '').split(';')[0].lower()
+                        mime = response.headers.get('Content-Type', '').split(';')[0].strip().lower()
+                        # Some publisher CDNs still advertise progressive JPEG's legacy MIME.
+                        # Normalize the header; the JPEG signature check below stays mandatory.
+                        if mime == 'image/pjpeg':
+                            mime = 'image/jpeg'
                         total = response.headers.get('Content-Range', '').rsplit('/', 1)[-1]
                         if (mime not in MIMES or int(response.headers.get('Content-Length') or 0) > MAX_IMAGE
                                 or total.isdigit() and int(total) > MAX_IMAGE):
