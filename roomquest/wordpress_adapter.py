@@ -10,6 +10,42 @@ from urllib.parse import urlsplit, urlunsplit, parse_qsl, urlencode
 
 MAX_PAGES = 5
 MAX_RECORDS = 500
+MAX_MADISON_TIME_REVIEWS = 5
+
+
+def _madison_display_schedule(item, source, fetch):
+    """Resolve only a misconfigured publisher zone with same-event HTML proof."""
+    from bs4 import BeautifulSoup
+    from roomquest.mapsee_adapter import plain, timestamp
+    root, link = urlsplit(source['feed_url']), urlsplit(item.get('url', ''))
+    if (link.scheme != 'https' or link.netloc != root.netloc or link.query or link.fragment
+            or not link.path.startswith('/calendar/') or '..' in link.path.split('/')):
+        raise ValueError('publisher_timezone_review_required')
+    soup = BeautifulSoup(fetch(item['url'], 'text/html'), 'html.parser')
+    title = soup.select_one('.tribe-events-single-event-title')
+    start = soup.select_one('.tribe-event-date-start')
+    end = soup.select_one('.tribe-events-schedule .tribe-event-time')
+    day = soup.select_one('.tribe-events-start-time[title]')
+    if not all((title, start, end, day)) or plain(title.get_text()) != plain(item.get('title')):
+        raise ValueError('publisher_timezone_review_required')
+    try:
+        local_start = datetime.fromisoformat(item['start_date'])
+        local_end = datetime.fromisoformat(item['end_date'])
+        displayed_start = datetime.strptime(start.get_text(' ', strip=True).split('@')[-1].strip(), '%I:%M %p').time()
+        displayed_end = datetime.strptime(end.get_text(' ', strip=True), '%I:%M %p').time()
+        if (local_start.tzinfo or local_end.tzinfo or local_start.date() != local_end.date()
+                or day['title'] != local_start.date().isoformat()
+                or local_start.time() != displayed_start or local_end.time() != displayed_end):
+            raise ValueError('publisher_timezone_review_required')
+        begins = timestamp(item['start_date'], source['timezone'])
+        ends = timestamp(item['end_date'], source['timezone'])
+        if ends <= begins:
+            raise ValueError('publisher_timezone_review_required')
+    except (KeyError, TypeError, ValueError) as exc:
+        raise ValueError('publisher_timezone_review_required') from exc
+    return dict(item, timezone=source['timezone'],
+                utc_start_date=begins.astimezone(timezone.utc).isoformat(),
+                utc_end_date=ends.astimezone(timezone.utc).isoformat())
 
 
 def collect(source, fetch, *, deadline_at=None):
@@ -27,6 +63,7 @@ def collect(source, fetch, *, deadline_at=None):
                   end_date=(now + timedelta(days=60)).date().isoformat())
     deadline = min(monotonic() + 35, deadline_at or float('inf'))
     rows = []
+    time_reviews = 0
     for page in range(1, MAX_PAGES + 1):
         if monotonic() >= deadline:
             raise ValueError('collection_deadline')
@@ -41,7 +78,7 @@ def collect(source, fetch, *, deadline_at=None):
             # Compare two representations from the same response. Never repair
             # publisher conflicts by guessing an offset or reading prose dates.
             from roomquest.mapsee_adapter import timestamp, tribe_timezone
-            for item in payload['events']:
+            for index, item in enumerate(payload['events']):
                 if not isinstance(item, dict) or item.get('status') != 'publish':
                     continue
                 if item.get('timezone') and source.get('timezone'):
@@ -49,7 +86,11 @@ def collect(source, fetch, *, deadline_at=None):
                     expected_zone, _ = tribe_timezone(source['timezone'])
                     instant = timestamp(item.get('utc_start_date'), 'UTC')
                     if instant and instant.astimezone(zone).utcoffset() != instant.astimezone(expected_zone).utcoffset():
-                        raise ValueError('publisher_timezone_review_required')
+                        time_reviews += 1
+                        if time_reviews > MAX_MADISON_TIME_REVIEWS or monotonic() >= deadline:
+                            raise ValueError('publisher_timezone_review_required')
+                        item = _madison_display_schedule(item, source, fetch)
+                        payload['events'][index] = item
                 for field in ('start_date', 'end_date'):
                     local, utc = item.get(field), item.get('utc_' + field)
                     if local and utc and item.get('timezone'):
