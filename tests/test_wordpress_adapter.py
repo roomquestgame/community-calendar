@@ -69,6 +69,74 @@ class WordPressTests(unittest.TestCase):
    self.assertEqual(db.call_args_list[-1].args[1]['p_error'],'database_unavailable')
 
 class ParksTests(unittest.TestCase):
+ def test_madison_zone_fallback_requires_matching_official_detail(self):
+  import copy
+  e=event();e.update(status='publish',timezone='UTC+0',url='https://venue.example.org/calendar/event/',
+   start_date='2026-11-17 18:00:00',end_date='2026-11-17 19:00:00',
+   utc_start_date='2026-11-17 18:00:00',utc_end_date='2026-11-17 19:00:00')
+  source={'source_key':'madison_county_parks_ia','feed_url':'https://venue.example.org','timezone':'America/Chicago'}
+  page='<h1 class="tribe-events-single-event-title">Public concert</h1><div class="tribe-events-schedule"><span class="tribe-event-date-start">November 17 @ 6:00 pm</span><span class="tribe-event-time">7:00 pm</span></div><div class="tribe-events-start-time" title="2026-11-17"></div>'
+  calls=[]
+  def fetch(url,accept):
+   calls.append((url,accept));return page if accept=='text/html' else json.dumps({'events':[copy.deepcopy(e)]})
+  row=collect(source,fetch)[0]
+  self.assertEqual(datetime.fromisoformat(row['starts_at']).astimezone(timezone.utc).isoformat(),'2026-11-18T00:00:00+00:00')
+  self.assertEqual(row['timezone'],'America/Chicago');self.assertEqual(len(calls),2)
+  for bad in (page.replace('Public concert','Wrong event'),page.replace('2026-11-17','2026-11-03'),page.replace('6:00 pm','5:00 pm'),page.replace('7:00 pm','8:00 pm')):
+   with self.subTest(page=bad),self.assertRaisesRegex(ValueError,'publisher_timezone_review_required'):
+    collect(source,lambda u,a:bad if a=='text/html' else json.dumps({'events':[e]}))
+  e['url']='https://other.example.org/calendar/event/'
+  with self.assertRaisesRegex(ValueError,'publisher_timezone_review_required'):
+   collect(source,fetch)
+ def test_actual_madison_api_timezone_requires_review(self):
+  # Factual fields captured from live API Nov 5; no prose/coordinate fixture.
+  e=event();e.update(status='publish',timezone='UTC+0',
+   start_date='2026-11-17 18:00:00',end_date='2026-11-17 19:00:00',
+   utc_start_date='2026-11-17 18:00:00',utc_end_date='2026-11-17 19:00:00')
+  source={'source_key':'madison_county_parks_ia','feed_url':'https://venue.example.org','timezone':'America/Chicago'}
+  with self.assertRaisesRegex(ValueError,'publisher_timezone_review_required'):
+   collect(source,lambda *_:json.dumps({'events':[e]}))
+  # Its UTC+0 representations are internally consistent, but disagree with
+  # the reviewed Iowa source timezone. No six-hour correction is invented.
+  del source['timezone']
+  self.assertEqual(len(collect(source,lambda *_:json.dumps({'events':[e]}))),1)
+ def test_madison_conflicting_local_and_utc_times_fail_without_guessing(self):
+  from zoneinfo import ZoneInfo
+  source={'source_key':'madison_county_parks_ia','feed_url':'https://venue.example.org'}
+  e=event();e.update(status='publish',timezone='America/Chicago')
+  for field in ('start_date','end_date'):
+   instant=datetime.fromisoformat(e['utc_'+field])
+   e[field]=instant.astimezone(ZoneInfo('America/Chicago')).replace(tzinfo=None).isoformat()
+  self.assertEqual(len(collect(source,lambda *_:json.dumps({'events':[e]}))),1)
+  for field in ('start_date','end_date'):
+   bad=dict(e);bad[field]=datetime.fromisoformat(e['utc_'+field]).replace(tzinfo=None).isoformat()
+   with self.subTest(field=field),self.assertRaisesRegex(ValueError,'publisher_schedule_conflict'):
+    collect(source,lambda *_:json.dumps({'events':[bad]}))
+ def test_madison_narrative_is_clean_bounded_and_source_scoped(self):
+  e=event();e.update(status='publish',description='<p>Learn &amp; build.</p><script>bad()</script><p>Bring tools.</p>')
+  for key in ('madison_county_parks_ia','nebraska_game_parks','municipal_mapsee_fixture'):
+   rows=collect({'source_key':key,'feed_url':'https://venue.example.org'},lambda *_:json.dumps({'events':[e]}))
+   if key=='madison_county_parks_ia':self.assertEqual(rows[0]['description'],'Learn & build.\nBring tools.')
+   else:self.assertNotIn('description',rows[0])
+  e['description']='x'*2100
+  rows=collect({'source_key':'madison_county_parks_ia','feed_url':'https://venue.example.org'},lambda *_:json.dumps({'events':[e]}))
+  self.assertEqual(len(rows[0]['description']),2000)
+ def test_madison_missing_or_malformed_prose_is_not_invented(self):
+  source={'source_key':'madison_county_parks_ia','feed_url':'https://venue.example.org'}
+  for value in (None,''):
+   e=event();e.update(status='publish',description=value)
+   self.assertEqual(collect(source,lambda *_:json.dumps({'events':[e]}))[0]['description'],'')
+  e['description']={'rendered':'wrong API shape'}
+  with self.assertRaisesRegex(ValueError,'invalid_wordpress_description'):
+   collect(source,lambda *_:json.dumps({'events':[e]}))
+ def test_madison_worker_carries_narrative_to_staging_without_extra_fetch(self):
+  source={'source_key':'madison_county_parks_ia','feed_url':'https://venue.example.org','kind':'json','platform_adapter':'wordpress'}
+  e=event();e.update(status='publish',description='<p>Learn basket weaving.</p>')
+  with patch('roomquest.preview_worker.fetch_publisher',return_value=json.dumps({'events':[e]})) as fetch:
+   result=preview_source(source)
+  self.assertEqual(result['p_events'][0]['description'],'Learn basket weaving.')
+  self.assertEqual(result['p_events'][0]['venue_address'],'12 Main St, Raleigh, NC')
+  self.assertEqual(fetch.call_count,1)
  def test_parks_preserve_timezone_and_address_but_reject_nonpublic_records(self):
   source={'source_key':'nebraska_game_parks','feed_url':'https://calendar.outdoornebraska.gov/wp-json/tribe/events/v1/events'}
   good=event();good.update(status='publish',timezone='America/Denver')
