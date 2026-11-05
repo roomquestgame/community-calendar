@@ -323,7 +323,7 @@ def _preview(title, start, end, venue, lat, lng, url, identity="",
     }
 
 
-def parse_ics_preview(payload: str, *, allow_ongoing=False, include_images=True) -> list[dict]:
+def parse_ics_preview(payload: str, *, allow_ongoing=False, include_images=True, include_description=False) -> list[dict]:
     """Use upstream combine_ics recurrence expansion and icalendar VEVENT parsing."""
     from icalendar import Calendar
     from scripts.combine_ics import expand_rrules
@@ -361,6 +361,10 @@ def parse_ics_preview(payload: str, *, allow_ongoing=False, include_images=True)
                               calendar_categories(item), image=calendar_image(item) if include_images else None,
                               allow_ongoing=allow_ongoing)
             if record:
+                # Retain the occurrence's own narrative after recurrence expansion.
+                # Do not look up by UID: recurrence overrides can have different text.
+                if include_description:
+                    record["description"] = str(item.get("DESCRIPTION", "")).strip()[:12000]
                 results.append(record)
         except (KeyError, ValueError, TypeError):
             continue
@@ -555,7 +559,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         deadline = min(monotonic() + 20, deadline_at - 8 if deadline_at is not None else float("inf"))
         try:
             payload = fetch_publisher(source["feed_url"], "text/calendar", respect_robots=mapsee, deadline_at=deadline)
-            records = parse(payload, {"url": source["feed_url"]}, legacy=not mapsee)
+            records = parse(payload, {"url": source["feed_url"]}, legacy=not mapsee,
+                            include_description=source.get("source_key") == "independence_ia_library_family")
         except PreviewError:
             # Transport errors are already safe, bounded codes (including HTTP digits).
             raise

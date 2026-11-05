@@ -5,7 +5,7 @@ Mapsee URL/address fallbacks stay restricted to its existing catalog records.
 """
 from datetime import datetime, timezone
 
-def parse(payload, source, *, legacy=False):
+def parse(payload, source, *, legacy=False, include_description=False):
     from icalendar import Calendar
     from roomquest.preview_worker import parse_ics_preview
     if not payload.lstrip("\ufeff \r\n").upper().startswith("BEGIN:VCALENDAR") or "END:VCALENDAR" not in payload.upper():
@@ -54,7 +54,7 @@ def parse(payload, source, *, legacy=False):
     # parser bound honest instead of silently calling a truncated feed empty.
     if len(events)>1000:
         raise ValueError("source_record_limit")
-    result=parse_ics_preview(payload,allow_ongoing=True,include_images=legacy)
+    result=parse_ics_preview(payload,allow_ongoing=True,include_images=legacy, include_description=include_description)
     if not result and unsupported:raise ValueError(unsupported[0])
     # A feed URL is an actual publisher link when its VEVENT omits URL. Never
     # fabricate a detail URL, venue, publisher host, description or image.

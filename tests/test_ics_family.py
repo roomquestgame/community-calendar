@@ -46,3 +46,25 @@ def test_missing_publisher_categories_remain_empty_not_inferred():
     events = parse(feed().replace('CATEGORIES:Arts,Community' + chr(13) + chr(10), ''), {}, legacy=False)
     assert events[0]["publisher_categories"] == []
     assert events[0]["category"] == ""
+
+
+def test_ics_description_survives_normalization():
+    raw = feed().replace('SUMMARY:Community workshop',
+                         'DESCRIPTION:Make a creation\\nBring your family.\r\nSUMMARY:Community workshop')
+    event = parse(raw, {}, legacy=False, include_description=True)[0]
+    assert event['description'] == 'Make a creation\nBring your family.'
+    assert event['id'] == 'event-0'
+    assert event['event_url'] == 'https://venue.example.org/event/0'
+
+
+def test_ics_missing_description_is_not_fabricated():
+    assert parse(feed(), {}, legacy=False, include_description=True)[0]['description'] == ''
+
+
+def test_independence_dispatch_retains_publisher_description():
+    s = source('independence_ia_library_family')
+    raw = feed().replace('SUMMARY:Community workshop',
+                         'DESCRIPTION:Build with library bricks.\r\nSUMMARY:Community workshop')
+    with patch('roomquest.preview_worker.fetch_publisher', return_value=raw):
+        out = preview_source(s)
+    assert out['p_events'][0]['description'] == 'Build with library bricks.'
