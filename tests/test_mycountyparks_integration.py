@@ -98,5 +98,5 @@ def test_transport_failure_keeps_explicit_error_and_never_stages():
         result = worker._process_claimed_source(source)
     assert result["failed"] == 1
     assert all(call.args[0] != "community_collector_record_staged_events" for call in rpc.call_args_list)
-    preview = next(call.args[1] for call in rpc.call_args_list if call.args[0] == "community_collector_record_preview_v2")
+    preview = next(call.args[1] for call in rpc.call_args_list if call.args[0] == "community_collector_record_preview_v3")
     assert preview["p_error"] == "publisher_http_403"

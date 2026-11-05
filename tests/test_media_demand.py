@@ -107,7 +107,8 @@ class WorkerTests(unittest.TestCase):
         self.assertEqual(db.capacity_violations, [])
         self.assertGreater(len([c for c in db.calls if c[0] == 'claim']), 1)
         self.assertEqual(db.calls[0][1], {'ticket': TICKET, 'worker_version': 'media_demand_v1',
-                                        'candidate_only_version': 'publisher_event_html_v2'})
+                                        'candidate_only_version': 'publisher_event_html_v2',
+                                        'publisher_candidates_version': 'publisher_event_candidates_v1'})
         self.assertEqual(db.calls[-1][0], 'finish')
 
     def test_database_concurrency_is_clamped_at_ten(self):

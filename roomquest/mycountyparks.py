@@ -19,6 +19,7 @@ from zoneinfo import ZoneInfo
 from bs4 import BeautifulSoup, Tag
 
 from roomquest.mapsee_adapter import record, timestamp
+from roomquest.publisher_evidence import attach
 
 ROOT = "https://www.mycountyparks.com"
 TZ = ZoneInfo("America/Chicago")
@@ -432,6 +433,9 @@ def parse_event(html, event, *, now=None):
     extras = [f"Cost: {cost}" if cost else "", f"Registration: {registration}" if registration else ""]
     suffix = "\n\n".join(value for value in extras if value)
     item["description"] = _description_with_suffix(description, suffix)
+    item["publisher_categories"] = [category[:100]] if category else []
+    attach(item, 'mycountyparks_ia_' + event.county,
+           facts={'cost': cost, 'registration': registration}, candidate=image_url)
     variant = _VARIANT.fullmatch(title)
     if variant:
         base, label = clean(variant.group(1)), variant.group(2).upper()
@@ -483,6 +487,9 @@ def combine_registration_options(records):
             lines.append(option_line(option, cost))
         suffix = heading + "\n".join(lines)
         primary["description"] = _description_with_suffix(primary["_summary"], suffix)
+        primary['publisher_details']['registration_options'] = [
+            {'label': option['label'], 'cost': option['cost'], 'registration': option['registration']}
+            for option in ordered]
         primary.pop("_option", None)
         primary.pop("_summary", None)
         ordinary.append(primary)
