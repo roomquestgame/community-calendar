@@ -1,15 +1,19 @@
 """South Carolina's custom JSON catalog and factual detail-page schedules.
 
 One registered park per claim. This is not a WordPress/Tribe adapter.
-No guessed times, park-wide pins, images, or automatic cancellation inference.
+No guessed times, park-wide pins, generic artwork, or cancellation inference.
 """
 from collections import Counter
 from datetime import datetime, timedelta
 import json
 import re
 from time import monotonic
+from urllib.parse import urljoin
+
+from bs4 import BeautifulSoup
 
 from roomquest.mapsee_adapter import plain, record
+from roomquest.publisher_evidence import attach, image_url
 
 ROOT = 'https://southcarolinaparks.com'
 TIMEZONE = 'America/New_York'
@@ -18,6 +22,60 @@ DATE = r'[A-Z][a-z]+ \d{1,2}, \d{4}'
 TIME = r'\d{1,2}:\d{2} [AP]M'
 SCHEDULE = re.compile(rf'^({DATE})(?: - ({DATE}))?, ({TIME}) - ({TIME})(?: Every Week on (.+))?$')
 DAYS = ('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')
+
+
+def details(event, page):
+    """Only the event's narrative/factual headings, never sidebar park prose."""
+    soup = BeautifulSoup(page, 'html.parser')
+    heading = soup.select_one('.event-heading__title')
+    if heading and plain(heading.get_text(' ', strip=True)) != plain(event['name']):
+        raise ValueError('park_detail_identity_mismatch')
+    section = heading.find_parent(class_='copy') if heading else None
+    narrative = section.select_one('.description') if section else None
+    description = plain(narrative.get_text(' ', strip=True)) if narrative else plain(event.get('description'))
+    facts, topics = {}, []
+    if section:
+        for title in section.select('h3'):
+            key = plain(title.get_text(' ', strip=True)).casefold()
+            value = title.find_next_sibling('p')
+            # Do not let a missing field borrow the next heading's paragraph.
+            sibling = title.find_next_sibling()
+            if value is None or sibling is not value:
+                continue
+            text = plain(value.get_text(' ', strip=True))[:300]
+            field = {'price': 'cost', 'ages': 'audience', 'age': 'audience',
+                     'meeting place': 'meeting_location', 'registration deadline': 'registration'}.get(key)
+            if field and text:
+                facts[field] = text
+            if key == 'civil war' and text.casefold() == 'yes':
+                topics.append('Civil War')
+    # Only explicit event-identity JSON-LD or an inline narrative image qualifies.
+    candidate = None
+    for script in soup.select('script[type="application/ld+json"]')[:20]:
+        try:
+            data = json.loads(script.string or script.get_text())
+            nodes = data if isinstance(data, list) else [data]
+            for node in nodes:
+                if not isinstance(node, dict):
+                    continue
+                types = node.get('@type', [])
+                if isinstance(types, str):
+                    types = [types]
+                if ('Event' in types and plain(node.get('name')) == plain(event['name'])
+                        and isinstance(node.get('image'), str)):
+                    candidate = image_url(urljoin(ROOT, node['image']), 'south_carolina_parks')
+        except (TypeError, ValueError):
+            continue
+    if not candidate and narrative:
+        image = narrative.select_one('img[src]')
+        if image:
+            candidate = image_url(urljoin(ROOT, image['src']), 'south_carolina_parks')
+    suffix = '\n\n'.join(f'{label}: {facts[field]}' for label, field in
+                         [('Price', 'cost'), ('Ages', 'audience'), ('Registration', 'registration'),
+                          ('Meeting Place', 'meeting_location')] if field in facts)
+    limit = max(0, 2000 - len(suffix) - (2 if suffix else 0))
+    description = description[:limit].rstrip() + ('\n\n' + suffix if suffix else '')
+    return description, facts, topics, candidate
 
 
 def occurrences(page):
@@ -69,12 +127,18 @@ def normalize(event, park, page):
     if any(parsed[d] != count for d, count in listed.items()):
         raise ValueError('park_occurrence_mismatch')
     rows = []
+    description, facts, topics, candidate = details(event, page)
     for start, end in schedule:
         row = record(event['name'], start, end, park['name'], address,
                      park['cityName'], f"{ROOT}/products/{event['id']}",
                      f"scparks:{event['id']}:{start}", tz=TIMEZONE)
         if row:
             row['timezone'] = TIMEZONE
+            row['description'] = description
+            # Topics are factual evidence, not a fabricated publisher taxonomy.
+            row['publisher_categories'] = topics
+            attach(row, 'south_carolina_parks_' + str(park['productID']),
+                   facts=facts, candidate=candidate)
             rows.append(row)
     if len(rows) > 500:
         raise ValueError('source_record_limit')

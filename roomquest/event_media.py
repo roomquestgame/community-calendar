@@ -176,8 +176,16 @@ def resolve_photo(claim: dict, *, fetcher=None, probe=None, clock=None, deadline
     deadline = deadline if deadline is not None else clock() + 20
     candidate_validator = None
     if claim.get('candidate_only') is True:
-        from roomquest.virginia_state_parks import event_photo_url
-        candidate_validator = event_photo_url
+        from roomquest.publisher_evidence import family, image_url
+        if claim.get('source_key') and (publisher := family(claim['source_key'], claim['event_url'])):
+            candidate_validator = lambda url, *_: image_url(url, publisher)
+        else:
+            # Legacy claims are Virginia-only. Never turn an unrecognized new
+            # publisher claim into permission to probe arbitrary candidates.
+            if claim.get('source_key') and not claim['source_key'].startswith('virginia_state_parks_'):
+                return None
+            from roomquest.virginia_state_parks import event_photo_url
+            candidate_validator = event_photo_url
     raw_candidate = claim.get('candidate_url')
     if isinstance(raw_candidate, str):
         raw_candidate = raw_candidate.strip() or None
@@ -203,7 +211,8 @@ def resolve_photo(claim: dict, *, fetcher=None, probe=None, clock=None, deadline
         clock=clock if strict_deadline else None, host_limiter=host_limiter, session=session)
     if verified and candidate_validator is not None and not candidate_validator(verified[0]):
         return None
-    return {'image_url': verified[0], 'mime_type': verified[1], 'evidence_url': claim['event_url']} if verified else None
+    return {'image_url': verified[0], 'mime_type': verified[1],
+            'evidence_url': claim.get('extraction_url') or claim['event_url']} if verified else None
 
 
 def rpc(action: str, payload=None):

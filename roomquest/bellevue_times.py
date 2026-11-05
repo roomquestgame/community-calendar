@@ -443,10 +443,8 @@ def normalize_cards(cards, *, now=None, publisher_total=None):
         item["location_provenance"] = provenance
         item["description"] = card.summary[:MAX_DESCRIPTION]
         item["publisher_categories"] = list(card.publisher_categories)
-        if card.image_url:
-            # Candidate metadata only: the current HTML publisher leaves the
-            # public image null; this adapter does not grant media permission.
-            item["image_url"] = card.image_url
+        from roomquest.publisher_evidence import attach
+        attach(item, 'bellevue_times_ne', candidate=card.image_url, evidence_url=CALENDAR)
         records.append(item)
     _log("normalized", first_page_count=len(cards), publisher_total=publisher_total,
          has_more=publisher_total > len(cards) if publisher_total is not None else None,

@@ -193,7 +193,8 @@ def collect_media(ticket, *, database=None, resolver=None, clock=None):
         return stats
 
     run = database('start', {'ticket': ticket, 'worker_version': WORKER_VERSION,
-                            'candidate_only_version': CANDIDATE_VERSION}, timeout=4)
+                            'candidate_only_version': CANDIDATE_VERSION,
+                            'publisher_candidates_version': 'publisher_event_candidates_v1'}, timeout=4)
     if not run:
         stats['stop_reason'] = 'not_admitted'
         return stats

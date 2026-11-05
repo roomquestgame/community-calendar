@@ -605,7 +605,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
             samples.pop()
         return {"p_source_key": source["source_key"], "p_samples": samples,
                 "p_future_count": len(records), "p_venue_count": 0,
-                "p_error": None, "p_events": records}
+                "p_error": None, "p_events": records,
+                "p_parser_capability": "publisher_event_candidates_v1"}
     # Independent HTML family with explicit, publisher-specific dispatch.
     if source.get("platform_adapter") == "html" and source.get("kind") == "html":
         source_key = str(source.get("source_key", ""))
@@ -644,6 +645,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         if source_key.startswith("virginia_state_parks_"):
             # Capability evidence also accompanies successful empty results.
             result["p_parser_capability"] = IMAGE_EXTRACTOR_VERSION
+        else:
+            result["p_parser_capability"] = "publisher_event_candidates_v1"
         return result
     if source.get("platform_adapter") == "chambermate":
         from roomquest.chambermate import API_HOST, collect as collect_chambermate
@@ -915,12 +918,15 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
     # A failed result is returned only after its source error/hold has been
     # recorded. If this RPC fails, the exception remains a worker failure.
     html = source.get("kind") == "html" and source.get("platform_adapter") == "html"
+    source_key = str(source.get('source_key', ''))
+    publisher_media = (html and (source_key.startswith(('virginia_state_parks_', 'mycountyparks_ia_'))
+                                or source_key == 'bellevue_times_ne')) or source.get('platform_adapter') == 'south_carolina_parks'
     preview_rpc = ("community_collector_record_preview_v3"
-                   if html and str(source.get("source_key", "")).startswith("virginia_state_parks_")
+                   if publisher_media
                    else "community_collector_record_preview_v2" if html
                    else "community_collector_record_preview")
     _observe_collection_phase(observe_phase, "record", operation=preview_rpc)
-    if html:
+    if html or publisher_media:
         supabase_rpc(preview_rpc, {**output, **pacing_rpc_fields(pacing)})
         if publisher_handoff is not None and not pacing["wait_unbounded"]:
             # The server starts its durable wait while recording the preview.

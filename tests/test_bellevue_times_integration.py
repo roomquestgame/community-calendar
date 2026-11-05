@@ -57,7 +57,7 @@ def test_raw_publisher_evidence_survives_the_existing_staging_and_preview_contra
     staged = next(call.args[1]["p_events"] for call in rpc.call_args_list
                   if call.args[0] == "community_collector_record_staged_events")
     preview = next(call.args[1] for call in rpc.call_args_list
-                   if call.args[0] == "community_collector_record_preview_v2")
+                   if call.args[0] == "community_collector_record_preview_v3")
     assert preview["p_samples"] == staged
     assert staged[0]["publisher_categories"] == ["Family Activity", "Adults Only", "Paid Admission"]
     assert staged[0]["category"] == "Family Activity"
@@ -95,7 +95,7 @@ def test_first_page_cloudflare_failure_is_not_staged_or_marked_healthy():
     assert fetch.call_count == 1
     assert result["failed"] == 1
     assert all(call.args[0] != "community_collector_record_staged_events" for call in rpc.call_args_list)
-    preview = next(call.args[1] for call in rpc.call_args_list if call.args[0] == "community_collector_record_preview_v2")
+    preview = next(call.args[1] for call in rpc.call_args_list if call.args[0] == "community_collector_record_preview_v3")
     assert preview["p_error"] == "publisher_http_403"
     assert preview["p_samples"] == [] and preview["p_future_count"] == 0
 
@@ -110,7 +110,7 @@ def test_incomplete_first_page_is_named_and_never_staged(html, reason):
         result = worker._process_claimed_source({**SOURCE, "id": 123})
     assert result["failed"] == 1
     assert all(call.args[0] != "community_collector_record_staged_events" for call in rpc.call_args_list)
-    preview = next(call.args[1] for call in rpc.call_args_list if call.args[0] == "community_collector_record_preview_v2")
+    preview = next(call.args[1] for call in rpc.call_args_list if call.args[0] == "community_collector_record_preview_v3")
     assert preview["p_error"] == reason
 
 
