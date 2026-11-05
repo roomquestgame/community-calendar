@@ -1,3 +1,13 @@
+## Virginia event descriptions — November 5, 2026 (prepared)
+
+The Virginia HTML adapter now reads the event's actual narrative, preserves a
+concise meeting point, and carries explicit publisher categories, fees,
+children-welcome, and registration evidence for shared backend classification.
+It uses the already-fetched detail HTML and preserves the existing photo-v2
+pipeline. A bounded, read-only manifest capture supports a fingerprinted repair
+of existing records. See [the extraction contract and capture limits](VIRGINIA_EVENT_DETAILS.md).
+Production release and repair evidence are tracked by the companion backend release.
+
 ## Dedicated event-image worker — November 5, 2026 (prepared; not deployed)
 
 The candidate-only Virginia image lane now has a ticketed `/api/media-demand`

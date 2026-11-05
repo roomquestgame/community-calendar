@@ -104,7 +104,7 @@ def test_relative_link_fix_preserves_meeting_and_park_coordinates_without_record
                 '<div>Main Park Address:</div><a>Occoneechee State Park</a>'
                 '<span>, 1192 Occoneechee Park Rd., Clarksville, VA 23927.</span>'
                 f'<h2>When</h2><div>{day}. 11:00 a.m. - 12:30 p.m.</div>'
-                f'<p>{description}</p></main></body></html>')
+                f'<div id="event_description"><p>{description}</p></div></main></body></html>')
     meeting = detail('Friends of Occoneechee State Park Monthly Meeting', 'Clarksville Town Hall',
                      'The Friends group meets at the Clarksville Town Hall (located at '
                      '321 Virginia Ave, Clarksville, VA 23927) in the Chamber Room. Everyone is welcome.')
