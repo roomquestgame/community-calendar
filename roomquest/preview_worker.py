@@ -559,8 +559,11 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         deadline = min(monotonic() + 20, deadline_at - 8 if deadline_at is not None else float("inf"))
         try:
             payload = fetch_publisher(source["feed_url"], "text/calendar", respect_robots=mapsee, deadline_at=deadline)
-            records = parse(payload, {"url": source["feed_url"]}, legacy=not mapsee,
+            records = parse(payload, {"url": source["feed_url"], "source_key": source.get("source_key")}, legacy=not mapsee,
                             include_description=source.get("source_key") == "independence_ia_library_family")
+            if source.get('source_key') == 'independence_ia_library_family':
+                from roomquest.iowa_civicplus import enrich
+                records = enrich(records, source, fetch_publisher, deadline)
         except PreviewError:
             # Transport errors are already safe, bounded codes (including HTTP digits).
             raise

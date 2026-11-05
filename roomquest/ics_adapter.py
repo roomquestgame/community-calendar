@@ -4,6 +4,26 @@ Legacy output fields and media stay intact to preserve venue-cache identity.
 Mapsee URL/address fallbacks stay restricted to its existing catalog records.
 """
 from datetime import datetime, timezone
+import logging
+import re
+from urllib.parse import urlsplit, parse_qs
+
+logger = logging.getLogger(__name__)
+
+
+def civicplus_detail_url(description, identity, source_url):
+    """Use an explicit same-publisher EID link; never synthesize from the UID."""
+    origin = urlsplit(source_url)
+    matches = []
+    for candidate in re.findall(r'https://[^\s<>"\']+', description):
+        candidate = candidate.rstrip('.,;)')
+        parsed = urlsplit(candidate)
+        if (parsed.scheme == 'https' and parsed.netloc.lower() == origin.netloc.lower()
+                and not parsed.username and not parsed.password
+                and parsed.path.lower() == '/calendar.aspx'
+                and parse_qs(parsed.query) == {'EID': [identity]}):
+            matches.append(candidate)
+    return matches[0] if len(set(matches)) == 1 else None
 
 def parse(payload, source, *, legacy=False, include_description=False):
     from icalendar import Calendar
@@ -25,7 +45,11 @@ def parse(payload, source, *, legacy=False, include_description=False):
         # Date-only events have no advertised time; the existing collector does
         # not invent one. Distinguish that unsupported shape from valid empty.
         if not isinstance(start,datetime):
-            if start>=datetime.now(timezone.utc).date():unsupported.append("unsupported_all_day_time")
+            end = e.decoded('DTEND') if e.get('DTEND') else start
+            if max(start, end) >= datetime.now(timezone.utc).date():
+                unsupported.append("unsupported_all_day_time")
+                logger.warning('ics_record_withheld source=%s uid=%s reason=unsupported_all_day_time',
+                               source.get('source_key', ''), str(e.get('UID', ''))[:180])
             continue
         if start.tzinfo is None:
             if start.date()>=datetime.now(timezone.utc).date():unsupported.append("timezone_unresolved")
@@ -62,6 +86,7 @@ def parse(payload, source, *, legacy=False, include_description=False):
     # category. VEVENT CATEGORIES can be a multi-valued vCategory or repeated.
     # Bound the labels before they enter our JSON staging contract.
     categories = {}
+    detail_urls = {}
     for event in events:
         labels = []
         raw = event.get("CATEGORIES")
@@ -75,9 +100,17 @@ def parse(payload, source, *, legacy=False, include_description=False):
                 if len(labels) >= 20:
                     break
         categories[str(event.get("UID", ""))] = labels
+        if include_description and source.get('source_key') == 'independence_ia_library_family':
+            uid = str(event.get('UID', ''))
+            detail_urls[uid] = civicplus_detail_url(str(event.get('DESCRIPTION', '')), uid, source['url'])
 
     for e in result:
-        if legacy:
+        if include_description and source.get('source_key') == 'independence_ia_library_family':
+            uid = e['id'].split('__', 1)[0]
+            if not detail_urls.get(uid):
+                raise ValueError('publisher_detail_link_missing')
+            e['event_url'] = detail_urls[uid]
+        if legacy and not include_description:
             continue
         e.pop("image_url",None)
         e["publisher_categories"]=categories.get(e["id"].split("__",1)[0], [])
