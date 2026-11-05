@@ -69,6 +69,18 @@ class WordPressTests(unittest.TestCase):
    self.assertEqual(db.call_args_list[-1].args[1]['p_error'],'database_unavailable')
 
 class ParksTests(unittest.TestCase):
+ def test_madison_conflicting_local_and_utc_times_fail_without_guessing(self):
+  from zoneinfo import ZoneInfo
+  source={'source_key':'madison_county_parks_ia','feed_url':'https://venue.example.org'}
+  e=event();e.update(status='publish',timezone='America/Chicago')
+  for field in ('start_date','end_date'):
+   instant=datetime.fromisoformat(e['utc_'+field])
+   e[field]=instant.astimezone(ZoneInfo('America/Chicago')).replace(tzinfo=None).isoformat()
+  self.assertEqual(len(collect(source,lambda *_:json.dumps({'events':[e]}))),1)
+  for field in ('start_date','end_date'):
+   bad=dict(e);bad[field]=datetime.fromisoformat(e['utc_'+field]).replace(tzinfo=None).isoformat()
+   with self.subTest(field=field),self.assertRaisesRegex(ValueError,'publisher_schedule_conflict'):
+    collect(source,lambda *_:json.dumps({'events':[bad]}))
  def test_madison_narrative_is_clean_bounded_and_source_scoped(self):
   e=event();e.update(status='publish',description='<p>Learn &amp; build.</p><script>bad()</script><p>Bring tools.</p>')
   for key in ('madison_county_parks_ia','nebraska_game_parks','municipal_mapsee_fixture'):
