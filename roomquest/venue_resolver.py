@@ -252,7 +252,7 @@ def run_batch(*, database=None, resolver=None, clock=None, deadline_seconds=15) 
 def run_pipeline() -> dict:
     """Run geocoding first; optional venue/photo stages cannot block it."""
     from roomquest.forward_geocoder import run_batch as geocode_batch
-    from roomquest.event_media import run_batch as photo_batch
+    from roomquest.event_media import dedicated_media_ready, run_batch as photo_batch
     from datetime import datetime, timezone
 
     start = monotonic()
@@ -270,7 +270,8 @@ def run_pipeline() -> dict:
 
     if phase == 2:
         try:
-            result["photos"] = photo_batch()
+            result["photos"] = ({"stop_reason": "dedicated_worker"} if dedicated_media_ready()
+                                else photo_batch())
         except Exception:
             result["photos"] = {"stop_reason": "stage_failed"}
     elif phase == 1:
@@ -280,3 +281,4 @@ def run_pipeline() -> dict:
             result["venues"] = {"stop_reason": "stage_failed"}
 
     return result
+

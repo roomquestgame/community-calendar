@@ -826,7 +826,7 @@ def supabase_rpc(path: str, payload: dict, *, timeout: float = 4):
     import urllib.request
     allowed = {"community_collector_claim_category", "community_collector_publish_category", "community_collector_finish_category", "community_collector_claim_previews", "community_collector_claim_demand_preview", "community_collector_claim_chambermaster", "community_collector_record_preview", "community_collector_record_preview_v2", "community_collector_record_preview_v3",
                "community_collector_record_staged_events", "community_collector_geocoder", "community_collector_geocoder_claim",
-               "community_collector_venues", "community_collector_media"}
+               "community_collector_venues", "community_collector_media", "community_collector_media_demand"}
     if path not in allowed:
         raise PreviewError("unsupported_collector_rpc")
     root = os.environ.get("SUPABASE_URL", "")
@@ -991,6 +991,7 @@ def collect_bulk_previews(max_sources=15, concurrency=3, deadline_seconds=48) ->
                 for key in ("complete", "failed", "staged"):
                     result[key] += item[key]
     return result
+
 
 
 
