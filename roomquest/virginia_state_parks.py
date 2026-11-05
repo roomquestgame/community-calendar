@@ -24,7 +24,7 @@ MAX_EVENT_PAGES = 10
 MAX_LISTING_LINKS = 200
 IMAGE_EXTRACTOR_VERSION = "publisher_event_html_v2"
 DETAILS_EXTRACTOR_VERSION = "virginia_event_details_v1"
-MAX_DESCRIPTION = 2000
+MAX_DESCRIPTION = 12000
 # Leave space for the backend's version and canonical evidence URL wrapper.
 MAX_PUBLISHER_DETAILS_BYTES = 3500
 NON_EVENT_IMAGE = re.compile(

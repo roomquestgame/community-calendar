@@ -6,7 +6,7 @@ removes hidden/navigation/promotion content, and stops at embedded page-tail
 headings. A missing, empty, or duplicate narrative container produces no
 description; the park address is never substituted as event prose.
 
-The description remains capped at 2,000 characters. Actual narrative comes
+The description remains capped at 12,000 characters. The former 2,000-character cap could discard late fee, audience and activity evidence. The backend retains and classifies this expanded bounded narrative. Actual narrative comes
 first. A concise `Meeting Location: ...` footer preserves a meeting point such
 as Terrace Gardens when it is absent from the retained narrative. Existing
 verified offsite venue, street/room instructions, GPS behavior, primary schedule,

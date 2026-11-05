@@ -103,9 +103,9 @@ def test_absent_ambiguous_or_empty_narrative_never_uses_address_fallback(mode):
 
 
 def test_long_description_reserves_meeting_location_and_never_splits_the_cap():
-    body = "<p>First meaningful paragraph.</p><p>" + "Trail interpretation and geology. " * 100 + "</p>"
+    body = "<p>First meaningful paragraph.</p><p>" + "Trail interpretation and geology. " * 500 + "</p>"
     event = parse(page(body))
-    assert len(event["description"]) <= 2000
+    assert len(event["description"]) <= va.MAX_DESCRIPTION
     assert event["description"].startswith("First meaningful paragraph.\n\n")
     assert "…\n\nMeeting Location: Terrace Gardens" in event["description"]
     assert event["publisher_details"]["meeting_location"] == "Terrace Gardens"
@@ -118,11 +118,11 @@ def test_meeting_point_in_narrative_is_not_duplicated():
 
 
 def test_meeting_point_at_the_clipping_boundary_is_still_retained():
-    prefix = "Walk " * 397
+    prefix = "Walk " * 2397
     body = prefix + "Terrace Gardens" + " with the ranger for an interpretive program."
-    assert "Terrace Gardens" in body[:2000]
+    assert "Terrace Gardens" in body[:va.MAX_DESCRIPTION]
     text = parse(page("<p>" + body + "</p>"))["description"]
-    assert len(text) <= 2000
+    assert len(text) <= va.MAX_DESCRIPTION
     assert text.endswith("\n\nMeeting Location: Terrace Gardens")
     assert text.count("Terrace Gardens") == 1
 
@@ -304,3 +304,9 @@ def test_details_staging_preserves_photo_capability_and_existing_completion_rpc(
     assert staged["publisher_details"]["children_welcome"] == "Yes"
     assert calls[1][0] == "community_collector_record_preview_v3"
     assert calls[1][1]["p_parser_capability"] == "publisher_event_html_v2"
+
+
+def test_meaningful_evidence_after_old_cap_is_preserved():
+    text = "Trail information. " * 140 + " Adults only. Program fee is $20. Archery instruction follows."
+    event = parse(page("<p>" + text + "</p>"))
+    assert "Adults only. Program fee is $20. Archery instruction follows." in event["description"]
