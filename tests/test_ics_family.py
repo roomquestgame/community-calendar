@@ -101,3 +101,15 @@ def test_independence_actual_capture_full_details_and_explicit_all_day_exclusion
     assert 'No registration needed.' in event['description']
     assert event['lat'] is None and event['lng'] is None
     assert 'uid=5956 reason=unsupported_all_day_time' in caplog.text
+
+
+def test_independence_detail_cancellation_is_withheld():
+    from pathlib import Path
+    from roomquest.iowa_civicplus import enrich, KEY, FEED
+    path = Path(__file__).parent/'fixtures'/'iowa'
+    detail = (path/'independence-lego.html').read_text().replace('Join us in the Community Room', 'This event is cancelled. Join us in the Community Room')
+    records = [{'id':'5975','title':'Legos @ the Library','description':'Lego activity.',
+                'starts_at':'2026-11-17T00:00:00+00:00',
+                'event_url':'https://independenceia.gov/calendar.aspx?EID=5975'}]
+    with patch('roomquest.preview_worker.fetch_publisher', return_value=detail) as fetch:
+        assert enrich(records, {'source_key':KEY,'feed_url':FEED}, fetch, float('inf')) == []

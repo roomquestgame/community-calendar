@@ -2,6 +2,9 @@
 from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
 from bs4 import BeautifulSoup
+import logging
+
+logger = logging.getLogger(__name__)
 
 KEY = 'independence_ia_library_family'
 FEED = 'https://independenceia.gov/common/modules/iCalendar/iCalendar.aspx?catID=26&feed=calendar'
@@ -12,6 +15,7 @@ def enrich(records, source, fetch, deadline):
         raise ValueError('unregistered_civicplus_source')
     if len(records) > 20:
         raise ValueError('source_detail_limit')
+    result = []
     for record in records:
         html = fetch(record['event_url'], 'text/html', respect_robots=True, deadline_at=deadline)
         soup = BeautifulSoup(html, 'html.parser')
@@ -45,4 +49,10 @@ def enrich(records, source, fetch, deadline):
         if not narrative:
             raise ValueError('publisher_detail_description_missing')
         record['description'] = (summary + '\n\n' + narrative).strip()[:12000]
-    return records
+        from roomquest.mycountyparks import cancelled
+        if cancelled(record['title'], record['description']):
+            logger.warning('ics_record_withheld source=%s uid=%s reason=publisher_cancelled',
+                           KEY, record['id'])
+            continue
+        result.append(record)
+    return result
