@@ -137,6 +137,20 @@ class PhotoTests(unittest.TestCase):
         self.assertFalse(session.get.call_args.kwargs['allow_redirects'])
         self.assertEqual(session.get.call_args.kwargs['headers']['Range'],'bytes=0-4095')
 
+    def test_progressive_jpeg_mime_is_normalized_only_with_jpeg_bytes(self):
+        for body, expected in [(b'\xff\xd8\xff\xe0jpeg', (PHOTO, 'image/jpeg')),
+                               (b'<html>not an image</html>', None)]:
+            with self.subTest(body=body):
+                response = MagicMock(); response.status_code = 200
+                response.headers = {'Content-Type': 'Image/PJPEG; charset=binary', 'Content-Length': '200000'}
+                response.iter_content.return_value = iter([body])
+                response.__enter__.return_value = response
+                session = MagicMock(); session.get.return_value = response
+                session.__enter__.return_value = session
+                with patch.object(m.requests, 'Session', return_value=session), patch.object(m, 'validate_public_dns'):
+                    self.assertEqual(m.probe_image(PHOTO), expected)
+                self.assertEqual(session.get.call_args.kwargs['headers']['Range'], 'bytes=0-4095')
+
     def test_probe_validates_redirect_targets_before_requesting_them(self):
         for redirect in ['http://example.org/photo.jpg', 'https://127.0.0.1/photo.jpg',
                          'https://user:password@example.org/photo.jpg']:
