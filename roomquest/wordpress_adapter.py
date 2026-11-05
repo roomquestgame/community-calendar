@@ -37,6 +37,18 @@ def collect(source, fetch, *, deadline_at=None):
             raise ValueError('unsupported_wordpress_payload')
         if len(payload['events']) > 100:
             raise ValueError('source_record_limit')
+        if source.get('source_key') == 'madison_county_parks_ia':
+            # Compare two representations from the same response. Never repair
+            # publisher conflicts by guessing an offset or reading prose dates.
+            from roomquest.mapsee_adapter import timestamp
+            for item in payload['events']:
+                if not isinstance(item, dict) or item.get('status') != 'publish':
+                    continue
+                for field in ('start_date', 'end_date'):
+                    local, utc = item.get(field), item.get('utc_' + field)
+                    if local and utc and item.get('timezone'):
+                        if timestamp(local, item['timezone']) != timestamp(utc, 'UTC'):
+                            raise ValueError('publisher_schedule_conflict')
         # Never follow response next links; rebuild only this registered URL.
         rows.extend(parse_tribe(payload, strict_public=source.get("source_key") in
                                   ("madison_county_parks_ia", "nebraska_game_parks"),
