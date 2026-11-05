@@ -34,6 +34,8 @@ jobs:
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
         with:
           python-version: '3.12'
+      - name: Validate Vercel build selection
+        run: node --test scripts/vercel-ignore.test.mjs
       - run: pip install -r requirements-dev.txt
       - run: python -m pytest tests/test_wordpress_adapter.py tests/test_mapsee_pipeline.py tests/test_roomquest_preview.py tests/test_squarespace_pilot.py tests/test_squarespace_family.py tests/test_jsonld_family.py tests/test_community_formats.py tests/test_ics_family.py tests/test_transient_staging.py tests/test_category_worker.py tests/test_category_entrypoint.py tests/test_chambermate.py tests/test_chambermate_integration.py tests/test_preview_transport_errors.py tests/test_virginia_state_parks_html.py tests/test_virginia_event_details.py tests/test_virginia_offsite_addresses.py tests/test_virginia_relative_event_links.py tests/test_mycountyparks.py tests/test_mycountyparks_integration.py tests/test_mycountyparks_cli.py tests/test_bellevue_times.py tests/test_bellevue_times_integration.py tests/test_publisher_robots_cache.py tests/test_event_media.py tests/test_media_demand.py tests/test_media_entrypoint.py tests/test_venue_resolver.py tests/test_roomquest_scoped_rpc.py -q
       - run: python -m pytest tests/test_south_carolina_parks.py tests/test_publisher_evidence.py -q
@@ -70,4 +72,5 @@ jobs:
           path: ${{ runner.temp }}/virginia-event-html-audit
           if-no-files-found: error
           retention-days: 7
+
 
