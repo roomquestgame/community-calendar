@@ -39,7 +39,8 @@ def collect(source, fetch, *, deadline_at=None):
             raise ValueError('source_record_limit')
         # Never follow response next links; rebuild only this registered URL.
         rows.extend(parse_tribe(payload, strict_public=source.get("source_key") in
-                                  ("madison_county_parks_ia", "nebraska_game_parks")))
+                                  ("madison_county_parks_ia", "nebraska_game_parks"),
+                               retain_description=source.get("source_key") == "madison_county_parks_ia"))
         if len(rows) > MAX_RECORDS:
             raise ValueError('source_record_limit')
         total_pages = payload.get('total_pages', 1)
