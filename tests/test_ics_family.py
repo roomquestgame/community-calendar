@@ -46,3 +46,70 @@ def test_missing_publisher_categories_remain_empty_not_inferred():
     events = parse(feed().replace('CATEGORIES:Arts,Community' + chr(13) + chr(10), ''), {}, legacy=False)
     assert events[0]["publisher_categories"] == []
     assert events[0]["category"] == ""
+
+
+def test_ics_description_survives_normalization():
+    raw = feed().replace('SUMMARY:Community workshop',
+                         'DESCRIPTION:Make a creation\\nBring your family.\r\nSUMMARY:Community workshop')
+    event = parse(raw, {}, legacy=False, include_description=True)[0]
+    assert event['description'] == 'Make a creation\nBring your family.'
+    assert event['id'] == 'event-0'
+    assert event['event_url'] == 'https://venue.example.org/event/0'
+
+
+def test_ics_missing_description_is_not_fabricated():
+    assert parse(feed(), {}, legacy=False, include_description=True)[0]['description'] == ''
+
+
+def test_independence_dispatch_retains_publisher_description():
+    s = source('independence_ia_library_family')
+    raw = feed().replace('SUMMARY:Community workshop',
+                         'DESCRIPTION:Build with library bricks. https://venue.example.org/calendar.aspx?EID=event-0\r\nSUMMARY:Community workshop')
+    with patch('roomquest.preview_worker.fetch_publisher', return_value=raw), patch('roomquest.iowa_civicplus.enrich', side_effect=lambda r,*args:r):
+        out = preview_source(s)
+    assert out['p_events'][0]['description'].startswith('Build with library bricks.')
+
+
+def test_civicplus_detail_links_require_same_publisher_explicit_matching_id():
+    from roomquest.ics_adapter import civicplus_detail_url
+    origin = 'https://independenceia.gov/calendar.ics'
+    good = 'https://independenceia.gov/calendar.aspx?EID=5975'
+    assert civicplus_detail_url('Summary ' + good, '5975', origin) == good
+    for bad in [good.replace('5975', '12'), good.replace('independenceia.gov', 'elsewhere.gov'),
+                good.replace('/calendar.aspx', '/other'), good + '&tracking=1']:
+        assert civicplus_detail_url(bad, '5975', origin) is None
+
+
+def test_independence_actual_capture_full_details_and_explicit_all_day_exclusion(caplog):
+    from pathlib import Path
+    from roomquest.iowa_civicplus import KEY, FEED
+    from zoneinfo import ZoneInfo
+    path = Path(__file__).parent / 'fixtures' / 'iowa'
+    local = (datetime.now(timezone.utc) + timedelta(days=2)).astimezone(ZoneInfo('America/Chicago')).replace(hour=18,minute=0,second=0,microsecond=0)
+    raw = (path/'independence-library.ics').read_text().replace('20261116',local.strftime('%Y%m%d'))
+    raw = raw.replace('20261019',(local-timedelta(days=10)).strftime('%Y%m%d')).replace('20261106',(local+timedelta(days=1)).strftime('%Y%m%d'))
+    detail = (path/'independence-lego.html').read_text().replace('2026-11-16T18:00:00',local.replace(tzinfo=None).isoformat())
+    with patch('roomquest.preview_worker.fetch_publisher', side_effect=[
+            raw, detail]):
+        result = preview_source(dict(source_key=KEY, feed_url=FEED, kind='ical', platform_adapter='ical'))
+    assert result['p_future_count'] == 1
+    event = result['p_events'][0]
+    assert event['event_url'] == 'https://independenceia.gov/calendar.aspx?EID=5975'
+    assert event['starts_at'] == local.astimezone(timezone.utc).isoformat()
+    assert event['ends_at'] == (local+timedelta(hours=1)).astimezone(timezone.utc).isoformat()
+    assert event['venue_address'] == '805 1st St East, Independence, IA 50644'
+    assert 'No registration needed.' in event['description']
+    assert event['lat'] is None and event['lng'] is None
+    assert 'uid=5956 reason=unsupported_all_day_time' in caplog.text
+
+
+def test_independence_detail_cancellation_is_withheld():
+    from pathlib import Path
+    from roomquest.iowa_civicplus import enrich, KEY, FEED
+    path = Path(__file__).parent/'fixtures'/'iowa'
+    detail = (path/'independence-lego.html').read_text().replace('Join us in the Community Room', 'This event is cancelled. Join us in the Community Room')
+    records = [{'id':'5975','title':'Legos @ the Library','description':'Lego activity.',
+                'starts_at':'2026-11-17T00:00:00+00:00',
+                'event_url':'https://independenceia.gov/calendar.aspx?EID=5975'}]
+    with patch('roomquest.preview_worker.fetch_publisher', return_value=detail) as fetch:
+        assert enrich(records, {'source_key':KEY,'feed_url':FEED}, fetch, float('inf')) == []
