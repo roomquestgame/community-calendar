@@ -40,14 +40,27 @@ def collect(source, fetch, *, deadline_at=None):
         if source.get('source_key') == 'madison_county_parks_ia':
             # Compare two representations from the same response. Never repair
             # publisher conflicts by guessing an offset or reading prose dates.
-            from roomquest.mapsee_adapter import timestamp
+            from roomquest.mapsee_adapter import timestamp, tribe_timezone
             for item in payload['events']:
                 if not isinstance(item, dict) or item.get('status') != 'publish':
                     continue
+                if item.get('timezone') and source.get('timezone'):
+                    zone, _ = tribe_timezone(item['timezone'])
+                    expected_zone, _ = tribe_timezone(source['timezone'])
+                    instant = timestamp(item.get('utc_start_date'), 'UTC')
+                    if instant and instant.astimezone(zone).utcoffset() != instant.astimezone(expected_zone).utcoffset():
+                        raise ValueError('publisher_timezone_review_required')
                 for field in ('start_date', 'end_date'):
                     local, utc = item.get(field), item.get('utc_' + field)
                     if local and utc and item.get('timezone'):
-                        if timestamp(local, item['timezone']) != timestamp(utc, 'UTC'):
+                        zone, _ = tribe_timezone(item['timezone'])
+                        wall = datetime.fromisoformat(local.replace('Z', '+00:00'))
+                        # Preserve explicit offsets; reject ambiguous IANA wall
+                        # times through the existing strict timestamp helper.
+                        if wall.tzinfo is None:
+                            wall = (wall.replace(tzinfo=zone) if item['timezone'].startswith('UTC')
+                                    else timestamp(local, item['timezone']))
+                        if wall != timestamp(utc, 'UTC'):
                             raise ValueError('publisher_schedule_conflict')
         # Never follow response next links; rebuild only this registered URL.
         rows.extend(parse_tribe(payload, strict_public=source.get("source_key") in
