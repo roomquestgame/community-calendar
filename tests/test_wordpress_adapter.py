@@ -69,6 +69,25 @@ class WordPressTests(unittest.TestCase):
    self.assertEqual(db.call_args_list[-1].args[1]['p_error'],'database_unavailable')
 
 class ParksTests(unittest.TestCase):
+ def test_madison_zone_fallback_requires_matching_official_detail(self):
+  import copy
+  e=event();e.update(status='publish',timezone='UTC+0',url='https://venue.example.org/calendar/event/',
+   start_date='2026-11-17 18:00:00',end_date='2026-11-17 19:00:00',
+   utc_start_date='2026-11-17 18:00:00',utc_end_date='2026-11-17 19:00:00')
+  source={'source_key':'madison_county_parks_ia','feed_url':'https://venue.example.org','timezone':'America/Chicago'}
+  page='<h1 class="tribe-events-single-event-title">Public concert</h1><div class="tribe-events-schedule"><span class="tribe-event-date-start">November 17 @ 6:00 pm</span><span class="tribe-event-time">7:00 pm</span></div><div class="tribe-events-start-time" title="2026-11-17"></div>'
+  calls=[]
+  def fetch(url,accept):
+   calls.append((url,accept));return page if accept=='text/html' else json.dumps({'events':[copy.deepcopy(e)]})
+  row=collect(source,fetch)[0]
+  self.assertEqual(datetime.fromisoformat(row['starts_at']).astimezone(timezone.utc).isoformat(),'2026-11-18T00:00:00+00:00')
+  self.assertEqual(row['timezone'],'America/Chicago');self.assertEqual(len(calls),2)
+  for bad in (page.replace('Public concert','Wrong event'),page.replace('2026-11-17','2026-11-03'),page.replace('6:00 pm','5:00 pm'),page.replace('7:00 pm','8:00 pm')):
+   with self.subTest(page=bad),self.assertRaisesRegex(ValueError,'publisher_timezone_review_required'):
+    collect(source,lambda u,a:bad if a=='text/html' else json.dumps({'events':[e]}))
+  e['url']='https://other.example.org/calendar/event/'
+  with self.assertRaisesRegex(ValueError,'publisher_timezone_review_required'):
+   collect(source,fetch)
  def test_actual_madison_api_timezone_requires_review(self):
   # Factual fields captured from live API Nov 5; no prose/coordinate fixture.
   e=event();e.update(status='publish',timezone='UTC+0',
