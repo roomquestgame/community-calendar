@@ -25,7 +25,8 @@ def page(where="Clarksville Town Hall", paragraphs=None, title="Friends meeting"
         "<div>Program Location:</div><div>" + where + "</div>"
         "<div>Main Park Address:</div><div>" + PARK["name"] + ", " + PARK["address"] + "</div>"
         "<h2>When</h2><div>Nov. 4, 2026. 6:00 p.m. - 7:00 p.m.</div>"
-        + "".join("<p>" + p + "</p>" for p in paragraphs) + "</main>")
+        + '<div id="event_description">'
+        + "".join("<p>" + p + "</p>" for p in paragraphs) + "</div></main>")
 
 
 def normalized(title, start, end, venue, address, city, url, identity, **kwargs):
@@ -84,7 +85,8 @@ def test_in_park_program_keeps_reviewed_coordinates():
     assert result["venue_name"] == PARK["name"]
     assert result["venue_address"] == PARK["address"]
     assert result["lat"] == PARK["lat"] and result["lng"] == PARK["lng"]
-    assert result["description"].startswith("Meeting Location: Terrace Gardens")
+    assert result["description"].startswith(INTRO)
+    assert result["description"].endswith("Meeting Location: Terrace Gardens")
 
 
 def test_offsite_without_address_never_borrows_park_address():

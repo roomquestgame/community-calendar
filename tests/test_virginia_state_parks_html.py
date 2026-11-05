@@ -322,7 +322,8 @@ def test_extracts_meeting_location_and_known_park_address():
     # Mock only normalized-record conversion to avoid date-dependent test windows.
     with patch.object(va, "record", return_value={"id":"example","lat":PARK["lat"],"lng":PARK["lng"]}) as record:
         result = va.parse_event(PAGE, CAL_LINK, PARK)
-    assert result["description"].startswith("Meeting Location: Terrace Gardens\n\n")
+    assert result["description"].startswith("Explore the history of the Occoneechee Plantation")
+    assert result["description"].endswith("\n\nMeeting Location: Terrace Gardens")
     assert "Plantation" in result["description"]
     assert result["location_provenance"] == "owner_reviewed_park_cache"
     assert result["park_code"] == "OC"
@@ -480,7 +481,8 @@ def test_exact_html_adapter_dispatch_does_not_use_wordpress_or_ics():
          patch.object(worker,"fetch_publisher",side_effect=lambda url,accept,**kwargs:fetch(url,accept)):
         result=worker.preview_source(SOURCE)
     assert result["p_future_count"]==1
-    assert result["p_events"][0]["description"].startswith("Meeting Location:")
+    assert result["p_events"][0]["description"].startswith("Explore the history")
+    assert result["p_events"][0]["description"].endswith("Meeting Location: Terrace Gardens")
     assert paths==[va.listing_url(PARK),CAL_LINK]
     wordpress.assert_not_called()
 

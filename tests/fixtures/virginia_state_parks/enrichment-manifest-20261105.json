@@ -1,0 +1,2697 @@
+{
+  "version": "virginia_event_details_capture_v1",
+  "observed_at": "2026-11-05 12:10:11.108585+00",
+  "events": [
+    {
+      "event_id": "3e756ea1-e686-4b55-a19b-858336da1381",
+      "source_key": "virginia_state_parks_bc",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-25-10-21-07-143843-oyk",
+      "title": "Discovery Walk",
+      "starts_at": "2026-11-07T15:00:00+00:00",
+      "ends_at": "2026-11-07T16:00:00+00:00",
+      "baseline_fingerprint": "241ad1b3f82c73b1ec2436e1f106dc0d"
+    },
+    {
+      "event_id": "a42db4c9-05d8-41f1-889e-949d13c4fa4f",
+      "source_key": "virginia_state_parks_bc",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-25-09-38-06-503939-6do",
+      "title": "Nature Art",
+      "starts_at": "2026-11-08T15:00:00+00:00",
+      "ends_at": "2026-11-08T16:00:00+00:00",
+      "baseline_fingerprint": "06d1ea1eb7f8f5590bd8ddc1fc21eb19"
+    },
+    {
+      "event_id": "9957fa51-27dd-4dfd-8e04-db6b9bf6bed0",
+      "source_key": "virginia_state_parks_bc",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-25-09-24-08-914874-7iv",
+      "title": "Archery Club",
+      "starts_at": "2026-11-08T18:00:00+00:00",
+      "ends_at": "2026-11-08T19:30:00+00:00",
+      "baseline_fingerprint": "8734d65354cb4a206c33aa20b71b2db2"
+    },
+    {
+      "event_id": "e0fdce92-9d21-4e96-9bd5-185348bc8b8a",
+      "source_key": "virginia_state_parks_bc",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-26-16-56-05-251100-s7p",
+      "title": "Nature Art",
+      "starts_at": "2026-11-14T15:00:00+00:00",
+      "ends_at": "2026-11-14T16:00:00+00:00",
+      "baseline_fingerprint": "3ae5c730ecd457cba3856d597588961e"
+    },
+    {
+      "event_id": "240298eb-0d17-4444-96ed-897b5a765dfa",
+      "source_key": "virginia_state_parks_bc",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-26-16-55-36-271014-zgn",
+      "title": "Discovery Walk",
+      "starts_at": "2026-11-14T18:00:00+00:00",
+      "ends_at": "2026-11-14T19:00:00+00:00",
+      "baseline_fingerprint": "2f1fcf10649872993faa0c70f514558d"
+    },
+    {
+      "event_id": "bc81822a-f736-469e-b9ce-82a3e52b2a63",
+      "source_key": "virginia_state_parks_bc",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-31-09-58-54-323032-dgr",
+      "title": "Discovery Walk",
+      "starts_at": "2026-11-21T15:00:00+00:00",
+      "ends_at": "2026-11-21T16:00:00+00:00",
+      "baseline_fingerprint": "a04b09e6d7e319a8aa20783c95d3cdfe"
+    },
+    {
+      "event_id": "743e53f1-11d1-49dc-904b-dd5795dcf49a",
+      "source_key": "virginia_state_parks_bc",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-26-16-56-29-223233-zbn",
+      "title": "Archery Club",
+      "starts_at": "2026-11-22T18:00:00+00:00",
+      "ends_at": "2026-11-22T19:30:00+00:00",
+      "baseline_fingerprint": "8b3727da84e056b334a132657b468296"
+    },
+    {
+      "event_id": "768ca37c-b6e9-423e-860f-3626e6a1a9bb",
+      "source_key": "virginia_state_parks_bc",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-25-10-14-53-698199-3ri",
+      "title": "Thankful Walk",
+      "starts_at": "2026-11-27T15:00:00+00:00",
+      "ends_at": "2026-11-27T16:00:00+00:00",
+      "baseline_fingerprint": "f3864f0f46c38e3028b78e7ca31ea813"
+    },
+    {
+      "event_id": "033b1e8a-d2a0-4fe2-86b5-de292d4f0e90",
+      "source_key": "virginia_state_parks_bc",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-25-09-36-19-404247-r7l",
+      "title": "Nature Art",
+      "starts_at": "2026-11-27T18:00:00+00:00",
+      "ends_at": "2026-11-27T19:00:00+00:00",
+      "baseline_fingerprint": "53ac455c4b3fa4ae251b2f80898473fa"
+    },
+    {
+      "event_id": "2106f2c5-d2d7-485b-90ed-1398f97b03be",
+      "source_key": "virginia_state_parks_bc",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-31-09-51-00-455090-6vb",
+      "title": "Basic Archery",
+      "starts_at": "2026-11-28T18:00:00+00:00",
+      "ends_at": "2026-11-28T19:00:00+00:00",
+      "baseline_fingerprint": "74142650a7416739cbc602ece3787872"
+    },
+    {
+      "event_id": "c66f110e-4977-4d0f-ad8c-5e0641beb358",
+      "source_key": "virginia_state_parks_bi",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-07-27-21-24-57-215635-702",
+      "title": "Lancaster County Library Bookmobile",
+      "starts_at": "2026-11-06T19:00:00+00:00",
+      "ends_at": "2026-11-06T21:00:00+00:00",
+      "baseline_fingerprint": "1a28a31787e90c3bb4589927d7266a3c"
+    },
+    {
+      "event_id": "880ac543-15fb-420d-94e8-49ccac3b8998",
+      "source_key": "virginia_state_parks_bi",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-24-14-12-07-507675-ges",
+      "title": "Paracord Key Chains",
+      "starts_at": "2026-11-07T15:00:00+00:00",
+      "ends_at": "2026-11-07T16:00:00+00:00",
+      "baseline_fingerprint": "55e4aae9830a3cb13df5201a43354b38"
+    },
+    {
+      "event_id": "09a56a58-08d1-4708-becb-da066d2be9a7",
+      "source_key": "virginia_state_parks_bi",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-09-28-07-58-56-318610-u24",
+      "title": "Colors of Nature Hike",
+      "starts_at": "2026-11-07T18:00:00+00:00",
+      "ends_at": "2026-11-07T19:00:00+00:00",
+      "baseline_fingerprint": "9a69420b5281c37990ab2c3515bcc2eb"
+    },
+    {
+      "event_id": "ee6be283-c250-4970-b6c7-226adc541b3d",
+      "source_key": "virginia_state_parks_bi",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-09-28-07-59-18-623650-nyw",
+      "title": "The Wild Life of Belle Isle",
+      "starts_at": "2026-11-07T20:00:00+00:00",
+      "ends_at": "2026-11-07T21:00:00+00:00",
+      "baseline_fingerprint": "1aee659c9ebf1931abca49206a0187e1"
+    },
+    {
+      "event_id": "d7a7a7db-2b19-44de-89b2-0efd62188bd3",
+      "source_key": "virginia_state_parks_bi",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-01-30-11-00-10-037402-4cj",
+      "title": "Walk on the Wild Side",
+      "starts_at": "2026-11-12T14:00:00+00:00",
+      "ends_at": "2026-11-12T16:00:00+00:00",
+      "baseline_fingerprint": "d9214638518cb7fc7b64705f26b8935c"
+    },
+    {
+      "event_id": "f4e90b62-2acb-456c-804d-d828c7b1d862",
+      "source_key": "virginia_state_parks_bi",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-07-27-21-24-57-235173-xqe",
+      "title": "Lancaster County Library Bookmobile",
+      "starts_at": "2026-11-13T19:00:00+00:00",
+      "ends_at": "2026-11-13T21:00:00+00:00",
+      "baseline_fingerprint": "e75185154f553702fd10c312e033ce0e"
+    },
+    {
+      "event_id": "798e25b2-8765-4fd1-97ef-1490cf730a9d",
+      "source_key": "virginia_state_parks_bi",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-24-14-20-40-758898-1yh",
+      "title": "B.A.R.K Rangers - Pets In Parks",
+      "starts_at": "2026-11-13T21:00:00+00:00",
+      "ends_at": "2026-11-13T22:00:00+00:00",
+      "baseline_fingerprint": "15891f7808030b7e84a9fe848ca487d1"
+    },
+    {
+      "event_id": "3299b83f-8502-4495-812e-bf190e891608",
+      "source_key": "virginia_state_parks_bi",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-24-14-22-54-459826-zfx",
+      "title": "Slimy Science",
+      "starts_at": "2026-11-14T15:00:00+00:00",
+      "ends_at": "2026-11-14T16:00:00+00:00",
+      "baseline_fingerprint": "37487879837184a9818919f62107537e"
+    },
+    {
+      "event_id": "c9ec686e-d3a5-4cee-9285-d4cd5591c4ae",
+      "source_key": "virginia_state_parks_bi",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-24-14-26-01-508321-dgm",
+      "title": "Make Your Own Crawly Dirt Treat",
+      "starts_at": "2026-11-14T18:00:00+00:00",
+      "ends_at": "2026-11-14T19:00:00+00:00",
+      "baseline_fingerprint": "591e772b50591c9f132ff2ce7b224227"
+    },
+    {
+      "event_id": "534b9409-4081-4bbe-8a3c-72ef97eda793",
+      "source_key": "virginia_state_parks_bi",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-09-28-13-02-08-562722-sbz",
+      "title": "Backyard Bass - Fishing in Parks",
+      "starts_at": "2026-11-14T20:00:00+00:00",
+      "ends_at": "2026-11-14T21:00:00+00:00",
+      "baseline_fingerprint": "6ef1dd340cced99abad1db45437a2006"
+    },
+    {
+      "event_id": "f8151f3f-15c0-4bb4-969a-05788bb2386a",
+      "source_key": "virginia_state_parks_ca",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-09-04-14-20-11-634256-mvn",
+      "title": "21st Annual Art & Wine Festival",
+      "starts_at": "2026-11-07T15:00:00+00:00",
+      "ends_at": "2026-11-07T22:00:00+00:00",
+      "baseline_fingerprint": "9b794aac6fed3802f71e6ad16e904958"
+    },
+    {
+      "event_id": "cf3a293d-28f8-490b-8cf5-8754b9401f21",
+      "source_key": "virginia_state_parks_ca",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-09-06-18-40-09-824404-n7c",
+      "title": "21st Annual Art & Wine Festival",
+      "starts_at": "2026-11-08T15:00:00+00:00",
+      "ends_at": "2026-11-08T21:00:00+00:00",
+      "baseline_fingerprint": "70f49af5e884095bfb31c9f8c322c7fc"
+    },
+    {
+      "event_id": "14331931-7c95-4586-a18e-7af342aa699c",
+      "source_key": "virginia_state_parks_ca",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-08-16-14-07-18-668201-yoh",
+      "title": "Fall Foliage Fun",
+      "starts_at": "2026-11-14T15:00:00+00:00",
+      "ends_at": "2026-11-14T17:00:00+00:00",
+      "baseline_fingerprint": "2120973ed2544b5f244ca7d9ad28e72f"
+    },
+    {
+      "event_id": "ac8baba2-0238-406a-b837-fee2547a1500",
+      "source_key": "virginia_state_parks_ca",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-21-14-00-49-480480-slh",
+      "title": "Eagle Tour",
+      "starts_at": "2026-11-21T15:00:00+00:00",
+      "ends_at": "2026-11-21T17:00:00+00:00",
+      "baseline_fingerprint": "09e9803b7f5269cd664d1c2859b78cf2"
+    },
+    {
+      "event_id": "d05cd6ee-ef92-4261-9d01-ec79b2e87b44",
+      "source_key": "virginia_state_parks_ca",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-21-13-53-37-749184-3fs",
+      "title": "Black Friday Fossil Find",
+      "starts_at": "2026-11-27T17:00:00+00:00",
+      "ends_at": "2026-11-27T19:00:00+00:00",
+      "baseline_fingerprint": "3f61819014d04ca337671c7c7321eff4"
+    },
+    {
+      "event_id": "adae45e6-251a-4ccc-98d7-382f26c250f1",
+      "source_key": "virginia_state_parks_ca",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-21-13-58-27-665236-i7r",
+      "title": "Shark Tooth Jewelry",
+      "starts_at": "2026-11-27T19:00:00+00:00",
+      "ends_at": "2026-11-27T19:30:00+00:00",
+      "baseline_fingerprint": "59309fdbb1a3b1030d0f15946c43b5e4"
+    },
+    {
+      "event_id": "28b83240-8d4d-4853-af29-bfc592f9945a",
+      "source_key": "virginia_state_parks_ca",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-21-14-15-50-101963-nxh",
+      "title": "Sea Glass Class",
+      "starts_at": "2026-11-28T17:00:00+00:00",
+      "ends_at": "2026-11-28T20:00:00+00:00",
+      "baseline_fingerprint": "5aad25b5f5dc4a87d29543ee6e35fd63"
+    },
+    {
+      "event_id": "624f3099-08fd-46cc-87cb-a68800e69820",
+      "source_key": "virginia_state_parks_ca",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-01-20-11-49-26-795691-e78",
+      "title": "White Elephant 5K",
+      "starts_at": "2026-12-05T13:00:00+00:00",
+      "ends_at": "2026-12-05T15:00:00+00:00",
+      "baseline_fingerprint": "790db637bdaff7667ac7191b1002223d"
+    },
+    {
+      "event_id": "7d7933c0-927c-45b1-b66d-1c4aa7df8745",
+      "source_key": "virginia_state_parks_ca",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-30-14-32-02-597986-58t",
+      "title": "The Nature of Winter",
+      "starts_at": "2027-01-01T15:00:00+00:00",
+      "ends_at": "2027-01-01T17:00:00+00:00",
+      "baseline_fingerprint": "d4e85bbbfb50301d9273f86ae4aedda3"
+    },
+    {
+      "event_id": "ca5a6e16-687b-4b52-bec2-06c5df3e47d7",
+      "source_key": "virginia_state_parks_cb",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-25-10-22-17-762680-wg3",
+      "title": "Frontlines at the Foothills",
+      "starts_at": "2026-11-07T15:00:00+00:00",
+      "ends_at": "2026-11-07T15:30:00+00:00",
+      "baseline_fingerprint": "4bc9191a29c408a50b540d6a3d2f5533"
+    },
+    {
+      "event_id": "1075b762-1d59-48ed-9a84-fad6f02e6741",
+      "source_key": "virginia_state_parks_cb",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-25-10-52-46-130339-qhw",
+      "title": "War to the Knife",
+      "starts_at": "2026-11-07T20:00:00+00:00",
+      "ends_at": "2026-11-07T21:00:00+00:00",
+      "baseline_fingerprint": "fff6f656638c3244551f763247cdbd30"
+    },
+    {
+      "event_id": "8f72c3c1-5959-41bf-9356-b6934c20bdb1",
+      "source_key": "virginia_state_parks_cb",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-26-10-43-34-500030-iwr",
+      "title": "Frontlines at the Foothills",
+      "starts_at": "2026-11-08T15:00:00+00:00",
+      "ends_at": "2026-11-08T15:30:00+00:00",
+      "baseline_fingerprint": "47c920d2742f82f57cf0658893412c18"
+    },
+    {
+      "event_id": "3c5ec355-c1cb-414f-bee8-47afbe1ba38c",
+      "source_key": "virginia_state_parks_cb",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-26-10-44-14-870035-xlr",
+      "title": "War to the Knife",
+      "starts_at": "2026-11-08T20:00:00+00:00",
+      "ends_at": "2026-11-08T21:00:00+00:00",
+      "baseline_fingerprint": "336de2d7c39d2c6a13281ccac4368df1"
+    },
+    {
+      "event_id": "49c26c71-6bc3-4b5e-ba69-3efe07b45893",
+      "source_key": "virginia_state_parks_cb",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-26-10-43-34-525844-ib0",
+      "title": "Frontlines at the Foothills",
+      "starts_at": "2026-11-14T15:00:00+00:00",
+      "ends_at": "2026-11-14T15:30:00+00:00",
+      "baseline_fingerprint": "11c53c3f3d12d78e3b2afe20a43fb5be"
+    },
+    {
+      "event_id": "63179aca-7eee-476b-bb74-eec5906ac39d",
+      "source_key": "virginia_state_parks_cb",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-26-10-44-14-891651-dzs",
+      "title": "War to the Knife",
+      "starts_at": "2026-11-14T20:00:00+00:00",
+      "ends_at": "2026-11-14T21:00:00+00:00",
+      "baseline_fingerprint": "bb779978763ce93fe5998e7cccc09a3c"
+    },
+    {
+      "event_id": "cf659904-8a55-4018-b4a8-39ba94406cf2",
+      "source_key": "virginia_state_parks_cb",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-26-10-43-34-546924-l82",
+      "title": "Frontlines at the Foothills",
+      "starts_at": "2026-11-15T15:00:00+00:00",
+      "ends_at": "2026-11-15T15:30:00+00:00",
+      "baseline_fingerprint": "a184261d816d4db7c3a45c2d9d82c0a6"
+    },
+    {
+      "event_id": "3a985650-8c40-4d9c-9d86-ef5f18a2a67f",
+      "source_key": "virginia_state_parks_cb",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-26-10-44-14-912755-dt6",
+      "title": "War to the Knife",
+      "starts_at": "2026-11-15T20:00:00+00:00",
+      "ends_at": "2026-11-15T21:00:00+00:00",
+      "baseline_fingerprint": "3dd01a6491f08dd3e8ba2cecb981c1cc"
+    },
+    {
+      "event_id": "e0b99543-dda9-4dcc-b5c3-b9728b32f055",
+      "source_key": "virginia_state_parks_cb",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-26-10-43-34-567987-5z4",
+      "title": "Frontlines at the Foothills",
+      "starts_at": "2026-11-21T15:00:00+00:00",
+      "ends_at": "2026-11-21T15:30:00+00:00",
+      "baseline_fingerprint": "49b61f0c78bbfac4c222e39067e453c1"
+    },
+    {
+      "event_id": "eb71a8d1-2453-43bd-aedc-3acb5b6f074b",
+      "source_key": "virginia_state_parks_cb",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-26-10-44-14-933490-3ic",
+      "title": "War to the Knife",
+      "starts_at": "2026-11-21T20:00:00+00:00",
+      "ends_at": "2026-11-21T21:00:00+00:00",
+      "baseline_fingerprint": "236df6c200437c756e95dbb528973357"
+    },
+    {
+      "event_id": "d824a346-b71e-47fd-bead-c1229a068bab",
+      "source_key": "virginia_state_parks_cl",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-09-11-09-42-03-676168-rb5",
+      "title": "Fall Foliage Hayrides",
+      "starts_at": "2026-11-07T17:00:00+00:00",
+      "ends_at": "2026-11-07T21:00:00+00:00",
+      "baseline_fingerprint": "02cc68764f2cfae455dc4c7f7c795dd2"
+    },
+    {
+      "event_id": "56d7f6fe-6516-448c-8917-47a4fbe44562",
+      "source_key": "virginia_state_parks_cl",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-04-13-08-50-23-891123-ryw",
+      "title": "Free Parking Days for Virginia State Park License Plate Holders",
+      "starts_at": "2026-11-11T11:00:00+00:00",
+      "ends_at": "2026-11-12T03:00:00+00:00",
+      "baseline_fingerprint": "2a9a2bdea595b4e9c421ac3d8593c11c"
+    },
+    {
+      "event_id": "dcee8bca-8ac7-4dd4-a6ea-72c387d51efa",
+      "source_key": "virginia_state_parks_cl",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-09-11-09-42-03-697194-7h0",
+      "title": "Fall Foliage Hayrides",
+      "starts_at": "2026-11-14T17:00:00+00:00",
+      "ends_at": "2026-11-14T21:00:00+00:00",
+      "baseline_fingerprint": "6a36bbe39d059825d3460f3be9a1f0a4"
+    },
+    {
+      "event_id": "ccec4cf4-18c6-4ed3-b008-262364541384",
+      "source_key": "virginia_state_parks_cl",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-01-30-15-35-40-168962-tv7",
+      "title": "Help the Park, Become an Ambassador",
+      "starts_at": "2026-11-17T23:30:00+00:00",
+      "ends_at": "2026-11-18T00:30:00+00:00",
+      "baseline_fingerprint": "d4bbae3cac1c4d54b760806ea0897c61"
+    },
+    {
+      "event_id": "c7c0a777-94ec-4172-a16f-3ed77fb79962",
+      "source_key": "virginia_state_parks_cl",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-01-12-28-39-896635-apl",
+      "title": "November Volunteer Workday: Autumn BioBlitz",
+      "starts_at": "2026-11-21T15:00:00+00:00",
+      "ends_at": "2026-11-21T17:00:00+00:00",
+      "baseline_fingerprint": "cde5281498774052e5b4d873f7e4e47a"
+    },
+    {
+      "event_id": "028b088e-c398-4eda-b4da-ffd3066a0614",
+      "source_key": "virginia_state_parks_cl",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-04-13-08-50-23-912915-toe",
+      "title": "Free Parking Days for Virginia State Park License Plate Holders",
+      "starts_at": "2026-11-27T11:00:00+00:00",
+      "ends_at": "2026-11-28T03:00:00+00:00",
+      "baseline_fingerprint": "a014206f2ba88c794d2edb7a81208e4e"
+    },
+    {
+      "event_id": "7154fc39-8e8b-4160-8225-d6ccd0ea177f",
+      "source_key": "virginia_state_parks_cp",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-28-09-53-39-830860-cxw",
+      "title": "Jones - Stewart Mansion Tours",
+      "starts_at": "2026-11-06T17:30:00+00:00",
+      "ends_at": "2026-11-06T20:30:00+00:00",
+      "baseline_fingerprint": "77376d99478e8f272b56d5cf8c1884c3"
+    },
+    {
+      "event_id": "0f63fb95-c65f-479d-8d44-31e798278610",
+      "source_key": "virginia_state_parks_cp",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-30-13-55-27-614034-945",
+      "title": "East Coast Star Party - Public Observing Event",
+      "starts_at": "2026-11-06T23:00:00+00:00",
+      "ends_at": "2026-11-07T02:00:00+00:00",
+      "baseline_fingerprint": "f808e1caaef7c53268e8bc618262d101"
+    },
+    {
+      "event_id": "e8a3d391-e2e4-4f8c-a954-fcf62d4631c6",
+      "source_key": "virginia_state_parks_cp",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-30-13-46-53-414482-qfm",
+      "title": "Jones - Stewart Mansion Tours",
+      "starts_at": "2026-11-07T17:30:00+00:00",
+      "ends_at": "2026-11-07T20:30:00+00:00",
+      "baseline_fingerprint": "9bd091ff1aa51c0ba0feeb2629ba1d70"
+    },
+    {
+      "event_id": "94e3a242-a9d0-4976-ae8e-750473a2c0f1",
+      "source_key": "virginia_state_parks_cp",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-30-13-46-53-435701-4w5",
+      "title": "Jones - Stewart Mansion Tours",
+      "starts_at": "2026-11-13T17:30:00+00:00",
+      "ends_at": "2026-11-13T20:30:00+00:00",
+      "baseline_fingerprint": "e8c4f034a817786b7e21f55cbc3d4d23"
+    },
+    {
+      "event_id": "44b58c28-bb7e-420e-8bb4-248d3ec2e77b",
+      "source_key": "virginia_state_parks_cp",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-30-13-46-53-457946-h74",
+      "title": "Jones - Stewart Mansion Tours",
+      "starts_at": "2026-11-14T17:30:00+00:00",
+      "ends_at": "2026-11-14T20:30:00+00:00",
+      "baseline_fingerprint": "96c0106f975e3cd5c3e377639232cff2"
+    },
+    {
+      "event_id": "89cee61a-97f1-41b7-9d33-e98d62ae7197",
+      "source_key": "virginia_state_parks_cp",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-30-13-46-53-479232-xyu",
+      "title": "Jones - Stewart Mansion Tours",
+      "starts_at": "2026-11-15T17:30:00+00:00",
+      "ends_at": "2026-11-15T20:30:00+00:00",
+      "baseline_fingerprint": "1a3929697b9fb878554c778d7ca6bd4e"
+    },
+    {
+      "event_id": "837f09e8-088d-4765-96fe-e75499ef04d8",
+      "source_key": "virginia_state_parks_cp",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-30-13-46-53-501048-vmf",
+      "title": "Jones - Stewart Mansion Tours",
+      "starts_at": "2026-11-20T17:30:00+00:00",
+      "ends_at": "2026-11-20T20:30:00+00:00",
+      "baseline_fingerprint": "6bb9f1a9053f8ead80c2f63bca7372f1"
+    },
+    {
+      "event_id": "78b59b90-bec1-4bd2-a897-52a57395010b",
+      "source_key": "virginia_state_parks_cp",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-30-13-46-53-521842-9p7",
+      "title": "Jones - Stewart Mansion Tours",
+      "starts_at": "2026-11-21T17:30:00+00:00",
+      "ends_at": "2026-11-21T20:30:00+00:00",
+      "baseline_fingerprint": "6a197f3d3e83c4795e300e726c3d8f3a"
+    },
+    {
+      "event_id": "a027b8f8-0b35-442e-aed6-f13e70ae4d1d",
+      "source_key": "virginia_state_parks_cp",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-30-13-46-53-542830-jco",
+      "title": "Jones - Stewart Mansion Tours",
+      "starts_at": "2026-11-22T17:30:00+00:00",
+      "ends_at": "2026-11-22T20:30:00+00:00",
+      "baseline_fingerprint": "2df7cbec7c94f072cd539f491939f36b"
+    },
+    {
+      "event_id": "6f0019df-2101-45bd-b8b4-45a0ff75c6b8",
+      "source_key": "virginia_state_parks_cp",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-30-13-46-53-563751-34i",
+      "title": "Jones - Stewart Mansion Tours",
+      "starts_at": "2026-11-27T17:30:00+00:00",
+      "ends_at": "2026-11-27T20:30:00+00:00",
+      "baseline_fingerprint": "2b5d05fb86526fc115de079de4f82694"
+    },
+    {
+      "event_id": "f96c3aeb-f85f-41e0-9398-f15cd21c968d",
+      "source_key": "virginia_state_parks_do",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-05-15-59-50-101426-ubm",
+      "title": "Skulls and Skins",
+      "starts_at": "2026-11-07T18:00:00+00:00",
+      "ends_at": "2026-11-07T19:00:00+00:00",
+      "baseline_fingerprint": "b70db3ec91b44a76648d6443bd255ba7"
+    },
+    {
+      "event_id": "66076723-d9a9-41b3-872e-1724df6f948f",
+      "source_key": "virginia_state_parks_do",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-05-15-58-49-513487-8hn",
+      "title": "CCC Fireside Chats",
+      "starts_at": "2026-11-07T22:00:00+00:00",
+      "ends_at": "2026-11-07T23:00:00+00:00",
+      "baseline_fingerprint": "060c27e96074454c5434273ca2456fb9"
+    },
+    {
+      "event_id": "eb15dd7c-2de6-42d8-ac85-62a1a46f737c",
+      "source_key": "virginia_state_parks_do",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-01-15-18-19-36-328794-ti8",
+      "title": "Monthly Volunteer Workday",
+      "starts_at": "2026-11-14T14:00:00+00:00",
+      "ends_at": "2026-11-14T17:00:00+00:00",
+      "baseline_fingerprint": "9f9188444a20305576f2d69d8912cb63"
+    },
+    {
+      "event_id": "e7ca5185-2467-4abe-9dbb-cd66f946f010",
+      "source_key": "virginia_state_parks_do",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-21-10-21-11-212878-s0a",
+      "title": "Skulls and Skins",
+      "starts_at": "2026-11-14T18:00:00+00:00",
+      "ends_at": "2026-11-14T19:00:00+00:00",
+      "baseline_fingerprint": "5877670e42108ef45ddd61d8c7defdf3"
+    },
+    {
+      "event_id": "e6da959e-9f83-4385-8761-0e0517e5093f",
+      "source_key": "virginia_state_parks_do",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-21-10-21-32-330102-5hn",
+      "title": "CCC Fireside Chats",
+      "starts_at": "2026-11-14T22:00:00+00:00",
+      "ends_at": "2026-11-14T23:00:00+00:00",
+      "baseline_fingerprint": "5f4a4a59782af1981929f72dca447c79"
+    },
+    {
+      "event_id": "6ae1fec3-771b-41ca-9e62-5088d1ad7865",
+      "source_key": "virginia_state_parks_do",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-21-10-21-11-235553-y0w",
+      "title": "Skulls and Skins",
+      "starts_at": "2026-11-21T18:00:00+00:00",
+      "ends_at": "2026-11-21T19:00:00+00:00",
+      "baseline_fingerprint": "908f1004950eaf1293037e68a24453a2"
+    },
+    {
+      "event_id": "1fc241aa-ba31-4f0a-bc8e-a678a405a89c",
+      "source_key": "virginia_state_parks_do",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-21-10-21-32-356632-j8w",
+      "title": "CCC Fireside Chats",
+      "starts_at": "2026-11-21T22:00:00+00:00",
+      "ends_at": "2026-11-21T23:00:00+00:00",
+      "baseline_fingerprint": "c10809d1efbdd439af659ef56d6666c7"
+    },
+    {
+      "event_id": "c0cab082-1174-4244-b5fc-374a8c2fcde7",
+      "source_key": "virginia_state_parks_fc",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-09-11-15-01-38-114089-fps",
+      "title": "False Cape After Dark",
+      "starts_at": "2026-11-05T22:00:00+00:00",
+      "ends_at": "2026-11-06T01:00:00+00:00",
+      "baseline_fingerprint": "7a612447d023d951dc5155b139285a0d"
+    },
+    {
+      "event_id": "9e4c20c5-20ac-448f-a3cb-8134dc079b3f",
+      "source_key": "virginia_state_parks_fc",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-09-11-10-58-01-441931-20o",
+      "title": "Blue Goose Wildlife & History Tram Tour",
+      "starts_at": "2026-11-08T17:00:00+00:00",
+      "ends_at": "2026-11-08T21:00:00+00:00",
+      "baseline_fingerprint": "c7767751a1382533f72f15db3c3c316e"
+    },
+    {
+      "event_id": "4bbd3f12-e462-481c-a307-7979e4197ce1",
+      "source_key": "virginia_state_parks_fc",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-09-11-11-19-49-159359-n6s",
+      "title": "Blue Goose Wildlife & History Tram Tour",
+      "starts_at": "2026-11-15T17:00:00+00:00",
+      "ends_at": "2026-11-15T21:00:00+00:00",
+      "baseline_fingerprint": "36c1e66ee0b3cf5abbea34301b37f809"
+    },
+    {
+      "event_id": "daffafdc-2b4e-45c4-b2b2-da37a05a290c",
+      "source_key": "virginia_state_parks_fc",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-09-11-15-05-25-957897-ews",
+      "title": "False Cape After Dark",
+      "starts_at": "2026-11-21T22:00:00+00:00",
+      "ends_at": "2026-11-22T01:00:00+00:00",
+      "baseline_fingerprint": "6ed707248c2402dac7e909e76f15329b"
+    },
+    {
+      "event_id": "53163268-a32b-428c-a25c-df2a6a90cf47",
+      "source_key": "virginia_state_parks_fc",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-09-11-11-21-40-448342-kzq",
+      "title": "Blue Goose Wildlife & History Tram Tour",
+      "starts_at": "2026-11-22T17:00:00+00:00",
+      "ends_at": "2026-11-22T21:00:00+00:00",
+      "baseline_fingerprint": "ac4b93ae5f80ec7eef872f5368f1d9a3"
+    },
+    {
+      "event_id": "77db1866-1a1c-4b15-adc2-4621269c58e4",
+      "source_key": "virginia_state_parks_fc",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-09-11-15-21-15-267086-us4",
+      "title": "#OptOutside Hike",
+      "starts_at": "2026-11-27T17:00:00+00:00",
+      "ends_at": "2026-11-27T21:00:00+00:00",
+      "baseline_fingerprint": "169546ffe9261139f3b4d76d9dee52af"
+    },
+    {
+      "event_id": "8bd1e661-1fdf-4ff8-b3ff-27762e4deef2",
+      "source_key": "virginia_state_parks_fc",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-27-15-37-53-741269-two",
+      "title": "False Cape Under the Stars",
+      "starts_at": "2026-11-28T22:30:00+00:00",
+      "ends_at": "2026-11-29T01:30:00+00:00",
+      "baseline_fingerprint": "06a2d90f432bb840269b931dda9f8938"
+    },
+    {
+      "event_id": "131e0540-35bf-43cc-a3c6-152b34e90812",
+      "source_key": "virginia_state_parks_fc",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-09-11-11-45-29-215521-71e",
+      "title": "Blue Goose Wildlife & History Tram Tour",
+      "starts_at": "2026-11-29T17:00:00+00:00",
+      "ends_at": "2026-11-29T21:00:00+00:00",
+      "baseline_fingerprint": "72c2276943fe9690a420909a010873ee"
+    },
+    {
+      "event_id": "98a331ec-ea72-4dd8-b093-e065b0e42a0c",
+      "source_key": "virginia_state_parks_fc",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-31-14-24-45-438667-po5",
+      "title": "Holiday Ornament Workshop",
+      "starts_at": "2026-11-29T18:00:00+00:00",
+      "ends_at": "2026-11-29T21:30:00+00:00",
+      "baseline_fingerprint": "70faf7667e4e16abf8397a95cf13fe95"
+    },
+    {
+      "event_id": "7d09c52a-61eb-493e-a3d5-3829aeee8cf5",
+      "source_key": "virginia_state_parks_fc",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-31-15-50-32-599442-f3s",
+      "title": "Blue Goose Wildlife & History Tram Tour",
+      "starts_at": "2026-12-06T17:00:00+00:00",
+      "ends_at": "2026-12-06T21:00:00+00:00",
+      "baseline_fingerprint": "399428fd14e970b79f34cb239a7d9a0f"
+    },
+    {
+      "event_id": "28d120ea-cc67-46f6-ad9d-8d9000493fe7",
+      "source_key": "virginia_state_parks_fl",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-29-15-40-05-777328-7mc",
+      "title": "Feet First into Fall Hike",
+      "starts_at": "2026-11-07T15:00:00+00:00",
+      "ends_at": "2026-11-07T16:00:00+00:00",
+      "baseline_fingerprint": "0d7a265ec721680823f2a2e0f91f1ea8"
+    },
+    {
+      "event_id": "dd93ad0d-76aa-4414-a99a-07d5eb382197",
+      "source_key": "virginia_state_parks_fl",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-30-13-48-00-093377-d0w",
+      "title": "Bay Lab Exploration",
+      "starts_at": "2026-11-07T17:00:00+00:00",
+      "ends_at": "2026-11-07T21:00:00+00:00",
+      "baseline_fingerprint": "dcc14c6b8adc65554f851d8316b03733"
+    },
+    {
+      "event_id": "12e2695e-3351-463b-bacc-affcbda436a7",
+      "source_key": "virginia_state_parks_fl",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-29-15-42-18-981316-ica",
+      "title": "Bayside Crabbing",
+      "starts_at": "2026-11-08T15:00:00+00:00",
+      "ends_at": "2026-11-08T16:00:00+00:00",
+      "baseline_fingerprint": "872e42c849cb7695cdafc997012bd213"
+    },
+    {
+      "event_id": "4f32fdb2-1615-4f91-85a1-ad89bb8b3b9e",
+      "source_key": "virginia_state_parks_fl",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-30-13-48-00-114550-9ez",
+      "title": "Bay Lab Exploration",
+      "starts_at": "2026-11-08T17:00:00+00:00",
+      "ends_at": "2026-11-08T21:00:00+00:00",
+      "baseline_fingerprint": "dd7a8cf8363b4270bb6dba90df40b29d"
+    },
+    {
+      "event_id": "a54df42a-1c91-4c8f-900f-faa9fb665811",
+      "source_key": "virginia_state_parks_fl",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-29-15-43-30-432367-yc2",
+      "title": "Creature Feature",
+      "starts_at": "2026-11-14T15:00:00+00:00",
+      "ends_at": "2026-11-14T16:00:00+00:00",
+      "baseline_fingerprint": "5b5590966a909c063ee3b1e20484b8ae"
+    },
+    {
+      "event_id": "5f0f8fd5-8305-4e3b-8cfe-32c6361280a5",
+      "source_key": "virginia_state_parks_fl",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-30-13-48-00-136265-4cu",
+      "title": "Bay Lab Exploration",
+      "starts_at": "2026-11-14T17:00:00+00:00",
+      "ends_at": "2026-11-14T21:00:00+00:00",
+      "baseline_fingerprint": "6c37ff41356a347e7670f514e75aca20"
+    },
+    {
+      "event_id": "8d1458da-6c40-4a17-a9db-114b08bb23e2",
+      "source_key": "virginia_state_parks_fl",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-29-15-52-51-352345-q2r",
+      "title": "Autumn Art: Leafy Bookmarks",
+      "starts_at": "2026-11-15T14:30:00+00:00",
+      "ends_at": "2026-11-15T16:30:00+00:00",
+      "baseline_fingerprint": "aa78315a0f2079f404243f67784c1a14"
+    },
+    {
+      "event_id": "4f5e9356-ebbb-4874-8a8f-52785d76748d",
+      "source_key": "virginia_state_parks_fl",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-30-13-48-00-158351-s5y",
+      "title": "Bay Lab Exploration",
+      "starts_at": "2026-11-15T17:00:00+00:00",
+      "ends_at": "2026-11-15T21:00:00+00:00",
+      "baseline_fingerprint": "df003fee0c7790334fab0af135efd74f"
+    },
+    {
+      "event_id": "986fc3ea-4916-4674-9187-234156142c31",
+      "source_key": "virginia_state_parks_fl",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-29-15-53-44-211786-9g5",
+      "title": "Trees' Knees",
+      "starts_at": "2026-11-21T14:00:00+00:00",
+      "ends_at": "2026-11-21T16:00:00+00:00",
+      "baseline_fingerprint": "86c74a70f381a722eb9e803588476b20"
+    },
+    {
+      "event_id": "eb0ecf1d-9898-4538-b907-0aa361bb59bc",
+      "source_key": "virginia_state_parks_fl",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-11-01-10-58-10-519248-7cd",
+      "title": "Walk the Beach for Good Reason! Beach Cleanup at FLSP",
+      "starts_at": "2026-11-21T15:00:00+00:00",
+      "ends_at": "2026-11-21T17:00:00+00:00",
+      "baseline_fingerprint": "257e8494f92fc8ca6a903748690c7f48"
+    },
+    {
+      "event_id": "1449401f-2569-4780-9272-7a0d03ef76c9",
+      "source_key": "virginia_state_parks_fs",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-19-14-32-26-098409-ond",
+      "title": "Reading with a Ranger",
+      "starts_at": "2026-11-05T16:00:00+00:00",
+      "ends_at": "2026-11-05T17:00:00+00:00",
+      "baseline_fingerprint": "4d45e5a12035e51c2d6d8450e3e95a5f"
+    },
+    {
+      "event_id": "523d1cef-0568-42dc-b1eb-f84c6166a5c3",
+      "source_key": "virginia_state_parks_fs",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-19-14-18-35-209747-o1p",
+      "title": "All About Owls",
+      "starts_at": "2026-11-06T16:00:00+00:00",
+      "ends_at": "2026-11-06T17:00:00+00:00",
+      "baseline_fingerprint": "77e86d292223149e4facf2e705439ee8"
+    },
+    {
+      "event_id": "27a2b055-c1a2-4732-92ad-9faa33208a19",
+      "source_key": "virginia_state_parks_fs",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-12-15-14-04-574560-uwy",
+      "title": "Fairy Stone Hunt",
+      "starts_at": "2026-11-06T17:00:00+00:00",
+      "ends_at": "2026-11-06T18:00:00+00:00",
+      "baseline_fingerprint": "1933a7dea3c4b0685abeda3ddffc9f70"
+    },
+    {
+      "event_id": "2eec1893-f5ce-4cef-b8f7-70f5905364f6",
+      "source_key": "virginia_state_parks_fs",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-12-15-21-53-359940-hic",
+      "title": "Welcome Campfire",
+      "starts_at": "2026-11-06T23:00:00+00:00",
+      "ends_at": "2026-11-07T00:00:00+00:00",
+      "baseline_fingerprint": "6b858024064377cae55d1e979b6a2424"
+    },
+    {
+      "event_id": "2d03e559-a8e6-4336-a046-831420f93e8c",
+      "source_key": "virginia_state_parks_fs",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-21-10-51-50-079857-rfk",
+      "title": "Fairy Stone Hunt",
+      "starts_at": "2026-11-07T17:00:00+00:00",
+      "ends_at": "2026-11-07T18:00:00+00:00",
+      "baseline_fingerprint": "59c5fc0b35f49255f7dfcdbf745dc1df"
+    },
+    {
+      "event_id": "25aedbf3-efcc-41e1-8fcd-af2c239cdbfc",
+      "source_key": "virginia_state_parks_fs",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-12-15-19-34-705339-qnd",
+      "title": "Fungal Friends",
+      "starts_at": "2026-11-07T19:00:00+00:00",
+      "ends_at": "2026-11-07T20:00:00+00:00",
+      "baseline_fingerprint": "abefda1ed09019ba8ecaebfdacc91c1a"
+    },
+    {
+      "event_id": "e4986e2b-d348-4072-83df-a2562f24c747",
+      "source_key": "virginia_state_parks_fs",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-19-14-20-59-666277-idl",
+      "title": "Animal Architects",
+      "starts_at": "2026-11-08T16:00:00+00:00",
+      "ends_at": "2026-11-08T17:00:00+00:00",
+      "baseline_fingerprint": "db7aee0623ef5c636998aa3f473890c9"
+    },
+    {
+      "event_id": "675e9dfa-359b-482b-8c11-f255168ed646",
+      "source_key": "virginia_state_parks_fs",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-21-10-51-50-103296-0en",
+      "title": "Fairy Stone Hunt",
+      "starts_at": "2026-11-08T17:00:00+00:00",
+      "ends_at": "2026-11-08T18:00:00+00:00",
+      "baseline_fingerprint": "1628a738de198f253ce8fe02113a8093"
+    },
+    {
+      "event_id": "ae0599fd-5a6c-4330-9003-d06313ed8566",
+      "source_key": "virginia_state_parks_fs",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-08-06-17-46-35-346635-ox2",
+      "title": "Friends of Fairy Stone Meeting",
+      "starts_at": "2026-11-08T19:00:00+00:00",
+      "ends_at": "2026-11-08T20:00:00+00:00",
+      "baseline_fingerprint": "c22e226b3b42dca3caf0557e8c66d312"
+    },
+    {
+      "event_id": "58c8ca98-5d52-49d2-a388-9dbe5f4bceec",
+      "source_key": "virginia_state_parks_fs",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-21-10-44-31-426103-ds5",
+      "title": "Reading with a Ranger",
+      "starts_at": "2026-11-12T16:00:00+00:00",
+      "ends_at": "2026-11-12T17:00:00+00:00",
+      "baseline_fingerprint": "eb71e4a7057967ecfc4f91ac40356e48"
+    },
+    {
+      "event_id": "0afcf7a4-87b7-4c2d-a908-015447c4aa7c",
+      "source_key": "virginia_state_parks_ha",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-04-10-25-29-313091-fl6",
+      "title": "Nature Hike",
+      "starts_at": "2026-11-06T19:00:00+00:00",
+      "ends_at": "2026-11-06T20:30:00+00:00",
+      "baseline_fingerprint": "5bde65c819cdfbe6c22ed1bfd92a8974"
+    },
+    {
+      "event_id": "f08f59cb-731d-46c8-9a02-c14f85e131de",
+      "source_key": "virginia_state_parks_ha",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-01-15-57-55-926329-lt1",
+      "title": "Roving Ranger",
+      "starts_at": "2026-11-07T15:00:00+00:00",
+      "ends_at": "2026-11-07T16:00:00+00:00",
+      "baseline_fingerprint": "903debd2d50e203f96517e1355e2abe1"
+    },
+    {
+      "event_id": "2406d177-bad9-4910-9a4c-8a359c362ef3",
+      "source_key": "virginia_state_parks_ha",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-04-15-43-27-096274-pde",
+      "title": "Barking Up the Right Tree: Tree ID Hike",
+      "starts_at": "2026-11-13T19:00:00+00:00",
+      "ends_at": "2026-11-13T20:30:00+00:00",
+      "baseline_fingerprint": "96fc22721dae7cb5b847740f2da99d96"
+    },
+    {
+      "event_id": "3d9427e4-952e-4e62-9c37-4b04c23bf5ff",
+      "source_key": "virginia_state_parks_ha",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-07-09-49-33-598828-wqr",
+      "title": "Totally Turtles!",
+      "starts_at": "2026-11-14T19:00:00+00:00",
+      "ends_at": "2026-11-14T20:00:00+00:00",
+      "baseline_fingerprint": "e36f0063a1ad3b2054bf8072da3f3bda"
+    },
+    {
+      "event_id": "38596b10-5599-4300-ae2d-5628b1a44169",
+      "source_key": "virginia_state_parks_ha",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-08-15-58-42-665197-qoc",
+      "title": "Eagle's Rest Guided Hike",
+      "starts_at": "2026-11-20T19:00:00+00:00",
+      "ends_at": "2026-11-20T20:30:00+00:00",
+      "baseline_fingerprint": "cc33e865f4bd526bc1e577ec6d88ced0"
+    },
+    {
+      "event_id": "7653d186-90cf-443a-b78b-834c9bfdd981",
+      "source_key": "virginia_state_parks_ha",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-14-14-13-39-190057-k1m",
+      "title": "Roving Ranger",
+      "starts_at": "2026-11-21T15:00:00+00:00",
+      "ends_at": "2026-11-21T16:00:00+00:00",
+      "baseline_fingerprint": "c77be11b5713a2fc5801a678a33e204c"
+    },
+    {
+      "event_id": "c0759291-2c10-4189-848b-9cea7ad6e8db",
+      "source_key": "virginia_state_parks_ha",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-08-16-03-21-255378-fr0",
+      "title": "Skins & Skulls",
+      "starts_at": "2026-11-21T19:00:00+00:00",
+      "ends_at": "2026-11-21T21:00:00+00:00",
+      "baseline_fingerprint": "b65cd6f320a058c4f61e767786a745b4"
+    },
+    {
+      "event_id": "5ae6749f-a630-425b-8ca5-29c22e116d98",
+      "source_key": "virginia_state_parks_ha",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-11-10-38-52-470324-kt2",
+      "title": "Black Friday Nature Hike",
+      "starts_at": "2026-11-27T19:00:00+00:00",
+      "ends_at": "2026-11-27T20:30:00+00:00",
+      "baseline_fingerprint": "0b0c20ed8c4be263c83aaff7f2127514"
+    },
+    {
+      "event_id": "fccd809d-c67f-4cfd-a447-5184bd22082d",
+      "source_key": "virginia_state_parks_ha",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-11-10-25-20-131781-b9o",
+      "title": "Survival Bracelets",
+      "starts_at": "2026-11-28T19:00:00+00:00",
+      "ends_at": "2026-11-28T20:00:00+00:00",
+      "baseline_fingerprint": "ecd01088f063533a4b183668245ce90e"
+    },
+    {
+      "event_id": "f67127c0-e332-4473-8e01-4db9fc3d89c5",
+      "source_key": "virginia_state_parks_hb",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-11-13-33-30-236337-9cz",
+      "title": "From Rail to Trail: The History of High Bridge",
+      "starts_at": "2026-11-06T19:00:00+00:00",
+      "ends_at": "2026-11-06T20:00:00+00:00",
+      "baseline_fingerprint": "e6ec93b4e290ae62a25c9f127c37f353"
+    },
+    {
+      "event_id": "f009b2ef-5d9a-43c2-a5e5-93335a2128d9",
+      "source_key": "virginia_state_parks_hb",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-07-17-17-21-27-896078-n4f",
+      "title": "Ride into the Sunset: A Ranger-Guided Bike Tour",
+      "starts_at": "2026-11-07T21:30:00+00:00",
+      "ends_at": "2026-11-07T23:30:00+00:00",
+      "baseline_fingerprint": "9ca4bf5614b4f5eb78d022eb3a78f86f"
+    },
+    {
+      "event_id": "ebd98cb7-72c4-43ca-b3a3-82106573f858",
+      "source_key": "virginia_state_parks_hb",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-13-10-45-24-091772-fxw",
+      "title": "High Bridge Hop On: A Golf Cart Tour",
+      "starts_at": "2026-11-09T16:00:00+00:00",
+      "ends_at": "2026-11-09T19:00:00+00:00",
+      "baseline_fingerprint": "e456be4db607bbff7837f413f49af9ed"
+    },
+    {
+      "event_id": "fbb5f35e-ba25-483c-9cea-046731047877",
+      "source_key": "virginia_state_parks_hb",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-13-10-43-38-526476-rsl",
+      "title": "From Rail to Trail: The History of High Bridge",
+      "starts_at": "2026-11-13T19:00:00+00:00",
+      "ends_at": "2026-11-13T20:00:00+00:00",
+      "baseline_fingerprint": "eac72dcbaaa46d683ccb54341a0e028e"
+    },
+    {
+      "event_id": "5390872f-ebee-47b5-8b2d-e2ce4c082ad7",
+      "source_key": "virginia_state_parks_hb",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-13-10-43-38-551042-xtn",
+      "title": "From Rail to Trail: The History of High Bridge",
+      "starts_at": "2026-11-15T19:00:00+00:00",
+      "ends_at": "2026-11-15T20:00:00+00:00",
+      "baseline_fingerprint": "931590491c20d022f4a3d3a06d1723c9"
+    },
+    {
+      "event_id": "8ac280bf-00c6-4748-9603-fe85f1d8d0f1",
+      "source_key": "virginia_state_parks_hb",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-13-10-45-24-116307-bqa",
+      "title": "High Bridge Hop On: A Golf Cart Tour",
+      "starts_at": "2026-11-16T16:00:00+00:00",
+      "ends_at": "2026-11-16T19:00:00+00:00",
+      "baseline_fingerprint": "7caee8a20ef368e885b24ff9293cdaf5"
+    },
+    {
+      "event_id": "4b4901aa-d0b0-49f3-81de-2146ca75c4fe",
+      "source_key": "virginia_state_parks_hb",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-30-14-20-01-667260-1n0",
+      "title": "Farmville Christmas Tree Lighting",
+      "starts_at": "2026-11-20T22:15:00+00:00",
+      "ends_at": "2026-11-21T00:00:00+00:00",
+      "baseline_fingerprint": "01d06ee9adcb7a52ccd7d988dcfe521c"
+    },
+    {
+      "event_id": "8437673f-f630-417e-9eb1-61b1de0ce218",
+      "source_key": "virginia_state_parks_hb",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2025-11-07-16-16-09-383766-ly4",
+      "title": "Heart of Virginia Community Band presents Christmas Music on the Plaza",
+      "starts_at": "2026-12-05T17:00:00+00:00",
+      "ends_at": "2026-12-05T18:00:00+00:00",
+      "baseline_fingerprint": "0340f020c98b560cbe9d20742601e352"
+    },
+    {
+      "event_id": "e3351c58-7524-41ca-a608-1b544fcae821",
+      "source_key": "virginia_state_parks_hb",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-13-10-45-24-141733-h2x",
+      "title": "High Bridge Hop On: A Golf Cart Tour",
+      "starts_at": "2026-12-07T16:00:00+00:00",
+      "ends_at": "2026-12-07T19:00:00+00:00",
+      "baseline_fingerprint": "45b86cc76bbbeec292fed88f3c2b3dca"
+    },
+    {
+      "event_id": "c470cd74-560f-45e8-8bfc-e78a6910175e",
+      "source_key": "virginia_state_parks_hb",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2025-11-07-16-11-07-719652-yjp",
+      "title": "Geminids Meteor Shower Watch",
+      "starts_at": "2026-12-14T00:30:00+00:00",
+      "ends_at": "2026-12-14T02:30:00+00:00",
+      "baseline_fingerprint": "64a7328e7e8fcd030c276922b04bd6da"
+    },
+    {
+      "event_id": "bd4cfb4a-1f90-469e-adab-fcd9d2dce601",
+      "source_key": "virginia_state_parks_hl",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-09-25-20-57-48-128888-ldf",
+      "title": "Turtle Time",
+      "starts_at": "2026-11-07T19:00:00+00:00",
+      "ends_at": "2026-11-07T20:00:00+00:00",
+      "baseline_fingerprint": "44776f901476443637688132e2b59cd2"
+    },
+    {
+      "event_id": "80742eb0-a2e4-46a2-a2df-08e507f014f6",
+      "source_key": "virginia_state_parks_hl",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-09-24-22-00-24-667964-jfy",
+      "title": "Stargazing",
+      "starts_at": "2026-11-08T01:00:00+00:00",
+      "ends_at": "2026-11-08T02:00:00+00:00",
+      "baseline_fingerprint": "95b174c3185592ad3be23c31dad75f4f"
+    },
+    {
+      "event_id": "77028ac9-b074-430d-971b-c9df64b87472",
+      "source_key": "virginia_state_parks_hl",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-06-09-02-06-423024-1uj",
+      "title": "Turtle Time",
+      "starts_at": "2026-11-14T17:00:00+00:00",
+      "ends_at": "2026-11-14T18:00:00+00:00",
+      "baseline_fingerprint": "cf8e8eeda87fd49a218ce1caf689782f"
+    },
+    {
+      "event_id": "856a3358-4466-4148-ac12-c3e4c88bcd11",
+      "source_key": "virginia_state_parks_hl",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-09-24-22-07-37-261649-zk9",
+      "title": "Bald Eagle Hike",
+      "starts_at": "2026-11-14T19:00:00+00:00",
+      "ends_at": "2026-11-14T21:30:00+00:00",
+      "baseline_fingerprint": "e725e18e9a672973381ebbcbb803bbd2"
+    },
+    {
+      "event_id": "8388da33-c9b0-41c7-9175-9a54557d4b5b",
+      "source_key": "virginia_state_parks_jr",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-20-10-44-39-453394-y2a",
+      "title": "Habitat Hike",
+      "starts_at": "2026-11-07T15:00:00+00:00",
+      "ends_at": "2026-11-07T16:30:00+00:00",
+      "baseline_fingerprint": "2ce44a44ddeb1d8f7f6e5271255cc41a"
+    },
+    {
+      "event_id": "c2101016-b421-40cb-ae07-78f6517821d1",
+      "source_key": "virginia_state_parks_jr",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-20-10-47-56-338733-bmq",
+      "title": "Nature Journaling",
+      "starts_at": "2026-11-07T18:00:00+00:00",
+      "ends_at": "2026-11-07T19:00:00+00:00",
+      "baseline_fingerprint": "054a60c8fd0ab73052265ec3b1253e03"
+    },
+    {
+      "event_id": "143c20c9-cbd6-4ca2-98e6-f2ba3642b810",
+      "source_key": "virginia_state_parks_jr",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-20-10-57-47-158014-m8k",
+      "title": "Whose Track is That?",
+      "starts_at": "2026-11-07T20:00:00+00:00",
+      "ends_at": "2026-11-07T21:00:00+00:00",
+      "baseline_fingerprint": "6d52bc28beb312653492d7840cfc8999"
+    },
+    {
+      "event_id": "aea9b8e7-99c0-4609-96fc-09d574624bc3",
+      "source_key": "virginia_state_parks_jr",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-21-10-13-49-100752-3vq",
+      "title": "Feeding Frenzy",
+      "starts_at": "2026-11-08T15:00:00+00:00",
+      "ends_at": "2026-11-08T16:00:00+00:00",
+      "baseline_fingerprint": "a3a40130755b499f0ee41cf9e1721fa4"
+    },
+    {
+      "event_id": "e7da9493-1ddd-43f1-8633-62b65642a192",
+      "source_key": "virginia_state_parks_jr",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-21-10-13-34-039118-ald",
+      "title": "GPS Treasure Hunt",
+      "starts_at": "2026-11-08T18:00:00+00:00",
+      "ends_at": "2026-11-08T19:30:00+00:00",
+      "baseline_fingerprint": "d45c1c43f4c3522bcb64b9b10f921764"
+    },
+    {
+      "event_id": "25908b56-ad1b-4337-b3de-648adbc19088",
+      "source_key": "virginia_state_parks_jr",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-21-10-13-17-077421-8et",
+      "title": "Pine Needle Basketry",
+      "starts_at": "2026-11-08T20:00:00+00:00",
+      "ends_at": "2026-11-08T21:00:00+00:00",
+      "baseline_fingerprint": "8bdcdc6320d295319d27b0a9bdda5e6c"
+    },
+    {
+      "event_id": "b8d94931-0f81-4917-b2e3-806a99347644",
+      "source_key": "virginia_state_parks_jr",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-02-07-13-47-31-012160-7hy",
+      "title": "Star Party!",
+      "starts_at": "2026-11-13T23:00:00+00:00",
+      "ends_at": "2026-11-14T03:00:00+00:00",
+      "baseline_fingerprint": "f474e3b40df02242731b818e375ee83c"
+    },
+    {
+      "event_id": "a2b39ca0-32cf-4981-a3da-5654fe443eb4",
+      "source_key": "virginia_state_parks_jr",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-21-10-12-33-133671-32h",
+      "title": "History Hike",
+      "starts_at": "2026-11-14T15:00:00+00:00",
+      "ends_at": "2026-11-14T16:30:00+00:00",
+      "baseline_fingerprint": "76cebe17ecc0f560adb64683af038675"
+    },
+    {
+      "event_id": "738fc675-f430-4352-a837-110f8ae71481",
+      "source_key": "virginia_state_parks_jr",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-21-10-12-08-064486-wt5",
+      "title": "Nature Journaling",
+      "starts_at": "2026-11-14T18:00:00+00:00",
+      "ends_at": "2026-11-14T19:00:00+00:00",
+      "baseline_fingerprint": "2064e069409fc2e67e76696664a166a3"
+    },
+    {
+      "event_id": "fc58cec2-bd8e-47c4-93a1-d6e650a128f6",
+      "source_key": "virginia_state_parks_jr",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-21-10-12-20-091536-inh",
+      "title": "Whose Track is That?",
+      "starts_at": "2026-11-14T20:00:00+00:00",
+      "ends_at": "2026-11-14T21:00:00+00:00",
+      "baseline_fingerprint": "f531d4fd6c5d51338d1161f8ed6597b1"
+    },
+    {
+      "event_id": "c1f0322d-3830-44b2-a47d-1430e106edaa",
+      "source_key": "virginia_state_parks_kp",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-28-19-05-58-743522-5d6",
+      "title": "Migration Station",
+      "starts_at": "2026-11-07T17:00:00+00:00",
+      "ends_at": "2026-11-07T19:00:00+00:00",
+      "baseline_fingerprint": "6a6f3f1310e25837dd1d96e3629fa887"
+    },
+    {
+      "event_id": "4f62a353-b67e-465c-860c-27e2071cb5a7",
+      "source_key": "virginia_state_parks_kp",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-28-18-49-02-931747-hcg",
+      "title": "Art in the Park",
+      "starts_at": "2026-11-07T19:30:00+00:00",
+      "ends_at": "2026-11-07T21:30:00+00:00",
+      "baseline_fingerprint": "dc18115144612c2968407e503087daa3"
+    },
+    {
+      "event_id": "2fe2bc2a-9544-4244-a770-aa11be9dddbf",
+      "source_key": "virginia_state_parks_kp",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-30-14-55-54-298510-sib",
+      "title": "Migration Station",
+      "starts_at": "2026-11-14T17:00:00+00:00",
+      "ends_at": "2026-11-14T19:00:00+00:00",
+      "baseline_fingerprint": "a2fe317394f55a36480d536e6a218354"
+    },
+    {
+      "event_id": "3ef6e3ec-aeee-4123-8982-a285ddb72497",
+      "source_key": "virginia_state_parks_kp",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-30-14-55-15-894620-3bh",
+      "title": "Art in the Park",
+      "starts_at": "2026-11-14T19:30:00+00:00",
+      "ends_at": "2026-11-14T21:30:00+00:00",
+      "baseline_fingerprint": "fb89db5d401d8197188aae7b732d52b6"
+    },
+    {
+      "event_id": "f064a8a7-7a39-4d6c-8a0a-0679db82f92e",
+      "source_key": "virginia_state_parks_kp",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-30-14-55-54-319600-sab",
+      "title": "Migration Station",
+      "starts_at": "2026-11-21T17:00:00+00:00",
+      "ends_at": "2026-11-21T19:00:00+00:00",
+      "baseline_fingerprint": "a1447c6ffe772878b4cc41eb5f5c4fd4"
+    },
+    {
+      "event_id": "73447cf3-d7ed-4afb-bd9c-e089ff703a47",
+      "source_key": "virginia_state_parks_kp",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-30-14-55-15-916345-qwu",
+      "title": "Art in the Park",
+      "starts_at": "2026-11-21T19:30:00+00:00",
+      "ends_at": "2026-11-21T21:30:00+00:00",
+      "baseline_fingerprint": "aa4edc9212e96a0985f1c551a7811d4d"
+    },
+    {
+      "event_id": "f321c400-441a-4ffe-8241-a940fd4640ad",
+      "source_key": "virginia_state_parks_kp",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-30-14-55-54-340585-y8f",
+      "title": "Migration Station",
+      "starts_at": "2026-11-28T17:00:00+00:00",
+      "ends_at": "2026-11-28T19:00:00+00:00",
+      "baseline_fingerprint": "a4ddd74ce29be544bd545d2f335b6f70"
+    },
+    {
+      "event_id": "ba119458-842c-4cbe-a5ca-e10701283dcf",
+      "source_key": "virginia_state_parks_kp",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-30-14-55-15-938251-qoz",
+      "title": "Art in the Park",
+      "starts_at": "2026-11-28T19:30:00+00:00",
+      "ends_at": "2026-11-28T21:30:00+00:00",
+      "baseline_fingerprint": "3066acbc4eb0c3e370a5efdc4ef7d5c0"
+    },
+    {
+      "event_id": "5cc35995-b813-452e-b256-1a88a5bb6106",
+      "source_key": "virginia_state_parks_kp",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-29-07-14-34-420442-hc8",
+      "title": "First Day Hike",
+      "starts_at": "2027-01-01T15:00:00+00:00",
+      "ends_at": "2027-01-01T19:00:00+00:00",
+      "baseline_fingerprint": "91e598ab591fab11407cfc8e7725e86b"
+    },
+    {
+      "event_id": "7b0d7504-bc46-4725-95dc-aeeaca5c0626",
+      "source_key": "virginia_state_parks_la",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-15-14-04-43-147980-tr2",
+      "title": "Owl Prowl: Park After Dark",
+      "starts_at": "2026-11-06T23:00:00+00:00",
+      "ends_at": "2026-11-07T01:00:00+00:00",
+      "baseline_fingerprint": "c1cc72694b51e2f6e56a6f0f2c60be24"
+    },
+    {
+      "event_id": "95e15bf6-aa5c-4e1a-9b1b-25d2541a7226",
+      "source_key": "virginia_state_parks_la",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-15-15-36-05-644928-yi9",
+      "title": "B.A.R.K. Ranger Pack Walk",
+      "starts_at": "2026-11-07T15:30:00+00:00",
+      "ends_at": "2026-11-07T16:30:00+00:00",
+      "baseline_fingerprint": "8fc9c499e96297c2aedf1093f128af38"
+    },
+    {
+      "event_id": "3340d1e5-ca5c-47a5-813e-059e43d1af26",
+      "source_key": "virginia_state_parks_la",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-15-15-42-50-052998-8o4",
+      "title": "Reptiles Alive!",
+      "starts_at": "2026-11-07T19:00:00+00:00",
+      "ends_at": "2026-11-07T20:00:00+00:00",
+      "baseline_fingerprint": "5b1c589a289195846a83fb59396cb8cf"
+    },
+    {
+      "event_id": "71424e64-f266-4e57-8000-f9dc23fd5f9f",
+      "source_key": "virginia_state_parks_la",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-19-16-17-50-534424-dvw",
+      "title": "Bird with a Ranger: Adult Program",
+      "starts_at": "2026-11-09T15:00:00+00:00",
+      "ends_at": "2026-11-09T16:00:00+00:00",
+      "baseline_fingerprint": "b3c486989dd5a0fcf843e34dee722500"
+    },
+    {
+      "event_id": "fc3946e2-2c48-4da0-b985-059f89c7d6d2",
+      "source_key": "virginia_state_parks_la",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-20-15-41-44-060763-inh",
+      "title": "Owl Prowl: Park After Dark",
+      "starts_at": "2026-11-13T23:00:00+00:00",
+      "ends_at": "2026-11-14T01:00:00+00:00",
+      "baseline_fingerprint": "60cb60afcdcbf14b8946fdce7ecf290b"
+    },
+    {
+      "event_id": "235a913e-eea5-44cc-a845-5f983f466abc",
+      "source_key": "virginia_state_parks_la",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-20-15-09-36-219709-508",
+      "title": "Reptiles Alive!",
+      "starts_at": "2026-11-14T19:00:00+00:00",
+      "ends_at": "2026-11-14T20:00:00+00:00",
+      "baseline_fingerprint": "a14dea2529cee2df84793c691591507f"
+    },
+    {
+      "event_id": "477925b3-d94c-4ac7-b290-cb665704e5d5",
+      "source_key": "virginia_state_parks_la",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-20-15-34-52-076438-ger",
+      "title": "B.A.R.K. Ranger Pack Walk",
+      "starts_at": "2026-11-15T15:30:00+00:00",
+      "ends_at": "2026-11-15T16:30:00+00:00",
+      "baseline_fingerprint": "5233738ced0b83be61f8906812101e9d"
+    },
+    {
+      "event_id": "56cb8124-72e6-4bc3-ae8a-6c62079ae516",
+      "source_key": "virginia_state_parks_la",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-20-14-54-49-963758-skg",
+      "title": "Bird with a Ranger: Adult Program",
+      "starts_at": "2026-11-16T15:00:00+00:00",
+      "ends_at": "2026-11-16T16:00:00+00:00",
+      "baseline_fingerprint": "e7887c155ab63f28508e72610b9867a7"
+    },
+    {
+      "event_id": "13c4caeb-99e1-4dd6-8578-576662142b8f",
+      "source_key": "virginia_state_parks_la",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-15-16-26-00-687550-t4r",
+      "title": "Self-Guided B.A.R.K. Ranger Adventure",
+      "starts_at": "2026-11-20T15:00:00+00:00",
+      "ends_at": "2026-11-20T21:00:00+00:00",
+      "baseline_fingerprint": "ef053ac8f09875cd1e59d87160db64eb"
+    },
+    {
+      "event_id": "1372f87d-8953-4905-ac97-fd17609d3464",
+      "source_key": "virginia_state_parks_la",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-20-15-09-36-240737-jsz",
+      "title": "Reptiles Alive!",
+      "starts_at": "2026-11-21T19:00:00+00:00",
+      "ends_at": "2026-11-21T20:00:00+00:00",
+      "baseline_fingerprint": "12b1e58edf5e8ff40416fc919058c3b1"
+    },
+    {
+      "event_id": "b5e48e55-b04c-4fb5-9e72-b8160a179ebf",
+      "source_key": "virginia_state_parks_le",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-03-15-41-46-404260-p58",
+      "title": "Homeschool Series",
+      "starts_at": "2026-11-13T15:00:00+00:00",
+      "ends_at": "2026-11-13T16:00:00+00:00",
+      "baseline_fingerprint": "baf722583b1155eabbc99ba3056bc677"
+    },
+    {
+      "event_id": "de6d12eb-9701-4897-a0bb-c3889d0e7b41",
+      "source_key": "virginia_state_parks_le",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-03-15-45-48-251228-keb",
+      "title": "Senior Ranger Series",
+      "starts_at": "2026-11-19T16:00:00+00:00",
+      "ends_at": "2026-11-19T16:45:00+00:00",
+      "baseline_fingerprint": "60b12f7a0520478dfeabf05c234bff9c"
+    },
+    {
+      "event_id": "50e57b4a-cddd-41a2-9a90-a613e00c53df",
+      "source_key": "virginia_state_parks_le",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-30-10-14-47-809340-3db",
+      "title": "Hike into the New Year",
+      "starts_at": "2027-01-01T14:00:00+00:00",
+      "ends_at": "2027-01-01T15:30:00+00:00",
+      "baseline_fingerprint": "710da00b7046ef479914325ef0507cd5"
+    },
+    {
+      "event_id": "a2324c9a-7acc-48fa-bb07-a30de597152d",
+      "source_key": "virginia_state_parks_ma",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-30-11-12-09-737471-69n",
+      "title": "Birding for Beginners",
+      "starts_at": "2026-11-07T15:00:00+00:00",
+      "ends_at": "2026-11-07T16:00:00+00:00",
+      "baseline_fingerprint": "6daef2f8b62b1574ff6880b7cca034c1"
+    },
+    {
+      "event_id": "2249aadd-4abf-40bd-a5b3-3007067e784e",
+      "source_key": "virginia_state_parks_ma",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-29-12-58-22-025220-gu7",
+      "title": "Poisonous and Palatable",
+      "starts_at": "2026-11-07T18:00:00+00:00",
+      "ends_at": "2026-11-07T20:00:00+00:00",
+      "baseline_fingerprint": "38b9ef548b1a6ffa6064bec0aaf214c2"
+    },
+    {
+      "event_id": "56ecbe63-3c7e-4f54-9667-db3d5d5a5172",
+      "source_key": "virginia_state_parks_ma",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-29-08-59-39-482670-iej",
+      "title": "Dugout Canoe Building Demonstration",
+      "starts_at": "2026-11-17T14:00:00+00:00",
+      "ends_at": "2026-11-17T22:00:00+00:00",
+      "baseline_fingerprint": "44213a69f02f02d3f759697acc9056d7"
+    },
+    {
+      "event_id": "0e41d996-8959-4797-bd93-067f3cf910bc",
+      "source_key": "virginia_state_parks_ma",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-30-11-28-07-511696-7lh",
+      "title": "Owl Prowl",
+      "starts_at": "2026-11-20T21:30:00+00:00",
+      "ends_at": "2026-11-20T22:30:00+00:00",
+      "baseline_fingerprint": "9260b9626350cc4f48121acba9673495"
+    },
+    {
+      "event_id": "8f0e837f-1b31-4985-8953-95d332c2881d",
+      "source_key": "virginia_state_parks_ma",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-21-14-38-48-936962-whg",
+      "title": "Timberneck Turkey Trot 5k Run/Walk",
+      "starts_at": "2026-11-21T14:00:00+00:00",
+      "ends_at": "2026-11-21T17:00:00+00:00",
+      "baseline_fingerprint": "179e2e7a7b8f2ad089d2c061adc7869f"
+    },
+    {
+      "event_id": "33685ff7-b62f-496c-a9de-0ac6fc8031df",
+      "source_key": "virginia_state_parks_ma",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-27-14-19-21-474541-h32",
+      "title": "B.A.R.K. Ranger Hike",
+      "starts_at": "2026-11-21T18:00:00+00:00",
+      "ends_at": "2026-11-21T19:00:00+00:00",
+      "baseline_fingerprint": "ee808f32c33c7b4d2553d67aa932ba40"
+    },
+    {
+      "event_id": "625e3664-7047-48c1-abf6-cd3976639e11",
+      "source_key": "virginia_state_parks_ma",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-30-14-31-53-974600-o2u",
+      "title": "Dugout Canoe Building Demonstration",
+      "starts_at": "2026-11-22T14:00:00+00:00",
+      "ends_at": "2026-11-22T22:00:00+00:00",
+      "baseline_fingerprint": "95ccb425e234d9206dfab89712fea152"
+    },
+    {
+      "event_id": "239bde23-efa3-4662-a649-5948a641aada",
+      "source_key": "virginia_state_parks_ma",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-30-14-31-53-995815-tex",
+      "title": "Dugout Canoe Building Demonstration",
+      "starts_at": "2026-11-23T14:00:00+00:00",
+      "ends_at": "2026-11-23T22:00:00+00:00",
+      "baseline_fingerprint": "f4f8d55ec2458ae30aadb21579e9fa9a"
+    },
+    {
+      "event_id": "6e561858-d14d-4d42-a017-11ad35013a05",
+      "source_key": "virginia_state_parks_ma",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-30-13-51-27-380351-hdj",
+      "title": "Poisonous and Palatable",
+      "starts_at": "2026-11-24T18:00:00+00:00",
+      "ends_at": "2026-11-24T20:00:00+00:00",
+      "baseline_fingerprint": "19dfdfa8e40ed7a8113851549487991c"
+    },
+    {
+      "event_id": "ee9d9dc3-2a89-40e8-b890-df4daaf6f928",
+      "source_key": "virginia_state_parks_ma",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-30-13-51-57-016428-gij",
+      "title": "Birding for Beginners",
+      "starts_at": "2026-12-19T15:00:00+00:00",
+      "ends_at": "2026-12-19T16:00:00+00:00",
+      "baseline_fingerprint": "635d5b32cfff4ca4b4a0a3d8d538ee41"
+    },
+    {
+      "event_id": "d69d4b0b-b74b-4d52-b147-68b4ad14f6fe",
+      "source_key": "virginia_state_parks_mn",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-09-21-14-43-26-341637-8s2",
+      "title": "Park Tales: White-Tailed Deer",
+      "starts_at": "2026-11-07T16:30:00+00:00",
+      "ends_at": "2026-11-07T17:15:00+00:00",
+      "baseline_fingerprint": "55c92a5d2fa95f6099509834fc65afe5"
+    },
+    {
+      "event_id": "09494416-0c6d-4a51-834c-8393b2679566",
+      "source_key": "virginia_state_parks_mn",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-09-21-15-20-20-925578-oax",
+      "title": "Winged Highway",
+      "starts_at": "2026-11-07T19:30:00+00:00",
+      "ends_at": "2026-11-07T20:15:00+00:00",
+      "baseline_fingerprint": "b9cef58d23641ae69efdb4b1fc33a012"
+    },
+    {
+      "event_id": "a3214efb-051a-4a41-b5cc-61f33b80b5c7",
+      "source_key": "virginia_state_parks_mn",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-05-11-38-46-732785-n4p",
+      "title": "Eagle Watch",
+      "starts_at": "2026-11-08T19:30:00+00:00",
+      "ends_at": "2026-11-08T20:15:00+00:00",
+      "baseline_fingerprint": "02fed22d5a97a3949e86e3c675997b8f"
+    },
+    {
+      "event_id": "e07cd92e-8f34-491e-a944-94e13b41e7d2",
+      "source_key": "virginia_state_parks_mn",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-01-13-07-36-983648-5pd",
+      "title": "Park Tales: Furs and Skulls",
+      "starts_at": "2026-11-14T19:30:00+00:00",
+      "ends_at": "2026-11-14T20:15:00+00:00",
+      "baseline_fingerprint": "84f9e26e2ff316a6647e5f377efebb30"
+    },
+    {
+      "event_id": "f77db098-3b9a-4335-a8c9-62f58363f5ca",
+      "source_key": "virginia_state_parks_mn",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-10-14-30-52-111633-eiz",
+      "title": "Park Tales: Full Moon",
+      "starts_at": "2026-11-15T16:30:00+00:00",
+      "ends_at": "2026-11-15T17:15:00+00:00",
+      "baseline_fingerprint": "43b0d43691e1fda408b26a8ee6de134a"
+    },
+    {
+      "event_id": "92d458a5-b35d-4ef6-bfd2-027e9334f72a",
+      "source_key": "virginia_state_parks_mn",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-01-12-56-23-173990-z7y",
+      "title": "Eagle Watch",
+      "starts_at": "2026-11-15T19:30:00+00:00",
+      "ends_at": "2026-11-15T20:15:00+00:00",
+      "baseline_fingerprint": "5cfab0348860dbe521971f85b6d6af99"
+    },
+    {
+      "event_id": "03554052-cd02-4304-b4e5-54f6bd835b71",
+      "source_key": "virginia_state_parks_mn",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-01-13-06-44-334777-zry",
+      "title": "Park Tales: Animal Hibernation",
+      "starts_at": "2026-11-21T19:30:00+00:00",
+      "ends_at": "2026-11-21T20:15:00+00:00",
+      "baseline_fingerprint": "f853334c92b5759cb195232df44dae1f"
+    },
+    {
+      "event_id": "d114c9f7-de9c-4e68-b13d-615664da174e",
+      "source_key": "virginia_state_parks_mn",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-01-13-04-42-563154-coa",
+      "title": "Park Tales: Tree Cookies",
+      "starts_at": "2026-11-28T16:30:00+00:00",
+      "ends_at": "2026-11-28T17:15:00+00:00",
+      "baseline_fingerprint": "e629b2c5930f935c23b98c4c9131e02d"
+    },
+    {
+      "event_id": "cae01b26-e8fb-4d24-b931-b2a463cb0ae2",
+      "source_key": "virginia_state_parks_nb",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-07-29-10-17-44-391167-rdu",
+      "title": "Shooting Stars: Astrophotography Under the Natural Bridge",
+      "starts_at": "2026-11-06T22:00:00+00:00",
+      "ends_at": "2026-11-07T00:00:00+00:00",
+      "baseline_fingerprint": "08b6c9db31bb82d9e7523563c79af87d"
+    },
+    {
+      "event_id": "a0bd335c-0bd8-4891-9e61-35efe0e08c90",
+      "source_key": "virginia_state_parks_nb",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-29-11-23-23-287887-qd6",
+      "title": "2026 Festival of Trees",
+      "starts_at": "2026-11-13T15:00:00+00:00",
+      "ends_at": "2026-12-31T22:00:00+00:00",
+      "baseline_fingerprint": "739d499af4be0a4518c4e2ebd64f8cfe"
+    },
+    {
+      "event_id": "6d14a7e4-bc3b-49b3-8237-a4ea6acca4fc",
+      "source_key": "virginia_state_parks_nb",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-01-30-12-09-22-080403-jw7",
+      "title": "Dark Sky Night: Mountain Moonrise",
+      "starts_at": "2026-11-22T00:00:00+00:00",
+      "ends_at": "2026-11-22T02:00:00+00:00",
+      "baseline_fingerprint": "3f27372a40aa70fb46a1fda2e2dd77c5"
+    },
+    {
+      "event_id": "211a5f6b-a427-455c-80c6-b037b005d0a0",
+      "source_key": "virginia_state_parks_nb",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-22-08-52-29-477391-awm",
+      "title": "Falling for Birds",
+      "starts_at": "2026-11-28T14:00:00+00:00",
+      "ends_at": "2026-11-28T15:30:00+00:00",
+      "baseline_fingerprint": "5b8222221c1532630b4e757d80cb6fe9"
+    },
+    {
+      "event_id": "49fd5c19-2faa-4de3-944e-402f491a4493",
+      "source_key": "virginia_state_parks_nb",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-22-15-02-14-809643-tos",
+      "title": "Happy Campers Holiday Memories at Natural Bridge Mini Photo Session",
+      "starts_at": "2026-12-05T15:00:00+00:00",
+      "ends_at": "2026-12-05T21:00:00+00:00",
+      "baseline_fingerprint": "08817f7a482c66bbf6b187b22cc3c3d8"
+    },
+    {
+      "event_id": "7fb4219c-19b4-477f-8ccd-fa7419f9c558",
+      "source_key": "virginia_state_parks_nb",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-22-15-06-08-653124-9sz",
+      "title": "The Timeless Toy Shop Memories at Natural Bridge Mini Photo Session",
+      "starts_at": "2026-12-06T15:00:00+00:00",
+      "ends_at": "2026-12-06T21:00:00+00:00",
+      "baseline_fingerprint": "9868fd3bca41eef195b977c142f03ba7"
+    },
+    {
+      "event_id": "fa1bbbdc-1dee-40cb-9a64-7cb9fb196e35",
+      "source_key": "virginia_state_parks_nb",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-01-30-12-12-38-629234-o69",
+      "title": "Dark Sky Night: Geminids Meteor Shower Watch",
+      "starts_at": "2026-12-11T00:00:00+00:00",
+      "ends_at": "2026-12-11T02:00:00+00:00",
+      "baseline_fingerprint": "45f87b12afe92fc71285cf099e40b30b"
+    },
+    {
+      "event_id": "60b13fa0-737f-4373-892c-4f47f3183c13",
+      "source_key": "virginia_state_parks_nb",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-01-30-14-04-13-705669-5z1",
+      "title": "2026 Luminary Nights at Natural Bridge State Park",
+      "starts_at": "2026-12-11T22:00:00+00:00",
+      "ends_at": "2026-12-12T02:00:00+00:00",
+      "baseline_fingerprint": "9938ea40195b3a61a0b166e3f8f26f40"
+    },
+    {
+      "event_id": "35ff3343-8265-47fa-878a-f193772901d5",
+      "source_key": "virginia_state_parks_nb",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-05-08-18-56-06-744460-5ad",
+      "title": "2026 Luminary Nights at Natural Bridge State Park",
+      "starts_at": "2026-12-12T22:00:00+00:00",
+      "ends_at": "2026-12-13T02:00:00+00:00",
+      "baseline_fingerprint": "c2c5e07a6b1bc70bfb41eb8227af33df"
+    },
+    {
+      "event_id": "a9846b99-702c-4986-9d01-658efa053420",
+      "source_key": "virginia_state_parks_nb",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-05-08-18-56-06-766807-qry",
+      "title": "2026 Luminary Nights at Natural Bridge State Park",
+      "starts_at": "2026-12-13T22:00:00+00:00",
+      "ends_at": "2026-12-14T02:00:00+00:00",
+      "baseline_fingerprint": "0fafaf6a1a571b03a7f2250dba85db3a"
+    },
+    {
+      "event_id": "ccc8a9dc-2be4-4687-a357-2c73598eda65",
+      "source_key": "virginia_state_parks_oc",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-17-16-00-48-597528-s8b",
+      "title": "Plantation Discovery Hike",
+      "starts_at": "2026-11-07T16:00:00+00:00",
+      "ends_at": "2026-11-07T17:30:00+00:00",
+      "baseline_fingerprint": "ddfdd46a1ea5d9ef7cd3160d0c5b6fc7"
+    },
+    {
+      "event_id": "4a43b08b-761a-4d12-b3ac-fa445804e1b9",
+      "source_key": "virginia_state_parks_oc",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-17-16-01-14-589649-321",
+      "title": "Fantastic Furs",
+      "starts_at": "2026-11-07T19:00:00+00:00",
+      "ends_at": "2026-11-07T20:00:00+00:00",
+      "baseline_fingerprint": "df068857cb555b112d05b0df205b60e0"
+    },
+    {
+      "event_id": "941d764c-ec83-40f0-acc2-4ddb8cfcf3ce",
+      "source_key": "virginia_state_parks_oc",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-08-08-16-34-29-608212-vyi",
+      "title": "Turkey Trot 5K",
+      "starts_at": "2026-11-14T15:00:00+00:00",
+      "ends_at": "2026-11-14T17:30:00+00:00",
+      "baseline_fingerprint": "47d031e37b24ecb417e2363ce245691e"
+    },
+    {
+      "event_id": "989159e2-7011-4835-8b21-61df9f6e96b6",
+      "source_key": "virginia_state_parks_oc",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-22-15-04-00-364182-cmx",
+      "title": "Archery and Disc Golf Contest",
+      "starts_at": "2026-11-14T18:30:00+00:00",
+      "ends_at": "2026-11-14T20:00:00+00:00",
+      "baseline_fingerprint": "f5df140705a5e9c771c9dc4df5a7243f"
+    },
+    {
+      "event_id": "1f266d0f-cdc2-41e5-93d6-7fdfa17dcad4",
+      "source_key": "virginia_state_parks_oc",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-21-10-44-02-561449-03v",
+      "title": "Plantation Discovery Hike",
+      "starts_at": "2026-11-21T16:00:00+00:00",
+      "ends_at": "2026-11-21T17:30:00+00:00",
+      "baseline_fingerprint": "1275a00c93762c5243fa8bba1b3bbd95"
+    },
+    {
+      "event_id": "860b263f-c8fc-40af-9240-8e78dc24b71e",
+      "source_key": "virginia_state_parks_oc",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-21-10-43-49-423116-tmx",
+      "title": "Fantastic Furs",
+      "starts_at": "2026-11-21T19:00:00+00:00",
+      "ends_at": "2026-11-21T20:00:00+00:00",
+      "baseline_fingerprint": "80c330679d08010b8f55c103753f11ee"
+    },
+    {
+      "event_id": "c1062c3d-f002-4791-b742-da62979c54e3",
+      "source_key": "virginia_state_parks_oc",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-21-10-44-02-584229-ucw",
+      "title": "Plantation Discovery Hike",
+      "starts_at": "2026-11-28T16:00:00+00:00",
+      "ends_at": "2026-11-28T17:30:00+00:00",
+      "baseline_fingerprint": "2d0c360ae054ecc8efe5661d461a4045"
+    },
+    {
+      "event_id": "a4ac21d5-c0a2-4a0a-98e5-7a3762ca6cfb",
+      "source_key": "virginia_state_parks_oc",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-31-13-54-17-713870-g0t",
+      "title": "Tutelo Trail First Day Hike",
+      "starts_at": "2027-01-01T15:00:00+00:00",
+      "ends_at": "2027-01-01T17:00:00+00:00",
+      "baseline_fingerprint": "2054f14585dfcceb649fcfeab6303e31"
+    },
+    {
+      "event_id": "c91de0f4-98f5-415e-b812-f70a8d356c5f",
+      "source_key": "virginia_state_parks_oc",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-11-02-07-41-23-538641-2tm",
+      "title": "Tutelo Trail First Day Hike",
+      "starts_at": "2027-01-01T19:00:00+00:00",
+      "ends_at": "2027-01-01T21:00:00+00:00",
+      "baseline_fingerprint": "d34a511241798a9003d82eccafa790f4"
+    },
+    {
+      "event_id": "85bc5eb8-2595-4b49-9b7e-285e4c788d15",
+      "source_key": "virginia_state_parks_po",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-19-15-41-54-898172-v5w",
+      "title": "Caterpillar Club",
+      "starts_at": "2026-11-05T15:00:00+00:00",
+      "ends_at": "2026-11-05T16:00:00+00:00",
+      "baseline_fingerprint": "428571924430ce90571a037f6d3b019d"
+    },
+    {
+      "event_id": "c360dfda-cb78-46ae-8ba5-341f3295fc24",
+      "source_key": "virginia_state_parks_po",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-16-10-00-49-617039-atq",
+      "title": "CCC Scavenger Hunt",
+      "starts_at": "2026-11-07T15:00:00+00:00",
+      "ends_at": "2026-11-07T16:00:00+00:00",
+      "baseline_fingerprint": "6705844d0250696d86b82f3ca8fae906"
+    },
+    {
+      "event_id": "05460b17-6fef-4fa0-b74e-1b5c50f55b04",
+      "source_key": "virginia_state_parks_po",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-19-15-19-02-353739-8p7",
+      "title": "Big Poplar Hike",
+      "starts_at": "2026-11-07T17:00:00+00:00",
+      "ends_at": "2026-11-07T18:00:00+00:00",
+      "baseline_fingerprint": "9d4446a403dfb4e14825f74cbc366a04"
+    },
+    {
+      "event_id": "992e18c1-7c0b-4e11-bc56-0077663479f1",
+      "source_key": "virginia_state_parks_po",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-16-10-05-43-649800-oyl",
+      "title": "B.A.R.K. Ranger Hike",
+      "starts_at": "2026-11-07T19:00:00+00:00",
+      "ends_at": "2026-11-07T20:00:00+00:00",
+      "baseline_fingerprint": "0487dd06b6ac94c86620d5e94515b1e1"
+    },
+    {
+      "event_id": "ebeddbbe-cc10-4bea-a74a-733739cde977",
+      "source_key": "virginia_state_parks_po",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-16-23-11-47-981008-k9j",
+      "title": "Trail Tales",
+      "starts_at": "2026-11-08T15:00:00+00:00",
+      "ends_at": "2026-11-08T20:30:00+00:00",
+      "baseline_fingerprint": "f812d1fb322f78e9b943a093957f9717"
+    },
+    {
+      "event_id": "7f645159-10d1-43dc-b362-61fe220fa341",
+      "source_key": "virginia_state_parks_po",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-26-11-05-27-880868-t7u",
+      "title": "Caterpillar Club",
+      "starts_at": "2026-11-12T15:00:00+00:00",
+      "ends_at": "2026-11-12T16:00:00+00:00",
+      "baseline_fingerprint": "3a50846010f0ca814c8df6c9868a0a06"
+    },
+    {
+      "event_id": "ccf18009-a4e4-435a-917a-a2a9fc20c83e",
+      "source_key": "virginia_state_parks_po",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-19-15-11-44-410805-9sx",
+      "title": "Nature Theater",
+      "starts_at": "2026-11-14T15:00:00+00:00",
+      "ends_at": "2026-11-14T16:00:00+00:00",
+      "baseline_fingerprint": "6c1634476fdc5439d3948f17c76703fd"
+    },
+    {
+      "event_id": "88238b1a-01fe-4a4d-b136-0d11dfee68c2",
+      "source_key": "virginia_state_parks_po",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-19-14-15-19-351608-j91",
+      "title": "Squirrelin' Around",
+      "starts_at": "2026-11-14T17:00:00+00:00",
+      "ends_at": "2026-11-14T18:00:00+00:00",
+      "baseline_fingerprint": "36f25d26c2397e79e0ab9476e7ba94cf"
+    },
+    {
+      "event_id": "1e019508-2ce0-4142-821e-defbfcb857b0",
+      "source_key": "virginia_state_parks_po",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-19-14-51-28-690902-vl1",
+      "title": "Stick With It",
+      "starts_at": "2026-11-14T19:00:00+00:00",
+      "ends_at": "2026-11-14T20:00:00+00:00",
+      "baseline_fingerprint": "249093779518f705c64ef0460174e2be"
+    },
+    {
+      "event_id": "089e8115-34ff-4bba-8cfe-b13682633a39",
+      "source_key": "virginia_state_parks_po",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-16-23-11-48-003874-4fa",
+      "title": "Trail Tales",
+      "starts_at": "2026-11-15T15:00:00+00:00",
+      "ends_at": "2026-11-15T20:30:00+00:00",
+      "baseline_fingerprint": "0696dccc2669a2ddfa59d0f27f6bd13a"
+    },
+    {
+      "event_id": "134afbcd-50cf-4c54-923d-4393a742e916",
+      "source_key": "virginia_state_parks_pw",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-06-15-30-00-576863-p7a",
+      "title": "Time Travel to the Cemetery",
+      "starts_at": "2026-11-07T15:00:00+00:00",
+      "ends_at": "2026-11-07T16:30:00+00:00",
+      "baseline_fingerprint": "f0ea51541791727004d67599431aa960"
+    },
+    {
+      "event_id": "e935d1ef-98aa-40bd-80d9-e1d53b74edb6",
+      "source_key": "virginia_state_parks_pw",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-04-08-54-07-641853-ax2",
+      "title": "Bushcraft Workshop: Coal Burned Spoons",
+      "starts_at": "2026-11-08T18:00:00+00:00",
+      "ends_at": "2026-11-08T20:00:00+00:00",
+      "baseline_fingerprint": "47e2aa9dc9f795378e7cfa38722a841e"
+    },
+    {
+      "event_id": "606492ab-9a13-40d6-bd34-9833b9f3f6f5",
+      "source_key": "virginia_state_parks_pw",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-06-09-05-26-530547-jhd",
+      "title": "Bushcraft Workshop: Coal Burned Spoons",
+      "starts_at": "2026-11-14T15:00:00+00:00",
+      "ends_at": "2026-11-14T17:00:00+00:00",
+      "baseline_fingerprint": "db4e41eeb84e60b1ddc03bb72cbde605"
+    },
+    {
+      "event_id": "17dafd8c-d6db-4051-912d-f08d83666975",
+      "source_key": "virginia_state_parks_pw",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-06-15-38-02-285752-fjn",
+      "title": "Fall Foraging",
+      "starts_at": "2026-11-14T18:00:00+00:00",
+      "ends_at": "2026-11-14T19:30:00+00:00",
+      "baseline_fingerprint": "112722ccdfbcd169a8529e58e2f95894"
+    },
+    {
+      "event_id": "b9110b05-2a1b-4348-a901-6a29c9581abd",
+      "source_key": "virginia_state_parks_pw",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-06-15-42-51-842166-uxo",
+      "title": "Fall into Birding",
+      "starts_at": "2026-11-15T15:00:00+00:00",
+      "ends_at": "2026-11-15T16:30:00+00:00",
+      "baseline_fingerprint": "5f55f613caae9ed23b08804351b5c7a5"
+    },
+    {
+      "event_id": "38721692-dd02-4d5e-a690-ec88d5fbb377",
+      "source_key": "virginia_state_parks_pw",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-03-06-36-29-333239-2ga",
+      "title": "Friends of Powhatan State Park Virtual Meeting",
+      "starts_at": "2026-11-17T23:00:00+00:00",
+      "ends_at": "2026-11-18T00:00:00+00:00",
+      "baseline_fingerprint": "b9b2144f7925cec524a89baca234447a"
+    },
+    {
+      "event_id": "8d23cb0f-1e14-4cd8-be3f-d78fc8612fac",
+      "source_key": "virginia_state_parks_pw",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-05-01-17-28-19-065698-amf",
+      "title": "Friends of Powhatan State Park Meeting",
+      "starts_at": "2026-11-18T00:00:00+00:00",
+      "ends_at": "2026-11-18T01:00:00+00:00",
+      "baseline_fingerprint": "9664dd263718288ff1dfbc48ca9b9fab"
+    },
+    {
+      "event_id": "b8254e4c-d463-40e8-a2c6-0e102bdc2f24",
+      "source_key": "virginia_state_parks_pw",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-06-15-45-41-463797-lmd",
+      "title": "Meadow Walk & Seed Collection",
+      "starts_at": "2026-11-21T15:00:00+00:00",
+      "ends_at": "2026-11-21T16:00:00+00:00",
+      "baseline_fingerprint": "10f11f9b6ea0347b3aaf1b3edf7c1368"
+    },
+    {
+      "event_id": "8fb1c22a-b967-4ff2-80de-38a06b3f1f5a",
+      "source_key": "virginia_state_parks_pw",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-06-15-56-18-463597-gyr",
+      "title": "Nature Journaling: Botanical Inks",
+      "starts_at": "2026-11-21T18:00:00+00:00",
+      "ends_at": "2026-11-21T20:00:00+00:00",
+      "baseline_fingerprint": "310c843c114856599af0f7d58251dd47"
+    },
+    {
+      "event_id": "a8638002-37d7-4a9b-a727-254b520e3139",
+      "source_key": "virginia_state_parks_pw",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-02-16-14-39-07-394579-bmv",
+      "title": "Ranger-Led Hike",
+      "starts_at": "2026-11-28T15:00:00+00:00",
+      "ends_at": "2026-11-28T17:00:00+00:00",
+      "baseline_fingerprint": "bb778f1f28bfd850977f624e56e60cf9"
+    },
+    {
+      "event_id": "09656539-73a7-4a92-a71c-10bcc1c7ce3a",
+      "source_key": "virginia_state_parks_sb",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-25-11-36-12-818953-0jy",
+      "title": "Walk the Battlefield",
+      "starts_at": "2026-11-11T16:00:00+00:00",
+      "ends_at": "2026-11-11T17:00:00+00:00",
+      "baseline_fingerprint": "9e18a9dcd1ba7fce62e42352cf7646f9"
+    },
+    {
+      "event_id": "6c7f1910-115b-4328-98f6-6d102625b45b",
+      "source_key": "virginia_state_parks_sb",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-21-15-19-15-707446-pab",
+      "title": "Fall Scavenger Hunt",
+      "starts_at": "2026-11-14T19:00:00+00:00",
+      "ends_at": "2026-11-14T20:00:00+00:00",
+      "baseline_fingerprint": "74b7d77245a8f79f69f31d6a3556ff04"
+    },
+    {
+      "event_id": "a66a8c95-3285-4dd3-a9fd-c056f1f8f117",
+      "source_key": "virginia_state_parks_sb",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-21-15-21-52-525167-rt1",
+      "title": "Hardtack & Coffee",
+      "starts_at": "2026-11-21T16:00:00+00:00",
+      "ends_at": "2026-11-21T17:00:00+00:00",
+      "baseline_fingerprint": "e231c9e46c968588bc509a7a01762bb2"
+    },
+    {
+      "event_id": "bc763969-4b70-4d1f-bd0d-b7c962ccc7a2",
+      "source_key": "virginia_state_parks_sb",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-26-14-00-10-767109-me5",
+      "title": "Hardtack & Coffee",
+      "starts_at": "2026-11-22T16:00:00+00:00",
+      "ends_at": "2026-11-22T17:00:00+00:00",
+      "baseline_fingerprint": "d5c50a52b4ad923b941adf084d8730d8"
+    },
+    {
+      "event_id": "dcf905fd-3f9d-4ad4-942f-e858aadc2aa3",
+      "source_key": "virginia_state_parks_sb",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-21-15-15-45-611984-n4h",
+      "title": "Gobble Gobble",
+      "starts_at": "2026-11-22T19:00:00+00:00",
+      "ends_at": "2026-11-22T19:45:00+00:00",
+      "baseline_fingerprint": "3ba3c8116b22be0ee3a9ba0ac629b719"
+    },
+    {
+      "event_id": "70715fbc-b147-4626-a958-3b2791735cd0",
+      "source_key": "virginia_state_parks_sb",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-24-15-30-13-419098-rgz",
+      "title": "Lighting of the Bridge",
+      "starts_at": "2026-12-11T22:30:00+00:00",
+      "ends_at": "2026-12-12T01:00:00+00:00",
+      "baseline_fingerprint": "04c51ed50dff0579ff9511c3941645cd"
+    },
+    {
+      "event_id": "19810bb3-e248-463f-aa63-32eeec4f7ae7",
+      "source_key": "virginia_state_parks_sb",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-11-02-16-13-54-331381-wj9",
+      "title": "Lighting of the Bridge",
+      "starts_at": "2026-12-12T22:30:00+00:00",
+      "ends_at": "2026-12-13T01:00:00+00:00",
+      "baseline_fingerprint": "517efde59aff8cdfd7513423b9ff809f"
+    },
+    {
+      "event_id": "69015368-8492-4c41-91e7-ff8ba16b8648",
+      "source_key": "virginia_state_parks_sb",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-11-02-16-13-54-352244-wpk",
+      "title": "Lighting of the Bridge",
+      "starts_at": "2026-12-13T22:30:00+00:00",
+      "ends_at": "2026-12-14T01:00:00+00:00",
+      "baseline_fingerprint": "6f8c655e3cf6e6451f66d413e5784b55"
+    },
+    {
+      "event_id": "349d1722-59c3-48e6-9a75-a67a787e8ef9",
+      "source_key": "virginia_state_parks_sb",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-28-14-36-16-545565-shx",
+      "title": "Hike Around the Park",
+      "starts_at": "2027-01-01T18:00:00+00:00",
+      "ends_at": "2027-01-01T19:00:00+00:00",
+      "baseline_fingerprint": "7549d1854090cc0042405c94f8d51c70"
+    },
+    {
+      "event_id": "c7cc7cb1-9d56-4598-a3be-4ed7191c21e1",
+      "source_key": "virginia_state_parks_sc",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-08-21-14-32-32-423461-34a",
+      "title": "Tenting Tonight on the Old Campground: 19th Virginia Infantry Living History",
+      "starts_at": "2026-11-07T14:00:00+00:00",
+      "ends_at": "2026-11-07T21:00:00+00:00",
+      "baseline_fingerprint": "5a4039f3a4a2d1f460f653d61077dfdc"
+    },
+    {
+      "event_id": "b61eb77b-0136-499a-84fe-c5a6408c0ee8",
+      "source_key": "virginia_state_parks_sc",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-09-04-19-02-51-598177-n28",
+      "title": "Tenting Tonight on the Old Campground: 19th Virginia Infantry Living History",
+      "starts_at": "2026-11-08T14:00:00+00:00",
+      "ends_at": "2026-11-08T18:00:00+00:00",
+      "baseline_fingerprint": "e6de187a27a378a02c1d4a48787731b8"
+    },
+    {
+      "event_id": "3e9765ed-6aa6-4bd0-a66b-dd09659d438c",
+      "source_key": "virginia_state_parks_sc",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2025-07-21-11-56-10-842223-bvf",
+      "title": "18th Annual Veterans Day Luminary",
+      "starts_at": "2026-11-14T22:30:00+00:00",
+      "ends_at": "2026-11-15T01:00:00+00:00",
+      "baseline_fingerprint": "21f1a84a7533ab07e2b69c4e179b9ba5"
+    },
+    {
+      "event_id": "1242142b-634f-449c-8aca-c60e251860b0",
+      "source_key": "virginia_state_parks_sc",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2023-06-22-14-25-38-544335-jei",
+      "title": "Friends of Sailor's Creek Battlefield Meeting",
+      "starts_at": "2026-11-16T18:30:00+00:00",
+      "ends_at": "2026-11-16T20:00:00+00:00",
+      "baseline_fingerprint": "4711776fcc9d6f2dcb70d126a65586b3"
+    },
+    {
+      "event_id": "e473f913-3904-4f6b-ad30-2240cf9f525f",
+      "source_key": "virginia_state_parks_sc",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-06-28-15-57-44-923980-4qk",
+      "title": "The Soldier Who Raised Goldfish: The Remarkable Life of Hugo Mulertt",
+      "starts_at": "2026-11-21T18:00:00+00:00",
+      "ends_at": "2026-11-21T19:00:00+00:00",
+      "baseline_fingerprint": "a8cdb91f054d306d1c1d53dfdc4fa17c"
+    },
+    {
+      "event_id": "9df448fa-066b-48fa-b36b-6a98b3e80aee",
+      "source_key": "virginia_state_parks_sc",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-06-30-16-22-24-708803-x0f",
+      "title": "The Soldier Who Raised Goldfish: The Remarkable Life of Hugo Mulertt",
+      "starts_at": "2026-11-22T18:00:00+00:00",
+      "ends_at": "2026-11-22T19:00:00+00:00",
+      "baseline_fingerprint": "80b92d7da293435caa84150198d926e3"
+    },
+    {
+      "event_id": "4d58c4df-b28d-4ffb-b917-57e9584d12f1",
+      "source_key": "virginia_state_parks_sc",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-05-15-15-43-40-283567-vsc",
+      "title": "Ride Along with Custer on the Final Ten Days of the Civil War",
+      "starts_at": "2026-11-28T18:00:00+00:00",
+      "ends_at": "2026-11-28T19:00:00+00:00",
+      "baseline_fingerprint": "1d34c609365008cc5d4abe1003615ac7"
+    },
+    {
+      "event_id": "28d94b10-365e-4346-b1f9-96c0eb18fbf6",
+      "source_key": "virginia_state_parks_sc",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-09-20-09-49-35-222826-jsd",
+      "title": "Antebellum St. Nicholas",
+      "starts_at": "2026-12-05T15:00:00+00:00",
+      "ends_at": "2026-12-05T19:00:00+00:00",
+      "baseline_fingerprint": "3bac887361a2862a61fd5179d22c441c"
+    },
+    {
+      "event_id": "4d14485b-bd92-4da5-aaa2-ad92013bea9a",
+      "source_key": "virginia_state_parks_sc",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-08-29-12-00-15-362075-wqy",
+      "title": "The Science Behind the Star of Bethlehem",
+      "starts_at": "2026-12-20T00:00:00+00:00",
+      "ends_at": "2026-12-20T02:30:00+00:00",
+      "baseline_fingerprint": "c2932a7d42a1f5e5a1c81167c0d226d4"
+    },
+    {
+      "event_id": "8084bae5-d853-4b6d-99d9-b9f51312eb25",
+      "source_key": "virginia_state_parks_se",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-06-11-02-35-853241-jug",
+      "title": "Bull's Eye Behind the Barn",
+      "starts_at": "2026-11-14T18:00:00+00:00",
+      "ends_at": "2026-11-14T20:00:00+00:00",
+      "baseline_fingerprint": "3b6d93a20c451e445b6255f08914dd29"
+    },
+    {
+      "event_id": "40d118bf-b0b5-4fb4-a8a6-5368e9bbb154",
+      "source_key": "virginia_state_parks_se",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-23-16-33-59-483042-6ab",
+      "title": "Autumn Adventure : Birds & Feeders",
+      "starts_at": "2026-11-21T15:00:00+00:00",
+      "ends_at": "2026-11-21T20:00:00+00:00",
+      "baseline_fingerprint": "5ea6fd5fe51a95057f4a32e67cf282f0"
+    },
+    {
+      "event_id": "1e82f530-838f-4eff-83b1-941f8f057aef",
+      "source_key": "virginia_state_parks_se",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-30-10-48-01-657986-ewt",
+      "title": "First Day HIke - Easy",
+      "starts_at": "2027-01-01T14:00:00+00:00",
+      "ends_at": "2027-01-01T15:30:00+00:00",
+      "baseline_fingerprint": "6a362e9272fed0230d55dae1637ce17f"
+    },
+    {
+      "event_id": "ee2eb819-28c6-4df4-a63b-0069e0cbb26a",
+      "source_key": "virginia_state_parks_sh",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-05-10-02-39-382196-u2q",
+      "title": "The Super Snazzy Snake Session",
+      "starts_at": "2026-11-07T15:00:00+00:00",
+      "ends_at": "2026-11-07T15:45:00+00:00",
+      "baseline_fingerprint": "44159da3a98d89e01ee51961580a81d0"
+    },
+    {
+      "event_id": "fbf1b5cc-fa8c-43cd-860b-88810e7fcbba",
+      "source_key": "virginia_state_parks_sh",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-05-09-35-30-634857-5c8",
+      "title": "Fall-ing Temperatures: Fur, Foraging, and Fun!",
+      "starts_at": "2026-11-07T16:00:00+00:00",
+      "ends_at": "2026-11-07T17:00:00+00:00",
+      "baseline_fingerprint": "5d3167c6dce5963a9e0dc3ee5885310c"
+    },
+    {
+      "event_id": "06e1465a-45d0-41e0-b98c-1ea46f43fe0f",
+      "source_key": "virginia_state_parks_sh",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-01-06-11-53-20-406655-0gz",
+      "title": "Little Wanderers",
+      "starts_at": "2026-11-07T19:00:00+00:00",
+      "ends_at": "2026-11-07T20:30:00+00:00",
+      "baseline_fingerprint": "16c9a17008a8f6b17e54b232d530e5f9"
+    },
+    {
+      "event_id": "380efc29-c970-47b0-90f4-7909d7f9dd18",
+      "source_key": "virginia_state_parks_sh",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-02-02-11-21-55-875223-nws",
+      "title": "Embers of Honor - Nights in Nature Series",
+      "starts_at": "2026-11-11T22:00:00+00:00",
+      "ends_at": "2026-11-12T00:00:00+00:00",
+      "baseline_fingerprint": "976686a75f8b7781f34e78372f575ae7"
+    },
+    {
+      "event_id": "971467ed-680f-4dae-ad19-c0282b226230",
+      "source_key": "virginia_state_parks_sh",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-08-24-15-31-22-731357-3yx",
+      "title": "Fall Women's Wellness Series - Morning Walk and Stretch",
+      "starts_at": "2026-11-14T14:00:00+00:00",
+      "ends_at": "2026-11-14T16:00:00+00:00",
+      "baseline_fingerprint": "559ea551c0aaf35d28ff019e909881ab"
+    },
+    {
+      "event_id": "249a011e-b5b0-408a-bedb-ef1cef3ca8da",
+      "source_key": "virginia_state_parks_sh",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-08-24-15-31-22-754113-goj",
+      "title": "Fall Women's Wellness Series - Morning Walk and Stretch",
+      "starts_at": "2026-12-05T14:00:00+00:00",
+      "ends_at": "2026-12-05T16:00:00+00:00",
+      "baseline_fingerprint": "5d20c0d8e1900e9e2deab0954452d4bc"
+    },
+    {
+      "event_id": "cec9b2d0-7a50-4309-8b68-dc1dc683427e",
+      "source_key": "virginia_state_parks_sh",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-01-06-11-53-20-428816-h25",
+      "title": "Little Wanderers",
+      "starts_at": "2026-12-12T19:00:00+00:00",
+      "ends_at": "2026-12-12T20:30:00+00:00",
+      "baseline_fingerprint": "af531e578aad313c12e018b474dd7096"
+    },
+    {
+      "event_id": "2387a002-2b61-452a-b6a6-6c7a238697a1",
+      "source_key": "virginia_state_parks_sh",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-09-29-15-20-38-317731-cht",
+      "title": "Winter's Embrace Wellness Series",
+      "starts_at": "2026-12-13T14:00:00+00:00",
+      "ends_at": "2026-12-13T16:00:00+00:00",
+      "baseline_fingerprint": "f2120d36403910328b80caa04983f290"
+    },
+    {
+      "event_id": "0768e257-0e8d-4cf0-a648-1e15e67b798b",
+      "source_key": "virginia_state_parks_sh",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-31-14-51-05-948302-4gf",
+      "title": "Discovery Hours and Treats!",
+      "starts_at": "2027-01-01T14:00:00+00:00",
+      "ends_at": "2027-01-01T21:00:00+00:00",
+      "baseline_fingerprint": "2a48ad0829bb40797fb8a94feb698ede"
+    },
+    {
+      "event_id": "ea22a793-9aff-4c0a-8a1b-f34762744dbb",
+      "source_key": "virginia_state_parks_sh",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-31-14-27-34-793845-zqo",
+      "title": "Winter WONDERland Hike",
+      "starts_at": "2027-01-01T14:30:00+00:00",
+      "ends_at": "2027-01-01T15:30:00+00:00",
+      "baseline_fingerprint": "cb53eaf1d31a598e429c50f9dc4c373b"
+    },
+    {
+      "event_id": "a13f1d39-22c5-4121-959a-6d145f391683",
+      "source_key": "virginia_state_parks_sk",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-01-06-11-56-40-112973-ni1",
+      "title": "Critter Chow",
+      "starts_at": "2026-11-06T19:00:00+00:00",
+      "ends_at": "2026-11-06T20:00:00+00:00",
+      "baseline_fingerprint": "80dde7de7bafd8a0144056d7189a1e0c"
+    },
+    {
+      "event_id": "203f2323-f295-4fb5-a1e7-855ac4e2639c",
+      "source_key": "virginia_state_parks_sk",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-02-13-08-56-40-182998-1gj",
+      "title": "Sensory Explorers' Trail Series: Fall Tree-mendous Hike",
+      "starts_at": "2026-11-07T15:00:00+00:00",
+      "ends_at": "2026-11-07T16:00:00+00:00",
+      "baseline_fingerprint": "5f6e63852abfb69c37791823dd1d0dc0"
+    },
+    {
+      "event_id": "df08f026-cccb-4f06-940b-8f13c0826f02",
+      "source_key": "virginia_state_parks_sk",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-05-01-15-37-35-935525-aqh",
+      "title": "First Saturdays at Sky Meadows",
+      "starts_at": "2026-11-07T16:00:00+00:00",
+      "ends_at": "2026-11-07T20:00:00+00:00",
+      "baseline_fingerprint": "eb24ecc5428620c06bd777a96bb6a4f2"
+    },
+    {
+      "event_id": "0adf9569-4543-488b-991b-e66566c7d327",
+      "source_key": "virginia_state_parks_sk",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-01-06-12-00-20-482530-hu7",
+      "title": "Barnyard Buddies: Feeding Time on the Farm",
+      "starts_at": "2026-11-07T18:00:00+00:00",
+      "ends_at": "2026-11-07T19:00:00+00:00",
+      "baseline_fingerprint": "112d3301e32bcdb84df6cd6cedcebcdf"
+    },
+    {
+      "event_id": "a02cb01a-f742-4556-9182-bb86ef42948a",
+      "source_key": "virginia_state_parks_sk",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2025-11-21-08-39-13-733230-eyr",
+      "title": "Astronomy for Everyone",
+      "starts_at": "2026-11-07T22:00:00+00:00",
+      "ends_at": "2026-11-08T01:00:00+00:00",
+      "baseline_fingerprint": "35520c3a2c9c3dd7afa936dbd18de434"
+    },
+    {
+      "event_id": "e1d41462-e07c-4083-b491-660da65b710e",
+      "source_key": "virginia_state_parks_sk",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2025-12-29-12-21-08-068746-alg",
+      "title": "Fall Wild Edible Plants: Advanced Survival Training",
+      "starts_at": "2026-11-08T15:00:00+00:00",
+      "ends_at": "2026-11-08T22:00:00+00:00",
+      "baseline_fingerprint": "e690a2522760f1b9be60f0ada7a457bc"
+    },
+    {
+      "event_id": "e112bf22-ca46-4fe5-b944-6aa4af270190",
+      "source_key": "virginia_state_parks_sk",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-01-06-11-56-40-135481-r9c",
+      "title": "Critter Chow",
+      "starts_at": "2026-11-13T19:00:00+00:00",
+      "ends_at": "2026-11-13T20:00:00+00:00",
+      "baseline_fingerprint": "7152adf0050a925bc76bbbdab069ddd3"
+    },
+    {
+      "event_id": "d8c2ad5b-ff81-4f48-934f-a20ed5f4831b",
+      "source_key": "virginia_state_parks_sk",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-04-11-11-06-15-563701-3cr",
+      "title": "Winter Tree Identification Workshop: Botany and Bloom Series",
+      "starts_at": "2026-11-14T15:00:00+00:00",
+      "ends_at": "2026-11-14T19:00:00+00:00",
+      "baseline_fingerprint": "2a37d2fc0bef0113eca8eaca76f30afa"
+    },
+    {
+      "event_id": "f891c6f5-b133-40fe-a687-693183f88ac1",
+      "source_key": "virginia_state_parks_sk",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-31-16-59-59-918986-8t1",
+      "title": "Autumn Impressions: Craft Session",
+      "starts_at": "2026-11-14T17:00:00+00:00",
+      "ends_at": "2026-11-14T19:00:00+00:00",
+      "baseline_fingerprint": "2fa31c76ba8d446b2cb111219f4a2e6f"
+    },
+    {
+      "event_id": "47b799cb-7fb8-4d9c-aedd-8988d07590ef",
+      "source_key": "virginia_state_parks_sk",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-01-06-12-00-20-504244-fym",
+      "title": "Barnyard Buddies: Feeding Time on the Farm",
+      "starts_at": "2026-11-14T18:00:00+00:00",
+      "ends_at": "2026-11-14T19:00:00+00:00",
+      "baseline_fingerprint": "60a69edfde07ec180cf93038f944d41a"
+    },
+    {
+      "event_id": "fd3e40a3-91d7-4a1a-ac74-b1b1916c2b58",
+      "source_key": "virginia_state_parks_sm",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-30-18-46-57-759016-7xv",
+      "title": "Camper Crafts",
+      "starts_at": "2026-11-14T18:00:00+00:00",
+      "ends_at": "2026-11-14T19:00:00+00:00",
+      "baseline_fingerprint": "ee58296215d22c01baa8d2d490f3ffe1"
+    },
+    {
+      "event_id": "12fff079-76d6-4f82-bb5e-d7df59d39f4c",
+      "source_key": "virginia_state_parks_sm",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-30-18-58-31-984283-une",
+      "title": "Discovery Center Exploration",
+      "starts_at": "2026-11-14T20:00:00+00:00",
+      "ends_at": "2026-11-14T22:00:00+00:00",
+      "baseline_fingerprint": "00580e286a2f39d881bbaaf6c622eecd"
+    },
+    {
+      "event_id": "412d20e2-f7eb-41d1-9307-5bdfe3e946b0",
+      "source_key": "virginia_state_parks_sm",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-11-02-07-41-59-839475-6my",
+      "title": "Camper Crafts",
+      "starts_at": "2026-11-21T18:00:00+00:00",
+      "ends_at": "2026-11-21T19:00:00+00:00",
+      "baseline_fingerprint": "c0eaca5c1b4bd413d28bb167f3bf9629"
+    },
+    {
+      "event_id": "e8b1f52b-b810-48b1-a25f-4ba20528eaa3",
+      "source_key": "virginia_state_parks_sm",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-11-02-07-41-03-044965-qt8",
+      "title": "Discovery Center Exploration",
+      "starts_at": "2026-11-21T20:00:00+00:00",
+      "ends_at": "2026-11-21T22:00:00+00:00",
+      "baseline_fingerprint": "66e9316b19e929c91033fa0ba6b16df7"
+    },
+    {
+      "event_id": "8c50ada3-0bc1-429b-96ac-0953dc62db93",
+      "source_key": "virginia_state_parks_sm",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-30-20-42-31-517405-hvs",
+      "title": "SML Turkey Trot Race",
+      "starts_at": "2026-11-26T14:00:00+00:00",
+      "ends_at": "2026-11-26T15:30:00+00:00",
+      "baseline_fingerprint": "f2a39df7a5480f7700c5562144f3e0c3"
+    },
+    {
+      "event_id": "bb99265e-9d52-42a5-9edb-1ec2780e872d",
+      "source_key": "virginia_state_parks_sm",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-27-20-47-49-369816-2ec",
+      "title": "Bedford Christmas Parade",
+      "starts_at": "2026-12-05T16:00:00+00:00",
+      "ends_at": "2026-12-05T18:00:00+00:00",
+      "baseline_fingerprint": "85ab7f2dfbd6c1d9108597f1c26d2edd"
+    },
+    {
+      "event_id": "fb2e0ba2-962f-4cf3-aebd-6aef8083fe35",
+      "source_key": "virginia_state_parks_sm",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-30-19-51-14-395552-yhi",
+      "title": "Hootin' in the New Year",
+      "starts_at": "2027-01-01T22:00:00+00:00",
+      "ends_at": "2027-01-01T23:30:00+00:00",
+      "baseline_fingerprint": "c6aa80e0a5264a68407272b7c8f6d2ad"
+    },
+    {
+      "event_id": "1a7edf4f-2dfe-4196-986a-73628926080e",
+      "source_key": "virginia_state_parks_sn",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-08-25-12-23-35-019426-r9o",
+      "title": "Party in the Pollinator Garden",
+      "starts_at": "2026-11-07T14:00:00+00:00",
+      "ends_at": "2026-11-07T15:30:00+00:00",
+      "baseline_fingerprint": "916e22d88135c8cac4bc90b29625ca39"
+    },
+    {
+      "event_id": "4fa68f12-9f33-4227-aed7-907f3dc7e7ac",
+      "source_key": "virginia_state_parks_sn",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-07-12-23-57-994138-54a",
+      "title": "Winter Preparations - Interpretive Center Displays",
+      "starts_at": "2026-11-07T22:00:00+00:00",
+      "ends_at": "2026-11-08T00:00:00+00:00",
+      "baseline_fingerprint": "83118a3c50f9d7552934b0799dea16e1"
+    },
+    {
+      "event_id": "4b81598b-8565-4b1a-a45c-24117d423923",
+      "source_key": "virginia_state_parks_sn",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-08-17-10-32-54-272032-hv2",
+      "title": "Raptors Revealed",
+      "starts_at": "2026-11-07T22:30:00+00:00",
+      "ends_at": "2026-11-07T23:30:00+00:00",
+      "baseline_fingerprint": "4c0291ca7e432b5586d6157e568f12be"
+    },
+    {
+      "event_id": "1edd05a9-0b57-456a-a6ab-9cba943ae7e0",
+      "source_key": "virginia_state_parks_sn",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-08-07-11-55-564206-tsg",
+      "title": "Winter Preparations - Interpretive Center Displays",
+      "starts_at": "2026-11-13T16:00:00+00:00",
+      "ends_at": "2026-11-13T19:00:00+00:00",
+      "baseline_fingerprint": "decc558238df8357d23be11fe8ac97d1"
+    },
+    {
+      "event_id": "b009a474-8228-4594-9716-49727843005d",
+      "source_key": "virginia_state_parks_sn",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-08-25-12-08-05-749760-kqt",
+      "title": "Earth and Sky Adventures",
+      "starts_at": "2026-11-14T21:30:00+00:00",
+      "ends_at": "2026-11-15T00:30:00+00:00",
+      "baseline_fingerprint": "c25e415a83a08e58d7c4dface6f149c7"
+    },
+    {
+      "event_id": "f3b52658-c2b9-4eb3-a5bb-8c67aed6fff3",
+      "source_key": "virginia_state_parks_sn",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-08-07-11-55-590280-4ir",
+      "title": "Winter Preparations - Interpretive Center Displays",
+      "starts_at": "2026-11-14T21:30:00+00:00",
+      "ends_at": "2026-11-14T23:00:00+00:00",
+      "baseline_fingerprint": "498675a9a604066b86e1c511f0312627"
+    },
+    {
+      "event_id": "550703f7-dd7a-47ee-881d-05bd90ef1676",
+      "source_key": "virginia_state_parks_sn",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-08-07-11-55-611201-39c",
+      "title": "Winter Preparations - Interpretive Center Displays",
+      "starts_at": "2026-11-15T16:00:00+00:00",
+      "ends_at": "2026-11-15T19:00:00+00:00",
+      "baseline_fingerprint": "aec0cf81c53241d607b9f8deaa500edd"
+    },
+    {
+      "event_id": "2f338bdc-6713-429e-9709-0c861705dc88",
+      "source_key": "virginia_state_parks_sn",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-07-12-27-19-862071-op2",
+      "title": "Young Naturalists - Winter Preparations",
+      "starts_at": "2026-11-18T15:30:00+00:00",
+      "ends_at": "2026-11-18T16:30:00+00:00",
+      "baseline_fingerprint": "5059bf666c60cee2759b5e2638e57437"
+    },
+    {
+      "event_id": "7e8f46cc-a923-4432-a1eb-c4ccc1a20d1d",
+      "source_key": "virginia_state_parks_sn",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-08-25-11-55-45-746125-sat",
+      "title": "Monthly Volunteer Workday: Trails and More",
+      "starts_at": "2026-11-21T14:30:00+00:00",
+      "ends_at": "2026-11-21T16:30:00+00:00",
+      "baseline_fingerprint": "c72569154beb01b28c57f11d5748a450"
+    },
+    {
+      "event_id": "9c3258f7-c7fc-4229-9ec9-5308539f73b9",
+      "source_key": "virginia_state_parks_sn",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-07-12-30-03-874105-k58",
+      "title": "B.A.R.K. Ranger Hike - Winter Preparations",
+      "starts_at": "2026-11-27T14:00:00+00:00",
+      "ends_at": "2026-11-27T15:30:00+00:00",
+      "baseline_fingerprint": "f21ab07740f84028f35a74793b8e0b77"
+    },
+    {
+      "event_id": "635a0519-8216-41eb-9eb3-4b8eebe97723",
+      "source_key": "virginia_state_parks_tl",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-09-07-13-44-44-975175-6c7",
+      "title": "Birding Bingo",
+      "starts_at": "2026-11-07T15:00:00+00:00",
+      "ends_at": "2026-11-07T16:00:00+00:00",
+      "baseline_fingerprint": "0e4cb63fbb665abf1b93561dd2424d30"
+    },
+    {
+      "event_id": "98f7b7a5-151c-48e9-9620-8510f7592492",
+      "source_key": "virginia_state_parks_tl",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-09-07-13-47-11-048330-8qn",
+      "title": "Reading with a Ranger",
+      "starts_at": "2026-11-07T17:00:00+00:00",
+      "ends_at": "2026-11-07T18:00:00+00:00",
+      "baseline_fingerprint": "9f19dace83b6b06688722cbb1a8781c0"
+    },
+    {
+      "event_id": "b8b96a93-2653-44a5-9347-2cbbac8e4603",
+      "source_key": "virginia_state_parks_tl",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-09-07-13-48-22-443336-5rm",
+      "title": "Making News with Zines",
+      "starts_at": "2026-11-07T19:00:00+00:00",
+      "ends_at": "2026-11-07T20:00:00+00:00",
+      "baseline_fingerprint": "b58dd47fc0e426f2603c57ca49399d6a"
+    },
+    {
+      "event_id": "9f0b500a-d547-4d17-8878-30cd6e2b8d9f",
+      "source_key": "virginia_state_parks_tl",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-09-07-13-49-27-644509-uwv",
+      "title": "Archery",
+      "starts_at": "2026-11-08T18:00:00+00:00",
+      "ends_at": "2026-11-08T19:00:00+00:00",
+      "baseline_fingerprint": "962eca0cb3081ef652cdd5511bfcc0c0"
+    },
+    {
+      "event_id": "56cf9ec9-9a59-49d0-8877-873c3c2ff2d1",
+      "source_key": "virginia_state_parks_tl",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-09-07-13-53-01-519589-d7m",
+      "title": "Reptile Rangers",
+      "starts_at": "2026-11-14T15:00:00+00:00",
+      "ends_at": "2026-11-14T16:00:00+00:00",
+      "baseline_fingerprint": "9d65a7ff14f304b52ad4635e5abb057a"
+    },
+    {
+      "event_id": "677e05ef-4e37-44b1-8dea-4b0c23f6f08e",
+      "source_key": "virginia_state_parks_tl",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-09-07-13-54-32-852457-k4p",
+      "title": "History Hour",
+      "starts_at": "2026-11-14T17:00:00+00:00",
+      "ends_at": "2026-11-14T18:00:00+00:00",
+      "baseline_fingerprint": "a50be4e9e53c5054bb1badb1d7f02a42"
+    },
+    {
+      "event_id": "b24fbe94-0409-47b6-88f4-e5418875ac47",
+      "source_key": "virginia_state_parks_tl",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-09-07-13-56-06-505682-2h5",
+      "title": "Crafting Hour",
+      "starts_at": "2026-11-14T19:00:00+00:00",
+      "ends_at": "2026-11-14T20:00:00+00:00",
+      "baseline_fingerprint": "645440dad09a7942f593bcd904ea2a6e"
+    },
+    {
+      "event_id": "1989d9b1-46bb-47c1-a87d-ac34e82255af",
+      "source_key": "virginia_state_parks_tl",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-09-10-19-55-16-459557-4wu",
+      "title": "Archery",
+      "starts_at": "2026-11-15T18:00:00+00:00",
+      "ends_at": "2026-11-15T19:00:00+00:00",
+      "baseline_fingerprint": "5374097481812fe8ba65a8b68ec0225f"
+    },
+    {
+      "event_id": "4355eeca-b2a4-455a-93b0-0e0f9b5f217d",
+      "source_key": "virginia_state_parks_tl",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-09-10-19-54-42-778788-w9x",
+      "title": "Making News with Zines",
+      "starts_at": "2026-11-21T15:00:00+00:00",
+      "ends_at": "2026-11-21T16:00:00+00:00",
+      "baseline_fingerprint": "18aa1ca55716cf06abdf050bccb7c925"
+    },
+    {
+      "event_id": "c90a3c9d-b97c-47c7-82fd-fb7ff200363d",
+      "source_key": "virginia_state_parks_tl",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-09-07-13-57-19-256654-1wm",
+      "title": "B.A.R.K. Rangers Guided Hike",
+      "starts_at": "2026-11-21T17:00:00+00:00",
+      "ends_at": "2026-11-21T18:00:00+00:00",
+      "baseline_fingerprint": "64c97ac942f42b78ec7e378ae86f59f1"
+    },
+    {
+      "event_id": "bf86a621-9523-4741-a51a-09cfa5526d89",
+      "source_key": "virginia_state_parks_we",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-09-18-13-32-04-315594-5vw",
+      "title": "Campfire Kickoff",
+      "starts_at": "2026-11-07T00:00:00+00:00",
+      "ends_at": "2026-11-07T01:00:00+00:00",
+      "baseline_fingerprint": "0359c60916dc0ef17e81c922fafcbdca"
+    },
+    {
+      "event_id": "b289a931-78e9-4c58-b92c-41f5b0b4bb7e",
+      "source_key": "virginia_state_parks_we",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-09-25-14-17-45-545789-tbh",
+      "title": "Fossil Quest",
+      "starts_at": "2026-11-07T15:00:00+00:00",
+      "ends_at": "2026-11-07T16:30:00+00:00",
+      "baseline_fingerprint": "15de3decc751aa939bbdae5688d94487"
+    },
+    {
+      "event_id": "7b8d9746-1f34-4e85-b10d-0c585b0e944f",
+      "source_key": "virginia_state_parks_we",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-09-25-15-25-15-062898-qep",
+      "title": "Shark Tooth Jewelry Making",
+      "starts_at": "2026-11-07T19:00:00+00:00",
+      "ends_at": "2026-11-07T19:30:00+00:00",
+      "baseline_fingerprint": "e88325eff287dd00317946e163218ada"
+    },
+    {
+      "event_id": "092295ef-b99d-431d-accc-71e248bef5cc",
+      "source_key": "virginia_state_parks_we",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-09-18-15-26-30-304954-59u",
+      "title": "Reptile Feeding: What's for Lunch?",
+      "starts_at": "2026-11-08T18:00:00+00:00",
+      "ends_at": "2026-11-08T18:30:00+00:00",
+      "baseline_fingerprint": "c53fedc3af2f083631ff898c44e44ce5"
+    },
+    {
+      "event_id": "b10ca789-f127-4864-8fd8-143ceba549e3",
+      "source_key": "virginia_state_parks_we",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-09-18-15-17-18-442601-qs1",
+      "title": "Campfire Kickoff",
+      "starts_at": "2026-11-14T00:00:00+00:00",
+      "ends_at": "2026-11-14T01:00:00+00:00",
+      "baseline_fingerprint": "234449661ae469313c5e0b1418407602"
+    },
+    {
+      "event_id": "e44857a5-e3c4-4da6-a6d6-8de41fc741f4",
+      "source_key": "virginia_state_parks_we",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-09-25-15-30-54-617471-2kn",
+      "title": "CCC Hike",
+      "starts_at": "2026-11-14T15:00:00+00:00",
+      "ends_at": "2026-11-14T16:30:00+00:00",
+      "baseline_fingerprint": "f8c0e9a23a5f23e6d3ad4bc74a1f0755"
+    },
+    {
+      "event_id": "d7a38193-7efc-4d1f-b95c-c754ea54e63b",
+      "source_key": "virginia_state_parks_we",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-09-26-08-47-14-087375-wmc",
+      "title": "Bird Feeder Builders",
+      "starts_at": "2026-11-14T19:00:00+00:00",
+      "ends_at": "2026-11-14T19:30:00+00:00",
+      "baseline_fingerprint": "12eb66ad84b2f86ff868f3f2c77aee3b"
+    },
+    {
+      "event_id": "2bd8ab7e-58d1-4678-a194-ee83bb940961",
+      "source_key": "virginia_state_parks_we",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-09-18-15-26-30-324460-n1o",
+      "title": "Reptile Feeding: What's for Lunch?",
+      "starts_at": "2026-11-15T18:00:00+00:00",
+      "ends_at": "2026-11-15T18:30:00+00:00",
+      "baseline_fingerprint": "b7e55eafd6fa3bcbfb09e2729fa4553a"
+    },
+    {
+      "event_id": "1bca1e79-7515-45d0-95ba-1d0897bd4c6e",
+      "source_key": "virginia_state_parks_we",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-09-26-14-12-12-384802-tba",
+      "title": "Tree Trek",
+      "starts_at": "2026-11-17T16:00:00+00:00",
+      "ends_at": "2026-11-17T17:00:00+00:00",
+      "baseline_fingerprint": "a2e5376e2f193f0f0c1dfb20a0c54d21"
+    },
+    {
+      "event_id": "15eed07b-0264-498a-b709-f70ab8160eda",
+      "source_key": "virginia_state_parks_we",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-09-18-15-17-18-463093-qdb",
+      "title": "Campfire Kickoff",
+      "starts_at": "2026-11-21T00:00:00+00:00",
+      "ends_at": "2026-11-21T01:00:00+00:00",
+      "baseline_fingerprint": "b2e84ef7f0d737adceb4e34cf338f36f"
+    },
+    {
+      "event_id": "9f2e6f0f-5a25-4b7f-96ff-1529d4436da5",
+      "source_key": "virginia_state_parks_ww",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-08-16-09-13-28-750323-whb",
+      "title": "November Homeschool Overview",
+      "starts_at": "2026-11-07T16:00:00+00:00",
+      "ends_at": "2026-11-07T17:00:00+00:00",
+      "baseline_fingerprint": "433e2d1eb5ac2ff1941b78c16dc51f07"
+    },
+    {
+      "event_id": "e6b8643c-786d-417e-ad99-f9a5f0a1155b",
+      "source_key": "virginia_state_parks_ww",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-13-12-39-30-771350-p4z",
+      "title": "Beginner's Compound Bow Archery",
+      "starts_at": "2026-11-08T16:00:00+00:00",
+      "ends_at": "2026-11-08T17:30:00+00:00",
+      "baseline_fingerprint": "a8dd538deb0f2c1218269b04fbda5e2f"
+    },
+    {
+      "event_id": "5340ba6c-2a60-4dc4-ac54-6bdfeabe862f",
+      "source_key": "virginia_state_parks_ww",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-01-23-10-09-36-159954-kqd",
+      "title": "Widewater State Park Volunteer Orientation",
+      "starts_at": "2026-11-08T19:00:00+00:00",
+      "ends_at": "2026-11-08T20:00:00+00:00",
+      "baseline_fingerprint": "39141a21501d0d7a76df7fe6f0e0e895"
+    },
+    {
+      "event_id": "4a1aa0b2-ae94-4ce8-97fa-1dd70176f90f",
+      "source_key": "virginia_state_parks_ww",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-08-21-07-21-16-183128-pb8",
+      "title": "Homeschool Grades K-4: Agriculture",
+      "starts_at": "2026-11-09T16:00:00+00:00",
+      "ends_at": "2026-11-09T17:00:00+00:00",
+      "baseline_fingerprint": "c57999aece11eec3f0b4b5303445f77b"
+    },
+    {
+      "event_id": "a618a11c-1e15-4e65-b2aa-1f9d61d64a1b",
+      "source_key": "virginia_state_parks_ww",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-08-21-07-21-51-464257-zes",
+      "title": "Homeschool Grades 5-8: Agriculture",
+      "starts_at": "2026-11-09T18:00:00+00:00",
+      "ends_at": "2026-11-09T19:00:00+00:00",
+      "baseline_fingerprint": "66f85e9cdd2bb8efb981f831fe0793d3"
+    },
+    {
+      "event_id": "27c96287-54ea-4d62-aa2d-e6acb803a1b6",
+      "source_key": "virginia_state_parks_ww",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2025-03-04-15-55-38-976127-0lr",
+      "title": "Winter Birding Walks",
+      "starts_at": "2026-11-10T14:00:00+00:00",
+      "ends_at": "2026-11-10T15:30:00+00:00",
+      "baseline_fingerprint": "76a30879c7a43fe194fcac81f76a07f0"
+    },
+    {
+      "event_id": "e73c05f3-6170-4ab4-92eb-3f21e53060e6",
+      "source_key": "virginia_state_parks_ww",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-01-14-11-29-14-056343-j7k",
+      "title": "Friend's of Widewater State Park Monthly Meeting",
+      "starts_at": "2026-11-10T23:30:00+00:00",
+      "ends_at": "2026-11-11T00:30:00+00:00",
+      "baseline_fingerprint": "2b7f1490747d27ee9ab2c7766ceef90d"
+    },
+    {
+      "event_id": "b6c97b12-d65b-472e-b4d5-655bf2fbc9b5",
+      "source_key": "virginia_state_parks_ww",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-01-06-12-39-07-187121-f5j",
+      "title": "Free Parking Days for Virginia State Park License Plate Holders",
+      "starts_at": "2026-11-11T13:00:00+00:00",
+      "ends_at": "2026-11-11T22:30:00+00:00",
+      "baseline_fingerprint": "338e42d68c0fd347352905499f4a88c3"
+    },
+    {
+      "event_id": "18afd3eb-7870-4264-a2bc-91cc4aefa9f1",
+      "source_key": "virginia_state_parks_yr",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-08-04-13-55-29-150292-ixk",
+      "title": "Rebellion & Runaway Walk",
+      "starts_at": "2026-11-07T15:00:00+00:00",
+      "ends_at": "2026-11-07T17:00:00+00:00",
+      "baseline_fingerprint": "ecc3c692bb94275f4529adc6a807fcd3"
+    },
+    {
+      "event_id": "115f7256-8ca3-4467-9b8a-6ebca659da85",
+      "source_key": "virginia_state_parks_yr",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-11-10-50-47-241720-b5k",
+      "title": "Dabble in Discovery",
+      "starts_at": "2026-11-07T18:00:00+00:00",
+      "ends_at": "2026-11-07T20:00:00+00:00",
+      "baseline_fingerprint": "877a41334bbf654c2b80befe53c8a785"
+    },
+    {
+      "event_id": "f0548f83-9af6-456c-a86e-b63857915199",
+      "source_key": "virginia_state_parks_yr",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-11-10-43-27-112052-yxr",
+      "title": "B.A.R.K. Ranger Dog Hike",
+      "starts_at": "2026-11-08T15:00:00+00:00",
+      "ends_at": "2026-11-08T17:00:00+00:00",
+      "baseline_fingerprint": "dab4c50ac32859c1a97e6d070b7eebdd"
+    },
+    {
+      "event_id": "3bc3476d-baa0-4435-8e60-3b6e22d9fabd",
+      "source_key": "virginia_state_parks_yr",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-13-12-23-02-610203-o5n",
+      "title": "Park Crafts - Leaf Lanterns",
+      "starts_at": "2026-11-08T18:00:00+00:00",
+      "ends_at": "2026-11-08T20:00:00+00:00",
+      "baseline_fingerprint": "f137e2e274d2a8c7c6c7e4680816c112"
+    },
+    {
+      "event_id": "e3214760-4d48-47b4-944f-d6f5787c63e7",
+      "source_key": "virginia_state_parks_yr",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-11-10-44-34-273038-cp2",
+      "title": "Leaf A Long",
+      "starts_at": "2026-11-13T15:00:00+00:00",
+      "ends_at": "2026-11-13T17:00:00+00:00",
+      "baseline_fingerprint": "1e90c88f49a157073cbe8ae016af4c72"
+    },
+    {
+      "event_id": "b2361fb1-51b4-4719-8080-83262fb0f3ee",
+      "source_key": "virginia_state_parks_yr",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-13-12-27-49-735423-7vn",
+      "title": "Dabble in Discovery",
+      "starts_at": "2026-11-13T18:00:00+00:00",
+      "ends_at": "2026-11-13T20:00:00+00:00",
+      "baseline_fingerprint": "a7194d9ac85f0ccde150962f4ad30256"
+    },
+    {
+      "event_id": "a05203d9-b92b-47c3-b2b7-ed01c787e5fe",
+      "source_key": "virginia_state_parks_yr",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-17-09-23-32-063857-37s",
+      "title": "Operation Oyster Reef",
+      "starts_at": "2026-11-14T15:00:00+00:00",
+      "ends_at": "2026-11-14T17:00:00+00:00",
+      "baseline_fingerprint": "3f3fda0efbc647650ae22043e577e808"
+    },
+    {
+      "event_id": "aa31cfd3-4d29-483f-b848-fb6bd257095b",
+      "source_key": "virginia_state_parks_yr",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2025-12-08-09-03-11-548364-081",
+      "title": "Monthly Volunteer Work Day",
+      "starts_at": "2026-11-14T15:00:00+00:00",
+      "ends_at": "2026-11-14T17:00:00+00:00",
+      "baseline_fingerprint": "6eaee52f91d389882ba6dbb84766eca6"
+    },
+    {
+      "event_id": "dd1af263-0867-4eb2-a54f-4efda4fb5edd",
+      "source_key": "virginia_state_parks_yr",
+      "event_url": "https://www.dcr.virginia.gov/state-parks/event?id=2026-10-13-12-35-22-139635-f8h",
+      "title": "B.A.R.K. Ranger Dog Hike",
+      "starts_at": "2026-11-14T18:00:00+00:00",
+      "ends_at": "2026-11-14T20:00:00+00:00",
+      "baseline_fingerprint": "ed7545dbf4927a9b78343fa71f21a493"
+    }
+  ]
+}

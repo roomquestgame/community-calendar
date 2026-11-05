@@ -13,7 +13,7 @@ from functools import lru_cache
 from importlib import resources
 from urllib.parse import parse_qs, unquote, urlencode, urljoin, urlparse
 from zoneinfo import ZoneInfo
-from bs4 import BeautifulSoup, Tag
+from bs4 import BeautifulSoup, Comment, NavigableString, Tag
 from roomquest.collector_errors import safe_error_code
 from roomquest.mapsee_adapter import record, timestamp
 
@@ -23,6 +23,10 @@ TZ = ZoneInfo("America/New_York")
 MAX_EVENT_PAGES = 10
 MAX_LISTING_LINKS = 200
 IMAGE_EXTRACTOR_VERSION = "publisher_event_html_v2"
+DETAILS_EXTRACTOR_VERSION = "virginia_event_details_v1"
+MAX_DESCRIPTION = 12000
+# Leave space for the backend's version and canonical evidence URL wrapper.
+MAX_PUBLISHER_DETAILS_BYTES = 3500
 NON_EVENT_IMAGE = re.compile(
     r"(?:^|[^a-z0-9])(?:maps?|logo|logos|favicon|icon|avatar|pixel|tracking|"
     r"navigation|breadcrumb|social|banner|header|footer|sidebar|"
@@ -33,6 +37,10 @@ NON_EVENT_SECTION = re.compile(
     r"^(?:know before you go|other events|related events|upcoming events|"
     r"park information|contact us|directions|location map|documents|other details|"
     r"event types|additional dates|add to calendar)\b", re.I,
+)
+NON_EVENT_CONTENT = re.compile(
+    r"(?:^|[ _-])(?:related|recommended|event[ _-]default[ _-]text|event[ _-]types|"
+    r"other[ _-]details|additional[ _-]dates|jobs[ _-]banner|order[ _-]plate)(?:[ _-]|$)", re.I,
 )
 DATE_TEXT = r"(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?\s+\d{1,2},?\s+20\d{2}"
 CLOCK = r"\d{1,2}(?::\d{2})?\s*[ap]\.?m\.?"
@@ -264,6 +272,236 @@ def primary_when(section):
     raise ValueError("event_schedule_missing")
 
 
+def event_description(section):
+    """Read the event narrative only; never substitute the park-address block.
+
+    The unique publisher-owned container is also the photo evidence boundary.
+    Work on a copy so text cleanup cannot change photo selection or venue facts.
+    Preserve paragraph/list boundaries and stop at an embedded page-tail heading.
+    """
+    containers = section.select("div#event_description")
+    if len(containers) != 1:
+        return ""
+    body = BeautifulSoup(str(containers[0]), "html.parser")
+    for node in body.select("script,style,nav,footer,header,aside,noscript,template,iframe,form,[hidden],[aria-hidden='true']"):
+        node.decompose()
+    for node in list(body.find_all(True)):
+        if node.parent is None:
+            continue
+        signature = " ".join([str(node.get("id", "")), " ".join(node.get("class", []))])
+        if (node.get("role") in ("navigation", "banner", "complementary", "contentinfo")
+                or NON_EVENT_CONTENT.search(signature)):
+            node.decompose()
+
+    stopped = False
+
+    def render(node):
+        nonlocal stopped
+        if stopped or isinstance(node, Comment):
+            return ""
+        if isinstance(node, NavigableString):
+            return re.sub(r"\s+", " ", str(node))
+        if not isinstance(node, Tag):
+            return ""
+        if re.fullmatch(r"h[1-6]", node.name) and NON_EVENT_SECTION.search(clean(node.get_text(" ", strip=True))):
+            stopped = True
+            return ""
+        if node.name == "br":
+            return "\n"
+        contents = "".join(render(child) for child in node.children)
+        if node.name == "li":
+            marker = (str(len(node.find_previous_siblings("li")) + 1) + ". "
+                      if node.parent and node.parent.name == "ol" else "- ")
+            return "\n" + marker + contents.strip() + "\n"
+        if node.name in ("p", "div", "section", "article", "blockquote", "ul", "ol", "h1", "h2", "h3", "h4", "h5", "h6"):
+            return "\n\n" + contents.strip() + "\n\n"
+        return contents
+
+    text = render(body)
+    text = re.sub(r"[ \t]+", " ", text)
+    text = "\n".join(line.strip() for line in text.splitlines())
+    return re.sub(r"\n{3,}", "\n\n", text).strip()
+
+
+def detail_section(section, heading):
+    """Return only siblings under one explicit publisher metadata heading."""
+    headings = [node for node in section.find_all(re.compile(r"^h[1-6]$"))
+                if clean(node.get_text(" ", strip=True)).casefold() == heading.casefold()]
+    if len(headings) != 1:
+        return []
+    nodes, size = [], 0
+    for node in headings[0].next_siblings:
+        if not isinstance(node, Tag):
+            continue
+        if re.fullmatch(r"h[1-6]", node.name) or node.find(re.compile(r"^h[1-6]$")):
+            break
+        if node.name in ("script", "style", "nav", "footer", "aside", "form"):
+            break
+        size += len(str(node))
+        if len(nodes) >= 20 or size > 20_000:
+            return []
+        nodes.append(node)
+    return nodes
+
+
+def publisher_categories(section, url):
+    """Retain raw event-type labels; the shared classifier owns their meaning."""
+    categories, seen = [], set()
+    for node in detail_section(section, "Event types"):
+        for link in node.select("a[href]"):
+            try:
+                target = urlparse(urljoin(url, link["href"]))
+                type_ids = parse_qs(target.query).get("type", [])
+                if (target.scheme != "https" or target.netloc != "www.dcr.virginia.gov"
+                        or target.path != "/state-parks/events" or len(type_ids) != 1
+                        or not EVENT_ID.fullmatch(type_ids[0])):
+                    continue
+            except (TypeError, ValueError):
+                continue
+            value = clean(link.get_text(" ", strip=True))
+            if value and len(value) <= 100 and value.casefold() not in seen:
+                categories.append(value)
+                seen.add(value.casefold())
+                if len(categories) == 20:
+                    return categories
+    return categories
+
+
+def publisher_details(section, url, meeting_location):
+    """Retain bounded explicit facts, leaving fee/age decisions to the backend.
+
+    Conflicting or oversized facts are omitted rather than truncated into a
+    misleading positive. Registration links are references only, never fetched.
+    """
+    from roomquest.preview_worker import public_source_url
+
+    names = {
+        "standard parking or admission fee applies": "standard_fee",
+        "extra fee": "extra_fee", "children welcome": "children_welcome",
+        "registration required": "registration_required",
+    }
+    sections = detail_section(section, "Other details")
+    values = {key: {} for key in names.values()}
+    for node in sections:
+        copy = BeautifulSoup(str(node), "html.parser")
+        for tag in copy.select("script,style,nav,footer,aside,[hidden],[aria-hidden='true']"):
+            tag.decompose()
+        for tag in copy.select("br"):
+            tag.replace_with("\n")
+        # A publisher may switch the same metadata from BR-delimited prose to
+        # paragraphs, list rows, a table, or a definition list. Keep each fact
+        # separate so an explicit "No" cannot absorb the next fee field.
+        for row in copy.select("tr"):
+            cells = row.find_all(["th", "td"], recursive=False)
+            if len(cells) == 2:
+                name = clean(cells[0].get_text(" ", strip=True))
+                if name.casefold() in names:
+                    row.replace_with("\n" + name + ": " + clean(cells[1].get_text(" ", strip=True)) + "\n")
+        for term in copy.select("dt"):
+            name = clean(term.get_text(" ", strip=True))
+            definition = next((tag for tag in term.next_siblings if isinstance(tag, Tag)), None)
+            if name.casefold() in names and definition is not None and definition.name == "dd":
+                value = clean(definition.get_text(" ", strip=True))
+                term.replace_with("\n" + name + ": " + value + "\n")
+                definition.decompose()
+        for tag in copy.select("p,li,tr,dt,dd,div"):
+            tag.insert_before("\n")
+            tag.insert_after("\n")
+        for line in copy.get_text("", strip=False).splitlines():
+            name, sep, value = clean(line).partition(":")
+            key = names.get(name.casefold())
+            value = clean(value)
+            if sep and key and value:
+                # Keep even an oversized value in the conflict check. A short
+                # duplicate must not turn an ambiguous field into certainty.
+                values[key][value.casefold().rstrip(" .")] = value
+    details = {}
+    if meeting_location and len(meeting_location) <= 400:
+        details["meeting_location"] = meeting_location
+    for key, options in values.items():
+        if len(options) == 1:
+            value = next(iter(options.values()))
+            if len(value) <= 300:
+                details[key] = value
+
+    descriptions = section.select("div#event_description")
+    link_sections = [*sections, *(descriptions if len(descriptions) == 1 else [])]
+    urls = []
+    for node in link_sections:
+        for link in node.find_all(["h1", "h2", "h3", "h4", "h5", "h6", "a"]):
+            if link.name != "a":
+                if NON_EVENT_SECTION.search(clean(link.get_text(" ", strip=True))):
+                    break
+                continue
+            if not link.has_attr("href"):
+                continue
+            excluded = False
+            for ancestor in [link, *link.parents]:
+                if not isinstance(ancestor, Tag):
+                    continue
+                signature = " ".join([str(ancestor.get("id", "")), " ".join(ancestor.get("class", []))])
+                if (ancestor.name in ("header", "nav", "footer", "aside", "form")
+                        or ancestor.has_attr("hidden") or ancestor.get("aria-hidden") == "true"
+                        or ancestor.get("role") in ("navigation", "banner", "complementary", "contentinfo")
+                        or NON_EVENT_CONTENT.search(signature)):
+                    excluded = True
+                    break
+                if ancestor is node:
+                    break
+            if excluded:
+                continue
+            label_text = clean(link.get_text(" ", strip=True))
+            previous = clean(str(link.previous_sibling)) if isinstance(link.previous_sibling, NavigableString) else ""
+            if not (re.search(r"\b(register|registration|sign[ -]?up|reservations?|tickets?)\b", label_text, re.I)
+                    or re.search(r"\b(register|sign[ -]?up|reserve)(?: here)?\s*:?$", previous[-80:], re.I)):
+                continue
+            try:
+                raw_url = str(link["href"])
+                if re.search(r"[\x00-\x20\x7f]", raw_url):
+                    continue
+                target = urljoin(url, raw_url)
+                if len(target) > 500 or not public_source_url(target) or re.search(r"[\x00-\x20\x7f]", target):
+                    continue
+            except (ValueError, TypeError):
+                continue
+            if target not in urls:
+                urls.append(target)
+                if len(urls) == 3:
+                    break
+        if len(urls) == 3:
+            break
+    if urls:
+        details["registration_urls"] = urls
+    while len(json.dumps(details, ensure_ascii=False).encode("utf-8")) > MAX_PUBLISHER_DETAILS_BYTES and details.get("registration_urls"):
+        details["registration_urls"].pop()
+        if not details["registration_urls"]:
+            del details["registration_urls"]
+    return details if len(json.dumps(details, ensure_ascii=False).encode("utf-8")) <= MAX_PUBLISHER_DETAILS_BYTES else {}
+
+
+def bounded_description(description, location_note, meeting_location=""):
+    """Narrative first, with the actual meeting point preserved within the cap."""
+    if not description:
+        return None
+    def truncate(budget):
+        if len(description) <= budget:
+            return description
+        cut = description[:budget - 1]
+        # Do not split a word solely to fill the last few available characters.
+        if re.search(r"\s", cut[-80:]):
+            cut = re.sub(r"\s+\S*$", "", cut)
+        return cut.rstrip() + "…"
+
+    body = truncate(MAX_DESCRIPTION)
+    # Check the retained body, not the pre-truncation text: a meeting point at
+    # the very end of the budget must not disappear during word-safe clipping.
+    evidence = meeting_location or location_note
+    if location_note and len(location_note) <= 600 and evidence.casefold() not in body.casefold():
+        suffix = "\n\n" + location_note
+        return truncate(MAX_DESCRIPTION - len(suffix)) + suffix
+    return body
+
+
 def parse_schedule(value):
     """Accept explicit same-day or start-date/time to end-date/time schedules."""
     match = SCHEDULE.fullmatch(clean(value))
@@ -329,16 +567,15 @@ def parse_event(html, url, park):
         raise ValueError("offsite_venue_requires_address")
     start, end = parse_schedule(primary_when(section))
 
-    desc = next((t for t in paragraphs if len(t) > 55 and not t.startswith("Know Before You Go")), "")
+    desc = event_description(section)
+    location_note = ""
     if offsite:
-        # Keep the venue/room instructions even when the first long paragraph
-        # is only an introduction to the sponsoring organization.
-        venue_paragraph = next((t for t in paragraphs
+        # Preserve a verified venue's room instructions if they would otherwise
+        # be outside the bounded narrative. Address/GPS handling stays separate.
+        location_note = next((t for t in paragraphs
             if meeting_street_address([t], where) == alternate_address), "")
-        if venue_paragraph and venue_paragraph != desc:
-            desc = venue_paragraph + ("\n\n" + desc if desc else "")
-    if where and where.lower() not in desc.lower():
-        desc = "Meeting Location: " + where + ("\n\n" + desc if desc else "")
+    elif where:
+        location_note = "Meeting Location: " + where
     venue_name = where if offsite else park["name"]
     street = alternate_address if offsite else park["address"]
     parts = [clean(p) for p in street.split(",")]
@@ -357,7 +594,11 @@ def parse_event(html, url, park):
                   publisher_geo=not offsite)
     if item is None:
         return None  # Outside normal forward discovery window.
-    item["description"] = desc[:2000] if desc else None
+    item["description"] = bounded_description(desc, location_note, where if not offsite else "")
+    item["publisher_categories"] = publisher_categories(section, url)
+    item["details_extractor_version"] = DETAILS_EXTRACTOR_VERSION
+    item["details_evidence_url"] = ROOT + "/state-parks/event?id=" + page_id
+    item["publisher_details"] = publisher_details(section, url, where)
     item["park_code"] = park["code"]
     item["location_provenance"] = (
         "publisher_offsite_street_pending_geocode" if offsite
