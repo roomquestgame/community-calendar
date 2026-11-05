@@ -1,0 +1,50 @@
+BEGIN:VCALENDAR
+PRODID:iCalendar-Ruby
+VERSION:2.0
+X-WR-TIMEZONE:America/Chicago
+BEGIN:VTIMEZONE
+TZID:America/Chicago
+X-LIC-LOCATION:America/Chicago
+BEGIN:STANDARD
+DTSTART:20241103T020000
+RRULE:FREQ=YEARLY;BYDAY=1SU;BYMONTH=11
+TZNAME:CST
+TZOFFSETFROM:-0500
+TZOFFSETTO:-0600
+END:STANDARD
+BEGIN:DAYLIGHT
+DTSTART:20250309T020000
+RRULE:FREQ=YEARLY;BYDAY=2SU;BYMONTH=3
+TZNAME:CDT
+TZOFFSETFROM:-0600
+TZOFFSETTO:-0500
+END:DAYLIGHT
+END:VTIMEZONE
+BEGIN:VEVENT
+DESCRIPTION:Try our Lego challenge or free build your own creation to be di
+ splayed in the library! https://independenceia.gov/calendar.aspx?EID=5975
+DTEND;TZID=America/Chicago:20261116T190000
+DTSTAMP;TZID=America/Chicago:20261026T171136
+DTSTART;TZID=America/Chicago:20261116T180000
+LAST-MODIFIED;TZID=America/Chicago:20261026T171136
+LOCATION:Public Library > Community Room - 805 1st St East  Independence IA
+  50644
+SEQUENCE:0
+SUMMARY:Legos @ the Library
+UID:5975
+URL:/common/modules/iCalendar/iCalendar.aspx?feed=calendar&catID=26
+END:VEVENT
+BEGIN:VEVENT
+DESCRIPTION:Make a thank you card to a local Veteran for Veterans Day https
+ ://independenceia.gov/calendar.aspx?EID=5956
+DTEND;VALUE=DATE:20261106
+DTSTAMP;TZID=America/Chicago:20260922T192428
+DTSTART;VALUE=DATE:20261019
+LAST-MODIFIED;TZID=America/Chicago:20260922T192428
+LOCATION:Public Library - 805 1st St East  Independence IA 50644
+SEQUENCE:0
+SUMMARY:Thank a Vet Cards
+UID:5956
+URL:/common/modules/iCalendar/iCalendar.aspx?feed=calendar&catID=26
+END:VEVENT
+END:VCALENDAR
