@@ -311,3 +311,50 @@ def test_unbounded_publisher_wait_fails_before_payload_parsing(monkeypatch, stat
     assert state["wait_unbounded"] is True
     assert session.get.call_count == 1
     response.close.assert_called_once()
+
+
+def test_reviewed_algolia_missing_robots_route_validates_both_hosts_and_keeps_credentials_local(monkeypatch):
+    from urllib.request import Request
+    checked=[]
+    monkeypatch.setattr(worker,'validate_public_dns',checked.append)
+    handler=worker.ReviewedRobotsRedirects()
+    request=Request('https://eyqhj2iy2m-dsn.algolia.net/robots.txt',headers={'Authorization':'fixture-only','Cookie':'fixture-only'})
+    redirected=handler.redirect_request(request,None,301,'',{},'https://algolia.net/1/404')
+    assert checked==['algolia.net']
+    assert redirected.full_url=='https://algolia.net/1/404'
+    assert redirected.get_method()=='GET'
+    assert redirected.get_header('Authorization') is None
+    assert redirected.get_header('Cookie') is None
+    # A second redirect, even from that exact vendor destination, fails closed.
+    with pytest.raises(worker.PreviewError,match='redirect_blocked'):
+        handler.redirect_request(redirected,None,301,'',{},'https://algolia.net/elsewhere')
+
+
+@pytest.mark.parametrize('origin,destination',[
+    ('https://other.algolia.net/robots.txt','https://algolia.net/1/404'),
+    ('https://eyqhj2iy2m-dsn.algolia.net/other','https://algolia.net/1/404'),
+    ('https://eyqhj2iy2m-dsn.algolia.net/robots.txt','https://user:pass@algolia.net/1/404'),
+    ('https://eyqhj2iy2m-dsn.algolia.net/robots.txt','https://algolia.net/1/404?extra=1'),
+])
+def test_unreviewed_robots_redirects_still_fail_closed(origin,destination):
+    from urllib.request import Request
+    with pytest.raises(worker.PreviewError,match='redirect_blocked'):
+        worker.ReviewedRobotsRedirects().redirect_request(Request(origin),None,301,'',{},destination)
+
+
+def test_vendor_redirect_destination_404_means_absent_rules_but_new_publisher_rules_win(monkeypatch):
+    api='eyqhj2iy2m-dsn.algolia.net'
+    checked=[]
+    monkeypatch.setattr(worker,'validate_public_dns',checked.append)
+    def make_opener(handler):
+        assert isinstance(handler,worker.ReviewedRobotsRedirects)
+        def open_request(request,timeout):
+            dest=handler.redirect_request(request,None,301,'',{},'https://algolia.net/1/404')
+            raise HTTPError(dest.full_url,404,'not found',{},None)
+        return SimpleNamespace(open=open_request)
+    monkeypatch.setattr(worker,'build_opener',make_opener)
+    assert worker.robots_allowed(api,'/1/indexes/prod-experience-waterloo-listings') is True
+    assert checked==[api,'algolia.net']
+    worker._robots_rules.cache_clear()
+    transport(monkeypatch,b'User-agent: *\nDisallow: /1/\n')
+    assert worker.robots_allowed(api,'/1/indexes/prod-experience-waterloo-listings') is False

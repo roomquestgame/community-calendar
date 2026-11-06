@@ -49,6 +49,22 @@ class RejectRedirects(HTTPRedirectHandler):
         raise PreviewError("redirect_blocked")
 
 
+class ReviewedRobotsRedirects(RejectRedirects):
+    """One reviewed vendor route; no general robots redirect permission."""
+    def redirect_request(self, request, fp, code, msg, headers, newurl):
+        # Observed November 6: this API host routes a nonexistent robots file
+        # to its vendor's explicit 404 endpoint. Recheck the original each
+        # cache window so newly published rules are still authoritative.
+        if (request.full_url == 'https://eyqhj2iy2m-dsn.algolia.net/robots.txt'
+                and newurl == 'https://algolia.net/1/404'
+                and code in (301, 302, 307, 308)):
+            validate_public_dns('algolia.net')
+            return Request(newurl, headers={
+                'User-Agent': 'RoomQuestCommunityCalendar/0.1 (community-event research)'
+            }, method='GET')
+        return super().redirect_request(request, fp, code, msg, headers, newurl)
+
+
 def _observe_retry_after(host, headers):
     wait, unbounded = observe_retry_after(headers.get("Retry-After") if headers else None)
     if unbounded:
@@ -117,7 +133,8 @@ def validate_public_dns(host: str) -> None:
 def _robots_rules(host: str, time_bucket: int):
     """Read each publisher's rules once per five-minute cache window.
 
-    Never redirect robots requests or fetch private-network destinations.
+    Only the exact reviewed API-vendor robots redirect is permitted; every
+    other redirect and every private-network destination remains blocked.
     404/410 mean no robots rules; all other HTTP/network failures fail closed.
     Actual denial and temporary unavailability retain distinct error codes.
     Cache the rules, not a path's decision: every event path is still checked.
@@ -129,7 +146,7 @@ def _robots_rules(host: str, time_bucket: int):
         # A failed robots response is not cached. Its Retry-After must still
         # protect another robots GET, not only later calendar requests.
         pace_publisher(host, monotonic() + 5, reserve=False)
-        opener = build_opener(RejectRedirects())
+        opener = build_opener(ReviewedRobotsRedirects())
         request = Request(robots_url, headers={
             "User-Agent": "RoomQuestCommunityCalendar/0.1 (community-event research)"
         })
