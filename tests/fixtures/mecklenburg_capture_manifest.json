@@ -1,0 +1,23 @@
+{
+  "captured_at": "2026-11-06T01:50:09Z",
+  "user_date": "2026-11-05 America/New_York",
+  "chase_city": {
+    "url": "https://chasecitychamber.com/upcoming-events",
+    "raw_sha256": "92b35407dc89b83dca0ea0abe51beeeeec6be4f9e6985624da6315eebcbe8fd3",
+    "fixture": "chase_city_20261105.html",
+    "scope": "Publisher event titles, links, schedules, venue facts, context identity and event-image URLs retained. Presentation markup removed and prose replaced with explicit synthetic fixture descriptions. Raw capture retained locally for audit."
+  },
+  "rosemont": {
+    "url": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/events?per_page=100&start_date=2026-11-05&end_date=2027-01-04&page=1",
+    "fixture": "rosemont_20261105.json",
+    "scope": "Publisher factual API fields retained for all 11 records and one-page bounds. Descriptions replaced with explicit synthetic fixture prose except a short paraphrase of the reviewed time conflict; unrelated metadata omitted. Raw capture retained locally for audit."
+  },
+  "chase_city_flyer": {
+    "source_event_url": "https://chasecitychamber.com/upcoming-events/chase-city-chamber-of-commerce-awards-cocktail-party",
+    "image_url": "https://images.squarespace-cdn.com/content/v1/64921bef4a756810ab11ec54/4760210d-377d-4a14-b2b2-254836e42004/Chamber+Cocktail+Party+%285.4+x+4.2+in%29+%281%29.png",
+    "status": 200,
+    "content_type": "image/webp",
+    "bytes": 598710
+  },
+  "reviewed_flyer_sha256": "de3def393870b439ec633cdd380c1321e957bfcd05808d8af71ac6c382b6ecf9"
+}

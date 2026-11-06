@@ -6,12 +6,92 @@ No venue search, source-wide pin, extra scheduler or provider identity change.
 from datetime import datetime, timedelta, timezone
 import json
 import re
+import sys
 from time import monotonic
 from urllib.parse import urlsplit, urlunsplit, parse_qsl, urlencode
 
 MAX_PAGES = 5
 MAX_RECORDS = 500
 MAX_MADISON_TIME_REVIEWS = 5
+ROSEMONT_KEY = 'rosemont_of_virginia'
+ROSEMONT_URL = 'https://rosemontofvirginia.com/wp-json/tribe/events/v1/events'
+ROSEMONT_TIMEZONE = 'America/New_York'
+
+
+def _rosemont_log(kind, **fields):
+    print(json.dumps({'event': 'rosemont_' + kind, 'source_key': ROSEMONT_KEY,
+                      **fields}, sort_keys=True), file=sys.stderr)
+
+
+def _rosemont_review(payload):
+    """Review only this publisher's records; missing venues never inherit the winery.
+
+    The reviewed November 21 occurrence has an unresolved header/body conflict.
+    Keep it out of publication until reviewed, without changing either time.
+    Holds are diagnostic exclusions, not inferred event cancellations.
+    """
+    from roomquest.mapsee_adapter import plain, timestamp
+    accepted, held, excluded = [], 0, 0
+    for item in payload['events']:
+        if not isinstance(item, dict):
+            raise ValueError('invalid_calendar_record')
+        flags = (True, 1, '1', 'true')
+        labels = [plain(c.get('name')).casefold() for c in item.get('categories', [])
+                  if isinstance(c, dict)]
+        title = plain(item.get('title'))
+        narrative = plain(item.get('description'))
+        if (item.get('status') != 'publish'
+                or item.get('event_status') in ('cancelled', 'canceled', 'postponed')
+                or any(item.get(k) in flags for k in
+                       ('hide_from_listings', 'all_day', 'is_virtual', 'virtual'))
+                or any(label in ('closings', 'closing', 'closures') for label in labels)
+                or re.search(r'\b(?:winery closed|holiday hours|christmas day hours)\b', title, re.I)
+                or re.search(r'\b(?:members?[\s-]+only|private\s+(?:event|party|function)|'
+                             r'invitation[\s-]+only)\b', title + ' ' + narrative, re.I)):
+            excluded += 1
+            continue
+        identity = str(item.get('id') or '')
+        if not identity.isdigit():
+            raise ValueError('event_identity_missing')
+        if item.get('timezone') != ROSEMONT_TIMEZONE:
+            raise ValueError('publisher_timezone_review_required')
+        for field in ('start_date', 'end_date'):
+            local, utc = item.get(field), item.get('utc_' + field)
+            if field == 'end_date' and not local and not utc:
+                continue
+            if (not local or not utc
+                    or timestamp(local, ROSEMONT_TIMEZONE) != timestamp(utc, 'UTC')):
+                raise ValueError('publisher_schedule_conflict')
+        reason = None
+        if (identity == '7956'
+                and item.get('url') == 'https://rosemontofvirginia.com/event/wine-dine-w-beer-fed-beef-6/'
+                and str(item.get('start_date', '')).startswith('2026-11-21')):
+            reason = 'publisher_header_body_time_conflict'
+        venue = item.get('venue')
+        if not reason and (not isinstance(venue, dict)
+                or not plain(venue.get('venue'))
+                or not re.search(r'\b\d{1,6}\s+[A-Za-z]', plain(venue.get('address')))
+                or not plain(venue.get('city'))
+                or not plain(venue.get('state') or venue.get('stateprovince') or venue.get('province'))):
+            reason = 'event_venue_unreviewed'
+        if reason:
+            held += 1
+            _rosemont_log('event_held', event_id=identity, reason=reason)
+            continue
+        accepted.append(item)
+    return dict(payload, events=accepted), held, excluded
+
+
+def _rosemont_evidence(row, item):
+    from roomquest.publisher_evidence import attach
+    row['publisher_categories'] = [c['name'] for c in item.get('categories', [])
+                                   if isinstance(c, dict) and isinstance(c.get('name'), str)]
+    row['location_provenance'] = 'publisher_event_address_pending_geocode'
+    featured = item.get('image')
+    candidate = featured.get('url') if isinstance(featured, dict) else None
+    cost = item.get('cost')
+    facts = {'cost': cost.strip()[:400]} if isinstance(cost, str) and cost.strip() else {}
+    return attach(row, ROSEMONT_KEY, facts=facts, candidate=candidate)
 
 
 def _madison_evidence(row, item):
@@ -90,6 +170,10 @@ def collect(source, fetch, *, deadline_at=None):
         from roomquest.iowa_tourism import collect_think
         return collect_think(source, fetch, deadline_at=deadline_at)
     from roomquest.mapsee_adapter import parse_tribe
+    rosemont = source.get('source_key') == ROSEMONT_KEY
+    if rosemont and (source.get('feed_url') != ROSEMONT_URL
+                     or source.get('timezone', ROSEMONT_TIMEZONE) != ROSEMONT_TIMEZONE):
+        raise ValueError('unregistered_rosemont_source')
     root = urlsplit(source['feed_url'])
     if '/wp-json/tribe/events/v1/events' in root.path:
         if root.path.rstrip('/').split('/wp-json/', 1)[1] != 'tribe/events/v1/events':
@@ -104,6 +188,7 @@ def collect(source, fetch, *, deadline_at=None):
     deadline = min(monotonic() + 35, deadline_at or float('inf'))
     rows = []
     time_reviews = 0
+    rosemont_held = rosemont_excluded = 0
     for page in range(1, MAX_PAGES + 1):
         if monotonic() >= deadline:
             raise ValueError('collection_deadline')
@@ -114,6 +199,10 @@ def collect(source, fetch, *, deadline_at=None):
             raise ValueError('unsupported_wordpress_payload')
         if len(payload['events']) > 100:
             raise ValueError('source_record_limit')
+        if rosemont:
+            payload, held, excluded = _rosemont_review(payload)
+            rosemont_held += held
+            rosemont_excluded += excluded
         if source.get('source_key') == 'madison_county_parks_ia':
             # Compare two representations from the same response. Never repair
             # publisher conflicts by guessing an offset or reading prose dates.
@@ -145,8 +234,12 @@ def collect(source, fetch, *, deadline_at=None):
                             raise ValueError('publisher_schedule_conflict')
         # Never follow response next links; rebuild only this registered URL.
         parsed_rows = parse_tribe(payload, strict_public=source.get("source_key") in
-                                  ("madison_county_parks_ia", "nebraska_game_parks"),
-                               retain_description=source.get("source_key") == "madison_county_parks_ia")
+                                  ("madison_county_parks_ia", "nebraska_game_parks", ROSEMONT_KEY),
+                                retain_description=source.get("source_key") in
+                                  ("madison_county_parks_ia", ROSEMONT_KEY))
+        if rosemont:
+            by_id = {str(item['id']): item for item in payload['events']}
+            parsed_rows = [_rosemont_evidence(row, by_id[row['id']]) for row in parsed_rows]
         if source.get('source_key') == 'madison_county_parks_ia':
             by_id = {str(item.get('id')): item for item in payload['events'] if isinstance(item, dict)}
             parsed_rows = [_madison_evidence(row, by_id[row['id']]) for row in parsed_rows]
@@ -168,6 +261,10 @@ def collect(source, fetch, *, deadline_at=None):
             raise ValueError('conflicting_event_occurrence')
         unique[key] = row
     result = sorted(unique.values(), key=lambda e: (e['starts_at'], e['title']))
+    if rosemont:
+        _rosemont_log('normalized', held=rosemont_held, excluded=rosemont_excluded, records=len(result))
+        if not result and rosemont_held:
+            raise ValueError('rosemont_event_evidence_unavailable')
     if result and not any(e.get('venue_name') or e.get('venue_address') for e in result):
         raise ValueError('venue_extraction_unavailable')
     return result

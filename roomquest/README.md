@@ -1,3 +1,20 @@
+## Mecklenburg reviewed sources — November 6, 2026 (two ready, one held)
+
+Rosemont through WordPress JSON and Chase City Chamber through its allowed normal
+HTML calendar are the two sources eligible for active registration. Their local
+captures produce three and one candidates. Mecklenburg public library parser
+work is retained dormant: Google robots explicitly denies the feed path, so the
+source must remain paused, disabled and outside discovery routing. Its exact
+source key now requires robots checks before any calendar HTTP request.
+The 29 parsed candidates comprise four eligible active-source candidates and
+25 held library candidates; they are not a production-publication count.
+Closures, private events, conflicting schedules and unreviewed venues are held
+or excluded. Local DNS restrictions prevented actual collector transport proof.
+Rosemont and Chase City use the existing bounded publisher-image candidate
+protocol. Library page artwork is not treated as event imagery. No export path
+disallowed by robots, new timer or default event pin is introduced.
+See [the source contracts, evidence and release boundary](../docs/mecklenburg-source-batch-20261105.md).
+
 ## Virginia event descriptions — November 5, 2026 (prepared)
 
 The Virginia HTML adapter now reads the event's actual narrative, preserves a

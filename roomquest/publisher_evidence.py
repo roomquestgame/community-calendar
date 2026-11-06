@@ -37,6 +37,12 @@ def family(source_key, event_url):
                 and re.fullmatch(r'/20\d{2}/\d{1,2}/\d{1,2}/[1-9]\d*/[a-z0-9-]+/', p.path)
                 and not p.query):
             return 'mason_city'
+        if (source_key == 'rosemont_of_virginia' and p.hostname == 'rosemontofvirginia.com'
+                and re.fullmatch(r'/event/[a-z0-9-]+/?', p.path) and not p.query):
+            return 'rosemont'
+        if (source_key == 'chase_city_chamber_va' and p.hostname == 'chasecitychamber.com'
+                and re.fullmatch(r'/upcoming-events/[a-z0-9-]+/?', p.path) and not p.query):
+            return 'chase_city_chamber'
         if (re.fullmatch(r'south_carolina_parks_[1-9][0-9]{0,9}', source_key or '')
                 and p.hostname == 'southcarolinaparks.com'
                 and re.fullmatch(r'/products/[1-9][0-9]{0,9}', p.path) and not p.query):
@@ -61,6 +67,15 @@ def image_url(value, publisher):
         if publisher in ('bellevue_times', 'madison'):
             host = 'www.madisoncountyparks.org' if publisher == 'madison' else 'bellevuetimes.com'
             return value if (p.hostname == host and p.path.startswith('/wp-content/uploads/')
+                             and re.search(r'\.(?:jpe?g|png|webp|gif)$', p.path, re.I)) else None
+        if publisher == 'rosemont':
+            return value if (p.hostname == 'rosemontofvirginia.com'
+                             and p.path.startswith('/wp-content/uploads/')
+                             and re.search(r'\.(?:jpe?g|png|webp|gif)$', p.path, re.I)
+                             and not re.search(r'(?:^|[-_/])(?:logo|favicon|avatar|pixel)(?:[-_.]|$)', p.path, re.I)) else None
+        if publisher == 'chase_city_chamber':
+            return value if (p.hostname == 'images.squarespace-cdn.com'
+                             and p.path.startswith('/content/v1/64921bef4a756810ab11ec54/')
                              and re.search(r'\.(?:jpe?g|png|webp|gif)$', p.path, re.I)) else None
         if publisher == 'south_carolina_parks':
             return value if (p.hostname == 'southcarolinaparks.com'
