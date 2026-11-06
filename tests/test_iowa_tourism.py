@@ -153,3 +153,14 @@ def test_wordpress_dispatch_sends_think_evidence_to_staging_and_versioned_comple
     assert db.call_args_list[-1].args[0] == 'community_collector_record_preview_v3'
     assert db.call_args_list[-1].args[1]['p_parser_capability'] == 'publisher_event_candidates_v1'
     assert all('description' in r for r in db.call_args_list[0].args[1]['p_events'])
+
+
+def test_think_requests_local_calendar_dates_across_utc_midnight():
+    calls = []
+    def fetch(url, accept):
+        calls.append(url)
+        return json.dumps({'events': [], 'total_pages': 1})
+    assert tourism.collect_think(THINK, fetch, now=NOW) == []
+    query = parse_qs(urlsplit(calls[0]).query)
+    assert query['start_date'] == ['2026-11-05']
+    assert query['end_date'] == ['2027-01-04']

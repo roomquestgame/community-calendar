@@ -262,7 +262,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
     return sorted(unique.values(), key=lambda r: (r['starts_at'], r['id']))
 
 
-def collect_think(source, fetch, *, deadline_at=None):
+def collect_think(source, fetch, *, deadline_at=None, now=None):
     from roomquest.mapsee_adapter import parse_tribe
     key = 'think_iowa_city_ia'
     endpoint = 'https://thinkiowacity.com/wp-json/tribe/events/v1/events'
@@ -270,14 +270,15 @@ def collect_think(source, fetch, *, deadline_at=None):
             or source.get('kind') != 'json' or source.get('platform_adapter') != 'wordpress'
             or source.get('timezone') != TZ.key):
         raise ValueError('unregistered_iowa_tourism_source')
-    now = datetime.now(timezone.utc)
+    now = now or datetime.now(timezone.utc)
+    local_day = now.astimezone(TZ).date()
     deadline = min(monotonic() + 30, deadline_at or float('inf'))
     rows = []
     for page in range(1, 6):
         if monotonic() >= deadline:
             raise ValueError('collection_deadline')
-        params = {'per_page': 100, 'page': page, 'start_date': now.date().isoformat(),
-                  'end_date': (now + timedelta(days=60)).date().isoformat()}
+        params = {'per_page': 100, 'page': page, 'start_date': local_day.isoformat(),
+                  'end_date': (local_day + timedelta(days=60)).isoformat()}
         data = json.loads(fetch(endpoint + '?' + urlencode(params), 'application/json'))
         if not isinstance(data, dict) or not isinstance(data.get('events'), list) or len(data['events']) > 100:
             raise ValueError('unsupported_wordpress_payload')
