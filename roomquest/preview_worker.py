@@ -622,7 +622,10 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
     if source.get("platform_adapter") == "html" and source.get("kind") == "html":
         source_key = str(source.get("source_key", ""))
         html_budget = 36
-        if source_key.startswith("mycountyparks_ia_"):
+        if source_key in ('unleashcb_ia', 'visit_mason_city_ia'):
+            from roomquest.iowa_tourism import collect as collect_html
+            allowed_hosts = (urlparse(source['feed_url']).hostname,)
+        elif source_key.startswith("mycountyparks_ia_"):
             from roomquest.mycountyparks import collect as collect_html
             allowed_hosts = ("www.mycountyparks.com",)
         elif source_key.startswith("virginia_state_parks_"):
@@ -706,7 +709,7 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
             samples.pop()
         return {**({"p_parser_capability": "publisher_event_candidates_v1"}
-                   if source.get('source_key') == 'rosemont_of_virginia' else {}),
+                   if source.get('source_key') in ('madison_county_parks_ia', 'think_iowa_city_ia', 'rosemont_of_virginia') else {}),
                 "p_source_key": source["source_key"], "p_samples": samples,
                 "p_future_count": len(records),
                 "p_venue_count": sum(1 for row in records if row["lat"] is not None),
@@ -936,11 +939,9 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
     # recorded. If this RPC fails, the exception remains a worker failure.
     html = source.get("kind") == "html" and source.get("platform_adapter") == "html"
     source_key = str(source.get('source_key', ''))
-    publisher_media = (html and (source_key.startswith(('virginia_state_parks_', 'mycountyparks_ia_'))
-                                or source_key in ('bellevue_times_ne', 'chase_city_chamber_va'))) or source.get('platform_adapter') == 'south_carolina_parks'
-    publisher_media = publisher_media or (source_key == 'rosemont_of_virginia'
-                                         and source.get('kind') == 'json'
-                                         and source.get('platform_adapter') == 'wordpress')
+    publisher_media = (source_key in ('madison_county_parks_ia', 'think_iowa_city_ia', 'rosemont_of_virginia') and source.get('kind') == 'json'
+                       and source.get('platform_adapter') == 'wordpress') or (html and (source_key.startswith(('virginia_state_parks_', 'mycountyparks_ia_'))
+                                or source_key in ('bellevue_times_ne', 'unleashcb_ia', 'visit_mason_city_ia', 'chase_city_chamber_va'))) or source.get('platform_adapter') == 'south_carolina_parks'
     preview_rpc = ("community_collector_record_preview_v3"
                    if publisher_media
                    else "community_collector_record_preview_v2" if html

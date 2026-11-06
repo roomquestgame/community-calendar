@@ -98,6 +98,7 @@ def test_independence_actual_capture_full_details_and_explicit_all_day_exclusion
     assert event['starts_at'] == local.astimezone(timezone.utc).isoformat()
     assert event['ends_at'] == (local+timedelta(hours=1)).astimezone(timezone.utc).isoformat()
     assert event['venue_address'] == '805 1st St East, Independence, IA 50644'
+    assert event['venue_name'] == 'Public Library > Community Room'
     assert 'No registration needed.' in event['description']
     assert event['lat'] is None and event['lng'] is None
     assert 'uid=5956 reason=unsupported_all_day_time' in caplog.text

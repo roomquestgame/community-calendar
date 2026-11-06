@@ -42,6 +42,13 @@ def enrich(records, source, fetch, deadline):
         # The detail's actual event address replaces no verified point.
         record['venue_address'] = f'{street}, {city}, {state} {zipcode}'
         record['venue_city'] = city
+        # CivicPlus sometimes concatenates its real room label and address in
+        # LOCATION. Remove only a suffix whose street matches this event's
+        # verified PostalAddress; keep the original room/library wording.
+        label = record.get('venue_name', '')
+        marker = ' - ' + street
+        if marker.casefold() in label.casefold():
+            record['venue_name'] = label[:label.casefold().index(marker.casefold())].strip()
         summary = record['description'].replace(record['event_url'], '').strip()
         for element in descriptions[0].select('script,style,[hidden]'):
             element.decompose()

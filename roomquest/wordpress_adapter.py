@@ -94,6 +94,42 @@ def _rosemont_evidence(row, item):
     return attach(row, ROSEMONT_KEY, facts=facts, candidate=candidate)
 
 
+def _madison_evidence(row, item):
+    """Use only this event's API content; optional images never add a fetch."""
+    from bs4 import BeautifulSoup
+    from roomquest.publisher_evidence import attach, family, image_url
+    if family('madison_county_parks_ia', row['event_url']) != 'madison':
+        return row
+    soup = BeautifulSoup(item.get('description') or '', 'html.parser')
+    for tag in soup.select('script, style, template, noscript'):
+        tag.decompose()
+    candidates = {u for tag in soup.select('img[src]')
+                  if (u := image_url(tag.get('src'), 'madison'))}
+    featured = item.get('image')
+    if isinstance(featured, dict) and (u := image_url(featured.get('url'), 'madison')):
+        candidates.add(u)
+    # More than one publisher image is ambiguous; do not choose arbitrarily.
+    candidate = next(iter(candidates)) if len(candidates) == 1 else None
+    narrative = row.get('description', '')
+    # Only explicit introductory scheduling prose, never a historical date in
+    # a talk's subject. A warning preserves the publisher's original wording.
+    mention = re.search(r'\bJoin us\b[^.\n]{0,160}?\bon\s+([A-Za-z]+)\s+(\d{1,2})\b', narrative, re.I)
+    months = {name.lower(): number for number, name in enumerate(
+        ('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August',
+         'September', 'October', 'November', 'December'), 1)}
+    months.update({name[:3]: number for name, number in list(months.items())})
+    if mention and item.get('start_date'):
+        day = datetime.fromisoformat(item['start_date']).date()
+        month = months.get(mention[1].lower())
+        if month and (month, int(mention[2])) != (day.month, day.day):
+            note = ('Schedule note: The date in the publisher description conflicts with its calendar. '
+                    'Use the event date shown above and confirm with the organizer.\n\n')
+            row['description'] = note + narrative[:2000 - len(note)]
+    cost = item.get('cost')
+    facts = {'cost': cost.strip()[:400]} if isinstance(cost, str) and cost.strip() else {}
+    return attach(row, 'madison_county_parks_ia', facts=facts, candidate=candidate)
+
+
 def _madison_display_schedule(item, source, fetch):
     """Resolve only a misconfigured publisher zone with same-event HTML proof."""
     from bs4 import BeautifulSoup
@@ -130,6 +166,9 @@ def _madison_display_schedule(item, source, fetch):
 
 
 def collect(source, fetch, *, deadline_at=None):
+    if source.get('source_key') == 'think_iowa_city_ia':
+        from roomquest.iowa_tourism import collect_think
+        return collect_think(source, fetch, deadline_at=deadline_at)
     from roomquest.mapsee_adapter import parse_tribe
     rosemont = source.get('source_key') == ROSEMONT_KEY
     if rosemont and (source.get('feed_url') != ROSEMONT_URL
@@ -201,6 +240,9 @@ def collect(source, fetch, *, deadline_at=None):
         if rosemont:
             by_id = {str(item['id']): item for item in payload['events']}
             parsed_rows = [_rosemont_evidence(row, by_id[row['id']]) for row in parsed_rows]
+        if source.get('source_key') == 'madison_county_parks_ia':
+            by_id = {str(item.get('id')): item for item in payload['events'] if isinstance(item, dict)}
+            parsed_rows = [_madison_evidence(row, by_id[row['id']]) for row in parsed_rows]
         rows.extend(parsed_rows)
         if len(rows) > MAX_RECORDS:
             raise ValueError('source_record_limit')

@@ -22,6 +22,21 @@ def family(source_key, event_url):
         if (source_key == 'bellevue_times_ne' and p.hostname == 'bellevuetimes.com'
                 and p.path.startswith('/events/') and re.fullmatch(r'occurrence=20[0-9]{6}T[0-9]{6}', p.query)):
             return 'bellevue_times'
+        if (source_key == 'madison_county_parks_ia' and p.hostname == 'www.madisoncountyparks.org'
+                and re.fullmatch(r'/calendar/[^/?#]+/?', p.path) and not p.query):
+            return 'madison'
+        if (source_key == 'think_iowa_city_ia' and p.hostname == 'thinkiowacity.com'
+                and re.fullmatch(r'/event/[a-z0-9-]+/(?:20\d{2}-\d{2}-\d{2}/)?', p.path)
+                and not p.query):
+            return 'think_iowa_city'
+        if (source_key == 'unleashcb_ia' and p.hostname == 'www.unleashcb.com'
+                and re.fullmatch(r'/events/detail/[a-z0-9_-]+/20\d{2}-\d{2}-\d{2}/', p.path)
+                and not p.query):
+            return 'unleashcb'
+        if (source_key == 'visit_mason_city_ia' and p.hostname == 'www.visitmasoncityiowa.com'
+                and re.fullmatch(r'/20\d{2}/\d{1,2}/\d{1,2}/[1-9]\d*/[a-z0-9-]+/', p.path)
+                and not p.query):
+            return 'mason_city'
         if (source_key == 'rosemont_of_virginia' and p.hostname == 'rosemontofvirginia.com'
                 and re.fullmatch(r'/event/[a-z0-9-]+/?', p.path) and not p.query):
             return 'rosemont'
@@ -49,8 +64,9 @@ def image_url(value, publisher):
         if publisher == 'mycountyparks':
             return value if (p.hostname == 'content.mycountyparks.com'
                              and p.path.startswith('/Production/RelatedItem/Content/')) else None
-        if publisher == 'bellevue_times':
-            return value if (p.hostname == 'bellevuetimes.com' and p.path.startswith('/wp-content/uploads/')
+        if publisher in ('bellevue_times', 'madison'):
+            host = 'www.madisoncountyparks.org' if publisher == 'madison' else 'bellevuetimes.com'
+            return value if (p.hostname == host and p.path.startswith('/wp-content/uploads/')
                              and re.search(r'\.(?:jpe?g|png|webp|gif)$', p.path, re.I)) else None
         if publisher == 'rosemont':
             return value if (p.hostname == 'rosemontofvirginia.com'
@@ -65,6 +81,15 @@ def image_url(value, publisher):
             return value if (p.hostname == 'southcarolinaparks.com'
                              and not p.path.lower().startswith(('/images/', '/logo', '/favicon'))
                              and re.search(r'\.(?:jpe?g|png|webp|gif)$', p.path, re.I)) else None
+        if publisher == 'think_iowa_city':
+            return value if (p.hostname == 'thinkiowacity.com' and p.path.startswith('/wp-content/uploads/')
+                             and re.search(r'\.(?:jpe?g|png|webp|gif)$', p.path, re.I)) else None
+        if publisher == 'unleashcb':
+            return value if (p.hostname == 'www.unleashcb.com' and p.path.startswith('/images/events/')
+                             and re.search(r'\.(?:jpe?g|png|webp|gif)$', p.path, re.I)) else None
+        if publisher == 'mason_city':
+            return value if (p.hostname == 'images.locable.com'
+                             and re.fullmatch(r'/[A-Za-z0-9_+=/-]{20,}', p.path)) else None
     except ValueError:
         pass
     return None

@@ -368,6 +368,28 @@ def _description_with_suffix(summary, suffix):
     return prefix + "\n\n" + suffix if prefix else suffix
 
 
+def verified_summary_end(title, summary, start):
+    """Use only a title-prefixed weekday/date/time line matching the header."""
+    value = clean(summary)
+    if not value.casefold().startswith(clean(title).casefold()):
+        return None
+    value = value[len(clean(title)):].strip()
+    match = re.match(r'^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday),\s*'
+                     r'([A-Za-z]+)\s+(\d{1,2}),\s*(\d{1,2}(?::\d{2})?)\s*[-–]\s*'
+                     r'(\d{1,2}(?::\d{2})?)\s*([ap])\.?m\.?(?:\s|$)', value, re.I)
+    if not match:
+        return None
+    month = _MONTHS.get(match[2][:3].upper())
+    if (not month or start.month != month or start.day != int(match[3])
+            or start.strftime('%A').casefold() != match[1].casefold()):
+        return None
+    def instant(raw):
+        clock = datetime.strptime(raw + match[6].upper() + 'M', '%I:%M%p' if ':' in raw else '%I%p').time()
+        return timestamp(datetime.combine(start.date(), clock).isoformat(), TZ.key)
+    begins, ends = instant(match[4]), instant(match[5])
+    return ends if begins == start and start < ends <= start + timedelta(hours=12) else None
+
+
 def parse_event(html, event, *, now=None):
     """Parse one listing-linked detail, ignoring parent park map coordinates."""
     if not isinstance(event, ListingEvent):
@@ -414,11 +436,22 @@ def parse_event(html, event, *, now=None):
         raise ValueError("mycountyparks_now_timezone_missing")
     if not _active_within_window(event, current):
         return None
+    if (re.search(r'\b(exhibit|exhibition)\b', title, re.I)
+            and re.search(r'\b(?:regular|normal)\s+(?:building|opening)\s+hours\b', description, re.I)
+            and re.search(r'\b[A-Za-z]+\s+\d{1,2}\s*[-–]\s*\d{1,2}\b', description)):
+        raise ValueError('mycountyparks_exhibition_hours_unresolved')
+    effective_end = event.end or verified_summary_end(title, description, start)
     venue, address, city = _location(main)
+    room_note = ''
+    if (re.search(r',\s*Lower Level$', venue, re.I)
+            and re.search(r'\bmeet upstairs in the Discovery Lab\b', description, re.I)):
+        venue = re.sub(r',\s*Lower Level$', '', venue, flags=re.I)
+        room_note = ('Location note: The publisher lists Lower Level but its description says upstairs '
+                     'in the Discovery Lab. Confirm the room with the organizer.\n\n')
     category = _section_text(main, "Category")
     cost = _bounded_text(_section_text(main, "Cost"), MAX_COST_TEXT)
     registration = _registration(main)
-    item = record(title, start.isoformat(), event.end.isoformat() if event.end else None,
+    item = record(title, start.isoformat(), effective_end.isoformat() if effective_end else None,
                   venue, address, city, event.url, f"mycountyparks:{event.county}:{event.event_id}",
                   category=category, lat=None, lng=None, tz=TZ.key,
                   publisher_geo=False, retain_until_end=True)
@@ -432,7 +465,7 @@ def parse_event(html, event, *, now=None):
         item["image_url"] = image_url
     extras = [f"Cost: {cost}" if cost else "", f"Registration: {registration}" if registration else ""]
     suffix = "\n\n".join(value for value in extras if value)
-    item["description"] = _description_with_suffix(description, suffix)
+    item["description"] = _description_with_suffix(room_note + description, suffix)
     item["publisher_categories"] = [category[:100]] if category else []
     attach(item, 'mycountyparks_ia_' + event.county,
            facts={'cost': cost, 'registration': registration}, candidate=image_url)
@@ -546,7 +579,7 @@ def collect(source, fetch, *, deadline_at=None, today=None, now=None):
             if reason == "mycountyparks_event_venue_requires_address":
                 unresolved += 1
                 print("mycountyparks_address_unresolved", county, event.event_id, reason, file=sys.stderr)
-            elif reason == "mycountyparks_event_midnight_noon_conflict":
+            elif reason in ("mycountyparks_event_midnight_noon_conflict", "mycountyparks_exhibition_hours_unresolved"):
                 time_conflicts += 1
                 print("mycountyparks_time_unresolved", county, event.event_id, reason, file=sys.stderr)
             else:

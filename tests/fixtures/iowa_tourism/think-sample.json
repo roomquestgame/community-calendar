@@ -1,0 +1,2180 @@
+{
+  "events": [
+    {
+      "id": 93221,
+      "global_id": "thinkiowacity.com?id=93221",
+      "global_id_lineage": [
+        "thinkiowacity.com?id=93221"
+      ],
+      "author": "20",
+      "status": "publish",
+      "date": "2026-10-26 18:23:04",
+      "date_utc": "2026-10-26 23:23:04",
+      "modified": "2026-10-26 22:39:24",
+      "modified_utc": "2026-10-27 03:39:24",
+      "url": "https://thinkiowacity.com/event/auditions-for-bears-bears-bears-bears-bears/",
+      "rest_url": "https://thinkiowacity.com/wp-json/tribe/events/v1/events/93221",
+      "title": "Auditions for BEARS BEARS BEARS BEARS BEARS",
+      "description": "<p>Attention local actors! Dreamwell Theatre&#8217;s next show will be BEARS BEARS BEARS BEARS BEARS by local playwright gwen doctor, directed by Nicole Terry! Auditions will take place 11/6 at 1pm-6pm in ICPL&#8217;s Meeting Room E, and 11/8 at 12pm-5pm in ICPL&#8217;s Meeting Room D.</p>\n<p>A community of bears struggle to navigate in a world that is changing faster than they can understand, as the encroachment of humanity transforms both their home and their relationships. Blending absurd humor with quiet heartbreak, the play explores survival, identity, and what is lost when the natural world collides with the human one.</p>\n<p>This show will be a workshop process, involving collaborative conversation with the playwright.</p>\n<p>We hope to see you there!</p>",
+      "excerpt": "",
+      "slug": "auditions-for-bears-bears-bears-bears-bears",
+      "image": {
+        "url": "https://thinkiowacity.com/wp-content/uploads/2026/10/BEARSx5-Audition-Flyer.png",
+        "id": 93223,
+        "extension": "png",
+        "width": 1080,
+        "height": 1350,
+        "filesize": 546157,
+        "sizes": {
+          "medium": {
+            "width": 240,
+            "height": 300,
+            "mime-type": "image/png",
+            "filesize": 109615,
+            "url": "https://thinkiowacity.com/wp-content/uploads/2026/10/BEARSx5-Audition-Flyer-240x300.png"
+          },
+          "large": {
+            "width": 819,
+            "height": 1024,
+            "mime-type": "image/png",
+            "filesize": 982218,
+            "url": "https://thinkiowacity.com/wp-content/uploads/2026/10/BEARSx5-Audition-Flyer-819x1024.png"
+          },
+          "thumbnail": {
+            "width": 150,
+            "height": 150,
+            "mime-type": "image/png",
+            "filesize": 38885,
+            "url": "https://thinkiowacity.com/wp-content/uploads/2026/10/BEARSx5-Audition-Flyer-150x150.png"
+          },
+          "medium_large": {
+            "width": 768,
+            "height": 960,
+            "mime-type": "image/png",
+            "filesize": 877033,
+            "url": "https://thinkiowacity.com/wp-content/uploads/2026/10/BEARSx5-Audition-Flyer-768x960.png"
+          }
+        }
+      },
+      "all_day": false,
+      "start_date": "2026-11-06 00:00:00",
+      "start_date_details": {
+        "year": "2026",
+        "month": "11",
+        "day": "06",
+        "hour": "00",
+        "minutes": "00",
+        "seconds": "00"
+      },
+      "end_date": "2026-11-08 00:00:00",
+      "end_date_details": {
+        "year": "2026",
+        "month": "11",
+        "day": "08",
+        "hour": "00",
+        "minutes": "00",
+        "seconds": "00"
+      },
+      "utc_start_date": "2026-11-06 06:00:00",
+      "utc_start_date_details": {
+        "year": "2026",
+        "month": "11",
+        "day": "06",
+        "hour": "06",
+        "minutes": "00",
+        "seconds": "00"
+      },
+      "utc_end_date": "2026-11-08 06:00:00",
+      "utc_end_date_details": {
+        "year": "2026",
+        "month": "11",
+        "day": "08",
+        "hour": "06",
+        "minutes": "00",
+        "seconds": "00"
+      },
+      "timezone": "America/Chicago",
+      "timezone_abbr": "CST",
+      "cost": "",
+      "cost_details": {
+        "currency_symbol": "$",
+        "currency_code": "USD",
+        "currency_position": "prefix",
+        "values": []
+      },
+      "website": "https://www.dreamwell.com/2025-2026-season/",
+      "show_map": false,
+      "show_map_link": false,
+      "hide_from_listings": false,
+      "sticky": false,
+      "featured": false,
+      "categories": [
+        {
+          "name": "Performing Arts",
+          "slug": "performing-arts",
+          "term_group": 0,
+          "term_taxonomy_id": 60,
+          "taxonomy": "tribe_events_cat",
+          "description": "",
+          "parent": 0,
+          "count": 436,
+          "filter": "raw",
+          "id": 60,
+          "urls": {
+            "self": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories/60",
+            "collection": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories"
+          }
+        },
+        {
+          "name": "Theatre",
+          "slug": "theatre",
+          "term_group": 0,
+          "term_taxonomy_id": 66,
+          "taxonomy": "tribe_events_cat",
+          "description": "",
+          "parent": 0,
+          "count": 523,
+          "filter": "raw",
+          "id": 66,
+          "urls": {
+            "self": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories/66",
+            "collection": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories"
+          }
+        }
+      ],
+      "tags": [],
+      "venue": {
+        "id": 13222,
+        "author": "7",
+        "status": "publish",
+        "date": "2022-07-12 16:25:43",
+        "date_utc": "2022-07-12 21:25:43",
+        "modified": "2022-07-12 16:25:43",
+        "modified_utc": "2022-07-12 21:25:43",
+        "url": "https://thinkiowacity.com/venue/iowa-city-public-library-2/",
+        "venue": "Iowa City Public Library",
+        "slug": "iowa-city-public-library-2",
+        "address": "123 S Linn St",
+        "city": "Iowa City",
+        "country": "US",
+        "state": "IA",
+        "zip": "52240",
+        "stateprovince": "IA",
+        "show_map": true,
+        "show_map_link": true,
+        "global_id": "thinkiowacity.com?id=13222",
+        "global_id_lineage": [
+          "thinkiowacity.com?id=13222"
+        ]
+      },
+      "organizer": [
+        {
+          "id": 58125,
+          "status": "publish",
+          "date": "2025-02-28 15:01:14",
+          "date_utc": "0000-00-00 00:00:00",
+          "modified": "2025-02-28 15:01:14",
+          "modified_utc": "0000-00-00 00:00:00",
+          "url": "https://thinkiowacity.com/organizer/dreamwell-theatre/",
+          "organizer": "dreamwell theatre",
+          "slug": "dreamwell-theatre",
+          "website": "https://www.dreamwell.com",
+          "email": "president@dreamwell.com",
+          "global_id": "thinkiowacity.com?id=58125",
+          "global_id_lineage": [
+            "thinkiowacity.com?id=58125"
+          ]
+        }
+      ],
+      "custom_fields": [],
+      "is_virtual": false,
+      "virtual_url": null,
+      "virtual_video_source": ""
+    },
+    {
+      "id": 93313,
+      "global_id": "thinkiowacity.com?id=93313",
+      "global_id_lineage": [
+        "thinkiowacity.com?id=93313"
+      ],
+      "author": "34",
+      "status": "publish",
+      "date": "2026-10-29 16:12:25",
+      "date_utc": "2026-10-29 21:12:25",
+      "modified": "2026-11-04 09:58:19",
+      "modified_utc": "2026-11-04 15:58:19",
+      "url": "https://thinkiowacity.com/event/glocal-at-iowa-me-iowa-the-world/",
+      "rest_url": "https://thinkiowacity.com/wp-json/tribe/events/v1/events/93313",
+      "title": "Glocal at Iowa Me &#8211; Iowa &#8211; the World",
+      "description": "<p>IN PARTNERSHIP WITH IOWA CITY PUBLIC LIBRARY, UI INTERNATIONAL PROGRAMS, AND UI INTERNATIONAL EDUCATION MONTH COMMITTEE ​<br />\n​​<br />\nTo celebrate International Education Month, this program features students speaking about their most meaningful &#8220;glocal&#8221; (where/how the global and the local intersect) experiences while at the University of Iowa.</p>\n<p>Using the unique presentation style of Pecha Kucha, meaning “chit-chat” in Japanese, presenters will have six minutes to share 20 timed slides. Their stories and images focus on culture and curiosity from diverse perspectives–and the lessons they’ve learned about life as students in a wide world. A panel discussion with Q&amp;A will follow the presentations.</p>\n<p>Nhelia Alemo is a third-year university of Iowa student pursuing a bachelor&#8217;s in political science and master&#8217;s in public affairs. She is a Congolese American born in Kinshasa and raised in the Midwest. Her global experiences have been grounded on my identity and navigating cultural differences from her upbringing and the outside world. She has taken initiative through policy writing and college extracurriculars to continue expanding her global competency, including being part of the Iowa City Foreign Relations Council intern program.</p>\n<p>Ellie Godsoe is a fourth year student from Buffalo, New York, studying English and Creative Writing and Screenwriting with a minor in International Studies. She participated in the Irish Writing Program in Dublin, Ireland, in the summer of 2024. This past summer, she returned to Dublin to complete an internship with Fishamble, an internationally acclaimed Irish theatre company. After graduating, Ellie intends to pursue an MFA in writing to continue interacting and connecting with unique perspectives from across the world.</p>\n<p>Sean Keene is a fourth-year student from Columbia, Missouri, majoring in political science, journalism, and Spanish, with a focus on Latin American politics. Sean has participated in four unique programs during his time at Iowa, studying in Spain, Chile, and Paris, and interning in Rome. After graduating, he plans to attend grad school to earn a Ph.D. in political science and international relations. As of this moment Sean has been to 25 countries and wants to try and get to 30 before graduating in May.</p>\n<p>Andrés Restrepo-Sánchez is a PhD candidate in Sociocultural Anthropology, whose research explores the connections between reproductive justice, obstetric violence, and birth reform in Medellín, Colombia. He earned a BS in Nursing and an MA in Cultural Studies in Bogotá, Colombia, and then moved to Iowa in 2021 to pursue his PhD with the support of a Fulbright scholarship. Andrés is also a birth doula, tarot reader, crochet and puzzle enthusiast, and RPG and fantasy fan.</p>\n<p>Harry Siraj is a first-year law student at the University of Iowa College of Law and a recent University of Iowa graduate, where he studied Political Science and graduated with high distinction and Phi Beta Kappa honors. Originally from Kerala, India, Harry is passionate about exploring the different facets of the legal field as he begins his law school journey. Outside the classroom, his interests include art and Brazilian Jiu-Jitsu.</p>",
+      "excerpt": "",
+      "slug": "glocal-at-iowa-me-iowa-the-world",
+      "image": {
+        "url": "https://thinkiowacity.com/wp-content/uploads/2026/10/11-6-26-EVENT-IG.png",
+        "id": 93316,
+        "extension": "png",
+        "width": 1080,
+        "height": 1080,
+        "filesize": 383628,
+        "sizes": {
+          "medium": {
+            "width": 300,
+            "height": 300,
+            "mime-type": "image/png",
+            "filesize": 153423,
+            "url": "https://thinkiowacity.com/wp-content/uploads/2026/10/11-6-26-EVENT-IG-300x300.png"
+          },
+          "large": {
+            "width": 1024,
+            "height": 1024,
+            "mime-type": "image/png",
+            "filesize": 1291809,
+            "url": "https://thinkiowacity.com/wp-content/uploads/2026/10/11-6-26-EVENT-IG-1024x1024.png"
+          },
+          "thumbnail": {
+            "width": 150,
+            "height": 150,
+            "mime-type": "image/png",
+            "filesize": 44970,
+            "url": "https://thinkiowacity.com/wp-content/uploads/2026/10/11-6-26-EVENT-IG-150x150.png"
+          },
+          "medium_large": {
+            "width": 768,
+            "height": 768,
+            "mime-type": "image/png",
+            "filesize": 792768,
+            "url": "https://thinkiowacity.com/wp-content/uploads/2026/10/11-6-26-EVENT-IG-768x768.png"
+          }
+        }
+      },
+      "all_day": false,
+      "start_date": "2026-11-06 11:00:00",
+      "start_date_details": {
+        "year": "2026",
+        "month": "11",
+        "day": "06",
+        "hour": "11",
+        "minutes": "00",
+        "seconds": "00"
+      },
+      "end_date": "2026-11-06 13:00:00",
+      "end_date_details": {
+        "year": "2026",
+        "month": "11",
+        "day": "06",
+        "hour": "13",
+        "minutes": "00",
+        "seconds": "00"
+      },
+      "utc_start_date": "2026-11-06 17:00:00",
+      "utc_start_date_details": {
+        "year": "2026",
+        "month": "11",
+        "day": "06",
+        "hour": "17",
+        "minutes": "00",
+        "seconds": "00"
+      },
+      "utc_end_date": "2026-11-06 19:00:00",
+      "utc_end_date_details": {
+        "year": "2026",
+        "month": "11",
+        "day": "06",
+        "hour": "19",
+        "minutes": "00",
+        "seconds": "00"
+      },
+      "timezone": "America/Chicago",
+      "timezone_abbr": "CST",
+      "cost": "",
+      "cost_details": {
+        "currency_symbol": "$",
+        "currency_code": "USD",
+        "currency_position": "prefix",
+        "values": []
+      },
+      "website": "https://www.icfrc.org/events-1",
+      "show_map": false,
+      "show_map_link": false,
+      "hide_from_listings": false,
+      "sticky": false,
+      "featured": false,
+      "categories": [
+        {
+          "name": "Education / Workshop",
+          "slug": "education-workshop",
+          "term_group": 0,
+          "term_taxonomy_id": 40,
+          "taxonomy": "tribe_events_cat",
+          "description": "",
+          "parent": 0,
+          "count": 448,
+          "filter": "raw",
+          "id": 40,
+          "urls": {
+            "self": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories/40",
+            "collection": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories"
+          }
+        },
+        {
+          "name": "Free Event",
+          "slug": "free-event",
+          "term_group": 0,
+          "term_taxonomy_id": 48,
+          "taxonomy": "tribe_events_cat",
+          "description": "",
+          "parent": 0,
+          "count": 1232,
+          "filter": "raw",
+          "id": 48,
+          "urls": {
+            "self": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories/48",
+            "collection": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories"
+          }
+        },
+        {
+          "name": "Lecture",
+          "slug": "lecture",
+          "term_group": 0,
+          "term_taxonomy_id": 52,
+          "taxonomy": "tribe_events_cat",
+          "description": "",
+          "parent": 0,
+          "count": 69,
+          "filter": "raw",
+          "id": 52,
+          "urls": {
+            "self": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories/52",
+            "collection": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories"
+          }
+        }
+      ],
+      "tags": [],
+      "venue": {
+        "id": 7334,
+        "author": "7",
+        "status": "publish",
+        "date": "2022-02-15 16:14:28",
+        "date_utc": "2022-02-15 22:14:28",
+        "modified": "2022-02-15 16:14:28",
+        "modified_utc": "2022-02-15 22:14:28",
+        "url": "https://thinkiowacity.com/venue/iowa-city-public-library/",
+        "venue": "Iowa City Public Library",
+        "slug": "iowa-city-public-library",
+        "address": "123 S Linn St",
+        "city": "Iowa City",
+        "country": "United States",
+        "state": "IA",
+        "zip": "52240",
+        "stateprovince": "IA",
+        "show_map": true,
+        "show_map_link": true,
+        "global_id": "thinkiowacity.com?id=7334",
+        "global_id_lineage": [
+          "thinkiowacity.com?id=7334"
+        ]
+      },
+      "organizer": [
+        {
+          "id": 21841,
+          "status": "publish",
+          "date": "2023-06-23 16:07:40",
+          "date_utc": "2023-06-23 21:07:40",
+          "modified": "2023-06-23 16:07:40",
+          "modified_utc": "2023-06-23 21:07:40",
+          "url": "https://thinkiowacity.com/organizer/iowa-city-foreign-relations-council/",
+          "organizer": "Iowa City Foreign Relations Council",
+          "slug": "iowa-city-foreign-relations-council",
+          "phone": "319.244.8886",
+          "website": "https://www.icfrc.org",
+          "email": "james@icfrc.org",
+          "global_id": "thinkiowacity.com?id=21841",
+          "global_id_lineage": [
+            "thinkiowacity.com?id=21841"
+          ]
+        }
+      ],
+      "custom_fields": [],
+      "is_virtual": false,
+      "virtual_url": null,
+      "virtual_video_source": ""
+    },
+    {
+      "id": 10005503,
+      "global_id": "thinkiowacity.com?id=10005503",
+      "global_id_lineage": [
+        "thinkiowacity.com?id=10005503"
+      ],
+      "author": "20",
+      "status": "publish",
+      "date": "2026-09-18 10:01:56",
+      "date_utc": "2026-09-18 15:01:56",
+      "modified": "2026-09-21 09:52:36",
+      "modified_utc": "2026-09-21 14:52:36",
+      "url": "https://thinkiowacity.com/event/friday-crafternoons-3/2026-11-06/",
+      "rest_url": "https://thinkiowacity.com/wp-json/tribe/events/v1/events/10005503",
+      "title": "Friday Crafternoons",
+      "description": "<p>Need a creative break at the end of the week? Swing by the Stanley on Friday afternoons to work on a craft project of your choice.</p>\n<p>Bring your own in-progress project or start a new one using the various supplies provided. Try your hand at sketching, coloring, knitting, embroidery, origami, and so much more in a relaxing, low-pressure environment. Stay as long as you like and make new connections. Light snacks will be provided.</p>\n<p>Friday Crafternoons occurs almost every Friday at the Stanley Museum of Art lobby and is free and open to all.</p>",
+      "excerpt": "",
+      "slug": "friday-crafternoons-3",
+      "image": {
+        "url": "https://thinkiowacity.com/wp-content/uploads/2026/09/Friday-Crafternoons_Think-Iowa-City.jpeg",
+        "id": 92473,
+        "extension": "jpeg",
+        "width": 1397,
+        "height": 932,
+        "filesize": 180922,
+        "sizes": {
+          "medium": {
+            "width": 300,
+            "height": 200,
+            "mime-type": "image/jpeg",
+            "filesize": 17275,
+            "url": "https://thinkiowacity.com/wp-content/uploads/2026/09/Friday-Crafternoons_Think-Iowa-City-300x200.jpeg"
+          },
+          "large": {
+            "width": 1024,
+            "height": 683,
+            "mime-type": "image/jpeg",
+            "filesize": 134872,
+            "url": "https://thinkiowacity.com/wp-content/uploads/2026/09/Friday-Crafternoons_Think-Iowa-City-1024x683.jpeg"
+          },
+          "thumbnail": {
+            "width": 150,
+            "height": 150,
+            "mime-type": "image/jpeg",
+            "filesize": 7707,
+            "url": "https://thinkiowacity.com/wp-content/uploads/2026/09/Friday-Crafternoons_Think-Iowa-City-150x150.jpeg"
+          },
+          "medium_large": {
+            "width": 768,
+            "height": 512,
+            "mime-type": "image/jpeg",
+            "filesize": 82787,
+            "url": "https://thinkiowacity.com/wp-content/uploads/2026/09/Friday-Crafternoons_Think-Iowa-City-768x512.jpeg"
+          }
+        }
+      },
+      "all_day": false,
+      "start_date": "2026-11-06 13:00:00",
+      "start_date_details": {
+        "year": "2026",
+        "month": "11",
+        "day": "06",
+        "hour": "13",
+        "minutes": "00",
+        "seconds": "00"
+      },
+      "end_date": "2026-11-06 13:00:00",
+      "end_date_details": {
+        "year": "2026",
+        "month": "11",
+        "day": "06",
+        "hour": "13",
+        "minutes": "00",
+        "seconds": "00"
+      },
+      "utc_start_date": "2026-11-06 19:00:00",
+      "utc_start_date_details": {
+        "year": "2026",
+        "month": "11",
+        "day": "06",
+        "hour": "19",
+        "minutes": "00",
+        "seconds": "00"
+      },
+      "utc_end_date": "2026-11-06 19:00:00",
+      "utc_end_date_details": {
+        "year": "2026",
+        "month": "11",
+        "day": "06",
+        "hour": "19",
+        "minutes": "00",
+        "seconds": "00"
+      },
+      "timezone": "America/Chicago",
+      "timezone_abbr": "CDT",
+      "cost": "",
+      "cost_details": {
+        "currency_symbol": "$",
+        "currency_code": "USD",
+        "currency_position": "prefix",
+        "values": []
+      },
+      "website": "https://stanleymuseum.uiowa.edu/event/37816/13",
+      "show_map": false,
+      "show_map_link": false,
+      "hide_from_listings": false,
+      "sticky": false,
+      "featured": false,
+      "categories": [
+        {
+          "name": "Crafts &amp; DIY",
+          "slug": "crafts-diy",
+          "term_group": 0,
+          "term_taxonomy_id": 38,
+          "taxonomy": "tribe_events_cat",
+          "description": "",
+          "parent": 0,
+          "count": 308,
+          "filter": "raw",
+          "id": 38,
+          "urls": {
+            "self": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories/38",
+            "collection": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories"
+          }
+        },
+        {
+          "name": "Exhibit",
+          "slug": "exhibit",
+          "term_group": 0,
+          "term_taxonomy_id": 41,
+          "taxonomy": "tribe_events_cat",
+          "description": "",
+          "parent": 0,
+          "count": 69,
+          "filter": "raw",
+          "id": 41,
+          "urls": {
+            "self": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories/41",
+            "collection": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories"
+          }
+        },
+        {
+          "name": "Free Event",
+          "slug": "free-event",
+          "term_group": 0,
+          "term_taxonomy_id": 48,
+          "taxonomy": "tribe_events_cat",
+          "description": "",
+          "parent": 0,
+          "count": 1232,
+          "filter": "raw",
+          "id": 48,
+          "urls": {
+            "self": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories/48",
+            "collection": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories"
+          }
+        },
+        {
+          "name": "Kids &amp; Family",
+          "slug": "kids-family",
+          "term_group": 0,
+          "term_taxonomy_id": 51,
+          "taxonomy": "tribe_events_cat",
+          "description": "",
+          "parent": 0,
+          "count": 869,
+          "filter": "raw",
+          "id": 51,
+          "urls": {
+            "self": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories/51",
+            "collection": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories"
+          }
+        },
+        {
+          "name": "Museum",
+          "slug": "museum",
+          "term_group": 0,
+          "term_taxonomy_id": 55,
+          "taxonomy": "tribe_events_cat",
+          "description": "",
+          "parent": 0,
+          "count": 39,
+          "filter": "raw",
+          "id": 55,
+          "urls": {
+            "self": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories/55",
+            "collection": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories"
+          }
+        },
+        {
+          "name": "Visual Arts",
+          "slug": "visual-arts",
+          "term_group": 0,
+          "term_taxonomy_id": 67,
+          "taxonomy": "tribe_events_cat",
+          "description": "",
+          "parent": 0,
+          "count": 129,
+          "filter": "raw",
+          "id": 67,
+          "urls": {
+            "self": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories/67",
+            "collection": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories"
+          }
+        }
+      ],
+      "tags": [
+        {
+          "name": "community",
+          "slug": "community",
+          "term_group": 0,
+          "term_taxonomy_id": 356,
+          "taxonomy": "post_tag",
+          "description": "",
+          "parent": 0,
+          "count": 123,
+          "filter": "raw",
+          "id": 356,
+          "urls": {
+            "self": "https://thinkiowacity.com/wp-json/tribe/events/v1/tags/356",
+            "collection": "https://thinkiowacity.com/wp-json/tribe/events/v1/tags"
+          }
+        },
+        {
+          "name": "family friendly",
+          "slug": "family-friendly",
+          "term_group": 0,
+          "term_taxonomy_id": 339,
+          "taxonomy": "post_tag",
+          "description": "",
+          "parent": 0,
+          "count": 363,
+          "filter": "raw",
+          "id": 339,
+          "urls": {
+            "self": "https://thinkiowacity.com/wp-json/tribe/events/v1/tags/339",
+            "collection": "https://thinkiowacity.com/wp-json/tribe/events/v1/tags"
+          }
+        },
+        {
+          "name": "iowa city",
+          "slug": "iowa-city",
+          "term_group": 0,
+          "term_taxonomy_id": 340,
+          "taxonomy": "post_tag",
+          "description": "",
+          "parent": 0,
+          "count": 607,
+          "filter": "raw",
+          "id": 340,
+          "urls": {
+            "self": "https://thinkiowacity.com/wp-json/tribe/events/v1/tags/340",
+            "collection": "https://thinkiowacity.com/wp-json/tribe/events/v1/tags"
+          }
+        },
+        {
+          "name": "things to do",
+          "slug": "things-to-do",
+          "term_group": 0,
+          "term_taxonomy_id": 338,
+          "taxonomy": "post_tag",
+          "description": "",
+          "parent": 0,
+          "count": 894,
+          "filter": "raw",
+          "id": 338,
+          "urls": {
+            "self": "https://thinkiowacity.com/wp-json/tribe/events/v1/tags/338",
+            "collection": "https://thinkiowacity.com/wp-json/tribe/events/v1/tags"
+          }
+        }
+      ],
+      "venue": {
+        "id": 28485,
+        "author": "7",
+        "status": "publish",
+        "date": "2024-02-29 15:52:56",
+        "date_utc": "2024-02-29 21:52:56",
+        "modified": "2024-02-29 15:52:56",
+        "modified_utc": "2024-02-29 21:52:56",
+        "url": "https://thinkiowacity.com/venue/160-w-burlington-street-sma-iowa-city-ia-united-states-iowa-52242/",
+        "venue": "160 W. Burlington Street, SMA, Iowa City, IA, United States, Iowa 52242",
+        "slug": "160-w-burlington-street-sma-iowa-city-ia-united-states-iowa-52242",
+        "show_map": true,
+        "show_map_link": true,
+        "global_id": "thinkiowacity.com?id=28485",
+        "global_id_lineage": [
+          "thinkiowacity.com?id=28485"
+        ]
+      },
+      "organizer": [
+        {
+          "id": 52243,
+          "status": "publish",
+          "date": "2024-10-11 13:38:19",
+          "date_utc": "0000-00-00 00:00:00",
+          "modified": "2024-10-11 13:38:19",
+          "modified_utc": "0000-00-00 00:00:00",
+          "url": "https://thinkiowacity.com/organizer/university-of-iowa-stanley-museum-of-art/",
+          "organizer": "University of Iowa Stanley Museum of Art",
+          "slug": "university-of-iowa-stanley-museum-of-art",
+          "phone": "3193351727",
+          "website": "https://stanleymuseum.uiowa.edu/",
+          "email": "stanley-museum@uiowa.edu",
+          "global_id": "thinkiowacity.com?id=52243",
+          "global_id_lineage": [
+            "thinkiowacity.com?id=52243"
+          ]
+        }
+      ],
+      "custom_fields": [],
+      "is_virtual": false,
+      "virtual_url": null,
+      "virtual_video_source": ""
+    },
+    {
+      "id": 10005176,
+      "global_id": "thinkiowacity.com?id=10005176",
+      "global_id_lineage": [
+        "thinkiowacity.com?id=10005176"
+      ],
+      "author": "20",
+      "status": "publish",
+      "date": "2026-06-10 09:13:31",
+      "date_utc": "2026-06-10 14:13:31",
+      "modified": "2026-06-10 09:14:36",
+      "modified_utc": "2026-06-10 14:14:36",
+      "url": "https://thinkiowacity.com/event/art-write-night/2026-11-06/",
+      "rest_url": "https://thinkiowacity.com/wp-json/tribe/events/v1/events/10005176",
+      "title": "Art &#038; Write Night",
+      "description": "<div id=\"sitenow-event\" class=\"sitenow-event sitenow-event-14332\">\n<div id=\"main-column\" class=\"main-column\">\n<div class=\"event-field event-description\">\n<p>Join the long, rich, historical tradition of artists creating in our spaces.</p>\n<p>Professional, aspiring, and amateur artists alike, <strong><em>make our museum your muse</em></strong>. The return of this popular program series welcomes guests into the Museum of Natural History&#8217;s magical gallery spaces after-hours to work on sketching or writing projects with other campus and community artists.</p>\n<p>Tell a friend, grab a notebook, and join us on the <strong>first Friday of each month</strong>. We&#8217;ll provide a new inspo prompt for each session and will sometimes move about the Museum but we&#8217;ll always <strong>start in Bird Hall on the third Floor of Macbride Hall</strong>. Join anytime between 6-8 p.m. and feel free to participate in a themed creation challenge or work on your own project with our exhibits as inspiration. We&#8217;ll save the last 15-30 minutes of each session to share what we&#8217;ve been working on, connecting with others (optional, of course!).</p>\n<p>Please note, the Museum is typically closed during this time, meaning the main entrance to Iowa Hall (atop the large staircase outside on the east side of Macbride Hall) will be closed and locked. All other building doors will be open, offering access to the Ground Floor of Macbride Hall, restrooms, stairs and elevator to the third floor galleries where this program takes place. Bird Hall is located on the third floor of Macbride Hall and can be reached by stairs or by taking the elevator to the third floor of the building.</p>\n<p>Special thanks to <a href=\"https://www.dickblick.com/\" target=\"_blank\" rel=\"noopener noreferrer nofollow\">Blick Art Materials</a> for supplying extra art materials. Make sure to check in with us in Bird Hall to check out a variety of special art tools and supplies.</p>\n</div>\n</div>\n<div id=\"secondary-column\" class=\"secondary-column\">\n<div class=\"event-field event-time\" data-once=\"date-repeats\">\n<div class=\"date-instance date-instance__past\"><span class=\"date-instance__date\">Friday, December 5, 2025 6:00pm to 8:00pm</span></div>\n<div class=\"date-instance date-instance__past\"><span class=\"date-instance__date\">Friday, February 6, 2026 6:00pm to 8:00pm</span></div>\n<div class=\"date-instance date-instance__past\"><span class=\"date-instance__date\">Friday, March 6, 2026 6:00pm to 8:00pm</span></div>\n<div class=\"date-instance date-instance__past\"><span class=\"date-instance__date\">Friday, April 3, 2026 6:00pm to 8:00pm</span></div>\n<div class=\"date-instance date-instance__past\"><span class=\"date-instance__date\">Friday, May 1, 2026 6:00pm to 8:00pm</span></div>\n<div class=\"date-instance date-instance__future\"><span class=\"date-instance__date\">Friday, August 7, 2026 6:00pm to 8:00pm</span></div>\n<div><span class=\"date-instance__date\">Friday, September 4, 2026 6:00pm to 8:00pm</span></div>\n<div class=\"date-instance date-instance__future\"><span class=\"date-instance__date\">Friday, October 2, 2026 6:00pm to 8:00pm</span></div>\n<div class=\"date-instance date-instance__future\"><span class=\"date-instance__date\">Friday, December 4, 2026 6:00pm to 8:00pm</span></div>\n<p><a id=\"date-repeats-toggle\" class=\"date-repeats-toggle is-expanded\" title=\"Hide Dates\" href=\"https://stanleymuseum.uiowa.edu/event/14332/6#\" target=\"_blank\" rel=\"noopener\">Hide Dates</a></p>\n</div>\n<div class=\"event-field event-location\">\n<p> University of Iowa Museum of Natural History</p>\n<div class=\"event-location-details\">Bird Hall (third Floor)</div>\n<div class=\"event-location-details\">39-53 East Jefferson Street, Iowa City, IA 52240</div>\n</div>\n<div class=\"event-field contact-info\"> <a href=\"mailto:jessica-smith-7@uiowa.edu\">Jessica Smith</a></div>\n<p><a class=\"btn btn-primary\" role=\"button\" href=\"https://events.uiowa.edu/event/14332\">View on Event Calendar</a></p>\n</div>\n</div>\n<div class=\"sitenow-event-accessibility-statement\"><em>Individuals with disabilities are encouraged to attend all University of Iowa–sponsored events. If you are a person with a disability who requires a reasonable accommodation in order to participate in this program, please contact Jessica Smith in advance at <a href=\"tel:319-335-3591\">319-335-3591</a> or <a href=\"mailto:jessica-smith-7@uiowa.edu\">jessica-smith-7@uiowa.edu</a>.</em></div>",
+      "excerpt": "",
+      "slug": "art-write-night",
+      "image": {
+        "url": "https://thinkiowacity.com/wp-content/uploads/2026/06/Aug-7-Art-Write.png",
+        "id": 91291,
+        "extension": "png",
+        "width": 1600,
+        "height": 1600,
+        "filesize": 680912,
+        "sizes": {
+          "medium": {
+            "width": 300,
+            "height": 300,
+            "mime-type": "image/png",
+            "filesize": 151522,
+            "url": "https://thinkiowacity.com/wp-content/uploads/2026/06/Aug-7-Art-Write-300x300.png"
+          },
+          "large": {
+            "width": 1024,
+            "height": 1024,
+            "mime-type": "image/png",
+            "filesize": 1168798,
+            "url": "https://thinkiowacity.com/wp-content/uploads/2026/06/Aug-7-Art-Write-1024x1024.png"
+          },
+          "thumbnail": {
+            "width": 150,
+            "height": 150,
+            "mime-type": "image/png",
+            "filesize": 45468,
+            "url": "https://thinkiowacity.com/wp-content/uploads/2026/06/Aug-7-Art-Write-150x150.png"
+          },
+          "medium_large": {
+            "width": 768,
+            "height": 768,
+            "mime-type": "image/png",
+            "filesize": 740236,
+            "url": "https://thinkiowacity.com/wp-content/uploads/2026/06/Aug-7-Art-Write-768x768.png"
+          },
+          "1536x1536": {
+            "width": 1536,
+            "height": 1536,
+            "mime-type": "image/png",
+            "filesize": 2207329,
+            "url": "https://thinkiowacity.com/wp-content/uploads/2026/06/Aug-7-Art-Write-1536x1536.png"
+          }
+        }
+      },
+      "all_day": false,
+      "start_date": "2026-11-06 18:00:00",
+      "start_date_details": {
+        "year": "2026",
+        "month": "11",
+        "day": "06",
+        "hour": "18",
+        "minutes": "00",
+        "seconds": "00"
+      },
+      "end_date": "2026-11-06 20:00:00",
+      "end_date_details": {
+        "year": "2026",
+        "month": "11",
+        "day": "06",
+        "hour": "20",
+        "minutes": "00",
+        "seconds": "00"
+      },
+      "utc_start_date": "2026-11-07 00:00:00",
+      "utc_start_date_details": {
+        "year": "2026",
+        "month": "11",
+        "day": "07",
+        "hour": "00",
+        "minutes": "00",
+        "seconds": "00"
+      },
+      "utc_end_date": "2026-11-07 02:00:00",
+      "utc_end_date_details": {
+        "year": "2026",
+        "month": "11",
+        "day": "07",
+        "hour": "02",
+        "minutes": "00",
+        "seconds": "00"
+      },
+      "timezone": "America/Chicago",
+      "timezone_abbr": "CST",
+      "cost": "",
+      "cost_details": {
+        "currency_symbol": "$",
+        "currency_code": "USD",
+        "currency_position": "prefix",
+        "values": []
+      },
+      "website": "https://stanleymuseum.uiowa.edu/event/14332/6",
+      "show_map": true,
+      "show_map_link": true,
+      "hide_from_listings": false,
+      "sticky": false,
+      "featured": false,
+      "categories": [
+        {
+          "name": "Crafts &amp; DIY",
+          "slug": "crafts-diy",
+          "term_group": 0,
+          "term_taxonomy_id": 38,
+          "taxonomy": "tribe_events_cat",
+          "description": "",
+          "parent": 0,
+          "count": 308,
+          "filter": "raw",
+          "id": 38,
+          "urls": {
+            "self": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories/38",
+            "collection": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories"
+          }
+        },
+        {
+          "name": "Exhibit",
+          "slug": "exhibit",
+          "term_group": 0,
+          "term_taxonomy_id": 41,
+          "taxonomy": "tribe_events_cat",
+          "description": "",
+          "parent": 0,
+          "count": 69,
+          "filter": "raw",
+          "id": 41,
+          "urls": {
+            "self": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories/41",
+            "collection": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories"
+          }
+        },
+        {
+          "name": "Free Event",
+          "slug": "free-event",
+          "term_group": 0,
+          "term_taxonomy_id": 48,
+          "taxonomy": "tribe_events_cat",
+          "description": "",
+          "parent": 0,
+          "count": 1232,
+          "filter": "raw",
+          "id": 48,
+          "urls": {
+            "self": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories/48",
+            "collection": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories"
+          }
+        },
+        {
+          "name": "Museum",
+          "slug": "museum",
+          "term_group": 0,
+          "term_taxonomy_id": 55,
+          "taxonomy": "tribe_events_cat",
+          "description": "",
+          "parent": 0,
+          "count": 39,
+          "filter": "raw",
+          "id": 55,
+          "urls": {
+            "self": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories/55",
+            "collection": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories"
+          }
+        }
+      ],
+      "tags": [
+        {
+          "name": "art",
+          "slug": "art",
+          "term_group": 0,
+          "term_taxonomy_id": 357,
+          "taxonomy": "post_tag",
+          "description": "",
+          "parent": 0,
+          "count": 109,
+          "filter": "raw",
+          "id": 357,
+          "urls": {
+            "self": "https://thinkiowacity.com/wp-json/tribe/events/v1/tags/357",
+            "collection": "https://thinkiowacity.com/wp-json/tribe/events/v1/tags"
+          }
+        },
+        {
+          "name": "downtown",
+          "slug": "downtown",
+          "term_group": 0,
+          "term_taxonomy_id": 347,
+          "taxonomy": "post_tag",
+          "description": "",
+          "parent": 0,
+          "count": 255,
+          "filter": "raw",
+          "id": 347,
+          "urls": {
+            "self": "https://thinkiowacity.com/wp-json/tribe/events/v1/tags/347",
+            "collection": "https://thinkiowacity.com/wp-json/tribe/events/v1/tags"
+          }
+        },
+        {
+          "name": "iowa city",
+          "slug": "iowa-city",
+          "term_group": 0,
+          "term_taxonomy_id": 340,
+          "taxonomy": "post_tag",
+          "description": "",
+          "parent": 0,
+          "count": 607,
+          "filter": "raw",
+          "id": 340,
+          "urls": {
+            "self": "https://thinkiowacity.com/wp-json/tribe/events/v1/tags/340",
+            "collection": "https://thinkiowacity.com/wp-json/tribe/events/v1/tags"
+          }
+        },
+        {
+          "name": "things to do",
+          "slug": "things-to-do",
+          "term_group": 0,
+          "term_taxonomy_id": 338,
+          "taxonomy": "post_tag",
+          "description": "",
+          "parent": 0,
+          "count": 894,
+          "filter": "raw",
+          "id": 338,
+          "urls": {
+            "self": "https://thinkiowacity.com/wp-json/tribe/events/v1/tags/338",
+            "collection": "https://thinkiowacity.com/wp-json/tribe/events/v1/tags"
+          }
+        }
+      ],
+      "venue": {
+        "id": 7736,
+        "status": "publish",
+        "date": "2022-02-28 08:28:45",
+        "date_utc": "2022-02-28 14:28:45",
+        "modified": "2022-02-28 08:28:45",
+        "modified_utc": "2022-02-28 14:28:45",
+        "url": "https://thinkiowacity.com/venue/macbride-hall/",
+        "venue": "Macbride Hall",
+        "slug": "macbride-hall",
+        "address": "15-37 East Jefferson Street",
+        "city": "Iowa City",
+        "country": "United States",
+        "zip": "52240",
+        "show_map": true,
+        "show_map_link": true,
+        "global_id": "thinkiowacity.com?id=7736",
+        "global_id_lineage": [
+          "thinkiowacity.com?id=7736"
+        ]
+      },
+      "organizer": [],
+      "custom_fields": [],
+      "is_virtual": false,
+      "virtual_url": null,
+      "virtual_video_source": ""
+    },
+    {
+      "id": 93339,
+      "global_id": "thinkiowacity.com?id=93339",
+      "global_id_lineage": [
+        "thinkiowacity.com?id=93339"
+      ],
+      "author": "34",
+      "status": "publish",
+      "date": "2026-11-01 13:15:04",
+      "date_utc": "2026-11-01 19:15:04",
+      "modified": "2026-11-04 10:41:04",
+      "modified_utc": "2026-11-04 16:41:04",
+      "url": "https://thinkiowacity.com/event/iowa-city-songwriters-festival-nathan-graham-and-todd-partridge/",
+      "rest_url": "https://thinkiowacity.com/wp-json/tribe/events/v1/events/93339",
+      "title": "Iowa City Songwriters Festival &#8211; Nathan Graham and Todd Partridge",
+      "description": "<p>When you think of a singer-songwriter, who comes to mind? Nathan Graham says it probably isn’t somebody who looks like he does. And he wants to change that. Raised in Chicago on Prince and Earth, Wind &amp; Fire, Graham bridges South Side Blues with Nashville Americana to deliver a bittersweet and soulful sound. Starting out backing blues singers at famous haunts like Buddy Guy’s Legends and Kingston Mines, he spent a decade building his career as a guitar-for-hire before forming bands to perform his own music and lyrics.</p>\n<p>Todd Partridge has been a fixture on the Midwest music scene for over 25 years, performing a gritty blend of American roots music steeped in blues, folk, country, classic rock, and Americana. Raised among the barns and cornfields of the Midwest prairie, his songwriting carries the raw honesty and weathered soul of Iowa itself. Todd has performed and recorded with bands including Black Light Syndrome, Salamagundi, and the critically acclaimed King of the Tramps, where he spent a decade touring across the U.S. and Europe and released five albums of self-described “Whiskey Gospel” music.</p>",
+      "excerpt": "",
+      "slug": "iowa-city-songwriters-festival-nathan-graham-and-todd-partridge",
+      "image": {
+        "url": "https://thinkiowacity.com/wp-content/uploads/2026/11/Nathan-Graham.webp",
+        "id": 93342,
+        "extension": "webp",
+        "width": 1600,
+        "height": 900,
+        "filesize": 66028,
+        "sizes": {
+          "medium": {
+            "width": 300,
+            "height": 169,
+            "mime-type": "image/webp",
+            "filesize": 9282,
+            "url": "https://thinkiowacity.com/wp-content/uploads/2026/11/Nathan-Graham-300x169.webp"
+          },
+          "large": {
+            "width": 1024,
+            "height": 576,
+            "mime-type": "image/webp",
+            "filesize": 57948,
+            "url": "https://thinkiowacity.com/wp-content/uploads/2026/11/Nathan-Graham-1024x576.webp"
+          },
+          "thumbnail": {
+            "width": 150,
+            "height": 150,
+            "mime-type": "image/webp",
+            "filesize": 4218,
+            "url": "https://thinkiowacity.com/wp-content/uploads/2026/11/Nathan-Graham-150x150.webp"
+          },
+          "medium_large": {
+            "width": 768,
+            "height": 432,
+            "mime-type": "image/webp",
+            "filesize": 39092,
+            "url": "https://thinkiowacity.com/wp-content/uploads/2026/11/Nathan-Graham-768x432.webp"
+          },
+          "1536x1536": {
+            "width": 1536,
+            "height": 864,
+            "mime-type": "image/webp",
+            "filesize": 99446,
+            "url": "https://thinkiowacity.com/wp-content/uploads/2026/11/Nathan-Graham-1536x864.webp"
+          }
+        }
+      },
+      "all_day": false,
+      "start_date": "2026-11-06 21:00:00",
+      "start_date_details": {
+        "year": "2026",
+        "month": "11",
+        "day": "06",
+        "hour": "21",
+        "minutes": "00",
+        "seconds": "00"
+      },
+      "end_date": "2026-11-06 23:00:00",
+      "end_date_details": {
+        "year": "2026",
+        "month": "11",
+        "day": "06",
+        "hour": "23",
+        "minutes": "00",
+        "seconds": "00"
+      },
+      "utc_start_date": "2026-11-07 03:00:00",
+      "utc_start_date_details": {
+        "year": "2026",
+        "month": "11",
+        "day": "07",
+        "hour": "03",
+        "minutes": "00",
+        "seconds": "00"
+      },
+      "utc_end_date": "2026-11-07 05:00:00",
+      "utc_end_date_details": {
+        "year": "2026",
+        "month": "11",
+        "day": "07",
+        "hour": "05",
+        "minutes": "00",
+        "seconds": "00"
+      },
+      "timezone": "America/Chicago",
+      "timezone_abbr": "CST",
+      "cost": "",
+      "cost_details": {
+        "currency_symbol": "$",
+        "currency_code": "USD",
+        "currency_position": "prefix",
+        "values": []
+      },
+      "website": "https://englert.org/events/nathan-graham-todd-partridge/",
+      "show_map": false,
+      "show_map_link": false,
+      "hide_from_listings": false,
+      "sticky": false,
+      "featured": false,
+      "categories": [
+        {
+          "name": "Music",
+          "slug": "music",
+          "term_group": 0,
+          "term_taxonomy_id": 56,
+          "taxonomy": "tribe_events_cat",
+          "description": "",
+          "parent": 0,
+          "count": 831,
+          "filter": "raw",
+          "id": 56,
+          "urls": {
+            "self": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories/56",
+            "collection": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories"
+          }
+        }
+      ],
+      "tags": [],
+      "venue": {
+        "id": 46602,
+        "author": "7",
+        "status": "publish",
+        "date": "2024-07-16 13:40:27",
+        "date_utc": "2024-07-16 18:40:27",
+        "modified": "2024-07-16 13:40:27",
+        "modified_utc": "2024-07-16 18:40:27",
+        "url": "https://thinkiowacity.com/venue/the-black-angel-restaurant-and-bar/",
+        "venue": "The Black Angel &#8211; Restaurant and Bar",
+        "slug": "the-black-angel-restaurant-and-bar",
+        "address": "630 Iowa Ave",
+        "city": "Iowa City",
+        "country": "United States",
+        "province": "Iowa",
+        "state": "IA",
+        "zip": "52240",
+        "stateprovince": "IA",
+        "show_map": false,
+        "show_map_link": false,
+        "global_id": "thinkiowacity.com?id=46602",
+        "global_id_lineage": [
+          "thinkiowacity.com?id=46602"
+        ]
+      },
+      "organizer": [
+        {
+          "id": 26687,
+          "status": "publish",
+          "date": "2024-01-22 12:29:10",
+          "date_utc": "0000-00-00 00:00:00",
+          "modified": "2024-01-22 12:29:10",
+          "modified_utc": "0000-00-00 00:00:00",
+          "url": "https://thinkiowacity.com/organizer/the-black-angel/",
+          "organizer": "The Black Angel",
+          "slug": "the-black-angel",
+          "global_id": "thinkiowacity.com?id=26687",
+          "global_id_lineage": [
+            "thinkiowacity.com?id=26687"
+          ]
+        }
+      ],
+      "custom_fields": [],
+      "is_virtual": false,
+      "virtual_url": null,
+      "virtual_video_source": ""
+    },
+    {
+      "id": 93036,
+      "global_id": "thinkiowacity.com?id=93036",
+      "global_id_lineage": [
+        "thinkiowacity.com?id=93036"
+      ],
+      "author": "20",
+      "status": "publish",
+      "date": "2026-10-20 11:59:41",
+      "date_utc": "2026-10-20 16:59:41",
+      "modified": "2026-10-20 15:40:01",
+      "modified_utc": "2026-10-20 20:40:01",
+      "url": "https://thinkiowacity.com/event/jack-splat-2026/",
+      "rest_url": "https://thinkiowacity.com/wp-json/tribe/events/v1/events/93036",
+      "title": "Jack SPLAT! 2026",
+      "description": "<p>Send Halloween out with a SPLAT! Don’t toss your Jack-O-Lanterns in the garbage—give them one last hurrah by letting us toss them from up high instead. This free outdoor event is presented by New Pioneer Food Co-op and Urban Acres Realtors (Sean McIntyre, Ben &amp; Whitney Russell, Tundi Brady, Cathy Pugh, and Nicki Thompson).</p>\n<p>We’ll be dropping pumpkins from the northwest corner of the parking ramp next to Chauncey Swan Park. Bring your ghoulish gourd, grab a spot with your blanket or lawn chairs, and get ready to watch the pumpkins fly. Come for the SPLATS, but stick around for outdoor activities and a warm breakfast from local food vendors.</p>\n<p>Food Vendors: Travelin’ Tom’s Coffee (more coming soon!)</p>\n<p>Activity Partners: Coming soon!</p>\n<p>How It Works:<br />\nPumpkin drop-off will start at 9:15 a.m. in Chauncey Swan Park on Saturday, November 7th<br />\nActivities will begin around 9:30 a.m.<br />\nPumpkin SPLATS will start at 10 am. All pumpkins will be dropped by our team.<br />\nPrep Your Pumpkin:<br />\nPumpkins must be gutted (this is Jack SPLAT, not Jack THUD).<br />\nPlease remove candles, artificial lighting, or any other decorations that are in or attached to the pumpkin. This includes stickers, ribbons, and remnants of candle wax inside.<br />\nWe compost Jack Splat pumpkins. Ones that have been painted or coated with a preserving sealant should not be added to a compost pile. Pumpkins coated with glitter should not be composted.<br />\nWe reserve the right to reject your pumpkin if it doesn’t meet our Jack Splat standards.</p>",
+      "excerpt": "",
+      "slug": "jack-splat-2026",
+      "image": {
+        "url": "https://thinkiowacity.com/wp-content/uploads/2026/10/Nov-7-HALLOWEEN-2024-3.webp",
+        "id": 93044,
+        "extension": "webp",
+        "width": 1600,
+        "height": 900,
+        "filesize": 187574,
+        "sizes": {
+          "medium": {
+            "width": 300,
+            "height": 169,
+            "mime-type": "image/webp",
+            "filesize": 22480,
+            "url": "https://thinkiowacity.com/wp-content/uploads/2026/10/Nov-7-HALLOWEEN-2024-3-300x169.webp"
+          },
+          "large": {
+            "width": 1024,
+            "height": 576,
+            "mime-type": "image/webp",
+            "filesize": 151446,
+            "url": "https://thinkiowacity.com/wp-content/uploads/2026/10/Nov-7-HALLOWEEN-2024-3-1024x576.webp"
+          },
+          "thumbnail": {
+            "width": 150,
+            "height": 150,
+            "mime-type": "image/webp",
+            "filesize": 11868,
+            "url": "https://thinkiowacity.com/wp-content/uploads/2026/10/Nov-7-HALLOWEEN-2024-3-150x150.webp"
+          },
+          "medium_large": {
+            "width": 768,
+            "height": 432,
+            "mime-type": "image/webp",
+            "filesize": 99032,
+            "url": "https://thinkiowacity.com/wp-content/uploads/2026/10/Nov-7-HALLOWEEN-2024-3-768x432.webp"
+          },
+          "1536x1536": {
+            "width": 1536,
+            "height": 864,
+            "mime-type": "image/webp",
+            "filesize": 266994,
+            "url": "https://thinkiowacity.com/wp-content/uploads/2026/10/Nov-7-HALLOWEEN-2024-3-1536x864.webp"
+          }
+        }
+      },
+      "all_day": false,
+      "start_date": "2026-11-07 09:30:00",
+      "start_date_details": {
+        "year": "2026",
+        "month": "11",
+        "day": "07",
+        "hour": "09",
+        "minutes": "30",
+        "seconds": "00"
+      },
+      "end_date": "2026-11-07 12:00:00",
+      "end_date_details": {
+        "year": "2026",
+        "month": "11",
+        "day": "07",
+        "hour": "12",
+        "minutes": "00",
+        "seconds": "00"
+      },
+      "utc_start_date": "2026-11-07 15:30:00",
+      "utc_start_date_details": {
+        "year": "2026",
+        "month": "11",
+        "day": "07",
+        "hour": "15",
+        "minutes": "30",
+        "seconds": "00"
+      },
+      "utc_end_date": "2026-11-07 18:00:00",
+      "utc_end_date_details": {
+        "year": "2026",
+        "month": "11",
+        "day": "07",
+        "hour": "18",
+        "minutes": "00",
+        "seconds": "00"
+      },
+      "timezone": "America/Chicago",
+      "timezone_abbr": "CST",
+      "cost": "",
+      "cost_details": {
+        "currency_symbol": "$",
+        "currency_code": "USD",
+        "currency_position": "prefix",
+        "values": []
+      },
+      "website": "https://theicm.org/event/jack-splat-3/",
+      "show_map": false,
+      "show_map_link": false,
+      "hide_from_listings": false,
+      "sticky": false,
+      "featured": false,
+      "categories": [
+        {
+          "name": "Kids &amp; Family",
+          "slug": "kids-family",
+          "term_group": 0,
+          "term_taxonomy_id": 51,
+          "taxonomy": "tribe_events_cat",
+          "description": "",
+          "parent": 0,
+          "count": 869,
+          "filter": "raw",
+          "id": 51,
+          "urls": {
+            "self": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories/51",
+            "collection": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories"
+          }
+        }
+      ],
+      "tags": [],
+      "venue": {
+        "id": 58043,
+        "status": "publish",
+        "date": "2025-02-25 15:43:15",
+        "date_utc": "0000-00-00 00:00:00",
+        "modified": "2025-02-25 15:43:15",
+        "modified_utc": "0000-00-00 00:00:00",
+        "url": "https://thinkiowacity.com/venue/chauncey-swan-park/",
+        "venue": "Chauncey Swan Park",
+        "slug": "chauncey-swan-park",
+        "address": "405 E. Washington St.",
+        "city": "Iowa City",
+        "country": "United States",
+        "state": "IA",
+        "zip": "52240",
+        "phone": "3193387996",
+        "website": "https://www.insideoutreentry.com/be-an-instrument-for-change-spring-concert-fundraiser-on-june-12025/",
+        "stateprovince": "IA",
+        "show_map": false,
+        "show_map_link": false,
+        "global_id": "thinkiowacity.com?id=58043",
+        "global_id_lineage": [
+          "thinkiowacity.com?id=58043"
+        ]
+      },
+      "organizer": [
+        {
+          "id": 24286,
+          "status": "publish",
+          "date": "2023-10-12 13:27:31",
+          "date_utc": "0000-00-00 00:00:00",
+          "modified": "2023-10-12 13:27:31",
+          "modified_utc": "0000-00-00 00:00:00",
+          "url": "https://thinkiowacity.com/organizer/the-iowa-childrens-musuem/",
+          "organizer": "The Iowa Children&#8217;s Musuem",
+          "slug": "the-iowa-childrens-musuem",
+          "phone": "3196256255",
+          "website": "https://theicm.org/event/teddy-bear-clinic/",
+          "email": "mchristenson@theicm.org",
+          "global_id": "thinkiowacity.com?id=24286",
+          "global_id_lineage": [
+            "thinkiowacity.com?id=24286"
+          ]
+        }
+      ],
+      "custom_fields": [],
+      "is_virtual": false,
+      "virtual_url": null,
+      "virtual_video_source": ""
+    },
+    {
+      "id": 91092,
+      "global_id": "thinkiowacity.com?id=91092",
+      "global_id_lineage": [
+        "thinkiowacity.com?id=91092"
+      ],
+      "author": "20",
+      "status": "publish",
+      "date": "2026-05-23 15:40:11",
+      "date_utc": "2026-05-23 20:40:11",
+      "modified": "2026-05-26 14:00:42",
+      "modified_utc": "2026-05-26 19:00:42",
+      "url": "https://thinkiowacity.com/event/live-your-best-life-sensory-walk-5k/",
+      "rest_url": "https://thinkiowacity.com/wp-json/tribe/events/v1/events/91092",
+      "title": "Live Your Best Life Sensory Walk &#038; 5K",
+      "description": "<p>Join us for the Live Your Best Life Sensory Walk &amp; 5K, an inclusive charity run and walk in lowa City designed for participants of all abilities. Whether you&#8217;re a seasoned runner chasing a new PR, a casual walker enjoying the morning with friends, or a family looking for a fun community event, this is for you.<br />\nHosted by Systems Unlimited, this event supports people living with disabilities and mental health needs across Eastern lowa. For 55 years, Systems Unlimited has worked to remove barriers and create opportunities so the people we serve can live healthy, active, and fulfilling lives.<br />\nParticipants can choose between two options:<br />\n5K Run/Walk &#8211; A scenic course perfect for runners, walkers, and anyone looking to challenge themselves. For this run, you will experience the sensory stations on the 1-Mi route but primarily will have a station free route to focus on your run and enjoy the scenery.<br />\n1-Mile Sensory Walk &#8211; A relaxed, accessible walk with sensory stations placed throughout the route designed to engage the senses and ensure everyone can experience the pride of reaching the finish line.<br />\nThe event takes place at the beautiful Terry Trueblood Recreation Area, one of lowa City&#8217;s most scenic outdoor spaces. After crossing the finish line, join us at the post-race celebration inside the Terry Trueblood Lodge for music, snacks, community vendors, and fun photo opportunities.<br />\nWhether you run, walk, roll, or cheer, you&#8217;ll be part of a meaningful event that celebrates inclusion, community, and living your best life.<br />\nRegister early to guarantee your event shirt and race materials as supplies are first come, first served.</p>",
+      "excerpt": "",
+      "slug": "live-your-best-life-sensory-walk-5k",
+      "image": {
+        "url": "https://thinkiowacity.com/wp-content/uploads/2026/05/Nov-7-5k.png",
+        "id": 91109,
+        "extension": "png",
+        "width": 300,
+        "height": 300,
+        "filesize": 14799,
+        "sizes": {
+          "thumbnail": {
+            "width": 150,
+            "height": 150,
+            "mime-type": "image/png",
+            "filesize": 16895,
+            "url": "https://thinkiowacity.com/wp-content/uploads/2026/05/Nov-7-5k-150x150.png"
+          }
+        }
+      },
+      "all_day": false,
+      "start_date": "2026-11-07 10:00:00",
+      "start_date_details": {
+        "year": "2026",
+        "month": "11",
+        "day": "07",
+        "hour": "10",
+        "minutes": "00",
+        "seconds": "00"
+      },
+      "end_date": "2026-11-07 17:00:00",
+      "end_date_details": {
+        "year": "2026",
+        "month": "11",
+        "day": "07",
+        "hour": "17",
+        "minutes": "00",
+        "seconds": "00"
+      },
+      "utc_start_date": "2026-11-07 16:00:00",
+      "utc_start_date_details": {
+        "year": "2026",
+        "month": "11",
+        "day": "07",
+        "hour": "16",
+        "minutes": "00",
+        "seconds": "00"
+      },
+      "utc_end_date": "2026-11-07 23:00:00",
+      "utc_end_date_details": {
+        "year": "2026",
+        "month": "11",
+        "day": "07",
+        "hour": "23",
+        "minutes": "00",
+        "seconds": "00"
+      },
+      "timezone": "America/Chicago",
+      "timezone_abbr": "CST",
+      "cost": "",
+      "cost_details": {
+        "currency_symbol": "$",
+        "currency_code": "USD",
+        "currency_position": "prefix",
+        "values": []
+      },
+      "website": "https://runsignup.com/LiveYourBestLife5k",
+      "show_map": false,
+      "show_map_link": false,
+      "hide_from_listings": false,
+      "sticky": false,
+      "featured": false,
+      "categories": [
+        {
+          "name": "Charity / Fundraising",
+          "slug": "charity-fundraising",
+          "term_group": 0,
+          "term_taxonomy_id": 37,
+          "taxonomy": "tribe_events_cat",
+          "description": "",
+          "parent": 0,
+          "count": 228,
+          "filter": "raw",
+          "id": 37,
+          "urls": {
+            "self": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories/37",
+            "collection": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories"
+          }
+        },
+        {
+          "name": "Fitness",
+          "slug": "fitness",
+          "term_group": 0,
+          "term_taxonomy_id": 46,
+          "taxonomy": "tribe_events_cat",
+          "description": "",
+          "parent": 0,
+          "count": 67,
+          "filter": "raw",
+          "id": 46,
+          "urls": {
+            "self": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories/46",
+            "collection": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories"
+          }
+        },
+        {
+          "name": "Kids &amp; Family",
+          "slug": "kids-family",
+          "term_group": 0,
+          "term_taxonomy_id": 51,
+          "taxonomy": "tribe_events_cat",
+          "description": "",
+          "parent": 0,
+          "count": 869,
+          "filter": "raw",
+          "id": 51,
+          "urls": {
+            "self": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories/51",
+            "collection": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories"
+          }
+        },
+        {
+          "name": "Races &amp; Runs",
+          "slug": "races-runs",
+          "term_group": 0,
+          "term_taxonomy_id": 61,
+          "taxonomy": "tribe_events_cat",
+          "description": "",
+          "parent": 0,
+          "count": 27,
+          "filter": "raw",
+          "id": 61,
+          "urls": {
+            "self": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories/61",
+            "collection": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories"
+          }
+        }
+      ],
+      "tags": [],
+      "venue": {
+        "id": 17549,
+        "author": "7",
+        "status": "publish",
+        "date": "2023-01-26 09:45:05",
+        "date_utc": "2023-01-26 15:45:05",
+        "modified": "2023-01-26 09:45:05",
+        "modified_utc": "2023-01-26 15:45:05",
+        "url": "https://thinkiowacity.com/venue/terry-trueblood-recreation-area/",
+        "venue": "Terry Trueblood Recreation Area",
+        "slug": "terry-trueblood-recreation-area",
+        "address": "579 McCollister Blvd",
+        "city": "Iowa City",
+        "country": "United States",
+        "state": "IA",
+        "zip": "52240",
+        "website": "https://www.namiwalks.org/index.cfm?fuseaction=donorDrive.event&eventID=1324",
+        "stateprovince": "IA",
+        "show_map": true,
+        "show_map_link": true,
+        "global_id": "thinkiowacity.com?id=17549",
+        "global_id_lineage": [
+          "thinkiowacity.com?id=17549"
+        ]
+      },
+      "organizer": [],
+      "custom_fields": [],
+      "is_virtual": false,
+      "virtual_url": null,
+      "virtual_video_source": ""
+    },
+    {
+      "id": 10005621,
+      "global_id": "thinkiowacity.com?id=10005621",
+      "global_id_lineage": [
+        "thinkiowacity.com?id=10005621"
+      ],
+      "author": "34",
+      "status": "publish",
+      "date": "2026-10-12 15:08:52",
+      "date_utc": "2026-10-12 20:08:52",
+      "modified": "2026-10-12 16:57:51",
+      "modified_utc": "2026-10-12 21:57:51",
+      "url": "https://thinkiowacity.com/event/brush-barrel-open-studio-weekend/2026-11-07/",
+      "rest_url": "https://thinkiowacity.com/wp-json/tribe/events/v1/events/10005621",
+      "title": "Brush &#038; Barrel Open Studio Weekend",
+      "description": "<p>Looking for something fun to do this weekend? Stop by Brush &amp; Barrel during our Open Studio hours and choose your own creative adventure!</p>\n<p>Whether you&#8217;re in the mood to create a colorful splatter painting masterpiece or relax with pottery painting, we&#8217;ve got something for artists of all ages and experience levels.</p>\n<p>No reservations are required. Just walk in, pick your project, and we&#8217;ll provide everything you need.</p>\n<p>&#x1f5d3; Every Saturday &amp; Sunday<br />\n&#x23f0; Open 12:00 PM &#8211; 5:00 PM<br />\n&#x1f6aa; Last walk-in accepted at 4:00 PM</p>\n<p>Choose from:<br />\n&#x1f3a8; Splatter Painting &#8211; Suit up and create an action-packed masterpiece in our splatter room.</p>\n<p>&#x1f3fa; Pottery Painting &#8211; Select from a variety of pottery pieces and customize your own unique creation.</p>\n<p>Perfect for: &#x2705; Families<br />\n&#x2705; Date nights<br />\n&#x2705; Friends&#8217; outings<br />\n&#x2705; Birthday celebrations<br />\n&#x2705; Rainy day fun<br />\n&#x2705; Anyone looking for a creative escape</p>\n<p>No experience necessary. Just bring your creativity!</p>",
+      "excerpt": "",
+      "slug": "brush-barrel-open-studio-weekend",
+      "image": {
+        "url": "https://thinkiowacity.com/wp-content/uploads/2026/10/Screenshot-2026-10-12-150504.png",
+        "id": 92969,
+        "extension": "png",
+        "width": 475,
+        "height": 306,
+        "filesize": 70166,
+        "sizes": {
+          "medium": {
+            "width": 300,
+            "height": 193,
+            "mime-type": "image/png",
+            "filesize": 112104,
+            "url": "https://thinkiowacity.com/wp-content/uploads/2026/10/Screenshot-2026-10-12-150504-300x193.png"
+          },
+          "thumbnail": {
+            "width": 150,
+            "height": 150,
+            "mime-type": "image/png",
+            "filesize": 50525,
+            "url": "https://thinkiowacity.com/wp-content/uploads/2026/10/Screenshot-2026-10-12-150504-150x150.png"
+          }
+        }
+      },
+      "all_day": false,
+      "start_date": "2026-11-07 12:00:00",
+      "start_date_details": {
+        "year": "2026",
+        "month": "11",
+        "day": "07",
+        "hour": "12",
+        "minutes": "00",
+        "seconds": "00"
+      },
+      "end_date": "2026-11-08 17:00:00",
+      "end_date_details": {
+        "year": "2026",
+        "month": "11",
+        "day": "08",
+        "hour": "17",
+        "minutes": "00",
+        "seconds": "00"
+      },
+      "utc_start_date": "2026-11-07 18:00:00",
+      "utc_start_date_details": {
+        "year": "2026",
+        "month": "11",
+        "day": "07",
+        "hour": "18",
+        "minutes": "00",
+        "seconds": "00"
+      },
+      "utc_end_date": "2026-11-08 23:00:00",
+      "utc_end_date_details": {
+        "year": "2026",
+        "month": "11",
+        "day": "08",
+        "hour": "23",
+        "minutes": "00",
+        "seconds": "00"
+      },
+      "timezone": "America/Chicago",
+      "timezone_abbr": "CDT",
+      "cost": "",
+      "cost_details": {
+        "currency_symbol": "$",
+        "currency_code": "USD",
+        "currency_position": "prefix",
+        "values": []
+      },
+      "website": "https://www.brushandbarrel.com/calendar.php",
+      "show_map": false,
+      "show_map_link": false,
+      "hide_from_listings": false,
+      "sticky": false,
+      "featured": false,
+      "categories": [
+        {
+          "name": "Crafts &amp; DIY",
+          "slug": "crafts-diy",
+          "term_group": 0,
+          "term_taxonomy_id": 38,
+          "taxonomy": "tribe_events_cat",
+          "description": "",
+          "parent": 0,
+          "count": 308,
+          "filter": "raw",
+          "id": 38,
+          "urls": {
+            "self": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories/38",
+            "collection": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories"
+          }
+        },
+        {
+          "name": "Education / Workshop",
+          "slug": "education-workshop",
+          "term_group": 0,
+          "term_taxonomy_id": 40,
+          "taxonomy": "tribe_events_cat",
+          "description": "",
+          "parent": 0,
+          "count": 448,
+          "filter": "raw",
+          "id": 40,
+          "urls": {
+            "self": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories/40",
+            "collection": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories"
+          }
+        },
+        {
+          "name": "Kids &amp; Family",
+          "slug": "kids-family",
+          "term_group": 0,
+          "term_taxonomy_id": 51,
+          "taxonomy": "tribe_events_cat",
+          "description": "",
+          "parent": 0,
+          "count": 869,
+          "filter": "raw",
+          "id": 51,
+          "urls": {
+            "self": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories/51",
+            "collection": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories"
+          }
+        },
+        {
+          "name": "Visual Arts",
+          "slug": "visual-arts",
+          "term_group": 0,
+          "term_taxonomy_id": 67,
+          "taxonomy": "tribe_events_cat",
+          "description": "",
+          "parent": 0,
+          "count": 129,
+          "filter": "raw",
+          "id": 67,
+          "urls": {
+            "self": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories/67",
+            "collection": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories"
+          }
+        },
+        {
+          "name": "Wine &amp; Beer",
+          "slug": "wine-beer",
+          "term_group": 0,
+          "term_taxonomy_id": 68,
+          "taxonomy": "tribe_events_cat",
+          "description": "",
+          "parent": 0,
+          "count": 341,
+          "filter": "raw",
+          "id": 68,
+          "urls": {
+            "self": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories/68",
+            "collection": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories"
+          }
+        }
+      ],
+      "tags": [],
+      "venue": {
+        "id": 5870,
+        "author": "20",
+        "status": "publish",
+        "date": "2021-12-21 17:05:40",
+        "date_utc": "2021-12-21 23:05:40",
+        "modified": "2021-12-21 17:05:40",
+        "modified_utc": "2021-12-21 23:05:40",
+        "url": "https://thinkiowacity.com/venue/brush-barrel/",
+        "venue": "Brush &#038; Barrel",
+        "slug": "brush-barrel",
+        "address": "1801 2nd St. #230",
+        "city": "Coralville",
+        "country": "US",
+        "state": "IA",
+        "zip": "52241",
+        "stateprovince": "IA",
+        "show_map": true,
+        "show_map_link": true,
+        "global_id": "thinkiowacity.com?id=5870",
+        "global_id_lineage": [
+          "thinkiowacity.com?id=5870"
+        ]
+      },
+      "organizer": [
+        {
+          "id": 15222,
+          "status": "publish",
+          "date": "2022-10-13 14:18:02",
+          "date_utc": "2022-10-13 19:18:02",
+          "modified": "2022-10-13 14:18:02",
+          "modified_utc": "2022-10-13 19:18:02",
+          "url": "https://thinkiowacity.com/organizer/brush-barrel/",
+          "organizer": "Brush &amp; Barrel",
+          "slug": "brush-barrel",
+          "phone": "319-338-5787",
+          "website": "brushandbarrel.com",
+          "email": "brushandbarrel@gmail.com",
+          "global_id": "thinkiowacity.com?id=15222",
+          "global_id_lineage": [
+            "thinkiowacity.com?id=15222"
+          ]
+        }
+      ],
+      "custom_fields": [],
+      "is_virtual": false,
+      "virtual_url": null,
+      "virtual_video_source": ""
+    },
+    {
+      "id": 93273,
+      "global_id": "thinkiowacity.com?id=93273",
+      "global_id_lineage": [
+        "thinkiowacity.com?id=93273"
+      ],
+      "author": "34",
+      "status": "publish",
+      "date": "2026-10-28 11:09:40",
+      "date_utc": "2026-10-28 16:09:40",
+      "modified": "2026-11-04 10:11:49",
+      "modified_utc": "2026-11-04 16:11:49",
+      "url": "https://thinkiowacity.com/event/flash-forward/",
+      "rest_url": "https://thinkiowacity.com/wp-json/tribe/events/v1/events/93273",
+      "title": "Flash Forward",
+      "description": "<p>Flash Forward is PorchLight&#8217;s monthly studio session for writers interested in short form writing: flash fiction, micro essays, prose poetry, and more. Join us to learn more about these miniature marvels. Each session includes a discussion of short form works we love, a generative writing prompt, optional sharing, and light positive feedback.</p>\n<p>Whether you&#8217;re new to these very short forms or an old hand, we&#8217;d love to have you join us!</p>\n<p>First meeting is free. If you decide you want to become a regular group member purchase a monthly membership for as little as $5 here. Memberships help us keep the Porchlight on!</p>",
+      "excerpt": "",
+      "slug": "flash-forward",
+      "image": {
+        "url": "https://thinkiowacity.com/wp-content/uploads/2026/10/Flash-Forward-slide.png",
+        "id": 93276,
+        "extension": "png",
+        "width": 1080,
+        "height": 1080,
+        "filesize": 586889,
+        "sizes": {
+          "medium": {
+            "width": 300,
+            "height": 300,
+            "mime-type": "image/png",
+            "filesize": 138774,
+            "url": "https://thinkiowacity.com/wp-content/uploads/2026/10/Flash-Forward-slide-300x300.png"
+          },
+          "large": {
+            "width": 1024,
+            "height": 1024,
+            "mime-type": "image/png",
+            "filesize": 1352152,
+            "url": "https://thinkiowacity.com/wp-content/uploads/2026/10/Flash-Forward-slide-1024x1024.png"
+          },
+          "thumbnail": {
+            "width": 150,
+            "height": 150,
+            "mime-type": "image/png",
+            "filesize": 38707,
+            "url": "https://thinkiowacity.com/wp-content/uploads/2026/10/Flash-Forward-slide-150x150.png"
+          },
+          "medium_large": {
+            "width": 768,
+            "height": 768,
+            "mime-type": "image/png",
+            "filesize": 796503,
+            "url": "https://thinkiowacity.com/wp-content/uploads/2026/10/Flash-Forward-slide-768x768.png"
+          }
+        }
+      },
+      "all_day": false,
+      "start_date": "2026-11-07 13:00:00",
+      "start_date_details": {
+        "year": "2026",
+        "month": "11",
+        "day": "07",
+        "hour": "13",
+        "minutes": "00",
+        "seconds": "00"
+      },
+      "end_date": "2026-11-07 14:30:00",
+      "end_date_details": {
+        "year": "2026",
+        "month": "11",
+        "day": "07",
+        "hour": "14",
+        "minutes": "30",
+        "seconds": "00"
+      },
+      "utc_start_date": "2026-11-07 19:00:00",
+      "utc_start_date_details": {
+        "year": "2026",
+        "month": "11",
+        "day": "07",
+        "hour": "19",
+        "minutes": "00",
+        "seconds": "00"
+      },
+      "utc_end_date": "2026-11-07 20:30:00",
+      "utc_end_date_details": {
+        "year": "2026",
+        "month": "11",
+        "day": "07",
+        "hour": "20",
+        "minutes": "30",
+        "seconds": "00"
+      },
+      "timezone": "America/Chicago",
+      "timezone_abbr": "CST",
+      "cost": "",
+      "cost_details": {
+        "currency_symbol": "$",
+        "currency_code": "USD",
+        "currency_position": "prefix",
+        "values": []
+      },
+      "website": "https://www.porchlightliterary.org/event-details/flash-forward-2026-11-07-13-00",
+      "show_map": false,
+      "show_map_link": false,
+      "hide_from_listings": false,
+      "sticky": false,
+      "featured": false,
+      "categories": [
+        {
+          "name": "Education / Workshop",
+          "slug": "education-workshop",
+          "term_group": 0,
+          "term_taxonomy_id": 40,
+          "taxonomy": "tribe_events_cat",
+          "description": "",
+          "parent": 0,
+          "count": 448,
+          "filter": "raw",
+          "id": 40,
+          "urls": {
+            "self": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories/40",
+            "collection": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories"
+          }
+        }
+      ],
+      "tags": [],
+      "venue": {
+        "id": 90429,
+        "status": "publish",
+        "date": "2026-04-11 11:50:27",
+        "date_utc": "2026-04-11 16:50:27",
+        "modified": "2026-04-11 11:50:27",
+        "modified_utc": "2026-04-11 16:50:27",
+        "url": "https://thinkiowacity.com/venue/porchlight-literary-arts-center/",
+        "venue": "PorchLight Literary Arts Center",
+        "slug": "porchlight-literary-arts-center",
+        "address": "1019 E WASHINGTON ST",
+        "city": "IOWA CITY",
+        "country": "United States",
+        "state": "IA",
+        "zip": "52240-5261",
+        "stateprovince": "IA",
+        "show_map": false,
+        "show_map_link": false,
+        "global_id": "thinkiowacity.com?id=90429",
+        "global_id_lineage": [
+          "thinkiowacity.com?id=90429"
+        ]
+      },
+      "organizer": [
+        {
+          "id": 90430,
+          "status": "publish",
+          "date": "2026-04-11 11:50:28",
+          "date_utc": "2026-04-11 16:50:28",
+          "modified": "2026-04-11 11:50:28",
+          "modified_utc": "2026-04-11 16:50:28",
+          "url": "https://thinkiowacity.com/organizer/porch-light-literary-arts-center/",
+          "organizer": "Porch Light Literary Arts Center",
+          "slug": "porch-light-literary-arts-center",
+          "global_id": "thinkiowacity.com?id=90430",
+          "global_id_lineage": [
+            "thinkiowacity.com?id=90430"
+          ]
+        }
+      ],
+      "custom_fields": [],
+      "is_virtual": false,
+      "virtual_url": null,
+      "virtual_video_source": ""
+    },
+    {
+      "id": 10005304,
+      "global_id": "thinkiowacity.com?id=10005304",
+      "global_id_lineage": [
+        "thinkiowacity.com?id=10005304"
+      ],
+      "author": "20",
+      "status": "publish",
+      "date": "2026-07-21 11:19:14",
+      "date_utc": "2026-07-21 16:19:14",
+      "modified": "2026-07-23 11:46:58",
+      "modified_utc": "2026-07-23 16:46:58",
+      "url": "https://thinkiowacity.com/event/teen-winter-skate-night/2026-11-07/",
+      "rest_url": "https://thinkiowacity.com/wp-json/tribe/events/v1/events/10005304",
+      "title": "Teen Winter Skate Night",
+      "description": "<p>Roller skating is every Saturday starting October 3rd through November 21st.</p>\n<p>Beginners Only &#8211; 3:00p.m.-5:00p.m.<br />\nAll Ages and Abilities &#8211; 5:30p.m.-7:30p.m.</p>\n<p>All youth, 5th grade and under must be accompanied by an adult 18 years or older who remains in the gym. Groups limited to 5 kids per adult. A facilities pass is required to check out skates. Socks are required. Some dates may not be available for skating.</p>",
+      "excerpt": "",
+      "slug": "teen-winter-skate-night",
+      "image": {
+        "url": "https://thinkiowacity.com/wp-content/uploads/2026/07/Roller-Skating-Social-Fall-2026.png",
+        "id": 91768,
+        "extension": "png",
+        "width": 1080,
+        "height": 1080,
+        "filesize": 47993,
+        "sizes": {
+          "medium": {
+            "width": 300,
+            "height": 300,
+            "mime-type": "image/png",
+            "filesize": 40204,
+            "url": "https://thinkiowacity.com/wp-content/uploads/2026/07/Roller-Skating-Social-Fall-2026-300x300.png"
+          },
+          "large": {
+            "width": 1024,
+            "height": 1024,
+            "mime-type": "image/png",
+            "filesize": 194142,
+            "url": "https://thinkiowacity.com/wp-content/uploads/2026/07/Roller-Skating-Social-Fall-2026-1024x1024.png"
+          },
+          "thumbnail": {
+            "width": 150,
+            "height": 150,
+            "mime-type": "image/png",
+            "filesize": 17062,
+            "url": "https://thinkiowacity.com/wp-content/uploads/2026/07/Roller-Skating-Social-Fall-2026-150x150.png"
+          },
+          "medium_large": {
+            "width": 768,
+            "height": 768,
+            "mime-type": "image/png",
+            "filesize": 131724,
+            "url": "https://thinkiowacity.com/wp-content/uploads/2026/07/Roller-Skating-Social-Fall-2026-768x768.png"
+          }
+        }
+      },
+      "all_day": false,
+      "start_date": "2026-11-07 15:00:00",
+      "start_date_details": {
+        "year": "2026",
+        "month": "11",
+        "day": "07",
+        "hour": "15",
+        "minutes": "00",
+        "seconds": "00"
+      },
+      "end_date": "2026-11-07 19:30:00",
+      "end_date_details": {
+        "year": "2026",
+        "month": "11",
+        "day": "07",
+        "hour": "19",
+        "minutes": "30",
+        "seconds": "00"
+      },
+      "utc_start_date": "2026-11-07 21:00:00",
+      "utc_start_date_details": {
+        "year": "2026",
+        "month": "11",
+        "day": "07",
+        "hour": "21",
+        "minutes": "00",
+        "seconds": "00"
+      },
+      "utc_end_date": "2026-11-08 01:30:00",
+      "utc_end_date_details": {
+        "year": "2026",
+        "month": "11",
+        "day": "08",
+        "hour": "01",
+        "minutes": "30",
+        "seconds": "00"
+      },
+      "timezone": "America/Chicago",
+      "timezone_abbr": "CDT",
+      "cost": "",
+      "cost_details": {
+        "currency_symbol": "$",
+        "currency_code": "USD",
+        "currency_position": "prefix",
+        "values": []
+      },
+      "website": "https://www.icgov.org/government/departments-and-divisions/parks-and-recreation",
+      "show_map": false,
+      "show_map_link": false,
+      "hide_from_listings": false,
+      "sticky": false,
+      "featured": false,
+      "categories": [
+        {
+          "name": "Free Event",
+          "slug": "free-event",
+          "term_group": 0,
+          "term_taxonomy_id": 48,
+          "taxonomy": "tribe_events_cat",
+          "description": "",
+          "parent": 0,
+          "count": 1232,
+          "filter": "raw",
+          "id": 48,
+          "urls": {
+            "self": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories/48",
+            "collection": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories"
+          }
+        },
+        {
+          "name": "Sports",
+          "slug": "sports",
+          "term_group": 0,
+          "term_taxonomy_id": 65,
+          "taxonomy": "tribe_events_cat",
+          "description": "",
+          "parent": 0,
+          "count": 278,
+          "filter": "raw",
+          "id": 65,
+          "urls": {
+            "self": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories/65",
+            "collection": "https://thinkiowacity.com/wp-json/tribe/events/v1/categories"
+          }
+        }
+      ],
+      "tags": [
+        {
+          "name": "community",
+          "slug": "community",
+          "term_group": 0,
+          "term_taxonomy_id": 356,
+          "taxonomy": "post_tag",
+          "description": "",
+          "parent": 0,
+          "count": 123,
+          "filter": "raw",
+          "id": 356,
+          "urls": {
+            "self": "https://thinkiowacity.com/wp-json/tribe/events/v1/tags/356",
+            "collection": "https://thinkiowacity.com/wp-json/tribe/events/v1/tags"
+          }
+        },
+        {
+          "name": "iowa city",
+          "slug": "iowa-city",
+          "term_group": 0,
+          "term_taxonomy_id": 340,
+          "taxonomy": "post_tag",
+          "description": "",
+          "parent": 0,
+          "count": 607,
+          "filter": "raw",
+          "id": 340,
+          "urls": {
+            "self": "https://thinkiowacity.com/wp-json/tribe/events/v1/tags/340",
+            "collection": "https://thinkiowacity.com/wp-json/tribe/events/v1/tags"
+          }
+        },
+        {
+          "name": "things to do",
+          "slug": "things-to-do",
+          "term_group": 0,
+          "term_taxonomy_id": 338,
+          "taxonomy": "post_tag",
+          "description": "",
+          "parent": 0,
+          "count": 894,
+          "filter": "raw",
+          "id": 338,
+          "urls": {
+            "self": "https://thinkiowacity.com/wp-json/tribe/events/v1/tags/338",
+            "collection": "https://thinkiowacity.com/wp-json/tribe/events/v1/tags"
+          }
+        }
+      ],
+      "venue": {
+        "id": 14664,
+        "author": "7",
+        "status": "publish",
+        "date": "2022-09-21 10:03:44",
+        "date_utc": "2022-09-21 15:03:44",
+        "modified": "2022-09-21 10:03:44",
+        "modified_utc": "2022-09-21 15:03:44",
+        "url": "https://thinkiowacity.com/venue/robert-a-lee-recreation-center/",
+        "venue": "Robert A. Lee Recreation. Center",
+        "slug": "robert-a-lee-recreation-center",
+        "city": "Iowa City",
+        "country": "US",
+        "state": "IA",
+        "stateprovince": "IA",
+        "show_map": true,
+        "show_map_link": true,
+        "global_id": "thinkiowacity.com?id=14664",
+        "global_id_lineage": [
+          "thinkiowacity.com?id=14664"
+        ]
+      },
+      "organizer": [
+        {
+          "id": 23100,
+          "status": "publish",
+          "date": "2023-09-11 16:59:38",
+          "date_utc": "0000-00-00 00:00:00",
+          "modified": "2023-09-11 16:59:38",
+          "modified_utc": "0000-00-00 00:00:00",
+          "url": "https://thinkiowacity.com/organizer/iowa-city-parks-and-recreation/",
+          "organizer": "Iowa City Parks and Recreation",
+          "slug": "iowa-city-parks-and-recreation",
+          "phone": "319-356-5100",
+          "website": "https://www.icgov.org/government/departments-and-divisions/parks-and-recreation",
+          "global_id": "thinkiowacity.com?id=23100",
+          "global_id_lineage": [
+            "thinkiowacity.com?id=23100"
+          ]
+        }
+      ],
+      "custom_fields": [],
+      "is_virtual": false,
+      "virtual_url": null,
+      "virtual_video_source": ""
+    }
+  ],
+  "total_pages": 1,
+  "next_rest_url": null
+}
