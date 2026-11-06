@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
-"""Read-only verification of the three exact EVE-41 publisher sources.
+"""Read-only readiness audit of the three exact EVE-41 publisher sources.
 
 Only preview_source is called: no database authentication, source claims,
 staging, demand, publication, source registration or image probes. Publisher
-facts and bounded diagnostic codes are the only artifact content.
+facts and bounded diagnostic codes are the only artifact content. The known
+Cooper robots HTTP403 hold is recorded without contacting that source again;
+only intended-active Tourism and Good Shepherd require live completion.
 """
 from datetime import datetime, timezone
 from contextlib import contextmanager
@@ -26,6 +28,13 @@ SOURCES = (
     ('coopers_landing_clarksville_va', coopers_landing.CALENDAR),
     ('good_shepherd_food_pantry_south_hill_va', good_shepherd.CALENDAR),
 )
+HELD_SOURCES = {
+    'coopers_landing_clarksville_va': {
+        'reason': 'robots_denied', 'observed_http_status': 403,
+        'evidence_run': 'https://github.com/roomquestgame/community-calendar/actions/runs/42248590568',
+        'evidence_commit': '2d1513d',
+    },
+}
 PER_SOURCE_SECONDS = 41
 OVERALL_SECONDS = 135
 MAX_RECORDS = 500
@@ -191,7 +200,17 @@ def audit():
     for key, url in SOURCES:
         started = monotonic()
         deadline = min(overall, started + PER_SOURCE_SECONDS)
-        receipt = {'source_key': key, 'kind': 'html', 'platform_adapter': 'html'}
+        receipt = {'source_key': key, 'kind': 'html', 'platform_adapter': 'html',
+                   'intended_active': key not in HELD_SOURCES}
+        if key in HELD_SOURCES:
+            # This is a documented readiness hold, not a successful network
+            # result. Never recontact the blocked source during this audit.
+            hold = HELD_SOURCES[key]
+            receipt.update(outcome='held', complete=False, network_skipped=True,
+                           error=hold['reason'], hold_evidence=dict(hold), duration_seconds=0.0)
+            result['sources'].append(receipt)
+            print(json.dumps(receipt), flush=True)
+            continue
         try:
             if started >= overall:
                 raise preview_worker.PreviewError('collection_deadline')
@@ -211,7 +230,7 @@ def audit():
             if (not isinstance(records, list) or len(records) > MAX_RECORDS
                     or any(not isinstance(event, dict) for event in records)):
                 raise preview_worker.PreviewError('snapshot_records_invalid')
-            receipt.update(outcome='complete', candidate_count=len(records),
+            receipt.update(outcome='complete', complete=True, candidate_count=len(records),
                            candidate_image_count=sum(bool(event.get('image_url')) for event in records),
                            parser_capability=output['p_parser_capability'], events=records)
         except Exception as error:
@@ -219,12 +238,14 @@ def audit():
             # Keep only the existing collector's bounded diagnostic-code form.
             value = error.args[0] if isinstance(error, preview_worker.PreviewError) and len(error.args) == 1 else ''
             code = value if isinstance(value, str) and re.fullmatch(r'[a-z_0-9]{3,100}', value) else 'source_audit_failed'
-            receipt.update(outcome='failed', error=code)
+            receipt.update(outcome='failed', complete=False, error=code)
         receipt['duration_seconds'] = round(monotonic() - started, 2)
         result['sources'].append(receipt)
         print(json.dumps({key: value for key, value in receipt.items()
                           if key not in ('events', 'calendar_diagnostic_html')}), flush=True)
     result['complete'] = all(row['outcome'] == 'complete' for row in result['sources'])
+    result['active_complete'] = all(row['outcome'] == 'complete' for row in result['sources']
+                                    if row['intended_active'])
     return result
 
 
@@ -235,7 +256,7 @@ def main():
     result = audit()
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(result, indent=2) + '\n')
-    return 0 if result['complete'] else 1
+    return 0 if result['active_complete'] else 1
 
 
 if __name__ == '__main__':

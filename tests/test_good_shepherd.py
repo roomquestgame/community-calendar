@@ -1,6 +1,7 @@
 """Published pantry dates and the source-scoped public calendar-render callback."""
 from copy import deepcopy
 from datetime import datetime, timezone
+import json
 from pathlib import Path
 from unittest.mock import Mock
 
@@ -83,6 +84,69 @@ def test_collect_uses_only_two_gets_and_exact_injected_read_only_render_tokens()
     render.assert_called_once_with(nonce='0123456789', args='a' * 40)
 
 
+def test_regenerated_render_dom_id_keeps_occurrences_and_exact_public_request_binding():
+    evidence = json.loads((FIXTURES / 'good_calendar_dynamic_id_observation.json').read_text())
+    assert evidence['observation']['placeholder_render_id_equal'] is False
+    assert evidence['observation']['rendered_id_valid'] is True
+    initial = fixture('good_calendar')
+    request = parser.calendar_request(initial)
+    # Synthetic distinct IDs reproduce the observed relationship; the live
+    # diagnostic deliberately replaced the original IDs with stable labels.
+    regenerated = fixture('good_calendar_rendered').replace(request['calendar_id'], 'r999999999999999')
+    pages = {parser.CALENDAR: initial, parser.MINISTRY: fixture('good_pantry')}
+    fetch = Mock(side_effect=lambda url, accept: pages[url])
+    render = Mock(return_value=regenerated)
+    assert parser.collect(SOURCE, fetch, render_calendar=render, now=NOW) == parse()
+    assert [call.args for call in fetch.call_args_list] == [(parser.CALENDAR, 'text/html'), (parser.MINISTRY, 'text/html')]
+    render.assert_called_once_with(nonce=request['nonce'], args=request['args'])
+
+
+@pytest.mark.parametrize('damage,reason', [
+    ('invalid_id', 'identity_unverified'), ('duplicate_calendar', 'render_structure'),
+    ('root_only_changed', 'months_incomplete'), ('truncated_grid', 'grid_incomplete'),
+    ('wrong_month', 'window_unverified'),
+])
+def test_regenerated_dom_id_does_not_accept_invalid_duplicated_or_incoherent_calendars(damage, reason):
+    initial = fixture('good_calendar')
+    old_id = parser.calendar_request(initial)['calendar_id']
+    soup = BeautifulSoup(fixture('good_calendar_rendered').replace(old_id, 'r999999999999999'), 'html.parser')
+    node = soup.select_one('.ics-calendar')
+    if damage == 'invalid_id':
+        node['id'] = 'unrelated-calendar'
+    elif damage == 'duplicate_calendar':
+        node.insert_after(deepcopy(node))
+    elif damage == 'root_only_changed':
+        node['id'] = 'raaaaaaaaaaaaaaa'
+    elif damage == 'truncated_grid':
+        soup.select('table.ics-calendar-month-grid')[3].select_one('td.d_10').decompose()
+    else:
+        soup.select_one('select.ics-calendar-select')['data-this-month'] = '202610'
+    pages = {parser.CALENDAR: initial, parser.MINISTRY: fixture('good_pantry')}
+    with pytest.raises(ValueError, match=reason):
+        parser.collect(SOURCE, lambda url, accept: pages[url],
+                       render_calendar=Mock(return_value=str(soup)), now=NOW)
+
+
+@pytest.mark.parametrize('damage,reason', [
+    ('wrong_canonical', 'page_identity'), ('duplicate_placeholder', 'structure_unverified'),
+    ('invalid_placeholder_id', 'request_unverified'),
+])
+def test_wrong_discovery_identity_still_fails_before_render(damage, reason):
+    soup = BeautifulSoup(fixture('good_calendar'), 'html.parser')
+    if damage == 'wrong_canonical':
+        soup.select_one('link[rel=canonical]')['href'] = parser.MINISTRY
+    elif damage == 'duplicate_placeholder':
+        node = soup.select_one('.r34ics-ajax-container')
+        node.insert_after(deepcopy(node))
+    else:
+        soup.select_one('.r34ics-ajax-container')['id'] = 'unrelated-ajax'
+    fetch, render = Mock(return_value=str(soup)), Mock()
+    with pytest.raises(ValueError, match=reason):
+        parser.collect(SOURCE, fetch, render_calendar=render, now=NOW)
+    fetch.assert_called_once_with(parser.CALENDAR, 'text/html')
+    render.assert_not_called()
+
+
 @pytest.mark.parametrize('old,new', [
     ('https:\\/\\/goodshepherdsouthhill.org\\/wp-admin\\/admin-ajax.php', 'https:\\/\\/other.example\\/write'),
     ('0123456789', 'invalid-token'), ('a' * 40, 'bad'),
@@ -155,8 +219,6 @@ def test_current_real_calendar_month_and_date_containers_must_agree():
     diagnostics = {}
     assert len(parse(soup, diagnostics=diagnostics)) == 7
     assert diagnostics['held'][0]['reason'] == 'publisher_date_conflict'
-    with pytest.raises(ValueError, match='identity_unverified'):
-        parse(expected_calendar_id='rffffffffffffffff')
 
 
 def test_future_new_date_is_accepted_only_when_published_in_the_grid():

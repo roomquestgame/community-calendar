@@ -20,22 +20,31 @@ def success(events=None):
             'p_events': events if events is not None else []}
 
 
-def test_injected_success_calls_only_the_three_reviewed_sources_with_deadlines(monkeypatch, capsys):
+def test_active_success_skips_held_cooper_without_io_and_keeps_exact_deadlines(monkeypatch, capsys):
     now, calls = [100.0], []
     monkeypatch.setattr(audit, 'monotonic', lambda: now[0])
     def preview(source, *, deadline_at):
+        assert source['source_key'] != audit.coopers_landing.SOURCE_KEY
         calls.append((dict(source), deadline_at))
         now[0] += 2
         return success([{'id': 'test', 'title': 'PUBLIC_BODY_SENTINEL', 'image_url': 'https://publisher.example/event.jpg'}])
     monkeypatch.setattr(audit.preview_worker, 'preview_source', preview)
     result = audit.audit()
-    assert result['read_only'] and result['complete']
-    assert [(s['source_key'], s['feed_url']) for s, _ in calls] == list(audit.SOURCES)
-    assert len(calls) == 3
+    assert result['read_only'] and result['active_complete'] and not result['complete']
+    assert [(s['source_key'], s['feed_url']) for s, _ in calls] == [s for s in audit.SOURCES if s[0] not in audit.HELD_SOURCES]
+    assert len(calls) == 2
     assert all(s['kind'] == s['platform_adapter'] == 'html' and s['timezone'] == 'America/New_York'
                and set(s) == {'source_key', 'feed_url', 'kind', 'platform_adapter', 'timezone'} for s, _ in calls)
-    assert [deadline for _, deadline in calls] == [141.0, 143.0, 145.0]
-    assert all(row['candidate_count'] == row['candidate_image_count'] == 1 for row in result['sources'])
+    assert [deadline for _, deadline in calls] == [141.0, 143.0]
+    assert all(row['candidate_count'] == row['candidate_image_count'] == 1
+               for row in result['sources'] if row['intended_active'])
+    held = result['sources'][1]
+    assert held['source_key'] == audit.coopers_landing.SOURCE_KEY
+    assert held['outcome'] == 'held' and held['error'] == 'robots_denied'
+    assert held['network_skipped'] and not held['complete'] and not held['intended_active']
+    assert held['hold_evidence']['observed_http_status'] == 403
+    assert held['hold_evidence']['evidence_run'].endswith('/42248590568')
+    assert 'events' not in held and 'candidate_count' not in held
     stdout = capsys.readouterr().out
     assert 'PUBLIC_BODY_SENTINEL' not in stdout
     assert len(stdout.splitlines()) == 3
@@ -47,12 +56,10 @@ def test_failure_is_sanitized_and_other_sources_are_still_checked(monkeypatch, c
         calls.append(source['source_key'])
         if len(calls) == 1:
             raise OSError('SENSITIVE_SENTINEL https://private.example/token')
-        if len(calls) == 2:
-            return {'p_error': 'robots_denied'}
         return success()
     monkeypatch.setattr(audit.preview_worker, 'preview_source', preview)
     result = audit.audit()
-    assert not result['complete'] and len(calls) == 3
+    assert not result['complete'] and not result['active_complete'] and len(calls) == 2
     assert [r.get('error') for r in result['sources']] == ['source_audit_failed', 'robots_denied', None]
     assert result['sources'][-1]['candidate_count'] == 0
     assert 'SENSITIVE_SENTINEL' not in json.dumps(result) + capsys.readouterr().out
@@ -69,7 +76,10 @@ def test_overall_exhaustion_does_not_start_more_requests_or_keep_late_results(mo
     result = audit.audit()
     assert calls == [41.0]
     assert not result['complete']
-    assert all(r['error'] == 'collection_deadline' and 'events' not in r for r in result['sources'])
+    assert not result['active_complete']
+    assert all(r['error'] == 'collection_deadline' and 'events' not in r
+               for r in result['sources'] if r['intended_active'])
+    assert result['sources'][1]['outcome'] == 'held' and result['sources'][1]['network_skipped']
 
 
 @pytest.mark.parametrize('result,code', [
@@ -83,14 +93,14 @@ def test_overall_exhaustion_does_not_start_more_requests_or_keep_late_results(mo
 def test_partial_or_unrecognized_output_cannot_claim_complete(monkeypatch, capsys, result, code):
     monkeypatch.setattr(audit.preview_worker, 'preview_source', lambda *args, **kwargs: result)
     report = audit.audit()
-    assert not report['complete']
-    assert all(row['error'] == code for row in report['sources'])
+    assert not report['complete'] and not report['active_complete']
+    assert all(row['error'] == code for row in report['sources'] if row['intended_active'])
     assert 'SENSITIVE_SENTINEL' not in json.dumps(report) + capsys.readouterr().out
 
 
 @pytest.mark.parametrize('complete,exit_code', [(True, 0), (False, 1)])
 def test_cli_writes_reviewable_receipt_and_returns_failure_status(monkeypatch, tmp_path, complete, exit_code):
-    report = {'read_only': True, 'complete': complete, 'sources': []}
+    report = {'read_only': True, 'complete': False, 'active_complete': complete, 'sources': []}
     target = tmp_path / 'audit.json'
     monkeypatch.setattr(audit, 'audit', lambda: report)
     monkeypatch.setattr(audit.sys, 'argv', ['capture_mecklenburg_batch3.py', '--output', str(target)])
@@ -174,20 +184,15 @@ def test_observer_keeps_robots_http_status_without_retries_or_sensitive_exceptio
     render = Mock()
     monkeypatch.setattr(audit.preview_worker, 'fetch_publisher', fetch)
     monkeypatch.setattr(audit.preview_worker, 'render_good_shepherd_calendar', render)
-    def preview(source, **kwargs):
-        if source['source_key'] == audit.coopers_landing.SOURCE_KEY:
-            audit.preview_worker.fetch_publisher(source['feed_url'], 'text/html', respect_robots=True)
-        return success()
-    monkeypatch.setattr(audit.preview_worker, 'preview_source', preview)
-    report = audit.audit()
-    receipt = report['sources'][1]
-    assert receipt['error'] == 'robots_denied'
+    receipt = {}
+    with pytest.raises(audit.preview_worker.PreviewError, match='robots_denied'):
+        with audit._observe_existing_transport(audit.coopers_landing.SOURCE_KEY, receipt):
+            audit.preview_worker.fetch_publisher(audit.coopers_landing.CALENDAR, 'text/html', respect_robots=True)
     assert receipt['transport_observation'] == {'transport_error_type': 'PreviewError', 'caused_by_http_status': status}
     fetch.assert_called_once()
     render.assert_not_called()
-    assert report['sources'][2]['outcome'] == 'complete'
     assert audit.preview_worker.fetch_publisher is fetch
-    assert 'SECRET_' not in json.dumps(report) + capsys.readouterr().out
+    assert 'SECRET_' not in json.dumps(receipt) + capsys.readouterr().out
 
 
 def test_parsed_robots_denial_does_not_invent_an_http_status(monkeypatch):
