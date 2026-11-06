@@ -1,0 +1,862 @@
+{
+  "events": [
+    {
+      "id": 7745,
+      "title": "Wine + Dine w/Short Stacked",
+      "url": "https://rosemontofvirginia.com/event/wine-dine-w-short-stacked-2/",
+      "status": "publish",
+      "all_day": false,
+      "hide_from_listings": false,
+      "start_date": "2026-11-07 11:00:00",
+      "end_date": "2026-11-07 17:00:00",
+      "utc_start_date": "2026-11-07 16:00:00",
+      "utc_end_date": "2026-11-07 22:00:00",
+      "timezone": "America/New_York",
+      "cost": "",
+      "categories": [
+        {
+          "name": "Event",
+          "slug": "event",
+          "term_group": 0,
+          "term_taxonomy_id": 57,
+          "taxonomy": "tribe_events_cat",
+          "description": "",
+          "parent": 0,
+          "count": 139,
+          "filter": "raw",
+          "id": 57,
+          "urls": {
+            "self": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/categories/57",
+            "collection": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/categories"
+          }
+        },
+        {
+          "name": "Food",
+          "slug": "food",
+          "term_group": 0,
+          "term_taxonomy_id": 37,
+          "taxonomy": "tribe_events_cat",
+          "description": "",
+          "parent": 0,
+          "count": 151,
+          "filter": "raw",
+          "id": 37,
+          "urls": {
+            "self": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/categories/37",
+            "collection": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/categories"
+          }
+        }
+      ],
+      "tags": [
+        {
+          "name": "food truck",
+          "slug": "food-truck",
+          "term_group": 0,
+          "term_taxonomy_id": 38,
+          "taxonomy": "post_tag",
+          "description": "",
+          "parent": 0,
+          "count": 147,
+          "filter": "raw",
+          "id": 38,
+          "urls": {
+            "self": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/tags/38",
+            "collection": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/tags"
+          }
+        },
+        {
+          "name": "wine",
+          "slug": "wine",
+          "term_group": 0,
+          "term_taxonomy_id": 39,
+          "taxonomy": "post_tag",
+          "description": "",
+          "parent": 0,
+          "count": 181,
+          "filter": "raw",
+          "id": 39,
+          "urls": {
+            "self": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/tags/39",
+            "collection": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/tags"
+          }
+        },
+        {
+          "name": "wine tasting",
+          "slug": "wine-tasting",
+          "term_group": 0,
+          "term_taxonomy_id": 40,
+          "taxonomy": "post_tag",
+          "description": "",
+          "parent": 0,
+          "count": 160,
+          "filter": "raw",
+          "id": 40,
+          "urls": {
+            "self": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/tags/40",
+            "collection": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/tags"
+          }
+        }
+      ],
+      "venue": {
+        "id": 4910,
+        "venue": "Rosemont",
+        "url": "https://rosemontofvirginia.com/venue/rosemont/",
+        "address": "1050 Blackridge Road",
+        "city": "LaCrosse",
+        "state": "VA",
+        "stateprovince": "VA",
+        "country": "United States",
+        "zip": "23950"
+      },
+      "image": {
+        "url": "https://rosemontofvirginia.com/wp-content/uploads/2026/04/ShortStacked-Logo.jpg"
+      },
+      "description": "Synthetic fixture narrative; publisher prose omitted from this test file."
+    },
+    {
+      "id": 8133,
+      "title": "Two Up Wine Down Festival",
+      "url": "https://rosemontofvirginia.com/event/two-up-wine-down-festival/",
+      "status": "publish",
+      "all_day": false,
+      "hide_from_listings": false,
+      "start_date": "2026-11-07 14:00:00",
+      "end_date": "2026-11-07 17:00:00",
+      "utc_start_date": "2026-11-07 19:00:00",
+      "utc_end_date": "2026-11-07 22:00:00",
+      "timezone": "America/New_York",
+      "cost": "$65",
+      "categories": [
+        {
+          "name": "Wine Festival",
+          "slug": "wine-festival",
+          "term_group": 0,
+          "term_taxonomy_id": 43,
+          "taxonomy": "tribe_events_cat",
+          "description": "",
+          "parent": 0,
+          "count": 8,
+          "filter": "raw",
+          "id": 43,
+          "urls": {
+            "self": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/categories/43",
+            "collection": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/categories"
+          }
+        }
+      ],
+      "tags": [],
+      "venue": [],
+      "image": {
+        "url": "https://rosemontofvirginia.com/wp-content/uploads/2026/10/twoupwinedown26-1.jpeg"
+      },
+      "description": "Synthetic fixture narrative; publisher prose omitted from this test file."
+    },
+    {
+      "id": 7988,
+      "title": "Wine Dinner at Blue Jay Bistro",
+      "url": "https://rosemontofvirginia.com/event/wine-dinner-at-blue-jay-bistro/",
+      "status": "publish",
+      "all_day": false,
+      "hide_from_listings": false,
+      "start_date": "2026-11-12 18:00:00",
+      "end_date": "2026-11-12 20:00:00",
+      "utc_start_date": "2026-11-12 23:00:00",
+      "utc_end_date": "2026-11-13 01:00:00",
+      "timezone": "America/New_York",
+      "cost": "$160.00",
+      "categories": [],
+      "tags": [],
+      "venue": {
+        "id": 7990,
+        "venue": "Blue Jay Bistro",
+        "url": "https://rosemontofvirginia.com/venue/blue-jay-bistro/",
+        "address": "141 E South Main St",
+        "city": "Littleton",
+        "state": "NC",
+        "stateprovince": "NC",
+        "country": "United States",
+        "zip": "27850"
+      },
+      "image": {
+        "url": "https://rosemontofvirginia.com/wp-content/uploads/2026/09/Blue-Jay-Bistro-Wine-Dinner.png"
+      },
+      "description": "Synthetic fixture narrative; publisher prose omitted from this test file."
+    },
+    {
+      "id": 7995,
+      "title": "Books, Bites &#038; Bonded",
+      "url": "https://rosemontofvirginia.com/event/booksbitesbonded/",
+      "status": "publish",
+      "all_day": false,
+      "hide_from_listings": false,
+      "start_date": "2026-11-14 11:00:00",
+      "end_date": "2026-11-14 17:00:00",
+      "utc_start_date": "2026-11-14 16:00:00",
+      "utc_end_date": "2026-11-14 22:00:00",
+      "timezone": "America/New_York",
+      "cost": "",
+      "categories": [
+        {
+          "name": "Event",
+          "slug": "event",
+          "term_group": 0,
+          "term_taxonomy_id": 57,
+          "taxonomy": "tribe_events_cat",
+          "description": "",
+          "parent": 0,
+          "count": 139,
+          "filter": "raw",
+          "id": 57,
+          "urls": {
+            "self": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/categories/57",
+            "collection": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/categories"
+          }
+        },
+        {
+          "name": "Food",
+          "slug": "food",
+          "term_group": 0,
+          "term_taxonomy_id": 37,
+          "taxonomy": "tribe_events_cat",
+          "description": "",
+          "parent": 0,
+          "count": 151,
+          "filter": "raw",
+          "id": 37,
+          "urls": {
+            "self": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/categories/37",
+            "collection": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/categories"
+          }
+        }
+      ],
+      "tags": [
+        {
+          "name": "food truck",
+          "slug": "food-truck",
+          "term_group": 0,
+          "term_taxonomy_id": 38,
+          "taxonomy": "post_tag",
+          "description": "",
+          "parent": 0,
+          "count": 147,
+          "filter": "raw",
+          "id": 38,
+          "urls": {
+            "self": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/tags/38",
+            "collection": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/tags"
+          }
+        },
+        {
+          "name": "wine",
+          "slug": "wine",
+          "term_group": 0,
+          "term_taxonomy_id": 39,
+          "taxonomy": "post_tag",
+          "description": "",
+          "parent": 0,
+          "count": 181,
+          "filter": "raw",
+          "id": 39,
+          "urls": {
+            "self": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/tags/39",
+            "collection": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/tags"
+          }
+        },
+        {
+          "name": "wine tasting",
+          "slug": "wine-tasting",
+          "term_group": 0,
+          "term_taxonomy_id": 40,
+          "taxonomy": "post_tag",
+          "description": "",
+          "parent": 0,
+          "count": 160,
+          "filter": "raw",
+          "id": 40,
+          "urls": {
+            "self": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/tags/40",
+            "collection": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/tags"
+          }
+        }
+      ],
+      "venue": [],
+      "image": {
+        "url": "https://rosemontofvirginia.com/wp-content/uploads/2025/06/rosemont-june-06-24-2024-02-2.jpg"
+      },
+      "description": "Synthetic fixture narrative; publisher prose omitted from this test file."
+    },
+    {
+      "id": 7558,
+      "title": "Winery Closed for Club Member Event",
+      "url": "https://rosemontofvirginia.com/event/winery-closed-for-club-member-event-9/",
+      "status": "publish",
+      "all_day": false,
+      "hide_from_listings": false,
+      "start_date": "2026-11-15 13:00:00",
+      "end_date": "2026-11-15 18:00:00",
+      "utc_start_date": "2026-11-15 18:00:00",
+      "utc_end_date": "2026-11-15 23:00:00",
+      "timezone": "America/New_York",
+      "cost": "",
+      "categories": [
+        {
+          "name": "Closings",
+          "slug": "closings",
+          "term_group": 0,
+          "term_taxonomy_id": 41,
+          "taxonomy": "tribe_events_cat",
+          "description": "",
+          "parent": 0,
+          "count": 52,
+          "filter": "raw",
+          "id": 41,
+          "urls": {
+            "self": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/categories/41",
+            "collection": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/categories"
+          }
+        }
+      ],
+      "tags": [],
+      "venue": [],
+      "image": {
+        "url": "https://rosemontofvirginia.com/wp-content/uploads/2025/06/rosemont-june-06-24-2024-02-2.jpg"
+      },
+      "description": "Synthetic fixture narrative; publisher prose omitted from this test file."
+    },
+    {
+      "id": 7566,
+      "title": "Wine Club Pick Up Party",
+      "url": "https://rosemontofvirginia.com/event/wine-club-pick-up-party-13/",
+      "status": "publish",
+      "all_day": false,
+      "hide_from_listings": false,
+      "start_date": "2026-11-15 13:00:00",
+      "end_date": "2026-11-15 18:00:00",
+      "utc_start_date": "2026-11-15 18:00:00",
+      "utc_end_date": "2026-11-15 23:00:00",
+      "timezone": "America/New_York",
+      "cost": "",
+      "categories": [
+        {
+          "name": "Closings",
+          "slug": "closings",
+          "term_group": 0,
+          "term_taxonomy_id": 41,
+          "taxonomy": "tribe_events_cat",
+          "description": "",
+          "parent": 0,
+          "count": 52,
+          "filter": "raw",
+          "id": 41,
+          "urls": {
+            "self": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/categories/41",
+            "collection": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/categories"
+          }
+        }
+      ],
+      "tags": [
+        {
+          "name": "wine",
+          "slug": "wine",
+          "term_group": 0,
+          "term_taxonomy_id": 39,
+          "taxonomy": "post_tag",
+          "description": "",
+          "parent": 0,
+          "count": 181,
+          "filter": "raw",
+          "id": 39,
+          "urls": {
+            "self": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/tags/39",
+            "collection": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/tags"
+          }
+        },
+        {
+          "name": "wine tasting",
+          "slug": "wine-tasting",
+          "term_group": 0,
+          "term_taxonomy_id": 40,
+          "taxonomy": "post_tag",
+          "description": "",
+          "parent": 0,
+          "count": 160,
+          "filter": "raw",
+          "id": 40,
+          "urls": {
+            "self": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/tags/40",
+            "collection": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/tags"
+          }
+        }
+      ],
+      "venue": {
+        "id": 4910,
+        "venue": "Rosemont",
+        "url": "https://rosemontofvirginia.com/venue/rosemont/",
+        "address": "1050 Blackridge Road",
+        "city": "LaCrosse",
+        "state": "VA",
+        "stateprovince": "VA",
+        "country": "United States",
+        "zip": "23950"
+      },
+      "image": {
+        "url": "https://rosemontofvirginia.com/wp-content/uploads/2025/06/rosemont-june-visit-06-08-2022-05-2.jpg"
+      },
+      "description": "Synthetic fixture narrative; publisher prose omitted from this test file."
+    },
+    {
+      "id": 7956,
+      "title": "Wine + Dine w/Beer Fed Beef",
+      "url": "https://rosemontofvirginia.com/event/wine-dine-w-beer-fed-beef-6/",
+      "status": "publish",
+      "all_day": false,
+      "hide_from_listings": false,
+      "start_date": "2026-11-21 11:00:00",
+      "end_date": "2026-11-21 17:00:00",
+      "utc_start_date": "2026-11-21 16:00:00",
+      "utc_end_date": "2026-11-21 22:00:00",
+      "timezone": "America/New_York",
+      "cost": "",
+      "categories": [
+        {
+          "name": "Event",
+          "slug": "event",
+          "term_group": 0,
+          "term_taxonomy_id": 57,
+          "taxonomy": "tribe_events_cat",
+          "description": "",
+          "parent": 0,
+          "count": 139,
+          "filter": "raw",
+          "id": 57,
+          "urls": {
+            "self": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/categories/57",
+            "collection": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/categories"
+          }
+        },
+        {
+          "name": "Food",
+          "slug": "food",
+          "term_group": 0,
+          "term_taxonomy_id": 37,
+          "taxonomy": "tribe_events_cat",
+          "description": "",
+          "parent": 0,
+          "count": 151,
+          "filter": "raw",
+          "id": 37,
+          "urls": {
+            "self": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/categories/37",
+            "collection": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/categories"
+          }
+        }
+      ],
+      "tags": [
+        {
+          "name": "food truck",
+          "slug": "food-truck",
+          "term_group": 0,
+          "term_taxonomy_id": 38,
+          "taxonomy": "post_tag",
+          "description": "",
+          "parent": 0,
+          "count": 147,
+          "filter": "raw",
+          "id": 38,
+          "urls": {
+            "self": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/tags/38",
+            "collection": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/tags"
+          }
+        },
+        {
+          "name": "wine",
+          "slug": "wine",
+          "term_group": 0,
+          "term_taxonomy_id": 39,
+          "taxonomy": "post_tag",
+          "description": "",
+          "parent": 0,
+          "count": 181,
+          "filter": "raw",
+          "id": 39,
+          "urls": {
+            "self": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/tags/39",
+            "collection": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/tags"
+          }
+        },
+        {
+          "name": "wine tasting",
+          "slug": "wine-tasting",
+          "term_group": 0,
+          "term_taxonomy_id": 40,
+          "taxonomy": "post_tag",
+          "description": "",
+          "parent": 0,
+          "count": 160,
+          "filter": "raw",
+          "id": 40,
+          "urls": {
+            "self": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/tags/40",
+            "collection": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/tags"
+          }
+        }
+      ],
+      "venue": {
+        "id": 4910,
+        "venue": "Rosemont",
+        "url": "https://rosemontofvirginia.com/venue/rosemont/",
+        "address": "1050 Blackridge Road",
+        "city": "LaCrosse",
+        "state": "VA",
+        "stateprovince": "VA",
+        "country": "United States",
+        "zip": "23950"
+      },
+      "image": {
+        "url": "https://rosemontofvirginia.com/wp-content/uploads/2024/08/Beer-Fed-Beef.jpg"
+      },
+      "description": "The food truck service is listed as 1–5 p.m."
+    },
+    {
+      "id": 7969,
+      "title": "Winery Closed Thanksgiving Day",
+      "url": "https://rosemontofvirginia.com/event/winery-closed-thanksgiving-day-4/",
+      "status": "publish",
+      "all_day": false,
+      "hide_from_listings": false,
+      "start_date": "2026-11-26 11:00:00",
+      "end_date": "2026-11-26 18:00:00",
+      "utc_start_date": "2026-11-26 16:00:00",
+      "utc_end_date": "2026-11-26 23:00:00",
+      "timezone": "America/New_York",
+      "cost": "",
+      "categories": [
+        {
+          "name": "Closings",
+          "slug": "closings",
+          "term_group": 0,
+          "term_taxonomy_id": 41,
+          "taxonomy": "tribe_events_cat",
+          "description": "",
+          "parent": 0,
+          "count": 52,
+          "filter": "raw",
+          "id": 41,
+          "urls": {
+            "self": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/categories/41",
+            "collection": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/categories"
+          }
+        }
+      ],
+      "tags": [
+        {
+          "name": "wine",
+          "slug": "wine",
+          "term_group": 0,
+          "term_taxonomy_id": 39,
+          "taxonomy": "post_tag",
+          "description": "",
+          "parent": 0,
+          "count": 181,
+          "filter": "raw",
+          "id": 39,
+          "urls": {
+            "self": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/tags/39",
+            "collection": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/tags"
+          }
+        },
+        {
+          "name": "wine tasting",
+          "slug": "wine-tasting",
+          "term_group": 0,
+          "term_taxonomy_id": 40,
+          "taxonomy": "post_tag",
+          "description": "",
+          "parent": 0,
+          "count": 160,
+          "filter": "raw",
+          "id": 40,
+          "urls": {
+            "self": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/tags/40",
+            "collection": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/tags"
+          }
+        }
+      ],
+      "venue": {
+        "id": 4910,
+        "venue": "Rosemont",
+        "url": "https://rosemontofvirginia.com/venue/rosemont/",
+        "address": "1050 Blackridge Road",
+        "city": "LaCrosse",
+        "state": "VA",
+        "stateprovince": "VA",
+        "country": "United States",
+        "zip": "23950"
+      },
+      "image": {
+        "url": "https://rosemontofvirginia.com/wp-content/uploads/2025/06/rosemont-june-06-24-2024-02-2.jpg"
+      },
+      "description": "Synthetic fixture narrative; publisher prose omitted from this test file."
+    },
+    {
+      "id": 8121,
+      "title": "Ugly Sweater Weekend",
+      "url": "https://rosemontofvirginia.com/event/ugly-sweater-weekend-4/",
+      "status": "publish",
+      "all_day": false,
+      "hide_from_listings": false,
+      "start_date": "2026-12-12 11:00:00",
+      "end_date": "2026-12-12 17:00:00",
+      "utc_start_date": "2026-12-12 16:00:00",
+      "utc_end_date": "2026-12-12 22:00:00",
+      "timezone": "America/New_York",
+      "cost": "",
+      "categories": [
+        {
+          "name": "Event",
+          "slug": "event",
+          "term_group": 0,
+          "term_taxonomy_id": 57,
+          "taxonomy": "tribe_events_cat",
+          "description": "",
+          "parent": 0,
+          "count": 139,
+          "filter": "raw",
+          "id": 57,
+          "urls": {
+            "self": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/categories/57",
+            "collection": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/categories"
+          }
+        },
+        {
+          "name": "Food",
+          "slug": "food",
+          "term_group": 0,
+          "term_taxonomy_id": 37,
+          "taxonomy": "tribe_events_cat",
+          "description": "",
+          "parent": 0,
+          "count": 151,
+          "filter": "raw",
+          "id": 37,
+          "urls": {
+            "self": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/categories/37",
+            "collection": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/categories"
+          }
+        },
+        {
+          "name": "Holidays",
+          "slug": "holidays",
+          "term_group": 0,
+          "term_taxonomy_id": 47,
+          "taxonomy": "tribe_events_cat",
+          "description": "",
+          "parent": 0,
+          "count": 21,
+          "filter": "raw",
+          "id": 47,
+          "urls": {
+            "self": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/categories/47",
+            "collection": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/categories"
+          }
+        },
+        {
+          "name": "Music",
+          "slug": "music",
+          "term_group": 0,
+          "term_taxonomy_id": 42,
+          "taxonomy": "tribe_events_cat",
+          "description": "",
+          "parent": 0,
+          "count": 28,
+          "filter": "raw",
+          "id": 42,
+          "urls": {
+            "self": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/categories/42",
+            "collection": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/categories"
+          }
+        }
+      ],
+      "tags": [
+        {
+          "name": "food truck",
+          "slug": "food-truck",
+          "term_group": 0,
+          "term_taxonomy_id": 38,
+          "taxonomy": "post_tag",
+          "description": "",
+          "parent": 0,
+          "count": 147,
+          "filter": "raw",
+          "id": 38,
+          "urls": {
+            "self": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/tags/38",
+            "collection": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/tags"
+          }
+        },
+        {
+          "name": "music",
+          "slug": "music",
+          "term_group": 0,
+          "term_taxonomy_id": 46,
+          "taxonomy": "post_tag",
+          "description": "",
+          "parent": 0,
+          "count": 28,
+          "filter": "raw",
+          "id": 46,
+          "urls": {
+            "self": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/tags/46",
+            "collection": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/tags"
+          }
+        },
+        {
+          "name": "wine",
+          "slug": "wine",
+          "term_group": 0,
+          "term_taxonomy_id": 39,
+          "taxonomy": "post_tag",
+          "description": "",
+          "parent": 0,
+          "count": 181,
+          "filter": "raw",
+          "id": 39,
+          "urls": {
+            "self": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/tags/39",
+            "collection": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/tags"
+          }
+        },
+        {
+          "name": "wine tasting",
+          "slug": "wine-tasting",
+          "term_group": 0,
+          "term_taxonomy_id": 40,
+          "taxonomy": "post_tag",
+          "description": "",
+          "parent": 0,
+          "count": 160,
+          "filter": "raw",
+          "id": 40,
+          "urls": {
+            "self": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/tags/40",
+            "collection": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/tags"
+          }
+        }
+      ],
+      "venue": {
+        "id": 4910,
+        "venue": "Rosemont",
+        "url": "https://rosemontofvirginia.com/venue/rosemont/",
+        "address": "1050 Blackridge Road",
+        "city": "LaCrosse",
+        "state": "VA",
+        "stateprovince": "VA",
+        "country": "United States",
+        "zip": "23950"
+      },
+      "image": {
+        "url": "https://rosemontofvirginia.com/wp-content/uploads/2026/10/Ugly-Sweater-2025-scaled.jpg"
+      },
+      "description": "Synthetic fixture narrative; publisher prose omitted from this test file."
+    },
+    {
+      "id": 8124,
+      "title": "Christmas Eve &#038; Christmas Day Hours",
+      "url": "https://rosemontofvirginia.com/event/christmas-eve-christmas-day-hours-3/",
+      "status": "publish",
+      "all_day": false,
+      "hide_from_listings": false,
+      "start_date": "2026-12-24 11:00:00",
+      "end_date": "2026-12-25 18:00:00",
+      "utc_start_date": "2026-12-24 16:00:00",
+      "utc_end_date": "2026-12-25 23:00:00",
+      "timezone": "America/New_York",
+      "cost": "",
+      "categories": [
+        {
+          "name": "Closings",
+          "slug": "closings",
+          "term_group": 0,
+          "term_taxonomy_id": 41,
+          "taxonomy": "tribe_events_cat",
+          "description": "",
+          "parent": 0,
+          "count": 52,
+          "filter": "raw",
+          "id": 41,
+          "urls": {
+            "self": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/categories/41",
+            "collection": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/categories"
+          }
+        }
+      ],
+      "tags": [],
+      "venue": {
+        "id": 4910,
+        "venue": "Rosemont",
+        "url": "https://rosemontofvirginia.com/venue/rosemont/",
+        "address": "1050 Blackridge Road",
+        "city": "LaCrosse",
+        "state": "VA",
+        "stateprovince": "VA",
+        "country": "United States",
+        "zip": "23950"
+      },
+      "image": {
+        "url": "https://rosemontofvirginia.com/wp-content/uploads/2022/11/rosemont-building-700x467-1.jpeg"
+      },
+      "description": "Synthetic fixture narrative; publisher prose omitted from this test file."
+    },
+    {
+      "id": 8126,
+      "title": "Winery Closed for New Year&#8217;s Day",
+      "url": "https://rosemontofvirginia.com/event/winery-closed-for-new-years-day-3/",
+      "status": "publish",
+      "all_day": false,
+      "hide_from_listings": false,
+      "start_date": "2027-01-01 11:00:00",
+      "end_date": "2027-01-01 18:00:00",
+      "utc_start_date": "2027-01-01 16:00:00",
+      "utc_end_date": "2027-01-01 23:00:00",
+      "timezone": "America/New_York",
+      "cost": "",
+      "categories": [
+        {
+          "name": "Closings",
+          "slug": "closings",
+          "term_group": 0,
+          "term_taxonomy_id": 41,
+          "taxonomy": "tribe_events_cat",
+          "description": "",
+          "parent": 0,
+          "count": 52,
+          "filter": "raw",
+          "id": 41,
+          "urls": {
+            "self": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/categories/41",
+            "collection": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/categories"
+          }
+        }
+      ],
+      "tags": [],
+      "venue": {
+        "id": 4910,
+        "venue": "Rosemont",
+        "url": "https://rosemontofvirginia.com/venue/rosemont/",
+        "address": "1050 Blackridge Road",
+        "city": "LaCrosse",
+        "state": "VA",
+        "stateprovince": "VA",
+        "country": "United States",
+        "zip": "23950"
+      },
+      "image": {
+        "url": "https://rosemontofvirginia.com/wp-content/uploads/2022/11/winter-whites-celebration-667x500-1.jpeg"
+      },
+      "description": "Synthetic fixture narrative; publisher prose omitted from this test file."
+    }
+  ],
+  "rest_url": "https://rosemontofvirginia.com/wp-json/tribe/events/v1/events/?page=1&per_page=50&start_date=2026-11-05 00:00:00&end_date=2027-01-04 23:59:59&status=publish",
+  "total": 11,
+  "total_pages": 1
+}
