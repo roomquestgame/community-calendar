@@ -78,3 +78,21 @@ def test_export_default_end_is_unknown_and_continuous_display_is_not_a_timed_ses
     assert collect(source(key),ET.tostring(isolated),now=NOW)[0]['ends_at'] is None
     event.find('EndDate').text='2026-11-30T23:55:00'
     assert collect(source(key),ET.tostring(isolated),now=NOW)==[]
+
+
+def test_actual_addresses_have_resolver_delimiters_and_keep_suite_in_publisher_evidence():
+    key=next(iter(SOURCES))
+    rows=collect(source(key),(ROOT/'bellevue.xml').read_text(),now=NOW)
+    thai=next(r for r in rows if r['id']=='2874')
+    assert thai['venue_address']=='11796 S 25th St, Bellevue, NE 68123'
+    together=next(r for r in rows if r['id']=='2873')
+    assert together['venue_address']=='1001 Ft Crook Rd. N., Bellevue, NE'
+    assert 'Suite 248' in together['publisher_details']['meeting_location']
+    assert '6805' not in together['venue_address']  # never invent the missing ZIP digit
+    assert thai['venue_city']=='Bellevue'
+
+
+def test_valid_but_shared_resolver_unsupported_plaza_address_is_held():
+    key=next(iter(SOURCES))
+    rows=collect(source(key),(ROOT/'bellevue.xml').read_text(),now=NOW)
+    assert not any(r['id']=='2902' for r in rows)

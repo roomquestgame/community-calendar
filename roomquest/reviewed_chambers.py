@@ -15,6 +15,49 @@ SOURCES = {
 }
 
 
+STREET_SUFFIX = r'(?:Street|St|Avenue|Ave|Road|Rd|Drive|Dr|Boulevard|Blvd|Lane|Ln|Court|Ct|Circle|Cir|Highway|Hwy|Parkway|Pkwy|Place|Pl|Way|Terrace|Ter|Loop|Trail|Trl)'
+
+
+def own_address(element, location):
+    """Format only explicit event-local street/city/state for the shared resolver.
+
+    Suites/rooms stay in meeting_location evidence; they are not a different
+    physical building and are not invented components of its geocoding query.
+    """
+    states = {'ia': 'IA', 'iowa': 'IA', 'ne': 'NE', 'nebraska': 'NE'}
+    street = plain(element.findtext('MapAddr1'))
+    city = plain(element.findtext('MapCity'))
+    state = states.get(plain(element.findtext('MapState')).lower())
+    if (street and city and state and re.match(r'^\d{1,6}\s', street)
+            and re.search(r'\b' + STREET_SUFFIX + r'\b', street, re.I)):
+        return f'{street}, {city}, {state}', city
+    # Remove only a final parenthesized directions note, not arbitrary text.
+    text = re.sub(r'\s*\([^()]*\)\s*$', '', location).strip()
+    locality = re.search(r'\b(IA|Iowa|NE|Nebraska)\b[,. ]*(\d{4,5}(?:-\d{4})?)?[. ]*$', text, re.I)
+    if not locality:
+        return None
+    state = states[locality.group(1).lower()]
+    body = text[:locality.start()].strip(' ,')
+    numbered = re.search(r'\b\d{1,6}\s+\S', body)
+    if not numbered:
+        return None
+    body = body[numbered.start():]
+    address = re.fullmatch(
+        r'(?P<street>\d{1,6}\s+.+?\b' + STREET_SUFFIX +
+        r'\.?(?:\s+(?:N|S|E|W|NE|NW|SE|SW)\.?)?)'
+        r'(?:,?\s+(?:Suite|Ste|Unit|#)\s*[A-Za-z0-9-]+)?'
+        r',?\s+(?P<city>[A-Za-z][A-Za-z .\x27-]+)', body, re.I)
+    if not address:
+        return None
+    city = address.group('city').strip(' ,')
+    street = address.group('street').strip(' ,')
+    postal = locality.group(2) or ''
+    # A malformed four-digit publisher ZIP is not silently corrected.
+    if not re.fullmatch(r'\d{5}(?:-\d{4})?', postal):
+        postal = ''
+    return f'{street}, {city}, {state}' + (' ' + postal if postal else ''), city
+
+
 def collect(source, payload, *, now=None):
     key=source.get('source_key');identity=SOURCES.get(key)
     if (not identity or source.get('feed_url')!=identity[0] or source.get('timezone')!=identity[1]
@@ -46,21 +89,17 @@ def collect(source, payload, *, now=None):
         location_html=e.findtext('LocationDesc') or ''
         location=plain(location_html)
         if re.search(r'\b(zoom|online|virtual)\b',location,re.I):continue
-        # Do not turn chamber office/source-city fields into a venue point.
-        map_street=plain(e.findtext('MapAddr1'))
-        map_city=plain(e.findtext('MapCity'));map_state=plain(e.findtext('MapState'))
-        address=', '.join(x for x in (map_street,map_city,map_state) if x) if map_street and map_city and map_state else location
-        soup=BeautifulSoup(location_html,'html.parser')
-        label=soup.find(['strong','b'])
-        venue=plain(label.get_text()) if label else re.split(r'\b\d{1,6}\s',location,maxsplit=1)[0].strip(' ,.-')
-        if not venue:venue=location
-        # The source city is not attendance evidence. Incomplete local addresses
-        # remain withheld until the publisher supplies a complete locality.
-        if (not venue or not re.search(r'\d+\s+\S+',address)
-                or not re.search(r'\b(?:IA|Iowa|NE|Nebraska)\b',address,re.I)):
+        resolved_address = own_address(e, location)
+        if not resolved_address:
             continue
+        address, event_city = resolved_address
+        soup = BeautifulSoup(location_html, 'html.parser')
+        label = soup.find(['strong', 'b'])
+        venue = plain(label.get_text()) if label else re.split(r'\b\d{1,6}\s', location, maxsplit=1)[0].strip(' ,.-')
+        if not venue:
+            venue = address  # an address-only publisher label stays explicit, never invented
         url=base+'/events/details/'+quote(slug if slug.endswith('-'+ident) else slug+'-'+ident,safe='-')
-        row=record(title,starts.isoformat(),ends.isoformat() if ends else None,venue,address,map_city,url,ident,tz=identity[1],retain_until_end=True)
+        row=record(title,starts.isoformat(),ends.isoformat() if ends else None,venue,address,event_city,url,ident,tz=identity[1],retain_until_end=True)
         if not row:continue
         row['description']=description
         # Numeric category IDs are not human-readable activity evidence.
@@ -68,7 +107,7 @@ def collect(source, payload, *, now=None):
         costs=plain(e.findtext('AdmissionDesc'))[:400]
         pictures={x.get('src') for x in BeautifulSoup(e.findtext('Description') or '', 'html.parser').select('img[src]')}
         candidate=next(iter(pictures)) if len(pictures)==1 else None
-        row=attach(row,key,facts={'cost':costs},candidate=candidate)
+        row=attach(row,key,facts={'cost':costs,'meeting_location':location[:400]},candidate=candidate)
         uid=(row['id'],row['starts_at'])
         if uid in rows and rows[uid]!=row:raise ValueError('conflicting_event_occurrence')
         rows[uid]=row
