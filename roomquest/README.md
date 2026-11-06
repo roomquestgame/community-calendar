@@ -1,3 +1,16 @@
+## Mecklenburg reviewed sources — November 5, 2026 (prepared)
+
+Three explicit sources reuse existing collection and publication lanes:
+Mecklenburg public libraries through ICS, Rosemont through WordPress JSON, and
+Chase City Chamber through its allowed normal HTML calendar. Local captures
+produce 25 + 3 + 1 factual candidates with real narratives and actual branch or
+event addresses; this is not a production-publication count. Closures, private
+events, conflicting schedules and unreviewed venues are excluded or held.
+Rosemont and Chase City use the existing bounded publisher-image candidate
+protocol. Library page artwork is not treated as event imagery. No export path
+disallowed by robots, new timer or default event pin is introduced.
+See [the source contracts, evidence and release boundary](../docs/mecklenburg-source-batch-20261105.md).
+
 ## Virginia event descriptions — November 5, 2026 (prepared)
 
 The Virginia HTML adapter now reads the event's actual narrative, preserves a
