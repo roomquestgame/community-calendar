@@ -16,6 +16,11 @@ def payload():
 
 @pytest.fixture(autouse=True)
 def fixture_clock(monkeypatch):
+    class FrozenDateTime(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return NOW.astimezone(tz) if tz else NOW.replace(tzinfo=None)
+    monkeypatch.setattr('roomquest.waterloo.datetime', FrozenDateTime)
     monkeypatch.setattr('roomquest.preview_worker._future_datetime',lambda value: value.astimezone(timezone.utc) if isinstance(value,datetime) and value.tzinfo else None)
 
 def test_actual_snapshot_keeps_narrative_categories_streets_and_unverified_photo_candidates(payload):

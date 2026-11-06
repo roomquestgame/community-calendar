@@ -15,6 +15,11 @@ def source(key):
 
 @pytest.fixture(autouse=True)
 def clock(monkeypatch):
+    class FrozenDateTime(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return NOW.astimezone(tz) if tz else NOW.replace(tzinfo=None)
+    monkeypatch.setattr('roomquest.reviewed_chambers.datetime', FrozenDateTime)
     monkeypatch.setattr('roomquest.preview_worker._future_datetime',lambda value: value.astimezone(timezone.utc) if isinstance(value,datetime) and value.tzinfo else None)
 
 @pytest.mark.parametrize('key,file',[(k,f) for k,f in zip(SOURCES,['bellevue','clear-lake'])])
