@@ -8,7 +8,7 @@ from roomquest.collector_errors import failure_details
 from roomquest.preview_worker import PreviewError, supabase_rpc, _process_claimed_source
 
 CATEGORIES = frozenset(('ical', 'wordpress', 'jsonld', 'squarespace', 'library',
-                        'rss', 'localist', 'socrata', 'chambermaster', 'chambermate', 'parks', 'html'))
+                        'rss', 'localist', 'socrata', 'chambermaster', 'chambermate', 'parks', 'html', 'revize'))
 
 MAX_HANDOFF_WAIT_SECONDS = 2
 FINISH_TIMEOUT_SECONDS = 5
@@ -38,6 +38,7 @@ _OPERATIONS = frozenset(('community_collector_claim_category',
                          'community_collector_record_staged_events',
                          'community_collector_record_preview',
                          'community_collector_record_preview_v2',
+                         'community_collector_record_preview_v3',
                          'community_collector_publish_category',
                          'community_collector_finish_category'))
 # This is an explicit diagnostic vocabulary, not a shape-only exception-message

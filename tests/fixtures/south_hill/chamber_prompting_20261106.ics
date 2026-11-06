@@ -1,0 +1,38 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//ChamberMaster//Event Calendar 2.0//EN
+METHOD:PUBLISH
+X-PUBLISHED-TTL:P1H
+REFRESH-INTERVAL:P1H
+CALSCALE:GREGORIAN
+BEGIN:VTIMEZONE
+TZID:America/New_York
+BEGIN:DAYLIGHT
+RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=2SU
+DTSTART:20070101T000000
+TZOFFSETFROM:-0500
+TZOFFSETTO:-0400
+TZNAME:Eastern Daylight Time
+END:DAYLIGHT
+BEGIN:STANDARD
+RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU
+DTSTART:20070101T000000
+TZOFFSETFROM:-0400
+TZOFFSETTO:-0500
+TZNAME:Eastern Standard Time
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+DTSTART;TZID=America/New_York:20261117T173000
+DTEND;TZID=America/New_York:20261117T190000
+X-MICROSOFT-CDO-ALLDAYEVENT:FALSE
+SUMMARY:AI For Business: Practical Prompting for Everyday Work
+DESCRIPTION:Want better results from AI? It starts with knowing what to ask and how to ask it.\n\nThis practical\, beginner-friendly workshop will show you how to give AI clearer instructions\, better context\, and useful feedback so you can get more relevant and reliable results.\n\nYou’ll learn a simple\, repeatable approach you can use with tools like ChatGPT\, Claude\, Gemini\, Copilot\, and other AI platforms to:\n\nWrite stronger prompts\nImprove responses that miss the mark\nAdd the right context and details\nAdapt prompts for everyday work tasks\nBuild prompts you can use again and again\n\nRegister here: https://sovainnovationhub.com/ai-programs/ai-workshops-for-business/
+X-ALT-DESC;FMTTYPE=text/html:Want better results from AI? It starts with knowing what to ask and how to ask it.\n\nThis practical\, beginner-friendly workshop will show you how to give AI clearer instructions\, better context\, and useful feedback so you can get more relevant and reliable results.\n\nYou’ll learn a simple\, repeatable approach you can use with tools like ChatGPT\, Claude\, Gemini\, Copilot\, and other AI platforms to:\n\nWrite stronger prompts\nImprove responses that miss the mark\nAdd the right context and details\nAdapt prompts for everyday work tasks\nBuild prompts you can use again and again\n\nRegister here: https://sovainnovationhub.com/ai-programs/ai-workshops-for-business/
+LOCATION:715 Wilborn Avenue South Boston VA 24592
+UID:e.4800.1637639
+SEQUENCE:3
+DTSTAMP:20261106T131331Z
+URL:https://members.southhillchamber.com/events/Details/ai-for-business-practical-prompting-for-everyday-work-1927017?sourceTypeId=Hub
+END:VEVENT
+END:VCALENDAR

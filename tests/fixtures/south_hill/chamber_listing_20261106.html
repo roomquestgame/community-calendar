@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html><body><div class="container-fluid gz-events-listing">
+<!--page title-->
+<div class="row gz-all-headers">
+<div class="col">
+<h1 class="gz-pagetitle">Events</h1>
+</div>
+<div aria-label="Display Options" class="btn-group gz-sort-btn-group" role="group">
+<div class="gz-submitEvent-div">
+<a aria-label="Submit Event button" class="gz-submitEvent-badge gz-posted-badge" href="https://members.southhillchamber.com/ap/Event/Submit/aPo5XarV" id="gz-submitEvent-btn" role="button" target="_blank" title="Submit Event"><i class="gz-fal gz-fa-plus"></i></a>
+</div>
+</div>
+</div>
+<!-- search bar-->
+<div class="row gz-directory-search">
+<div class="col">
+<form action="https://members.southhillchamber.com/calendar/Search" id="filter" method="get">
+<div class="input-group gz-search-filters">
+<input aria-label="Search by keyword" class="form-control gz-search-keyword" for="search" id="searchInput" name="term" placeholder="What are you looking for?" type="text"/>
+<select aria-label="Search by Category" class="custom-select gz-search-category multiSelect gz-option" data-name="CatVals" id="category-select" multiple="" style="display: none" type="text"></select>
+<select aria-label="Search by Happening" class="custom-select gz-search-happening gz-option" data-name="DateFilter" id="happening-select" name="DateFilter">
+<option selected="" value="0">Show Events Happening...</option>
+<option value="1">Today</option>
+<option value="2">This Week</option>
+<option value="3">This Weekend</option>
+<option value="4">This Month</option>
+<option value="5">Custom</option>
+</select>
+<div class="input-group-append">
+<button aria-label="Search Submit" class="btn gz-search-btn" type="submit"><i class="gz-far gz-fa-search"></i>Search</button>
+</div>
+</div>
+<div class="row" id="gz-search-custom" style="display: none">
+<div>
+<label for="from">Start Date</label>
+<input data-val="true" data-val-date="The field from must be a date." id="from" name="from" type="text" value="11/06/2026"/>
+</div>
+<div>
+<label for="to">End Date</label>
+<input data-val="true" data-val-date="The field to must be a date." id="to" name="to" type="text" value="11/06/2027"/>
+</div>
+</div>
+<input id="CategoryValues" name="CategoryValues" type="hidden"/>
+<input id="mode" name="mode" type="hidden"/>
+</form>
+</div>
+</div>
+<!-- search pills, these display if keyword or items in search are selected -->
+<div class="row gz-search-pills">
+<div class="col">
+<a aria-label="Deselect" class="badge badge-pill gz-search-pill" data-name="CustomDate" data-value="11/6/2027 11:59:59 PM">11/6/2026  - 11/6/2027<i class="gz-fal gz-fa-times"></i></a>
+</div>
+</div>
+<!--includes events # and sorting options, grid view should be selected and display by default-->
+<div class="row gz-sort-bar">
+<div class="col">
+<div aria-label="Toolbar with button groups" class="btn-toolbar gz-sort-toolbar justify-content-between" role="toolbar">
+<h4 class="gz-subtitle">Results: 4</h4>
+<div aria-label="Display Options" class="btn-group gz-sort-btn-group" role="group">
+<!-- the below gz-view-btn buttons are the toggles for grid and list view, place a class of "active" on the active button as seen below, list view should be default active for events-->
+<a aria-label="Grid View button" class="gz-sort-btn gz-view-btn" href="javascript:void(0)" id="gz-grid-btn" role="button" title="Grid View"><i class="gz-fal gz-fa-th"></i></a>
+<a aria-label="List View button" class="gz-sort-btn gz-view-btn" href="javascript:void(0)" id="gz-list-btn" role="button" title="List View"><i class="gz-fal gz-fa-list"></i></a>
+<a aria-label="Calendar View button" class="gz-sort-btn gz-view-btn active" href="javascript:void(0)" id="gz-calendar-btn" role="button" title="Calendar View"><i class="gz-fal gz-fa-calendar-alt"></i></a>
+</div>
+</div>
+</div>
+</div>
+<!-- start of LIST card view, the GRID view will use same markup except instead of using column '.gz-list-col'  use '.gz-grid-col' -->
+<div class="row gz-cards gz-events-cards">
+<div class="gz-list-col">
+<div class="card gz-events-card" itemscope="itemscope" itemtype="http://schema.org/Event">
+<div class="card-header">
+<div class="gz-card-wkday-wrap">
+<span class="gz-card-wkday">MON</span>
+</div>
+<div class="gz-event-date-wrap">
+<div class="gz-card-month">
+<span class="gz-start-dt">November</span>
+</div>
+<div class="gz-card-dday">
+<!--if no end day omit .gz-end-dy span-->
+<span class="gz-start-dy">16</span>
+</div>
+</div>
+</div>
+<div class="card-header">
+<!--if no event image omit the <a> and leave .card-header empty-->
+<a aria-label="Build a Marketing Plan You Will Actually Use link" class="gz-card-head-empty" href="https://members.southhillchamber.com/calendar/Details/build-a-marketing-plan-you-will-actually-use-1948864?sourceTypeId=Website"></a>
+</div>
+<div class="card-body gz-events-card-body">
+<h5 class="card-title" itemprop="name">
+<a class="gz-card-title gz-event-card-title" href="https://members.southhillchamber.com/calendar/Details/build-a-marketing-plan-you-will-actually-use-1948864?sourceTypeId=Website" itemprop="url">Build a Marketing Plan You Will Actually Use</a>
+</h5>
+<h5 class="gz-event-card-time">6:00 PM - 7:30 PM</h5>
+<!-- date & time for schema.org, correct the datetime, these do not display only using only for schema-->
+<meta content="11/16/2026 6:00:00 PM" itemprop="startDate"/>
+<meta content="11/16/2026 7:30:00 PM" itemprop="endDate"/>
+<p class="card-text gz-description gz-events-description" itemprop="about">When you’re running a business, marketing can easily become a long list of things you “should” be doing.
+
+​This two-hour workshop with Letterpress Communications will help you cut through the noise and focus on what matters most: who you’re trying to ...</p>
+</div>
+<div class="card-footer">
+<!-- if registration is not available add .disabled class-->
+</div>
+</div>
+</div>
+<div class="gz-list-col">
+<div class="card gz-events-card" itemscope="itemscope" itemtype="http://schema.org/Event">
+<div class="card-header">
+<div class="gz-card-wkday-wrap">
+<span class="gz-card-wkday">TUE</span>
+</div>
+<div class="gz-event-date-wrap">
+<div class="gz-card-month">
+<span class="gz-start-dt">November</span>
+</div>
+<div class="gz-card-dday">
+<!--if no end day omit .gz-end-dy span-->
+<span class="gz-start-dy">17</span>
+</div>
+</div>
+</div>
+<div class="card-header">
+<!--if no event image omit the <a> and leave .card-header empty-->
+<a aria-label="AI For Business: Practical Prompting for Everyday Work link" class="gz-card-head-empty" href="https://members.southhillchamber.com/calendar/Details/ai-for-business-practical-prompting-for-everyday-work-1927017?sourceTypeId=Website"></a>
+</div>
+<div class="card-body gz-events-card-body">
+<h5 class="card-title" itemprop="name">
+<a class="gz-card-title gz-event-card-title" href="https://members.southhillchamber.com/calendar/Details/ai-for-business-practical-prompting-for-everyday-work-1927017?sourceTypeId=Website" itemprop="url">AI For Business: Practical Prompting for Everyday Work</a>
+</h5>
+<h5 class="gz-event-card-time">5:30 PM - 7:00 PM</h5>
+<!-- date & time for schema.org, correct the datetime, these do not display only using only for schema-->
+<meta content="11/17/2026 5:30:00 PM" itemprop="startDate"/>
+<meta content="11/17/2026 7:00:00 PM" itemprop="endDate"/>
+<p class="card-text gz-description gz-events-description" itemprop="about">Want better results from AI? It starts with knowing what to ask and how to ask it.
+
+This practical, beginner-friendly workshop will show you how to give AI clearer instructions, better context, and useful feedback so you can get more relevant and ...</p>
+</div>
+<div class="card-footer">
+<!-- if registration is not available add .disabled class-->
+</div>
+</div>
+</div>
+<div class="gz-list-col">
+<div class="card gz-events-card" itemscope="itemscope" itemtype="http://schema.org/Event">
+<div class="card-header">
+<div class="gz-card-wkday-wrap">
+<span class="gz-card-wkday">FRI</span>
+</div>
+<div class="gz-event-date-wrap">
+<div class="gz-card-month">
+<span class="gz-start-dt">December</span>
+</div>
+<div class="gz-card-dday">
+<!--if no end day omit .gz-end-dy span-->
+<span class="gz-start-dy">4</span>
+</div>
+</div>
+</div>
+<div class="card-header">
+<!--if no event image omit the <a> and leave .card-header empty-->
+<a aria-label="Annual Customer Appreciation Day link" class="gz-card-head-empty" href="https://members.southhillchamber.com/calendar/Details/annual-customer-appreciation-day-1734865?sourceTypeId=Website"></a>
+</div>
+<div class="card-body gz-events-card-body">
+<h5 class="card-title" itemprop="name">
+<a class="gz-card-title gz-event-card-title" href="https://members.southhillchamber.com/calendar/Details/annual-customer-appreciation-day-1734865?sourceTypeId=Website" itemprop="url">Annual Customer Appreciation Day</a>
+</h5>
+<h5 class="gz-event-card-time">11:30 AM - 2:00 PM</h5>
+<!-- date & time for schema.org, correct the datetime, these do not display only using only for schema-->
+<meta content="12/4/2026 11:30:00 AM" itemprop="startDate"/>
+<meta content="12/4/2026 2:00:00 PM" itemprop="endDate"/>
+<p class="card-text gz-description gz-events-description" itemprop="about">Join us for our Annual Customer Appreciation Day. Rain or  Shine. 
+Stew Lunch while supplies last
+
+** Please RSVP by 11.28.26</p>
+</div>
+<div class="card-footer">
+<!-- if registration is not available add .disabled class-->
+</div>
+</div>
+</div>
+<div class="gz-list-col">
+<div class="card gz-events-card" itemscope="itemscope" itemtype="http://schema.org/Event">
+<div class="card-header">
+<div class="gz-card-wkday-wrap">
+<span class="gz-card-wkday">TUE</span>
+</div>
+<div class="gz-event-date-wrap">
+<div class="gz-card-month">
+<span class="gz-start-dt">January</span>
+</div>
+<div class="gz-card-dday">
+<!--if no end day omit .gz-end-dy span-->
+<span class="gz-start-dy">12</span>
+</div>
+</div>
+</div>
+<div class="card-header">
+<!--if no event image omit the <a> and leave .card-header empty-->
+<a aria-label="AI for Business: AI for Marketing, Outreach, &amp; Creation link" class="gz-card-head-empty" href="https://members.southhillchamber.com/calendar/Details/ai-for-business-ai-for-marketing-outreach-creation-1927021?sourceTypeId=Website"></a>
+</div>
+<div class="card-body gz-events-card-body">
+<h5 class="card-title" itemprop="name">
+<a class="gz-card-title gz-event-card-title" href="https://members.southhillchamber.com/calendar/Details/ai-for-business-ai-for-marketing-outreach-creation-1927021?sourceTypeId=Website" itemprop="url">AI for Business: AI for Marketing, Outreach, &amp; Creation</a>
+</h5>
+<h5 class="gz-event-card-time">12:00 PM - 7:00 PM</h5>
+<!-- date & time for schema.org, correct the datetime, these do not display only using only for schema-->
+<meta content="1/12/2027 12:00:00 PM" itemprop="startDate"/>
+<meta content="1/12/2027 7:00:00 PM" itemprop="endDate"/>
+<p class="card-text gz-description gz-events-description" itemprop="about">Learn how to use AI to better understand your audience, strengthen your message, and create marketing and outreach content more efficiently.
+
+Explore practical ways to use AI for customer research, email, social media, newsletters, website content, ...</p>
+</div>
+<div class="card-footer">
+<!-- if registration is not available add .disabled class-->
+</div>
+</div>
+</div>
+</div>
+<div class="row gz-cards gz-events-calendar" style="display: none">
+<div class="row">
+<div class="col">
+<div class="gz-calendar-month">
+<h2 class="gz-heading">
+<a class="gz-switch-month" data-date="10/01/2026" data-mode="1" href="#"><i class="gz-far gz-fa-chevron-left"></i></a>
+<span class="gz-calendar-month-text">Nov 2026</span>
+<a class="gz-switch-month" data-date="12/01/2026" data-mode="1" href="#"><i class="gz-far gz-fa-chevron-right"></i></a>
+</h2>
+</div>
+</div>
+<div class="row">
+<div class="col">
+<div id="gz-calendar">
+<div class="gz-week gz-names">
+<div class="gz-day">Sun</div>
+<div class="gz-day">Mon</div>
+<div class="gz-day">Tue</div>
+<div class="gz-day">Wed</div>
+<div class="gz-day">Thu</div>
+<div class="gz-day">Fri</div>
+<div class="gz-day">Sat</div>
+</div>
+<div class="gz-week"> <div class="gz-day">
+1    </div>
+<div class="gz-day">
+2    </div>
+<div class="gz-day">
+3    </div>
+<div class="gz-day">
+<a class="gz-day-link" href="https://members.southhillchamber.com/calendar/Search?from=11%2f04%2f2026&amp;to=11%2f05%2f2026&amp;mode=0&amp;cid=11727&amp;DateFilter=5" title="All Events">4</a>
+<div class="gz-event-link"><a href="https://members.southhillchamber.com/calendar/Details/43rd-annual-seafood-festival-1904022?sourceTypeId=Hub" title="43rd Annual Seafood festival">43rd Annual Seafood festival</a></div>
+</div>
+<div class="gz-day">
+5    </div>
+<div class="gz-day">
+6    </div>
+<div class="gz-day">
+7    </div>
+</div><div class="gz-week"> <div class="gz-day">
+8    </div>
+<div class="gz-day">
+9    </div>
+<div class="gz-day">
+10    </div>
+<div class="gz-day">
+11    </div>
+<div class="gz-day">
+12    </div>
+<div class="gz-day">
+13    </div>
+<div class="gz-day">
+14    </div>
+</div><div class="gz-week"> <div class="gz-day">
+15    </div>
+<div class="gz-day">
+<a class="gz-day-link" href="https://members.southhillchamber.com/calendar/Search?from=11%2f16%2f2026&amp;to=11%2f17%2f2026&amp;mode=0&amp;cid=11727&amp;DateFilter=5" title="All Events">16</a>
+<div class="gz-event-link"><a href="https://members.southhillchamber.com/calendar/Details/build-a-marketing-plan-you-will-actually-use-1948864?sourceTypeId=Hub" title="Build a Marketing Plan You Will Actually Use">Build a Marketing Plan You Will Actually Use</a></div>
+</div>
+<div class="gz-day">
+<a class="gz-day-link" href="https://members.southhillchamber.com/calendar/Search?from=11%2f17%2f2026&amp;to=11%2f18%2f2026&amp;mode=0&amp;cid=11727&amp;DateFilter=5" title="All Events">17</a>
+<div class="gz-event-link"><a href="https://members.southhillchamber.com/calendar/Details/ai-for-business-practical-prompting-for-everyday-work-1927017?sourceTypeId=Hub" title="AI For Business: Practical Prompting for Everyday Work">AI For Business: Practical Prompting for Everyday Work</a></div>
+</div>
+<div class="gz-day">
+18    </div>
+<div class="gz-day">
+19    </div>
+<div class="gz-day">
+20    </div>
+<div class="gz-day">
+21    </div>
+</div><div class="gz-week"> <div class="gz-day">
+22    </div>
+<div class="gz-day">
+23    </div>
+<div class="gz-day">
+24    </div>
+<div class="gz-day">
+25    </div>
+<div class="gz-day">
+26    </div>
+<div class="gz-day">
+27    </div>
+<div class="gz-day">
+28    </div>
+</div><div class="gz-week"> <div class="gz-day">
+29    </div>
+<div class="gz-day">
+30    </div>
+<div class="gz-day">
+</div>
+<div class="gz-day">
+</div>
+<div class="gz-day">
+</div>
+<div class="gz-day">
+</div>
+<div class="gz-day">
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></body></html>

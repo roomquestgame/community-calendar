@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import re
-from urllib.parse import urlsplit
+from urllib.parse import parse_qsl, urlsplit
 
 DETAILS_VERSION = 'publisher_event_details_v1'
 IMAGE_VERSION = 'publisher_event_candidates_v1'
@@ -57,6 +57,22 @@ def family(source_key, event_url):
         if (source_key == 'chase_city_chamber_va' and p.hostname == 'chasecitychamber.com'
                 and re.fullmatch(r'/upcoming-events/[a-z0-9-]+/?', p.path) and not p.query):
             return 'chase_city_chamber'
+        if (source_key == 'south_hill_town_va' and p.netloc == 'www.southhillva.gov'
+                and p.path == '/calendar.php' and not p.query):
+            return 'south_hill_town'
+        if (source_key == 'south_hill_chamber_va' and p.netloc == 'members.southhillchamber.com'
+                and re.fullmatch(r'/calendar/Details/[a-z0-9-]+-[1-9][0-9]*', p.path) and not p.query):
+            return 'south_hill_chamber'
+        if (source_key == 'clarksville_community_players_va' and p.netloc == 'clarksvilleplayers.org'
+                and p.path == '/' and not p.query):
+            return 'clarksville_players'
+        if (source_key == 'maccallum_more_va' and p.netloc == 'maccallummore.org'
+                and re.fullmatch(r'/pages/[a-z0-9-]+', p.path) and not p.query):
+            return 'maccallum_more'
+        if (source_key == 'mecklenburg_ymca_programs_va' and p.netloc == 'mecklenburg.recliquecore.com'
+                and re.fullmatch(r'/programs/[1-9][0-9]*/[a-z0-9-]+/', p.path)
+                and p.query == 'locations=-1'):
+            return 'mecklenburg_ymca'
         if (re.fullmatch(r'south_carolina_parks_[1-9][0-9]{0,9}', source_key or '')
                 and p.hostname == 'southcarolinaparks.com'
                 and re.fullmatch(r'/products/[1-9][0-9]{0,9}', p.path) and not p.query):
@@ -76,7 +92,8 @@ def image_url(value, publisher):
                 value = value.split('?', 1)[0]
         p = urlsplit(value)
         if (p.scheme != 'https' or p.username or p.password or p.port not in (None, 443)
-                or p.query or p.fragment or re.search(r'[\s\\<>]|%2e|%2f|%5c', value, re.I)
+                or (p.query and publisher != 'maccallum_more')
+                or p.fragment or re.search(r'[\s\\<>]|%2e|%2f|%5c', value, re.I)
                 or '..' in p.path.split('/')):
             return None
         if publisher == 'waterloo':
@@ -84,6 +101,29 @@ def image_url(value, publisher):
                              and re.search(r'\.(?:jpe?g|png|webp|gif)$', p.path, re.I)) else None
         if publisher == 'reviewed_chamber':
             return value if value == 'https://cdn.firespring.com/images/49799955-78ed-4e31-b627-8bc12eb7ffea.png' else None
+        if publisher in ('clarksville_players', 'maccallum_more', 'mecklenburg_ymca'):
+            if (p.netloc != p.hostname or
+                    re.search(r'(?:^|[-_/])(?:logo|favicon|avatar|pixel)(?:[-_.]|$)', p.path, re.I)):
+                return None
+            if publisher == 'clarksville_players':
+                return value if (p.hostname == 'img1.wsimg.com' and re.fullmatch(
+                    r'/isteam/ip/a33c590a-25e0-4bb6-979e-3d018e2af1b1/[^/]+\.(?:jpe?g|png|webp)'
+                    r'(?:/:/(?:rs|cr)=[A-Za-z0-9:,.]+(?:/(?:rs|cr)=[A-Za-z0-9:,.]+)*)?',
+                    p.path, re.I)) else None
+            if publisher == 'maccallum_more':
+                params = parse_qsl(p.query, keep_blank_values=True)
+                if (len({key for key, _ in params}) != len(params)
+                        or any(key not in ('v', 'width') or not re.fullmatch(r'[1-9][0-9]{0,12}', val)
+                               for key, val in params)):
+                    return None
+                # Require the ordinary spelling, without escaped parameter names.
+                if p.query and not re.fullmatch(r'(?:v|width)=[1-9][0-9]{0,12}(?:&(?:v|width)=[1-9][0-9]{0,12})?', p.query):
+                    return None
+                return value if (p.hostname == 'maccallummore.org' and re.fullmatch(
+                    r'/cdn/shop/files/[^/]+\.(?:jpe?g|png|webp)', p.path, re.I)) else None
+            return value if (p.hostname == 'reclique-core-mecklenburg.s3.amazonaws.com'
+                             and re.fullmatch(r'/wp-content/uploads/(?:[A-Za-z0-9_-]+/)*[^/]+\.(?:jpe?g|png|webp)',
+                                              p.path, re.I)) else None
         if publisher == 'mycountyparks':
             return value if (p.hostname == 'content.mycountyparks.com'
                              and p.path.startswith('/Production/RelatedItem/Content/')) else None
