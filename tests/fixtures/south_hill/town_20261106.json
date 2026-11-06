@@ -1,0 +1,746 @@
+[
+  {
+    "title": "Content Editing Training (Part 1)",
+    "primary_calendar_name": "Meeting",
+    "calendar_displays": [
+      "1"
+    ],
+    "start": "2024-04-08T13:00:00",
+    "url": "",
+    "location": "",
+    "image": "<img src=\"/revize/plugins/_editforms_/v2/images/placeholder.png\" alt=\"Revize update image\"/>",
+    "rid": "17",
+    "id": "17",
+    "desc": "%3Ca%20href%3D%22..%2Fenotify%2Findex.php%22%20target%3D%22_blank%22%3EAgenda%3C%2Fa%3E",
+    "color": "#3787d8",
+    "end": "2024-04-08T14:30:00",
+    "duration": "01:30",
+    "options": ""
+  },
+  {
+    "title": "Coffee with Mayor",
+    "primary_calendar_name": "Events",
+    "calendar_displays": [
+      "2"
+    ],
+    "start": "2024-04-10T08:00:00",
+    "url": "",
+    "location": "",
+    "image": "<img src=\"/revize/plugins/_editforms_/v2/images/placeholder.png\" alt=\"Revize update image\"/>",
+    "rid": "19",
+    "id": "19",
+    "desc": "",
+    "color": "#3787d8",
+    "end": "2024-04-10T10:00:00",
+    "duration": "02:00",
+    "options": ""
+  },
+  {
+    "title": "Coffee with Mayor",
+    "primary_calendar_name": "Meeting",
+    "calendar_displays": [
+      "1"
+    ],
+    "start": "2024-04-23T09:00:00",
+    "url": "",
+    "location": "",
+    "image": "<img src=\"/revize/plugins/_editforms_/v2/images/placeholder.png\" alt=\"Revize update image\"/>",
+    "rid": "20",
+    "id": "20",
+    "desc": "",
+    "color": "#3787d8",
+    "end": "2024-04-23T10:00:00",
+    "duration": "01:00",
+    "options": ""
+  },
+  {
+    "title": "Coffee with The Town",
+    "primary_calendar_name": "Meeting",
+    "calendar_displays": [
+      "1"
+    ],
+    "start": "2024-04-26T09:00:00",
+    "url": "",
+    "location": "",
+    "image": "<img src=\"/revize/plugins/_editforms_/v2/images/placeholder.png\" alt=\"Revize update image\"/>",
+    "rid": "21",
+    "id": "21",
+    "desc": "",
+    "color": "#3787d8",
+    "end": "2024-04-26T10:00:00",
+    "duration": "01:00",
+    "options": ""
+  },
+  {
+    "title": "Sitemap Review",
+    "primary_calendar_name": "Meeting",
+    "calendar_displays": [
+      "1"
+    ],
+    "start": "2024-06-25T11:25:00",
+    "url": "",
+    "location": "",
+    "image": "<img src=\"/revize/plugins/_editforms_/v2/images/placeholder.png\" alt=\"Revize update image\"/>",
+    "rid": "24",
+    "id": "24",
+    "desc": "",
+    "color": "#3787d8",
+    "allDay": true,
+    "options": ""
+  },
+  {
+    "title": "Melons Party",
+    "primary_calendar_name": "Meeting",
+    "calendar_displays": [
+      "1"
+    ],
+    "start": "2024-06-29T11:29:00",
+    "url": "",
+    "location": "",
+    "image": "<img src=\"/revize/plugins/_editforms_/v2/images/placeholder.png\" alt=\"Revize update image\"/>",
+    "rid": "25",
+    "id": "25",
+    "desc": "Hi",
+    "color": "#3787d8",
+    "allDay": true,
+    "options": ""
+  },
+  {
+    "title": "Independence Day!",
+    "primary_calendar_name": "Meeting",
+    "calendar_displays": [
+      "1"
+    ],
+    "start": "2024-07-04T11:32:00",
+    "url": "",
+    "location": "",
+    "image": "<img src=\"/revize/plugins/_editforms_/v2/images/placeholder.png\" alt=\"Revize update image\"/>",
+    "rid": "26",
+    "id": "26",
+    "desc": "",
+    "color": "#3787d8",
+    "allDay": true,
+    "options": ""
+  },
+  {
+    "title": "Content Editing Training (Part 1)",
+    "primary_calendar_name": "Events",
+    "calendar_displays": [
+      "2"
+    ],
+    "start": "2025-02-25T13:00:00",
+    "url": "",
+    "location": "",
+    "image": "<img src=\"/revize/plugins/_editforms_/v2/images/placeholder.png\" alt=\"Revize update image\"/>",
+    "rid": "31",
+    "id": "31",
+    "desc": "%3Ca%20target%3D%22_blank%22%20href%3D%22.%2Frevize_photo_gallery%2FRevize%20Training%20Items%2FSample%20Agenda.pdf%22%3EAgenda%3C%2Fa%3E",
+    "color": "#3787d8",
+    "end": "2025-02-25T14:30:00",
+    "duration": "01:30",
+    "options": ""
+  },
+  {
+    "title": "Content Editing Training (Part 2)",
+    "primary_calendar_name": "Events",
+    "calendar_displays": [
+      "2"
+    ],
+    "start": "2025-02-26T13:00:00",
+    "url": "",
+    "location": "",
+    "image": "<img src=\"/revize/plugins/_editforms_/v2/images/placeholder.png\" alt=\"Revize update image\"/>",
+    "rid": "32",
+    "id": "32",
+    "desc": "%3Ca%20target%3D%22_blank%22%20href%3D%22.%2Frevize_photo_gallery%2FRevize%20Training%20Items%2FSample%20Agenda.pdf%22%3EAgenda%3C%2Fa%3E",
+    "color": "#3787d8",
+    "end": "2025-02-26T14:30:00",
+    "duration": "01:30",
+    "options": ""
+  },
+  {
+    "title": "Coffee with The Town",
+    "primary_calendar_name": "Events",
+    "calendar_displays": [
+      "2"
+    ],
+    "start": "2025-03-19T10:00:00",
+    "url": "",
+    "location": "",
+    "image": "<img src=\"/revize/plugins/_editforms_/v2/images/placeholder.png\" alt=\"Revize update image\"/>",
+    "rid": "33",
+    "id": "33",
+    "desc": "",
+    "color": "#3787d8",
+    "end": "2025-03-19T10:40:00",
+    "duration": "00:40",
+    "options": ""
+  },
+  {
+    "title": "Regular Town Council Meeting",
+    "primary_calendar_name": "Meeting",
+    "calendar_displays": [
+      "1"
+    ],
+    "start": "2025-03-10T19:00:00",
+    "url": "https://maps.app.goo.gl/gehY5BxzYo8j48us5",
+    "location": "Council Chambers (Temporary Location)",
+    "image": "<img src=\"./Images/Site Photos/SH-FBprofile.png\" alt=\"Revize update image\"/>",
+    "rid": "37",
+    "id": "37",
+    "desc": "",
+    "color": "#d83795",
+    "end": "2025-03-10T21:00:00",
+    "duration": "02:00",
+    "options": ""
+  },
+  {
+    "title": "Town Hall Closed: Memorial Day",
+    "primary_calendar_name": "Events",
+    "calendar_displays": [
+      "2",
+      "1"
+    ],
+    "start": "2025-05-26T00:00:00",
+    "url": "",
+    "location": "",
+    "image": "<img src=\"./Images/Site Photos/SH-FBprofile.png\" alt=\"SH-FBprofile\"/>",
+    "rid": "38",
+    "id": "38",
+    "desc": "",
+    "color": "#3787d8",
+    "allDay": true,
+    "options": ""
+  },
+  {
+    "title": "Town Hall Closed: Juneteenth",
+    "primary_calendar_name": "Events",
+    "calendar_displays": [
+      "2"
+    ],
+    "start": "2025-06-19T00:00:00",
+    "url": "",
+    "location": "",
+    "image": "<img src=\"./Images/Site Photos/SH-FBprofile.png\" alt=\"SH-FBprofile\"/>",
+    "rid": "39",
+    "id": "39",
+    "desc": "",
+    "color": "#3787d8",
+    "allDay": true,
+    "options": ""
+  },
+  {
+    "title": "Town Hall Closed: Independence Day",
+    "primary_calendar_name": "Events",
+    "calendar_displays": [
+      "2"
+    ],
+    "start": "2025-07-04T00:00:00",
+    "url": "",
+    "location": "",
+    "image": "<img src=\"./Images/Site Photos/SH-FBprofile.png\" alt=\"SH-FBprofile\"/>",
+    "rid": "40",
+    "id": "40",
+    "desc": "",
+    "color": "#3787d8",
+    "allDay": true,
+    "options": ""
+  },
+  {
+    "title": "Town Hall Closed: Labor Day",
+    "primary_calendar_name": "Events",
+    "calendar_displays": [
+      "2"
+    ],
+    "start": "2025-09-01T00:00:00",
+    "url": "",
+    "location": "",
+    "image": "<img src=\"./mural - Copy.jpg\" alt=\"mural - Copy\"/>",
+    "rid": "41",
+    "id": "41",
+    "desc": "",
+    "color": "#3787d8",
+    "allDay": true,
+    "options": ""
+  },
+  {
+    "title": "Town Hall Closed: Columbus Day",
+    "primary_calendar_name": "Events",
+    "calendar_displays": [
+      "2"
+    ],
+    "start": "2025-10-13T00:00:00",
+    "url": "",
+    "location": "",
+    "image": "<img src=\"./Images/Site Photos/SH logo space (1) REV_script.jpg\" alt=\"SH logo space (1) REV_script\"/>",
+    "rid": "42",
+    "id": "42",
+    "desc": "",
+    "color": "#3787d8",
+    "allDay": true,
+    "options": ""
+  },
+  {
+    "title": "Town Hall Closed: Veteran's Day",
+    "primary_calendar_name": "Events",
+    "calendar_displays": [
+      "2"
+    ],
+    "start": "2025-11-11T00:00:00",
+    "url": "",
+    "location": "",
+    "image": "<img src=\"./Images/Site Photos/SH logo space (1) REV_script.jpg\" alt=\"SH logo space (1) REV_script\"/>",
+    "rid": "43",
+    "id": "43",
+    "desc": "",
+    "color": "#3787d8",
+    "allDay": true,
+    "options": ""
+  },
+  {
+    "title": "Town Hall Closing Early: Thanksgiving",
+    "primary_calendar_name": "Events",
+    "calendar_displays": [
+      "2"
+    ],
+    "start": "2025-11-26T12:00:00",
+    "url": "",
+    "location": "",
+    "image": "<img src=\"./Images/Site Photos/SH logo space (1) REV_script.jpg\" alt=\"SH logo space (1) REV_script\"/>",
+    "rid": "44",
+    "id": "44",
+    "desc": "",
+    "color": "#3787d8",
+    "allDay": true,
+    "options": ""
+  },
+  {
+    "title": "Town Hall Closed: Thanksgiving",
+    "primary_calendar_name": "Events",
+    "calendar_displays": [
+      "2"
+    ],
+    "start": "2025-11-27T00:00:00",
+    "url": "",
+    "location": "",
+    "image": "<img src=\"./Images/Site Photos/SH logo space (1) REV_script.jpg\" alt=\"SH logo space (1) REV_script\"/>",
+    "rid": "45",
+    "id": "45",
+    "desc": "",
+    "color": "#3787d8",
+    "end": "2025-11-28T23:55:00",
+    "duration": "47:55",
+    "options": ""
+  },
+  {
+    "title": "Town Hall Closed: Christmas",
+    "primary_calendar_name": "Events",
+    "calendar_displays": [
+      "2"
+    ],
+    "start": "2025-12-24T00:00:00",
+    "url": "",
+    "location": "",
+    "image": "<img src=\"./Images/Site Photos/SH logo space (1) REV_script.jpg\" alt=\"SH logo space (1) REV_script\"/>",
+    "rid": "47",
+    "id": "47",
+    "desc": "",
+    "color": "#3787d8",
+    "end": "2025-12-26T23:55:00",
+    "duration": "71:55",
+    "options": ""
+  },
+  {
+    "title": "Regular Town Council",
+    "primary_calendar_name": "Meeting",
+    "calendar_displays": [
+      "1"
+    ],
+    "start": "2025-09-08T19:00:00",
+    "url": "",
+    "location": "111 E. Danville St. (Temporary Location)",
+    "image": "<img src=\".//mural - Copy.jpg?t=202508260935250\" alt=\"Revize update image\"/>",
+    "rid": "50",
+    "id": "50",
+    "desc": "On%20the%20night%20of%20the%20meeting%2C%20agenda%20copies%20and%20sign-up%20sheets%20for%20Citizens%20to%20Address%20Council%20will%20be%20available%20on%20a%20podium%20by%20the%20front%20door%20to%20the%20Council%20Chambers%20%28sign%20up%20sheets%20will%20be%20collected%20around%206%3A50%20p.m.%29.%3Cbr%20class%3D%22html-br%22%20%2F%3E%3Cbr%20class%3D%22html-br%22%20%2F%3E%3Cstrong%3EFor%20anyone%20wishing%20to%20share%20materials%20with%20Council%2C%2012%20copies%20must%20be%20provided%20to%20the%20Town%20Clerk%20by%20noon%20on%20the%20day%20of%20the%20meeting.%20%3C%2Fstrong%3EThese%20statements%20will%20be%20reviewed%20and%20approved%20by%20the%20Mayor%20before%20being%20distributed%20at%20the%20meeting.%20Submissions%20received%20after%20the%20deadline%20should%20still%20be%20submitted%20to%20the%20Clerk%20and%2C%20following%20the%20Mayor%26rsquo%3Bs%20review%20and%20approval%2C%20will%20be%20forwarded%20to%20the%20Council%20at%20a%20later%20date.",
+    "rrule": "DTSTART:20250908T190000\nRDATE:20250908T190000\nRRULE:FREQ=MONTHLY;INTERVAL=1;BYSETPOS=2;BYDAY=MO\nEXDATE:20251013T190000\nEXDATE:20261012T190000",
+    "color": "#d83795",
+    "end": "2025-09-08T21:00:00",
+    "duration": "02:00",
+    "options": ""
+  },
+  {
+    "title": "Regular Town Council Meeting",
+    "primary_calendar_name": "Meeting",
+    "calendar_displays": [
+      "1"
+    ],
+    "start": "2025-10-14T19:00:00",
+    "url": "",
+    "location": "111 E. Danville St. (Temporary Location)",
+    "image": "<img src=\".//mural - Copy.jpg?t=202508260935250\" alt=\"Revize update image\"/>",
+    "rid": "51",
+    "id": "51",
+    "desc": "On%20the%20night%20of%20the%20meeting%2C%20agenda%20copies%20and%20sign-up%20sheets%20for%20Citizens%20to%20Address%20Council%20will%20be%20available%20on%20a%20podium%20by%20the%20front%20door%20to%20the%20Council%20Chambers%20%28sign%20up%20sheets%20will%20be%20collected%20around%206%3A50%20p.m.%29.%3Cbr%20class%3D%22html-br%22%20%2F%3E%3Cbr%20class%3D%22html-br%22%20%2F%3E%3Cstrong%3EFor%20anyone%20wishing%20to%20share%20materials%20with%20Council%2C%2012%20copies%20must%20be%20provided%20to%20the%20Town%20Clerk%20by%20noon%20on%20the%20day%20of%20the%20meeting.%20%3C%2Fstrong%3EThese%20statements%20will%20be%20reviewed%20and%20approved%20by%20the%20Mayor%20before%20being%20distributed%20at%20the%20meeting.%20Submissions%20received%20after%20the%20deadline%20should%20still%20be%20submitted%20to%20the%20Clerk%20and%2C%20following%20the%20Mayor%26rsquo%3Bs%20review%20and%20approval%2C%20will%20be%20forwarded%20to%20the%20Council%20at%20a%20later%20date.",
+    "color": "#d83795",
+    "end": "2025-10-14T21:00:00",
+    "duration": "02:00",
+    "options": ""
+  },
+  {
+    "title": "South Hill Planning Commission Meeting",
+    "primary_calendar_name": "Meeting",
+    "calendar_displays": [
+      "1"
+    ],
+    "start": "2025-09-02T19:00:00",
+    "url": "",
+    "location": "111 E. Danville St. (Temporary Location)",
+    "image": "<img src=\"./mural - Copy.jpg\" alt=\"mural - Copy\"/>",
+    "rid": "52",
+    "id": "52",
+    "desc": "",
+    "color": "#d83795",
+    "end": "2025-09-02T21:00:00",
+    "duration": "02:00",
+    "options": ""
+  },
+  {
+    "title": "Autumn Jubilee: Pumpkins and Potions",
+    "primary_calendar_name": "Events",
+    "calendar_displays": [
+      "2"
+    ],
+    "start": "2025-10-25T14:00:00",
+    "url": "",
+    "location": "Centennial Park",
+    "image": "<img src=\".//Autumn Jubilee_2025.png?t=202508260940280\" alt=\"Revize update image\"/>",
+    "rid": "54",
+    "id": "54",
+    "desc": "%3Cdiv%20class%3D%22xdj266r%20x14z9mp%20xat24cr%20x1lziwak%20x1vvkbs%22%3E%3Cspan%20class%3D%22html-span%20xexx8yu%20xyri2b%20x18d9i69%20x1c1uobl%20x1hl2dhg%20x16tdsg8%20x1vvkbs%20x3nfvp2%20x1j61x8r%20x1fcty0u%20xdj266r%20xat24cr%20xm2jcoa%20x1mpyi22%20xxymvpz%20xlup9mm%20x1kky2od%22%3E%3Cimg%20class%3D%22xz74otr%20x15mokao%20x1ga7v0g%20x16uus16%20xbiv7yw%22%20src%3D%22https%3A%2F%2Fstatic.xx.fbcdn.net%2Fimages%2Femoji.php%2Fv9%2Ft86%2F1%2F16%2F1f383.png%22%20alt%3D%22%26%23127875%3B%22%20width%3D%2216%22%20height%3D%2216%22%20%2F%3E%3C%2Fspan%3E%3Cspan%20class%3D%22html-span%20xexx8yu%20xyri2b%20x18d9i69%20x1c1uobl%20x1hl2dhg%20x16tdsg8%20x1vvkbs%20x3nfvp2%20x1j61x8r%20x1fcty0u%20xdj266r%20xat24cr%20xm2jcoa%20x1mpyi22%20xxymvpz%20xlup9mm%20x1kky2od%22%3E%3Cimg%20class%3D%22xz74otr%20x15mokao%20x1ga7v0g%20x16uus16%20xbiv7yw%22%20src%3D%22https%3A%2F%2Fstatic.xx.fbcdn.net%2Fimages%2Femoji.php%2Fv9%2Ftf4%2F1%2F16%2F2728.png%22%20alt%3D%22%26%2310024%3B%22%20width%3D%2216%22%20height%3D%2216%22%20%2F%3E%3C%2Fspan%3E%26nbsp%3BMark%20Your%20Calendars%20for%20a%20Magical%20Day%21%26nbsp%3B%3Cspan%20class%3D%22html-span%20xexx8yu%20xyri2b%20x18d9i69%20x1c1uobl%20x1hl2dhg%20x16tdsg8%20x1vvkbs%20x3nfvp2%20x1j61x8r%20x1fcty0u%20xdj266r%20xat24cr%20xm2jcoa%20x1mpyi22%20xxymvpz%20xlup9mm%20x1kky2od%22%3E%3Cimg%20class%3D%22xz74otr%20x15mokao%20x1ga7v0g%20x16uus16%20xbiv7yw%22%20src%3D%22https%3A%2F%2Fstatic.xx.fbcdn.net%2Fimages%2Femoji.php%2Fv9%2Ftf4%2F1%2F16%2F2728.png%22%20alt%3D%22%26%2310024%3B%22%20width%3D%2216%22%20height%3D%2216%22%20%2F%3E%3C%2Fspan%3E%3Cspan%20class%3D%22html-span%20xexx8yu%20xyri2b%20x18d9i69%20x1c1uobl%20x1hl2dhg%20x16tdsg8%20x1vvkbs%20x3nfvp2%20x1j61x8r%20x1fcty0u%20xdj266r%20xat24cr%20xm2jcoa%20x1mpyi22%20xxymvpz%20xlup9mm%20x1kky2od%22%3E%3Cimg%20class%3D%22xz74otr%20x15mokao%20x1ga7v0g%20x16uus16%20xbiv7yw%22%20src%3D%22https%3A%2F%2Fstatic.xx.fbcdn.net%2Fimages%2Femoji.php%2Fv9%2Ft86%2F1%2F16%2F1f383.png%22%20alt%3D%22%26%23127875%3B%22%20width%3D%2216%22%20height%3D%2216%22%20%2F%3E%3Cbr%20%2F%3E%3Cbr%20%2F%3E%3C%2Fspan%3E%3C%2Fdiv%3E%0A%3Cdiv%20class%3D%22x14z9mp%20xat24cr%20x1lziwak%20x1vvkbs%20xtlvy1s%22%3EAutumn%20Jubilee%3A%20Pumpkins%20and%20Potions%3Cbr%20%2F%3E%3Cbr%20class%3D%22html-br%22%20%2F%3E%3Cspan%20class%3D%22html-span%20xexx8yu%20xyri2b%20x18d9i69%20x1c1uobl%20x1hl2dhg%20x16tdsg8%20x1vvkbs%20x3nfvp2%20x1j61x8r%20x1fcty0u%20xdj266r%20xat24cr%20xm2jcoa%20x1mpyi22%20xxymvpz%20xlup9mm%20x1kky2od%22%3E%3Cimg%20class%3D%22xz74otr%20x15mokao%20x1ga7v0g%20x16uus16%20xbiv7yw%22%20src%3D%22https%3A%2F%2Fstatic.xx.fbcdn.net%2Fimages%2Femoji.php%2Fv9%2Ft7e%2F1%2F16%2F1f4c5.png%22%20alt%3D%22%26%23128197%3B%22%20width%3D%2216%22%20height%3D%2216%22%20%2F%3E%3C%2Fspan%3E%26nbsp%3BSaturday%2C%20October%2025%2C%202025%3Cbr%20class%3D%22html-br%22%20%2F%3E%3Cspan%20class%3D%22html-span%20xexx8yu%20xyri2b%20x18d9i69%20x1c1uobl%20x1hl2dhg%20x16tdsg8%20x1vvkbs%20x3nfvp2%20x1j61x8r%20x1fcty0u%20xdj266r%20xat24cr%20xm2jcoa%20x1mpyi22%20xxymvpz%20xlup9mm%20x1kky2od%22%3E%3Cimg%20class%3D%22xz74otr%20x15mokao%20x1ga7v0g%20x16uus16%20xbiv7yw%22%20src%3D%22https%3A%2F%2Fstatic.xx.fbcdn.net%2Fimages%2Femoji.php%2Fv9%2Ft2d%2F1%2F16%2F1f4cd.png%22%20alt%3D%22%26%23128205%3B%22%20width%3D%2216%22%20height%3D%2216%22%20%2F%3E%3C%2Fspan%3E%26nbsp%3BCentennial%20Park%2C%20South%20Hill%2C%20VA%3Cbr%20class%3D%22html-br%22%20%2F%3E%3Cspan%20class%3D%22html-span%20xexx8yu%20xyri2b%20x18d9i69%20x1c1uobl%20x1hl2dhg%20x16tdsg8%20x1vvkbs%20x3nfvp2%20x1j61x8r%20x1fcty0u%20xdj266r%20xat24cr%20xm2jcoa%20x1mpyi22%20xxymvpz%20xlup9mm%20x1kky2od%22%3E%3Cimg%20class%3D%22xz74otr%20x15mokao%20x1ga7v0g%20x16uus16%20xbiv7yw%22%20src%3D%22https%3A%2F%2Fstatic.xx.fbcdn.net%2Fimages%2Femoji.php%2Fv9%2Ft5a%2F1%2F16%2F1f4b0.png%22%20alt%3D%22%26%23128176%3B%22%20width%3D%2216%22%20height%3D%2216%22%20%2F%3E%3C%2Fspan%3E%26nbsp%3BFREE%20Family-Friendly%20Fun%21%3C%2Fdiv%3E%0A%3Cdiv%20class%3D%22x14z9mp%20xat24cr%20x1lziwak%20x1vvkbs%20xtlvy1s%22%3E%3Cspan%20class%3D%22html-span%20xexx8yu%20xyri2b%20x18d9i69%20x1c1uobl%20x1hl2dhg%20x16tdsg8%20x1vvkbs%20x3nfvp2%20x1j61x8r%20x1fcty0u%20xdj266r%20xat24cr%20xm2jcoa%20x1mpyi22%20xxymvpz%20xlup9mm%20x1kky2od%22%3E%3Cimg%20class%3D%22xz74otr%20x15mokao%20x1ga7v0g%20x16uus16%20xbiv7yw%22%20src%3D%22https%3A%2F%2Fstatic.xx.fbcdn.net%2Fimages%2Femoji.php%2Fv9%2Ft29%2F1%2F16%2F1f551.png%22%20alt%3D%22%26%23128337%3B%22%20width%3D%2216%22%20height%3D%2216%22%20%2F%3E%3C%2Fspan%3E%26nbsp%3B2%3A00%20%26ndash%3B%203%3A00%20PM%20%26ndash%3B%20Sensory-Friendly%20Hour%3Cbr%20class%3D%22html-br%22%20%2F%3E%3Cspan%20class%3D%22html-span%20xexx8yu%20xyri2b%20x18d9i69%20x1c1uobl%20x1hl2dhg%20x16tdsg8%20x1vvkbs%20x3nfvp2%20x1j61x8r%20x1fcty0u%20xdj266r%20xat24cr%20xm2jcoa%20x1mpyi22%20xxymvpz%20xlup9mm%20x1kky2od%22%3E%3Cimg%20class%3D%22xz74otr%20x15mokao%20x1ga7v0g%20x16uus16%20xbiv7yw%22%20src%3D%22https%3A%2F%2Fstatic.xx.fbcdn.net%2Fimages%2Femoji.php%2Fv9%2Ftaa%2F1%2F16%2F1f552.png%22%20alt%3D%22%26%23128338%3B%22%20width%3D%2216%22%20height%3D%2216%22%20%2F%3E%3C%2Fspan%3E%26nbsp%3B3%3A00%20PM%20%26ndash%3B%20The%20magic%20begins%21%3Cbr%20%2F%3E%3Cbr%20class%3D%22html-br%22%20%2F%3E%3Cspan%20class%3D%22html-span%20xexx8yu%20xyri2b%20x18d9i69%20x1c1uobl%20x1hl2dhg%20x16tdsg8%20x1vvkbs%20x3nfvp2%20x1j61x8r%20x1fcty0u%20xdj266r%20xat24cr%20xm2jcoa%20x1mpyi22%20xxymvpz%20xlup9mm%20x1kky2od%22%3E%3Cimg%20class%3D%22xz74otr%20x15mokao%20x1ga7v0g%20x16uus16%20xbiv7yw%22%20src%3D%22https%3A%2F%2Fstatic.xx.fbcdn.net%2Fimages%2Femoji.php%2Fv9%2Ft5d%2F1%2F16%2F26a1.png%22%20alt%3D%22%26%239889%3B%22%20width%3D%2216%22%20height%3D%2216%22%20%2F%3E%3C%2Fspan%3E%20Enjoy%20Wizard%26ndash%3Bthemed%20trivia%2C%20delicious%20food%20trucks%2C%20the%20Dog%20Costume%20Parade%2C%20a%20spellbinding%20costume%20contest%2C%20pumpkin%20painting%2C%20and%20so%20much%20more%21%3Cbr%20%2F%3E%3Cbr%20%2F%3E%3C%2Fdiv%3E%0A%3Cdiv%20class%3D%22x14z9mp%20xat24cr%20x1lziwak%20x1vvkbs%20xtlvy1s%22%3E%3Cspan%20class%3D%22html-span%20xexx8yu%20xyri2b%20x18d9i69%20x1c1uobl%20x1hl2dhg%20x16tdsg8%20x1vvkbs%20x3nfvp2%20x1j61x8r%20x1fcty0u%20xdj266r%20xat24cr%20xm2jcoa%20x1mpyi22%20xxymvpz%20xlup9mm%20x1kky2od%22%3E%3Cimg%20class%3D%22xz74otr%20x15mokao%20x1ga7v0g%20x16uus16%20xbiv7yw%22%20src%3D%22https%3A%2F%2Fstatic.xx.fbcdn.net%2Fimages%2Femoji.php%2Fv9%2Ft2d%2F1%2F16%2F1f3ac.png%22%20alt%3D%22%26%23127916%3B%22%20width%3D%2216%22%20height%3D%2216%22%20%2F%3E%3C%2Fspan%3E%20At%20Dark%20%26ndash%3B%20Cozy%20up%20for%20a%20special%20outdoor%20screening%20of%20Harry%20Potter%20and%20the%20Sorcerer%26rsquo%3Bs%20Stone.%3Cbr%20%2F%3E%3Cbr%20%2F%3E%3C%2Fdiv%3E%0A%3Cdiv%20class%3D%22x14z9mp%20xat24cr%20x1lziwak%20x1vvkbs%20xtlvy1s%22%3EStay%20tuned%20for%20the%20full%20schedule%20and%20more%20surprises%20coming%20your%20way.%3Cbr%20%2F%3E%3Cbr%20class%3D%22html-br%22%20%2F%3EGrab%20your%20robes%2C%20wands%2C%20and%20your%20best%20wizarding%20spirit%20%26mdash%3B%20this%20will%20be%20a%20day%20you%20won%26rsquo%3Bt%20want%20to%20miss%21%3C%2Fdiv%3E",
+    "color": "#3787d8",
+    "end": "2025-10-25T21:00:00",
+    "duration": "07:00",
+    "options": ""
+  },
+  {
+    "title": "Hometown Christmas",
+    "primary_calendar_name": "Events",
+    "calendar_displays": [
+      "2"
+    ],
+    "start": "2025-12-05T18:00:00",
+    "url": "https://www.facebook.com/events/1323435365712513/?acontext=%7B%22event_action_history%22%3A[]%7D",
+    "location": "Centennial Park",
+    "image": "<img src=\"./HTC Save the Date - Copy.jpg\" alt=\"HTC Save the Date - Copy\"/>",
+    "rid": "55",
+    "id": "55",
+    "desc": "%3Cdiv%20class%3D%22xdj266r%20x14z9mp%20xat24cr%20x1lziwak%20x1vvkbs%20x126k92a%22%3E%0A%3Cdiv%20dir%3D%22auto%22%3E%3Cspan%20class%3D%22html-span%20xexx8yu%20xyri2b%20x18d9i69%20x1c1uobl%20x1hl2dhg%20x16tdsg8%20x1vvkbs%20x3nfvp2%20x1j61x8r%20x1fcty0u%20xdj266r%20xat24cr%20xm2jcoa%20x1mpyi22%20xxymvpz%20xlup9mm%20x1kky2od%22%3E%3Cimg%20class%3D%22xz74otr%20x15mokao%20x1ga7v0g%20x16uus16%20xbiv7yw%22%20src%3D%22https%3A%2F%2Fstatic.xx.fbcdn.net%2Fimages%2Femoji.php%2Fv9%2Ft7%2F1%2F16%2F1f384.png%22%20alt%3D%22%26%23127876%3B%22%20width%3D%2216%22%20height%3D%2216%22%20%2F%3E%3C%2Fspan%3E%20It%26rsquo%3Bs%20the%20Most%20Wonderful%20Time%20of%20the%20Year%20in%20South%20Hill%21%20%3Cspan%20class%3D%22html-span%20xexx8yu%20xyri2b%20x18d9i69%20x1c1uobl%20x1hl2dhg%20x16tdsg8%20x1vvkbs%20x3nfvp2%20x1j61x8r%20x1fcty0u%20xdj266r%20xat24cr%20xm2jcoa%20x1mpyi22%20xxymvpz%20xlup9mm%20x1kky2od%22%3E%3Cimg%20class%3D%22xz74otr%20x15mokao%20x1ga7v0g%20x16uus16%20xbiv7yw%22%20src%3D%22https%3A%2F%2Fstatic.xx.fbcdn.net%2Fimages%2Femoji.php%2Fv9%2Ft7%2F1%2F16%2F1f384.png%22%20alt%3D%22%26%23127876%3B%22%20width%3D%2216%22%20height%3D%2216%22%20%2F%3E%3Cbr%20%2F%3E%3Cbr%20%2F%3E%3C%2Fspan%3E%3C%2Fdiv%3E%0A%3C%2Fdiv%3E%0A%3Cdiv%20class%3D%22x14z9mp%20xat24cr%20x1lziwak%20x1vvkbs%20xtlvy1s%20x126k92a%22%3E%0A%3Cdiv%20dir%3D%22auto%22%3EThe%20%3Ca%20class%3D%22html-a%20xdj266r%20x14z9mp%20xat24cr%20x1lziwak%20xexx8yu%20xyri2b%20x18d9i69%20x1c1uobl%20x1hl2dhg%20x16tdsg8%20x1vvkbs%22%20tabindex%3D%22-1%22%3E%3C%2Fa%3ETown%20of%20South%20Hill%2C%20in%20partnership%20with%20the%20%3Cspan%20class%3D%22html-span%20xdj266r%20x14z9mp%20xat24cr%20x1lziwak%20xexx8yu%20xyri2b%20x18d9i69%20x1c1uobl%20x1hl2dhg%20x16tdsg8%20x1vvkbs%22%3E%3Ca%20class%3D%22x1i10hfl%20xjbqb8w%20x1ejq31n%20x18oe1m7%20x1sy0etr%20xstzfhl%20x972fbf%20x10w94by%20x1qhh985%20x14e42zd%20x9f619%20x1ypdohk%20xt0psk2%20x3ct3a4%20xdj266r%20x14z9mp%20xat24cr%20x1lziwak%20xexx8yu%20xyri2b%20x18d9i69%20x1c1uobl%20x16tdsg8%20x1hl2dhg%20xggy1nq%20x1a2a7pz%20xkrqix3%20x1sur9pj%20x1fey0fg%20x1s688f%22%20tabindex%3D%220%22%20rel%3D%22noopener%22%20href%3D%22https%3A%2F%2Fwww.facebook.com%2Fprofile.php%3Fid%3D100064368292534%26amp%3B__cft__%5B0%5D%3DAZVNUxy0N1V_TkcL6TJy-YkcMBxp57Qme3gSZMduiuLXG-lfe76NIGH4JG-TuUnMe5Sbq5JcQeD6LzA4zM7qlc6OMoZwU5ZHq1TWVyC61YAybpA9Sf1Ab-NYzBFozP5OUVK9CmfabHFu7GDC1HMJxO3Aw1I73d2g5ezccc8rDgIJcA%26amp%3B__tn__%3D-%5DK-R%22%20target%3D%22_blank%22%3E%3Cspan%20class%3D%22xt0psk2%22%3E%3Cspan%20class%3D%22xjp7ctv%22%3ESouth%20Hill%20Revitalization%20Committee%3C%2Fspan%3E%3C%2Fspan%3E%3C%2Fa%3E%3C%2Fspan%3E%2C%20is%20proudly%20presenting%20a%20very%20merry%20Hometown%20Christmas%21%3Cbr%20%2F%3E%3Cbr%20%2F%3E%3C%2Fdiv%3E%0A%3C%2Fdiv%3E%0A%3Cdiv%20class%3D%22x14z9mp%20xat24cr%20x1lziwak%20x1vvkbs%20xtlvy1s%20x126k92a%22%3E%0A%3Cdiv%20dir%3D%22auto%22%3EWe%20invite%20everyone%20to%20join%20us%20at%20Centennial%20Park%20for%20an%20unforgettable%20weekend%20of%20holiday%20cheer%2C%20beginning%20Friday%20evening%2C%20December%205%2C%20as%20Mayor%20Moody%20and%20special%20guests%20light%20the%20town%20Christmas%20tree%20to%20kick%20off%20the%20festivities.%3Cbr%20%2F%3E%3Cbr%20%2F%3E%3C%2Fdiv%3E%0A%3C%2Fdiv%3E%0A%3Cdiv%20class%3D%22x14z9mp%20xat24cr%20x1lziwak%20x1vvkbs%20xtlvy1s%20x126k92a%22%3E%0A%3Cdiv%20dir%3D%22auto%22%3EGet%20ready%20for%20a%20magical%20celebration%20filled%20with%20sparkling%20lights%2C%20joyful%20music%2C%20festive%20activities%2C%20and%20a%20few%20special%20surprises%20sprinkled%20in%20along%20the%20way.%3Cbr%20%2F%3E%3Cbr%20%2F%3E%3C%2Fdiv%3E%0A%3C%2Fdiv%3E%0A%3Cdiv%20class%3D%22x14z9mp%20xat24cr%20x1lziwak%20x1vvkbs%20xtlvy1s%20x126k92a%22%3E%0A%3Cdiv%20dir%3D%22auto%22%3ECome%20make%20memories%20that%20will%20warm%20your%20heart%20all%20season%20long%20%26mdash%3B%20it%26rsquo%3Bs%20a%20Hometown%20Christmas%20you%20won%26rsquo%3Bt%20want%20to%20miss%21%3C%2Fdiv%3E%0A%3C%2Fdiv%3E",
+    "color": "#3787d8",
+    "end": "2025-12-06T19:00:00",
+    "duration": "25:00",
+    "options": ""
+  },
+  {
+    "title": "Town Hall Closed: Martin Luther King, Jr. Day",
+    "primary_calendar_name": "Events",
+    "calendar_displays": [
+      "2",
+      "1"
+    ],
+    "start": "2026-01-19T00:00:00",
+    "url": "",
+    "location": "",
+    "image": "<img src=\".//360_F_472915109_C0EekoFIjvA0Q0nOOvMHz1wDefN3Cp7t.jpg?t=202601061155550\" alt=\"Revize update image\"/>",
+    "rid": "56",
+    "id": "56",
+    "desc": "South%20Hill%20Town%20Hall%20will%20be%20closed%20for%20Martin%20Luther%20King%2C%20Jr.%20Day.%26nbsp%3B%3Cbr%20%2F%3E%3Cbr%20%2F%3ETown%20Hall%20will%20reopen%20on%20Tuesday%2C%20January%2020%2C%202026%20at%208%3A30%20a.m.",
+    "color": "#3787d8",
+    "allDay": true,
+    "options": ""
+  },
+  {
+    "title": "Regular Town Council",
+    "primary_calendar_name": "Meeting",
+    "calendar_displays": [
+      "1"
+    ],
+    "start": "2026-10-13T19:00:00",
+    "url": "",
+    "location": "111 E. Danville St. (Temporary Location)",
+    "image": "<img src=\"./mural - Copy (2).jpg\" alt=\"mural - Copy (2)\"/>",
+    "rid": "62",
+    "id": "62",
+    "desc": "On%20the%20night%20of%20the%20meeting%2C%20agenda%20copies%20and%20sign-up%20sheets%20for%20Citizens%20to%20Address%20Council%20will%20be%20available%20on%20a%20podium%20by%20the%20front%20door%20to%20the%20Council%20Chambers%20%28sign%20up%20sheets%20will%20be%20collected%20around%206%3A50%20p.m.%29.%3Cbr%20class%3D%22html-br%22%20%2F%3E%3Cbr%20class%3D%22html-br%22%20%2F%3E%3Cstrong%3EFor%20anyone%20wishing%20to%20share%20materials%20with%20Council%2C%2012%20copies%20must%20be%20provided%20to%20the%20Town%20Clerk%20by%20noon%20on%20the%20day%20of%20the%20meeting.%26nbsp%3B%3C%2Fstrong%3EThese%20statements%20will%20be%20reviewed%20and%20approved%20by%20the%20Mayor%20before%20being%20distributed%20at%20the%20meeting.%20Submissions%20received%20after%20the%20deadline%20should%20still%20be%20submitted%20to%20the%20Clerk%20and%2C%20following%20the%20Mayor%26rsquo%3Bs%20review%20and%20approval%2C%20will%20be%20forwarded%20to%20the%20Council%20at%20a%20later%20date.",
+    "color": "#d83795",
+    "end": "2026-10-13T21:00:00",
+    "duration": "02:00",
+    "options": ""
+  },
+  {
+    "title": "Town Hall Closed: Veteran's Day",
+    "primary_calendar_name": "Events",
+    "calendar_displays": [
+      "2"
+    ],
+    "start": "2026-11-11T00:00:00",
+    "url": "",
+    "location": "",
+    "image": "<img src=\"./istockphoto-1436114961-612x612 (1).jpg\" alt=\"istockphoto-1436114961-612x612 (1)\"/>",
+    "rid": "64",
+    "id": "64",
+    "desc": "South%20Hill%20Town%20Hall%20will%20be%20closed%20for%20Veteran%27s%20Day.%26nbsp%3B%3Cbr%20%2F%3E%3Cbr%20%2F%3ETown%20Hall%20will%20reopen%20on%20Thursday%2C%20November%2012%2C%202026%20at%208%3A30%20a.m.",
+    "color": "#3787d8",
+    "allDay": true,
+    "options": ""
+  },
+  {
+    "title": "Town Hall Closed: Thanksgiving",
+    "primary_calendar_name": "Events",
+    "calendar_displays": [
+      "2"
+    ],
+    "start": "2026-11-25T12:30:00",
+    "url": "",
+    "location": "",
+    "image": "<img src=\"./istockphoto-1341674075-612x612 (1).jpg\" alt=\"istockphoto-1341674075-612x612 (1)\"/>",
+    "rid": "65",
+    "id": "65",
+    "desc": "South%20Hill%20Town%20Hall%20will%20close%20at%26nbsp%3B%3Cstrong%3Enoon%3C%2Fstrong%3E%20on%20Wednesday%2C%20November%2025%2C%202026%20for%20the%20Thanksgiving%20holiday.%26nbsp%3B%3Cbr%20%2F%3E%3Cbr%20%2F%3ETown%20Hall%20will%20reopen%20on%20Monday%2C%20November%2030%2C%202026%20at%208%3A30%20a.m.",
+    "color": "#3787d8",
+    "end": "2026-11-27T23:55:00",
+    "duration": "59:25",
+    "options": ""
+  },
+  {
+    "title": "Town Hall Closed: Christmas",
+    "primary_calendar_name": "Events",
+    "calendar_displays": [
+      "2"
+    ],
+    "start": "2026-12-24T00:00:00",
+    "url": "",
+    "location": "",
+    "image": "<img src=\".//merry-christmas-lettering-design-on-white-background-free-vector.jpg?t=202601061516280\" alt=\"Revize update image\"/>",
+    "rid": "66",
+    "id": "66",
+    "desc": "South%20Hill%20Town%20Hall%20will%20be%20closed%20on%20December%2024%20and%20December%2025%2C%202026%20for%20the%20Christmas%20holiday.%26nbsp%3B%3Cbr%20%2F%3E%3Cbr%20%2F%3ETown%20Hall%20will%20reopen%20on%20Monday%2C%20December%2028%2C%202026%20at%208%3A30%20a.m.",
+    "color": "#3787d8",
+    "end": "2026-12-25T23:55:00",
+    "duration": "47:55",
+    "options": ""
+  },
+  {
+    "title": "Special Town Council Meeting",
+    "primary_calendar_name": "Meeting",
+    "calendar_displays": [
+      "1"
+    ],
+    "start": "2026-02-04T06:30:00",
+    "url": "",
+    "location": "111 E. Danville St. (Temporary Location)",
+    "image": "<img src=\"./624542990_1343725004457113_8009632924630850159_n.jpg\" alt=\"624542990_1343725004457113_8009632924630850159_n\"/>",
+    "rid": "67",
+    "id": "67",
+    "desc": "%3Cdiv%20class%3D%22xdj266r%20x14z9mp%20xat24cr%20x1lziwak%20x1vvkbs%20x126k92a%22%3E%0A%3Cdiv%20dir%3D%22auto%22%3EMayor%20Moody%20has%20called%20a%20Special%20Meeting%20of%20the%20South%20Hill%20Town%20Council%20to%20be%20held%20on%20Wednesday%2C%20February%204%2C%202026%2C%20at%206%3A30%20p.m.%20at%20our%20temporary%20location%20at%20111%20E.%20Danville%20Street.%3Cbr%20%2F%3E%3Cbr%20%2F%3E%3C%2Fdiv%3E%0A%3C%2Fdiv%3E%0A%3Cdiv%20class%3D%22x14z9mp%20xat24cr%20x1lziwak%20x1vvkbs%20xtlvy1s%20x126k92a%22%3E%0A%3Cdiv%20dir%3D%22auto%22%3EThe%20discussion%20will%20be%20held%20in%20Closed%20Session%20pursuant%20to%20the%20following%3A%3C%2Fdiv%3E%0A%3C%2Fdiv%3E%0A%3Cdiv%20class%3D%22x14z9mp%20xat24cr%20x1lziwak%20x1vvkbs%20xtlvy1s%20x126k92a%22%3E%0A%3Cul%3E%0A%3Cli%20dir%3D%22auto%22%3EPersonnel%2C%20%26sect%3B%202.2-3711%20%28A%29%281%29%3A%20matter%20involving%20actions%20of%20public%20officers.%3Cbr%20%2F%3E%3Cbr%20%2F%3E%3C%2Fli%3E%0A%3C%2Ful%3E%0A%3C%2Fdiv%3E%0A%3Cdiv%20class%3D%22x14z9mp%20xat24cr%20x1lziwak%20x1vvkbs%20xtlvy1s%20x126k92a%22%3E%0A%3Cdiv%20dir%3D%22auto%22%3EFurther%20information%20can%20be%20obtained%20by%20contacting%20Town%20Manager%20Keli%20Reekes%20at%20%28434%29%20447-3191%20or%20kreekes%40southhillva.org.%3C%2Fdiv%3E%0A%3C%2Fdiv%3E",
+    "color": "#d83795",
+    "end": "2026-02-04T20:00:00",
+    "duration": "13:30",
+    "options": ""
+  },
+  {
+    "title": "Budget Work Session (1)",
+    "primary_calendar_name": "Meeting",
+    "calendar_displays": [
+      "1"
+    ],
+    "start": "2026-03-11T15:00:00",
+    "url": "",
+    "location": "",
+    "image": "<img src=\"./Notice of Work Session (3).png\" alt=\"Notice of Work Session (3)\"/>",
+    "rid": "68",
+    "id": "68",
+    "desc": "",
+    "color": "#d83795",
+    "end": "2026-03-11T17:00:00",
+    "duration": "02:00",
+    "options": ""
+  },
+  {
+    "title": "Budget Work Session (2)",
+    "primary_calendar_name": "Meeting",
+    "calendar_displays": [
+      "1"
+    ],
+    "start": "2026-03-16T15:00:00",
+    "url": "",
+    "location": "",
+    "image": "<img src=\"./Notice of Work Session (3).png\" alt=\"Notice of Work Session (3)\"/>",
+    "rid": "69",
+    "id": "69",
+    "desc": "",
+    "color": "#d83795",
+    "end": "2026-03-16T17:00:00",
+    "duration": "02:00",
+    "options": ""
+  },
+  {
+    "title": "Budget Work Session (3)",
+    "primary_calendar_name": "Meeting",
+    "calendar_displays": [
+      "1"
+    ],
+    "start": "2026-03-18T15:00:00",
+    "url": "",
+    "location": "",
+    "image": "<img src=\"./Notice of Work Session (3).png\" alt=\"Notice of Work Session (3)\"/>",
+    "rid": "70",
+    "id": "70",
+    "desc": "",
+    "color": "#d83795",
+    "end": "2026-03-18T17:00:00",
+    "duration": "02:00",
+    "options": ""
+  },
+  {
+    "title": "2nd Annual South Hill Community Easter Egg Hunt",
+    "primary_calendar_name": "Events",
+    "calendar_displays": [
+      "2"
+    ],
+    "start": "2026-03-28T17:00:00",
+    "url": "https://www.facebook.com/events/1766594394296783/",
+    "location": "Centennial Park",
+    "image": "<img src=\"./638227144_1359884099507870_4704005976310623371_n.jpg\" alt=\"638227144_1359884099507870_4704005976310623371_n\"/>",
+    "rid": "71",
+    "id": "71",
+    "desc": "%3Cdiv%20class%3D%22xdj266r%20x14z9mp%20xat24cr%20x1lziwak%20x1vvkbs%20x126k92a%22%3E%0A%3Cdiv%20dir%3D%22auto%22%3E%3Cspan%20class%3D%22html-span%20xexx8yu%20xyri2b%20x18d9i69%20x1c1uobl%20x1hl2dhg%20x16tdsg8%20x1vvkbs%20x3nfvp2%20x1j61x8r%20x1fcty0u%20xdj266r%20xat24cr%20xm2jcoa%20x1mpyi22%20xxymvpz%20xlup9mm%20x1kky2od%22%3E%3Cimg%20class%3D%22xz74otr%20x15mokao%20x1ga7v0g%20x16uus16%20xbiv7yw%22%20src%3D%22https%3A%2F%2Fstatic.xx.fbcdn.net%2Fimages%2Femoji.php%2Fv9%2Ftd%2F1%2F16%2F1f423.png%22%20alt%3D%22%26%23128035%3B%22%20width%3D%2216%22%20height%3D%2216%22%20%2F%3E%3C%2Fspan%3E%3Cspan%20class%3D%22html-span%20xexx8yu%20xyri2b%20x18d9i69%20x1c1uobl%20x1hl2dhg%20x16tdsg8%20x1vvkbs%20x3nfvp2%20x1j61x8r%20x1fcty0u%20xdj266r%20xat24cr%20xm2jcoa%20x1mpyi22%20xxymvpz%20xlup9mm%20x1kky2od%22%3E%3Cimg%20class%3D%22xz74otr%20x15mokao%20x1ga7v0g%20x16uus16%20xbiv7yw%22%20src%3D%22https%3A%2F%2Fstatic.xx.fbcdn.net%2Fimages%2Femoji.php%2Fv9%2Ftf0%2F1%2F16%2F1f338.png%22%20alt%3D%22%26%23127800%3B%22%20width%3D%2216%22%20height%3D%2216%22%20%2F%3E%3C%2Fspan%3E%20South%20Hill%26rsquo%3Bs%202nd%20Annual%20Easter%20Egg%20Hunt%20%2B%20Movie%20Night%20is%20Back%21%20%3Cspan%20class%3D%22html-span%20xexx8yu%20xyri2b%20x18d9i69%20x1c1uobl%20x1hl2dhg%20x16tdsg8%20x1vvkbs%20x3nfvp2%20x1j61x8r%20x1fcty0u%20xdj266r%20xat24cr%20xm2jcoa%20x1mpyi22%20xxymvpz%20xlup9mm%20x1kky2od%22%3E%3Cimg%20class%3D%22xz74otr%20x15mokao%20x1ga7v0g%20x16uus16%20xbiv7yw%22%20src%3D%22https%3A%2F%2Fstatic.xx.fbcdn.net%2Fimages%2Femoji.php%2Fv9%2Ftf0%2F1%2F16%2F1f338.png%22%20alt%3D%22%26%23127800%3B%22%20width%3D%2216%22%20height%3D%2216%22%20%2F%3E%3C%2Fspan%3E%3Cspan%20class%3D%22html-span%20xexx8yu%20xyri2b%20x18d9i69%20x1c1uobl%20x1hl2dhg%20x16tdsg8%20x1vvkbs%20x3nfvp2%20x1j61x8r%20x1fcty0u%20xdj266r%20xat24cr%20xm2jcoa%20x1mpyi22%20xxymvpz%20xlup9mm%20x1kky2od%22%3E%3Cimg%20class%3D%22xz74otr%20x15mokao%20x1ga7v0g%20x16uus16%20xbiv7yw%22%20src%3D%22https%3A%2F%2Fstatic.xx.fbcdn.net%2Fimages%2Femoji.php%2Fv9%2Ftd%2F1%2F16%2F1f423.png%22%20alt%3D%22%26%23128035%3B%22%20width%3D%2216%22%20height%3D%2216%22%20%2F%3E%3Cbr%20%2F%3E%3C%2Fspan%3E%3C%2Fdiv%3E%0A%3C%2Fdiv%3E%0A%3Cdiv%20class%3D%22x14z9mp%20xat24cr%20x1lziwak%20x1vvkbs%20xtlvy1s%20x126k92a%22%3E%0A%3Cdiv%20dir%3D%22auto%22%3E%3Cbr%20%2F%3EMark%20your%20calendars%20for%20March%2028%2C%202026%20and%20bring%20the%20whole%20family%20out%20to%20Centennial%20Park%20in%20South%20Hill%20for%20an%20evening%20full%20of%20fun%21%20%3Cspan%20class%3D%22html-span%20xexx8yu%20xyri2b%20x18d9i69%20x1c1uobl%20x1hl2dhg%20x16tdsg8%20x1vvkbs%20x3nfvp2%20x1j61x8r%20x1fcty0u%20xdj266r%20xat24cr%20xm2jcoa%20x1mpyi22%20xxymvpz%20xlup9mm%20x1kky2od%22%3E%3Cimg%20class%3D%22xz74otr%20x15mokao%20x1ga7v0g%20x16uus16%20xbiv7yw%22%20src%3D%22https%3A%2F%2Fstatic.xx.fbcdn.net%2Fimages%2Femoji.php%2Fv9%2Ft8c%2F1%2F16%2F1f389.png%22%20alt%3D%22%26%23127881%3B%22%20width%3D%2216%22%20height%3D%2216%22%20%2F%3E%3Cbr%20%2F%3E%3C%2Fspan%3E%3C%2Fdiv%3E%0A%3C%2Fdiv%3E%0A%3Cdiv%20class%3D%22x14z9mp%20xat24cr%20x1lziwak%20x1vvkbs%20xtlvy1s%20x126k92a%22%3E%0A%3Cdiv%20dir%3D%22auto%22%3E%3Cspan%20class%3D%22html-span%20xexx8yu%20xyri2b%20x18d9i69%20x1c1uobl%20x1hl2dhg%20x16tdsg8%20x1vvkbs%20x3nfvp2%20x1j61x8r%20x1fcty0u%20xdj266r%20xat24cr%20xm2jcoa%20x1mpyi22%20xxymvpz%20xlup9mm%20x1kky2od%22%3E%3Cbr%20%2F%3E%3Cimg%20class%3D%22xz74otr%20x15mokao%20x1ga7v0g%20x16uus16%20xbiv7yw%22%20src%3D%22https%3A%2F%2Fstatic.xx.fbcdn.net%2Fimages%2Femoji.php%2Fv9%2Ftac%2F1%2F16%2F1f554.png%22%20alt%3D%22%26%23128340%3B%22%20width%3D%2216%22%20height%3D%2216%22%20%2F%3E%3C%2Fspan%3E%20Event%20starts%20at%205%20PM%3C%2Fdiv%3E%0A%3Cdiv%20dir%3D%22auto%22%3E%3Cspan%20class%3D%22html-span%20xexx8yu%20xyri2b%20x18d9i69%20x1c1uobl%20x1hl2dhg%20x16tdsg8%20x1vvkbs%20x3nfvp2%20x1j61x8r%20x1fcty0u%20xdj266r%20xat24cr%20xm2jcoa%20x1mpyi22%20xxymvpz%20xlup9mm%20x1kky2od%22%3E%3Cimg%20class%3D%22xz74otr%20x15mokao%20x1ga7v0g%20x16uus16%20xbiv7yw%22%20src%3D%22https%3A%2F%2Fstatic.xx.fbcdn.net%2Fimages%2Femoji.php%2Fv9%2Ft5d%2F1%2F16%2F1f95a.png%22%20alt%3D%22%26%23129370%3B%22%20width%3D%2216%22%20height%3D%2216%22%20%2F%3E%3C%2Fspan%3E%20Easter%20Egg%20Hunt%20begins%20at%206%20PM%3C%2Fdiv%3E%0A%3Cdiv%20dir%3D%22auto%22%3E%3Cspan%20class%3D%22html-span%20xexx8yu%20xyri2b%20x18d9i69%20x1c1uobl%20x1hl2dhg%20x16tdsg8%20x1vvkbs%20x3nfvp2%20x1j61x8r%20x1fcty0u%20xdj266r%20xat24cr%20xm2jcoa%20x1mpyi22%20xxymvpz%20xlup9mm%20x1kky2od%22%3E%3Cimg%20class%3D%22xz74otr%20x15mokao%20x1ga7v0g%20x16uus16%20xbiv7yw%22%20src%3D%22https%3A%2F%2Fstatic.xx.fbcdn.net%2Fimages%2Femoji.php%2Fv9%2Ft2d%2F1%2F16%2F1f3ac.png%22%20alt%3D%22%26%23127916%3B%22%20width%3D%2216%22%20height%3D%2216%22%20%2F%3E%3C%2Fspan%3E%20%26ldquo%3BWicked%3A%20For%20Good%26rdquo%3B%20movie%20showing%20at%20dark%3C%2Fdiv%3E%0A%3C%2Fdiv%3E%0A%3Cdiv%20class%3D%22x14z9mp%20xat24cr%20x1lziwak%20x1vvkbs%20xtlvy1s%20x126k92a%22%3E%0A%3Cdiv%20dir%3D%22auto%22%3E%3Cbr%20%2F%3EThis%20FREE%2C%20family-friendly%20event%20will%20feature%3A%3C%2Fdiv%3E%0A%3Cdiv%20dir%3D%22auto%22%3E%3Cspan%20class%3D%22html-span%20xexx8yu%20xyri2b%20x18d9i69%20x1c1uobl%20x1hl2dhg%20x16tdsg8%20x1vvkbs%20x3nfvp2%20x1j61x8r%20x1fcty0u%20xdj266r%20xat24cr%20xm2jcoa%20x1mpyi22%20xxymvpz%20xlup9mm%20x1kky2od%22%3E%3Cimg%20class%3D%22xz74otr%20x15mokao%20x1ga7v0g%20x16uus16%20xbiv7yw%22%20src%3D%22https%3A%2F%2Fstatic.xx.fbcdn.net%2Fimages%2Femoji.php%2Fv9%2Ftf4%2F1%2F16%2F2728.png%22%20alt%3D%22%26%2310024%3B%22%20width%3D%2216%22%20height%3D%2216%22%20%2F%3E%3C%2Fspan%3E%20Food%20trucks%20%28a%20full%20lineup%20coming%20soon%21%29%3C%2Fdiv%3E%0A%3Cdiv%20dir%3D%22auto%22%3E%3Cspan%20class%3D%22html-span%20xexx8yu%20xyri2b%20x18d9i69%20x1c1uobl%20x1hl2dhg%20x16tdsg8%20x1vvkbs%20x3nfvp2%20x1j61x8r%20x1fcty0u%20xdj266r%20xat24cr%20xm2jcoa%20x1mpyi22%20xxymvpz%20xlup9mm%20x1kky2od%22%3E%3Cimg%20class%3D%22xz74otr%20x15mokao%20x1ga7v0g%20x16uus16%20xbiv7yw%22%20src%3D%22https%3A%2F%2Fstatic.xx.fbcdn.net%2Fimages%2Femoji.php%2Fv9%2Ft82%2F1%2F16%2F1f3a8.png%22%20alt%3D%22%26%23127912%3B%22%20width%3D%2216%22%20height%3D%2216%22%20%2F%3E%3C%2Fspan%3E%20Face%20painting%3C%2Fdiv%3E%0A%3Cdiv%20dir%3D%22auto%22%3E%3Cspan%20class%3D%22html-span%20xexx8yu%20xyri2b%20x18d9i69%20x1c1uobl%20x1hl2dhg%20x16tdsg8%20x1vvkbs%20x3nfvp2%20x1j61x8r%20x1fcty0u%20xdj266r%20xat24cr%20xm2jcoa%20x1mpyi22%20xxymvpz%20xlup9mm%20x1kky2od%22%3E%3Cimg%20class%3D%22xz74otr%20x15mokao%20x1ga7v0g%20x16uus16%20xbiv7yw%22%20src%3D%22https%3A%2F%2Fstatic.xx.fbcdn.net%2Fimages%2Femoji.php%2Fv9%2Ft29%2F1%2F16%2F1f430.png%22%20alt%3D%22%26%23128048%3B%22%20width%3D%2216%22%20height%3D%2216%22%20%2F%3E%3C%2Fspan%3E%20A%20special%20appearance%20from%20the%20Easter%20Bunny%3C%2Fdiv%3E%0A%3Cdiv%20dir%3D%22auto%22%3E%3Cspan%20class%3D%22html-span%20xexx8yu%20xyri2b%20x18d9i69%20x1c1uobl%20x1hl2dhg%20x16tdsg8%20x1vvkbs%20x3nfvp2%20x1j61x8r%20x1fcty0u%20xdj266r%20xat24cr%20xm2jcoa%20x1mpyi22%20xxymvpz%20xlup9mm%20x1kky2od%22%3E%3Cimg%20class%3D%22xz74otr%20x15mokao%20x1ga7v0g%20x16uus16%20xbiv7yw%22%20src%3D%22https%3A%2F%2Fstatic.xx.fbcdn.net%2Fimages%2Femoji.php%2Fv9%2Ftff%2F1%2F16%2F1f3a5.png%22%20alt%3D%22%26%23127909%3B%22%20width%3D%2216%22%20height%3D%2216%22%20%2F%3E%3C%2Fspan%3E%20Outdoor%20movie%20night%20under%20the%20stars%3C%2Fdiv%3E%0A%3Cdiv%20dir%3D%22auto%22%3E%26hellip%3Band%20more%20surprises%21%3C%2Fdiv%3E%0A%3C%2Fdiv%3E%0A%3Cdiv%20class%3D%22x14z9mp%20xat24cr%20x1lziwak%20x1vvkbs%20xtlvy1s%20x126k92a%22%3E%0A%3Cdiv%20dir%3D%22auto%22%3E%3Cbr%20%2F%3EThis%20event%20brought%20to%20you%20by%20The%20Town%20of%20South%20Hill%20and%20South%20Hill%20Revitalization%20Committee%2C%20and%20is%20made%20possible%20in%20partnership%20with%20City%20of%20Refuge%2C%20South%20Hill%20United%20Methodist%20Church%2C%20Xtreme%20Team%20Family%2C%20and%20Walmart%20of%20South%20Hill.%3C%2Fdiv%3E%0A%3C%2Fdiv%3E%0A%3Cdiv%20class%3D%22x14z9mp%20xat24cr%20x1lziwak%20x1vvkbs%20xtlvy1s%20x126k92a%22%3E%0A%3Cdiv%20dir%3D%22auto%22%3E%3Cbr%20%2F%3EBring%20your%20baskets%2C%20lawn%20chairs%2C%20and%20blankets%20and%20join%20us%20for%20a%20fun%20night%20in%20the%20park%21%20%3Cspan%20class%3D%22html-span%20xexx8yu%20xyri2b%20x18d9i69%20x1c1uobl%20x1hl2dhg%20x16tdsg8%20x1vvkbs%20x3nfvp2%20x1j61x8r%20x1fcty0u%20xdj266r%20xat24cr%20xm2jcoa%20x1mpyi22%20xxymvpz%20xlup9mm%20x1kky2od%22%3E%3Cimg%20class%3D%22xz74otr%20x15mokao%20x1ga7v0g%20x16uus16%20xbiv7yw%22%20src%3D%22https%3A%2F%2Fstatic.xx.fbcdn.net%2Fimages%2Femoji.php%2Fv9%2Ft15%2F1%2F16%2F1f49b.png%22%20alt%3D%22%26%23128155%3B%22%20width%3D%2216%22%20height%3D%2216%22%20%2F%3E%3C%2Fspan%3E%3C%2Fdiv%3E%0A%3C%2Fdiv%3E%0A%3Cdiv%20class%3D%22x14z9mp%20xat24cr%20x1lziwak%20x1vvkbs%20xtlvy1s%20x126k92a%22%3E%0A%3Cdiv%20dir%3D%22auto%22%3E%3Cspan%20class%3D%22html-span%20xexx8yu%20xyri2b%20x18d9i69%20x1c1uobl%20x1hl2dhg%20x16tdsg8%20x1vvkbs%20x3nfvp2%20x1j61x8r%20x1fcty0u%20xdj266r%20xat24cr%20xm2jcoa%20x1mpyi22%20xxymvpz%20xlup9mm%20x1kky2od%22%3E%3Cimg%20class%3D%22xz74otr%20x15mokao%20x1ga7v0g%20x16uus16%20xbiv7yw%22%20src%3D%22https%3A%2F%2Fstatic.xx.fbcdn.net%2Fimages%2Femoji.php%2Fv9%2Ft2d%2F1%2F16%2F1f4cd.png%22%20alt%3D%22%26%23128205%3B%22%20width%3D%2216%22%20height%3D%2216%22%20%2F%3E%3C%2Fspan%3E%20Centennial%20Park%20%26ndash%3B%20South%20Hill%2C%20VA%3C%2Fdiv%3E%0A%3Cdiv%20dir%3D%22auto%22%3E%3Cspan%20class%3D%22html-span%20xexx8yu%20xyri2b%20x18d9i69%20x1c1uobl%20x1hl2dhg%20x16tdsg8%20x1vvkbs%20x3nfvp2%20x1j61x8r%20x1fcty0u%20xdj266r%20xat24cr%20xm2jcoa%20x1mpyi22%20xxymvpz%20xlup9mm%20x1kky2od%22%3E%3Cimg%20class%3D%22xz74otr%20x15mokao%20x1ga7v0g%20x16uus16%20xbiv7yw%22%20src%3D%22https%3A%2F%2Fstatic.xx.fbcdn.net%2Fimages%2Femoji.php%2Fv9%2Ft7e%2F1%2F16%2F1f4c5.png%22%20alt%3D%22%26%23128197%3B%22%20width%3D%2216%22%20height%3D%2216%22%20%2F%3E%3C%2Fspan%3E%20Saturday%2C%20March%2028%2C%202026%3C%2Fdiv%3E%0A%3C%2Fdiv%3E",
+    "color": "#3787d8",
+    "end": "2026-03-28T21:00:00",
+    "duration": "04:00",
+    "options": ""
+  },
+  {
+    "title": "Mayor Moody's Christmas Tree Lighting and Hometown Christmas Kickoff",
+    "primary_calendar_name": "Events",
+    "calendar_displays": [
+      "2"
+    ],
+    "start": "2026-12-04T18:00:00",
+    "url": "https://www.facebook.com/events/1600123574347246/",
+    "location": "Centennial Park",
+    "image": "<img src=\"./638020809_1359949566167990_4604396313424386833_n.jpg\" alt=\"638020809_1359949566167990_4604396313424386833_n\"/>",
+    "rid": "72",
+    "id": "72",
+    "desc": "",
+    "color": "#3787d8",
+    "end": "2026-12-04T21:00:00",
+    "duration": "03:00",
+    "options": ""
+  },
+  {
+    "title": "Hometown Christmas",
+    "primary_calendar_name": "Events",
+    "calendar_displays": [
+      "2"
+    ],
+    "start": "2026-12-05T00:00:00",
+    "url": "https://www.facebook.com/events/941574405065111/",
+    "location": "Centennial Park",
+    "image": "<img src=\"./638020809_1359949566167990_4604396313424386833_n.jpg\" alt=\"638020809_1359949566167990_4604396313424386833_n\"/>",
+    "rid": "73",
+    "id": "73",
+    "desc": "",
+    "color": "#3787d8",
+    "allDay": true,
+    "options": ""
+  },
+  {
+    "title": "Autumn Jubilee: Small Town Carnival",
+    "primary_calendar_name": "Events",
+    "calendar_displays": [
+      "2"
+    ],
+    "start": "2026-10-17T00:00:00",
+    "url": "",
+    "location": "Centennial Park",
+    "image": "<img src=\"./f9e3c915-95a9-4abd-bed4-247072203516 - Copy.jpg\" alt=\"f9e3c915-95a9-4abd-bed4-247072203516 - Copy\"/>",
+    "rid": "74",
+    "id": "74",
+    "desc": "",
+    "color": "#3787d8",
+    "allDay": true,
+    "options": ""
+  },
+  {
+    "title": "End of Summer & Movie Night",
+    "primary_calendar_name": "Events",
+    "calendar_displays": [
+      "2"
+    ],
+    "start": "2026-09-11T17:00:00",
+    "url": "https://www.facebook.com/events/1416143470287461/",
+    "location": "Centennial Park",
+    "image": "<img src=\"./637935613_1359911459505134_780127478095246003_n.jpg\" alt=\"637935613_1359911459505134_780127478095246003_n\"/>",
+    "rid": "75",
+    "id": "75",
+    "desc": "",
+    "color": "#3787d8",
+    "end": "2026-09-11T21:00:00",
+    "duration": "04:00",
+    "options": ""
+  },
+  {
+    "title": "Sparks in the Park: Independence Day Celebration",
+    "primary_calendar_name": "Events",
+    "calendar_displays": [
+      "2"
+    ],
+    "start": "2026-07-02T00:00:00",
+    "url": "https://www.facebook.com/events/1438930618017667/",
+    "location": "Parker Park",
+    "image": "<img src=\"./638066103_1359902806172666_7497802062537569254_n.jpg\" alt=\"638066103_1359902806172666_7497802062537569254_n\"/>",
+    "rid": "77",
+    "id": "77",
+    "desc": "",
+    "color": "#3787d8",
+    "allDay": true,
+    "options": ""
+  },
+  {
+    "title": "First Friday Food Truck Rodeo",
+    "primary_calendar_name": "Events",
+    "calendar_displays": [
+      "2"
+    ],
+    "start": "2026-06-05T17:00:00",
+    "url": "https://www.facebook.com/events/935391615494194/",
+    "location": "South Hill Farmer's Market",
+    "image": "<img src=\"./638292825_1359893916173555_5914973899767678473_n.jpg\" alt=\"638292825_1359893916173555_5914973899767678473_n\"/>",
+    "rid": "78",
+    "id": "78",
+    "desc": "",
+    "color": "#3787d8",
+    "end": "2026-06-05T20:00:00",
+    "duration": "03:00",
+    "options": ""
+  },
+  {
+    "title": "First Friday Food Truck Rodeo",
+    "primary_calendar_name": "Events",
+    "calendar_displays": [
+      "2"
+    ],
+    "start": "2026-05-01T17:00:00",
+    "url": "https://www.facebook.com/events/2708859759446986/",
+    "location": "South Hill Farmer's Market",
+    "image": "<img src=\"./638162280_1359890909507189_7104607138468676736_n.jpg\" alt=\"638162280_1359890909507189_7104607138468676736_n\"/>",
+    "rid": "79",
+    "id": "79",
+    "desc": "",
+    "color": "#3787d8",
+    "end": "2026-05-01T20:00:00",
+    "duration": "03:00",
+    "options": ""
+  }
+]

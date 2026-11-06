@@ -1,0 +1,164 @@
+[
+  {
+    "file": "players_home.html",
+    "source_url": "https://clarksvilleplayers.org/",
+    "captured_on": "2026-11-06",
+    "raw_sha256": "32efc9457af26048966518c1b4c07126a994b3dd3e59855a840da65d0c5405cc",
+    "raw_bytes": 180566,
+    "fixture_sha256": "5606d69e8b6c1569cdfc62e6b2316b148776a7514f89dd1cee15a13d6005484b",
+    "notes": "Relevant public DOM retained; scripts/styles, unrelated layout, transaction parameters and input tokens removed. Some unrelated promotional prose omitted."
+  },
+  {
+    "file": "players_auditions.html",
+    "source_url": "https://clarksvilleplayers.org/auditions",
+    "captured_on": "2026-11-06",
+    "raw_sha256": "ecba5f185a3ac8416baeb3b6e739caef1c9639e7a6b39bd6f25fcc9dc8f075fa",
+    "raw_bytes": 164020,
+    "fixture_sha256": "611ac99610c4b8dd0f094a505d580410d6b1599deab41f6922c6492e9867076d",
+    "notes": "Relevant public DOM retained; scripts/styles, unrelated layout, transaction parameters and input tokens removed. Some unrelated promotional prose omitted."
+  },
+  {
+    "file": "maccallum_home.html",
+    "source_url": "https://maccallummore.org/",
+    "captured_on": "2026-11-06",
+    "raw_sha256": "3cbbe8033a8d6b6f86f791e9dfcc35266f21b7cc87178c1a44f1bd6829a936f6",
+    "raw_bytes": 369386,
+    "fixture_sha256": "23abdbadc2c70be9aef0a181f75858a1e68ece90b1745ed871d859a078788a09",
+    "notes": "Relevant public DOM retained; scripts/styles, unrelated layout, transaction parameters and input tokens removed. Some unrelated promotional prose omitted."
+  },
+  {
+    "file": "maccallum_grand_illumination.html",
+    "source_url": "https://maccallummore.org/pages/grand-illumination",
+    "captured_on": "2026-11-06",
+    "raw_sha256": "51e8aa0a6bbe006bc3558bcfe29ee4a93eddfdfcf71bda826b9e7b25f3c0fff9",
+    "raw_bytes": 330737,
+    "fixture_sha256": "bacb5eacb20534ee7213feafb4ab785b789244b4a744c6e40d8aa8addc3c5c6a",
+    "notes": "Relevant public DOM retained; scripts/styles, unrelated layout, transaction parameters and input tokens removed. Some unrelated promotional prose omitted."
+  },
+  {
+    "file": "maccallum_porch_goose_raffle.html",
+    "source_url": "https://maccallummore.org/pages/porch-goose-raffle",
+    "captured_on": "2026-11-06",
+    "raw_sha256": "883b0d1c164608c3b5e19f1b456338c1f965e1d4768991e94578fc9f3aa1df7e",
+    "raw_bytes": 336273,
+    "fixture_sha256": "d60e4711506ed1a1001214bd7ccc7a79f52c83d706a1ea38b75994f8e2a84d26",
+    "notes": "Relevant public DOM retained; scripts/styles, unrelated layout, transaction parameters and input tokens removed. Some unrelated promotional prose omitted."
+  },
+  {
+    "file": "maccallum_juried_art_show.html",
+    "source_url": "https://maccallummore.org/pages/juried-art-show",
+    "captured_on": "2026-11-06",
+    "raw_sha256": "fde74705b830507da429817243b2c4260dd773fa76e99767df33a1ce927b5848",
+    "raw_bytes": 336462,
+    "fixture_sha256": "02955d90fdbff25dd55d3c8963201db0c2613ece42e057ffc41caa403fc081c5",
+    "notes": "Relevant public DOM retained; scripts/styles, unrelated layout, transaction parameters and input tokens removed. Some unrelated promotional prose omitted."
+  },
+  {
+    "file": "ymca_catalog.html",
+    "source_url": "https://mecklenburg.recliquecore.com/programs/",
+    "captured_on": "2026-11-06",
+    "raw_sha256": "ec8721abf01ac732065b01ca841f2b5c7b17c84783f6b4b3b4fd708cce0cda9f",
+    "raw_bytes": 38775,
+    "fixture_sha256": "d9c782ad35e457b21c65b392125f378c054c30f63cf52b22b7430175b5a34f49",
+    "notes": "Relevant public DOM retained; scripts/styles, unrelated layout, transaction parameters and input tokens removed. Some unrelated promotional prose omitted."
+  },
+  {
+    "file": "ymca_locations.html",
+    "source_url": "https://mecklenburgcountyymca.org/locations.php",
+    "captured_on": "2026-11-06",
+    "raw_sha256": "dc9cf52178c0f7d5ba871ee29a3c13bf696d3a192d988d20c13f8856be443bf5",
+    "raw_bytes": 8938,
+    "fixture_sha256": "a70373d03575a34d7ddb0342b43e1edf7c2fb2f9bed2604b297b3897249cb2d9",
+    "notes": "Relevant public DOM retained; scripts/styles, unrelated layout, transaction parameters and input tokens removed. Some unrelated promotional prose omitted."
+  },
+  {
+    "file": "ymca_program_1.html",
+    "source_url": "https://mecklenburg.recliquecore.com/programs/1/youth-basketball/?locations=-1",
+    "captured_on": "2026-11-06",
+    "raw_sha256": "93b58e7cc1af0499045b298a21e25d8b5744f3ceb999b1238f5fb6fa32b36dd6",
+    "raw_bytes": 53145,
+    "fixture_sha256": "40410a7268ac969e4e5a3d7351c0b9b01ad057df35e89a69958aad031ed9b81b",
+    "notes": "Relevant public DOM retained; scripts/styles, unrelated layout, transaction parameters and input tokens removed. Some unrelated promotional prose omitted."
+  },
+  {
+    "file": "ymca_program_13.html",
+    "source_url": "https://mecklenburg.recliquecore.com/programs/13/youth-cheer/?locations=-1",
+    "captured_on": "2026-11-06",
+    "raw_sha256": "9c3206e0ab4cb20e8ff2fa95be79d43a5ebb5843ccc3c027f3ce84c6c023255f",
+    "raw_bytes": 60266,
+    "fixture_sha256": "e9632bcf9e35f2dcfa7fe2d52ca927c98f1200ff767731a67806c50d87ef1b6f",
+    "notes": "Relevant public DOM retained; scripts/styles, unrelated layout, transaction parameters and input tokens removed. Some unrelated promotional prose omitted."
+  },
+  {
+    "file": "ymca_program_14.html",
+    "source_url": "https://mecklenburg.recliquecore.com/programs/14/pickleball/?locations=-1",
+    "captured_on": "2026-11-06",
+    "raw_sha256": "e5d2d299e2126e7f24f1d15c39d1546766f6a9a72f3fdc8fc8ad53e0deb4132a",
+    "raw_bytes": 36966,
+    "fixture_sha256": "7de6ff42580c3d08caf73bc1f039abf3f67f2f41e9d294a5f0067f6180d236bc",
+    "notes": "Relevant public DOM retained; scripts/styles, unrelated layout, transaction parameters and input tokens removed. Some unrelated promotional prose omitted."
+  },
+  {
+    "file": "ymca_program_15.html",
+    "source_url": "https://mecklenburg.recliquecore.com/programs/15/gymnastics/?locations=-1",
+    "captured_on": "2026-11-06",
+    "raw_sha256": "9f105d51a72eeafa0754d95bad5ae9f0cac729cb10a3ccc2f217ca534857098d",
+    "raw_bytes": 80529,
+    "fixture_sha256": "5de11fb83085560ce9aeb005aac809e76b62d05aa5b738fc5b72cda9fc8aefd3",
+    "notes": "Relevant public DOM retained; scripts/styles, unrelated layout, transaction parameters and input tokens removed. Some unrelated promotional prose omitted."
+  },
+  {
+    "file": "ymca_program_16.html",
+    "source_url": "https://mecklenburg.recliquecore.com/programs/16/personal-training/?locations=-1",
+    "captured_on": "2026-11-06",
+    "raw_sha256": "c7d19580e02220202bb6f0efd92ddf12f1b0d6cba73463c990bd80823aa0e60e",
+    "raw_bytes": 58938,
+    "fixture_sha256": "b720026be618137b29826b69a21d09715914345b2005e9aa06f998341f754294",
+    "notes": "Relevant public DOM retained; scripts/styles, unrelated layout, transaction parameters and input tokens removed. Some unrelated promotional prose omitted."
+  },
+  {
+    "file": "ymca_program_18.html",
+    "source_url": "https://mecklenburg.recliquecore.com/programs/18/youth-soccer/?locations=-1",
+    "captured_on": "2026-11-06",
+    "raw_sha256": "67065a45a72504790374753e7e5cd7d745cf49ee9e5d7590dcd8e06881c6e537",
+    "raw_bytes": 35550,
+    "fixture_sha256": "d80da4e3b09d739d44deeccfb3cfc3022a73b585438c99cc5cd6f33b00863ad8",
+    "notes": "Relevant public DOM retained; scripts/styles, unrelated layout, transaction parameters and input tokens removed. Some unrelated promotional prose omitted."
+  },
+  {
+    "file": "ymca_program_26.html",
+    "source_url": "https://mecklenburg.recliquecore.com/programs/26/youth-volleyball/?locations=-1",
+    "captured_on": "2026-11-06",
+    "raw_sha256": "f7391f7cbf671e6bfc89ebf46237d3c21d65696a4cc7277f87cbb845a24dc9c7",
+    "raw_bytes": 52419,
+    "fixture_sha256": "2cc1af7db7e915889030013969e463e940acb03a388bc2169585a3bd75ee6df8",
+    "notes": "Relevant public DOM retained; scripts/styles, unrelated layout, transaction parameters and input tokens removed. Some unrelated promotional prose omitted."
+  },
+  {
+    "file": "ymca_program_32.html",
+    "source_url": "https://mecklenburg.recliquecore.com/programs/32/wellness-challenge/?locations=-1",
+    "captured_on": "2026-11-06",
+    "raw_sha256": "c9f4e792c21ecb25afac05d142446a8f41a34c08158c8bb2ff791276bdd56019",
+    "raw_bytes": 35112,
+    "fixture_sha256": "95b0a0692371c004a0b2dc4defaf7a2e6b1baddc6e222ee1f16a4b24ea42dfbe",
+    "notes": "Relevant public DOM retained; scripts/styles, unrelated layout, transaction parameters and input tokens removed. Some unrelated promotional prose omitted."
+  },
+  {
+    "file": "ymca_program_33.html",
+    "source_url": "https://mecklenburg.recliquecore.com/programs/33/craft-classes/?locations=-1",
+    "captured_on": "2026-11-06",
+    "raw_sha256": "2f76a4622bcb5c9e2d0f53ae5d31e4dd1dca954e34afc1668f86bcf1be85b299",
+    "raw_bytes": 40452,
+    "fixture_sha256": "c6252cf334223f9f74463db07ce7c1d768ce70d396a49aae590ca1e7d1c527c4",
+    "notes": "Relevant public DOM retained; scripts/styles, unrelated layout, transaction parameters and input tokens removed. Some unrelated promotional prose omitted."
+  },
+  {
+    "file": "ymca_program_37.html",
+    "source_url": "https://mecklenburg.recliquecore.com/programs/37/dance/?locations=-1",
+    "captured_on": "2026-11-06",
+    "raw_sha256": "c0b837069076ebc35fac48527a413857fd17adb9a704538767b08e4b3393ce4c",
+    "raw_bytes": 35170,
+    "fixture_sha256": "514ef38ece788bff4f5368912d7c6eefa7ab76bfa69052bd75a9014e9c87a5f5",
+    "notes": "Relevant public DOM retained; scripts/styles, unrelated layout, transaction parameters and input tokens removed. Some unrelated promotional prose omitted."
+  }
+]

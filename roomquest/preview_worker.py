@@ -635,6 +635,26 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                 "p_future_count": len(records), "p_venue_count": 0,
                 "p_error": None, "p_events": records,
                 "p_parser_capability": "publisher_event_candidates_v1"}
+    if source.get("platform_adapter") == "revize" and source.get("kind") == "json":
+        from roomquest.revize import collect
+        deadline = min(monotonic() + 30, deadline_at - 8 if deadline_at is not None else float("inf"))
+        try:
+            records = collect(source, lambda url, accept: fetch_publisher(
+                url, accept, respect_robots=True, deadline_at=deadline,
+                allowed_hosts=("www.southhillva.gov",)), deadline_at=deadline)
+        except PreviewError:
+            raise
+        except (ValueError, TypeError, KeyError, OverflowError) as exc:
+            reason = str(exc)
+            raise PreviewError(reason if re.fullmatch(r"[a-z_]{3,100}", reason) else "invalid_revize_payload") from exc
+        samples = records[:MAX_PREVIEWS]
+        while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
+            samples.pop()
+        return {"p_source_key": source["source_key"], "p_samples": samples,
+                "p_future_count": len(records),
+                "p_venue_count": sum(1 for row in records if row["lat"] is not None),
+                "p_error": None, "p_events": records,
+                "p_parser_capability": "publisher_event_candidates_v1"}
     # Independent HTML family with explicit, publisher-specific dispatch.
     if source.get("platform_adapter") == "html" and source.get("kind") == "html":
         source_key = str(source.get("source_key", ""))
@@ -659,6 +679,18 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
             from roomquest.chase_city_chamber import collect as collect_html
             allowed_hosts = ("chasecitychamber.com",)
             html_budget = 20
+        elif source_key == "south_hill_chamber_va":
+            from roomquest.south_hill_chamber import collect as collect_html
+            allowed_hosts = ("members.southhillchamber.com",)
+        elif source_key == "clarksville_community_players_va":
+            from roomquest.clarksville_players import collect as collect_html
+            allowed_hosts = ("clarksvilleplayers.org",)
+        elif source_key == "maccallum_more_va":
+            from roomquest.maccallum_more import collect as collect_html
+            allowed_hosts = ("maccallummore.org",)
+        elif source_key == "mecklenburg_ymca_programs_va":
+            from roomquest.mecklenburg_ymca import collect as collect_html
+            allowed_hosts = ("mecklenburg.recliquecore.com", "mecklenburgcountyymca.org")
         else:
             raise PreviewError("unregistered_html_source")
         deadline = min(monotonic() + html_budget, deadline_at - 5 if deadline_at is not None else float("inf"))
@@ -967,7 +999,11 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
                         and source.get('platform_adapter') == 'growthzone')
     publisher_media = reviewed_chamber or (source_key in ('madison_county_parks_ia', 'think_iowa_city_ia', 'rosemont_of_virginia') and source.get('kind') == 'json'
                        and source.get('platform_adapter') == 'wordpress') or (html and (source_key.startswith(('virginia_state_parks_', 'mycountyparks_ia_'))
-                                or source_key in ('bellevue_times_ne', 'unleashcb_ia', 'visit_mason_city_ia', 'chase_city_chamber_va', 'experience_waterloo_ia'))) or source.get('platform_adapter') == 'south_carolina_parks'
+                                or source_key in ('bellevue_times_ne', 'unleashcb_ia', 'visit_mason_city_ia', 'chase_city_chamber_va', 'experience_waterloo_ia',
+                                                  'south_hill_chamber_va', 'clarksville_community_players_va',
+                                                  'maccallum_more_va', 'mecklenburg_ymca_programs_va'))) or source.get('platform_adapter') == 'south_carolina_parks' or (
+                        source_key == 'south_hill_town_va' and source.get('kind') == 'json'
+                        and source.get('platform_adapter') == 'revize')
     preview_rpc = ("community_collector_record_preview_v3"
                    if publisher_media
                    else "community_collector_record_preview_v2" if html

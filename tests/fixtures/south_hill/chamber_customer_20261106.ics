@@ -1,0 +1,38 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//ChamberMaster//Event Calendar 2.0//EN
+METHOD:PUBLISH
+X-PUBLISHED-TTL:P1H
+REFRESH-INTERVAL:P1H
+CALSCALE:GREGORIAN
+BEGIN:VTIMEZONE
+TZID:America/New_York
+BEGIN:DAYLIGHT
+RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=2SU
+DTSTART:20070101T000000
+TZOFFSETFROM:-0500
+TZOFFSETTO:-0400
+TZNAME:Eastern Daylight Time
+END:DAYLIGHT
+BEGIN:STANDARD
+RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU
+DTSTART:20070101T000000
+TZOFFSETFROM:-0400
+TZOFFSETTO:-0500
+TZNAME:Eastern Standard Time
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+DTSTART;TZID=America/New_York:20261204T113000
+DTEND;TZID=America/New_York:20261204T140000
+X-MICROSOFT-CDO-ALLDAYEVENT:FALSE
+SUMMARY:Annual Customer Appreciation Day
+DESCRIPTION:Join us for our Annual Customer Appreciation Day. Rain or Shine. Stew Lunch while supplies last ** Please RSVP by 11.28.26\nhttps://members.southhillchamber.com/ap/Events/Register/3BFz3yatYCQCg
+X-ALT-DESC;FMTTYPE=text/html:<!DOCTYPE html><html><head><title></title></head><body aria-disabled="false"><p>Join us for our Annual Customer Appreciation Day. Rain or Shine. Stew Lunch while supplies last ** Please RSVP by 11.28.26</p><p><br></p><p><a fr-original-style="" href="https://members.southhillchamber.com/ap/Events/Register/3BFz3yatYCQCg" style="user-select: auto\;">https://members.southhillchamber.com/ap/Events/Register/3BFz3yatYCQCg</a></p></body></html>
+LOCATION:710 W. Danville St South Hill VA 23970
+UID:e.4800.1464252
+SEQUENCE:3
+DTSTAMP:20261106T130710Z
+URL:https://members.southhillchamber.com/events/Details/annual-customer-appreciation-day-1734865?sourceTypeId=Hub
+END:VEVENT
+END:VCALENDAR
