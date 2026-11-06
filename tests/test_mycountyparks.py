@@ -76,6 +76,37 @@ def normalized(title, start, end, venue, street, city, url, identity, **kwargs):
             "category": kwargs.get("category"), "reason": "missing_verified_venue_geo"}
 
 
+def test_title_prefixed_prose_can_complete_a_matching_verified_header_end():
+    item = entry(title='Science for Squirts: Hooray for Hognose', when='NOV 18 2026 10:00 AM')
+    summary = ('SCIENCE FOR SQUIRTS: HOORAY FOR HOGNOSE Wednesday, November 18, 10-11a.m. '
+               'Meet a hognose snake and learn about wildlife.')
+    row = mcp.parse_event(detail(item, summary=summary), parsed(item), now=NOW)
+    assert row['ends_at'] == '2026-11-18T17:00:00+00:00'
+    assert row['starts_at'] == '2026-11-18T16:00:00+00:00'
+    for bad in (summary.replace('Wednesday', 'Thursday'), summary.replace('November 18', 'November 19'),
+                summary.replace('10-11', '9-11'), summary.replace('HOORAY FOR HOGNOSE', 'Different Talk')):
+        row = mcp.parse_event(detail(item, summary=bad), parsed(item), now=NOW)
+        assert row['ends_at'] is None
+
+
+def test_conflicting_room_instructions_keep_building_address_and_warn_without_choosing_room():
+    item = entry(title='Coffee Club', county='Mahaska', when='DEC 04 2026 9:00 AM')
+    row = mcp.parse_event(detail(item, venue='Environmental Learning Center, Lower Level',
+        street='2342 Highway 92', city='Oskaloosa IA 52577',
+        summary='Join us for coffee. We meet upstairs in the Discovery Lab.'), parsed(item), now=NOW)
+    assert row['venue_name'] == 'Environmental Learning Center'
+    assert row['venue_address'] == '2342 Highway 92, Oskaloosa, IA 52577'
+    assert row['description'].startswith('Location note:')
+    assert 'Lower Level' in row['description'] and 'upstairs' in row['description']
+
+
+def test_month_long_exhibition_with_unspecified_building_hours_is_withheld():
+    item = entry(title='Travelling Exhibit', county='Mahaska', when='DEC 04 2026 12:30 PM')
+    with pytest.raises(ValueError, match='exhibition_hours_unresolved'):
+        mcp.parse_event(detail(item, summary='View during regular building hours/December 4-31. Explore local wildlife.'),
+                        parsed(item), now=NOW)
+
+
 @pytest.fixture(autouse=True)
 def record_spy(monkeypatch):
     spy = Mock(side_effect=normalized)

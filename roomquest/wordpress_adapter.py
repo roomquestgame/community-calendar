@@ -86,6 +86,9 @@ def _madison_display_schedule(item, source, fetch):
 
 
 def collect(source, fetch, *, deadline_at=None):
+    if source.get('source_key') == 'think_iowa_city_ia':
+        from roomquest.iowa_tourism import collect_think
+        return collect_think(source, fetch, deadline_at=deadline_at)
     from roomquest.mapsee_adapter import parse_tribe
     root = urlsplit(source['feed_url'])
     if '/wp-json/tribe/events/v1/events' in root.path:
