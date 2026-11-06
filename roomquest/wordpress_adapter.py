@@ -5,12 +5,49 @@ No venue search, source-wide pin, extra scheduler or provider identity change.
 """
 from datetime import datetime, timedelta, timezone
 import json
+import re
 from time import monotonic
 from urllib.parse import urlsplit, urlunsplit, parse_qsl, urlencode
 
 MAX_PAGES = 5
 MAX_RECORDS = 500
 MAX_MADISON_TIME_REVIEWS = 5
+
+
+def _madison_evidence(row, item):
+    """Use only this event's API content; optional images never add a fetch."""
+    from bs4 import BeautifulSoup
+    from roomquest.publisher_evidence import attach, family, image_url
+    if family('madison_county_parks_ia', row['event_url']) != 'madison':
+        return row
+    soup = BeautifulSoup(item.get('description') or '', 'html.parser')
+    for tag in soup.select('script, style, template, noscript'):
+        tag.decompose()
+    candidates = {u for tag in soup.select('img[src]')
+                  if (u := image_url(tag.get('src'), 'madison'))}
+    featured = item.get('image')
+    if isinstance(featured, dict) and (u := image_url(featured.get('url'), 'madison')):
+        candidates.add(u)
+    # More than one publisher image is ambiguous; do not choose arbitrarily.
+    candidate = next(iter(candidates)) if len(candidates) == 1 else None
+    narrative = row.get('description', '')
+    # Only explicit introductory scheduling prose, never a historical date in
+    # a talk's subject. A warning preserves the publisher's original wording.
+    mention = re.search(r'\bJoin us\b[^.\n]{0,160}?\bon\s+([A-Za-z]+)\s+(\d{1,2})\b', narrative, re.I)
+    months = {name.lower(): number for number, name in enumerate(
+        ('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August',
+         'September', 'October', 'November', 'December'), 1)}
+    months.update({name[:3]: number for name, number in list(months.items())})
+    if mention and item.get('start_date'):
+        day = datetime.fromisoformat(item['start_date']).date()
+        month = months.get(mention[1].lower())
+        if month and (month, int(mention[2])) != (day.month, day.day):
+            note = ('Schedule note: The date in the publisher description conflicts with its calendar. '
+                    'Use the event date shown above and confirm with the organizer.\n\n')
+            row['description'] = note + narrative[:2000 - len(note)]
+    cost = item.get('cost')
+    facts = {'cost': cost.strip()[:400]} if isinstance(cost, str) and cost.strip() else {}
+    return attach(row, 'madison_county_parks_ia', facts=facts, candidate=candidate)
 
 
 def _madison_display_schedule(item, source, fetch):
@@ -104,9 +141,13 @@ def collect(source, fetch, *, deadline_at=None):
                         if wall != timestamp(utc, 'UTC'):
                             raise ValueError('publisher_schedule_conflict')
         # Never follow response next links; rebuild only this registered URL.
-        rows.extend(parse_tribe(payload, strict_public=source.get("source_key") in
+        parsed_rows = parse_tribe(payload, strict_public=source.get("source_key") in
                                   ("madison_county_parks_ia", "nebraska_game_parks"),
-                               retain_description=source.get("source_key") == "madison_county_parks_ia"))
+                               retain_description=source.get("source_key") == "madison_county_parks_ia")
+        if source.get('source_key') == 'madison_county_parks_ia':
+            by_id = {str(item.get('id')): item for item in payload['events'] if isinstance(item, dict)}
+            parsed_rows = [_madison_evidence(row, by_id[row['id']]) for row in parsed_rows]
+        rows.extend(parsed_rows)
         if len(rows) > MAX_RECORDS:
             raise ValueError('source_record_limit')
         total_pages = payload.get('total_pages', 1)

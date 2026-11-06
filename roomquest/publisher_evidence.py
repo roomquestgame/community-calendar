@@ -22,6 +22,9 @@ def family(source_key, event_url):
         if (source_key == 'bellevue_times_ne' and p.hostname == 'bellevuetimes.com'
                 and p.path.startswith('/events/') and re.fullmatch(r'occurrence=20[0-9]{6}T[0-9]{6}', p.query)):
             return 'bellevue_times'
+        if (source_key == 'madison_county_parks_ia' and p.hostname == 'www.madisoncountyparks.org'
+                and re.fullmatch(r'/calendar/[^/?#]+/?', p.path) and not p.query):
+            return 'madison'
         if (re.fullmatch(r'south_carolina_parks_[1-9][0-9]{0,9}', source_key or '')
                 and p.hostname == 'southcarolinaparks.com'
                 and re.fullmatch(r'/products/[1-9][0-9]{0,9}', p.path) and not p.query):
@@ -43,8 +46,9 @@ def image_url(value, publisher):
         if publisher == 'mycountyparks':
             return value if (p.hostname == 'content.mycountyparks.com'
                              and p.path.startswith('/Production/RelatedItem/Content/')) else None
-        if publisher == 'bellevue_times':
-            return value if (p.hostname == 'bellevuetimes.com' and p.path.startswith('/wp-content/uploads/')
+        if publisher in ('bellevue_times', 'madison'):
+            host = 'www.madisoncountyparks.org' if publisher == 'madison' else 'bellevuetimes.com'
+            return value if (p.hostname == host and p.path.startswith('/wp-content/uploads/')
                              and re.search(r'\.(?:jpe?g|png|webp|gif)$', p.path, re.I)) else None
         if publisher == 'south_carolina_parks':
             return value if (p.hostname == 'southcarolinaparks.com'

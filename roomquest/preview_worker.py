@@ -698,7 +698,9 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         samples = records[:MAX_PREVIEWS]
         while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
             samples.pop()
-        return {"p_source_key": source["source_key"], "p_samples": samples,
+        return {**({"p_parser_capability": "publisher_event_candidates_v1"}
+                   if source.get('source_key') == 'madison_county_parks_ia' else {}),
+                "p_source_key": source["source_key"], "p_samples": samples,
                 "p_future_count": len(records),
                 "p_venue_count": sum(1 for row in records if row["lat"] is not None),
                 "p_error": None, "p_events": records}
@@ -927,7 +929,8 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
     # recorded. If this RPC fails, the exception remains a worker failure.
     html = source.get("kind") == "html" and source.get("platform_adapter") == "html"
     source_key = str(source.get('source_key', ''))
-    publisher_media = (html and (source_key.startswith(('virginia_state_parks_', 'mycountyparks_ia_'))
+    publisher_media = (source_key == 'madison_county_parks_ia' and source.get('kind') == 'json'
+                       and source.get('platform_adapter') == 'wordpress') or (html and (source_key.startswith(('virginia_state_parks_', 'mycountyparks_ia_'))
                                 or source_key == 'bellevue_times_ne')) or source.get('platform_adapter') == 'south_carolina_parks'
     preview_rpc = ("community_collector_record_preview_v3"
                    if publisher_media
