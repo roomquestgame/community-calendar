@@ -218,8 +218,7 @@ def _terminal_row(start, end, identity, program):
             'event_url': CALENDAR, 'category': '', 'reason': 'missing_verified_venue_geo'}
 
 
-def parse(payload, ministry_payload, *, now=None, diagnostics=None,
-          expected_calendar_id=None, expected_month=None):
+def parse(payload, ministry_payload, *, now=None, diagnostics=None, expected_month=None):
     current = now or datetime.now(timezone.utc)
     if current.tzinfo is None:
         raise ValueError('good_shepherd_now_timezone_missing')
@@ -230,8 +229,10 @@ def parse(payload, ministry_payload, *, now=None, diagnostics=None,
         raise ValueError('good_shepherd_render_structure_unverified')
     calendar = calendars[0]
     calendar_id = calendar.get('id', '')
+    # The publisher generates DOM IDs, not feed identities. A returned render
+    # can use a different valid ID than the current AJAX placeholder; its own
+    # selector, month, day and event references must still agree throughout.
     if (not re.fullmatch(r'r[a-f0-9]{8,40}', calendar_id)
-            or (expected_calendar_id is not None and calendar_id != expected_calendar_id)
             or calendar.select('[rel~=next], .pagination, [data-next-page]')):
         raise ValueError('good_shepherd_calendar_identity_unverified')
     _text(calendar)
@@ -345,8 +346,11 @@ def collect(source, fetch, *, render_calendar, deadline_at=None, now=None):
     check()
     ministry = get(MINISTRY)
     diagnostics = {}
+    # The fixed render callback receives only the exact public tokens from
+    # this canonical page's single reviewed placeholder. Do not substitute
+    # DOM-ID equality for that source/action/argument binding.
     rows = parse(rendered, ministry, now=now, diagnostics=diagnostics,
-                 expected_calendar_id=request['calendar_id'], expected_month=request['month'])
+                 expected_month=request['month'])
     check()
     print(json.dumps({'event': 'good_shepherd_normalized', 'source_key': SOURCE_KEY,
                       'records': len(rows), **diagnostics}, sort_keys=True), file=sys.stderr)

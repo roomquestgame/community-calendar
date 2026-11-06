@@ -1,0 +1,26 @@
+{
+  "source_key": "good_shepherd_food_pantry_south_hill_va",
+  "source_url": "https://goodshepherdsouthhill.org/welcome/calendar/",
+  "render_url": "https://goodshepherdsouthhill.org/wp-admin/admin-ajax.php",
+  "checked_at": "2026-11-06T16:02:33.944723+00:00",
+  "evidence_run": "https://github.com/roomquestgame/community-calendar/actions/runs/42248590568",
+  "evidence_commit": "2d1513d",
+  "diagnostic_json_sha256": "fc501041cd1a504fde6d45714e989ea3ca0a922ad2b75abbfbb1035959f4f2d1",
+  "error": "good_shepherd_calendar_identity_unverified",
+  "observation": {
+    "calendar_get_calls": 1,
+    "placeholder_count": 1,
+    "placeholder_id_valid": true,
+    "render_calls": 1,
+    "rendered_calendar_count": 1,
+    "rendered_id_valid": true,
+    "placeholder_render_id_equal": false,
+    "pagination_selector_count": 0,
+    "month_selector_count": 1,
+    "month_grid_count": 6,
+    "calendar_diagnostic_truncated": false,
+    "placeholder_label": "CALENDAR_PLACEHOLDER",
+    "rendered_label": "CALENDAR_RENDERED"
+  },
+  "note": "Observed IDs were replaced by distinct stable labels in the audit artifact. Regression tests use synthetic valid IDs to reproduce this observed relationship; no synthetic IDs are represented as original source identifiers."
+}
