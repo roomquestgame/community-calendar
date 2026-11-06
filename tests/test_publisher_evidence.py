@@ -5,10 +5,13 @@ from unittest.mock import Mock
 import pytest
 
 from roomquest.publisher_evidence import attach, family, image_url, IMAGE_VERSION
+from roomquest import event_media
 from roomquest.event_media import resolve_photo
 from roomquest.south_carolina_parks import details
 
 FIXTURES = Path(__file__).parent / 'fixtures' / 'south_carolina_parks'
+ROSEMONT_IMAGE = 'https://rosemontofvirginia.com/wp-content/uploads/2026/04/ShortStacked-Logo.jpg'
+ROSEMONT_EVENT = 'https://rosemontofvirginia.com/event/wine-dine-w-short-stacked-2/'
 
 
 @pytest.mark.parametrize('key,url,picture,publisher', [
@@ -18,6 +21,7 @@ FIXTURES = Path(__file__).parent / 'fixtures' / 'south_carolina_parks'
      'https://bellevuetimes.com/wp-content/uploads/2026/11/cart.png', 'bellevue_times'),
     ('south_carolina_parks_1831', 'https://southcarolinaparks.com/products/10012259',
      'https://southcarolinaparks.com/assets/event-birding.jpg', 'south_carolina_parks'),
+    ('rosemont_of_virginia', ROSEMONT_EVENT, ROSEMONT_IMAGE, 'rosemont'),
 ])
 def test_selected_candidates_use_probe_only_and_reject_off_publisher_redirects(key, url, picture, publisher):
     item = attach({'event_url': url}, key, candidate=picture, facts={'cost': '$10'})
@@ -29,6 +33,57 @@ def test_selected_candidates_use_probe_only_and_reject_off_publisher_redirects(k
              'candidate_url': picture}
     assert resolve_photo(claim, fetcher=fetch, probe=lambda _: (picture, 'image/jpeg'))['image_url'] == picture
     assert resolve_photo(claim, fetcher=fetch, probe=lambda _: ('https://unrelated.example/photo.jpg', 'image/jpeg')) is None
+    fetch.assert_not_called()
+
+
+@pytest.mark.parametrize('publisher', [
+    'mycountyparks', 'bellevue_times', 'madison', 'chase_city_chamber',
+    'south_carolina_parks', 'think_iowa_city', 'unleashcb', 'mason_city', None,
+])
+def test_rosemont_reviewed_image_exception_does_not_apply_to_other_families(publisher):
+    assert image_url(ROSEMONT_IMAGE, publisher) is None
+
+
+@pytest.mark.parametrize('key,url', [
+    ('unrelated_wordpress', ROSEMONT_EVENT),
+    ('rosemont_of_virginia', 'https://other.example/event/wine-dine/'),
+    ('rosemont_of_virginia', 'https://rosemontofvirginia.com/'),
+])
+def test_rosemont_reviewed_image_still_requires_publisher_event_identity(key, url):
+    with pytest.raises(ValueError, match='publisher_evidence_identity_mismatch'):
+        attach({'event_url': url}, key, candidate=ROSEMONT_IMAGE)
+
+
+@pytest.mark.parametrize('body,mime,accepted', [
+    (b'\xff\xd8\xff\xe0jpeg', 'image/jpeg', True),
+    (b'<html>not an image</html>', 'image/jpeg', False),
+    (b'<svg></svg>', 'image/svg+xml', False),
+])
+def test_rosemont_reviewed_candidate_still_requires_normal_byte_probe(monkeypatch, body, mime, accepted):
+    response = Mock()
+    response.status_code = 200
+    response.headers = {'Content-Type': mime, 'Content-Length': str(len(body))}
+    response.iter_content.return_value = iter([body])
+    response.__enter__ = Mock(return_value=response)
+    response.__exit__ = Mock(return_value=False)
+    session = Mock()
+    session.get.return_value = response
+    session.__enter__ = Mock(return_value=session)
+    session.__exit__ = Mock(return_value=False)
+    monkeypatch.setattr(event_media.requests, 'Session', lambda: session)
+    monkeypatch.setattr(event_media, 'validate_public_dns', lambda _: None)
+    fetch = Mock(side_effect=AssertionError('No event-page fetch'))
+    claim = {'source_key': 'rosemont_of_virginia', 'event_url': ROSEMONT_EVENT,
+             'title': 'Wine + Dine', 'candidate_only': True, 'candidate_url': ROSEMONT_IMAGE}
+    result = resolve_photo(claim, fetcher=fetch)
+    assert bool(result) is accepted
+    if accepted:
+        assert result == {'image_url': ROSEMONT_IMAGE, 'mime_type': 'image/jpeg',
+                          'evidence_url': ROSEMONT_EVENT}
+    session.get.assert_called_once()
+    assert session.get.call_args.args == (ROSEMONT_IMAGE,)
+    assert session.get.call_args.kwargs['allow_redirects'] is False
+    assert session.get.call_args.kwargs['headers']['Range'] == 'bytes=0-4095'
     fetch.assert_not_called()
 
 

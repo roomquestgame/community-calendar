@@ -7,6 +7,12 @@ from urllib.parse import urlsplit
 DETAILS_VERSION = 'publisher_event_details_v1'
 IMAGE_VERSION = 'publisher_event_candidates_v1'
 
+# Reviewed 2026-11-06: TEC event 7745 explicitly features attachment 7634.
+# This exact vendor artwork remains a candidate subject to the normal byte probe.
+ROSEMONT_REVIEWED_FEATURED_IMAGE = (
+    'https://rosemontofvirginia.com/wp-content/uploads/2026/04/ShortStacked-Logo.jpg'
+)
+
 
 def family(source_key, event_url):
     """Bind an enrolled publisher family to its own canonical event link."""
@@ -72,7 +78,8 @@ def image_url(value, publisher):
             return value if (p.hostname == 'rosemontofvirginia.com'
                              and p.path.startswith('/wp-content/uploads/')
                              and re.search(r'\.(?:jpe?g|png|webp|gif)$', p.path, re.I)
-                             and not re.search(r'(?:^|[-_/])(?:logo|favicon|avatar|pixel)(?:[-_.]|$)', p.path, re.I)) else None
+                             and (value == ROSEMONT_REVIEWED_FEATURED_IMAGE
+                                  or not re.search(r'(?:^|[-_/])(?:logo|favicon|avatar|pixel)(?:[-_.]|$)', p.path, re.I))) else None
         if publisher == 'chase_city_chamber':
             return value if (p.hostname == 'images.squarespace-cdn.com'
                              and p.path.startswith('/content/v1/64921bef4a756810ab11ec54/')

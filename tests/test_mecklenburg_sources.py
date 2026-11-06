@@ -16,6 +16,7 @@ from roomquest.publisher_evidence import family, image_url
 
 FIXTURES = Path(__file__).with_name('fixtures')
 ROSEMONT = json.loads((FIXTURES / 'rosemont_20261105.json').read_text())
+ROSEMONT_FEATURED_IMAGE = 'https://rosemontofvirginia.com/wp-content/uploads/2026/04/ShortStacked-Logo.jpg'
 CHASE_HTML = (FIXTURES / 'chase_city_20261105.html').read_text()
 NOW = datetime(2026, 11, 6, 2, tzinfo=timezone.utc)  # November 5 in Virginia.
 ROSEMONT_SOURCE = {
@@ -76,7 +77,10 @@ def test_rosemont_real_snapshot_holds_closures_private_missing_venues_and_time_c
     assert all(row['lat'] is None and row['lng'] is None for row in rows)
     assert all(row['description'] and len(row['description']) <= 2000 for row in rows)
     assert all(row['timezone'] == 'America/New_York' for row in rows)
-    assert 'image_url' not in by_id['7745']  # Publisher supplied a vendor logo.
+    assert by_id['7745']['image_url'] == ROSEMONT_FEATURED_IMAGE
+    assert by_id['7745']['image_provenance'] == 'publisher_event_candidates_v1'
+    assert by_id['7745']['image_evidence_url'] == by_id['7745']['event_url']
+    assert 'image_verified_at' not in by_id['7745']
     assert by_id['7988']['image_provenance'] == 'publisher_event_candidates_v1'
     assert by_id['8121']['starts_at'].startswith('2026-12-12')
     assert not any(row['starts_at'].startswith('2026-12-13') for row in rows)
@@ -93,6 +97,41 @@ def test_rosemont_contract_does_not_expand_other_wordpress_sources():
     row = wp(one_event(item), source)[0]
     assert 'description' not in row and 'image_url' not in row
     assert 'details_extractor_version' not in row
+
+
+@pytest.mark.parametrize('candidate', [
+    'https://rosemontofvirginia.com/wp-content/uploads/2026/04/Rosemont-Logo.jpg',
+    ROSEMONT_FEATURED_IMAGE.replace('/2026/04/', '/2026/05/'),
+    ROSEMONT_FEATURED_IMAGE.replace('-Logo.jpg', '-Logo-300x300.jpg'),
+    ROSEMONT_FEATURED_IMAGE.replace('-Logo.jpg', '-logo.jpg'),
+    ROSEMONT_FEATURED_IMAGE.replace('.jpg', '.png'),
+    ROSEMONT_FEATURED_IMAGE + '?size=1024',
+    ROSEMONT_FEATURED_IMAGE + '#image',
+    ROSEMONT_FEATURED_IMAGE.replace('https:', 'http:'),
+    ROSEMONT_FEATURED_IMAGE.replace('https://', 'https://user@'),
+    ROSEMONT_FEATURED_IMAGE.replace('.com/', '.com:443/'),
+    ROSEMONT_FEATURED_IMAGE.replace('.com/', '.com:8443/'),
+    ROSEMONT_FEATURED_IMAGE.replace('.com/', '.com.evil.test/'),
+    ROSEMONT_FEATURED_IMAGE.replace('https://', 'https://www.'),
+    ROSEMONT_FEATURED_IMAGE.replace('/04/', '/04/../04/'),
+    ROSEMONT_FEATURED_IMAGE.replace('/04/', '/04/%2e%2e/04/'),
+    ROSEMONT_FEATURED_IMAGE.replace('/04/', '/04%2f'),
+    ROSEMONT_FEATURED_IMAGE.replace('ShortStacked', 'Short Stacked'),
+])
+def test_rosemont_reviewed_image_does_not_admit_generic_or_modified_assets(candidate):
+    item = first_public_event()
+    item['image']['url'] = candidate
+    row = wp(one_event(item))[0]
+    assert 'image_url' not in row
+    assert 'image_provenance' not in row
+    assert 'image_evidence_url' not in row
+
+
+@pytest.mark.parametrize('featured', [None, {}, {'url': None}])
+def test_rosemont_reviewed_image_is_not_injected_without_publisher_candidate(featured):
+    item = first_public_event()
+    item['image'] = featured
+    assert 'image_url' not in wp(one_event(item))[0]
 
 
 @pytest.mark.parametrize('field,value', [
