@@ -5,12 +5,13 @@ import json
 from pathlib import Path
 from unittest.mock import patch
 from urllib.parse import parse_qs, urlencode, urlsplit, urlunsplit
+from urllib.robotparser import RobotFileParser
 
 from bs4 import BeautifulSoup
 import pytest
 
 from roomquest import chase_city_chamber as chamber
-from roomquest import preview_worker, wordpress_adapter
+from roomquest import ics_adapter, preview_worker, wordpress_adapter
 from roomquest.publisher_evidence import family, image_url
 
 FIXTURES = Path(__file__).with_name('fixtures')
@@ -24,6 +25,10 @@ ROSEMONT_SOURCE = {
 CHASE_SOURCE = {
     'source_key': 'chase_city_chamber_va', 'kind': 'html', 'platform_adapter': 'html',
     'feed_url': chamber.CALENDAR, 'timezone': 'America/New_York',
+}
+LIBRARY_SOURCE = {
+    'source_key': 'mecklenburg_va_libraries', 'kind': 'ical', 'platform_adapter': 'ical',
+    'feed_url': ics_adapter.MECKLENBURG_LIBRARY_FEED, 'timezone': 'America/New_York',
 }
 
 
@@ -258,3 +263,27 @@ def test_library_ics_keeps_existing_finish_lane_without_new_media_host_permissio
         preview_worker._process_claimed_source(source)
     assert calls[-1] == 'community_collector_record_preview'
     assert family('mecklenburg_va_libraries', 'https://www.youseemore.com/mecklib/calendar.asp') is None
+
+
+def test_library_robots_denial_stops_calendar_request_and_parser():
+    # Actual Google Calendar robots response captured November 6, 2026.
+    rules = RobotFileParser()
+    rules.parse('User-agent: *\nAllow: /$\nDisallow: /\n'.splitlines())
+    with patch.object(preview_worker, 'validate_public_dns'), \
+            patch.object(preview_worker, '_robots_rules', return_value=rules) as robots, \
+            patch.object(preview_worker.requests, 'Session') as session, \
+            patch.object(ics_adapter, 'parse') as parse:
+        with pytest.raises(preview_worker.PreviewError, match='^robots_denied$'):
+            preview_worker.preview_source(LIBRARY_SOURCE)
+    assert robots.call_args.args[0] == 'calendar.google.com'
+    session.return_value.__enter__.return_value.get.assert_not_called()
+    parse.assert_not_called()
+
+
+def test_library_robots_policy_does_not_change_unrelated_legacy_ics():
+    source = dict(LIBRARY_SOURCE, source_key='unrelated_legacy_ics')
+    with patch.object(preview_worker, 'fetch_publisher', return_value='captured calendar') as fetch, \
+            patch.object(ics_adapter, 'parse', return_value=[]):
+        result = preview_worker.preview_source(source)
+    assert fetch.call_args.kwargs['respect_robots'] is False
+    assert result['p_future_count'] == 0

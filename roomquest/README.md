@@ -1,11 +1,15 @@
-## Mecklenburg reviewed sources — November 5, 2026 (prepared)
+## Mecklenburg reviewed sources — November 6, 2026 (two ready, one held)
 
-Three explicit sources reuse existing collection and publication lanes:
-Mecklenburg public libraries through ICS, Rosemont through WordPress JSON, and
-Chase City Chamber through its allowed normal HTML calendar. Local captures
-produce 25 + 3 + 1 factual candidates with real narratives and actual branch or
-event addresses; this is not a production-publication count. Closures, private
-events, conflicting schedules and unreviewed venues are excluded or held.
+Rosemont through WordPress JSON and Chase City Chamber through its allowed normal
+HTML calendar are the two sources eligible for active registration. Their local
+captures produce three and one candidates. Mecklenburg public library parser
+work is retained dormant: Google robots explicitly denies the feed path, so the
+source must remain paused, disabled and outside discovery routing. Its exact
+source key now requires robots checks before any calendar HTTP request.
+The 29 parsed candidates comprise four eligible active-source candidates and
+25 held library candidates; they are not a production-publication count.
+Closures, private events, conflicting schedules and unreviewed venues are held
+or excluded. Local DNS restrictions prevented actual collector transport proof.
 Rosemont and Chase City use the existing bounded publisher-image candidate
 protocol. Library page artwork is not treated as event imagery. No export path
 disallowed by robots, new timer or default event pin is introduced.

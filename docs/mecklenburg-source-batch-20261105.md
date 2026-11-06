@@ -2,18 +2,24 @@
 
 Prepared for [EVE-39](https://linear.app/eventquest/issue/EVE-39/deploy-a-mecklenburg-area-source-batch-with-verified-venues-and-feed).
 The publisher captures were checked on November 5, 2026 in America/New_York
-(November 6 UTC). This change prepares three named sources for the existing
-collector. Source registration, demand coverage, protected publication and
+(November 6 UTC). This change prepares Rosemont and Chase City for the existing
+collector and retains the library parser work dormant behind a robots check.
+The release has two eligible active sources and one held source. Source
+registration, demand coverage, protected publication and
 verified geocoding belong to the companion application migration. Local parser
 results are not evidence of production ingestion or public map visibility.
 
 ## Source contracts
 
-| Source key | Registered endpoint | Adapter | Local candidates |
-| --- | --- | --- | ---: |
-| `mecklenburg_va_libraries` | `https://calendar.google.com/calendar/ical/mecklib.org%40gmail.com/public/basic.ics` | `kind=ical`, `platform_adapter=ical` | 25 |
-| `rosemont_of_virginia` | `https://rosemontofvirginia.com/wp-json/tribe/events/v1/events` | `kind=json`, `platform_adapter=wordpress` | 3 |
-| `chase_city_chamber_va` | `https://chasecitychamber.com/upcoming-events` | `kind=html`, `platform_adapter=html` | 1 |
+| Source key | Reviewed endpoint | Adapter | Parsed candidates | Release status |
+| --- | --- | --- | ---: | --- |
+| `mecklenburg_va_libraries` | `https://calendar.google.com/calendar/ical/mecklib.org%40gmail.com/public/basic.ics` | `kind=ical`, `platform_adapter=ical` | 25 | Held: paused, disabled, routing disabled |
+| `rosemont_of_virginia` | `https://rosemontofvirginia.com/wp-json/tribe/events/v1/events` | `kind=json`, `platform_adapter=wordpress` | 3 | Eligible active source |
+| `chase_city_chamber_va` | `https://chasecitychamber.com/upcoming-events` | `kind=html`, `platform_adapter=html` | 1 | Eligible active source |
+
+The captures yielded 29 parsed candidates; only four belong to the two sources
+eligible for active registration. The 25 library candidates remain offline
+evidence and must not be collected or published under the current robots policy.
 
 All three retain actual occurrence dates, publisher attribution and original
 links. Narratives for these reviewed sources are capped at 2,000 characters.
@@ -21,6 +27,25 @@ No source-wide map pin, new scheduler, geocoder subscription, separate events
 directory or native event is introduced. Off-site event addresses remain off-site.
 
 ### Mecklenburg County Public Library
+
+**Activation is held.** A subsequent live request to
+[`https://calendar.google.com/robots.txt`](https://calendar.google.com/robots.txt)
+returned HTTP 200 with exactly:
+
+```text
+User-agent: *
+Allow: /$
+Disallow: /
+```
+
+These rules deny the exact library iCalendar path, and the existing robots parser
+also returns false. No calendar request was made after establishing this denial.
+The dispatcher now uses `respect_robots=True` for this exact library source key,
+so a robots denial stops the calendar HTTP request and parsing. Other legacy ICS
+sources keep their existing transport behavior. The companion registration must
+remain paused and disabled, with discovery routing disabled. The parser work
+below is retained dormant; the public feed's prior HTTP 200 is not permission
+to activate automated collection.
 
 The library [official calendar](https://www.youseemore.com/mecklib/calendar.asp)
 links its shared Google iCalendar feed. The
@@ -169,8 +194,19 @@ prose with explicit synthetic fixture text; the capture manifest records origins
 On the assembled main-based branch, all 34 Python test modules named by the
 provider workflow passed: 998 tests and 33 subtests. The five Vercel build-selection
 tests also passed. These are offline parser, dispatcher, evidence and worker
-regressions; the 25 + 3 + 1 counts above come from the separate read-only publisher
-capture dry runs, not a production refresh.
+regressions before the final library-only robots guard. A subsequent focused
+denial test exercises the real fetch path with the captured Google rules and
+proves no calendar HTTP request or parser invocation occurs; a companion check
+preserves unrelated legacy ICS behavior. The affected final-guard suite passed
+126 tests and 22 subtests. The 25 + 3 + 1 counts above come from
+separate read-only publisher capture dry runs, not a production refresh.
+
+An attempted real-transport preflight stopped at `validate_public_dns` with
+`dns_unavailable` for all three publisher hosts in this local runtime. The DNS
+gate was not bypassed. Actual `preview_source` transport has therefore not been
+proved here for Rosemont or Chase City and requires a network-capable runner.
+The library remains held regardless of that environment limitation because its
+raw robots policy explicitly denies the feed path.
 
 The existing label-triggered provider workflow includes both new suites. Keep
 the upstream generation workflows and production cadence unchanged. Run local
