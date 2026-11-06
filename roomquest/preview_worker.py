@@ -210,12 +210,57 @@ def pace_publisher(host: str, deadline: float, *, reserve=True) -> None:
 
 def fetch_publisher(url: str, accept: str, *, respect_robots: bool = False,
                     deadline_at: float | None = None, allowed_hosts=None) -> str:
-    """Use Udell's requests GET and its redirect behavior for approved HTTPS feeds.
+    """Fetch an approved public source with the existing bounded GET transport."""
+    return _fetch_publisher_request(url, accept, respect_robots=respect_robots,
+                                    deadline_at=deadline_at, allowed_hosts=allowed_hosts)
+
+
+def render_good_shepherd_calendar(*, nonce: str, args: str,
+                                  deadline_at: float | None = None) -> str:
+    """Read the one public calendar render action observed in publisher markup.
+
+    The parser cannot supply a URL, action, arbitrary form fields or credentials.
+    This display-only POST uses the ordinary shared publisher protections; no
+    registration, account, subscription or other WordPress action is supported.
+    """
+    if (not isinstance(nonce, str) or not re.fullmatch(r'[0-9a-f]{10}', nonce)
+            or not isinstance(args, str) or not re.fullmatch(r'[0-9a-f]{40}', args)):
+        raise PreviewError('invalid_calendar_render_parameters')
+    return _fetch_publisher_request(
+        'https://goodshepherdsouthhill.org/wp-admin/admin-ajax.php', 'text/html',
+        respect_robots=True, deadline_at=deadline_at,
+        allowed_hosts=('goodshepherdsouthhill.org',),
+        calendar_form={'action': 'r34ics_ajax', 'r34ics_nonce': nonce,
+                       'subaction': 'display_calendar', 'args': args,
+                       'js_args[debug]': 'false'})
+
+
+def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = False,
+                             deadline_at: float | None = None, allowed_hosts=None,
+                             calendar_form=None) -> str:
+    """Use the shared bounded transport for approved HTTPS publisher content.
 
     Keep URL/DNS validation and bounded downloads. As in upstream Udell,
     fetch registered calendar endpoints directly without a robots preflight;
-    destination URLs still pass public-network checks before each redirect.
+    destination URLs still pass public-network checks before each GET redirect.
+    The one reviewed display-only POST is source scoped and never redirected.
     """
+    if calendar_form is not None:
+        # A second boundary keeps internal callers from turning this into an
+        # arbitrary write-capable transport. Never replay a POST on redirect.
+        if (url != 'https://goodshepherdsouthhill.org/wp-admin/admin-ajax.php'
+                or accept != 'text/html' or not respect_robots
+                or allowed_hosts != ('goodshepherdsouthhill.org',)
+                or not isinstance(calendar_form, dict)
+                or set(calendar_form) != {'action', 'r34ics_nonce', 'subaction', 'args', 'js_args[debug]'}
+                or calendar_form.get('action') != 'r34ics_ajax'
+                or calendar_form.get('subaction') != 'display_calendar'
+                or calendar_form.get('js_args[debug]') != 'false'
+                or not isinstance(calendar_form.get('r34ics_nonce'), str)
+                or not isinstance(calendar_form.get('args'), str)
+                or not re.fullmatch(r'[0-9a-f]{10}', str(calendar_form.get('r34ics_nonce', '')))
+                or not re.fullmatch(r'[0-9a-f]{40}', str(calendar_form.get('args', '')))):
+            raise PreviewError('invalid_calendar_render_parameters')
     if not public_source_url(url):
         raise PreviewError("invalid_source_url")
     headers = {
@@ -223,6 +268,9 @@ def fetch_publisher(url: str, accept: str, *, respect_robots: bool = False,
                        else "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"),
         "Accept": accept,
     }
+    if calendar_form is not None:
+        headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8'
+        headers['Referer'] = 'https://goodshepherdsouthhill.org/welcome/calendar/'
     current = url
     deadline = min(deadline_at or float("inf"), monotonic() + 18)
     with requests.Session() as session:
@@ -242,8 +290,12 @@ def fetch_publisher(url: str, accept: str, *, respect_robots: bool = False,
             try:
                 remaining = max(0.1, deadline - monotonic())
                 timeout = (min(3,remaining/2), min(7,remaining/2)) if respect_robots else (5,12)
-                response = session.get(current, headers=headers, timeout=timeout,
-                                       stream=True, allow_redirects=False)
+                if calendar_form is None:
+                    response = session.get(current, headers=headers, timeout=timeout,
+                                           stream=True, allow_redirects=False)
+                else:
+                    response = session.post(current, data=calendar_form, headers=headers,
+                                            timeout=timeout, stream=True, allow_redirects=False)
                 if respect_robots:
                     try:
                         _observe_retry_after(parsed.netloc, response.headers)
@@ -251,6 +303,9 @@ def fetch_publisher(url: str, accept: str, *, respect_robots: bool = False,
                         response.close()
                         raise
                 if response.status_code in (301, 302, 303, 307, 308):
+                    if calendar_form is not None:
+                        response.close()
+                        raise PreviewError('calendar_render_redirect_blocked')
                     from urllib.parse import urljoin
                     location = response.headers.get("Location")
                     response.close()
@@ -262,6 +317,11 @@ def fetch_publisher(url: str, accept: str, *, respect_robots: bool = False,
                     code = response.status_code
                     response.close()
                     raise PreviewError("publisher_http_" + str(code))
+                if (calendar_form is not None and
+                        response.headers.get('Content-Type', '').split(';', 1)[0].strip().lower()
+                        != 'text/html'):
+                    response.close()
+                    raise PreviewError('invalid_calendar_render_content_type')
                 length = int(response.headers.get("Content-Length") or 0)
                 if length > MAX_BODY:
                     response.close()
@@ -691,15 +751,28 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         elif source_key == "mecklenburg_ymca_programs_va":
             from roomquest.mecklenburg_ymca import collect as collect_html
             allowed_hosts = ("mecklenburg.recliquecore.com", "mecklenburgcountyymca.org")
+        elif source_key == "coopers_landing_clarksville_va":
+            from roomquest.coopers_landing import collect as collect_html
+            allowed_hosts = ("cooperslandinginn.net",)
+        elif source_key == "clarksville_tourism_va":
+            from roomquest.clarksville_tourism import collect as collect_html
+            allowed_hosts = ("tourism.visitclarksvilleva.com",)
+        elif source_key == "good_shepherd_food_pantry_south_hill_va":
+            from roomquest.good_shepherd import collect as collect_html
+            allowed_hosts = ("goodshepherdsouthhill.org",)
         else:
             raise PreviewError("unregistered_html_source")
         deadline = min(monotonic() + html_budget, deadline_at - 5 if deadline_at is not None else float("inf"))
         try:
+            extra = {}
+            if source_key == 'good_shepherd_food_pantry_south_hill_va':
+                extra['render_calendar'] = lambda *, nonce, args: render_good_shepherd_calendar(
+                    nonce=nonce, args=args, deadline_at=deadline)
             records = collect_html(
                 source, lambda url, accept: fetch_publisher(
                     url, accept, respect_robots=True, deadline_at=deadline,
                     allowed_hosts=allowed_hosts,
-                ), deadline_at=deadline)
+                ), deadline_at=deadline, **extra)
         except PreviewError:
             raise
         except (ValueError, TypeError, KeyError, OverflowError) as exc:
@@ -1001,7 +1074,9 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
                        and source.get('platform_adapter') == 'wordpress') or (html and (source_key.startswith(('virginia_state_parks_', 'mycountyparks_ia_'))
                                 or source_key in ('bellevue_times_ne', 'unleashcb_ia', 'visit_mason_city_ia', 'chase_city_chamber_va', 'experience_waterloo_ia',
                                                   'south_hill_chamber_va', 'clarksville_community_players_va',
-                                                  'maccallum_more_va', 'mecklenburg_ymca_programs_va'))) or source.get('platform_adapter') == 'south_carolina_parks' or (
+                                                  'maccallum_more_va', 'mecklenburg_ymca_programs_va',
+                                                  'coopers_landing_clarksville_va', 'clarksville_tourism_va',
+                                                  'good_shepherd_food_pantry_south_hill_va'))) or source.get('platform_adapter') == 'south_carolina_parks' or (
                         source_key == 'south_hill_town_va' and source.get('kind') == 'json'
                         and source.get('platform_adapter') == 'revize')
     preview_rpc = ("community_collector_record_preview_v3"

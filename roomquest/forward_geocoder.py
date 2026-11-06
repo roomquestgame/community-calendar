@@ -61,7 +61,7 @@ def expected_address_parts(address: str) -> tuple[str, str, str, str]:
     street = canonical(parts[0] if parts else "")
     city = canonical(parts[1] if len(parts) > 1 else "")
     state_zip = parts[2] if len(parts) > 2 else ""
-    state_match = re.match(r"\\s*([A-Za-z]{2})(?:\\s+(\\d{5}(?:-\\d{4})?))?\\s*$", state_zip)
+    state_match = re.match(r"\s*([A-Za-z]{2})(?:\s+(\d{5}(?:-\d{4})?))?\s*$", state_zip)
     state = canonical(state_match.group(1) if state_match else state_zip)
     postal = state_match.group(2) if state_match and state_match.group(2) else ""
     return street, city, state, postal

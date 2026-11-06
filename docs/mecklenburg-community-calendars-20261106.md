@@ -1,0 +1,40 @@
+# Mecklenburg community calendar batch — November 6, 2026
+
+[EVE-41](https://linear.app/eventquest/issue/EVE-41/next-mecklenburg-batch-coopers-landing-clarksville-tourism-and-good) adds three reviewed public sources to the existing HTML collector. This is implementation evidence; the manual shared-transport audit, final-head CI, collector deployment, companion database deployment and actual public readback must be recorded before claiming release.
+
+## Sources and verified publisher facts
+
+| Source | Registered discovery URL | Captured 60-day candidates | Venue |
+| --- | --- | ---: | --- |
+| Cooper's Landing | https://cooperslandinginn.net/?page_id=119 | 1 | 801 Virginia Avenue, Clarksville, VA 23927 |
+| Clarksville Tourism | https://tourism.visitclarksvilleva.com/calendar/ | 1 | Cookie & Cocoa Crawl check-in: 321 Virginia Avenue, Clarksville, VA 23927 |
+| Good Shepherd Drops of Love Food Pantry | https://goodshepherdsouthhill.org/welcome/calendar/ | 8 | 1664 N. Mecklenburg Avenue, South Hill, VA 23970 |
+
+Source keys are `coopers_landing_clarksville_va`, `clarksville_tourism_va` and `good_shepherd_food_pantry_south_hill_va`. All use `kind=html`, `platform_adapter=html`, the existing HTML demand worker, staged candidates and v3 snapshot certification. No cron, parallel event store or new collector category is added.
+
+Cooper's explicit 2026 cooking-school schedule supplies December 7, 6:30–8:30 p.m. Eastern, Holiday Entertaining & Heavy Hors d'oeuvres. The 6 p.m. reception is separate. The class is $85 plus tax, with optional paired wines extra and advance reservation terms. Its general upcoming-events page mixes undated offers, so it is not used to infer years.
+
+Tourism's bounded Locable catalog visits five pages and the ten relevant future details in the current capture. Visible details must agree with their embedded calendar data; the latter is parsed locally rather than fetched as another feed. The final December 5 Cookie & Cocoa Crawl runs 10 a.m.–3 p.m., costs $40, and begins at Town Hall (check-in ends at noon). Stable occurrence ID667469 supersedes the specifically reviewed ID636949 teaser only with corroborating identity. A cancelled final cannot cause that teaser to reappear. Eight poker occurrences are held for conflicting Poker/Pool narratives and 600/601 Virginia Avenue addresses. The parser never converts catalog absence or a hold into cancellation.
+
+Good Shepherd uses its observed public WordPress ICS Calendar display action. The worker injects a narrowly bound render callback: one fixed host/path and form action, with fresh nonce/argument tokens from current markup. Parsers cannot select arbitrary POST destinations or actions. Existing public DNS, robots, pacing, response limits, strict encoding, deadlines and Retry-After checks apply; POST redirects are rejected. The calendar must contain complete, correctly labeled day grids. Only explicit Food Pantry dates are imported: November 10/17/24 and December 1/8/15/22/29, 10:30 a.m.–noon, corroborated by https://goodshepherdsouthhill.org/ministries/food-pantry/. January 5 is not present and is not generated. Price remains unknown. Parish services, closures, travel bookings and untimed sales are excluded.
+
+## Shared capabilities
+
+Event narratives and exact official evidence links reach normal classification. Explicit same-occurrence cancellation/postponement is retained; missing future dates never withdraw events. The companion backend preserves real demand, publication rights, source holds, address waiting/resumption, freshness, manual category overlays and canonical public readers.
+
+Only Tourism supplies an event-specific artwork candidate, using the actual Locable image path format. The same media worker must verify bytes before display. Cooper's and Good Shepherd have no verified event artwork; shared banners and logos are not substituted. Addresses are sent through the existing verified geocoder/cache. Source coverage circles are discovery coverage only, never event coordinates.
+
+## South Hill geocoding review
+
+Production readback at 15:36 UTC found an enabled, unpaused worker, 48 resolutions and 21 ambiguous outcomes in 24 hours, using 87 of 2300 daily reservations. The two Town keys each have one finalized ambiguous attempt and no active claim. Runtime logs confirm successful claim/reserve/fail RPCs followed by another address's successful submit in the same invocation. No provider response or detailed rejection reason was retained, so the original ambiguity cause cannot be distinguished retrospectively.
+
+The Python review found overescaped regular expressions when splitting ZIP codes from state components. The narrow correction and focused regressions preserve candidate precision, street/state/ZIP matching, request reservation and lease behavior. Both current Town queue strings omit ZIP codes; this separate defect does not explain their original ambiguity or authorize resetting attempts.
+
+The current town agenda confirms the temporary council venue at 111 E. Danville Street, South Hill, VA 23970. The town calendar links a selected address pin at latitude 36.7244269, longitude -78.1295057. Virginia Tourism Corporation’s official Centennial Park listing confirms 225 E. Danville Street and a named venue point at latitude 36.7239802, longitude -78.128577. The companion backend prepares a bounded repair for these two exact cache keys, preserving attempt/request/quota/ambiguity history and resuming through normal publication gates. Map viewport centers and the old Town Hall address are excluded. See the companion backend’s docs/evidence/south-hill-venues-20261106.json for the source chain and captured hashes.
+
+## Verification and release limits
+
+Captured raw markup is retained as bounded public fixtures with receipts. Local parser, transport, evidence, status and shared pipeline tests run before CI. The public audit script calls only `preview_source`; it does not stage, publish, register, fabricate interest, authenticate to the database or probe images. Local shared transport returned `dns_unavailable`, so the manual GitHub audit is required to establish actual collector network behavior without bypassing that guard.
+
+Library, SVCC/Blackthorn and other previously held sources remain held. South Hill Chamber remains pending with routing disabled after HTTP403. Keep this source-access hold distinct from Town address ambiguity. No app UI or mobile OTA change belongs to this batch.
+

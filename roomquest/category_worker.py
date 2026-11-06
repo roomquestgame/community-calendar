@@ -51,6 +51,8 @@ _ERROR_CODES = frozenset(('database_unavailable', 'staging_deadline',
     'robots_denied', 'invalid_source_url', 'invalid_redirect_url', 'non_public_dns',
     'redirect_blocked', 'redirect_host_not_approved', 'redirect_missing_location',
     'too_many_redirects', 'publisher_wait_requires_review',
+    'invalid_calendar_render_parameters', 'calendar_render_redirect_blocked',
+    'invalid_calendar_render_content_type',
     'adapter_requires_configuration', 'source_timezone_required', 'park_code_missing',
     'park_catalog_incomplete', 'unverified_park_calendar_identifier',
     'unregistered_html_calendar'))

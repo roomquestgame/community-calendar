@@ -1,0 +1,30 @@
+{
+  "id": "locable_clarksville:667469",
+  "title": "🎄 Historic Downtown Clarksville’s 1st Annual Cookie & Cocoa Crawl 🍪☕",
+  "starts_at": "2026-12-05T15:00:00+00:00",
+  "ends_at": "2026-12-05T20:00:00+00:00",
+  "venue_name": "Historic Downtown Clarksville",
+  "lat": null,
+  "lng": null,
+  "event_url": "https://tourism.visitclarksvilleva.com/connections/76407-historic-downtown-clarksville/events/2026/12/5/667469/historic-downtown-clarksvilles-1st-annual-cookie-cocoa-crawl/",
+  "category": "",
+  "venue_address": "321 Virginia Avenue, Clarksville, VA 23927",
+  "venue_city": "Clarksville",
+  "reason": "missing_verified_venue_geo",
+  "timezone": "America/New_York",
+  "description": "Get ready for a sweet holiday adventure in Historic Downtown Clarksville, Virginia! Bring the family and enjoy a festive day filled with holiday cheer, featuring Santa Claus, carolers, and life-sized gingerbread people!\n🎟️ TICKETS REQUIRED — $40 PER TICKET — LIMITED AVAILABILITY!This is a ticketed event, and only a limited number of tickets are available. Purchase yours early to reserve your spot!\nYour $40 ticket includes a cookie pail to fill with delicious cookies as you stroll through participating downtown businesses. Visit each designated stop to collect a cookie and fill your pail with holiday treats. Then, head to Cottage Barn for a cozy cup of cocoa!\nWhile you’re downtown, explore our charming local shops and restaurants, where you’ll find special holiday offers, food and drink specials, and unique shopping opportunities.\nEnjoy a wonderful holiday outing while supporting the local businesses that make Historic Downtown Clarksville such a special place. Your participation also helps support downtown revitalization efforts, including façade grants, wayfinding, beautification, and more.\n🎁 A SPECIAL THANK-YOU TO QUACK THE CODE!A heartfelt thank-you to Quack the Code for sponsoring the cookie pails and helping make this sweet holiday experience possible!\n🎄 Purchase your tickets below and join the crawl! With limited tickets available, don’t wait to claim your spot at this exciting new holiday tradition.One town, lots of cookies, a cup of cocoa, and plenty of Christmas magic!\n📅 Date: Saturday, December 5, 2026🕙 Event Hours: 10:00 AM – 3:00 PM🕐 Check-In: 10:00 AM – 12:00 PM📍 Location: Historic Downtown Clarksville, Virginia Check-In: Town Hall, 321 Virginia Avenue, Clarksville, VA 23927🚗 Parking: Available along Virginia Avenue and in the Third Street and Fourth Street parking lots.",
+  "publisher_status": "scheduled",
+  "location_provenance": "publisher_event_address_pending_geocode",
+  "publisher_categories": [],
+  "details_extractor_version": "publisher_event_details_v1",
+  "details_evidence_url": "https://tourism.visitclarksvilleva.com/connections/76407-historic-downtown-clarksville/events/2026/12/5/667469/historic-downtown-clarksvilles-1st-annual-cookie-cocoa-crawl/",
+  "publisher_details": {
+    "cost": "$40.00",
+    "registration": "Tickets required. Tickets: https://www.zeffy.com/en-US/ticketing/cookie-and-cocoa-crawl",
+    "audience": "Bring the family."
+  },
+  "image_extractor_version": "publisher_event_candidates_v1",
+  "image_url": "https://images.locable.com/eyJidWNrZXQiOiJpbXBhY3QtcHJvZHVjdGlvbiIsImtleSI6Il9vcmlnaW5hbHMvZmZmYmFlOTYtZDEzYS00NGQ5LWE0NjktYjQ1YWRiNTk0NTJjL0hpc3RvcmljIERvd250b3duIENvb2tpZSAmIENvY29hIENyYXdsLnBuZyIsImVkaXRzIjp7InJlc2l6ZSI6eyJ3aWR0aCI6NjQwfSwicG5nIjp7InF1YWxpdHkiOjgwLCJhZGFwdGl2ZUZpbHRlcmluZyI6dHJ1ZX19fQ==",
+  "image_provenance": "publisher_event_candidates_v1",
+  "image_evidence_url": "https://tourism.visitclarksvilleva.com/connections/76407-historic-downtown-clarksville/events/2026/12/5/667469/historic-downtown-clarksvilles-1st-annual-cookie-cocoa-crawl/"
+}
