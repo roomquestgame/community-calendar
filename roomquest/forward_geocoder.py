@@ -15,7 +15,7 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 
-from roomquest.preview_worker import supabase_rpc
+from roomquest.preview_worker import PreviewError, supabase_rpc
 
 ENDPOINT = "https://api.geocod.io/v2/geocode"
 RPC = "community_collector_geocoder"
@@ -171,8 +171,59 @@ def rpc(action: str, payload: dict | None = None):
         print("geocoder_rpc_ok", action)
         return result
     except Exception as exc:
-        print("geocoder_rpc_failed", action, type(exc).__name__, str(exc)[:80])
+        # Submit failures get one bounded diagnostic from run_batch, where the
+        # already-returned match is available. Never print RPC exception text.
+        if action != "submit":
+            print("geocoder_rpc_failed", action, type(exc).__name__)
         raise
+
+
+def _submit_failure_diagnostic(identity: dict, address: str, match: dict,
+                               error: Exception) -> dict:
+    """Report only fixed validation flags and well-formed queue identifiers."""
+    rows = match.get("results") if isinstance(match, dict) else None
+    rows = rows if isinstance(rows, list) else []
+    first = rows[0] if rows and isinstance(rows[0], dict) else {}
+    components = first.get("address_components")
+    components = components if isinstance(components, dict) else {}
+    actual_street, actual_city, actual_state, _ = result_address_parts(
+        {"address_components": components})
+    expected_street, expected_city, expected_state, _ = expected_address_parts(address)
+    try:
+        score = float(first.get("accuracy") or 0)
+        score_valid = math.isfinite(score) and 0.9 <= score <= 1
+    except (TypeError, ValueError, OverflowError):
+        score_valid = False
+
+    def identifier(name: str, pattern: str):
+        value = identity.get(name)
+        return value if isinstance(value, str) and re.fullmatch(pattern, value) else None
+
+    def empty_component(name: str) -> bool:
+        value = components.get(name)
+        return isinstance(value, str) and not value.strip()
+
+    error_type = next((kind.__name__ for kind in
+                       (PreviewError, HTTPError, URLError, TimeoutError, ConnectionError)
+                       if isinstance(error, kind)), "unknown")
+    return {
+        "event": "geocoder_submit_failed",
+        "venue_key": identifier("venue_key", r"[0-9a-f]{32}"),
+        "request_id": identifier("request_id", r"[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}"),
+        "error_type": error_type,
+        "result_count": min(len(rows), 3),
+        "city_present": bool(actual_city),
+        "city_exact_match": bool(actual_city and expected_city and actual_city == expected_city),
+        "city_space_insensitive_match": bool(actual_city and expected_city and
+                                             actual_city.replace(" ", "") == expected_city.replace(" ", "")),
+        "street_match": bool(actual_street and expected_street and actual_street == expected_street),
+        "state_match": bool(actual_state and expected_state and actual_state == expected_state),
+        "empty_predirectional_component": empty_component("predirectional"),
+        "empty_postdirectional_component": empty_component("postdirectional"),
+        "score_valid": score_valid,
+        "accuracy_type_valid": first.get("accuracy_type") in ("rooftop", "point"),
+        "country_valid": components.get("country") in ("US", "USA"),
+    }
 
 
 def run_batch(*, max_requests: int = 10, deadline_seconds: int = 45,
@@ -220,7 +271,17 @@ def run_batch(*, max_requests: int = 10, deadline_seconds: int = 45,
             database("fail", {**identity, "reason": "ambiguous"})
             stats["ambiguous"] += 1
         else:
-            result = database("submit", {**identity, "response": match})
+            try:
+                result = database("submit", {**identity, "response": match})
+            except (PreviewError, URLError, TimeoutError, ConnectionError) as exc:
+                # The database may have committed despite a transport failure.
+                # Keep the lease/outcome and consumed reservation intact: never
+                # replay submit, call fail, or repeat this provider request here.
+                stats["errors"] += 1
+                print(json.dumps(_submit_failure_diagnostic(
+                    identity, claim["query_text"], match, exc), sort_keys=True,
+                    separators=(",", ":")))
+                continue
             stats["resolved"] += 1
             stats["events_updated"] += int(result.get("events_updated", 0))
     return stats
