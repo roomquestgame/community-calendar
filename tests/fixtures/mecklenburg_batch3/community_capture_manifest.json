@@ -1,0 +1,40 @@
+{
+  "captured_date": "2026-11-06",
+  "fixture_note": "Relevant exact publisher markup only; scripts/forms/unrelated navigation omitted. Calendar public runtime nonce/argument/id tokens replaced with stable test values. No event facts changed.",
+  "sources": [
+    {
+      "fixture": "cooper_classes.html",
+      "captured_file": "cooper_classes.html",
+      "raw_sha256": "ddf11ac632b1707e9f2aa3403ff90edc224fd7565f8a9565b76253dbc3c21ba9",
+      "extracted_sha256": "8e69f4b9f5087635a27f1266f74e090d3c2bcd332da28b4fb88ba9a9eb2002be",
+      "source_url": "https://cooperslandinginn.net/?page_id=119",
+      "method": "GET"
+    },
+    {
+      "fixture": "good_calendar.html",
+      "captured_file": "good_calendar.html",
+      "raw_sha256": "63c3e4d215f7b6e5b4607a7c89b2d44359ceeabccbeb291647971f4c62bd235a",
+      "extracted_sha256": "830dc988a689a87b02aa7e17f48206a435ab743f9366b698a7cfaf3d01ab461d",
+      "source_url": "https://goodshepherdsouthhill.org/welcome/calendar/",
+      "method": "GET"
+    },
+    {
+      "fixture": "good_calendar_rendered.html",
+      "captured_file": "good_calendar_rendered.html",
+      "raw_sha256": "3900cfb94672a6cf80c8d82150cb61a57309f05f0663fda2a689613f01ab537a",
+      "extracted_sha256": "8851895be430b243b3f734becce30975e24f42f5514471fafd0df470981ea9a0",
+      "source_url": "https://goodshepherdsouthhill.org/wp-admin/admin-ajax.php",
+      "method": "POST",
+      "discovery_url": "https://goodshepherdsouthhill.org/welcome/calendar/",
+      "public_render_action": "r34ics_ajax / display_calendar (observed publisher script; saved tokens sanitized)"
+    },
+    {
+      "fixture": "good_pantry.html",
+      "captured_file": "good_pantry.html",
+      "raw_sha256": "24861ec319b1482ca93295c86e28462f81fcfaad540db7ec489dcf633d0eef3c",
+      "extracted_sha256": "79b8858eb7a0b43308a095900945488a29bc97c806cba177dd4c52abc12cbe25",
+      "source_url": "https://goodshepherdsouthhill.org/ministries/food-pantry/",
+      "method": "GET"
+    }
+  ]
+}

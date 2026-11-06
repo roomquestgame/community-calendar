@@ -40,6 +40,28 @@ class ValidationTests(unittest.TestCase):
         r["results"][0]["address_components"]["city"] = "Durham"
         self.assertIsNotNone(g.verify(r, ADDRESS))
 
+    def test_exact_zip_qualified_address_is_verified(self):
+        address = "11 W. Jones Street, Raleigh, NC 27601"
+        self.assertEqual(g.expected_address_parts(address),
+                         ("11 w jones st", "raleigh", "nc", "27601"))
+        self.assertIsNotNone(g.verify(response(), address))
+        # Current South Hill queue inputs have no ZIP and keep their old parts.
+        for number in ("111", "225"):
+            self.assertEqual(g.expected_address_parts(f"{number} e danville st,s hill,va"),
+                             (f"{number} e danville st", "s hill", "va", ""))
+
+    def test_different_supplied_zip_is_rejected(self):
+        self.assertIsNone(g.verify(response(), "11 W. Jones Street, Raleigh, NC 27602"))
+
+    def test_zip_plus_four_matches_exactly(self):
+        r = response()
+        r["results"][0]["address_components"]["postal_code"] = "27601-1234"
+        address = "11 W. Jones Street, Raleigh, NC 27601-1234"
+        self.assertEqual(g.expected_address_parts(address),
+                         ("11 w jones st", "raleigh", "nc", "27601-1234"))
+        self.assertIsNotNone(g.verify(r, address))
+        self.assertIsNone(g.verify(r, "11 W. Jones Street, Raleigh, NC 27601-1235"))
+
     def test_wrong_state_number_street_and_old_v1_state_fail(self):
         for field, value in [("state_province", "FL"),
                              ("number", "111"), ("street", "Jonesville")]:

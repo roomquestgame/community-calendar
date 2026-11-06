@@ -18,6 +18,7 @@ _ACCESS_ERRORS = frozenset({
     "robots_denied", "invalid_source_url", "invalid_redirect_url", "non_public_dns",
     "redirect_blocked", "redirect_host_not_approved", "redirect_missing_location",
     "too_many_redirects", "publisher_wait_requires_review",
+    "calendar_render_redirect_blocked",
 })
 _CONFIGURATION_ERRORS = frozenset({
     "adapter_requires_configuration", "source_timezone_required", "park_code_missing",

@@ -73,6 +73,17 @@ def family(source_key, event_url):
                 and re.fullmatch(r'/programs/[1-9][0-9]*/[a-z0-9-]+/', p.path)
                 and p.query == 'locations=-1'):
             return 'mecklenburg_ymca'
+        if (source_key == 'coopers_landing_clarksville_va' and p.netloc == 'cooperslandinginn.net'
+                and p.path == '/' and p.query == 'page_id=119'):
+            return 'coopers_landing'
+        if (source_key == 'good_shepherd_food_pantry_south_hill_va'
+                and p.netloc == 'goodshepherdsouthhill.org'
+                and p.path == '/welcome/calendar/' and not p.query):
+            return 'good_shepherd'
+        if (source_key == 'clarksville_tourism_va' and p.netloc == 'tourism.visitclarksvilleva.com'
+                and re.fullmatch(r'/connections/[1-9][0-9]*-[a-z0-9-]+/events/20[0-9]{2}/[1-9][0-9]?/[1-9][0-9]?/[1-9][0-9]*/[a-z0-9-]+/', p.path)
+                and not p.query):
+            return 'clarksville_tourism'
         if (re.fullmatch(r'south_carolina_parks_[1-9][0-9]{0,9}', source_key or '')
                 and p.hostname == 'southcarolinaparks.com'
                 and re.fullmatch(r'/products/[1-9][0-9]{0,9}', p.path) and not p.query):
@@ -151,8 +162,9 @@ def image_url(value, publisher):
         if publisher == 'unleashcb':
             return value if (p.hostname == 'www.unleashcb.com' and p.path.startswith('/images/events/')
                              and re.search(r'\.(?:jpe?g|png|webp|gif)$', p.path, re.I)) else None
-        if publisher == 'mason_city':
+        if publisher in ('mason_city', 'clarksville_tourism'):
             return value if (p.hostname == 'images.locable.com'
+                             and (publisher == 'mason_city' or p.netloc == p.hostname)
                              and re.fullmatch(r'/[A-Za-z0-9_+=/-]{20,}', p.path)) else None
     except ValueError:
         pass

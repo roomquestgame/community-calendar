@@ -1,0 +1,166 @@
+{
+  "user_agent": "RoomQuestCommunityCalendar/0.2 (+https://roomquestapp.vercel.app/)",
+  "method": "ordinary urllib GET; inherited environment unchanged; no redirect, retry, credentials, or guard changes",
+  "responses": [
+    {
+      "file": "robots.txt",
+      "url": "https://tourism.visitclarksvilleva.com/robots.txt",
+      "status": 200,
+      "content_type": "text/plain; charset=utf-8",
+      "bytes": 2900,
+      "sha256": "07f38edc4462f073e5f6df8ea5fcd5a67a50726e36439c6d5d0a9dc927368b6e",
+      "captured_at": "2026-11-06T15:20:08.846656+00:00",
+      "seconds": 7.388
+    },
+    {
+      "file": "calendar_1.html",
+      "url": "https://tourism.visitclarksvilleva.com/calendar/",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "bytes": 31678,
+      "sha256": "8e87d4d01e4d368fd025bdf40b9fb9dacd2855e0c3c999523aa96e70b598cb05",
+      "captured_at": "2026-11-06T15:20:14.010226+00:00",
+      "seconds": 4.161
+    },
+    {
+      "file": "calendar_2.html",
+      "url": "https://tourism.visitclarksvilleva.com/calendar/?page=2",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "bytes": 31567,
+      "sha256": "6f3810cf9b7bebab55c6076df5769418efc585f66623355540325be21e56e8b9",
+      "captured_at": "2026-11-06T15:20:18.870257+00:00",
+      "seconds": 3.859
+    },
+    {
+      "file": "calendar_3.html",
+      "url": "https://tourism.visitclarksvilleva.com/calendar/?page=3",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "bytes": 31574,
+      "sha256": "3df31668460933042a75da79d7208737445d624dce14f8a66aa6d2c490afee83",
+      "captured_at": "2026-11-06T15:20:22.744740+00:00",
+      "seconds": 2.873
+    },
+    {
+      "file": "calendar_4.html",
+      "url": "https://tourism.visitclarksvilleva.com/calendar/?page=4",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "bytes": 31571,
+      "sha256": "3f9ac2cc8367ddd64b0b6321c19b142f04d7b548c405bf2fbcf8fa3ebf66ed01",
+      "captured_at": "2026-11-06T15:20:26.843059+00:00",
+      "seconds": 3.097
+    },
+    {
+      "file": "calendar_5.html",
+      "url": "https://tourism.visitclarksvilleva.com/calendar/?page=5",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "bytes": 22882,
+      "sha256": "0f7ae4da0dd59c0a463f0799e0b918e2080ffb85cf4b6a4470029611f61e92ce",
+      "captured_at": "2026-11-06T15:20:30.765859+00:00",
+      "seconds": 2.921
+    },
+    {
+      "file": "cocoa_final.html",
+      "url": "https://tourism.visitclarksvilleva.com/connections/76407-historic-downtown-clarksville/events/2026/12/5/667469/historic-downtown-clarksvilles-1st-annual-cookie-cocoa-crawl/",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "bytes": 34229,
+      "sha256": "a4ce95f4e5f4a48f61057a0c7b15b5914d469e78c40c04e76a623f59fcba1371",
+      "captured_at": "2026-11-06T15:20:35.169235+00:00",
+      "seconds": 3.39
+    },
+    {
+      "file": "cocoa_teaser.html",
+      "url": "https://tourism.visitclarksvilleva.com/connections/76407-historic-downtown-clarksville/events/2026/12/5/636949/save-the-date-cookie-cocoa-crawl/",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "bytes": 22051,
+      "sha256": "664799a1e1bf750fb75d221051270b38fab8264176e4e04f91c6eda057485e73",
+      "captured_at": "2026-11-06T15:20:39.392012+00:00",
+      "seconds": 3.182
+    },
+    {
+      "file": "poker_conflict.html",
+      "url": "https://tourism.visitclarksvilleva.com/connections/76463-lake-country-cigar-and-wine/events/2026/11/11/482506/weekly-poker-tournament/",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "bytes": 21843,
+      "sha256": "b2111486d4ff0c4ddc7731faa5cacc0e26112d0df3d8e35c039af2ca83c38834",
+      "captured_at": "2026-11-06T15:20:43.092780+00:00",
+      "seconds": 2.696
+    },
+    {
+      "file": "poker_482507.html",
+      "url": "https://tourism.visitclarksvilleva.com/connections/76463-lake-country-cigar-and-wine/events/2026/11/18/482507/weekly-poker-tournament/",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "bytes": 21843,
+      "sha256": "ec6f1d6b057fe4c9c9922dd51d587cb90076a81111d50ed38fde731466e40c94",
+      "captured_at": "2026-11-06T15:22:19.437268+00:00",
+      "seconds": 7.658
+    },
+    {
+      "file": "poker_482508.html",
+      "url": "https://tourism.visitclarksvilleva.com/connections/76463-lake-country-cigar-and-wine/events/2026/11/25/482508/weekly-poker-tournament/",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "bytes": 21843,
+      "sha256": "2f82364339335228df661b77492719c475178e6a1f960294db30d8dc13650969",
+      "captured_at": "2026-11-06T15:22:25.305090+00:00",
+      "seconds": 4.867
+    },
+    {
+      "file": "poker_482509.html",
+      "url": "https://tourism.visitclarksvilleva.com/connections/76463-lake-country-cigar-and-wine/events/2026/12/2/482509/weekly-poker-tournament/",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "bytes": 21841,
+      "sha256": "0eba196e3c1b7cf549f42c2f50565833f65f653ceb44921298f7393036feefb1",
+      "captured_at": "2026-11-06T15:22:29.229590+00:00",
+      "seconds": 2.85
+    },
+    {
+      "file": "poker_482510.html",
+      "url": "https://tourism.visitclarksvilleva.com/connections/76463-lake-country-cigar-and-wine/events/2026/12/9/482510/weekly-poker-tournament/",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "bytes": 21841,
+      "sha256": "23cf11a7e324f2633ad3a6f38c62f5728321cfda13540b891314a824e3e31742",
+      "captured_at": "2026-11-06T15:22:32.823493+00:00",
+      "seconds": 2.592
+    },
+    {
+      "file": "poker_482511.html",
+      "url": "https://tourism.visitclarksvilleva.com/connections/76463-lake-country-cigar-and-wine/events/2026/12/16/482511/weekly-poker-tournament/",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "bytes": 21843,
+      "sha256": "bc9bd7ae2d666e16a1cf8cf59b73111961c74669919dec03a574297a49a84d9c",
+      "captured_at": "2026-11-06T15:22:36.791608+00:00",
+      "seconds": 2.967
+    },
+    {
+      "file": "poker_482512.html",
+      "url": "https://tourism.visitclarksvilleva.com/connections/76463-lake-country-cigar-and-wine/events/2026/12/23/482512/weekly-poker-tournament/",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "bytes": 21843,
+      "sha256": "d201fb38ac194147d077a30e1a291b423a2b64b88fde04fa0702011fa83c1adb",
+      "captured_at": "2026-11-06T15:22:40.671200+00:00",
+      "seconds": 2.878
+    },
+    {
+      "file": "poker_482513.html",
+      "url": "https://tourism.visitclarksvilleva.com/connections/76463-lake-country-cigar-and-wine/events/2026/12/30/482513/weekly-poker-tournament/",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "bytes": 21843,
+      "sha256": "ac4c5ed9af95737b68d4f15609341b7b40f8843551ef78fff1740ede47cdf399",
+      "captured_at": "2026-11-06T15:22:44.645807+00:00",
+      "seconds": 2.972
+    }
+  ]
+}
