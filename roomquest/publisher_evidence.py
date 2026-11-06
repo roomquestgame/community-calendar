@@ -25,6 +25,14 @@ def family(source_key, event_url):
                 and re.fullmatch(r'/County/[^/]+/Park/[^/]+/Events/[1-9][0-9]{0,7}/[^/]+/?', p.path)
                 and not p.query):
             return 'mycountyparks'
+        chamber_hosts = {'municipal_chambermaster_bellevue_ne': 'business.bellevuenebraska.com',
+                         'municipal_chambermaster_clear_lake_ia': 'members.clearlakeiowa.com'}
+        if (source_key in chamber_hosts and p.hostname == chamber_hosts[source_key]
+                and re.fullmatch(r'/events/details/(?:[a-z0-9-]|%[0-9A-F]{2})+-[1-9][0-9]*', p.path) and not p.query):
+            return 'reviewed_chamber'
+        if (source_key == 'experience_waterloo_ia' and p.hostname == 'experiencewaterloo.com'
+                and re.fullmatch(r'/events/[a-z0-9-]+/', p.path) and not p.query):
+            return 'waterloo'
         if (source_key == 'bellevue_times_ne' and p.hostname == 'bellevuetimes.com'
                 and p.path.startswith('/events/') and re.fullmatch(r'occurrence=20[0-9]{6}T[0-9]{6}', p.query)):
             return 'bellevue_times'
@@ -62,11 +70,20 @@ def image_url(value, publisher):
     if not isinstance(value, str) or len(value) > 2000:
         return None
     try:
+        if publisher == 'waterloo':
+            probe = urlsplit(value)
+            if (probe.hostname == 'waterloo-ia.s3.amazonaws.com' and re.fullmatch(r'v=[0-9]+', probe.query)):
+                value = value.split('?', 1)[0]
         p = urlsplit(value)
         if (p.scheme != 'https' or p.username or p.password or p.port not in (None, 443)
                 or p.query or p.fragment or re.search(r'[\s\\<>]|%2e|%2f|%5c', value, re.I)
                 or '..' in p.path.split('/')):
             return None
+        if publisher == 'waterloo':
+            return value if (p.hostname == 'waterloo-ia.s3.amazonaws.com' and p.path.startswith('/images/')
+                             and re.search(r'\.(?:jpe?g|png|webp|gif)$', p.path, re.I)) else None
+        if publisher == 'reviewed_chamber':
+            return value if value == 'https://cdn.firespring.com/images/49799955-78ed-4e31-b627-8bc12eb7ffea.png' else None
         if publisher == 'mycountyparks':
             return value if (p.hostname == 'content.mycountyparks.com'
                              and p.path.startswith('/Production/RelatedItem/Content/')) else None

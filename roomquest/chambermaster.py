@@ -20,6 +20,9 @@ def collect(source, payload, deadline_at, fetcher=fetch_publisher):
     api = urlparse(source['feed_url'])
     if api.path != '/api/events' or api.query or api.fragment:
         raise PreviewError('invalid_chambermaster_api')
+    from roomquest.reviewed_chambers import SOURCES, collect as reviewed_collect
+    if source.get('source_key') in SOURCES:
+        return reviewed_collect(source, payload)
     records = parse_growthzone_preview(payload, source)
     if len(records) > MAX_DETAILS:
         raise PreviewError('chambermaster_detail_limit')
