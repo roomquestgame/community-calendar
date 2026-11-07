@@ -35,6 +35,12 @@ def family(source_key, event_url):
         if source_key == 'red_door_104_va':
             from roomquest.red_door_104 import EVENT_URL
             return source_key if re.fullmatch(EVENT_URL, event_url) else None
+        if source_key == 'south_boston_speedway_va':
+            from roomquest.south_boston_speedway import EVENT_URL
+            return source_key if EVENT_URL.fullmatch(event_url) else None
+        if source_key == 'discover_halifax_va':
+            from roomquest.discover_halifax import EVENT_URL
+            return source_key if EVENT_URL.fullmatch(event_url) else None
         p = urlsplit(event_url)
         if p.scheme != 'https' or p.username or p.password or p.port not in (None, 443) or p.fragment:
             return None
@@ -44,6 +50,7 @@ def family(source_key, event_url):
                 and not p.query):
             return 'mycountyparks'
         chamber_hosts = {'municipal_chambermaster_howard_md': 'business.howardchamber.com',
+                         'municipal_chambermaster_halifax_va': 'www.halifaxchamber.net',
                          'municipal_chambermaster_siouxland_ia': 'business.siouxlandchamber.com',
                          'municipal_chambermaster_bellevue_ne': 'business.bellevuenebraska.com',
                          'municipal_chambermaster_clear_lake_ia': 'members.clearlakeiowa.com'}
@@ -138,6 +145,14 @@ def image_url(value, publisher):
         if re.search(r'(?:^|[-_/])(?:logo|favicon|avatar|pixel)(?:[-_.]|$)', value, re.I):
             return None
         return value if re.fullmatch(PHOTO_URL, value, re.I) else None
+    if publisher == 'south_boston_speedway_va':
+        from roomquest.south_boston_speedway import PHOTO_URL
+        return value if PHOTO_URL.fullmatch(value) else None
+    if publisher == 'discover_halifax_va':
+        from roomquest.discover_halifax import PHOTO_URL
+        if re.search(r'(?:^|[-_/])(?:logo|favicon|avatar|pixel)(?:[-_.]|$)', value, re.I):
+            return None
+        return value if PHOTO_URL.fullmatch(value) else None
     try:
         if publisher == 'waterloo':
             probe = urlsplit(value)
