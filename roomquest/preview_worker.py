@@ -1113,7 +1113,8 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
                         and source.get('platform_adapter') == 'growthzone')
     from roomquest.raleigh_html import SOURCES as RALEIGH_SOURCES
     from roomquest.virginia_wix_events import SOURCES as VA_WIX_SOURCES
-    publisher_media = (html and (source_key in RALEIGH_SOURCES or source_key in VA_WIX_SOURCES or source_key == 'visit_farmville_va')) or reviewed_chamber or (source_key in ('madison_county_parks_ia', 'think_iowa_city_ia', 'rosemont_of_virginia') and source.get('kind') == 'json'
+    from roomquest.maryland_sources import ARTS, HTML as MARYLAND_HTML, PG_PARKS
+    publisher_media = (html and (source_key in RALEIGH_SOURCES or source_key in MARYLAND_HTML or source_key in VA_WIX_SOURCES or source_key == 'visit_farmville_va')) or reviewed_chamber or (source_key in ('madison_county_parks_ia', 'think_iowa_city_ia', 'rosemont_of_virginia', ARTS, PG_PARKS) and source.get('kind') == 'json'
                        and source.get('platform_adapter') == 'wordpress') or (html and (source_key.startswith(('virginia_state_parks_', 'mycountyparks_ia_'))
                                 or source_key in ('bellevue_times_ne', 'unleashcb_ia', 'visit_mason_city_ia', 'chase_city_chamber_va', 'experience_waterloo_ia',
                                                   'south_hill_chamber_va', 'clarksville_community_players_va',
