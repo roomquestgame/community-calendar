@@ -625,6 +625,8 @@ SUPPORTED = {"ical", "jsonld", "growthzone", "wordpress", "squarespace"}
 
 
 def preview_source(source: dict, *, deadline_at=None) -> dict:
+    from roomquest import maryland_sources
+    source_key = source.get('source_key')
     if source.get("kind", "ical") == "ical" and source.get("platform_adapter") == "ical":
         from roomquest.ics_adapter import parse
         mapsee = source.get("source_key", "").startswith("municipal_mapsee_")
@@ -635,12 +637,17 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                 raise PreviewError("unregistered_mapsee_source")
         deadline = min(monotonic() + 20, deadline_at - 8 if deadline_at is not None else float("inf"))
         try:
-            payload = fetch_publisher(
-                source["feed_url"], "text/calendar",
-                respect_robots=mapsee or source.get("source_key") == "mecklenburg_va_libraries",
-                deadline_at=deadline)
-            records = parse(payload, {"url": source["feed_url"], "source_key": source.get("source_key")}, legacy=not mapsee,
-                            include_description=source.get("source_key") == "independence_ia_library_family")
+            if source_key in maryland_sources.ICS:
+                records = maryland_sources.collect_ics(source, lambda url, accept: fetch_publisher(
+                    url, accept, respect_robots=True, deadline_at=deadline,
+                    allowed_hosts=(urlparse(maryland_sources.ICS[source_key]).hostname,)))
+            else:
+                payload = fetch_publisher(
+                    source["feed_url"], "text/calendar",
+                    respect_robots=mapsee or source_key == "mecklenburg_va_libraries",
+                    deadline_at=deadline)
+                records = parse(payload, {"url": source["feed_url"], "source_key": source_key}, legacy=not mapsee,
+                                include_description=source_key == "independence_ia_library_family")
             if source.get('source_key') == 'independence_ia_library_family':
                 from roomquest.iowa_civicplus import enrich
                 records = enrich(records, source, fetch_publisher, deadline)
@@ -764,6 +771,10 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         elif source_key == "good_shepherd_food_pantry_south_hill_va":
             from roomquest.good_shepherd import collect as collect_html
             allowed_hosts = ("goodshepherdsouthhill.org",)
+        elif source_key in maryland_sources.HTML:
+            collect_html = maryland_sources.collect_html
+            allowed_hosts = (urlparse(maryland_sources.HTML[source_key]).hostname,)
+            html_budget = 36
         else:
             raise PreviewError("unregistered_html_source")
         deadline = min(monotonic() + html_budget, deadline_at - 5 if deadline_at is not None else float("inf"))
@@ -819,15 +830,21 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
     # WordPress is a collection family; Mapsee remains catalog provenance.
     if source.get("platform_adapter") == "wordpress" and source.get("kind") == "json":
         from roomquest.wordpress_adapter import collect as collect_wordpress
+        maryland = source_key in (maryland_sources.PG_PARKS, maryland_sources.ARTS)
         if source.get("source_key", "").startswith("municipal_mapsee_"):
             from roomquest.mapsee_adapter import profiles
             profile = profiles().get(source["source_key"])
             if not profile or profile["type"] != "tribe" or profile["url"] != source.get("feed_url"):
                 raise PreviewError("unregistered_mapsee_source")
-        deadline = min(monotonic() + 20, deadline_at - 8 if deadline_at is not None else float("inf"))
+        deadline = min(monotonic() + (35 if maryland else 20), deadline_at - 8 if deadline_at is not None else float("inf"))
         try:
-            records = collect_wordpress(source, lambda url, accept: fetch_publisher(
-                url, accept, respect_robots=True, deadline_at=deadline), deadline_at=deadline)
+            if maryland:
+                host = urlparse(source['feed_url']).hostname
+                records = maryland_sources.collect_wordpress(source, lambda url, accept: fetch_publisher(
+                    url, accept, respect_robots=True, deadline_at=deadline, allowed_hosts=(host,)))
+            else:
+                records = collect_wordpress(source, lambda url, accept: fetch_publisher(
+                    url, accept, respect_robots=True, deadline_at=deadline), deadline_at=deadline)
         except PreviewError:
             # Transport errors are already safe, bounded codes (including HTTP digits).
             raise
@@ -838,7 +855,7 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
             samples.pop()
         return {**({"p_parser_capability": "publisher_event_candidates_v1"}
-                   if source.get('source_key') in ('madison_county_parks_ia', 'think_iowa_city_ia', 'rosemont_of_virginia') else {}),
+                   if maryland or source_key in ('madison_county_parks_ia', 'think_iowa_city_ia', 'rosemont_of_virginia') else {}),
                 "p_source_key": source["source_key"], "p_samples": samples,
                 "p_future_count": len(records),
                 "p_venue_count": sum(1 for row in records if row["lat"] is not None),
