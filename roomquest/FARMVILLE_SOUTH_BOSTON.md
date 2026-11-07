@@ -1,5 +1,19 @@
 # Farmville and South Boston source batch
 
+## Pending-route activation review
+
+The official Halifax County Chamber XML returned two explicit public tour
+occurrences. The XML route requires chamber ID 845 and excludes any listing
+carrying a member or internal visibility flag. Farmville Chamber's XML had no
+qualifying public records in the normal window.
+
+The Speedway pairs individually linked race details with the current season
+calendar and verifies the local green-flag time and track address. Discover
+Halifax verifies the advertised listing count, then checks all available event
+details in a seven-day window, bounded at 18 requests. The Woodbine Christmas
+Market occurrence stays held on conflicting published times. These routes
+require a successful guarded publisher audit before approval.
+
 ## Follow-up intake
 
 The follow-up audit includes all 15 original routes plus the official Waterworks

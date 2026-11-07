@@ -10,19 +10,21 @@ from roomquest.publisher_evidence import attach
 from roomquest.mycountyparks import cancelled
 
 SIOUXLAND = 'municipal_chambermaster_siouxland_ia'
+HALIFAX = 'municipal_chambermaster_halifax_va'
 
 SOURCES = {
  'municipal_chambermaster_bellevue_ne': ('https://business.bellevuenebraska.com/api/events', 'America/Chicago'),
  'municipal_chambermaster_clear_lake_ia': ('https://members.clearlakeiowa.com/api/events', 'America/Chicago'),
  'municipal_chambermaster_howard_md': ('https://business.howardchamber.com/api/events', 'America/New_York'),
  SIOUXLAND: ('https://business.siouxlandchamber.com/api/events', 'America/Chicago'),
+ HALIFAX: ('https://www.halifaxchamber.net/api/events', 'America/New_York'),
 }
 
 
 STREET_SUFFIX = r'(?:Street|St|Avenue|Ave|Road|Rd|Drive|Dr|Boulevard|Blvd|Lane|Ln|Court|Ct|Circle|Cir|Highway|Hwy|Parkway|Pkwy|Place|Pl|Way|Terrace|Ter|Loop|Trail|Trl)'
 
 
-def own_address(element, location, *, maryland=False):
+def own_address(element, location, *, maryland=False, virginia=False):
     """Format only explicit event-local street/city/state for the shared resolver.
 
     Suites/rooms stay in meeting_location evidence; they are not a different
@@ -31,6 +33,8 @@ def own_address(element, location, *, maryland=False):
     states = {'ia': 'IA', 'iowa': 'IA', 'ne': 'NE', 'nebraska': 'NE'}
     if maryland:
         states.update({'md': 'MD', 'maryland': 'MD'})
+    if virginia:
+        states.update({'va': 'VA', 'virginia': 'VA'})
     street = plain(element.findtext('MapAddr1'))
     city = plain(element.findtext('MapCity'))
     state = states.get(plain(element.findtext('MapState')).lower())
@@ -76,7 +80,7 @@ def collect(source, payload, *, now=None):
             or source.get('kind')!='xml' or source.get('platform_adapter')!='growthzone'):
         raise ValueError('unregistered_reviewed_chamber')
     root=ET.fromstring(payload)
-    if root.tag!='ArrayOfEventDisplay' or len(root)>500:
+    if root.tag!='ArrayOfEventDisplay' or len(root)>(1000 if key == HALIFAX else 500):
         raise ValueError('publisher_record_limit')
     now=now or datetime.now(timezone.utc);rows={}
     base=identity[0].removesuffix('/api/events')
@@ -85,7 +89,9 @@ def collect(source, payload, *, now=None):
         if (e.findtext('Status')!='APPROVED' or 'Public' not in (e.findtext('VisibilityFlags') or '').split()
                 or e.findtext('IsAllDayEvent')!='false'):
             continue
-        if key == SIOUXLAND and e.findtext('VisibilityFlags') != 'Public':
+        if key == HALIFAX and e.findtext('CCID') != '845':
+            raise ValueError('publisher_identity_changed')
+        if key in (SIOUXLAND, HALIFAX) and e.findtext('VisibilityFlags') != 'Public':
             continue
         ident=e.findtext('EventID') or '';slug=e.findtext('Slug') or ''
         if not re.fullmatch(r'[1-9][0-9]{0,19}',ident) or not slug or len(slug)>300 or not all(c.isalnum() or c=='-' for c in slug):
@@ -103,7 +109,8 @@ def collect(source, payload, *, now=None):
         location_html=e.findtext('LocationDesc') or ''
         location=plain(location_html)
         if re.search(r'\b(zoom|online|virtual)\b',location,re.I):continue
-        resolved_address = own_address(e, location, maryland=key == 'municipal_chambermaster_howard_md')
+        resolved_address = own_address(e, location, maryland=key == 'municipal_chambermaster_howard_md',
+                                       virginia=key == HALIFAX)
         if not resolved_address:
             continue
         address, event_city = resolved_address

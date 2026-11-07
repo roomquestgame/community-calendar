@@ -13,7 +13,7 @@ from bs4 import BeautifulSoup
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from roomquest import preview_worker, virginia_wix_events, visit_farmville
+from roomquest import preview_worker, reviewed_chambers, virginia_wix_events, visit_farmville
 
 
 SOURCES = (
@@ -25,10 +25,11 @@ SOURCES = (
     ('hampden_sydney_college_va', 'rss_index', 'https://ems.hsc.edu/mastercalendar/RSSFeeds.aspx'),
     ('longwood_basketball_va', 'html_probe', 'https://longwoodlancers.com/sports/mens-basketball/schedule'),
     ('north_street_press_club_va', 'html_parser', virginia_wix_events.SOURCES['north_street_press_club_va'][0]),
-    ('discover_halifax_va', 'html_probe', 'https://gohalifaxva.com/events/'),
+    ('discover_halifax_va', 'html_parser', 'https://gohalifaxva.com/events/'),
     ('halifax_county_chamber_va', 'html_probe', 'https://www.halifaxchamber.net/events/catgid/19'),
+    (reviewed_chambers.HALIFAX, 'chambermaster', reviewed_chambers.SOURCES[reviewed_chambers.HALIFAX][0]),
     ('prizery_va', 'html_parser', 'https://prizery.org/events/'),
-    ('south_boston_speedway_va', 'html_probe', 'https://www.southbostonspeedway.com/schedule'),
+    ('south_boston_speedway_va', 'html_parser', 'https://www.southbostonspeedway.com/schedule'),
     ('sova_innovation_hub_va', 'xml_probe', 'https://coworking.sovainnovationhub.com/events/rss'),
     ('berry_hill_resort_va', 'html_parser', virginia_wix_events.SOURCES['berry_hill_resort_va'][0]),
     ('halifax_county_main_va', 'ical', preview_worker.VIRGINIA_CIVIC_ICS['halifax_county_main_va']),
@@ -48,11 +49,12 @@ def probe(spec):
                                               allowed_hosts=(allowed_host,), deadline_at=deadline)
 
     try:
-        if route in ('html_parser', 'ical'):
-            kind = 'html' if route == 'html_parser' else 'ical'
+        if route in ('html_parser', 'ical', 'chambermaster'):
+            kind, adapter = {'html_parser': ('html', 'html'), 'ical': ('ical', 'ical'),
+                             'chambermaster': ('xml', 'growthzone')}[route]
             output = preview_worker.preview_source(
                 {'source_key': key, 'feed_url': url, 'timezone': 'America/New_York',
-                 'kind': kind, 'platform_adapter': kind}, deadline_at=deadline)
+                 'kind': kind, 'platform_adapter': adapter}, deadline_at=deadline)
             rows = output['p_events']
         elif route == 'json_probe':
             data = json.loads(fetch(url, 'application/json'))
