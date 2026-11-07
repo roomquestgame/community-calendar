@@ -169,3 +169,106 @@ class WordPressOffsetTests(unittest.TestCase):
   e['venue'].update(address='210615 NE-71',city='Gering',state='Nebraska')
   rows=collect({'source_key':'nebraska_game_parks','feed_url':'https://venue.example.org'},lambda *_:json.dumps({'events':[e]}))
   self.assertEqual(rows[0]['lat'],35.8)
+
+
+class MarylandCalendarTests(unittest.TestCase):
+ def setUp(self):
+  from roomquest import maryland_sources
+  self.md = maryland_sources
+  self.start = (datetime.now(timezone.utc) + timedelta(days=2)).astimezone(
+   maryland_sources.ZoneInfo(maryland_sources.ZONE)).replace(hour=14, minute=0, second=0, microsecond=0)
+  self.end = self.start + timedelta(hours=2)
+
+ def test_parks_uses_public_category_and_occurrence_address(self):
+  md = self.md
+  url = md.PG_ROOT + '/event_list/public-concert'
+  source = {'source_key': md.PG_PARKS, 'feed_url': md.PG_ROOT, 'kind': 'json',
+            'platform_adapter': 'wordpress', 'timezone': md.ZONE}
+  event_data = {'id': 42, 'status': 'publish', 'title': 'Public concert', 'url': url, 'venue': [],
+                'timezone': md.ZONE, 'categories': [{'name': 'Music'}], 'description': '<p>Local bands.</p>',
+                'start_date': self.start.replace(tzinfo=None).isoformat(),
+                'end_date': self.end.replace(tzinfo=None).isoformat(),
+                'utc_start_date': self.start.astimezone(timezone.utc).isoformat(),
+                'utc_end_date': self.end.astimezone(timezone.utc).isoformat()}
+  detail = f"""<link rel="canonical" href="{url}"><div class="addeventatc">
+   <span class="start">{self.start.strftime('%A, %B %d, %Y %I:%M %p')}</span>
+   <span class="end">{self.end.strftime('%m/%d/%Y %I:%M %p')}</span></div>
+   <div class="event-location"><p><a href="/facilities/example">Public Hall</a></p>
+   <a href="https://maps.google.com/maps?q=10+Main+Street%2C+Bowie%2C+MD%2C+USA">Map</a></div>"""
+  def fetch(address, accept, **kwargs):
+   self.assertTrue(kwargs['respect_robots'])
+   if accept == 'text/html':
+    self.assertEqual(address, url)
+    return detail
+   query = parse_qs(urlsplit(address).query)
+   self.assertEqual(query['per_page'], ['50'])
+   self.assertEqual(query['categories'], ['540'])
+   return json.dumps({'events': [event_data], 'total': 1, 'total_pages': 1})
+  with patch('roomquest.preview_worker.fetch_publisher', side_effect=fetch):
+   result = preview_source(source)
+   record = result['p_events'][0]
+   self.assertEqual(record['id'], '42')
+   self.assertEqual(record['venue_address'], '10 Main Street, Bowie, MD')
+   self.assertEqual(record['venue_name'], 'Public Hall')
+   self.assertIsNone(record['lat'])
+   self.assertEqual(record['description'], 'Local bands.')
+   self.assertEqual(record['publisher_categories'], ['Music'])
+   detail = detail.replace('class="event-location"', 'class="unrelated"')
+   with self.assertRaisesRegex(PreviewError, 'venue_extraction_unavailable'):
+    preview_source(source)
+
+ def test_parks_large_snapshot_does_not_return_a_partial_success(self):
+  md = self.md
+  source = {'source_key': md.PG_PARKS, 'feed_url': md.PG_ROOT, 'kind': 'json',
+            'platform_adapter': 'wordpress', 'timezone': md.ZONE}
+  with self.assertRaisesRegex(ValueError, 'pagination_limit'):
+   md.collect_wordpress(source, lambda *_: json.dumps({'events': [], 'total': 372, 'total_pages': 8}))
+
+ def test_state_portal_admits_park_venues_only(self):
+  from icalendar import Calendar, Event
+  md = self.md
+  calendar = Calendar()
+  calendar.add('prodid', '-//Test//EN')
+  calendar.add('version', '2.0')
+  for i, location in enumerate(('Pavilion,Example State Park 10 Main Street,Bowie,MD 20715',
+                                'County Office,10 Main Street,Bowie,MD 20715')):
+   e = Event()
+   e.add('uid', f'event-{i}')
+   e.add('summary', 'Accessible fishing' if i == 0 else 'Agency meeting')
+   e.add('description', f'https://go.activecalendar.com/doit-md/event/event-{i}/')
+   e.add('location', location)
+   e.add('dtstart', self.start)
+   e.add('dtend', self.end)
+   calendar.add_component(e)
+  source = {'source_key': md.DNR, 'feed_url': md.DNR_FEED, 'kind': 'ical',
+            'platform_adapter': 'ical', 'timezone': md.ZONE}
+  records = md.collect_ics(source, lambda *_: calendar.to_ical().decode())
+  self.assertEqual([row['id'] for row in records], ['event-0'])
+  self.assertEqual(records[0]['event_url'], 'https://go.activecalendar.com/doit-md/event/event-0/')
+  self.assertEqual(records[0]['venue_address'], '10 Main Street, Bowie, MD 20715')
+
+ def test_library_requires_exact_branch_feed_and_complete_event_address(self):
+  md = self.md
+  self.assertEqual(md.library_venue('East Columbia Branch, 6600 Cradlerock Way, Columbia, MD, 21045, US'),
+                   ('East Columbia Branch', ('6600 Cradlerock Way, Columbia, MD 21045', 'Columbia')))
+  self.assertIsNone(md.library_venue('East Columbia Branch'))
+  with self.assertRaisesRegex(ValueError, 'unregistered_maryland_source'):
+   md.collect_ics({'source_key': 'howard_library_east_columbia_md', 'kind': 'ical',
+                   'platform_adapter': 'ical', 'timezone': md.ZONE,
+                   'feed_url': 'https://howardcounty.librarycalendar.com/events/feed/ical'},
+                  lambda *_: self.fail('unregistered feed was requested'))
+
+ def test_park_and_maryland_html_sources_finalize_with_v3(self):
+  from roomquest.preview_worker import _process_claimed_source
+  md = self.md
+  for key, kind, adapter in ((md.PG_PARKS, 'json', 'wordpress'), (md.ARTS, 'json', 'wordpress'),
+                             (md.SAVAGE, 'html', 'html'), (md.HISTORY, 'html', 'html')):
+   with self.subTest(key=key), patch('roomquest.preview_worker.preview_source') as preview, \
+        patch('roomquest.preview_worker.supabase_rpc', side_effect=[0, None]) as rpc:
+    preview.return_value = {'p_source_key': key, 'p_samples': [], 'p_future_count': 0,
+                            'p_venue_count': 0, 'p_error': None, 'p_events': [],
+                            'p_parser_capability': 'publisher_event_candidates_v1'}
+    result = _process_claimed_source({'source_key': key, 'kind': kind, 'platform_adapter': adapter})
+    self.assertEqual(result['complete'], 1)
+    self.assertEqual(rpc.call_args.args[0], 'community_collector_record_preview_v3')
+    self.assertEqual(rpc.call_args.args[1]['p_parser_capability'], 'publisher_event_candidates_v1')

@@ -244,6 +244,31 @@ def civicplus_detail_url(description, identity, source_url):
             matches.append(candidate)
     return matches[0] if len(set(matches)) == 1 else None
 
+
+_VA_CIVIC_VENUES = {
+    'Sports Arena - 1328 Zion Hill Road Farmville VA 23901':
+        ('Sports Arena', '1328 Zion Hill Road, Farmville, VA 23901', 'Farmville'),
+    'Board of Supervisors Meeting Room - 1050 Mary Bethune Street P.O. Box 699 Halifax VA 24558':
+        ('Board of Supervisors Meeting Room', '1050 Mary Bethune Street, Halifax, VA 24558', 'Halifax'),
+    'Finance Conference Room - Halifax County Administration Building 1050 Mary Bethune Streeet Halifax VA 24558':
+        ('Finance Conference Room', '1050 Mary Bethune Street, Halifax, VA 24558', 'Halifax'),
+    'Voter Registration Office - 1030 Mary Bethune Street, LL3 Halifax VA 24558':
+        ('Voter Registration Office', '1030 Mary Bethune Street, Halifax, VA 24558', 'Halifax'),
+}
+
+
+def normalize_virginia_civic(records, source_url):
+    """Use verified named facilities and the VEVENT's published detail link."""
+    for item in records:
+        location = _VA_CIVIC_VENUES.get(' '.join(item['venue_name'].split()))
+        if not location:
+            raise ValueError('civic_venue_requires_review')
+        item['venue_name'], item['venue_address'], item['venue_city'] = location
+        item['event_url'] = (civicplus_detail_url(item.get('description', ''), item['id'].split('__', 1)[0],
+                                                source_url) or item['event_url'])
+        item['description'] = item.get('description', '')[:2000]
+    return records
+
 def parse(payload, source, *, legacy=False, include_description=False):
     from icalendar import Calendar
     from roomquest.preview_worker import parse_ics_preview

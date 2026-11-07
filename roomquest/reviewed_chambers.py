@@ -14,6 +14,7 @@ SIOUXLAND = 'municipal_chambermaster_siouxland_ia'
 SOURCES = {
  'municipal_chambermaster_bellevue_ne': ('https://business.bellevuenebraska.com/api/events', 'America/Chicago'),
  'municipal_chambermaster_clear_lake_ia': ('https://members.clearlakeiowa.com/api/events', 'America/Chicago'),
+ 'municipal_chambermaster_howard_md': ('https://business.howardchamber.com/api/events', 'America/New_York'),
  SIOUXLAND: ('https://business.siouxlandchamber.com/api/events', 'America/Chicago'),
 }
 
@@ -21,28 +22,30 @@ SOURCES = {
 STREET_SUFFIX = r'(?:Street|St|Avenue|Ave|Road|Rd|Drive|Dr|Boulevard|Blvd|Lane|Ln|Court|Ct|Circle|Cir|Highway|Hwy|Parkway|Pkwy|Place|Pl|Way|Terrace|Ter|Loop|Trail|Trl)'
 
 
-def own_address(element, location):
+def own_address(element, location, *, maryland=False):
     """Format only explicit event-local street/city/state for the shared resolver.
 
     Suites/rooms stay in meeting_location evidence; they are not a different
     physical building and are not invented components of its geocoding query.
     """
     states = {'ia': 'IA', 'iowa': 'IA', 'ne': 'NE', 'nebraska': 'NE'}
+    if maryland:
+        states.update({'md': 'MD', 'maryland': 'MD'})
     street = plain(element.findtext('MapAddr1'))
     city = plain(element.findtext('MapCity'))
     state = states.get(plain(element.findtext('MapState')).lower())
     if (street and city and state and re.match(r'^\d{1,6}\s', street)
             and re.search(r'\b' + STREET_SUFFIX + r'\b', street, re.I)):
         return f'{street}, {city}, {state}', city
-    return address_from_location(location)
+    return address_from_location(location, states=states)
 
 
-def address_from_location(location):
+def address_from_location(location, *, states=None):
     """Return explicit street, city and state, without inheriting source locality."""
-    states = {'ia': 'IA', 'iowa': 'IA', 'ne': 'NE', 'nebraska': 'NE'}
+    states = states or {'ia': 'IA', 'iowa': 'IA', 'ne': 'NE', 'nebraska': 'NE'}
     # Remove only a final parenthesized directions note, not arbitrary text.
     text = re.sub(r'\s*\([^()]*\)\s*$', '', location).strip()
-    locality = re.search(r'\b(IA|Iowa|NE|Nebraska)\b[,. ]*(\d{4,5}(?:-\d{4})?)?[. ]*$', text, re.I)
+    locality = re.search(r'\b(' + '|'.join(states) + r')\b[,. ]*(\d{4,5}(?:-\d{4})?)?[. ]*$', text, re.I)
     if not locality:
         return None
     state = states[locality.group(1).lower()]
@@ -100,7 +103,7 @@ def collect(source, payload, *, now=None):
         location_html=e.findtext('LocationDesc') or ''
         location=plain(location_html)
         if re.search(r'\b(zoom|online|virtual)\b',location,re.I):continue
-        resolved_address = own_address(e, location)
+        resolved_address = own_address(e, location, maryland=key == 'municipal_chambermaster_howard_md')
         if not resolved_address:
             continue
         address, event_city = resolved_address

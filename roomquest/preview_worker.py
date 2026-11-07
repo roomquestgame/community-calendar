@@ -34,6 +34,10 @@ MAX_PREVIEWS = 10
 STAGING_BATCH_SIZE = 20
 LOOKAHEAD_DAYS = 60
 ROOMQUEST_DB = "https://drpqjuqghpjivtwznfdj.supabase.co"
+VIRGINIA_CIVIC_ICS = {
+    "farmville_parks_rec_va": "https://farmvilleva.com/common/modules/iCalendar/iCalendar.aspx?catID=23&feed=calendar",
+    "halifax_county_main_va": "https://www.halifaxcountyva.gov/common/modules/iCalendar/iCalendar.aspx?catID=14&feed=calendar",
+}
 _robots_delays = {}
 _publisher_next = {}
 _publisher_retry_after = {}
@@ -625,9 +629,16 @@ SUPPORTED = {"ical", "jsonld", "growthzone", "wordpress", "squarespace"}
 
 
 def preview_source(source: dict, *, deadline_at=None) -> dict:
+    from roomquest import maryland_sources
+    source_key = source.get('source_key')
     if source.get("kind", "ical") == "ical" and source.get("platform_adapter") == "ical":
         from roomquest.ics_adapter import parse
-        mapsee = source.get("source_key", "").startswith("municipal_mapsee_")
+        source_key = source.get("source_key", "")
+        civic_ics = source_key in VIRGINIA_CIVIC_ICS
+        if civic_ics and (source.get("feed_url") != VIRGINIA_CIVIC_ICS[source_key]
+                          or source.get("timezone") != "America/New_York"):
+            raise PreviewError("unregistered_virginia_civic_ics")
+        mapsee = source_key.startswith("municipal_mapsee_")
         if mapsee:
             from roomquest.mapsee_adapter import profiles
             profile = profiles().get(source["source_key"])
@@ -635,12 +646,21 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                 raise PreviewError("unregistered_mapsee_source")
         deadline = min(monotonic() + 20, deadline_at - 8 if deadline_at is not None else float("inf"))
         try:
-            payload = fetch_publisher(
-                source["feed_url"], "text/calendar",
-                respect_robots=mapsee or source.get("source_key") == "mecklenburg_va_libraries",
-                deadline_at=deadline)
-            records = parse(payload, {"url": source["feed_url"], "source_key": source.get("source_key")}, legacy=not mapsee,
-                            include_description=source.get("source_key") == "independence_ia_library_family")
+            if source_key in maryland_sources.ICS:
+                records = maryland_sources.collect_ics(source, lambda url, accept: fetch_publisher(
+                    url, accept, respect_robots=True, deadline_at=deadline,
+                    allowed_hosts=(urlparse(maryland_sources.ICS[source_key]).hostname,)))
+            else:
+                host_scope = {"allowed_hosts": (urlparse(VIRGINIA_CIVIC_ICS[source_key]).hostname,)} if civic_ics else {}
+                payload = fetch_publisher(
+                    source["feed_url"], "text/calendar",
+                    respect_robots=civic_ics or mapsee or source_key == "mecklenburg_va_libraries",
+                    deadline_at=deadline, **host_scope)
+                records = parse(payload, {"url": source["feed_url"], "source_key": source_key}, legacy=not mapsee,
+                                include_description=civic_ics or source_key == "independence_ia_library_family")
+                if civic_ics:
+                    from roomquest.ics_adapter import normalize_virginia_civic
+                    records = normalize_virginia_civic(records, source["feed_url"])
             if source.get('source_key') == 'independence_ia_library_family':
                 from roomquest.iowa_civicplus import enrich
                 records = enrich(records, source, fetch_publisher, deadline)
@@ -720,9 +740,16 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         source_key = str(source.get("source_key", ""))
         html_budget = 36
         from roomquest.raleigh_html import SOURCES as RALEIGH_SOURCES
+        from roomquest.virginia_wix_events import SOURCES as VA_WIX_SOURCES
         if source_key in RALEIGH_SOURCES:
             from roomquest.raleigh_html import collect as collect_html
             allowed_hosts = (urlparse(RALEIGH_SOURCES[source_key][0]).hostname,)
+        elif source_key in VA_WIX_SOURCES:
+            from roomquest.virginia_wix_events import collect as collect_html
+            allowed_hosts = (urlparse(VA_WIX_SOURCES[source_key][0]).hostname,)
+        elif source_key == 'visit_farmville_va':
+            from roomquest.visit_farmville import collect as collect_html
+            allowed_hosts = ('visitfarmville.com',)
         elif source_key == 'council_bluffs_public_library_ia':
             from roomquest.council_bluffs_library import HOST, collect as collect_html
             allowed_hosts = (HOST,)
@@ -767,6 +794,10 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         elif source_key == "good_shepherd_food_pantry_south_hill_va":
             from roomquest.good_shepherd import collect as collect_html
             allowed_hosts = ("goodshepherdsouthhill.org",)
+        elif source_key in maryland_sources.HTML:
+            collect_html = maryland_sources.collect_html
+            allowed_hosts = (urlparse(maryland_sources.HTML[source_key]).hostname,)
+            html_budget = 36
         else:
             raise PreviewError("unregistered_html_source")
         deadline = min(monotonic() + html_budget, deadline_at - 5 if deadline_at is not None else float("inf"))
@@ -822,15 +853,21 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
     # WordPress is a collection family; Mapsee remains catalog provenance.
     if source.get("platform_adapter") == "wordpress" and source.get("kind") == "json":
         from roomquest.wordpress_adapter import collect as collect_wordpress
+        maryland = source_key in (maryland_sources.PG_PARKS, maryland_sources.ARTS)
         if source.get("source_key", "").startswith("municipal_mapsee_"):
             from roomquest.mapsee_adapter import profiles
             profile = profiles().get(source["source_key"])
             if not profile or profile["type"] != "tribe" or profile["url"] != source.get("feed_url"):
                 raise PreviewError("unregistered_mapsee_source")
-        deadline = min(monotonic() + 20, deadline_at - 8 if deadline_at is not None else float("inf"))
+        deadline = min(monotonic() + (35 if maryland else 20), deadline_at - 8 if deadline_at is not None else float("inf"))
         try:
-            records = collect_wordpress(source, lambda url, accept: fetch_publisher(
-                url, accept, respect_robots=True, deadline_at=deadline), deadline_at=deadline)
+            if maryland:
+                host = urlparse(source['feed_url']).hostname
+                records = maryland_sources.collect_wordpress(source, lambda url, accept: fetch_publisher(
+                    url, accept, respect_robots=True, deadline_at=deadline, allowed_hosts=(host,)))
+            else:
+                records = collect_wordpress(source, lambda url, accept: fetch_publisher(
+                    url, accept, respect_robots=True, deadline_at=deadline), deadline_at=deadline)
         except PreviewError:
             # Transport errors are already safe, bounded codes (including HTTP digits).
             raise
@@ -841,7 +878,7 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
             samples.pop()
         return {**({"p_parser_capability": "publisher_event_candidates_v1"}
-                   if source.get('source_key') in ('madison_county_parks_ia', 'think_iowa_city_ia', 'rosemont_of_virginia') else {}),
+                   if maryland or source_key in ('madison_county_parks_ia', 'think_iowa_city_ia', 'rosemont_of_virginia') else {}),
                 "p_source_key": source["source_key"], "p_samples": samples,
                 "p_future_count": len(records),
                 "p_venue_count": sum(1 for row in records if row["lat"] is not None),
@@ -1085,7 +1122,9 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
     reviewed_chamber = (source_key in REVIEWED_CHAMBERS and source.get('kind') == 'xml'
                         and source.get('platform_adapter') == 'growthzone')
     from roomquest.raleigh_html import SOURCES as RALEIGH_SOURCES
-    publisher_media = (html and source_key in RALEIGH_SOURCES) or reviewed_chamber or (source_key in ('madison_county_parks_ia', 'think_iowa_city_ia', 'rosemont_of_virginia') and source.get('kind') == 'json'
+    from roomquest.virginia_wix_events import SOURCES as VA_WIX_SOURCES
+    from roomquest.maryland_sources import ARTS, HTML as MARYLAND_HTML, PG_PARKS
+    publisher_media = (html and (source_key in RALEIGH_SOURCES or source_key in MARYLAND_HTML or source_key in VA_WIX_SOURCES or source_key == 'visit_farmville_va')) or reviewed_chamber or (source_key in ('madison_county_parks_ia', 'think_iowa_city_ia', 'rosemont_of_virginia', ARTS, PG_PARKS) and source.get('kind') == 'json'
                        and source.get('platform_adapter') == 'wordpress') or (html and (source_key.startswith(('virginia_state_parks_', 'mycountyparks_ia_'))
                                 or source_key in ('council_bluffs_public_library_ia', 'bellevue_times_ne', 'unleashcb_ia', 'visit_mason_city_ia', 'chase_city_chamber_va', 'experience_waterloo_ia',
                                                   'south_hill_chamber_va', 'clarksville_community_players_va',

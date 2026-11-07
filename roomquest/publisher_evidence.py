@@ -20,6 +20,15 @@ def family(source_key, event_url):
         from roomquest.raleigh_html import SOURCES as RALEIGH_SOURCES, event_url as raleigh_event_url
         if source_key in RALEIGH_SOURCES:
             return 'raleigh:' + source_key if raleigh_event_url(source_key, event_url) else None
+        from roomquest.maryland_sources import ARTS, EVENT_URLS, HISTORY, PG_PARKS, SAVAGE
+        if source_key in (ARTS, HISTORY, PG_PARKS, SAVAGE):
+            return source_key if re.fullmatch(EVENT_URLS[source_key], event_url) else None
+        from roomquest.virginia_wix_events import SOURCES as WIX_SOURCES, event_url as wix_event_url
+        if source_key in WIX_SOURCES:
+            return 'virginia_wix:' + source_key if wix_event_url(source_key, event_url) else None
+        if source_key == 'visit_farmville_va':
+            from roomquest.visit_farmville import event_url as farmville_event_url
+            return 'visit_farmville' if farmville_event_url(event_url) else None
         p = urlsplit(event_url)
         if p.scheme != 'https' or p.username or p.password or p.port not in (None, 443) or p.fragment:
             return None
@@ -28,7 +37,8 @@ def family(source_key, event_url):
                 and re.fullmatch(r'/County/[^/]+/Park/[^/]+/Events/[1-9][0-9]{0,7}/[^/]+/?', p.path)
                 and not p.query):
             return 'mycountyparks'
-        chamber_hosts = {'municipal_chambermaster_siouxland_ia': 'business.siouxlandchamber.com',
+        chamber_hosts = {'municipal_chambermaster_howard_md': 'business.howardchamber.com',
+                         'municipal_chambermaster_siouxland_ia': 'business.siouxlandchamber.com',
                          'municipal_chambermaster_bellevue_ne': 'business.bellevuenebraska.com',
                          'municipal_chambermaster_clear_lake_ia': 'members.clearlakeiowa.com'}
         if (source_key in chamber_hosts and p.hostname == chamber_hosts[source_key]
@@ -106,6 +116,12 @@ def image_url(value, publisher):
     if isinstance(publisher, str) and publisher.startswith('raleigh:'):
         from roomquest.raleigh_html import photo_url
         return photo_url(publisher.removeprefix('raleigh:'), value)
+    if isinstance(publisher, str) and publisher.startswith('virginia_wix:'):
+        from roomquest.virginia_wix_events import photo_url
+        return photo_url(publisher.removeprefix('virginia_wix:'), value)
+    if publisher == 'visit_farmville':
+        from roomquest.visit_farmville import photo_url
+        return photo_url(value)
     try:
         if publisher == 'waterloo':
             probe = urlsplit(value)
@@ -117,6 +133,17 @@ def image_url(value, publisher):
                 or p.fragment or re.search(r'[\s\\<>]|%2e|%2f|%5c', value, re.I)
                 or '..' in p.path.split('/')):
             return None
+        from roomquest.maryland_sources import ARTS, HISTORY, PG_PARKS, SAVAGE
+        maryland_hosts = {ARTS: 'www.hocoarts.org', PG_PARKS: 'www.pgparks.com',
+                          SAVAGE: 'www.savagemill.com'}
+        if publisher in maryland_hosts or publisher == HISTORY:
+            if re.search(r'(?:^|[-_/])(?:logo|favicon|avatar|pixel)(?:[-_.]|$)', p.path, re.I):
+                return None
+            valid = ((p.hostname in (maryland_hosts[publisher], maryland_hosts[publisher].removeprefix('www.'))
+                      and p.path.startswith('/wp-content/uploads/')) if publisher in maryland_hosts
+                     else (p.hostname == 'images.squarespace-cdn.com'
+                           and p.path.startswith('/content/v1/69667e5d5eade41db9bed1e2/')))
+            return value if valid and re.search(r'\.(?:jpe?g|png|webp|gif)$', p.path, re.I) else None
         if publisher == 'waterloo':
             return value if (p.hostname == 'waterloo-ia.s3.amazonaws.com' and p.path.startswith('/images/')
                              and re.search(r'\.(?:jpe?g|png|webp|gif)$', p.path, re.I)) else None
