@@ -3,7 +3,7 @@ import json
 
 import pytest
 
-from roomquest import preview_worker, prizery, virginia_wix_events, visit_farmville
+from roomquest import preview_worker, prizery, red_door_104, virginia_wix_events, visit_farmville
 
 
 class DateTimeType(type):
@@ -69,6 +69,35 @@ def test_prizery_keeps_timed_show_and_holds_theatre_run(monkeypatch):
     detail = detail.replace('7:30 pm', '8:30 pm')
     with pytest.raises(ValueError, match='prizery_event_detail_mismatch'):
         prizery.collect(source(prizery.SOURCE_KEY, prizery.SOURCE_URL), fetch)
+
+
+def test_red_door_keeps_dated_workshop_and_its_art(monkeypatch):
+    monkeypatch.setattr(preview_worker, 'datetime', FixedClock)
+    url = red_door_104.SOURCE_URL + '/holiday-drawing'
+    image = ('https://images.squarespace-cdn.com/content/v1/5505f653e4b072c28ec4ab8b/'
+             '064214ca-267a-4350-b06e-853a2e7d9f86/IMG_4278.jpeg')
+    listing = (
+        '<div class="sqs-pinterest-products-wrapper">'
+        f'<a class="product" data-item-id="6a789a4cee0be167548299f9" href="{url}">'
+        f'<div class="product-title">Holiday Drawing</div><img data-image="{image}"></a>'
+        f'<a class="product sold-out" data-item-id="6a789a4cee0be167548299f8" href="{url}-sold-out">'
+        '<div class="product-title">Sold Out Class</div></a></div>')
+    detail = (
+        f'<link rel="canonical" href="{url}"><h1 class="product-title">Holiday Drawing</h1>'
+        '<script type="application/ld+json">{"@type":"LocalBusiness","name":"Red Door 104",'
+        '"address":"104 N Main St Farmville, VA, 23901 United States"}</script>'
+        '<div class="product-excerpt"><h3>Date: Saturday , November 21st, 2026</h3>'
+        '<h3>Time: 10am-12pm</h3><p>Location: Red Door 104 Studio</p></div>'
+        f'<img data-image="{image}">')
+    pages = {red_door_104.SOURCE_URL: listing, url: detail}
+    config = source(red_door_104.SOURCE_KEY, red_door_104.SOURCE_URL)
+    row, = red_door_104.collect(config, lambda location, _: pages[location])
+    assert row['starts_at'] == '2026-11-21T15:00:00+00:00'
+    assert row['ends_at'] == '2026-11-21T17:00:00+00:00'
+    assert row['venue_address'] == red_door_104.ADDRESS
+    assert row['image_url'] == image
+    pages[url] = detail.replace('Red Door 104 Studio', 'A private residence')
+    assert red_door_104.collect(config, lambda location, _: pages[location]) == []
 
 
 def test_wix_detail_preserves_venue_and_own_artwork(monkeypatch):
