@@ -20,6 +20,12 @@ def family(source_key, event_url):
         from roomquest.raleigh_html import SOURCES as RALEIGH_SOURCES, event_url as raleigh_event_url
         if source_key in RALEIGH_SOURCES:
             return 'raleigh:' + source_key if raleigh_event_url(source_key, event_url) else None
+        from roomquest.virginia_wix_events import SOURCES as WIX_SOURCES, event_url as wix_event_url
+        if source_key in WIX_SOURCES:
+            return 'virginia_wix:' + source_key if wix_event_url(source_key, event_url) else None
+        if source_key == 'visit_farmville_va':
+            from roomquest.visit_farmville import event_url as farmville_event_url
+            return 'visit_farmville' if farmville_event_url(event_url) else None
         p = urlsplit(event_url)
         if p.scheme != 'https' or p.username or p.password or p.port not in (None, 443) or p.fragment:
             return None
@@ -102,6 +108,12 @@ def image_url(value, publisher):
     if isinstance(publisher, str) and publisher.startswith('raleigh:'):
         from roomquest.raleigh_html import photo_url
         return photo_url(publisher.removeprefix('raleigh:'), value)
+    if isinstance(publisher, str) and publisher.startswith('virginia_wix:'):
+        from roomquest.virginia_wix_events import photo_url
+        return photo_url(publisher.removeprefix('virginia_wix:'), value)
+    if publisher == 'visit_farmville':
+        from roomquest.visit_farmville import photo_url
+        return photo_url(value)
     try:
         if publisher == 'waterloo':
             probe = urlsplit(value)
