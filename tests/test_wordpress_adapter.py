@@ -257,3 +257,18 @@ class MarylandCalendarTests(unittest.TestCase):
                    'platform_adapter': 'ical', 'timezone': md.ZONE,
                    'feed_url': 'https://howardcounty.librarycalendar.com/events/feed/ical'},
                   lambda *_: self.fail('unregistered feed was requested'))
+
+ def test_park_and_maryland_html_sources_finalize_with_v3(self):
+  from roomquest.preview_worker import _process_claimed_source
+  md = self.md
+  for key, kind, adapter in ((md.PG_PARKS, 'json', 'wordpress'), (md.ARTS, 'json', 'wordpress'),
+                             (md.SAVAGE, 'html', 'html'), (md.HISTORY, 'html', 'html')):
+   with self.subTest(key=key), patch('roomquest.preview_worker.preview_source') as preview, \
+        patch('roomquest.preview_worker.supabase_rpc', side_effect=[0, None]) as rpc:
+    preview.return_value = {'p_source_key': key, 'p_samples': [], 'p_future_count': 0,
+                            'p_venue_count': 0, 'p_error': None, 'p_events': [],
+                            'p_parser_capability': 'publisher_event_candidates_v1'}
+    result = _process_claimed_source({'source_key': key, 'kind': kind, 'platform_adapter': adapter})
+    self.assertEqual(result['complete'], 1)
+    self.assertEqual(rpc.call_args.args[0], 'community_collector_record_preview_v3')
+    self.assertEqual(rpc.call_args.args[1]['p_parser_capability'], 'publisher_event_candidates_v1')
