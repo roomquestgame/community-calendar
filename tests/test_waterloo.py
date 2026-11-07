@@ -63,3 +63,13 @@ def test_duplicate_conflicts_and_unbounded_result_sets_are_not_partial_success(p
     modified={**good,'title':'Changed title'}
     with pytest.raises(ValueError,match='conflicting'):parse_hits([good,modified],now=NOW)
     with pytest.raises(ValueError,match='record_limit'):parse_hits([good]*501,now=NOW)
+
+
+def test_publisher_address_padding_does_not_change_the_geocoder_identity(payload):
+    padded=next(e for e in payload['hits'] if e['id']==1209841)
+    clean=copy.deepcopy(padded)
+    clean['address']=[value.strip() for value in clean['address']]
+    a=parse_hits([padded],now=NOW)[0]
+    b=parse_hits([clean],now=NOW)[0]
+    assert a['venue_address']==b['venue_address']=='503 South Street, Waterloo, ia 50701'
+    assert a['id']==b['id'] and a['starts_at']==b['starts_at']

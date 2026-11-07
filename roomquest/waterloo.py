@@ -55,7 +55,7 @@ def parse_hits(hits, *, now=None):
             continue
         url = FEED.rstrip('/') + uri
         row = record(title, start.isoformat(), end.isoformat(), address[0],
-                     ', '.join(address[1:]), address[-1].split(',')[0], url,
+                     ', '.join(value.strip() for value in address[1:]), address[-1].split(',')[0].strip(), url,
                      'waterloo:' + ident, tz='America/Chicago', retain_until_end=True)
         if not row:
             continue
