@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta, timezone
 from time import monotonic
+from zoneinfo import ZoneInfo
 
 from roomquest import council_bluffs_library as library
 from roomquest import reviewed_chambers as chamber
@@ -59,11 +60,14 @@ def test_siouxland_holds_ambiguous_address_and_member_flags():
 
 
 def test_library_collects_two_sessions_and_keeps_only_own_programs():
+    now = datetime.now(timezone.utc)
+    day = now.date() + timedelta(days=1)
+
     def card(number, times, branch=library.VENUE, topics=True):
         labels = '<span>Arts &amp; Crafts</span>' if topics else ''
         return f"""<article class="node--type-lc-event moderation-state--published">
-        <span class="lc-date-icon__item--month">Nov</span><span class="lc-date-icon__item--day">7</span>
-        <span class="lc-date-icon__item--year">2026</span><div class="lc-event__info">
+        <span class="lc-date-icon__item--month">{day:%b}</span><span class="lc-date-icon__item--day">{day.day}</span>
+        <span class="lc-date-icon__item--year">{day.year}</span><div class="lc-event__info">
         <a class="lc-event__link" href="/event/sewing-{number}">Sewing Class</a>
         <div class="lc-event-info-item--time">{times}</div></div>
         <div class="lc-event__branch">Library Branch: {branch}</div>
@@ -79,9 +83,10 @@ def test_library_collects_two_sessions_and_keeps_only_own_programs():
     }
     rows = library.collect(source(library.KEY, library.URL, 'html', 'html'),
                            lambda url, accept: pages[url], deadline_at=monotonic() + 5,
-                           now=datetime(2026, 11, 7, 12, tzinfo=timezone.utc))
+                           now=now)
     assert [row['id'] for row in rows] == ['101', '103']
-    assert rows[1]['starts_at'] == '2026-11-07T20:00:00+00:00'
+    assert datetime.fromisoformat(rows[1]['starts_at']).astimezone(ZoneInfo(library.TIMEZONE)) == (
+        datetime(day.year, day.month, day.day, 14, tzinfo=ZoneInfo(library.TIMEZONE)))
     assert rows[1]['venue_address'] == library.ADDRESS
     assert rows[1]['publisher_categories'] == ['Arts & Crafts']
     assert rows[1]['publisher_details']['meeting_location'] == 'Meeting Room D'
