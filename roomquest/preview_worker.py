@@ -750,6 +750,9 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         elif source_key == 'visit_farmville_va':
             from roomquest.visit_farmville import collect as collect_html
             allowed_hosts = ('visitfarmville.com',)
+        elif source_key == 'council_bluffs_public_library_ia':
+            from roomquest.council_bluffs_library import HOST, collect as collect_html
+            allowed_hosts = (HOST,)
         elif source_key == 'experience_waterloo_ia':
             from roomquest.waterloo import collect as collect_html, API_HOST
             allowed_hosts = ('experiencewaterloo.com', API_HOST)
@@ -967,14 +970,21 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
     accept = "text/calendar" if adapter == "ical" else (
         "application/json" if adapter in {"wordpress", "squarespace"} else "text/html,application/xml"
     )
+    from roomquest.sarpy_tourism import KEY as SARPY_TOURISM, URL as SARPY_URL
+    sarpy_tourism = source.get("source_key") == SARPY_TOURISM
+    if sarpy_tourism and (url != SARPY_URL or adapter != "ical" or source.get("kind") != "ical"):
+        raise PreviewError("unregistered_sarpy_tourism")
     chambermaster = source.get("source_key", "").startswith("municipal_chambermaster_")
     if adapter == "squarespace":
         from roomquest.squarespace import SOURCES
         if url not in SOURCES:
             raise PreviewError("unregistered_squarespace_source")
-    payload = fetch_publisher(url, accept, respect_robots=True, deadline_at=deadline_at) if chambermaster or adapter == "squarespace" else fetch_publisher(url, accept)
+    payload = fetch_publisher(url, accept, respect_robots=True, deadline_at=deadline_at) if chambermaster or sarpy_tourism or adapter == "squarespace" else fetch_publisher(url, accept)
     try:
-        if adapter == "ical":
+        if sarpy_tourism:
+            from roomquest.sarpy_tourism import collect
+            events = collect(source, payload)
+        elif adapter == "ical":
             from roomquest.ics_adapter import parse
             events = parse(payload, {"url": url}, legacy=True)
         elif adapter == "squarespace":
@@ -1003,7 +1013,7 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         "p_future_count": len(records),
         "p_venue_count": sum(1 for row in records if row["lat"] is not None),
         "p_error": None,
-        "p_events": records if reviewed_chamber else records[:100],
+        "p_events": records if reviewed_chamber or sarpy_tourism else records[:100],
         **({"p_parser_capability": "publisher_event_candidates_v1"} if reviewed_chamber else {}),
     }
 
@@ -1116,7 +1126,7 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
     from roomquest.maryland_sources import ARTS, HTML as MARYLAND_HTML, PG_PARKS
     publisher_media = (html and (source_key in RALEIGH_SOURCES or source_key in MARYLAND_HTML or source_key in VA_WIX_SOURCES or source_key == 'visit_farmville_va')) or reviewed_chamber or (source_key in ('madison_county_parks_ia', 'think_iowa_city_ia', 'rosemont_of_virginia', ARTS, PG_PARKS) and source.get('kind') == 'json'
                        and source.get('platform_adapter') == 'wordpress') or (html and (source_key.startswith(('virginia_state_parks_', 'mycountyparks_ia_'))
-                                or source_key in ('bellevue_times_ne', 'unleashcb_ia', 'visit_mason_city_ia', 'chase_city_chamber_va', 'experience_waterloo_ia',
+                                or source_key in ('council_bluffs_public_library_ia', 'bellevue_times_ne', 'unleashcb_ia', 'visit_mason_city_ia', 'chase_city_chamber_va', 'experience_waterloo_ia',
                                                   'south_hill_chamber_va', 'clarksville_community_players_va',
                                                   'maccallum_more_va', 'mecklenburg_ymca_programs_va',
                                                   'coopers_landing_clarksville_va', 'clarksville_tourism_va',
