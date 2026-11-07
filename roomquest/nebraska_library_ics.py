@@ -57,6 +57,7 @@ def collect(source, payload):
                 or NON_PROGRAM.match(row['title']) or cancelled(row['title'], row['description'])):
             continue
         name, address, city = venue
-        row.update(venue_name=name, venue_address=address, venue_city=city, lat=None, lng=None)
+        row.update(venue_name=name, venue_address=address, venue_city=city,
+                   description=row['description'][:2000], lat=None, lng=None)
         result.append(row)
     return result
