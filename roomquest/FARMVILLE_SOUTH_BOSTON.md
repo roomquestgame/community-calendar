@@ -1,5 +1,21 @@
 # Farmville and South Boston source batch
 
+## Basketball and workshop review
+
+The Joan Perry Brock Center's WordPress calendar replayed 13 upcoming Longwood
+home games with explicit times and its documented arena address. The collector
+checks venue ID, home matchup, public status and agreement between local and UTC
+times. SOVA's public program page replayed two in-person AI workshop sessions
+with start and end times at its South Boston address. Collect only sessions
+that explicitly name that location.
+
+Farmville Chamber has no qualifying records in the reviewed window. Longwood
+campus and visual arts still need usable public occurrences. Hampden-Sydney's
+public music series has no upcoming date and time, and its main calendar mixes
+audiences. North Street's sitemap includes historic Wix details and does not
+establish the complete current schedule. The Waterworks ticket route redirected
+in guarded transport.
+
 ## Pending-route activation review
 
 The official Halifax County Chamber XML returned two explicit public tour

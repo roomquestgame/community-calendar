@@ -71,3 +71,47 @@ def test_discover_halifax_requires_complete_window_and_confirms_detail():
     row = tourism._detail(detail, url, 'Public Music', day, '6:00 PM')
     assert row['venue_address'] == '1142 Hite Drive, Buffalo Springs, VA 24529'
     assert tourism._detail(detail, url, 'Public Music', day, '5:00 PM') is None
+
+
+def test_basketball_requires_verified_home_venue_and_consistent_schedule():
+    from roomquest import jpb_basketball as basketball
+
+    event = {
+        'id': 11, 'status': 'publish', 'title': 'Longwood University Women’s Basketball vs Test',
+        'url': 'https://www.jpbcenter.com/event/longwood-vs-test/',
+        'timezone': 'UTC', 'start_date': '2026-11-17 22:30:00',
+        'utc_start_date': '2026-11-17 22:30:00', 'end_date': '2026-11-18 00:30:00',
+        'utc_end_date': '2026-11-18 00:30:00',
+        'venue': {'id': 2207, 'venue': 'Farmville, Va., Joan Perry Brock Center'},
+    }
+    result = basketball.review({'events': [
+        event, dict(event, all_day=True), dict(event, venue={**event['venue'], 'id': 30}),
+        dict(event, title='Longwood University Women’s Basketball at Test'),
+    ]})
+    row, = result['events']
+    assert row['venue']['address'] == '405 Spruce Street'
+    assert row['venue']['zip'] == '23901'
+    with pytest.raises(ValueError, match='jpb_calendar_identity_unverified'):
+        basketball.review({'events': [dict(event, venue={**event['venue'], 'city': 'Richmond'})]})
+    with pytest.raises(ValueError, match='jpb_calendar_schedule_conflict'):
+        basketball.review({'events': [dict(event, utc_start_date='2026-11-17 23:30:00')]})
+
+
+def test_sova_takes_exact_in_person_sessions_from_program():
+    from roomquest import sova_workshops as sova
+
+    now = datetime.now(timezone.utc)
+    day, other = (now + timedelta(days=delta) for delta in (2, 3))
+    page = (f'<link rel="canonical" href="{sova.URL}">'
+            '<footer>715 Wilborn Avenue South Boston, VA 24592</footer>'
+            '<div class="et_pb_column"><div class="et_pb_text_inner">'
+            '<h3>AI for Business: Test Workshop</h3>'
+            f'<p>{day:%B %d, %Y} | 12:30 PM – 2:30 PM | SOVA Innovation Hub or<br>'
+            f'{other:%B %d, %Y} | 12:30 PM – 2:30 PM | Another venue</p>'
+            '</div></div>')
+    source = dict(source_key=sova.KEY, feed_url=sova.URL, timezone=sova.ZONE,
+                  kind='html', platform_adapter='html')
+    row, = sova.collect(source, lambda *_: page)
+    assert row['venue_address'] == '715 Wilborn Avenue, South Boston, VA 24592'
+    assert row['attendance_mode'] == 'in_person'
+    assert row['event_url'] == sova.URL

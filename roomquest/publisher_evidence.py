@@ -41,6 +41,12 @@ def family(source_key, event_url):
         if source_key == 'discover_halifax_va':
             from roomquest.discover_halifax import EVENT_URL
             return source_key if EVENT_URL.fullmatch(event_url) else None
+        if source_key == 'sova_innovation_hub_va':
+            from roomquest.sova_workshops import URL
+            return source_key if event_url == URL else None
+        if source_key == 'longwood_basketball_va':
+            from roomquest.jpb_basketball import EVENT_URL
+            return source_key if EVENT_URL.fullmatch(event_url) else None
         p = urlsplit(event_url)
         if p.scheme != 'https' or p.username or p.password or p.port not in (None, 443) or p.fragment:
             return None
@@ -152,6 +158,9 @@ def image_url(value, publisher):
         from roomquest.discover_halifax import PHOTO_URL
         if re.search(r'(?:^|[-_/])(?:logo|favicon|avatar|pixel)(?:[-_.]|$)', value, re.I):
             return None
+        return value if PHOTO_URL.fullmatch(value) else None
+    if publisher == 'longwood_basketball_va':
+        from roomquest.jpb_basketball import PHOTO_URL
         return value if PHOTO_URL.fullmatch(value) else None
     try:
         if publisher == 'waterloo':
