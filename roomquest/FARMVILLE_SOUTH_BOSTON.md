@@ -1,5 +1,36 @@
 # Farmville and South Boston source batch
 
+## Follow-up intake
+
+The follow-up audit includes all 15 original routes plus the official Waterworks
+Players ticket catalogue and the Red Door 104 workshop catalogue. Use the
+existing `farmville_south_boston_live` workflow input. A publisher response
+alone does not qualify a source for activation.
+
+| Source | Follow-up evidence and release condition |
+| -- | -- |
+| Farmville Parks & Recreation | Production collected and published three events. Indoor Walking and Senior Holiday Bingo need classifier review. |
+| Visit Farmville | Production published four markets. The Hamilton screening is held on a geocoder match. The exact library address and marker are on the publisher's location page. |
+| Berry Hill Resort | Production staged six events; its exact resort address needs a verified marker before the normal publisher resumes. |
+| Halifax County government | Production paused on `robots_unavailable`. Review publisher access before an explicit reactivation. |
+| Discover Halifax | Directorist listing exposes dated cards and detail fields; reconcile advertised count, detail budget, street address formats and source overlap before enabling. Hold the Woodbine Christmas Market occurrence with conflicting published start times. |
+| Halifax County Chamber | Event details expose structured starts and ends. Verify complete listing retrieval and physical locations before selecting an HTML or ChamberMaster route. |
+| North Street Press Club | Exact Wix details parse. The public catalogue still exposes Load More and recurring occurrences. |
+| The Prizery | HTML collector supports individually timed shows and an explicitly timed reception. Date ranges alone do not establish showtimes. Use production transport validation before activating the route. |
+| Farmville Area Chamber | Publisher disallows the previously tested search route; review the public upcoming-events listing and exact detail URLs. |
+| Longwood campus | Public eligibility, stable endpoints and event venue resolution need verification. |
+| Longwood Center for the Visual Arts | Exhibition ranges need specific public hours or timed openings. |
+| Hampden-Sydney College | RSS includes mixed audiences; identify public events and exact campus venues. |
+| Longwood basketball | Respect the publisher pacing result and identify home game dates, times and venue. |
+| South Boston Speedway | Official dated schedules exist. Confirm upcoming race details, including weather rescheduling semantics. |
+| SOVA Innovation Hub | The Atom feed timestamps need to be corroborated with occurrence starts and physical locations. |
+| Waterworks Players | The official ticket page links Ludus; the ticket catalogue returned HTTP 403 during research. A dated public route is required. |
+| Red Door 104 | The official workshop catalogue has dated products. Check detail-level start times, year, availability and duplicate Visit Farmville listings. |
+
+Mecklenburg County YMCA already has an approved public-programs route. The
+six current staged programs are in Clarksville. Chase City branch programs
+need qualifying occurrence evidence before adding a separate route.
+
 One batch covers all 15 candidates. The table records the intake decision for
 each source. Candidate counts come from publisher payload replay on November 7,
 2026. Database registration, production transport validation, and publication

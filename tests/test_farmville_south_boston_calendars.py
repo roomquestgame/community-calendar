@@ -3,7 +3,7 @@ import json
 
 import pytest
 
-from roomquest import preview_worker, virginia_wix_events, visit_farmville
+from roomquest import preview_worker, prizery, virginia_wix_events, visit_farmville
 
 
 class DateTimeType(type):
@@ -35,6 +35,40 @@ def test_wix_partial_listing_fails_before_details():
     with pytest.raises(ValueError, match='pagination_requires_review'):
         virginia_wix_events.collect(source(key, url), fetch)
     assert calls == [url]
+
+
+def test_prizery_keeps_timed_show_and_holds_theatre_run(monkeypatch):
+    monkeypatch.setattr(preview_worker, 'datetime', FixedClock)
+    url = 'https://prizery.org/jukebox-saturday-night/'
+    image = 'https://prizery.org/site/wp-content/uploads/2026/11/Jukebox.jpg'
+    summary = 'Thursday, December 17 at 7:30 pm, Tickets $35'
+    listing = (
+        f'<article class="category-events"><h3 class="elementor-post__title">'
+        f'<a href="{url}">Jukebox Saturday Night</a></h3>'
+        f'<div class="elementor-post__excerpt">{summary}</div></article>'
+        '<article class="category-events"><h3 class="elementor-post__title">'
+        '<a href="https://prizery.org/a-theatre-run/">Theatre Run</a></h3>'
+        '<div class="elementor-post__excerpt">November 13-22, 2026</div></article>')
+    detail = (
+        f'<link rel="canonical" href="{url}">'
+        '<meta property="article:published_time" content="2026-11-02T18:04:03+00:00">'
+        f'<meta property="og:image" content="{image}"><h1>Jukebox Saturday Night</h1><p>{summary}</p>')
+    calls = []
+
+    def fetch(location, mime):
+        calls.append(location)
+        return listing if location == prizery.SOURCE_URL else detail
+
+    rows = prizery.collect(source(prizery.SOURCE_KEY, prizery.SOURCE_URL), fetch)
+    assert calls == [prizery.SOURCE_URL, url]
+    assert len(rows) == 1
+    assert rows[0]['starts_at'] == '2026-12-18T00:30:00+00:00'
+    assert rows[0]['venue_address'] == '700 Bruce Street, South Boston, VA 24592'
+    assert rows[0]['image_evidence_url'] == url
+    assert rows[0]['image_url'] == image
+    detail = detail.replace('7:30 pm', '8:30 pm')
+    with pytest.raises(ValueError, match='prizery_event_detail_mismatch'):
+        prizery.collect(source(prizery.SOURCE_KEY, prizery.SOURCE_URL), fetch)
 
 
 def test_wix_detail_preserves_venue_and_own_artwork(monkeypatch):
