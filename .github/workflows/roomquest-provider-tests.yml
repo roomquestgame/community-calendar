@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       farmville_south_boston_live:
-        description: 'Read-only audit of the 15 Farmville and South Boston source candidates'
+        description: 'Read-only audit of the Farmville and South Boston source batch'
         type: boolean
         required: false
         default: false

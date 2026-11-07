@@ -1,4 +1,4 @@
-"""Read-only preflight for the 15 Farmville and South Boston source candidates."""
+"""Read-only preflight for the Farmville and South Boston source batch."""
 from concurrent.futures import ThreadPoolExecutor
 import argparse
 import json
@@ -27,11 +27,13 @@ SOURCES = (
     ('north_street_press_club_va', 'html_parser', virginia_wix_events.SOURCES['north_street_press_club_va'][0]),
     ('discover_halifax_va', 'html_probe', 'https://gohalifaxva.com/events/'),
     ('halifax_county_chamber_va', 'html_probe', 'https://www.halifaxchamber.net/events/catgid/19'),
-    ('prizery_va', 'html_probe', 'https://prizery.org/events/'),
+    ('prizery_va', 'html_parser', 'https://prizery.org/events/'),
     ('south_boston_speedway_va', 'html_probe', 'https://www.southbostonspeedway.com/schedule'),
     ('sova_innovation_hub_va', 'xml_probe', 'https://coworking.sovainnovationhub.com/events/rss'),
     ('berry_hill_resort_va', 'html_parser', virginia_wix_events.SOURCES['berry_hill_resort_va'][0]),
     ('halifax_county_main_va', 'ical', preview_worker.VIRGINIA_CIVIC_ICS['halifax_county_main_va']),
+    ('waterworks_players_va', 'html_probe', 'https://waterworksplayers.ludus.com/'),
+    ('red_door_104_va', 'html_probe', 'https://www.reddoor104.com/workshops-special-events'),
 )
 
 
