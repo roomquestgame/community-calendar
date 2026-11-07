@@ -13,7 +13,7 @@ from bs4 import BeautifulSoup
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from roomquest import preview_worker, reviewed_chambers, virginia_wix_events, visit_farmville
+from roomquest import jpb_basketball, preview_worker, reviewed_chambers, sova_workshops, virginia_wix_events, visit_farmville
 
 
 SOURCES = (
@@ -23,14 +23,14 @@ SOURCES = (
     ('longwood_campus_va', 'json_probe', 'https://calendar.longwood.edu/live/json/events/max/10'),
     ('longwood_visual_arts_va', 'json_probe', 'https://lcva.longwood.edu/wp-json/tribe/events/v1/events?per_page=10'),
     ('hampden_sydney_college_va', 'rss_index', 'https://ems.hsc.edu/mastercalendar/RSSFeeds.aspx'),
-    ('longwood_basketball_va', 'html_probe', 'https://longwoodlancers.com/sports/mens-basketball/schedule'),
+    (jpb_basketball.KEY, 'wordpress', jpb_basketball.URL),
     ('north_street_press_club_va', 'html_parser', virginia_wix_events.SOURCES['north_street_press_club_va'][0]),
     ('discover_halifax_va', 'html_parser', 'https://gohalifaxva.com/events/'),
     ('halifax_county_chamber_va', 'html_probe', 'https://www.halifaxchamber.net/events/catgid/19'),
     (reviewed_chambers.HALIFAX, 'chambermaster', reviewed_chambers.SOURCES[reviewed_chambers.HALIFAX][0]),
     ('prizery_va', 'html_parser', 'https://prizery.org/events/'),
     ('south_boston_speedway_va', 'html_parser', 'https://www.southbostonspeedway.com/schedule'),
-    ('sova_innovation_hub_va', 'xml_probe', 'https://coworking.sovainnovationhub.com/events/rss'),
+    (sova_workshops.KEY, 'html_parser', sova_workshops.URL),
     ('berry_hill_resort_va', 'html_parser', virginia_wix_events.SOURCES['berry_hill_resort_va'][0]),
     ('halifax_county_main_va', 'ical', preview_worker.VIRGINIA_CIVIC_ICS['halifax_county_main_va']),
     ('waterworks_players_va', 'html_probe', 'https://waterworksplayers.ludus.com/'),
@@ -49,9 +49,9 @@ def probe(spec):
                                               allowed_hosts=(allowed_host,), deadline_at=deadline)
 
     try:
-        if route in ('html_parser', 'ical', 'chambermaster'):
+        if route in ('html_parser', 'ical', 'chambermaster', 'wordpress'):
             kind, adapter = {'html_parser': ('html', 'html'), 'ical': ('ical', 'ical'),
-                             'chambermaster': ('xml', 'growthzone')}[route]
+                             'chambermaster': ('xml', 'growthzone'), 'wordpress': ('json', 'wordpress')}[route]
             output = preview_worker.preview_source(
                 {'source_key': key, 'feed_url': url, 'timezone': 'America/New_York',
                  'kind': kind, 'platform_adapter': adapter}, deadline_at=deadline)
