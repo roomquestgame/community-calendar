@@ -28,11 +28,15 @@ def family(source_key, event_url):
                 and re.fullmatch(r'/County/[^/]+/Park/[^/]+/Events/[1-9][0-9]{0,7}/[^/]+/?', p.path)
                 and not p.query):
             return 'mycountyparks'
-        chamber_hosts = {'municipal_chambermaster_bellevue_ne': 'business.bellevuenebraska.com',
+        chamber_hosts = {'municipal_chambermaster_siouxland_ia': 'business.siouxlandchamber.com',
+                         'municipal_chambermaster_bellevue_ne': 'business.bellevuenebraska.com',
                          'municipal_chambermaster_clear_lake_ia': 'members.clearlakeiowa.com'}
         if (source_key in chamber_hosts and p.hostname == chamber_hosts[source_key]
                 and re.fullmatch(r'/events/details/(?:[a-z0-9-]|%[0-9A-F]{2})+-[1-9][0-9]*', p.path) and not p.query):
             return 'reviewed_chamber'
+        if (source_key == 'council_bluffs_public_library_ia' and p.netloc == 'www.councilbluffslibrary.org'
+                and re.fullmatch(r'/event/[a-z0-9-]+-[1-9][0-9]*', p.path) and not p.query):
+            return 'council_bluffs_library'
         if (source_key == 'experience_waterloo_ia' and p.hostname == 'experiencewaterloo.com'
                 and re.fullmatch(r'/events/[a-z0-9-]+/', p.path) and not p.query):
             return 'waterloo'

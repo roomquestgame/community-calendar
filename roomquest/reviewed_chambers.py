@@ -9,9 +9,12 @@ from roomquest.mapsee_adapter import record, timestamp, plain
 from roomquest.publisher_evidence import attach
 from roomquest.mycountyparks import cancelled
 
+SIOUXLAND = 'municipal_chambermaster_siouxland_ia'
+
 SOURCES = {
  'municipal_chambermaster_bellevue_ne': ('https://business.bellevuenebraska.com/api/events', 'America/Chicago'),
  'municipal_chambermaster_clear_lake_ia': ('https://members.clearlakeiowa.com/api/events', 'America/Chicago'),
+ SIOUXLAND: ('https://business.siouxlandchamber.com/api/events', 'America/Chicago'),
 }
 
 
@@ -31,6 +34,12 @@ def own_address(element, location):
     if (street and city and state and re.match(r'^\d{1,6}\s', street)
             and re.search(r'\b' + STREET_SUFFIX + r'\b', street, re.I)):
         return f'{street}, {city}, {state}', city
+    return address_from_location(location)
+
+
+def address_from_location(location):
+    """Return explicit street, city and state, without inheriting source locality."""
+    states = {'ia': 'IA', 'iowa': 'IA', 'ne': 'NE', 'nebraska': 'NE'}
     # Remove only a final parenthesized directions note, not arbitrary text.
     text = re.sub(r'\s*\([^()]*\)\s*$', '', location).strip()
     locality = re.search(r'\b(IA|Iowa|NE|Nebraska)\b[,. ]*(\d{4,5}(?:-\d{4})?)?[. ]*$', text, re.I)
@@ -73,6 +82,8 @@ def collect(source, payload, *, now=None):
         if (e.findtext('Status')!='APPROVED' or 'Public' not in (e.findtext('VisibilityFlags') or '').split()
                 or e.findtext('IsAllDayEvent')!='false'):
             continue
+        if key == SIOUXLAND and e.findtext('VisibilityFlags') != 'Public':
+            continue
         ident=e.findtext('EventID') or '';slug=e.findtext('Slug') or ''
         if not re.fullmatch(r'[1-9][0-9]{0,19}',ident) or not slug or len(slug)>300 or not all(c.isalnum() or c=='-' for c in slug):
             raise ValueError('publisher_identity_changed')
@@ -93,6 +104,8 @@ def collect(source, payload, *, now=None):
         if not resolved_address:
             continue
         address, event_city = resolved_address
+        if key == SIOUXLAND and re.match(r'^\d+\s*(?:&|and|/)\s*\d+', address, re.I):
+            continue
         soup = BeautifulSoup(location_html, 'html.parser')
         label = soup.find(['strong', 'b'])
         venue = plain(label.get_text()) if label else re.split(r'\b\d{1,6}\s', location, maxsplit=1)[0].strip(' ,.-')
@@ -112,7 +125,7 @@ def collect(source, payload, *, now=None):
         row['publisher_categories']=[]
         costs=plain(e.findtext('AdmissionDesc'))[:400]
         pictures={x.get('src') for x in BeautifulSoup(e.findtext('Description') or '', 'html.parser').select('img[src]')}
-        candidate=next(iter(pictures)) if len(pictures)==1 else None
+        candidate=next(iter(pictures)) if key != SIOUXLAND and len(pictures)==1 else None
         row=attach(row,key,facts={'cost':costs,'meeting_location':location[:400]},candidate=candidate)
         uid=(row['id'],row['starts_at'])
         if uid in rows and rows[uid]!=row:raise ValueError('conflicting_event_occurrence')
