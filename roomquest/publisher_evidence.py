@@ -32,6 +32,9 @@ def family(source_key, event_url):
         if source_key == 'prizery_va':
             from roomquest.prizery import EVENT_URL
             return source_key if re.fullmatch(EVENT_URL, event_url) else None
+        if source_key == 'red_door_104_va':
+            from roomquest.red_door_104 import EVENT_URL
+            return source_key if re.fullmatch(EVENT_URL, event_url) else None
         p = urlsplit(event_url)
         if p.scheme != 'https' or p.username or p.password or p.port not in (None, 443) or p.fragment:
             return None
@@ -127,6 +130,11 @@ def image_url(value, publisher):
         return photo_url(value)
     if publisher == 'prizery_va':
         from roomquest.prizery import PHOTO_URL
+        if re.search(r'(?:^|[-_/])(?:logo|favicon|avatar|pixel)(?:[-_.]|$)', value, re.I):
+            return None
+        return value if re.fullmatch(PHOTO_URL, value, re.I) else None
+    if publisher == 'red_door_104_va':
+        from roomquest.red_door_104 import PHOTO_URL
         if re.search(r'(?:^|[-_/])(?:logo|favicon|avatar|pixel)(?:[-_.]|$)', value, re.I):
             return None
         return value if re.fullmatch(PHOTO_URL, value, re.I) else None

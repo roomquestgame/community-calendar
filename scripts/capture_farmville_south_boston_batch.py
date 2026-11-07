@@ -33,7 +33,7 @@ SOURCES = (
     ('berry_hill_resort_va', 'html_parser', virginia_wix_events.SOURCES['berry_hill_resort_va'][0]),
     ('halifax_county_main_va', 'ical', preview_worker.VIRGINIA_CIVIC_ICS['halifax_county_main_va']),
     ('waterworks_players_va', 'html_probe', 'https://waterworksplayers.ludus.com/'),
-    ('red_door_104_va', 'html_probe', 'https://www.reddoor104.com/workshops-special-events'),
+    ('red_door_104_va', 'html_parser', 'https://www.reddoor104.com/workshops-special-events'),
 )
 
 
