@@ -17,6 +17,9 @@ ROSEMONT_REVIEWED_FEATURED_IMAGE = (
 def family(source_key, event_url):
     """Bind an enrolled publisher family to its own canonical event link."""
     try:
+        from roomquest.raleigh_html import SOURCES as RALEIGH_SOURCES, event_url as raleigh_event_url
+        if source_key in RALEIGH_SOURCES:
+            return 'raleigh:' + source_key if raleigh_event_url(source_key, event_url) else None
         p = urlsplit(event_url)
         if p.scheme != 'https' or p.username or p.password or p.port not in (None, 443) or p.fragment:
             return None
@@ -96,6 +99,9 @@ def family(source_key, event_url):
 def image_url(value, publisher):
     if not isinstance(value, str) or len(value) > 2000:
         return None
+    if isinstance(publisher, str) and publisher.startswith('raleigh:'):
+        from roomquest.raleigh_html import photo_url
+        return photo_url(publisher.removeprefix('raleigh:'), value)
     try:
         if publisher == 'waterloo':
             probe = urlsplit(value)

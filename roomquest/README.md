@@ -1,3 +1,23 @@
+## Raleigh first approved source batch — November 7, 2026 (prepared)
+
+Eight exact public calendars now have a bounded HTML adapter. JSON/ICS export
+URLs excluded by Squarespace robots are never fetched. Fixed-date replay gives
+83 candidates from seven sources, with original image candidates; missing
+venues and conflicting dates are held without source-center pins. Black Chamber
+remains paused for conflicting gala evidence. Both bookstore calendars retain
+visible event addresses and bounded optional detail enrichment. Shared v3
+staging, categorization, geocoding, image probes, demand and freshness remain.
+
+Local provider suite: 1,547 tests and 37 subtests pass; five Vercel build-selection
+tests pass. These are parser/worker tests, not deployed transport or publication
+proof. The companion backend migration starts seven registrations pending and
+Black Chamber paused/disabled. Use the existing manual provider workflow's
+`raleigh_live` option after collector release to collect read-only transport
+receipts. No database credentials, demand, staging or publication are part of
+that audit. The authenticated workflow browser is currently unavailable.
+
+See [the source contracts and replay provenance](../tests/fixtures/raleigh/README.md).
+
 ## Mecklenburg reviewed sources — November 6, 2026 (two ready, one held)
 
 Rosemont through WordPress JSON and Chase City Chamber through its allowed normal
@@ -304,4 +324,5 @@ event addresses. Online/phone records stay unlocated; physical venue review,
 cached/shared geocoding, publication, and classification remain downstream.
 There is no new timer or per-event detail crawl. See [CHAMBERMATE.md](CHAMBERMATE.md)
 for source registration, the public contract, limits, and focused tests.
+
 

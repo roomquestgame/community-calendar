@@ -4,6 +4,11 @@ on:
     types: [labeled]
   workflow_dispatch:
     inputs:
+      raleigh_live:
+        description: 'Read-only Raleigh source readiness through production publisher guards'
+        type: boolean
+        required: false
+        default: false
       mecklenburg_live:
         description: 'Read-only five-source Mecklenburg audit through the real shared collector (no database writes)'
         type: boolean
@@ -51,7 +56,7 @@ jobs:
       - if: github.event_name != 'workflow_dispatch' || !(inputs.mecklenburg_live || inputs.mecklenburg_batch3_live)
         run: python -m pytest tests/test_forward_geocoder.py tests/test_roomquest_entrypoint.py tests/test_mecklenburg_sources.py tests/test_clarksville_tourism.py tests/test_coopers_landing.py tests/test_good_shepherd.py tests/test_mecklenburg_batch3_pipeline.py tests/test_mecklenburg_batch3_audit.py tests/test_revize.py tests/test_south_hill_chamber.py tests/test_mecklenburg_batch2_pipeline.py tests/test_clarksville_players.py tests/test_maccallum_more.py tests/test_mecklenburg_ymca.py tests/test_mecklenburg_library_ics.py tests/test_wordpress_adapter.py tests/test_mapsee_pipeline.py tests/test_roomquest_preview.py tests/test_squarespace_pilot.py tests/test_squarespace_family.py tests/test_jsonld_family.py tests/test_community_formats.py tests/test_ics_family.py tests/test_transient_staging.py tests/test_category_worker.py tests/test_category_entrypoint.py tests/test_chambermate.py tests/test_chambermate_integration.py tests/test_preview_transport_errors.py tests/test_virginia_state_parks_html.py tests/test_virginia_event_details.py tests/test_virginia_offsite_addresses.py tests/test_virginia_relative_event_links.py tests/test_mycountyparks.py tests/test_mycountyparks_integration.py tests/test_mycountyparks_cli.py tests/test_bellevue_times.py tests/test_bellevue_times_integration.py tests/test_publisher_robots_cache.py tests/test_event_media.py tests/test_media_demand.py tests/test_media_entrypoint.py tests/test_venue_resolver.py tests/test_roomquest_scoped_rpc.py -q
       - if: github.event_name != 'workflow_dispatch' || !(inputs.mecklenburg_live || inputs.mecklenburg_batch3_live)
-        run: python -m pytest tests/test_south_carolina_parks.py tests/test_publisher_evidence.py tests/test_madison_quality.py tests/test_iowa_tourism.py tests/test_reviewed_chambers.py tests/test_waterloo.py -q
+        run: python -m pytest tests/test_raleigh_html.py tests/test_south_carolina_parks.py tests/test_publisher_evidence.py tests/test_madison_quality.py tests/test_iowa_tourism.py tests/test_reviewed_chambers.py tests/test_waterloo.py -q
       - name: Read-only MyCountyParks live verification
         id: mycountyparks_audit
         if: github.event_name == 'workflow_dispatch' && inputs.mycountyparks_live
@@ -112,4 +117,15 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-
+      - name: Read-only Raleigh batch readiness
+        id: raleigh_audit
+        if: github.event_name == 'workflow_dispatch' && inputs.raleigh_live
+        run: python scripts/capture_raleigh_batch.py --output "$RUNNER_TEMP/raleigh-batch-audit.json"
+      - name: Preserve public Raleigh audit evidence
+        if: always() && steps.raleigh_audit.outcome != 'skipped' && steps.raleigh_audit.outcome != ''
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: raleigh-batch-audit-${{ github.sha }}
+          path: ${{ runner.temp }}/raleigh-batch-audit.json
+          if-no-files-found: error
+          retention-days: 14

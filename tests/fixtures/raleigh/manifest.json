@@ -1,0 +1,67 @@
+[
+  {
+    "file": "black_chamber.html",
+    "url": "https://blackchamberraleigh.com/calendar",
+    "sha256": "e9342cba8c161875338563912cdc02b35222f8ec384d6710bc44074d54541f86"
+  },
+  {
+    "file": "blackbird-crochet.html",
+    "url": "https://www.blackbirdbooksandcoffee.com/event/2026-11-11/coffee-crochet",
+    "sha256": "19de3b094f7e29ff7526fad62815be40d069cb1cc9a9eca120c186b87d8d3a45"
+  },
+  {
+    "file": "blackbird-page1.html",
+    "url": "https://www.blackbirdbooksandcoffee.com/upcoming-events?page=1",
+    "sha256": "af239a4c203b3c97be0db1ae299b61cce87ef684e26250fbbd988194b0df2382"
+  },
+  {
+    "file": "blackbird.html",
+    "url": "https://www.blackbirdbooksandcoffee.com/upcoming-events",
+    "sha256": "680b9fc1399ec00d725cb6742b3dbce1260b5035f9e51fdba6c1349b37dcd204"
+  },
+  {
+    "file": "city_farm.html",
+    "url": "https://raleighcityfarm.org/events",
+    "sha256": "8f58663b36dd3cb65739fbde721e5de4a644fe36e4174e786007a4bc2f367a5e"
+  },
+  {
+    "file": "makrs.html",
+    "url": "https://makrs.com/events",
+    "sha256": "9a06a904034ad9e362e9afaf07d46ec3c4f975ed3a635d6fdd2d39db96e8c07f"
+  },
+  {
+    "file": "ponysaurus.html",
+    "url": "https://www.ponysaurusbrewing.com/raleigh-events",
+    "sha256": "27c548a362803480e4b2791a16d7742c2f0206ec8b68528f0161b83f7de5cdd7"
+  },
+  {
+    "file": "quail-dec.html",
+    "url": "https://quailridgebooks.com/events/2026/12",
+    "sha256": "13a6cb3a5eecb163e456da767afcba89989300ff45f42d4292c23f54e5fa05e4"
+  },
+  {
+    "file": "quail-jan.html",
+    "url": "https://quailridgebooks.com/events/2027/1",
+    "sha256": "6804728474973add499dbd4cadba6f12d4857a07c3e691fe645c957ea78f4d28"
+  },
+  {
+    "file": "quail-story-future.html",
+    "url": "https://quailridgebooks.com/event/2026-11-07/under-tree-storytime",
+    "sha256": "203682dcc2c5e9bb153150751d7ef3c338f71e8f2e5a908ca0b0a62d70491bee"
+  },
+  {
+    "file": "quail_ridge.html",
+    "url": "https://quailridgebooks.com/events",
+    "sha256": "bfdeb660333ff98f429938affb541e879d7f97520aa4799a93450df72f17ce3f"
+  },
+  {
+    "file": "triangle_popup.html",
+    "url": "https://trianglepopup.squarespace.com/events",
+    "sha256": "7e9df60930bc6f53b9f16c4e0a97ac282c656202312a5d933b0b015dc30bfea2"
+  },
+  {
+    "file": "volumes_vices.html",
+    "url": "https://www.volumesandvices.com/calendar",
+    "sha256": "7e6010a596d5a4f40d7f2b74c5d0f78d4b8a40698fca29a135f8a72a6008c018"
+  }
+]
