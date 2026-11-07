@@ -2,7 +2,7 @@
 from zoneinfo import ZoneInfo
 from datetime import datetime, timezone, timedelta
 import re
-from urllib.parse import quote
+from urllib.parse import quote, urlparse
 import xml.etree.ElementTree as ET
 from bs4 import BeautifulSoup
 from roomquest.mapsee_adapter import record, timestamp, plain
@@ -96,6 +96,12 @@ def collect(source, payload, *, now=None):
         soup = BeautifulSoup(location_html, 'html.parser')
         label = soup.find(['strong', 'b'])
         venue = plain(label.get_text()) if label else re.split(r'\b\d{1,6}\s', location, maxsplit=1)[0].strip(' ,.-')
+        # Publisher's own URL and complete address corroborate this named venue.
+        # Do not infer a venue from an act name or a city-wide default.
+        if (not venue and key == 'municipal_chambermaster_clear_lake_ia'
+                and urlparse(plain(e.findtext('URL'))).hostname in {'surfballroom.com', 'www.surfballroom.com'}
+                and re.fullmatch(r'460 (?:N|North) Shore Drive, Clear Lake, IA 50428', address, re.I)):
+            venue = 'Surf Ballroom & Museum'
         if not venue:
             venue = address  # an address-only publisher label stays explicit, never invented
         url=base+'/events/details/'+quote(slug if slug.endswith('-'+ident) else slug+'-'+ident,safe='-')

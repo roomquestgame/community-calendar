@@ -96,3 +96,22 @@ def test_valid_but_shared_resolver_unsupported_plaza_address_is_held():
     key=next(iter(SOURCES))
     rows=collect(source(key),(ROOT/'bellevue.xml').read_text(),now=NOW)
     assert not any(r['id']=='2902' for r in rows)
+
+
+def test_surf_label_requires_own_publisher_domain_and_complete_address():
+    key='municipal_chambermaster_clear_lake_ia'
+    root=ET.parse(ROOT/'clear-lake.xml').getroot()
+    event=next(e for e in root if e.findtext('URL')=='http://surfballroom.com'
+               and '460 N Shore Drive' in (e.findtext('LocationDesc') or ''))
+    isolated=ET.Element('ArrayOfEventDisplay');isolated.append(event)
+    row=collect(source(key),ET.tostring(isolated),now=NOW)[0]
+    assert row['venue_name']=='Surf Ballroom & Museum'
+    assert '460 N Shore Drive' in row['publisher_details']['meeting_location']
+    identity=(row['id'],row['starts_at'],row['ends_at'],row['venue_address'])
+    event.find('URL').text='https://surfballroom.com.unrelated.example/'
+    other=collect(source(key),ET.tostring(isolated),now=NOW)[0]
+    assert other['venue_name']==other['venue_address']
+    assert identity==(other['id'],other['starts_at'],other['ends_at'],other['venue_address'])
+    event.find('URL').text='http://surfballroom.com'
+    event.find('LocationDesc').text='461 N Shore Drive, Clear Lake, Iowa, 50428'
+    assert collect(source(key),ET.tostring(isolated),now=NOW)[0]['venue_name']!='Surf Ballroom & Museum'
