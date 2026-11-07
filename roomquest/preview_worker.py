@@ -629,8 +629,13 @@ SUPPORTED = {"ical", "jsonld", "growthzone", "wordpress", "squarespace"}
 
 
 def preview_source(source: dict, *, deadline_at=None) -> dict:
-    from roomquest import maryland_sources
+    from roomquest import maryland_sources, nebraska_library_ics
     source_key = source.get('source_key')
+    if source_key in nebraska_library_ics.SOURCES:
+        try:
+            nebraska_library_ics.validate(source)
+        except ValueError as exc:
+            raise PreviewError(str(exc)) from exc
     if source.get("kind", "ical") == "ical" and source.get("platform_adapter") == "ical":
         from roomquest.ics_adapter import parse
         source_key = source.get("source_key", "")
@@ -646,7 +651,11 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                 raise PreviewError("unregistered_mapsee_source")
         deadline = min(monotonic() + 20, deadline_at - 8 if deadline_at is not None else float("inf"))
         try:
-            if source_key in maryland_sources.ICS:
+            if source_key in nebraska_library_ics.SOURCES:
+                payload = fetch_publisher(source["feed_url"], "text/calendar", respect_robots=True,
+                                          deadline_at=deadline, allowed_hosts=(urlparse(source["feed_url"]).hostname,))
+                records = nebraska_library_ics.collect(source, payload)
+            elif source_key in maryland_sources.ICS:
                 records = maryland_sources.collect_ics(source, lambda url, accept: fetch_publisher(
                     url, accept, respect_robots=True, deadline_at=deadline,
                     allowed_hosts=(urlparse(maryland_sources.ICS[source_key]).hostname,)))
