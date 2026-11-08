@@ -44,6 +44,12 @@ def family(source_key, event_url):
         if source_key == 'sova_innovation_hub_va':
             from roomquest.sova_workshops import URL
             return source_key if event_url == URL else None
+        from roomquest.nebraska_venues import EVENT_URLS as NEBRASKA_EVENT_URLS
+        if source_key in NEBRASKA_EVENT_URLS:
+            return source_key if re.fullmatch(NEBRASKA_EVENT_URLS[source_key], event_url) else None
+        if source_key == 'hurrdat_sports_bar_ne':
+            from roomquest.hurrdat_calendar import EVENT_URL
+            return source_key if re.fullmatch(EVENT_URL, event_url) else None
         if source_key == 'longwood_basketball_va':
             from roomquest.jpb_basketball import EVENT_URL
             return source_key if EVENT_URL.fullmatch(event_url) else None
@@ -159,6 +165,13 @@ def image_url(value, publisher):
         if re.search(r'(?:^|[-_/])(?:logo|favicon|avatar|pixel)(?:[-_.]|$)', value, re.I):
             return None
         return value if PHOTO_URL.fullmatch(value) else None
+    from roomquest.nebraska_venues import PHOTO_URLS as NEBRASKA_PHOTO_URLS
+    if publisher in (*NEBRASKA_PHOTO_URLS, 'hurrdat_sports_bar_ne'):
+        from roomquest.hurrdat_calendar import PHOTO_URL as HURRDAT_PHOTO_URL
+        pattern = NEBRASKA_PHOTO_URLS.get(publisher, HURRDAT_PHOTO_URL)
+        if re.search(r'(?:^|[-_/])(?:logo|favicon|avatar|pixel)(?:[-_.]|$)', value, re.I):
+            return None
+        return value if re.fullmatch(pattern, value, re.I) else None
     if publisher == 'longwood_basketball_va':
         from roomquest.jpb_basketball import PHOTO_URL
         return value if PHOTO_URL.fullmatch(value) else None
