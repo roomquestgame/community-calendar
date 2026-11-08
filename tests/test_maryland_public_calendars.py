@@ -64,3 +64,25 @@ def test_joint_park_pdf_uses_calendar_columns_and_keeps_sites_separate(monkeypat
     assert row['starts_at'] == '2026-11-09T15:00:00+00:00'
     assert row['ends_at'] == '2026-11-09T19:00:00+00:00'
     assert row['venue_address'] == '23222 Georgia Avenue, Brookeville, MD 20833'
+
+
+def test_maryland_public_facts_use_v2_preview_contract(monkeypatch):
+    source_key = calendars.ANNE
+    source = {'source_key': source_key, 'feed_url': calendars.SOURCES[source_key],
+              'kind': 'html', 'platform_adapter': 'html', 'timezone': calendars.ZONE}
+    calls = {}
+
+    def record_rpc(name, payload):
+        calls[name] = payload
+        return 0
+
+    monkeypatch.setattr(preview_worker, 'fetch_publisher',
+                        lambda *args, **kwargs: '<div class="zn-event-w-date"></div>')
+    monkeypatch.setattr(preview_worker, 'supabase_rpc', record_rpc)
+    result = preview_worker._process_claimed_source(source)
+    assert result['complete'] == 1
+    assert calls['community_collector_record_staged_events']['p_events'] == []
+    assert set(calls['community_collector_record_preview_v2']) == {
+        'p_source_key', 'p_samples', 'p_future_count', 'p_venue_count', 'p_error',
+        'p_publisher_crawl_delay_seconds', 'p_publisher_retry_after_seconds', 'p_publisher_wait_unbounded',
+    }

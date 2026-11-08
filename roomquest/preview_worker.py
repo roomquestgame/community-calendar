@@ -859,6 +859,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                   "p_future_count": len(records),
                   "p_venue_count": sum(1 for row in records if row["lat"] is not None),
                   "p_error": None, "p_events": records}
+        if source_key in maryland_public_calendars.SOURCES or source_key in maryland_park_programs.SOURCES:
+            return result  # These public facts use the v2 preview RPC without media evidence.
         if source_key.startswith("virginia_state_parks_"):
             # Capability evidence also accompanies successful empty results.
             result["p_parser_capability"] = IMAGE_EXTRACTOR_VERSION
