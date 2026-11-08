@@ -22,7 +22,7 @@ from bs4 import BeautifulSoup
 from icalendar import Calendar
 
 from roomquest.mapsee_adapter import plain, record, timestamp
-from roomquest.publisher_evidence import attach
+from roomquest.publisher_evidence import attach, optional_description
 
 SOURCE_KEY = 'clarksville_tourism_va'
 HOST = 'tourism.visitclarksvilleva.com'
@@ -446,7 +446,7 @@ def parse_detail(payload, listing, *, now=None):
             or (terminal and start < current - timedelta(days=STATUS_LOOKBACK_DAYS))
             or (not terminal and (end or start + timedelta(hours=3)) <= current)):
         return None
-    description_node = _one(section, '[itemprop="description"]', required=not terminal)
+    description_node = _one(section, '[itemprop="description"]', required=False)
     narrative = _text(description_node)
     subtitle = _one(section, '.page-header h3', required=False)
     full_narrative = (plain(subtitle.get_text()) + '\n' if subtitle else '') + narrative
@@ -472,8 +472,6 @@ def parse_detail(payload, listing, *, now=None):
             re.search(r'\bpoker\b', title, re.I) and re.search(r'\bpool tournament\b', narrative, re.I)
             or re.search(r'\bpool\b', title, re.I) and re.search(r'\bpoker tournament\b', narrative, re.I)
         )
-        if not narrative:
-            raise EventHold('publisher_description_missing')
     venue_node = _one(section, '.event-details [itemprop="location"]', required=False)
     address_node = _one(section, '.event-details [itemprop="address"]', required=False)
     venue = plain(venue_node.get_text()) if venue_node else ''
@@ -501,6 +499,8 @@ def parse_detail(payload, listing, *, now=None):
     # conflicting prose out of both the event and its classification evidence.
     if activity_conflict:
         narrative = ''
+    elif not terminal:
+        narrative = optional_description(SOURCE_KEY, listing.identity, narrative)
     row.update(venue_name=venue, venue_address=address, venue_city=city, timezone=TIMEZONE,
                description=narrative[:MAX_DESCRIPTION], publisher_status=status,
                location_provenance=('publisher_explicit_status_without_current_venue' if not address

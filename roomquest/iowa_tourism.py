@@ -12,7 +12,7 @@ from bs4 import BeautifulSoup, NavigableString
 from icalendar import Calendar
 
 from roomquest.mapsee_adapter import record, timestamp, plain
-from roomquest.publisher_evidence import attach
+from roomquest.publisher_evidence import attach, optional_description
 from roomquest.mycountyparks import cancelled
 
 TZ = ZoneInfo('America/Chicago')
@@ -127,9 +127,7 @@ def parse_council(html, *, now=None, expected_month=None):
                          retain_until_end=True)
             if not row:
                 continue
-            if not narrative:
-                raise ValueError('publisher_description_missing')
-            row['description'] = narrative
+            row['description'] = optional_description('unleashcb_ia', row['id'], narrative)
             image = card.select_one('a[href] > img[src]')
             candidate = urljoin(url, image['src']) if image else None
             rows.append(attach(row, 'unleashcb_ia', candidate=candidate))
@@ -306,8 +304,7 @@ def collect_think(source, fetch, *, deadline_at=None, now=None):
                 row = parsed[0]
                 if cancelled(row['title'], row.get('description', '')):
                     raise ValueError('publisher_cancelled')
-                if not row.get('description'):
-                    raise ValueError('publisher_description_missing')
+                row['description'] = optional_description(key, row['id'], row.get('description'))
                 venue = item.get('venue') or {}
                 if not re.search(r'\d+\s+\S+', plain(venue.get('address'))):
                     row['venue_address'] = ''
