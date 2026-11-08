@@ -511,6 +511,7 @@ def parse_schedule(value):
 
     def day(value):
         date_str = re.sub(r"(?<=\w)\.(?=\s+\d)", "", value).replace(",", "")
+        date_str = re.sub(r"^Sept(?=\s)", "Sep", date_str, flags=re.IGNORECASE)
         for fmt in ("%b %d %Y", "%B %d %Y"):
             try:
                 return datetime.strptime(date_str, fmt).date()
