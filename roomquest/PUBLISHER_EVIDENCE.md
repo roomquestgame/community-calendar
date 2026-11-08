@@ -41,6 +41,12 @@ Iowa City and Clarksville Tourism use this policy. Preserve descriptions
 that the publisher provides and evaluate any access or status evidence
 before accepting the occurrence.
 
+Council Bluffs Public Library, Mason City, Experience Waterloo, Discover
+Halifax, the reviewed ChamberMaster feeds and MyCountyParks also retain
+verified occurrences with missing prose. Existing end-time evidence stays
+optional. A missing narrative still matters when it supplies the actual
+session schedule, as at Cooper's Landing, D&G Outdoors and The Prizery.
+
 When a calendar listing, detail heading and structured export agree on the
 event title, a disagreement in optional marketing copy can be reported as a
 warning. Keep the corroborated title and drop the conflicting description

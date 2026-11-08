@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 
 from roomquest.mapsee_adapter import plain, record
 from roomquest.mycountyparks import cancelled
-from roomquest.publisher_evidence import attach
+from roomquest.publisher_evidence import attach, optional_description
 
 KEY = 'council_bluffs_public_library_ia'
 HOST = 'www.councilbluffslibrary.org'
@@ -39,7 +39,7 @@ def _program(card, day, now):
     room = _text(card, '.lc-event__room').removeprefix('Room: ').strip()
     topics = [plain(tag.get_text(' ', strip=True)) for tag in card.select('.lc-event__program-types span')]
     if (branch != VENUE or not room or re.search(r'\boff[- ]?site\b', room, re.I)
-            or not topics or card.select_one('.lc-event__body') is None):
+            or not topics):
         return None
     times = _TIME_RANGE.fullmatch(_text(card, '.lc-event__info .lc-event-info-item--time'))
     if not times:
@@ -55,13 +55,14 @@ def _program(card, day, now):
         raise ValueError('library_calendar_event_identity')
     title = plain(link.get_text(' ', strip=True))
     description = _text(card, '.lc-event__body')[:2000]
-    if not title or not description or cancelled(title, description):
+    if not title or cancelled(title, description):
         return None
     url = urljoin(URL, link['href'])
     row = record(title, start.isoformat(), end.isoformat(), VENUE, ADDRESS, 'Council Bluffs',
                  url, identity[1], ', '.join(topics), tz=TIMEZONE, retain_until_end=True)
     if row:
-        row.update(description=description, publisher_categories=topics[:20])
+        row.update(description=optional_description(KEY, row['id'], description),
+                   publisher_categories=topics[:20])
         audience = _text(card, '.lc-event__age-groups').removeprefix('Age Group: ').strip()
         registration = ('Registration required' if card.select_one('.lc-event__registration-icon') else '')
         attach(row, KEY, facts={'meeting_location': room, 'audience': audience, 'registration': registration})

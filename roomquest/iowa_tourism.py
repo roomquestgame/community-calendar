@@ -196,7 +196,7 @@ def parse_mason(html, url, *, now=None):
         end = None
     location, address = section.select_one('[itemprop="location"]'), section.select_one('[itemprop="address"]')
     narrative = text(section.select_one('[itemprop="description"]'))
-    if not location or not address or not narrative:
+    if not location or not address:
         raise ValueError('publisher_event_facts_missing')
     if cancelled(title, narrative):
         raise ValueError('publisher_cancelled')
@@ -207,7 +207,7 @@ def parse_mason(html, url, *, now=None):
                  'locable:' + path[3], tz=TZ.key, retain_until_end=True)
     if not row:
         return None
-    row['description'] = narrative
+    row['description'] = optional_description('visit_mason_city_ia', row['id'], narrative)
     photo = section.select_one('.blog-show-image img[itemprop="image"][src]')
     return attach(row, 'visit_mason_city_ia', candidate=photo['src'] if photo else None)
 
