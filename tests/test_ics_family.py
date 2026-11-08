@@ -15,6 +15,22 @@ def test_shared_dispatch_preserves_identity_and_transport(key):
  assert out['p_events'][0]['id']=='event-0' and out['p_events'][0]['lat']==35.8
  assert out['p_source_key']==key and out['p_future_count']==1
  assert fetch.call_args.kwargs['respect_robots']==key.startswith('municipal_mapsee_')
+
+
+def test_reviewed_raleigh_legacy_ics_checks_publisher_and_keeps_description():
+    key = "municipal_78278a6e98fb935c1bade8f8"
+    reviewed = {**source(key), "feed_url": "https://unitedarts.org/events/?ical=1"}
+    raw = feed().replace("SUMMARY:", "DESCRIPTION:Make a creation.\r\nSUMMARY:")
+    with patch("roomquest.preview_worker.fetch_publisher", return_value=raw) as fetch:
+        out = preview_source(reviewed)
+        with pytest.raises(PreviewError, match="unregistered_raleigh_catalog_ics"):
+            preview_source(source(key))
+    fetch.assert_called_once()
+    assert fetch.call_args.kwargs["respect_robots"] is True
+    assert fetch.call_args.kwargs["allowed_hosts"] == ("unitedarts.org",)
+    assert out["p_events"][0]["description"] == "Make a creation."
+
+
 @pytest.mark.parametrize('legacy',[False,True])
 def test_large_feed_fails_instead_of_truncating(legacy):
  with pytest.raises(ValueError,match='source_record_limit'):parse(feed(501),{'url':'https://venue.example.org/calendar.ics'},legacy=legacy)
