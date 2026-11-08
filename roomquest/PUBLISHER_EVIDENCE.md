@@ -33,6 +33,14 @@ reported separately. Code or a green workflow alone is not production acceptance
 
 ## Optional facts and event holds
 
+Use `optional_description` after validating the occurrence. A missing
+description produces a warning and an empty field. When a trusted feed
+already provides a summary, keep it if an optional detail page supplies
+no additional prose. Independence Library, Unleash Council Bluffs, Think
+Iowa City and Clarksville Tourism use this policy. Preserve descriptions
+that the publisher provides and evaluate any access or status evidence
+before accepting the occurrence.
+
 When a calendar listing, detail heading and structured export agree on the
 event title, a disagreement in optional marketing copy can be reported as a
 warning. Keep the corroborated title and drop the conflicting description

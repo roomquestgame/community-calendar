@@ -1,11 +1,22 @@
 """Evidence from already-fetched publisher content; never a fetch/crawl policy."""
 from __future__ import annotations
 
+import logging
 import re
 from urllib.parse import parse_qsl, urlsplit
 
 DETAILS_VERSION = 'publisher_event_details_v1'
 IMAGE_VERSION = 'publisher_event_candidates_v1'
+log = logging.getLogger(__name__)
+
+
+def optional_description(source_key, occurrence_id, description):
+    """Keep missing prose out of publication decisions after core checks."""
+    if description:
+        return description
+    log.warning('publisher_field_warning source=%s occurrence=%r field=description reason=missing',
+                source_key, str(occurrence_id)[:180])
+    return ''
 
 # Reviewed 2026-11-06: TEC event 7745 explicitly features attachment 7634.
 # This exact vendor artwork remains a candidate subject to the normal byte probe.

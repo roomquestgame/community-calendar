@@ -200,6 +200,15 @@ def test_conflicting_description_does_not_hide_a_confirmed_poker_title():
     assert event.row['description'] == ''
 
 
+def test_missing_description_keeps_a_corroborated_event(caplog):
+    soup = detail('poker_conflict.html')
+    soup.select_one('[itemprop="description"]').decompose()
+    event = parse(soup, POKER)
+    assert event.row['title'] == 'Weekly Poker Tournament'
+    assert event.row['description'] == ''
+    assert 'field=description reason=missing' in caplog.text
+
+
 def test_unreviewed_same_named_profile_address_conflict_still_holds():
     soup = detail('poker_conflict.html')
     soup.select_one('.adr [itemprop="address"]').string = '602 Virginia Avenue, Clarksville, VA 23927'

@@ -142,3 +142,21 @@ def test_independence_detail_cancellation_is_withheld():
                 'event_url':'https://independenceia.gov/calendar.aspx?EID=5975'}]
     with patch('roomquest.preview_worker.fetch_publisher', return_value=detail) as fetch:
         assert enrich(records, {'source_key':KEY,'feed_url':FEED}, fetch, float('inf')) == []
+
+
+def test_independence_keeps_feed_summary_if_detail_has_no_description(caplog):
+    from pathlib import Path
+    from bs4 import BeautifulSoup
+    from roomquest.iowa_civicplus import enrich, KEY, FEED
+
+    path = Path(__file__).parent / 'fixtures' / 'iowa'
+    detail = BeautifulSoup((path/'independence-lego.html').read_text(), 'html.parser')
+    detail.select_one('[itemprop="description"]').decompose()
+    record = {'id': '5975', 'title': 'Legos @ the Library', 'description': 'Lego activity.',
+              'starts_at': '2026-11-17T00:00:00+00:00',
+              'event_url': 'https://independenceia.gov/calendar.aspx?EID=5975'}
+    event, = enrich([record], {'source_key': KEY, 'feed_url': FEED},
+                    lambda *args, **kwargs: str(detail), float('inf'))
+    assert event['description'] == 'Lego activity.'
+    assert event['venue_address'] == '805 1st St East, Independence, IA 50644'
+    assert 'field=description reason=missing' in caplog.text
