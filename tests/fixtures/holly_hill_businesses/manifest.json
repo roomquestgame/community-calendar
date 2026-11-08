@@ -1,0 +1,74 @@
+[
+  {
+    "file": "d_and_g_listing.html",
+    "url": "https://dandgoutdoors.com/hunt/",
+    "captured_at": "2026-11-08",
+    "http_status": 200,
+    "original_sha256": "31466e91b7fc85fe4ec96bfafec148dd53e194583b1f708d08b46b8dd83b1c45",
+    "fixture_sha256": "884dbcc896dd6dada5d4ebdac558ed1b4723bbb798943624c3efb07514b92921",
+    "note": "Relevant unmodified publisher title/canonical/JSON-LD/main content, with irrelevant navigation, scripts, cart forms and social widgets removed. D&G footer retains the exact publisher hunt/address statement."
+  },
+  {
+    "file": "d_and_g_december.html",
+    "url": "https://dandgoutdoors.com/hunt/december-12-2026-200-birds/",
+    "captured_at": "2026-11-08",
+    "http_status": 200,
+    "original_sha256": "19af754b8cb3755de9c4f4a305951f43e9627bf1001555b519a7c8ab2146676e",
+    "fixture_sha256": "b04e0d08cbbc86cd5223446cf1c35b0ec7dba074df7b33e5ce62cf6b29499e37",
+    "note": "Relevant unmodified publisher title/canonical/JSON-LD/main content, with irrelevant navigation, scripts, cart forms and social widgets removed. D&G footer retains the exact publisher hunt/address statement."
+  },
+  {
+    "file": "d_and_g_january_morning.html",
+    "url": "https://dandgoutdoors.com/hunt/january-9-2027-200-birds-morning/",
+    "captured_at": "2026-11-08",
+    "http_status": 200,
+    "original_sha256": "62a76545b3c7669809fd7fd91513f3786b75c77fc3b1ba111165524fc72ff5f7",
+    "fixture_sha256": "7ce45f002ff98f82d7e3d2a4108f402be7b143e102812dfcbb2f3278f365afaa",
+    "note": "Relevant unmodified publisher title/canonical/JSON-LD/main content, with irrelevant navigation, scripts, cart forms and social widgets removed. D&G footer retains the exact publisher hunt/address statement."
+  },
+  {
+    "file": "d_and_g_january_afternoon.html",
+    "url": "https://dandgoutdoors.com/hunt/january-9-2027-200-birds-afternoon/",
+    "captured_at": "2026-11-08",
+    "http_status": 200,
+    "original_sha256": "fcdac3fc6d9d3bd421cc79a025bbca0e383570b8864c6fba0f4ba40fca92d426",
+    "fixture_sha256": "645b15da8059f450e7c8afc29fe1519d06186ba9b3082a71c7659eca6bbdbc7e",
+    "note": "Relevant unmodified publisher title/canonical/JSON-LD/main content, with irrelevant navigation, scripts, cart forms and social widgets removed. D&G footer retains the exact publisher hunt/address statement."
+  },
+  {
+    "file": "d_and_g_january_bonus.html",
+    "url": "https://dandgoutdoors.com/hunt/january-30-2027-400-birds-bonus-hunt/",
+    "captured_at": "2026-11-08",
+    "http_status": 200,
+    "original_sha256": "65758050a896b29b11105d67d25e143b18134a5959bd51de4eea09cec611588f",
+    "fixture_sha256": "706019aba2b9656b713e5be20dea1b181b1e3e52975315d75cca5785b43a6cf5",
+    "note": "Relevant unmodified publisher title/canonical/JSON-LD/main content, with irrelevant navigation, scripts, cart forms and social widgets removed. D&G footer retains the exact publisher hunt/address statement."
+  },
+  {
+    "file": "d_and_g_february.html",
+    "url": "https://dandgoutdoors.com/hunt/february-27-2027-400-birds-bonus-hunt/",
+    "captured_at": "2026-11-08",
+    "http_status": 200,
+    "original_sha256": "240d4705d19ce7446f1faee1743ac3ad3e9b8384b6dd61472fa1537330e2877a",
+    "fixture_sha256": "8ef8109f517cd275c620d7029ead7bb1e274593e3600fd90b9a61157ffd4ecfd",
+    "note": "Relevant unmodified publisher title/canonical/JSON-LD/main content, with irrelevant navigation, scripts, cart forms and social widgets removed. D&G footer retains the exact publisher hunt/address statement."
+  },
+  {
+    "file": "d_and_g_march.html",
+    "url": "https://dandgoutdoors.com/hunt/march-6-2027-200-birds/",
+    "captured_at": "2026-11-08",
+    "http_status": 200,
+    "original_sha256": "751fe4a5f4ef4b1e8a0d77411f635220bbe6bf4e1993ba86f0e9edb0a811afa4",
+    "fixture_sha256": "ea1c85ce19b7d2f4afe4cfc9aa85d236cc41f997cdf22f7c9b59ce56e9304f0f",
+    "note": "Relevant unmodified publisher title/canonical/JSON-LD/main content, with irrelevant navigation, scripts, cart forms and social widgets removed. D&G footer retains the exact publisher hunt/address statement."
+  },
+  {
+    "file": "outside_inn.html",
+    "url": "https://outsideinncampground.com/upcoming-events/",
+    "captured_at": "2026-11-08",
+    "http_status": 200,
+    "original_sha256": "766866ec53b255687b3eca7dcd2932108aab2019a6fbb6b6d693254cb8c608fe",
+    "fixture_sha256": "adaca7b857e09f1da386289995ad42ba685b6e8ffb23c233ca4694aa5103f118",
+    "note": "Relevant unmodified publisher title/canonical/JSON-LD/main content, with irrelevant navigation, scripts, cart forms and social widgets removed. D&G footer retains the exact publisher hunt/address statement."
+  }
+]

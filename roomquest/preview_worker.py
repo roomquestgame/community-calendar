@@ -250,16 +250,31 @@ def render_good_shepherd_calendar(*, nonce: str, args: str,
                        'js_args[debug]': 'false'})
 
 
+def render_elloree_calendar(*, deadline_at: float | None = None) -> str:
+    """Read Elloree's exact public calendar action with no caller-supplied body."""
+    return _fetch_publisher_request(
+        'https://connect.elloreesc.com/api/functions/getPublicCalendarEvents',
+        'application/json', respect_robots=True, deadline_at=deadline_at,
+        allowed_hosts=('connect.elloreesc.com',), calendar_json={})
+
+
 def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = False,
                              deadline_at: float | None = None, allowed_hosts=None,
-                             calendar_form=None) -> str | bytes:
+                             calendar_form=None, calendar_json=None) -> str | bytes:
     """Use the shared bounded transport for approved HTTPS publisher content.
 
     Keep URL/DNS validation and bounded downloads. As in upstream Udell,
     fetch registered calendar endpoints directly without a robots preflight;
     destination URLs still pass public-network checks before each GET redirect.
-    The one reviewed display-only POST is source scoped and never redirected.
+    Reviewed display-only POSTs are source scoped and never redirected.
     """
+    if calendar_json is not None:
+        if (calendar_form is not None
+                or url != 'https://connect.elloreesc.com/api/functions/getPublicCalendarEvents'
+                or accept != 'application/json' or not respect_robots
+                or allowed_hosts != ('connect.elloreesc.com',)
+                or not isinstance(calendar_json, dict) or calendar_json):
+            raise PreviewError('invalid_calendar_render_parameters')
     if calendar_form is not None:
         # A second boundary keeps internal callers from turning this into an
         # arbitrary write-capable transport. Never replay a POST on redirect.
@@ -286,6 +301,9 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
     if calendar_form is not None:
         headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8'
         headers['Referer'] = 'https://goodshepherdsouthhill.org/welcome/calendar/'
+    elif calendar_json is not None:
+        headers['Content-Type'] = 'application/json'
+        headers['Referer'] = 'https://elloreesc.com/elloree-town-calendar/'
     current = url
     deadline = min(deadline_at or float("inf"), monotonic() + 18)
     with requests.Session() as session:
@@ -305,9 +323,12 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
             try:
                 remaining = max(0.1, deadline - monotonic())
                 timeout = (min(3,remaining/2), min(7,remaining/2)) if respect_robots else (5,12)
-                if calendar_form is None:
+                if calendar_form is None and calendar_json is None:
                     response = session.get(current, headers=headers, timeout=timeout,
                                            stream=True, allow_redirects=False)
+                elif calendar_json is not None:
+                    response = session.post(current, json=calendar_json, headers=headers,
+                                            timeout=timeout, stream=True, allow_redirects=False)
                 else:
                     response = session.post(current, data=calendar_form, headers=headers,
                                             timeout=timeout, stream=True, allow_redirects=False)
@@ -318,7 +339,7 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
                         response.close()
                         raise
                 if response.status_code in (301, 302, 303, 307, 308):
-                    if calendar_form is not None:
+                    if calendar_form is not None or calendar_json is not None:
                         response.close()
                         raise PreviewError('calendar_render_redirect_blocked')
                     from urllib.parse import urljoin
@@ -335,6 +356,11 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
                 if (calendar_form is not None and
                         response.headers.get('Content-Type', '').split(';', 1)[0].strip().lower()
                         != 'text/html'):
+                    response.close()
+                    raise PreviewError('invalid_calendar_render_content_type')
+                if (calendar_json is not None and
+                        response.headers.get('Content-Type', '').split(';', 1)[0].strip().lower()
+                        != 'application/json'):
                     response.close()
                     raise PreviewError('invalid_calendar_render_content_type')
                 length = int(response.headers.get("Content-Length") or 0)
@@ -646,7 +672,34 @@ SUPPORTED = {"ical", "jsonld", "growthzone", "wordpress", "squarespace"}
 
 def preview_source(source: dict, *, deadline_at=None) -> dict:
     from roomquest import maryland_sources, nebraska_library_ics
+    from roomquest import holly_hill_sources
     source_key = source.get('source_key')
+    if source_key in holly_hill_sources.SOURCES:
+        try:
+            spec = holly_hill_sources.validate(source)
+            deadline = min(monotonic() + 36, deadline_at - 8 if deadline_at is not None else float('inf'))
+            records = holly_hill_sources.collect(
+                source, lambda url, accept: fetch_publisher(
+                    url, accept, respect_robots=True, deadline_at=deadline,
+                    allowed_hosts=spec['hosts']), deadline_at=deadline,
+                fetch_elloree=lambda: render_elloree_calendar(deadline_at=deadline))
+        except PreviewError:
+            raise
+        except (ValueError, TypeError, KeyError, OverflowError) as exc:
+            reason = str(exc)
+            raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}', reason) else 'invalid_holly_hill_payload') from exc
+        if len(records) > 500:
+            raise PreviewError('holly_hill_record_limit')
+        samples = records[:MAX_PREVIEWS]
+        while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
+            samples.pop()
+        result = {'p_source_key': source_key, 'p_samples': samples,
+                  'p_future_count': len(records),
+                  'p_venue_count': sum(row.get('lat') is not None for row in records),
+                  'p_error': None, 'p_events': records}
+        if holly_hill_sources.publisher_media(source):
+            result['p_parser_capability'] = 'publisher_event_candidates_v1'
+        return result
     if source_key in nebraska_library_ics.SOURCES:
         try:
             nebraska_library_ics.validate(source)
@@ -1193,6 +1246,8 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
                                                   'good_shepherd_food_pantry_south_hill_va'))) or source.get('platform_adapter') == 'south_carolina_parks' or (
                         source_key == 'south_hill_town_va' and source.get('kind') == 'json'
                         and source.get('platform_adapter') == 'revize')
+    from roomquest.holly_hill_sources import publisher_media as holly_hill_media
+    publisher_media = publisher_media or holly_hill_media(source)
     preview_rpc = ("community_collector_record_preview_v3"
                    if publisher_media
                    else "community_collector_record_preview_v2" if html
@@ -1269,3 +1324,4 @@ def collect_bulk_previews(max_sources=15, concurrency=3, deadline_seconds=48) ->
                 for key in ("complete", "failed", "staged"):
                     result[key] += item[key]
     return result
+

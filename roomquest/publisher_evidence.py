@@ -17,6 +17,12 @@ ROSEMONT_REVIEWED_FEATURED_IMAGE = (
 def family(source_key, event_url):
     """Bind an enrolled publisher family to its own canonical event link."""
     try:
+        from roomquest.holly_hill_businesses import SOURCES as HOLLY_BUSINESSES, event_url as holly_business_url
+        if source_key in HOLLY_BUSINESSES:
+            return 'holly_hill:' + source_key if holly_business_url(source_key, event_url) else None
+        from roomquest.holly_hill_civic import SOURCES as HOLLY_CIVIC, event_url as holly_civic_url
+        if source_key in HOLLY_CIVIC:
+            return 'holly_hill:' + source_key if holly_civic_url(source_key, event_url) else None
         from roomquest.raleigh_html import SOURCES as RALEIGH_SOURCES, event_url as raleigh_event_url
         if source_key in RALEIGH_SOURCES:
             return 'raleigh:' + source_key if raleigh_event_url(source_key, event_url) else None
@@ -138,6 +144,9 @@ def family(source_key, event_url):
 def image_url(value, publisher):
     if not isinstance(value, str) or len(value) > 2000:
         return None
+    if isinstance(publisher, str) and publisher.startswith('holly_hill:'):
+        from roomquest.holly_hill_civic import image_url as holly_image_url
+        return holly_image_url(publisher.removeprefix('holly_hill:'), value)
     if isinstance(publisher, str) and publisher.startswith('raleigh:'):
         from roomquest.raleigh_html import photo_url
         return photo_url(publisher.removeprefix('raleigh:'), value)
@@ -274,3 +283,4 @@ def attach(item, source_key, *, facts=None, candidate=None, evidence_url=None):
         item['image_provenance'] = IMAGE_VERSION
         item['image_evidence_url'] = evidence_url or item['event_url']
     return item
+

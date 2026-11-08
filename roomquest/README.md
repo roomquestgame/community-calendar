@@ -334,3 +334,16 @@ There is no new timer or per-event detail crawl. See [CHAMBERMATE.md](CHAMBERMAT
 for source registration, the public contract, limits, and focused tests.
 
 
+
+
+
+## Holly Hill and surrounding South Carolina towns
+
+The complete November 8 intake batch is documented in
+[`docs/holly-hill-source-batch.md`](../docs/holly-hill-source-batch.md), with the
+full inventory in `docs/evidence/holly_hill_batch_20261108.json`.
+`holly_hill_sources.py` binds twelve exact publisher configurations to the
+existing guarded fetch, staging, geocoder, classifier and media contracts.
+Existing regional MapSee sources retain their source keys and operator holds.
+Run `python scripts/capture_holly_hill_batch.py --output /tmp/holly-hill-audit.json`
+for the bounded read-only batch audit; this does not create demand or write events.

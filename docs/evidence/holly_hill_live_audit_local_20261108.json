@@ -1,0 +1,1393 @@
+{
+  "schema_version": "holly_hill_read_only_audit_v1",
+  "checked_at": "2026-11-08T02:31:03.556665+00:00",
+  "read_only": true,
+  "registry_snapshot_as_of": "2026-11-08",
+  "source_versions": {
+    "catalog_audit_sha256": "c5d090203d3d7c4995582fe4798a3345902ca0c3b7e55f93f56adfb1cb4fe644",
+    "batch_manifest_sha256": "98a84c4d7a1089f25f0ca8de6f6a321aa8e28fdc15818619d4662841535b9015",
+    "source_identity_sha256": "5474c0cb3a965317d0da1115195f234cc472ccf31a14a5d32a97d9a035e23e9c"
+  },
+  "limits": {
+    "per_source_seconds": 45.0,
+    "overall_seconds": 120.0,
+    "concurrency": 1,
+    "samples_per_source": 3
+  },
+  "retained_inventory": {
+    "catalog_business_holds": [
+      {
+        "name": "Angel Oak Stitchery",
+        "url": "https://www.angeloakstitchery.com/classes.htm",
+        "town": "Harleyville",
+        "reason": "Official classes page, but current fetch 403; no verified dated feed.",
+        "hold_status": "blocked",
+        "evidence_urls": []
+      },
+      {
+        "name": "Crosswind Farm",
+        "url": "https://www.crosswindfarmsc.com/location-hours",
+        "town": "Holly Hill",
+        "reason": "Only public scheduled/private event information; no dated calendar. Tourism-aggregator occurrence has weekday/date conflict requiring review.",
+        "hold_status": "no_direct_calendar",
+        "evidence_urls": []
+      },
+      {
+        "name": "The Clubhouse",
+        "url": "https://www.theclubhousehollyhill.com/calendar",
+        "town": "Holly Hill",
+        "reason": "Google calendar info@theclubhousehollyhill.com embed 401 and derived public ICS 404 observed by root; /eventlist mainly Facebook.",
+        "hold_status": "calendar_not_public",
+        "evidence_urls": []
+      },
+      {
+        "name": "Skynyrd's Grill & Sports Bar",
+        "url": "https://www.skynyrdsgrillandsportsbar.com/",
+        "town": "St. George",
+        "reason": "Official rendered content advertises daily music and Facebook current schedule; direct fetch 403.",
+        "hold_status": "facebook_schedule_only",
+        "evidence_urls": []
+      },
+      {
+        "name": "Copper House",
+        "url": "https://copperhousehollyhill.com/",
+        "town": "Holly Hill",
+        "reason": "Official rendered page offers email updates for events; no dated calendar; direct fetch 403.",
+        "hold_status": "no_public_dated_calendar",
+        "evidence_urls": []
+      },
+      {
+        "name": "Mill Creek Food & Spirits",
+        "url": "https://www.millcreeksc.com/food__spirit.html",
+        "town": "Vance",
+        "reason": "Music/karaoke most Fridays/Saturdays, contact for schedule. No exact dated occurrence or recurrence generation.",
+        "hold_status": "contact_for_schedule",
+        "evidence_urls": []
+      },
+      {
+        "name": "Bell's Marina & Resort",
+        "url": "https://bellsmarina.com/events/",
+        "town": "Eutawville",
+        "reason": "Events page offers private venue rental, not a public schedule. Direct recheck 202 with 177 bytes.",
+        "hold_status": "private_venue_rental_page",
+        "evidence_urls": []
+      },
+      {
+        "name": "Cork & Barrel",
+        "url": "https://corkandbarrel.net/",
+        "town": "Santee",
+        "reason": "Historical 2026 performance on Bandsintown only; no official dated feed verified.",
+        "hold_status": "blocked_unverified_calendar",
+        "evidence_urls": []
+      },
+      {
+        "name": "Black's Camp & Restaurant",
+        "url": "https://www.blackscamp.com/",
+        "town": "Cross",
+        "reason": "Public events known from secondary reporting; current website blocked and no direct calendar verified.",
+        "hold_status": "blocked_unverified_calendar",
+        "evidence_urls": []
+      },
+      {
+        "name": "Rocks Pond Campground & Marina",
+        "url": "https://www.rockspondcampground.net/",
+        "town": "Eutawville",
+        "reason": "Old Events search title points to wifi.html, not a calendar. Current fetch 465; do not infer closed.",
+        "hold_status": "stale_domain_requires_review",
+        "evidence_urls": []
+      }
+    ],
+    "catalog_name_only_leads": [
+      {
+        "name": "Santee Steak & Seafood Restaurant",
+        "town": "Santee",
+        "reason": "Regional directory advertises music; no first-party dated calendar verified.",
+        "evidence_url": "https://www.santeecoopercountry.org/where-to-eat/p/santee-steak-seafood-restaurant-61f9164c23d3865efb63739b/",
+        "evidence_urls": []
+      },
+      {
+        "name": "Clark's Restaurant & Tavern",
+        "town": "Santee",
+        "reason": "Dining/bar directory only; no event calendar established.",
+        "evidence_url": "https://golfsantee.com/dining-entertainment/",
+        "evidence_urls": []
+      },
+      {
+        "name": "Cedar Creek Tavern (formerly Oasis Bar & Grill)",
+        "town": "Santee",
+        "reason": "Directory says new ownership/renovation and opening soon. Current operation and event schedule unverified.",
+        "evidence_url": "https://golfsantee.com/dining-entertainment/",
+        "evidence_urls": []
+      }
+    ],
+    "batch_manifest_held_sources": [
+      {
+        "source_key": "angel_oak_stitchery_sc",
+        "publisher_name": "Angel Oak Stitchery",
+        "feed_url": "https://www.angeloakstitchery.com/classes.htm",
+        "town": "Harleyville",
+        "reason": "blocked",
+        "evidence_urls": [
+          "https://www.angeloakstitchery.com/classes.htm"
+        ]
+      },
+      {
+        "source_key": "crosswind_farm_sc",
+        "publisher_name": "Crosswind Farm",
+        "feed_url": "https://www.crosswindfarmsc.com/location-hours",
+        "town": "Holly Hill",
+        "reason": "no_direct_calendar",
+        "evidence_urls": [
+          "https://www.crosswindfarmsc.com/location-hours"
+        ]
+      },
+      {
+        "source_key": "clubhouse_holly_hill_sc",
+        "publisher_name": "The Clubhouse",
+        "feed_url": "https://www.theclubhousehollyhill.com/calendar",
+        "town": "Holly Hill",
+        "reason": "calendar_not_public",
+        "evidence_urls": [
+          "https://www.theclubhousehollyhill.com/calendar"
+        ]
+      },
+      {
+        "source_key": "skynyrds_st_george_sc",
+        "publisher_name": "Skynyrd's Grill & Sports Bar",
+        "feed_url": "https://www.skynyrdsgrillandsportsbar.com/",
+        "town": "St. George",
+        "reason": "facebook_schedule_only",
+        "evidence_urls": [
+          "https://www.skynyrdsgrillandsportsbar.com/"
+        ]
+      },
+      {
+        "source_key": "copper_house_holly_hill_sc",
+        "publisher_name": "Copper House",
+        "feed_url": "https://copperhousehollyhill.com/",
+        "town": "Holly Hill",
+        "reason": "no_public_dated_calendar",
+        "evidence_urls": [
+          "https://copperhousehollyhill.com/"
+        ]
+      },
+      {
+        "source_key": "mill_creek_food_spirits_sc",
+        "publisher_name": "Mill Creek Food & Spirits",
+        "feed_url": "https://www.millcreeksc.com/food__spirit.html",
+        "town": "Vance",
+        "reason": "contact_for_schedule",
+        "evidence_urls": [
+          "https://www.millcreeksc.com/food__spirit.html"
+        ]
+      },
+      {
+        "source_key": "bells_marina_sc",
+        "publisher_name": "Bell's Marina & Resort",
+        "feed_url": "https://bellsmarina.com/events/",
+        "town": "Eutawville",
+        "reason": "private_venue_rental_page",
+        "evidence_urls": [
+          "https://bellsmarina.com/events/"
+        ]
+      },
+      {
+        "source_key": "cork_barrel_santee_sc",
+        "publisher_name": "Cork & Barrel",
+        "feed_url": "https://corkandbarrel.net/",
+        "town": "Santee",
+        "reason": "blocked_unverified_calendar",
+        "evidence_urls": [
+          "https://corkandbarrel.net/"
+        ]
+      },
+      {
+        "source_key": "blacks_camp_sc",
+        "publisher_name": "Black's Camp & Restaurant",
+        "feed_url": "https://www.blackscamp.com/",
+        "town": "Cross",
+        "reason": "blocked_unverified_calendar",
+        "evidence_urls": [
+          "https://www.blackscamp.com/"
+        ]
+      },
+      {
+        "source_key": "rocks_pond_campground_sc",
+        "publisher_name": "Rocks Pond Campground & Marina",
+        "feed_url": "https://www.rockspondcampground.net/",
+        "town": "Eutawville",
+        "reason": "stale_domain_requires_review",
+        "evidence_urls": [
+          "https://www.rockspondcampground.net/"
+        ]
+      },
+      {
+        "source_key": "orangeburg_county_ymca_sc",
+        "publisher_name": "Orangeburg County YMCA",
+        "feed_url": "https://columbiaymca.org/events/",
+        "town": "Orangeburg",
+        "reason": "publisher_http_403",
+        "evidence_urls": [
+          "https://columbiaymca.org/events/"
+        ]
+      },
+      {
+        "source_key": "santee_water_park_sc",
+        "publisher_name": "Santee Water Park",
+        "feed_url": "https://columbiaymca.org/locations/santee-water-park/",
+        "town": "Santee",
+        "reason": "operating_hours_not_dated_events",
+        "evidence_urls": [
+          "https://columbiaymca.org/locations/santee-water-park/"
+        ]
+      },
+      {
+        "source_key": "core_holly_hill_center_sc",
+        "publisher_name": "CORE / Holly Hill Community Center",
+        "feed_url": "https://www.coresc.org/",
+        "town": "Holly Hill",
+        "reason": "dated_program_calendar_not_verified",
+        "evidence_urls": [
+          "https://www.coresc.org/"
+        ]
+      },
+      {
+        "source_key": "old_santee_canal_park_sc",
+        "publisher_name": "Old Santee Canal Park",
+        "feed_url": "https://oldsanteecanal.recdesk.com/Community/Program",
+        "town": "Moncks Corner",
+        "reason": "recdesk_adapter_required",
+        "evidence_urls": [
+          "https://oldsanteecanal.recdesk.com/Community/Program"
+        ]
+      },
+      {
+        "source_key": "world_grits_festival_sc",
+        "publisher_name": "World Grits Festival",
+        "feed_url": "https://w.worldgritsfestival.com/index.html",
+        "town": "St. George",
+        "reason": "future_annual_schedule_outside_window",
+        "evidence_urls": [
+          "https://w.worldgritsfestival.com/index.html"
+        ]
+      },
+      {
+        "source_key": "elloree_heritage_museum_sc",
+        "publisher_name": "Elloree Heritage Museum",
+        "feed_url": "https://www.elloreemuseum.org/events",
+        "town": "Elloree",
+        "reason": "current_dated_schedule_not_verified",
+        "evidence_urls": [
+          "https://www.elloreemuseum.org/events"
+        ]
+      },
+      {
+        "source_key": "town_of_harleyville_sc",
+        "publisher_name": "Town of Harleyville",
+        "feed_url": "https://harleyvillesc.gov/town-events",
+        "town": "Harleyville",
+        "reason": "current_dated_schedule_not_verified",
+        "evidence_urls": [
+          "https://harleyvillesc.gov/town-events"
+        ]
+      },
+      {
+        "source_key": "branchville_raylrode_daze_sc",
+        "publisher_name": "Branchville Raylrode Daze Festivul",
+        "feed_url": "https://www.raylrodedazefestivul.com/",
+        "town": "Branchville",
+        "reason": "publisher_timeout",
+        "evidence_urls": [
+          "https://www.raylrodedazefestivul.com/"
+        ]
+      },
+      {
+        "source_key": "town_of_holly_hill_sc",
+        "publisher_name": "Town of Holly Hill",
+        "feed_url": "https://hollyhill.sc.gov/",
+        "town": "Holly Hill",
+        "reason": "dated_calendar_not_verified",
+        "evidence_urls": [
+          "https://hollyhill.sc.gov/"
+        ]
+      },
+      {
+        "source_key": "town_of_santee_sc",
+        "publisher_name": "Town of Santee",
+        "feed_url": "https://www.townofsantee-sc.org/upcoming-events-calendars",
+        "town": "Santee",
+        "reason": "dated_calendar_not_verified",
+        "evidence_urls": [
+          "https://www.townofsantee-sc.org/upcoming-events-calendars"
+        ]
+      },
+      {
+        "source_key": "santee_national_wildlife_refuge_sc",
+        "publisher_name": "Santee National Wildlife Refuge",
+        "feed_url": "https://www.fws.gov/refuge/santee/visit-us/activities",
+        "town": "Santee",
+        "reason": "activities_without_dated_events",
+        "evidence_urls": [
+          "https://www.fws.gov/refuge/santee/visit-us/activities"
+        ]
+      },
+      {
+        "source_key": "octech_library_events_sc",
+        "publisher_name": "OCTech Library events",
+        "feed_url": "https://libguides.octech.edu/libraryevents",
+        "town": "Orangeburg",
+        "reason": "public_eligibility_calendar_unverified",
+        "evidence_urls": [
+          "https://libguides.octech.edu/libraryevents"
+        ]
+      },
+      {
+        "source_key": "sc_works_trident_sc",
+        "publisher_name": "SC Works Trident",
+        "feed_url": "https://scworkstrident.org/events/?tribe_redirected=1",
+        "town": "North Charleston",
+        "reason": "publisher_api_http_403",
+        "evidence_urls": [
+          "https://scworkstrident.org/events/?tribe_redirected=1"
+        ]
+      },
+      {
+        "source_key": "octech_academic_calendar_sc",
+        "publisher_name": "OCTech academic calendar",
+        "feed_url": "https://catalog.octech.edu/academic-calendar",
+        "town": "Orangeburg",
+        "reason": "administrative_calendar",
+        "evidence_urls": [
+          "https://catalog.octech.edu/academic-calendar"
+        ]
+      },
+      {
+        "source_key": "westbury_farms_sc",
+        "publisher_name": "Westbury Farms strawberries",
+        "feed_url": "https://www.facebook.com/westburyfarmsstrawberries",
+        "town": "St. George",
+        "reason": "social_schedule_unverified",
+        "evidence_urls": [
+          "https://www.facebook.com/westburyfarmsstrawberries"
+        ]
+      }
+    ],
+    "batch_manifest_name_only_leads": [
+      {
+        "name": "Santee Steak & Seafood Restaurant",
+        "town": "Santee",
+        "reason": "Regional directory advertises music; no first-party dated calendar verified.",
+        "evidence_url": "https://www.santeecoopercountry.org/where-to-eat/p/santee-steak-seafood-restaurant-61f9164c23d3865efb63739b/",
+        "evidence_urls": []
+      },
+      {
+        "name": "Clark's Restaurant & Tavern",
+        "town": "Santee",
+        "reason": "Dining/bar directory only; no event calendar established.",
+        "evidence_url": "https://golfsantee.com/dining-entertainment/",
+        "evidence_urls": []
+      },
+      {
+        "name": "Cedar Creek Tavern (formerly Oasis Bar & Grill)",
+        "town": "Santee",
+        "reason": "Directory says new ownership/renovation and opening soon. Current operation and event schedule unverified.",
+        "evidence_url": "https://golfsantee.com/dining-entertainment/",
+        "evidence_urls": []
+      },
+      {
+        "name": "Cypress Gardens",
+        "town": "Moncks Corner",
+        "reason": "Individual dated programs already represented by SCC/Moncks Corner Library; standalone publisher feed not established.",
+        "evidence_url": "https://www.santeecoopercountry.org/daily-events-calendar/",
+        "evidence_urls": []
+      },
+      {
+        "name": "Claflin University public performances",
+        "town": "Orangeburg",
+        "reason": "Dated performances represented through SCC/SC250; standalone public feed not established.",
+        "evidence_url": "https://southcarolina250.com/events/",
+        "evidence_urls": []
+      }
+    ],
+    "counts": {
+      "catalog_business_holds": 10,
+      "catalog_name_only_leads": 3,
+      "batch_manifest_held_sources": 25,
+      "batch_manifest_name_only_leads": 5
+    },
+    "counts_note": "Inventory lists may overlap; their counts must not be added together."
+  },
+  "sources": [
+    {
+      "source_key": "beidler_forest_sc",
+      "feed_url": "https://www.audubon.org/beidler-forest/explore/seasonal-highlights/night-exploration",
+      "kind": "html",
+      "platform_adapter": "html",
+      "timezone": "America/New_York",
+      "group": "new_holly_hill",
+      "registry_snapshot": null,
+      "intended_active": true,
+      "source_preview_attempted": true,
+      "network_skipped": false,
+      "complete": false,
+      "candidate_count": null,
+      "samples": [],
+      "checked_at": "2026-11-08T02:31:03.556687+00:00",
+      "publisher_name": "Audubon Beidler Forest public programs",
+      "outcome": "transport_error",
+      "error": "dns_unavailable",
+      "error_category": "transport",
+      "duration_seconds": 0.002
+    },
+    {
+      "source_key": "cane_bay_ymca_sc",
+      "feed_url": "https://ymcagc.org/events/",
+      "kind": "html",
+      "platform_adapter": "html",
+      "timezone": "America/New_York",
+      "group": "new_holly_hill",
+      "registry_snapshot": null,
+      "intended_active": true,
+      "source_preview_attempted": true,
+      "network_skipped": false,
+      "complete": false,
+      "candidate_count": null,
+      "samples": [],
+      "checked_at": "2026-11-08T02:31:03.558874+00:00",
+      "publisher_name": "Cane Bay Family YMCA",
+      "outcome": "transport_error",
+      "error": "dns_unavailable",
+      "error_category": "transport",
+      "duration_seconds": 0.0
+    },
+    {
+      "source_key": "d_and_g_outdoors_sc",
+      "feed_url": "https://dandgoutdoors.com/hunt/",
+      "kind": "html",
+      "platform_adapter": "html",
+      "timezone": "America/New_York",
+      "group": "new_holly_hill",
+      "registry_snapshot": null,
+      "intended_active": true,
+      "source_preview_attempted": true,
+      "network_skipped": false,
+      "complete": false,
+      "candidate_count": null,
+      "samples": [],
+      "checked_at": "2026-11-08T02:31:03.559313+00:00",
+      "publisher_name": "D&G Outdoors public pheasant shoots",
+      "outcome": "transport_error",
+      "error": "dns_unavailable",
+      "error_category": "transport",
+      "duration_seconds": 0.0
+    },
+    {
+      "source_key": "elloree_town_calendar_sc",
+      "feed_url": "https://elloreesc.com/elloree-town-calendar/",
+      "kind": "html",
+      "platform_adapter": "html",
+      "timezone": "America/New_York",
+      "group": "new_holly_hill",
+      "registry_snapshot": null,
+      "intended_active": true,
+      "source_preview_attempted": true,
+      "network_skipped": false,
+      "complete": false,
+      "candidate_count": null,
+      "samples": [],
+      "checked_at": "2026-11-08T02:31:03.559645+00:00",
+      "publisher_name": "Town of Elloree public calendar",
+      "outcome": "transport_error",
+      "error": "dns_unavailable",
+      "error_category": "transport",
+      "duration_seconds": 0.0
+    },
+    {
+      "source_key": "moncks_corner_library_sc",
+      "feed_url": "https://berkeleylibrarysc.libcal.com/ical_subscribe.php?src=p&cid=8209",
+      "kind": "ical",
+      "platform_adapter": "ical",
+      "timezone": "America/New_York",
+      "group": "new_holly_hill",
+      "registry_snapshot": null,
+      "intended_active": true,
+      "source_preview_attempted": true,
+      "network_skipped": false,
+      "complete": false,
+      "candidate_count": null,
+      "samples": [],
+      "checked_at": "2026-11-08T02:31:03.559833+00:00",
+      "publisher_name": "Berkeley County Library — Moncks Corner",
+      "outcome": "transport_error",
+      "error": "dns_unavailable",
+      "error_category": "transport",
+      "duration_seconds": 0.0
+    },
+    {
+      "source_key": "octech_continuing_education_sc",
+      "feed_url": "https://octech.coursestorm.com/browse",
+      "kind": "html",
+      "platform_adapter": "html",
+      "timezone": "America/New_York",
+      "group": "new_holly_hill",
+      "registry_snapshot": null,
+      "intended_active": true,
+      "source_preview_attempted": true,
+      "network_skipped": false,
+      "complete": false,
+      "candidate_count": null,
+      "samples": [],
+      "checked_at": "2026-11-08T02:31:03.560037+00:00",
+      "publisher_name": "Orangeburg-Calhoun Technical College continuing education",
+      "outcome": "transport_error",
+      "error": "dns_unavailable",
+      "error_category": "transport",
+      "duration_seconds": 0.0
+    },
+    {
+      "source_key": "orangeburg_county_library_sc",
+      "feed_url": "https://www.orangeburgcounty.org/common/modules/iCalendar/iCalendar.aspx?catID=23&feed=calendar",
+      "kind": "ical",
+      "platform_adapter": "ical",
+      "timezone": "America/New_York",
+      "group": "new_holly_hill",
+      "registry_snapshot": null,
+      "intended_active": true,
+      "source_preview_attempted": true,
+      "network_skipped": false,
+      "complete": false,
+      "candidate_count": null,
+      "samples": [],
+      "checked_at": "2026-11-08T02:31:03.560214+00:00",
+      "publisher_name": "Orangeburg County Library",
+      "outcome": "transport_error",
+      "error": "dns_unavailable",
+      "error_category": "transport",
+      "duration_seconds": 0.0
+    },
+    {
+      "source_key": "outside_inn_campground_sc",
+      "feed_url": "https://outsideinncampground.com/upcoming-events/",
+      "kind": "html",
+      "platform_adapter": "html",
+      "timezone": "America/New_York",
+      "group": "new_holly_hill",
+      "registry_snapshot": null,
+      "intended_active": true,
+      "source_preview_attempted": true,
+      "network_skipped": false,
+      "complete": false,
+      "candidate_count": null,
+      "samples": [],
+      "checked_at": "2026-11-08T02:31:03.560609+00:00",
+      "publisher_name": "Outside Inn Campground public events",
+      "outcome": "transport_error",
+      "error": "dns_unavailable",
+      "error_category": "transport",
+      "duration_seconds": 0.0
+    },
+    {
+      "source_key": "santee_cooper_country_sc",
+      "feed_url": "https://www.santeecoopercountry.org/daily-events-calendar/",
+      "kind": "json",
+      "platform_adapter": "jsonld",
+      "timezone": "America/New_York",
+      "group": "new_holly_hill",
+      "registry_snapshot": null,
+      "intended_active": true,
+      "source_preview_attempted": true,
+      "network_skipped": false,
+      "complete": false,
+      "candidate_count": null,
+      "samples": [],
+      "checked_at": "2026-11-08T02:31:03.560791+00:00",
+      "publisher_name": "Santee Cooper Country regional events",
+      "outcome": "transport_error",
+      "error": "dns_unavailable",
+      "error_category": "transport",
+      "duration_seconds": 0.0
+    },
+    {
+      "source_key": "south_carolina_250_sc",
+      "feed_url": "https://southcarolina250.com/events/?ical=1",
+      "kind": "ical",
+      "platform_adapter": "ical",
+      "timezone": "America/New_York",
+      "group": "new_holly_hill",
+      "registry_snapshot": null,
+      "intended_active": true,
+      "source_preview_attempted": true,
+      "network_skipped": false,
+      "complete": false,
+      "candidate_count": null,
+      "samples": [],
+      "checked_at": "2026-11-08T02:31:03.560943+00:00",
+      "publisher_name": "South Carolina 250 public calendar",
+      "outcome": "transport_error",
+      "error": "dns_unavailable",
+      "error_category": "transport",
+      "duration_seconds": 0.0
+    },
+    {
+      "source_key": "st_george_library_sc",
+      "feed_url": "https://dorchesterlibrarysc.libcal.com/ical_subscribe.php?src=p&cid=22342",
+      "kind": "ical",
+      "platform_adapter": "ical",
+      "timezone": "America/New_York",
+      "group": "new_holly_hill",
+      "registry_snapshot": null,
+      "intended_active": true,
+      "source_preview_attempted": true,
+      "network_skipped": false,
+      "complete": false,
+      "candidate_count": null,
+      "samples": [],
+      "checked_at": "2026-11-08T02:31:03.561140+00:00",
+      "publisher_name": "Dorchester County Library — St. George",
+      "outcome": "transport_error",
+      "error": "dns_unavailable",
+      "error_category": "transport",
+      "duration_seconds": 0.0
+    },
+    {
+      "source_key": "town_of_eutawville_sc",
+      "feed_url": "https://townofeutawville.gov/wp-json/tribe/events/v1/events",
+      "kind": "json",
+      "platform_adapter": "wordpress",
+      "timezone": "America/New_York",
+      "group": "new_holly_hill",
+      "registry_snapshot": null,
+      "intended_active": true,
+      "source_preview_attempted": true,
+      "network_skipped": false,
+      "complete": false,
+      "candidate_count": null,
+      "samples": [],
+      "checked_at": "2026-11-08T02:31:03.561310+00:00",
+      "publisher_name": "Town of Eutawville",
+      "outcome": "transport_error",
+      "error": "dns_unavailable",
+      "error_category": "transport",
+      "duration_seconds": 0.0
+    },
+    {
+      "source_key": "municipal_mapsee_6083d79c979fe3ebf3c3a651",
+      "feed_url": "https://ccplsc.libcal.com/ical_subscribe.php?src=p&cid=19511",
+      "kind": "ical",
+      "platform_adapter": "ical",
+      "timezone": "America/New_York",
+      "group": "existing_mapsee_broader_charleston",
+      "registry_snapshot": {
+        "id": 2556,
+        "publisher_name": "Charleston County Public Library - Baxter-Patrick James Island (Charleston, SC)",
+        "approval": "approved",
+        "health": "ok",
+        "intake_state": null,
+        "preview_status": "idle",
+        "preview_future_count": 0,
+        "catalog_origin": "tophe112-source/mapsee-aggregator"
+      },
+      "intended_active": true,
+      "source_preview_attempted": true,
+      "network_skipped": false,
+      "complete": false,
+      "candidate_count": null,
+      "samples": [],
+      "checked_at": "2026-11-08T02:31:03.561610+00:00",
+      "publisher_name": "Charleston County Public Library - Baxter-Patrick James Island (Charleston, SC)",
+      "outcome": "transport_error",
+      "error": "dns_unavailable",
+      "error_category": "transport",
+      "duration_seconds": 0.0
+    },
+    {
+      "source_key": "municipal_mapsee_a30ced3c7a6e889005513265",
+      "feed_url": "https://ccplsc.libcal.com/ical_subscribe.php?src=p&cid=19512",
+      "kind": "ical",
+      "platform_adapter": "ical",
+      "timezone": "America/New_York",
+      "group": "existing_mapsee_broader_charleston",
+      "registry_snapshot": {
+        "id": 2557,
+        "publisher_name": "Charleston County Public Library - Bees Ferry West Ashley (Charleston, SC)",
+        "approval": "approved",
+        "health": "ok",
+        "intake_state": null,
+        "preview_status": "idle",
+        "preview_future_count": 0,
+        "catalog_origin": "tophe112-source/mapsee-aggregator"
+      },
+      "intended_active": true,
+      "source_preview_attempted": true,
+      "network_skipped": false,
+      "complete": false,
+      "candidate_count": null,
+      "samples": [],
+      "checked_at": "2026-11-08T02:31:03.561793+00:00",
+      "publisher_name": "Charleston County Public Library - Bees Ferry West Ashley (Charleston, SC)",
+      "outcome": "transport_error",
+      "error": "dns_unavailable",
+      "error_category": "transport",
+      "duration_seconds": 0.0
+    },
+    {
+      "source_key": "municipal_mapsee_b6d31a60f7556b9dc5b5a441",
+      "feed_url": "https://ccplsc.libcal.com/ical_subscribe.php?src=p&cid=19515",
+      "kind": "ical",
+      "platform_adapter": "ical",
+      "timezone": "America/New_York",
+      "group": "existing_mapsee_broader_charleston",
+      "registry_snapshot": {
+        "id": 2558,
+        "publisher_name": "Charleston County Public Library - Dorchester Road (Charleston, SC)",
+        "approval": "approved",
+        "health": "ok",
+        "intake_state": null,
+        "preview_status": "idle",
+        "preview_future_count": 0,
+        "catalog_origin": "tophe112-source/mapsee-aggregator"
+      },
+      "intended_active": true,
+      "source_preview_attempted": true,
+      "network_skipped": false,
+      "complete": false,
+      "candidate_count": null,
+      "samples": [],
+      "checked_at": "2026-11-08T02:31:03.561924+00:00",
+      "publisher_name": "Charleston County Public Library - Dorchester Road (Charleston, SC)",
+      "outcome": "transport_error",
+      "error": "dns_unavailable",
+      "error_category": "transport",
+      "duration_seconds": 0.0
+    },
+    {
+      "source_key": "municipal_mapsee_8b0774c6920349bcbea24dfa",
+      "feed_url": "https://ccplsc.libcal.com/ical_subscribe.php?src=p&cid=19518",
+      "kind": "ical",
+      "platform_adapter": "ical",
+      "timezone": "America/New_York",
+      "group": "existing_mapsee_broader_charleston",
+      "registry_snapshot": {
+        "id": 2559,
+        "publisher_name": "Charleston County Public Library - Hurd/St. Andrews (Charleston, SC)",
+        "approval": "approved",
+        "health": "ok",
+        "intake_state": null,
+        "preview_status": "idle",
+        "preview_future_count": 0,
+        "catalog_origin": "tophe112-source/mapsee-aggregator"
+      },
+      "intended_active": true,
+      "source_preview_attempted": true,
+      "network_skipped": false,
+      "complete": false,
+      "candidate_count": null,
+      "samples": [],
+      "checked_at": "2026-11-08T02:31:03.562037+00:00",
+      "publisher_name": "Charleston County Public Library - Hurd/St. Andrews (Charleston, SC)",
+      "outcome": "transport_error",
+      "error": "dns_unavailable",
+      "error_category": "transport",
+      "duration_seconds": 0.0
+    },
+    {
+      "source_key": "municipal_mapsee_358009885c548cf933b6f3e3",
+      "feed_url": "https://ccplsc.libcal.com/ical_subscribe.php?src=p&cid=19514",
+      "kind": "ical",
+      "platform_adapter": "ical",
+      "timezone": "America/New_York",
+      "group": "existing_mapsee_broader_charleston",
+      "registry_snapshot": {
+        "id": 2560,
+        "publisher_name": "Charleston County Public Library - John L. Dart (Charleston, SC)",
+        "approval": "approved",
+        "health": "ok",
+        "intake_state": null,
+        "preview_status": "idle",
+        "preview_future_count": 0,
+        "catalog_origin": "tophe112-source/mapsee-aggregator"
+      },
+      "intended_active": true,
+      "source_preview_attempted": true,
+      "network_skipped": false,
+      "complete": false,
+      "candidate_count": null,
+      "samples": [],
+      "checked_at": "2026-11-08T02:31:03.562274+00:00",
+      "publisher_name": "Charleston County Public Library - John L. Dart (Charleston, SC)",
+      "outcome": "transport_error",
+      "error": "dns_unavailable",
+      "error_category": "transport",
+      "duration_seconds": 0.0
+    },
+    {
+      "source_key": "municipal_mapsee_c6e67987bd3f978830edfa89",
+      "feed_url": "https://ccplsc.libcal.com/ical_subscribe.php?src=p&cid=19516",
+      "kind": "ical",
+      "platform_adapter": "ical",
+      "timezone": "America/New_York",
+      "group": "existing_mapsee_broader_charleston",
+      "registry_snapshot": {
+        "id": 2561,
+        "publisher_name": "Charleston County Public Library - John's Island (Charleston, SC)",
+        "approval": "approved",
+        "health": "ok",
+        "intake_state": null,
+        "preview_status": "idle",
+        "preview_future_count": 0,
+        "catalog_origin": "tophe112-source/mapsee-aggregator"
+      },
+      "intended_active": true,
+      "source_preview_attempted": true,
+      "network_skipped": false,
+      "complete": false,
+      "candidate_count": null,
+      "samples": [],
+      "checked_at": "2026-11-08T02:31:03.562454+00:00",
+      "publisher_name": "Charleston County Public Library - John's Island (Charleston, SC)",
+      "outcome": "transport_error",
+      "error": "dns_unavailable",
+      "error_category": "transport",
+      "duration_seconds": 0.0
+    },
+    {
+      "source_key": "municipal_mapsee_e47e04138eed59112b0fbd69",
+      "feed_url": "https://ccplsc.libcal.com/ical_subscribe.php?src=p&cid=19521",
+      "kind": "ical",
+      "platform_adapter": "ical",
+      "timezone": "America/New_York",
+      "group": "existing_mapsee_broader_charleston",
+      "registry_snapshot": {
+        "id": 2562,
+        "publisher_name": "Charleston County Public Library - McClellanville (Charleston, SC)",
+        "approval": "approved",
+        "health": "ok",
+        "intake_state": null,
+        "preview_status": "idle",
+        "preview_future_count": 0,
+        "catalog_origin": "tophe112-source/mapsee-aggregator"
+      },
+      "intended_active": true,
+      "source_preview_attempted": true,
+      "network_skipped": false,
+      "complete": false,
+      "candidate_count": null,
+      "samples": [],
+      "checked_at": "2026-11-08T02:31:03.562598+00:00",
+      "publisher_name": "Charleston County Public Library - McClellanville (Charleston, SC)",
+      "outcome": "transport_error",
+      "error": "dns_unavailable",
+      "error_category": "transport",
+      "duration_seconds": 0.0
+    },
+    {
+      "source_key": "municipal_mapsee_cb51b1822f7d92b4a46eceba",
+      "feed_url": "https://ccplsc.libcal.com/ical_subscribe.php?src=p&cid=19519",
+      "kind": "ical",
+      "platform_adapter": "ical",
+      "timezone": "America/New_York",
+      "group": "existing_mapsee_broader_charleston",
+      "registry_snapshot": {
+        "id": 2563,
+        "publisher_name": "Charleston County Public Library - Mt. Pleasant (Charleston, SC)",
+        "approval": "approved",
+        "health": "ok",
+        "intake_state": null,
+        "preview_status": "idle",
+        "preview_future_count": 0,
+        "catalog_origin": "tophe112-source/mapsee-aggregator"
+      },
+      "intended_active": true,
+      "source_preview_attempted": true,
+      "network_skipped": false,
+      "complete": false,
+      "candidate_count": null,
+      "samples": [],
+      "checked_at": "2026-11-08T02:31:03.562722+00:00",
+      "publisher_name": "Charleston County Public Library - Mt. Pleasant (Charleston, SC)",
+      "outcome": "transport_error",
+      "error": "dns_unavailable",
+      "error_category": "transport",
+      "duration_seconds": 0.0
+    },
+    {
+      "source_key": "municipal_mapsee_24aad2a2789d89b66bb1923f",
+      "feed_url": "https://ccplsc.libcal.com/ical_subscribe.php?src=p&cid=19524",
+      "kind": "ical",
+      "platform_adapter": "ical",
+      "timezone": "America/New_York",
+      "group": "existing_mapsee_broader_charleston",
+      "registry_snapshot": {
+        "id": 2564,
+        "publisher_name": "Charleston County Public Library - Poe/Sullivan's Island (Charleston, SC)",
+        "approval": "approved",
+        "health": "ok",
+        "intake_state": null,
+        "preview_status": "idle",
+        "preview_future_count": 0,
+        "catalog_origin": "tophe112-source/mapsee-aggregator"
+      },
+      "intended_active": true,
+      "source_preview_attempted": true,
+      "network_skipped": false,
+      "complete": false,
+      "candidate_count": null,
+      "samples": [],
+      "checked_at": "2026-11-08T02:31:03.562844+00:00",
+      "publisher_name": "Charleston County Public Library - Poe/Sullivan's Island (Charleston, SC)",
+      "outcome": "transport_error",
+      "error": "dns_unavailable",
+      "error_category": "transport",
+      "duration_seconds": 0.0
+    },
+    {
+      "source_key": "municipal_mapsee_bd72ac0359b5e374da9c65d9",
+      "feed_url": "https://ccplsc.libcal.com/ical_subscribe.php?src=p&cid=19527",
+      "kind": "ical",
+      "platform_adapter": "ical",
+      "timezone": "America/New_York",
+      "group": "existing_mapsee_broader_charleston",
+      "registry_snapshot": {
+        "id": 2565,
+        "publisher_name": "Charleston County Public Library - Village (Charleston, SC)",
+        "approval": "approved",
+        "health": "ok",
+        "intake_state": null,
+        "preview_status": "idle",
+        "preview_future_count": 0,
+        "catalog_origin": "tophe112-source/mapsee-aggregator"
+      },
+      "intended_active": true,
+      "source_preview_attempted": true,
+      "network_skipped": false,
+      "complete": false,
+      "candidate_count": null,
+      "samples": [],
+      "checked_at": "2026-11-08T02:31:03.562964+00:00",
+      "publisher_name": "Charleston County Public Library - Village (Charleston, SC)",
+      "outcome": "transport_error",
+      "error": "dns_unavailable",
+      "error_category": "transport",
+      "duration_seconds": 0.0
+    },
+    {
+      "source_key": "municipal_mapsee_aad57d4cf321f293931ea9ac",
+      "feed_url": "https://ccplsc.libcal.com/ical_subscribe.php?src=p&cid=19525",
+      "kind": "ical",
+      "platform_adapter": "ical",
+      "timezone": "America/New_York",
+      "group": "existing_mapsee_broader_charleston",
+      "registry_snapshot": {
+        "id": 2566,
+        "publisher_name": "Charleston County Public Library - Wando Mount Pleasant (Charleston, SC)",
+        "approval": "approved",
+        "health": "ok",
+        "intake_state": null,
+        "preview_status": "idle",
+        "preview_future_count": 0,
+        "catalog_origin": "tophe112-source/mapsee-aggregator"
+      },
+      "intended_active": true,
+      "source_preview_attempted": true,
+      "network_skipped": false,
+      "complete": false,
+      "candidate_count": null,
+      "samples": [],
+      "checked_at": "2026-11-08T02:31:03.563080+00:00",
+      "publisher_name": "Charleston County Public Library - Wando Mount Pleasant (Charleston, SC)",
+      "outcome": "transport_error",
+      "error": "dns_unavailable",
+      "error_category": "transport",
+      "duration_seconds": 0.0
+    },
+    {
+      "source_key": "municipal_mapsee_e0fed69fcd075a8c46282d08",
+      "feed_url": "https://ccplsc.libcal.com/ical_subscribe.php?src=p&cid=19528",
+      "kind": "ical",
+      "platform_adapter": "ical",
+      "timezone": "America/New_York",
+      "group": "existing_mapsee_broader_charleston",
+      "registry_snapshot": {
+        "id": 2567,
+        "publisher_name": "Charleston County Public Library - West Ashley (Charleston, SC)",
+        "approval": "approved",
+        "health": "ok",
+        "intake_state": null,
+        "preview_status": "idle",
+        "preview_future_count": 0,
+        "catalog_origin": "tophe112-source/mapsee-aggregator"
+      },
+      "intended_active": true,
+      "source_preview_attempted": true,
+      "network_skipped": false,
+      "complete": false,
+      "candidate_count": null,
+      "samples": [],
+      "checked_at": "2026-11-08T02:31:03.563195+00:00",
+      "publisher_name": "Charleston County Public Library - West Ashley (Charleston, SC)",
+      "outcome": "transport_error",
+      "error": "dns_unavailable",
+      "error_category": "transport",
+      "duration_seconds": 0.0
+    },
+    {
+      "source_key": "municipal_mapsee_f94253da2ee23936537e8437",
+      "feed_url": "https://lowcountryfoodbank.org/events/?ical=1",
+      "kind": "ical",
+      "platform_adapter": "ical",
+      "timezone": "America/New_York",
+      "group": "existing_mapsee_broader_charleston",
+      "registry_snapshot": {
+        "id": 3304,
+        "publisher_name": "Lowcountry Food Bank (Charleston, SC)",
+        "approval": "approved",
+        "health": "ok",
+        "intake_state": "ready",
+        "preview_status": "complete",
+        "preview_future_count": 29,
+        "catalog_origin": "tophe112-source/mapsee-aggregator"
+      },
+      "intended_active": true,
+      "source_preview_attempted": true,
+      "network_skipped": false,
+      "complete": false,
+      "candidate_count": null,
+      "samples": [],
+      "checked_at": "2026-11-08T02:31:03.563533+00:00",
+      "publisher_name": "Lowcountry Food Bank (Charleston, SC)",
+      "outcome": "transport_error",
+      "error": "dns_unavailable",
+      "error_category": "transport",
+      "duration_seconds": 0.0
+    },
+    {
+      "source_key": "municipal_mapsee_dc537abfddfbf9169cfab633",
+      "feed_url": "https://www.charleston-sc.gov/common/modules/iCalendar/iCalendar.aspx?catID=36&feed=calendar",
+      "kind": "ical",
+      "platform_adapter": "ical",
+      "timezone": "America/New_York",
+      "group": "existing_mapsee_broader_charleston",
+      "registry_snapshot": {
+        "id": 3894,
+        "publisher_name": "Shaw Community Center",
+        "approval": "approved",
+        "health": "ok",
+        "intake_state": null,
+        "preview_status": "idle",
+        "preview_future_count": 0,
+        "catalog_origin": "tophe112-source/mapsee-aggregator"
+      },
+      "intended_active": true,
+      "source_preview_attempted": true,
+      "network_skipped": false,
+      "complete": false,
+      "candidate_count": null,
+      "samples": [],
+      "checked_at": "2026-11-08T02:31:03.563806+00:00",
+      "publisher_name": "Shaw Community Center",
+      "outcome": "transport_error",
+      "error": "dns_unavailable",
+      "error_category": "transport",
+      "duration_seconds": 0.0
+    },
+    {
+      "source_key": "municipal_mapsee_9055294a82d17e6ddfd51fd1",
+      "feed_url": "https://www.affa-sc.org/events",
+      "kind": "json",
+      "platform_adapter": "squarespace",
+      "timezone": "America/New_York",
+      "group": "existing_mapsee_broader_charleston",
+      "registry_snapshot": {
+        "id": 4263,
+        "publisher_name": "AFFA: Aliance for Full Acceptance",
+        "approval": "approved",
+        "health": "empty",
+        "intake_state": "ready",
+        "preview_status": "complete",
+        "preview_future_count": 0,
+        "catalog_origin": "tophe112-source/mapsee-aggregator"
+      },
+      "intended_active": true,
+      "source_preview_attempted": true,
+      "network_skipped": false,
+      "complete": false,
+      "candidate_count": null,
+      "samples": [],
+      "checked_at": "2026-11-08T02:31:03.564051+00:00",
+      "publisher_name": "AFFA: Aliance for Full Acceptance",
+      "outcome": "transport_error",
+      "error": "dns_unavailable",
+      "error_category": "transport",
+      "duration_seconds": 0.001
+    },
+    {
+      "source_key": "municipal_mapsee_3f0f69d7d5abeaa140c4e611",
+      "feed_url": "https://charlestonlibrarysociety.org",
+      "kind": "json",
+      "platform_adapter": "wordpress",
+      "timezone": "America/New_York",
+      "group": "existing_mapsee_broader_charleston",
+      "registry_snapshot": {
+        "id": 4347,
+        "publisher_name": "Charleston Library Society",
+        "approval": "paused",
+        "health": "disabled",
+        "intake_state": "review",
+        "preview_status": "failed",
+        "preview_future_count": 0,
+        "catalog_origin": "tophe112-source/mapsee-aggregator"
+      },
+      "intended_active": false,
+      "source_preview_attempted": false,
+      "network_skipped": true,
+      "complete": false,
+      "candidate_count": null,
+      "samples": [],
+      "checked_at": "2026-11-08T02:31:03.564911+00:00",
+      "publisher_name": "Charleston Library Society",
+      "outcome": "held",
+      "error": "source_network_error",
+      "error_category": "preexisting_hold",
+      "hold_evidence": {
+        "reason": "source_network_error",
+        "evidence": "paused_mapsee_recheck in catalog audit"
+      },
+      "duration_seconds": 0.0
+    },
+    {
+      "source_key": "municipal_mapsee_baa7422ed7a6c890ac58f572",
+      "feed_url": "https://duneswestpoa.com",
+      "kind": "json",
+      "platform_adapter": "wordpress",
+      "timezone": "America/New_York",
+      "group": "existing_mapsee_broader_charleston",
+      "registry_snapshot": {
+        "id": 4403,
+        "publisher_name": "Dunes West Community Center",
+        "approval": "paused",
+        "health": "disabled",
+        "intake_state": "review",
+        "preview_status": "failed",
+        "preview_future_count": 0,
+        "catalog_origin": "tophe112-source/mapsee-aggregator"
+      },
+      "intended_active": false,
+      "source_preview_attempted": false,
+      "network_skipped": true,
+      "complete": false,
+      "candidate_count": null,
+      "samples": [],
+      "checked_at": "2026-11-08T02:31:03.564927+00:00",
+      "publisher_name": "Dunes West Community Center",
+      "outcome": "held",
+      "error": "invalid_event_end",
+      "error_category": "preexisting_hold",
+      "hold_evidence": {
+        "reason": "invalid_event_end",
+        "evidence": "paused_mapsee_recheck in catalog audit"
+      },
+      "duration_seconds": 0.0
+    },
+    {
+      "source_key": "municipal_mapsee_6bcc0da0f3eab569d4e2709d",
+      "feed_url": "https://harborec.org",
+      "kind": "json",
+      "platform_adapter": "wordpress",
+      "timezone": "America/New_York",
+      "group": "existing_mapsee_broader_charleston",
+      "registry_snapshot": {
+        "id": 4446,
+        "publisher_name": "Harbor Entrepreneur Center",
+        "approval": "approved",
+        "health": "ok",
+        "intake_state": "ready",
+        "preview_status": "complete",
+        "preview_future_count": 3,
+        "catalog_origin": "tophe112-source/mapsee-aggregator"
+      },
+      "intended_active": true,
+      "source_preview_attempted": true,
+      "network_skipped": false,
+      "complete": false,
+      "candidate_count": null,
+      "samples": [],
+      "checked_at": "2026-11-08T02:31:03.564936+00:00",
+      "publisher_name": "Harbor Entrepreneur Center",
+      "outcome": "transport_error",
+      "error": "dns_unavailable",
+      "error_category": "transport",
+      "duration_seconds": 0.001
+    },
+    {
+      "source_key": "municipal_mapsee_d0e44fa026d12d3c92ed6f75",
+      "feed_url": "https://charlestonlaw.edu",
+      "kind": "json",
+      "platform_adapter": "wordpress",
+      "timezone": "America/New_York",
+      "group": "existing_mapsee_broader_charleston",
+      "registry_snapshot": {
+        "id": 4682,
+        "publisher_name": "Sol Blatt Jr. Law Library",
+        "approval": "paused",
+        "health": "disabled",
+        "intake_state": "deactivated",
+        "preview_status": "failed",
+        "preview_future_count": 0,
+        "catalog_origin": "tophe112-source/mapsee-aggregator"
+      },
+      "intended_active": false,
+      "source_preview_attempted": false,
+      "network_skipped": true,
+      "complete": false,
+      "candidate_count": null,
+      "samples": [],
+      "checked_at": "2026-11-08T02:31:03.566204+00:00",
+      "publisher_name": "Sol Blatt Jr. Law Library",
+      "outcome": "held",
+      "error": "robots_denied",
+      "error_category": "preexisting_hold",
+      "hold_evidence": {
+        "reason": "robots_denied",
+        "evidence": "paused_mapsee_recheck in catalog audit"
+      },
+      "duration_seconds": 0.0
+    },
+    {
+      "source_key": "municipal_chambermaster_orangeburg_sc",
+      "feed_url": "https://business.orangeburgchamber.com/api/events",
+      "kind": "xml",
+      "platform_adapter": "growthzone",
+      "timezone": "America/New_York",
+      "group": "existing_local",
+      "registry_snapshot": {
+        "id": 4897,
+        "publisher_name": "Orangeburg County Chamber of Commerce",
+        "approval": "approved",
+        "health": "ok",
+        "intake_state": "ready",
+        "preview_status": "complete",
+        "preview_future_count": 18
+      },
+      "intended_active": true,
+      "source_preview_attempted": true,
+      "network_skipped": false,
+      "complete": false,
+      "candidate_count": null,
+      "samples": [],
+      "checked_at": "2026-11-08T02:31:03.566219+00:00",
+      "publisher_name": "Orangeburg County Chamber of Commerce",
+      "outcome": "transport_error",
+      "error": "dns_unavailable",
+      "error_category": "transport",
+      "duration_seconds": 0.001
+    },
+    {
+      "source_key": "south_carolina_parks_725",
+      "feed_url": "https://southcarolinaparks.com/api/events#park=725",
+      "kind": "json",
+      "platform_adapter": "south_carolina_parks",
+      "timezone": "America/New_York",
+      "group": "existing_local",
+      "registry_snapshot": {
+        "id": 4915,
+        "publisher_name": "Colonial Dorchester State Historic Site",
+        "approval": "approved",
+        "health": "unchecked",
+        "intake_state": null
+      },
+      "intended_active": true,
+      "source_preview_attempted": true,
+      "network_skipped": false,
+      "complete": false,
+      "candidate_count": null,
+      "samples": [],
+      "checked_at": "2026-11-08T02:31:03.567189+00:00",
+      "publisher_name": "Colonial Dorchester State Historic Site",
+      "outcome": "transport_error",
+      "error": "dns_unavailable",
+      "error_category": "transport",
+      "duration_seconds": 0.001
+    },
+    {
+      "source_key": "south_carolina_parks_1219",
+      "feed_url": "https://southcarolinaparks.com/api/events#park=1219",
+      "kind": "json",
+      "platform_adapter": "south_carolina_parks",
+      "timezone": "America/New_York",
+      "group": "existing_local",
+      "registry_snapshot": {
+        "id": 4920,
+        "publisher_name": "Givhans Ferry State Park",
+        "approval": "approved",
+        "health": "unchecked",
+        "intake_state": null,
+        "preview_status": "idle",
+        "preview_future_count": 0
+      },
+      "intended_active": true,
+      "source_preview_attempted": true,
+      "network_skipped": false,
+      "complete": false,
+      "candidate_count": null,
+      "samples": [],
+      "checked_at": "2026-11-08T02:31:03.568100+00:00",
+      "publisher_name": "Givhans Ferry State Park",
+      "outcome": "transport_error",
+      "error": "dns_unavailable",
+      "error_category": "transport",
+      "duration_seconds": 0.0
+    },
+    {
+      "source_key": "south_carolina_parks_535",
+      "feed_url": "https://southcarolinaparks.com/api/events#park=535",
+      "kind": "json",
+      "platform_adapter": "south_carolina_parks",
+      "timezone": "America/New_York",
+      "group": "existing_local",
+      "registry_snapshot": {
+        "id": 4949,
+        "publisher_name": "Santee State Park",
+        "approval": "approved",
+        "health": "empty",
+        "intake_state": "ready",
+        "preview_status": "complete",
+        "preview_future_count": 0
+      },
+      "intended_active": true,
+      "source_preview_attempted": true,
+      "network_skipped": false,
+      "complete": false,
+      "candidate_count": null,
+      "samples": [],
+      "checked_at": "2026-11-08T02:31:03.568312+00:00",
+      "publisher_name": "Santee State Park",
+      "outcome": "transport_error",
+      "error": "dns_unavailable",
+      "error_category": "transport",
+      "duration_seconds": 0.0
+    }
+  ],
+  "notes": [
+    "Registry approval/health/preview counts are historical snapshots, not live audit results.",
+    "Broader Charleston MapSee membership does not establish event proximity to Holly Hill.",
+    "Candidate counts are collector output, not published or deduplicated event counts.",
+    "Held parser/guard results and failed requests are never successful empty feeds."
+  ],
+  "counts": {
+    "retained_sources": 35,
+    "new_supported_sources": 12,
+    "existing_mapsee_sources": 19,
+    "existing_local_sources": 4,
+    "intended_active_sources": 32,
+    "attempted_sources": 32,
+    "success": 0,
+    "empty": 0,
+    "transport_error": 32,
+    "held": 3,
+    "candidate_count_across_sources": 0
+  },
+  "active_complete": false,
+  "complete": false,
+  "duration_seconds": 0.028,
+  "finished_at": "2026-11-08T02:31:03.568557+00:00"
+}

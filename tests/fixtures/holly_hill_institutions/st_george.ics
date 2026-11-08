@@ -1,0 +1,67 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Sanitized publisher fixture//EN
+BEGIN:VEVENT
+SUMMARY:Silver Sneakers - St. George
+DTSTART:20261109T150000Z
+DTEND:20261109T160000Z
+DTSTAMP:20261109T000000Z
+UID:LibCal-22342-17312240
+CATEGORIES:
+DESCRIPTION:Fitness program for senior adults.\n\nAges 50 \n\nMondays and 
+ Thursdays at 10AM\n\nRegistration is not required.
+LOCATION:St. George Branch - 506 N Parler Ave\, St. George\, SC 29477
+URL:https://dorchesterlibrarysc.libcal.com/event/17312240
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Coffee Talk with Ms. Darlene - St. George
+DTSTART:20261110T153000Z
+DTEND:20261110T163000Z
+DTSTAMP:20261110T000000Z
+UID:LibCal-22342-17312431
+CATEGORIES:
+DESCRIPTION:Stop by for a casual 30-minute coffee break with Ms. Darlene. 
+ Enjoy conversation\, meet new people and connect in a relaxed\, welcoming 
+ space.\n\nAges 18 \n\nEvery Tuesday at 10:30AM\n\nRegistration is not requ
+ ired.
+LOCATION:St. George Branch - 506 N Parler Ave\, St. George\, SC 29477
+URL:https://dorchesterlibrarysc.libcal.com/event/17312431
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:CLOSED - Veterans Day
+DTSTART;VALUE=DATE:20261111
+DTEND;VALUE=DATE:20261112
+DTSTAMP:20261111T000000Z
+UID:LibCal-22342-17316298
+CATEGORIES:
+DESCRIPTION:In observance of Veterans Day\, all Dorchester County Librarie
+ s and book drops will be closed on Wednesday\, November 11th.
+LOCATION:St. George Branch - 506 N Parler Ave\, St. George\, SC 29477
+URL:https://dorchesterlibrarysc.libcal.com/event/17316298
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Silver Sneakers - St. George
+DTSTART:20261112T150000Z
+DTEND:20261112T160000Z
+DTSTAMP:20261112T000000Z
+UID:LibCal-22342-17312242
+CATEGORIES:
+DESCRIPTION:Fitness program for senior adults.\n\nAges 50 \n\nMondays and 
+ Thursdays at 10AM\n\nRegistration is not required.
+LOCATION:St. George Branch - 506 N Parler Ave\, St. George\, SC 29477
+URL:https://dorchesterlibrarysc.libcal.com/event/17312242
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Thanksgiving Holiday – All Locations & Book Drops Closed
+DTSTART;VALUE=DATE:20261126
+DTEND;VALUE=DATE:20261127
+DTSTAMP:20261126T000000Z
+UID:LibCal-22342-17316777
+CATEGORIES:
+DESCRIPTION:In observance of Thanksgiving\, all Dorchester County Library 
+ locations and book drops will close at 5pm on Wed\, November 25th\, and be
+  closed all day on November 26th\, 27th\, 28th\, and 29th.
+LOCATION:St. George Branch - 506 N Parler Ave\, St. George\, SC 29477
+URL:https://dorchesterlibrarysc.libcal.com/event/17316777
+END:VEVENT
+END:VCALENDAR
