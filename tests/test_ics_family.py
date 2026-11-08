@@ -43,6 +43,110 @@ def test_raleigh_udell_catalog_uses_bounded_publisher_transport():
     assert fetch.call_args.kwargs["allowed_hosts"] == ("events.ackland.org",)
 
 
+DUKE_KEY = 'municipal_f8b341508884150709031005'
+DUKE_FEED = 'https://calendar.duke.edu/events/index.ics?gf[]=Duke+Arts&future_days=90'
+
+
+def legacy_url_feed(event_url=None):
+    """Synthetic publisher fields; no live Duke feed request is needed."""
+    url_property = '' if event_url is None else 'URL:' + event_url + '\r\n'
+    return feed().replace('URL:https://venue.example.org/event/0\r\n', url_property).replace(
+        'END:VEVENT', 'IMAGE:https://venue.example.org/fixture.jpg\r\n'
+        'DESCRIPTION:Fixture narrative remains on the existing legacy path.\r\nEND:VEVENT')
+
+
+@pytest.fixture
+def offline_ics_transport(monkeypatch):
+    def forbidden(*_args, **_kwargs):
+        raise AssertionError('ICS regression attempted live network access')
+    monkeypatch.setattr('socket.getaddrinfo', forbidden)
+    monkeypatch.setattr('urllib.request.urlopen', forbidden)
+    monkeypatch.setattr('requests.sessions.Session.request', forbidden)
+
+
+@pytest.mark.usefixtures('offline_ics_transport')
+@pytest.mark.parametrize('event_url', [None, '', '   ', 'http://venue.example.org/event/0',
+                                      'https://calendar.duke.edu/show?fq=id:fixture'])
+def test_duke_dispatch_falls_back_only_for_missing_or_rejected_event_url(event_url):
+    raw = legacy_url_feed(event_url)
+    expected = parse_ics_preview(raw, allow_ongoing=True, include_images=True)
+    expected[0]['event_url'] = expected[0]['event_url'] or DUKE_FEED
+    reviewed = {**source(DUKE_KEY), 'feed_url': DUKE_FEED}
+    with patch('roomquest.preview_worker.fetch_publisher', return_value=raw) as fetch:
+        out = preview_source(reviewed)
+    # Equality preserves identity, times, venue, category and image; it also
+    # catches accidentally enabling the legacy description/address rewrites.
+    assert out['p_events'] == out['p_samples'] == expected
+    assert out['p_error'] is None and out['p_future_count'] == 1
+    assert expected[0]['image_url'] == 'https://venue.example.org/fixture.jpg'
+    assert 'description' not in out['p_events'][0]
+    fetch.assert_called_once()
+    assert fetch.call_args.args == (DUKE_FEED, 'text/calendar')
+    assert fetch.call_args.kwargs['respect_robots'] is True
+    assert fetch.call_args.kwargs['allowed_hosts'] == ('calendar.duke.edu',)
+    assert fetch.call_args.kwargs['deadline_at'] is not None
+
+
+@pytest.mark.usefixtures('offline_ics_transport')
+@pytest.mark.parametrize('legacy', [False, True])
+def test_shared_ics_url_fallback_uses_the_actual_feed_for_both_paths(legacy):
+    result = parse(legacy_url_feed(), {'url': DUKE_FEED}, legacy=legacy)
+    assert result[0]['event_url'] == DUKE_FEED
+    assert result[0]['id'] == 'event-0'
+
+
+@pytest.mark.usefixtures('offline_ics_transport')
+@pytest.mark.parametrize('legacy', [False, True])
+@pytest.mark.parametrize('fallback', [None, '', '   ', 42,
+    'http://calendar.duke.edu/events/index.ics', 'https://127.0.0.1/events.ics',
+    'https://fixture@calendar.duke.edu/events/index.ics'])
+def test_missing_event_url_rejects_an_unusable_feed_fallback(legacy, fallback):
+    with pytest.raises(ValueError, match='^invalid_source_url$'):
+        parse(legacy_url_feed(), {'url': fallback}, legacy=legacy)
+
+
+@pytest.mark.usefixtures('offline_ics_transport')
+@pytest.mark.parametrize('event_url', [None, ''])
+def test_duke_stages_the_feed_fallback_before_recording_success_and_pacing(event_url):
+    from roomquest.publisher_pacing import observe_crawl_delay, observe_retry_after
+    raw = legacy_url_feed(event_url)
+    calls = []
+    def fetch(*_args, **_kwargs):
+        observe_crawl_delay(2.1)
+        observe_retry_after('60')
+        return raw
+    def rpc(name, payload):
+        calls.append((name, payload))
+        return len(payload.get('p_events', []))
+    with patch('roomquest.preview_worker.fetch_publisher', side_effect=fetch), \
+            patch('roomquest.preview_worker.supabase_rpc', side_effect=rpc):
+        result = _process_claimed_source({**source(DUKE_KEY), 'feed_url': DUKE_FEED})
+    assert result == {'complete': 1, 'failed': 0, 'staged': 1}
+    assert [name for name, _ in calls] == [
+        'community_collector_record_staged_events', 'community_collector_record_preview_v2']
+    assert calls[0][1]['p_events'][0]['event_url'] == DUKE_FEED
+    recorded = calls[1][1]
+    assert recorded['p_error'] is None and recorded['p_future_count'] == 1
+    assert recorded['p_publisher_crawl_delay_seconds'] == 3
+    assert recorded['p_publisher_retry_after_seconds'] == 60
+    assert recorded['p_publisher_wait_unbounded'] is False
+
+
+@pytest.mark.usefixtures('offline_ics_transport')
+@pytest.mark.parametrize('fallback', ['', 'https://127.0.0.1/events.ics'])
+def test_invalid_feed_fallback_cannot_stage_or_record_success(fallback):
+    # Isolate parser validation even when a transport fixture returns a body.
+    # The production transport independently rejects this URL before fetching.
+    with patch('roomquest.preview_worker.fetch_publisher', return_value=legacy_url_feed()), \
+            patch('roomquest.preview_worker.supabase_rpc') as rpc:
+        result = _process_claimed_source({**source('udell_fixture'), 'feed_url': fallback})
+    assert result['complete'] == 0 and result['failed'] == 1 and result['staged'] == 0
+    assert result['error_code'] == 'invalid_source_url'
+    rpc.assert_called_once()
+    assert rpc.call_args.args[0] == 'community_collector_record_preview_v2'
+    assert rpc.call_args.args[1]['p_error'] == 'invalid_source_url'
+
+
 @pytest.mark.parametrize('legacy',[False,True])
 def test_large_feed_fails_instead_of_truncating(legacy):
  with pytest.raises(ValueError,match='source_record_limit'):parse(feed(501),{'url':'https://venue.example.org/calendar.ics'},legacy=legacy)
