@@ -176,6 +176,13 @@ def collect_category(category, ticket):
             published = supabase_rpc('community_collector_publish_category', args, timeout=12)
             result['publication'] = published
             outcome = 'busy' if published.get('outcome') in ('busy', 'idle') else 'complete'
+            if (category == 'ical' and source['action'] == 'collect'
+                    and result.get('complete') == 1 and result.get('failed') == 0
+                    and published.get('outcome') == 'idle'):
+                # A recorded snapshot can await venue review without occupying
+                # a collector slot. Preserve the publication result and hold;
+                # finish still checks the durable successful pacing receipt.
+                outcome = 'complete'
             return result
         except Exception as error:
             diagnostics.report(error)  # Preserve the primary phase before finish.

@@ -20,7 +20,8 @@ NOW = datetime(2026, 11, 8, 12, tzinfo=timezone.utc)
 KEYS = tuple(sorted(sources.SOURCES))
 MEDIA_KEYS = {civic.SANTEE, civic.BEIDLER, civic.SC250, civic.EUTAWVILLE,
               civic.ELLOREE, businesses.D_AND_G, businesses.OUTSIDE_INN}
-V2_KEYS = {institutions.OCTECH, institutions.CANE_BAY}
+V2_KEYS = {institutions.OCTECH, institutions.CANE_BAY, *institutions.ICS,
+           sources.ORANGEBURG_LIBRARY}
 
 
 @pytest.fixture(autouse=True)

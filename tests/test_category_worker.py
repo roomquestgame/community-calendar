@@ -41,6 +41,100 @@ def test_collection_publishes_then_finishes():
         assert process.call_args.kwargs['deadline_at'] > 0
         assert rpc.call_args_list[-1].args[1]['p_outcome']=='complete'
 
+
+@pytest.mark.parametrize('count', [0, 2])
+@pytest.mark.parametrize('publication,finish', [('idle', 'complete'), ('busy', 'busy')])
+def test_recorded_ical_collection_distinguishes_no_publication_from_capacity_busy(count, publication, finish):
+    from roomquest import preview_worker as preview
+    from roomquest.publisher_pacing import observe_crawl_delay, observe_retry_after
+    calls = []
+    events = [{'id': str(i), 'title': 'Fixture', 'lat': None, 'lng': None}
+              for i in range(count)]
+
+    def collect(*_args, **_kwargs):
+        observe_crawl_delay(3)
+        observe_retry_after('60')
+        return {'p_source_key': 'fixture', 'p_samples': [], 'p_future_count': count,
+                'p_venue_count': 0, 'p_error': None, 'p_events': events}
+
+    def rpc(path, data, **kwargs):
+        calls.append((path, dict(data)))
+        if path == 'community_collector_claim_category':
+            return {'action': 'collect', 'source_key': 'fixture',
+                    'kind': 'ical', 'platform_adapter': 'ical'}
+        if path == 'community_collector_record_staged_events':
+            assert data['p_events'] == events
+            return len(data['p_events'])
+        if path == 'community_collector_record_preview_v2':
+            assert data['p_error'] is None
+            assert data['p_publisher_crawl_delay_seconds'] == 3
+            assert data['p_publisher_retry_after_seconds'] == 60
+            return None
+        if path == 'community_collector_publish_category':
+            return {'outcome': publication}
+        return True
+
+    with patch.object(w, 'supabase_rpc', side_effect=rpc), \
+            patch.object(preview, 'supabase_rpc', side_effect=rpc), \
+            patch.object(preview, 'preview_source', side_effect=collect):
+        result = w.collect_category('ical', 'ticket')
+    assert result == {'category': 'ical', 'claimed': 1, 'complete': 1,
+                      'failed': 0, 'staged': count, 'publication': {'outcome': publication}}
+    assert [path for path, _ in calls] == [
+        'community_collector_claim_category', 'community_collector_record_staged_events',
+        'community_collector_record_preview_v2', 'community_collector_publish_category',
+        'community_collector_finish_category']
+    assert calls[-1][1]['p_outcome'] == finish
+
+
+@pytest.mark.parametrize('category', sorted(w.CATEGORIES - {'ical'}))
+def test_other_categories_keep_busy_when_successful_collection_cannot_publish(category):
+    with patch.object(w, 'supabase_rpc', side_effect=[
+            {'action': 'collect'}, {'outcome': 'idle'}, True]) as rpc, \
+            patch.object(w, '_process_claimed_source',
+                         return_value={'complete': 1, 'failed': 0, 'staged': 1}):
+        result = w.collect_category(category, 'ticket')
+    assert result['publication'] == {'outcome': 'idle'}
+    assert rpc.call_args_list[-1].args[1]['p_outcome'] == 'busy'
+
+
+@pytest.mark.parametrize('collection_result', [
+    {'failed': 0, 'staged': 0}, {'complete': 0, 'failed': 0, 'staged': 0},
+])
+def test_ical_idle_publication_needs_explicit_successful_completion(collection_result):
+    with patch.object(w, 'supabase_rpc', side_effect=[
+            {'action': 'collect'}, {'outcome': 'idle'}, True]) as rpc, \
+            patch.object(w, '_process_claimed_source', return_value=collection_result):
+        w.collect_category('ical', 'ticket')
+    assert rpc.call_args_list[-1].args[1]['p_outcome'] == 'busy'
+
+
+def test_ical_recording_failure_cannot_release_successful_collection_slot():
+    from roomquest import preview_worker as preview
+    calls = []
+
+    def rpc(path, data, **kwargs):
+        calls.append((path, dict(data)))
+        if path == 'community_collector_claim_category':
+            return {'action': 'collect', 'source_key': 'fixture',
+                    'kind': 'ical', 'platform_adapter': 'ical'}
+        if path == 'community_collector_record_preview_v2':
+            raise PreviewError('database_unavailable')
+        return 0
+
+    output = {'p_source_key': 'fixture', 'p_samples': [], 'p_future_count': 0,
+              'p_venue_count': 0, 'p_error': None, 'p_events': []}
+    with patch.object(w, 'supabase_rpc', side_effect=rpc), \
+            patch.object(preview, 'supabase_rpc', side_effect=rpc), \
+            patch.object(preview, 'preview_source', return_value=output):
+        with pytest.raises(PreviewError, match='database_unavailable'):
+            w.collect_category('ical', 'ticket')
+    assert [path for path, _ in calls] == [
+        'community_collector_claim_category', 'community_collector_record_staged_events',
+        'community_collector_record_preview_v2', 'community_collector_finish_category']
+    assert calls[-1][1]['p_outcome'] == 'failed'
+
+
 def test_failed_snapshot_is_not_published():
     with patch.object(w, 'supabase_rpc', side_effect=[{'action':'collect'}, True]) as rpc, patch.object(w, '_process_claimed_source', return_value={'failed':1}):
         w.collect_category('ical','ticket')
@@ -142,18 +236,25 @@ def test_html_records_pacing_before_releasing_a_source_error_slot():
     assert calls[-1][1]['p_outcome'] == 'source_error'
 
 
-def test_html_publication_rpc_failure_keeps_worker_recovery():
+@pytest.mark.parametrize('category', ['html', 'ical'])
+@pytest.mark.parametrize('action', ['collect', 'publish'])
+def test_publication_rpc_failure_keeps_worker_recovery(category, action):
     with patch.object(w, 'supabase_rpc', side_effect=[
-        {'action': 'publish'}, PreviewError('database_unavailable'), True]) as rpc:
+        {'action': action}, PreviewError('database_unavailable'), True]) as rpc, \
+            patch.object(w, '_process_claimed_source',
+                         return_value={'complete': 1, 'failed': 0, 'staged': 1}):
         with pytest.raises(PreviewError, match='database_unavailable'):
-            w.collect_category('html', 'ticket')
+            w.collect_category(category, 'ticket')
     assert rpc.call_args_list[-1].args[1]['p_outcome'] == 'failed'
 
-def test_publication_continuation_does_not_refetch():
-    with patch.object(w, 'supabase_rpc', side_effect=[{'action':'publish'}, {'outcome':'busy'}, True]) as rpc, patch.object(w, '_process_claimed_source') as process:
-        w.collect_category('jsonld','ticket')
+@pytest.mark.parametrize('category', ['ical', 'jsonld'])
+@pytest.mark.parametrize('publication,finish', [('idle', 'busy'), ('busy', 'busy'), ('continued', 'complete')])
+def test_publication_continuation_does_not_refetch(category, publication, finish):
+    with patch.object(w, 'supabase_rpc', side_effect=[{'action':'publish'}, {'outcome':publication}, True]) as rpc, patch.object(w, '_process_claimed_source') as process:
+        result = w.collect_category(category,'ticket')
         process.assert_not_called()
-        assert rpc.call_args_list[-1].args[1]['p_outcome']=='busy'
+        assert result['publication'] == {'outcome': publication}
+        assert rpc.call_args_list[-1].args[1]['p_outcome']==finish
 
 def test_failure_releases_ticket_for_bounded_retry():
     with patch.object(w, 'supabase_rpc', side_effect=[{'action':'publish'}, PreviewError('database_unavailable'), True]) as rpc:
