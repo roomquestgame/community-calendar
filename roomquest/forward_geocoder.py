@@ -49,7 +49,8 @@ def result_address_parts(item: dict) -> tuple[str, str, str, str]:
     """Return normalized street, city, state, and postal code separately."""
     c = item.get("address_components") or {}
     street = " ".join(str(c.get(k) or "") for k in
-                      ("number", "predirectional", "street", "suffix", "postdirectional"))
+                      ("number", "predirectional", "street", "suffix", "postdirectional",
+                       "unit_type", "unit_number"))
     city = str(c.get("city") or "")
     state = str(c.get("state_province") or "")
     postal = re.sub(r"[^0-9-]", "", str(c.get("zip") or c.get("postal_code") or ""))

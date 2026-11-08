@@ -35,6 +35,71 @@ class ValidationTests(unittest.TestCase):
     def test_real_v2_street_components(self):
         self.assertIsNotNone(g.verify(response(), ADDRESS))
 
+    def test_exact_secondary_address_components_survive_provider_verification(self):
+        cases = [
+            ("10411 portal rd ste 104,la vista,ne", "10411", "Portal", "Rd", "104"),
+            ("10411 portal rd ste 102,la vista,ne", "10411", "Portal", "Rd", "102"),
+            ("12744 westport pkwy ste 1a,la vista,ne", "12744", "Westport", "Pkwy", "1A"),
+        ]
+        for address, number, street, suffix, unit in cases:
+            with self.subTest(address=address):
+                payload = response()
+                payload["results"][0]["address_components"].update(
+                    number=number, predirectional="", street=street, suffix=suffix,
+                    city="La Vista", state_province="NE", postal_code="",
+                    unit_type="Ste", unit_number=unit)
+                opener = MagicMock(return_value=io.BytesIO(json.dumps(payload).encode()))
+                accepted = g.geocode(address, "fixture-only", reservation=reservation(), opener=opener)
+                self.assertIsNotNone(accepted)
+                self.assertEqual(accepted["results"][0]["address_components"]["unit_number"], unit)
+                opener.assert_called_once()
+
+    def test_wrong_missing_or_incomplete_provider_suite_is_rejected(self):
+        for unit_type, unit_number in [("Ste", "102"), (None, None), ("", ""),
+                                       ("Ste", None), (None, "104"), ("Unit", "104")]:
+            with self.subTest(unit_type=unit_type, unit_number=unit_number):
+                payload = response()
+                payload["results"][0]["address_components"].update(
+                    number="10411", predirectional="", street="Portal", suffix="Rd",
+                    city="La Vista", state_province="NE", postal_code="",
+                    unit_type=unit_type, unit_number=unit_number)
+                self.assertIsNone(g.verify(payload, "10411 portal rd ste 104,la vista,ne"))
+
+    def test_optional_empty_secondary_components_preserve_existing_building_match(self):
+        for empty in (None, "", "  "):
+            with self.subTest(empty=empty):
+                payload = response()
+                payload["results"][0]["address_components"].update(
+                    unit_type=empty, unit_number=empty)
+                self.assertIsNotNone(g.verify(payload, ADDRESS))
+
+    def test_matching_suite_still_requires_confidence_country_and_unique_location(self):
+        address = "10411 portal rd ste 104,la vista,ne"
+        payload = response()
+        payload["results"][0]["address_components"].update(
+            number="10411", predirectional="", street="Portal", suffix="Rd",
+            city="La Vista", state_province="NE", postal_code="",
+            unit_type="Ste", unit_number="104")
+        for changes in ({"accuracy": .89}, {"accuracy_type": "range_interpolation"}):
+            with self.subTest(changes=changes):
+                rejected = copy.deepcopy(payload)
+                rejected["results"][0].update(changes)
+                self.assertIsNone(g.verify(rejected, address))
+        for field, value in (("country", "CA"), ("state_province", "KS"), ("number", "10412")):
+            with self.subTest(field=field):
+                rejected = copy.deepcopy(payload)
+                rejected["results"][0]["address_components"][field] = value
+                self.assertIsNone(g.verify(rejected, address))
+        for wrong_suite in (False, True):
+            rejected = copy.deepcopy(payload)
+            alternate = copy.deepcopy(rejected["results"][0])
+            if wrong_suite:
+                alternate["address_components"]["unit_number"] = "102"
+            else:
+                alternate["location"]["lat"] += .02
+            rejected["results"].append(alternate)
+            self.assertIsNone(g.verify(rejected, address))
+
     def test_live_postal_locality_difference_preserves_street_and_state(self):
         r = response()
         r["results"][0]["address_components"]["city"] = "Durham"
