@@ -5,6 +5,30 @@ from urllib.parse import urlsplit,parse_qs
 from roomquest.wordpress_adapter import collect
 from roomquest.preview_worker import preview_source,PreviewError
 
+
+def test_ncma_uses_raleigh_wall_clock_and_exact_campus_venue():
+    from roomquest.ncma_calendar import KEY, ROOT
+
+    wall = (datetime.now(timezone.utc) + timedelta(days=2)).replace(hour=13, minute=0, second=0, microsecond=0, tzinfo=None)
+    local = wall.isoformat(sep=' ')
+    end = (wall + timedelta(hours=1)).isoformat(sep=' ')
+    cafe = {'id': 2015, 'venue': 'West Building, NCMA Café', 'slug': 'west-building-ncma-cafe',
+            'url': ROOT + '/venue/west-building-ncma-cafe/'}
+    campus = {'id': 100, 'title': 'Art workshop', 'status': 'publish', 'url': ROOT + '/event/art-workshop/',
+              'start_date': local, 'utc_start_date': local, 'end_date': end, 'utc_end_date': end,
+              'timezone': 'UTC+0', 'description': '<p>Learn to make art.</p>', 'venue': cafe}
+    offsite = dict(campus, id=101, venue={'id': 2279, 'venue': 'Moore Square, Raleigh'})
+    unknown = dict(campus, id=102, venue=None)
+    rows = collect({'source_key': KEY, 'feed_url': ROOT},
+                   lambda *_: json.dumps({'events': [campus, offsite, unknown], 'total_pages': 1}))
+    from zoneinfo import ZoneInfo
+    assert len(rows) == 1
+    assert datetime.fromisoformat(rows[0]['starts_at']) == wall.replace(tzinfo=ZoneInfo('America/New_York'))
+    assert rows[0]['venue_address'] == '2110 Blue Ridge Road, Raleigh, NC, 27607'
+    assert rows[0]['lat'] is None
+    assert 'West Building, NCMA Café' in rows[0]['description']
+    assert 'Learn to make art.' in rows[0]['description']
+
 def event(i=1):
  start=datetime.now(timezone.utc)+timedelta(days=2)
  return {'id':i,'title':'Public concert','utc_start_date':start.isoformat(),'utc_end_date':(start+timedelta(hours=2)).isoformat(),
