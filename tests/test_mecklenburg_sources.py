@@ -292,7 +292,7 @@ def test_reviewed_sources_stage_before_v3_candidate_capability_handoff(source, b
     assert calls[1][1]['p_parser_capability'] == 'publisher_event_candidates_v1'
 
 
-def test_library_ics_keeps_existing_finish_lane_without_new_media_host_permission():
+def test_library_ics_records_pacing_without_new_media_host_permission():
     source = {'source_key': 'mecklenburg_va_libraries', 'kind': 'ical', 'platform_adapter': 'ical'}
     output = {'p_source_key': source['source_key'], 'p_events': [], 'p_samples': [],
               'p_future_count': 0, 'p_venue_count': 0, 'p_error': None}
@@ -300,7 +300,7 @@ def test_library_ics_keeps_existing_finish_lane_without_new_media_host_permissio
     with patch.object(preview_worker, 'preview_source', return_value=output), \
             patch.object(preview_worker, 'supabase_rpc', side_effect=lambda name, payload: calls.append(name) or 0):
         preview_worker._process_claimed_source(source)
-    assert calls[-1] == 'community_collector_record_preview'
+    assert calls[-1] == 'community_collector_record_preview_v2'
     assert family('mecklenburg_va_libraries', 'https://www.youseemore.com/mecklib/calendar.asp') is None
 
 
