@@ -1,0 +1,25 @@
+{
+  "reviewed_on": "2026-11-08",
+  "source_key": "sc_works_trident_sc",
+  "capture": "Public unauthenticated API responses with robots respected. Administrative author metadata and unused fields removed; event facts unchanged. No geocodes added.",
+  "receipts": [
+    {
+      "file": "scworks_page1.json",
+      "raw_sha256": "117f6c82d8d82d64fc4ffd63dee5f187b198b4bca15fafd8320de03270241d44",
+      "fixture_sha256": "355d4186af1b6690139fb0c1e5d05bde47198c48da86c584e90f37cbadf9691c",
+      "returned_records": 50,
+      "total": 85,
+      "total_pages": 2,
+      "url": "https://scworkstrident.org/wp-json/tribe/events/v1/events?per_page=100&start_date=2026-11-08&end_date=2027-01-07&page=1"
+    },
+    {
+      "file": "scworks_page2.json",
+      "raw_sha256": "95ec1c8791284f84398814727ddbb558c45b9b21e53fce01d9fdc5e71a0ae2d6",
+      "fixture_sha256": "65b91e2c3d7ddf34264179a76d85e3eef29293c3ba8f1ea34f359b769c5d9f22",
+      "returned_records": 35,
+      "total": 85,
+      "total_pages": 2,
+      "url": "https://scworkstrident.org/wp-json/tribe/events/v1/events?per_page=100&start_date=2026-11-08&end_date=2027-01-07&page=2"
+    }
+  ]
+}

@@ -57,6 +57,29 @@ def test_inventory_includes_every_supported_source_and_all_existing_rows():
     assert inventory['retained_inventory']['counts']['catalog_name_only_leads'] == 3
 
 
+def test_recovery_recheck_is_exact_five_feeds_without_mapsee_or_database_calls(no_real_io, monkeypatch):
+    preview = Mock(side_effect=lambda source, **_: success(source))
+    monkeypatch.setattr(audit.preview_worker, 'preview_source', preview)
+    report = audit.audit(recovery_only=True, overall_seconds=240)
+    assert report['read_only'] and report['recovery_only'] and report['complete']
+    assert {call.args[0]['source_key'] for call in preview.call_args_list} == {
+        'elloree_town_calendar_sc', 'sc_works_trident_sc', 'old_santee_canal_park_sc',
+        'orangeburg_county_ymca_sc', 'town_of_santee_sc'}
+    assert preview.call_count == report['counts']['attempted_sources'] == 5
+    assert report['limits']['overall_seconds'] == 240
+    assert report['limits']['per_source_seconds'] == 45
+    assert report['counts']['existing_mapsee_sources'] == 0
+    assert all(row['network_skipped'] is False for row in report['sources'])
+
+
+def test_invalid_recovery_scope_fails_before_network(no_real_io, monkeypatch):
+    preview = Mock()
+    monkeypatch.setattr(audit.preview_worker, 'preview_source', preview)
+    with pytest.raises(ValueError, match='audit_recovery_scope_invalid'):
+        audit.audit(recovery_only='unreviewed')
+    preview.assert_not_called()
+
+
 def test_live_interface_calls_exact_inventory_skips_holds_and_limits_samples(no_real_io, monkeypatch, capsys):
     calls, clock = [], [100.0]
     monkeypatch.setattr(audit, 'monotonic', lambda: clock[0])

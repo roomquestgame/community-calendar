@@ -234,17 +234,19 @@ def test_elloree_actual_api_both_shapes_exclude_closures_and_keep_blank_ends():
     assert h.parse_elloree('{"data":[]}', source(h.ELLOREE), now=NOW) == []
 
 
-def test_elloree_public_post_hook_is_exact_and_changed_endpoint_fails_before_call():
+def test_elloree_direct_public_api_avoids_repeating_town_html_and_validates_identity():
     callback = Mock(return_value=fixture('elloree.json'))
-    page = '<script>fetch("' + h.ELLOREE_API + '",{method:"POST",body:"{}"})</script>'
-    fetch = Mock(return_value=page)
+    fetch = Mock(side_effect=AssertionError('town HTML must not be refetched'))
     assert len(h.collect_elloree(source(h.ELLOREE), fetch, fetch_json=callback, now=NOW)) == 2
     callback.assert_called_once_with()
-    fetch.assert_called_once_with(h.SOURCES[h.ELLOREE]['url'], 'text/html')
+    fetch.assert_not_called()
     callback.reset_mock()
-    with pytest.raises(ValueError, match='elloree_calendar_endpoint_changed'):
-        h.collect_elloree(source(h.ELLOREE), lambda *_: '<html>new calendar</html>', fetch_json=callback, now=NOW)
+    changed = source(h.ELLOREE) | {'feed_url': 'https://other.example/calendar'}
+    with pytest.raises(ValueError, match='unregistered_holly_hill_civic_source'):
+        h.collect_elloree(changed, fetch, fetch_json=callback, now=NOW)
     callback.assert_not_called()
+    with pytest.raises(ValueError, match='elloree_public_post_transport_required'):
+        h.collect_elloree(source(h.ELLOREE), fetch, now=NOW)
 
 
 def test_elloree_unknown_venue_and_ambiguous_dst_do_not_get_town_defaults():
@@ -264,7 +266,7 @@ def test_source_identity_is_exact_before_any_transport(key):
     value['feed_url'] += '?unreviewed=1'
     fetch = Mock()
     collect = {h.SANTEE: h.collect_santee, h.BEIDLER: h.collect_beidler,
-               h.SC250: h.collect_sc250_ics, h.EUTAWVILLE: h.collect_tec, h.ELLOREE: h.collect_elloree}[key]
+               h.SC250: h.collect_sc250_ics, h.EUTAWVILLE: h.collect_tec, h.SCWORKS: h.collect_tec, h.ELLOREE: h.collect_elloree}[key]
     with pytest.raises(ValueError, match='unregistered_holly_hill_civic_source'):
         collect(value, fetch, now=NOW)
     fetch.assert_not_called()
@@ -281,7 +283,7 @@ def test_public_evidence_never_accepts_foreign_tracking_or_source_logo_images():
 
 def test_pending_calendar_sources_have_explicit_holds_not_empty_parsers():
     assert h.PENDING_SOURCES['world_grits_festival_sc'][1] == 'future_annual_dates_outside_window_no_clock_times'
-    assert h.PENDING_SOURCES['old_santee_canal_park_sc'][1] == 'recdesk_public_post_adapter_required'
+    assert 'old_santee_canal_park_sc' not in h.PENDING_SOURCES
     assert not set(h.PENDING_SOURCES).intersection(h.SOURCES)
 
 

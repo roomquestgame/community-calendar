@@ -1,0 +1,169 @@
+{
+  "source": "unauthenticated public publisher responses",
+  "raw_capture_receipts": [
+    {
+      "url": "https://oldsanteecanal.recdesk.com/Community/Program/Detail?programId=100",
+      "status": 200,
+      "bytes": 70778,
+      "sha256": "95349653d45197a8a7817f8295a1799090448c2c12eff4d578dbaef9629e2e6a",
+      "content_type": "text/html; charset=utf-8",
+      "checked_at": "2026-11-08T11:18:02.688701+00:00"
+    },
+    {
+      "url": "https://oldsanteecanal.recdesk.com/Community/Program/Detail?programId=101",
+      "status": 200,
+      "bytes": 70423,
+      "sha256": "3b7304e80c3c7f708c381189c3c2b7ece9a4b0483db1b04516f01db4333275cd",
+      "content_type": "text/html; charset=utf-8",
+      "checked_at": "2026-11-08T11:18:05.739203+00:00"
+    },
+    {
+      "url": "https://oldsanteecanal.recdesk.com/Community/Program/Detail?programId=95",
+      "status": 200,
+      "bytes": 76547,
+      "sha256": "01776e0917e925e238ebab69e401b7223dee73df55008a456341998d986226e4",
+      "content_type": "text/html; charset=utf-8",
+      "checked_at": "2026-11-08T11:17:59.168215+00:00"
+    },
+    {
+      "url": "https://oldsanteecanal.recdesk.com/Community/Program/Detail?programId=98",
+      "status": 200,
+      "bytes": 70415,
+      "sha256": "e7cda8b94d85422f5187736d805208693de09863ce3a9fdf9b943d5765747ff7",
+      "content_type": "text/html; charset=utf-8",
+      "checked_at": "2026-11-08T11:18:09.538436+00:00"
+    },
+    {
+      "url": "https://oldsanteecanal.recdesk.com/Community/Program/Detail?programId=99",
+      "status": 200,
+      "bytes": 73737,
+      "sha256": "f370d97fd9d728b0d138234d5e0f95b67cd240d7bb338c570e8ea5cc0c8f8d6d",
+      "content_type": "text/html; charset=utf-8",
+      "checked_at": "2026-11-08T11:18:13.042835+00:00"
+    },
+    {
+      "url": "https://oldsanteecanal.recdesk.com/Community/Facility/Detail?facilityId=2",
+      "status": 200,
+      "bytes": 87354,
+      "sha256": "fe7af748648c3ed5b27ef9bdc59d30b062f0a7e04e9e7556758ebc076f3fe5d5",
+      "content_type": "text/html; charset=utf-8",
+      "checked_at": "2026-11-08T11:21:50.221956+00:00"
+    },
+    {
+      "url": "https://oldsanteecanal.recdesk.com/Community/Facility/Detail?facilityId=3",
+      "status": 200,
+      "bytes": 88744,
+      "sha256": "33b6e33696d064d561840724e880a68b07dbfc9eb9349892b58315a0eff5ae69",
+      "content_type": "text/html; charset=utf-8",
+      "checked_at": "2026-11-08T11:21:53.598957+00:00"
+    },
+    {
+      "url": "https://oldsanteecanal.recdesk.com/Community/Program",
+      "status": 200,
+      "bytes": 106939,
+      "sha256": "b86f760fc4ea6e86cd9f7969f4b28fcad72a6a98e2e9b6690843abb7554fc1f4",
+      "content_type": null,
+      "checked_at": "2026-11-08T11:15:17.391615+00:00"
+    },
+    {
+      "url": "https://oldsanteecanal.recdesk.com/Community/Program/FilterPrograms",
+      "status": 200,
+      "bytes": 50805,
+      "sha256": "323c10f33ef2abb857cab5cf3c075ed4e1c953e975a06b9c16043c7f9f6e4a3c",
+      "content_type": "text/html; charset=utf-8",
+      "checked_at": "2026-11-08T11:17:11.948094+00:00",
+      "method": "POST",
+      "body": {
+        "ProgramName": "",
+        "Code": "",
+        "ProgramNameXS": "",
+        "DateRangeSelection": "",
+        "DateRangeFrom": "",
+        "DateRangeTo": "",
+        "ProgramType": "0",
+        "Age": "",
+        "Facility": "0",
+        "Days": "0",
+        "Pagination": {
+          "CurrentPageIndex": 1,
+          "LoadMore": false
+        }
+      }
+    },
+    {
+      "url": "https://columbiaymca.org/category/orangeburg-county-ymca/feed/",
+      "status": 200,
+      "bytes": 77079,
+      "sha256": "131ebe65af2e897b06da55d77f988060ed8191e80658af56722cc73e4b49d380",
+      "content_type": "application/rss+xml; charset=UTF-8",
+      "checked_at": "2026-11-08T11:19:03.570934+00:00"
+    },
+    {
+      "url": "https://columbiaymca.org/2026/11/03/create-with-us-holiday-craft-event-at-orangeburg-y/",
+      "status": 200,
+      "bytes": 1432290,
+      "sha256": "7df29f225117bc1e6fca71986c74f8c6044b45bf14a4b31e1b7d59d1b1d4f89d",
+      "content_type": "text/html; charset=UTF-8",
+      "checked_at": "2026-11-08T11:17:11.753564+00:00",
+      "method": "GET",
+      "body": null
+    }
+  ],
+  "sanitized_fixtures": [
+    {
+      "name": "recdesk_100.html",
+      "sha256": "e6c9e9bd3e1e5701f1ad236a55c29ba29b12ff54f4d76ecba1c473289aa4c29f",
+      "bytes": 6284
+    },
+    {
+      "name": "recdesk_101.html",
+      "sha256": "308dd71bf761dc94987eb05b317f798b2ee74c4f959e93ccc82ea16186c41ca4",
+      "bytes": 6163
+    },
+    {
+      "name": "recdesk_95.html",
+      "sha256": "2f2916fd0535b0e3afff48b87031cec84ab2ed2700fb848a67d608da51c56529",
+      "bytes": 9719
+    },
+    {
+      "name": "recdesk_98.html",
+      "sha256": "427ec7d332691b7f9ec63dfaeb0ac62ef5defd6a99b62968584e2870006dc43c",
+      "bytes": 6168
+    },
+    {
+      "name": "recdesk_99.html",
+      "sha256": "c9dba8affeb08f810671346d0a6754ccc31966d8a5817041966ceab3cc767ea3",
+      "bytes": 7190
+    },
+    {
+      "name": "recdesk_facility_2.html",
+      "sha256": "5c8db56bbbe393f866c4a66a79b61f8a7472af2d704f63dd8f0bbd36001a3afe",
+      "bytes": 8368
+    },
+    {
+      "name": "recdesk_facility_3.html",
+      "sha256": "7cd4cbd66f5dacb0f071cf63e62cf2b79890414da4acd46371ed1c50c507d6d6",
+      "bytes": 9158
+    },
+    {
+      "name": "recdesk_index_shell.html",
+      "sha256": "c1c898b6ffc671d1c97ae341048b35a5722023882f7c4ca9600add635d664014",
+      "bytes": 1577
+    },
+    {
+      "name": "recdesk_programs.html",
+      "sha256": "24333ff82837b18a39f346635bf30f80f55a873f0bed80fee54312b33a855ee1",
+      "bytes": 13128
+    },
+    {
+      "name": "ymca_branch_feed.xml",
+      "sha256": "550de194c9c7538f860d04b66bc6cb374a8851595bda2dabc47a549b802db5fb",
+      "bytes": 52752
+    },
+    {
+      "name": "ymca_craft.html",
+      "sha256": "2cec9578c5bac2a9c3785c95940b861a74c5a53c11086de5783c75ed1f0d44a9",
+      "bytes": 3725
+    }
+  ]
+}

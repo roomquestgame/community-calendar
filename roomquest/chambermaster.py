@@ -36,7 +36,8 @@ def collect(source, payload, deadline_at, fetcher=fetch_publisher):
         try:
             raw = fetcher(detail, 'text/calendar', respect_robots=True, deadline_at=deadline_at)
         except PreviewError as exc:
-            if str(exc) in {'source_network_error', 'source_fetch_deadline', 'publisher_rate_limited'}:
+            if str(exc) in {'source_network_error', 'source_fetch_deadline',
+                            'publisher_rate_limited', 'publisher_pacing_deferred'}:
                 return {**row, 'reason': 'publisher_venue_details_unavailable'}
             raise
         calendar = Calendar.from_ical(raw)

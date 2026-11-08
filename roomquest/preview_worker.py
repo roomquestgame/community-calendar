@@ -7,7 +7,7 @@ Production publish/approval stays behind RoomQuest's audited Supabase gates.
 from __future__ import annotations
 
 from datetime import date, datetime, timedelta, timezone
-from functools import lru_cache
+from collections import OrderedDict
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
 from time import monotonic
@@ -50,6 +50,10 @@ VIRGINIA_CIVIC_ICS = {
     "halifax_county_main_va": "https://www.halifaxcountyva.gov/common/modules/iCalendar/iCalendar.aspx?catID=14&feed=calendar",
 }
 _robots_delays = {}
+ROBOTS_CACHE_SECONDS = 300
+MAX_ROBOTS_HOSTS = 128
+_robots_cache = OrderedDict()
+_robots_cache_lock = Lock()
 _publisher_next = {}
 _publisher_retry_after = {}
 _publisher_lock = Lock()
@@ -144,9 +148,20 @@ def validate_public_dns(host: str) -> None:
         raise PreviewError("dns_unavailable") from exc
 
 
-@lru_cache(maxsize=128)
-def _robots_rules(host: str, time_bucket: int):
-    """Read each publisher's rules once per five-minute cache window.
+def _cache_robots(host, parser):
+    # Age a policy from its completed response, not a shared wall-clock bucket.
+    # A policy fetched just before a five-minute boundary must not expire a
+    # moment later while that same publisher's crawl delay is still running.
+    with _robots_cache_lock:
+        _robots_cache[host] = (monotonic() + ROBOTS_CACHE_SECONDS, parser)
+        _robots_cache.move_to_end(host)
+        while len(_robots_cache) > MAX_ROBOTS_HOSTS:
+            _robots_cache.popitem(last=False)
+    return parser
+
+
+def _robots_rules(host: str, *, deadline_at: float | None = None):
+    """Cache each publisher's rules for five minutes after a valid response.
 
     Only the exact reviewed API-vendor robots redirect is permitted; every
     other redirect and every private-network destination remains blocked.
@@ -154,19 +169,34 @@ def _robots_rules(host: str, time_bucket: int):
     Actual denial and temporary unavailability retain distinct error codes.
     Cache the rules, not a path's decision: every event path is still checked.
     """
+    with _robots_cache_lock:
+        cached = _robots_cache.get(host)
+        if cached is not None:
+            if cached[0] > monotonic():
+                _robots_cache.move_to_end(host)
+                return cached[1]
+            del _robots_cache[host]
+    deadline = deadline_at if deadline_at is not None else monotonic() + 18
+    if monotonic() >= deadline:
+        raise PreviewError("source_fetch_deadline")
     robots_url = "https://" + host + "/robots.txt"
     attempted = False
     try:
         validate_public_dns(host)
         # A failed robots response is not cached. Its Retry-After must still
         # protect another robots GET, not only later calendar requests.
-        pace_publisher(host, monotonic() + 5, reserve=False)
+        # Publisher admission uses the enclosing source budget. The robots
+        # network operation remains capped at five seconds after that wait.
+        pace_publisher(host, deadline, reserve=False)
         opener = build_opener(ReviewedRobotsRedirects())
         request = Request(robots_url, headers={
             "User-Agent": "RoomQuestCommunityCalendar/0.1 (community-event research)"
         })
+        remaining = deadline - monotonic()
+        if remaining <= 0:
+            raise PreviewError("source_fetch_deadline")
         attempted = True
-        with opener.open(request, timeout=5) as response:
+        with opener.open(request, timeout=min(5, remaining)) as response:
             _observe_retry_after(host, getattr(response, "headers", {}))
             raw = response.read(128_001)
             if response.status != 200 or len(raw) > 128_000:
@@ -175,7 +205,7 @@ def _robots_rules(host: str, time_bucket: int):
         _observe_retry_after(host, exc.headers)
         if exc.code in (404, 410):
             _robots_delays[host] = 1
-            return None
+            return _cache_robots(host, None)
         if exc.code in (401, 403):
             raise PreviewError("robots_denied") from exc
         if exc.code == 429:
@@ -193,12 +223,12 @@ def _robots_rules(host: str, time_bucket: int):
     # The newly learned delay also separates this robots response from the
     # first calendar request. An oversized value is held before that request.
     _reserve_known_crawl_delay(host)
-    return parser
+    return _cache_robots(host, parser)
 
 
-def robots_allowed(host: str, path: str) -> bool:
+def robots_allowed(host: str, path: str, *, deadline_at: float | None = None) -> bool:
     """Evaluate the current path against cached, publisher-specific rules."""
-    parser = _robots_rules(host, int(monotonic() // 300))
+    parser = _robots_rules(host, deadline_at=deadline_at)
     _, unbounded = observe_crawl_delay(_robots_delays.get(host, 1))
     if unbounded:
         raise PreviewError("publisher_wait_requires_review")
@@ -215,7 +245,11 @@ def pace_publisher(host: str, deadline: float, *, reserve=True) -> None:
                 raise PreviewError("publisher_wait_requires_review")
         wait = max(0, _publisher_next.get(host, now) - now)
         if now + wait + 0.2 >= deadline:
-            raise PreviewError("publisher_rate_limited")
+            # This is a local scheduling decision; no publisher rejected a
+            # request. Keep real HTTP 429 codes distinct in records and logs.
+            if wait:
+                raise PreviewError("publisher_pacing_deferred")
+            raise PreviewError("source_fetch_deadline")
         if reserve:
             delay = max(1, float(_robots_delays.get(host, 1)))
             _publisher_next[host] = now + wait + delay
@@ -258,6 +292,23 @@ def render_elloree_calendar(*, deadline_at: float | None = None) -> str:
         allowed_hosts=('connect.elloreesc.com',), calendar_json={})
 
 
+def render_old_santee_programs(*, deadline_at: float | None = None) -> str:
+    """Read the exact anonymous RecDesk program-list display operation.
+
+    All filter fields and the first page are fixed to the reviewed public UI.
+    No caller-supplied URL, account, cart, registration or payment data is
+    accepted. The adapter checks the returned total before accepting a snapshot.
+    """
+    return _fetch_publisher_request(
+        'https://oldsanteecanal.recdesk.com/Community/Program/FilterPrograms',
+        'text/html', respect_robots=True, deadline_at=deadline_at,
+        allowed_hosts=('oldsanteecanal.recdesk.com',), calendar_json={
+            'ProgramName': '', 'Code': '', 'ProgramNameXS': '',
+            'DateRangeSelection': '', 'DateRangeFrom': '', 'DateRangeTo': '',
+            'ProgramType': '0', 'Age': '', 'Facility': '0', 'Days': '0',
+            'Pagination': {'CurrentPageIndex': 1, 'LoadMore': False}})
+
+
 def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = False,
                              deadline_at: float | None = None, allowed_hosts=None,
                              calendar_form=None, calendar_json=None) -> str | bytes:
@@ -268,13 +319,29 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
     destination URLs still pass public-network checks before each GET redirect.
     Reviewed display-only POSTs are source scoped and never redirected.
     """
+    render_content_type = None
+    json_content_type = 'application/json'
+    json_referer = None
     if calendar_json is not None:
-        if (calendar_form is not None
-                or url != 'https://connect.elloreesc.com/api/functions/getPublicCalendarEvents'
-                or accept != 'application/json' or not respect_robots
-                or allowed_hosts != ('connect.elloreesc.com',)
-                or not isinstance(calendar_json, dict) or calendar_json):
+        elloree = (url == 'https://connect.elloreesc.com/api/functions/getPublicCalendarEvents'
+                   and accept == 'application/json' and allowed_hosts == ('connect.elloreesc.com',)
+                   and isinstance(calendar_json, dict) and not calendar_json)
+        recdesk = (url == 'https://oldsanteecanal.recdesk.com/Community/Program/FilterPrograms'
+                   and accept == 'text/html' and allowed_hosts == ('oldsanteecanal.recdesk.com',)
+                   and isinstance(calendar_json, dict) and calendar_json == {
+                       'ProgramName': '', 'Code': '', 'ProgramNameXS': '',
+                       'DateRangeSelection': '', 'DateRangeFrom': '', 'DateRangeTo': '',
+                       'ProgramType': '0', 'Age': '', 'Facility': '0', 'Days': '0',
+                       'Pagination': {'CurrentPageIndex': 1, 'LoadMore': False}}
+                   and type(calendar_json['Pagination']['CurrentPageIndex']) is int
+                   and calendar_json['Pagination']['LoadMore'] is False)
+        if calendar_form is not None or not respect_robots or not (elloree or recdesk):
             raise PreviewError('invalid_calendar_render_parameters')
+        render_content_type = 'application/json' if elloree else 'text/html'
+        json_referer = ('https://elloreesc.com/elloree-town-calendar/' if elloree
+                        else 'https://oldsanteecanal.recdesk.com/Community/Program')
+        if recdesk:
+            json_content_type = 'application/json; charset=utf-8'
     if calendar_form is not None:
         # A second boundary keeps internal callers from turning this into an
         # arbitrary write-capable transport. Never replay a POST on redirect.
@@ -302,10 +369,12 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
         headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8'
         headers['Referer'] = 'https://goodshepherdsouthhill.org/welcome/calendar/'
     elif calendar_json is not None:
-        headers['Content-Type'] = 'application/json'
-        headers['Referer'] = 'https://elloreesc.com/elloree-town-calendar/'
+        headers['Content-Type'] = json_content_type
+        headers['Referer'] = json_referer
     current = url
-    deadline = min(deadline_at or float("inf"), monotonic() + 18)
+    admission_deadline = deadline_at if deadline_at is not None else monotonic() + 18
+    deadline = min(admission_deadline, monotonic() + 18)
+    network_started = False
     with requests.Session() as session:
         for _ in range(5):
             parsed = urlparse(current)
@@ -313,13 +382,26 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
                 raise PreviewError("redirect_host_not_approved")
             if not public_source_url(current):
                 raise PreviewError("invalid_redirect_url")
+            current_deadline = deadline if network_started else admission_deadline
+            if respect_robots and monotonic() >= current_deadline:
+                raise PreviewError("source_fetch_deadline")
             validate_public_dns(parsed.hostname or "")
-            if respect_robots and not robots_allowed(parsed.netloc, parsed.path + ("?" + parsed.query if parsed.query else "")):
+            if respect_robots and not robots_allowed(
+                    parsed.netloc, parsed.path + ("?" + parsed.query if parsed.query else ""),
+                    deadline_at=current_deadline):
                 raise PreviewError("robots_denied")
-            if respect_robots and monotonic() >= deadline:
+            if respect_robots and monotonic() >= current_deadline:
                 raise PreviewError("source_fetch_deadline")
             if respect_robots:
-                pace_publisher(parsed.netloc, deadline)
+                pace_publisher(parsed.netloc, current_deadline)
+                if monotonic() >= current_deadline:
+                    raise PreviewError("source_fetch_deadline")
+            if not network_started:
+                # Admission can consume a valid part of the source budget;
+                # preserve the 18-second network cap after admission. Redirects
+                # share that cap and never restart the enclosing deadline.
+                deadline = min(admission_deadline, monotonic() + 18)
+                network_started = True
             try:
                 remaining = max(0.1, deadline - monotonic())
                 timeout = (min(3,remaining/2), min(7,remaining/2)) if respect_robots else (5,12)
@@ -360,7 +442,7 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
                     raise PreviewError('invalid_calendar_render_content_type')
                 if (calendar_json is not None and
                         response.headers.get('Content-Type', '').split(';', 1)[0].strip().lower()
-                        != 'application/json'):
+                        != render_content_type):
                     response.close()
                     raise PreviewError('invalid_calendar_render_content_type')
                 length = int(response.headers.get("Content-Length") or 0)
@@ -682,7 +764,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                 source, lambda url, accept: fetch_publisher(
                     url, accept, respect_robots=True, deadline_at=deadline,
                     allowed_hosts=spec['hosts']), deadline_at=deadline,
-                fetch_elloree=lambda: render_elloree_calendar(deadline_at=deadline))
+                fetch_elloree=lambda: render_elloree_calendar(deadline_at=deadline),
+                fetch_programs=lambda: render_old_santee_programs(deadline_at=deadline))
         except PreviewError:
             raise
         except (ValueError, TypeError, KeyError, OverflowError) as exc:

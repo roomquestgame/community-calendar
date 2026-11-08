@@ -35,7 +35,7 @@ def isolated_rules(monkeypatch):
     # All HTTP and clocks in this suite are controlled; record pacing without
     # introducing real sleeps into fake-origin tests.
     monkeypatch.setattr(worker, "sleep", Mock())
-    worker._robots_rules.cache_clear()
+    worker._robots_cache.clear()
     saved_delays = dict(worker._robots_delays)
     saved_next = dict(worker._publisher_next)
     saved_retry = dict(worker._publisher_retry_after)
@@ -43,7 +43,7 @@ def isolated_rules(monkeypatch):
     worker._publisher_next.clear()
     worker._publisher_retry_after.clear()
     yield
-    worker._robots_rules.cache_clear()
+    worker._robots_cache.clear()
     worker._robots_delays.clear()
     worker._robots_delays.update(saved_delays)
     worker._publisher_next.clear()
@@ -258,7 +258,7 @@ def test_robots_retry_after_protects_the_next_robots_get_too(monkeypatch):
         with pytest.raises(worker.PreviewError, match="^publisher_rate_limited$"):
             worker.robots_allowed(HOST, "/public/event")
     with capture_publisher_pacing() as second:
-        with pytest.raises(worker.PreviewError, match="^publisher_rate_limited$"):
+        with pytest.raises(worker.PreviewError, match="^publisher_pacing_deferred$"):
             worker.robots_allowed(HOST, "/public/event")
     assert second["retry_after_seconds"] == 600
     assert calls == [(ROBOTS_URL, 5)]
@@ -283,7 +283,7 @@ def publisher_transport(monkeypatch, status, retry_after):
     factory.return_value.__enter__.return_value = session
     monkeypatch.setattr(worker.requests, "Session", factory)
     monkeypatch.setattr(worker, "validate_public_dns", lambda *_: None)
-    monkeypatch.setattr(worker, "robots_allowed", lambda *_: True)
+    monkeypatch.setattr(worker, "robots_allowed", lambda *_, **__: True)
     monkeypatch.setattr(worker, "monotonic", lambda: 100.0)
     return response, session
 
@@ -295,7 +295,7 @@ def test_publisher_retry_after_blocks_a_following_request_and_survives_new_captu
             worker.fetch_publisher("https://" + HOST + "/events", "text/html", respect_robots=True)
     assert first["retry_after_seconds"] == 120
     with capture_publisher_pacing() as second:
-        with pytest.raises(worker.PreviewError, match="^publisher_rate_limited$"):
+        with pytest.raises(worker.PreviewError, match="^publisher_pacing_deferred$"):
             worker.fetch_publisher("https://" + HOST + "/events", "text/html", respect_robots=True)
     assert second["retry_after_seconds"] == 120
     assert session.get.call_count == 1
@@ -355,6 +355,6 @@ def test_vendor_redirect_destination_404_means_absent_rules_but_new_publisher_ru
     monkeypatch.setattr(worker,'build_opener',make_opener)
     assert worker.robots_allowed(api,'/1/indexes/prod-experience-waterloo-listings') is True
     assert checked==[api,'algolia.net']
-    worker._robots_rules.cache_clear()
+    worker._robots_cache.clear()
     transport(monkeypatch,b'User-agent: *\nDisallow: /1/\n')
     assert worker.robots_allowed(api,'/1/indexes/prod-experience-waterloo-listings') is False

@@ -6,6 +6,8 @@ from urllib.parse import urlsplit
 from roomquest import holly_hill_businesses as businesses
 from roomquest import holly_hill_civic as civic
 from roomquest import holly_hill_institutions as institutions
+from roomquest import holly_hill_institution_recovery as institution_recovery
+from roomquest import santee_town_calendar as santee_town
 
 ZONE = 'America/New_York'
 ORANGEBURG_LIBRARY = 'orangeburg_county_library_sc'
@@ -16,6 +18,12 @@ SOURCES.update({key: {'url': url, 'kind': 'ical' if key in institutions.ICS else
                      'adapter': 'ical' if key in institutions.ICS else 'html',
                      'hosts': (urlsplit(url).hostname,)}
                 for key, url in institutions.SOURCES.items()})
+SOURCES.update({key: {'url': url, 'kind': 'html', 'adapter': 'html',
+                     'hosts': (urlsplit(url).hostname,)}
+                for key, url in institution_recovery.SOURCES.items()})
+SOURCES.update({key: {'url': url, 'kind': 'html', 'adapter': 'html',
+                     'hosts': (urlsplit(url).hostname,)}
+                for key, url in santee_town.SOURCES.items()})
 SOURCES[ORANGEBURG_LIBRARY] = {
     'url': 'https://www.orangeburgcounty.org/common/modules/iCalendar/iCalendar.aspx?catID=23&feed=calendar',
     'kind': 'ical', 'adapter': 'ical', 'hosts': ('www.orangeburgcounty.org',)}
@@ -43,9 +51,14 @@ def publisher_media(source):
         return False
 
 
-def collect(source, fetch, *, deadline_at=None, fetch_elloree=None):
+def collect(source, fetch, *, deadline_at=None, fetch_elloree=None, fetch_programs=None):
     validate(source)
     key = source['source_key']
+    if key in santee_town.SOURCES:
+        return santee_town.collect(source, fetch, deadline_at=deadline_at)
+    if key in institution_recovery.SOURCES:
+        return institution_recovery.collect(source, fetch, deadline_at=deadline_at,
+                                            fetch_programs=fetch_programs)
     if key in institutions.SOURCES:
         return institutions.collect(source, fetch, deadline_at=deadline_at)
     if key in businesses.SOURCES:
@@ -61,7 +74,7 @@ def collect(source, fetch, *, deadline_at=None, fetch_elloree=None):
         return civic.collect_beidler(source, fetch, deadline_at=deadline_at)
     if key == civic.SC250:
         return civic.collect_sc250_ics(source, fetch, deadline_at=deadline_at)
-    if key == civic.EUTAWVILLE:
+    if key in (civic.EUTAWVILLE, civic.SCWORKS):
         return civic.collect_tec(source, fetch, deadline_at=deadline_at)
     if key == civic.ELLOREE:
         return civic.collect_elloree(source, fetch, fetch_json=fetch_elloree, deadline_at=deadline_at)

@@ -155,7 +155,8 @@ def test_detail_collection_bounds_concurrency_and_finishes_the_snapshot():
     assert 1 < maximum <= 3
 
 
-@pytest.mark.parametrize('reason', ['source_network_error','source_fetch_deadline','publisher_rate_limited'])
+@pytest.mark.parametrize('reason', ['source_network_error','source_fetch_deadline',
+                                   'publisher_rate_limited','publisher_pacing_deferred'])
 def test_unavailable_optional_venue_keeps_verified_xml_identity_and_time(reason):
     from roomquest.chambermaster import collect
     from time import monotonic
