@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from datetime import date, datetime, timedelta, timezone
 from functools import lru_cache
+from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
 from time import monotonic
 from time import sleep
@@ -43,6 +44,7 @@ RALEIGH_CATALOG_ICS = {
     "municipal_mapsee_71f780dc81d6d3b9097db7c0": "https://www.hollyspringsnc.gov/common/modules/iCalendar/iCalendar.aspx?catID=24&feed=calendar",
     "municipal_mapsee_915fd84e82585dad00e9ffba": "https://www.fuquay-varina.org/common/modules/iCalendar/iCalendar.aspx?catID=45&feed=calendar",
 }
+RALEIGH_UDELL_ICS = json.loads(Path(__file__).with_name("raleigh_udell_ics.json").read_text(encoding="utf-8"))
 VIRGINIA_CIVIC_ICS = {
     "farmville_parks_rec_va": "https://farmvilleva.com/common/modules/iCalendar/iCalendar.aspx?catID=23&feed=calendar",
     "halifax_county_main_va": "https://www.halifaxcountyva.gov/common/modules/iCalendar/iCalendar.aspx?catID=14&feed=calendar",
@@ -655,7 +657,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         source_key = source.get("source_key", "")
         civic_ics = source_key in VIRGINIA_CIVIC_ICS
         raleigh_ics = source_key in RALEIGH_CATALOG_ICS
-        if raleigh_ics and source.get("feed_url") != RALEIGH_CATALOG_ICS[source_key]:
+        raleigh_url = RALEIGH_CATALOG_ICS.get(source_key) or RALEIGH_UDELL_ICS.get(source_key)
+        if raleigh_url and source.get("feed_url") != raleigh_url:
             raise PreviewError("unregistered_raleigh_catalog_ics")
         if civic_ics and (source.get("feed_url") != VIRGINIA_CIVIC_ICS[source_key]
                           or source.get("timezone") != "America/New_York"):
@@ -678,11 +681,11 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                     allowed_hosts=(urlparse(maryland_sources.ICS[source_key]).hostname,)))
             else:
                 host_scope = {}
-                if civic_ics or raleigh_ics:
+                if civic_ics or raleigh_url:
                     host_scope["allowed_hosts"] = (urlparse(source["feed_url"]).hostname,)
                 payload = fetch_publisher(
                     source["feed_url"], "text/calendar",
-                    respect_robots=civic_ics or raleigh_ics or mapsee or source_key == "mecklenburg_va_libraries",
+                    respect_robots=civic_ics or bool(raleigh_url) or mapsee or source_key == "mecklenburg_va_libraries",
                     deadline_at=deadline, **host_scope)
                 records = parse(payload, {"url": source["feed_url"], "source_key": source_key}, legacy=not mapsee,
                                 include_description=civic_ics or raleigh_ics or source_key == "independence_ia_library_family")

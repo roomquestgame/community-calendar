@@ -31,6 +31,18 @@ def test_reviewed_raleigh_legacy_ics_checks_publisher_and_keeps_description():
     assert out["p_events"][0]["description"] == "Make a creation."
 
 
+def test_raleigh_udell_catalog_uses_bounded_publisher_transport():
+    key = "municipal_3eaa90140971d6aa8fd09832"
+    reviewed = {**source(key), "feed_url": "https://events.ackland.org/events/?ical=1"}
+    with patch("roomquest.preview_worker.fetch_publisher", return_value=feed()) as fetch:
+        assert preview_source(reviewed)["p_future_count"] == 1
+        with pytest.raises(PreviewError, match="unregistered_raleigh_catalog_ics"):
+            preview_source(source(key))
+    fetch.assert_called_once()
+    assert fetch.call_args.kwargs["respect_robots"] is True
+    assert fetch.call_args.kwargs["allowed_hosts"] == ("events.ackland.org",)
+
+
 @pytest.mark.parametrize('legacy',[False,True])
 def test_large_feed_fails_instead_of_truncating(legacy):
  with pytest.raises(ValueError,match='source_record_limit'):parse(feed(501),{'url':'https://venue.example.org/calendar.ics'},legacy=legacy)
