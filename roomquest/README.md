@@ -1,3 +1,7 @@
+## Raleigh–Durham catalog activation — November 8, 2026
+
+Legacy Raleigh–Durham ICS entries now use the same bounded robots-aware publisher transport as the reviewed Raleigh cohort. The collector checks the exact catalog URL and publisher host before fetching. The companion activation migration enrolls permitted feeds in search discovery and leaves explicit publisher blocks outside the activation list.
+
 ## Raleigh catalog feed recovery — November 8, 2026
 
 Seven exact Raleigh-area calendar keys use the existing bounded ICS transport with publisher robots and same-host redirect checks. The normal worker retained descriptions for 226 timed candidates in captured feeds. The companion database migration supplies search coverage and the shared address path for these existing Mapsee and Udell registrations. Counts precede address resolution and publication.
