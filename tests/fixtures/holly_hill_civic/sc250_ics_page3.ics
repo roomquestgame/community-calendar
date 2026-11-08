@@ -1,0 +1,616 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//South Carolina&#039\;s 250th Anniversary of the American Revolut
+ ion - ECPv6.18.3//NONSGML v1.0//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALDESC:Events for South Carolina&#039\;s 250th Anniversary of the Am
+ erican Revolution
+X-WR-CALNAME:South Carolina&#039\;s 250th Anniversary of the American Revo
+ lution
+REFRESH-INTERVAL;VALUE=DURATION:PT1H
+X-ORIGINAL-URL:https://southcarolina250.com
+X-PUBLISHED-TTL:PT1H
+X-ROBOTS-TAG:noindex
+BEGIN:VTIMEZONE
+TZID:America/New_York
+BEGIN:DAYLIGHT
+DTSTART:20250309T070000
+TZNAME:EDT
+TZOFFSETFROM:-0500
+TZOFFSETTO:-0400
+END:DAYLIGHT
+BEGIN:STANDARD
+DTSTART:20251102T060000
+TZNAME:EST
+TZOFFSETFROM:-0400
+TZOFFSETTO:-0500
+END:STANDARD
+BEGIN:DAYLIGHT
+DTSTART:20260308T070000
+TZNAME:EDT
+TZOFFSETFROM:-0500
+TZOFFSETTO:-0400
+END:DAYLIGHT
+BEGIN:STANDARD
+DTSTART:20261101T060000
+TZNAME:EST
+TZOFFSETFROM:-0400
+TZOFFSETTO:-0500
+END:STANDARD
+BEGIN:DAYLIGHT
+DTSTART:20270314T070000
+TZNAME:EDT
+TZOFFSETFROM:-0500
+TZOFFSETTO:-0400
+END:DAYLIGHT
+BEGIN:STANDARD
+DTSTART:20271107T060000
+TZNAME:EST
+TZOFFSETFROM:-0400
+TZOFFSETTO:-0500
+END:STANDARD
+BEGIN:DAYLIGHT
+DTSTART:20280312T070000
+TZNAME:EDT
+TZOFFSETFROM:-0500
+TZOFFSETTO:-0400
+END:DAYLIGHT
+BEGIN:STANDARD
+DTSTART:20281105T060000
+TZNAME:EST
+TZOFFSETFROM:-0400
+TZOFFSETTO:-0500
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+SUMMARY:First Blood: The First Siege of Ninety Six
+DTSTART;TZID=America/New_York:20261118T180000
+DTEND;TZID=America/New_York:20261118T190000
+UID:10003235-1795024800-1795028400@southcarolina250.com
+CATEGORIES:Events,Lectures
+DESCRIPTION:A lecture by historian and battlefield preservationist Durant 
+ Ashmore. At the first Siege of Ninety Six (November 19–21\, 1775)\, Jame
+ s Birmingham was killed\, the first South Carolinian to die in the name of
+  Liberty. Durant discusses the events that led to his death.
+LOCATION:Captain Kimberly Hampton Library\, 304 Biltmore Rd\, Easley\, SC\
+ , 29640\, United States
+URL:https://southcarolina250.com/event/first-blood-the-first-siege-of-nine
+ ty-six/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Screening:  Ken Burns The Revolutionary War
+DTSTART;TZID=America/New_York:20261118T180000
+DTEND;TZID=America/New_York:20261118T200000
+UID:10002307-1795024800-1795032000@southcarolina250.com
+ATTACH;FMTTYPE=image/jpeg:https://southcarolina250.com/wp-content/uploads/
+ 2026/03/download-8.jpg
+CATEGORIES:Movie Screenings
+DESCRIPTION:Join us every Wednesday throughout the months of April and May
+  for a screening of The American Revolution: A Film by Ken Burns. Each wee
+ k we will show 1 episode. Each episode lasts around 2 hours.\n\nFREE POPCO
+ RN & DRINKS!\n\nThis event is Free but donations are gladly accepted.
+LOCATION:Oconee History Museum\, 123 Brown's Square Drive\, Walhalla\, SC\
+ , 29691\, United States
+URL:https://southcarolina250.com/event/screening-ken-burns-the-revolutiona
+ ry-war/2026-11-18/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Revolutionary War Review Homeschool Friday - SC Revolutionary Lead
+ ers
+DTSTART;TZID=America/New_York:20261120T110000
+DTEND;TZID=America/New_York:20261120T120000
+UID:10003130-1795172400-1795176000@southcarolina250.com
+ATTACH;FMTTYPE=image/png:https://southcarolina250.com/wp-content/uploads/2
+ 026/08/Screenshot-2026-08-01-152859.png
+CATEGORIES:Lectures,Other
+DESCRIPTION:November 20 – South Carolina’s Revolutionary Leaders. \nCo
+ me and learn about some of South Carolina’s Revolutionary Leaders such a
+ s Robert Anderson\, Andrew Pickens\, Henry Laurens\, Thomas Sumter\, Franc
+ is Marion\, Thomas Heyward\, Jr.\, Arthur Middleton\, and others. \nAs a p
+ art of our celebrations and remembrances during the 250th\, the Anderson C
+ ounty Museum is adding a series to our Homeschool Friday program. \nThe Re
+ volutionary War Review series will focus on several elements of the Revolu
+ tionary War and is open to all students.
+LOCATION:Anderson County Museum\, 202 East Greenville Street\, Anderson\, 
+ SC\, 29621\, United States
+URL:https://southcarolina250.com/event/revolutionary-war-review-homeschool
+ -friday-sc-revolutionary-leaders/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Remember the Ladies: Backcountry
+DTSTART;TZID=America/New_York:20261121T100000
+DTEND;TZID=America/New_York:20261121T120000
+UID:10003174-1795255200-1795262400@southcarolina250.com
+ATTACH;FMTTYPE=image/jpeg:https://southcarolina250.com/wp-content/uploads/
+ 2026/08/Ladies-11.21.jpg
+CATEGORIES:Events
+DESCRIPTION:Spend your morning with some of the Patriot ladies of South C
+ arolina’s backcountry.\nProgram Highlights: \n\nColonel Rawdon\, Command
+ er of the Camden Garrison\, will spar with Mrs. Sarah McCalla over her hus
+ band being held as a POW.\nPaul Wood will speak on Dicey Langston and her 
+ Revolutionary legacy.\nBettise Davidson will tell the story of the Widow J
+ enkins of Marion District who defied a British officer.\n\nLight refreshme
+ nts will be served. \n*After our program\, visitors are encouraged to visi
+ t Historic Camden for a “Make & Take” craft for the ladies.*
+LOCATION:Revolutionary War Visitor Center\, 212 Broad Street\, Camden\, SC
+ \, 29020\, United States
+URL:https://southcarolina250.com/event/remember-the-ladies-backcountry/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Yap Ye Iswa Festival
+DTSTART;TZID=America/New_York:20261121T100000
+DTEND;TZID=America/New_York:20261121T160000
+UID:10003227-1795255200-1795276800@southcarolina250.com
+ATTACH;FMTTYPE=image/jpeg:https://southcarolina250.com/wp-content/uploads/
+ 2026/11/yap-ye-flyer-2026.jpeg
+CATEGORIES:Demonstrations - Reenactments,Events,Exhibits,Festivals,Lecture
+ s,Performance,Tours
+DESCRIPTION:Come celebrate and learn about the Catawba Nation’s culture 
+ at the annual Yap Ye Iswa Festival. \nVisitors can experience dancing\, dr
+ umming\, Catawba vendors\, food\, demonstrations\, lecture series\, guided
+  nature walks\, the new Catawba Life village and more! \nFree and open to 
+ the public!
+LOCATION:Catawba Cultural Center\, 1536 Tom Steven Road\, Rock Hill\, SC\,
+  29730\, United States
+URL:https://southcarolina250.com/event/yap-ye-iswa-festival-2/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:SC250 2nd Annual Sweet Potato Festival
+DTSTART;TZID=America/New_York:20261121T110000
+DTEND;TZID=America/New_York:20261121T180000
+UID:10003107-1795258800-1795284000@southcarolina250.com
+ATTACH;FMTTYPE=image/jpeg:https://southcarolina250.com/wp-content/uploads/
+ 2026/07/11447.jpg
+CATEGORIES:Festivals
+DESCRIPTION:Celebrate the 250th anniversary by exploring the untold storie
+ s of South Carolina’s Revolutionary history across six historic counties
+ .
+LOCATION:Freewoods Farm\, 9515 Freewoods Farm road\, Myrtle Beach\, SC\, 2
+ 9588\, United States
+URL:https://southcarolina250.com/event/sc250-2nd-annual-sweet-potato-festi
+ val/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:The Spirit of 96 Soiree' hosted by the Friends of the Ninety Six N
+ ational Historic Site Commitee
+DTSTART;TZID=America/New_York:20261121T180000
+DTEND;TZID=America/New_York:20261121T203000
+UID:10003214-1795284000-1795293000@southcarolina250.com
+CATEGORIES:Anniversaries - Commemorations
+DESCRIPTION:An evening of merriment\, celebrating and honoring our forebea
+ rers and the critical role Star Fort played in the Revolutionary War. \nCo
+ lonial attire encouraged but not required. Celebrating 250 years of freedo
+ m. \nLive music\, food\, and beverage provided. \nLet liberty ring and mer
+ rymaking begin!
+LOCATION:Turner Family Farms Event Center\, 6790 Hwy 178 South\, Ninety Si
+ x\, SC\, 29666\, United States
+URL:https://southcarolina250.com/event/the-spirit-of-96-soiree-hosted-by-t
+ he-friends-of-the-ninety-six-national-historic-site-commitee/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Screening:  Ken Burns The Revolutionary War
+DTSTART;TZID=America/New_York:20261125T180000
+DTEND;TZID=America/New_York:20261125T200000
+UID:10002308-1795629600-1795636800@southcarolina250.com
+ATTACH;FMTTYPE=image/jpeg:https://southcarolina250.com/wp-content/uploads/
+ 2026/03/download-8.jpg
+CATEGORIES:Movie Screenings
+DESCRIPTION:Join us every Wednesday throughout the months of April and May
+  for a screening of The American Revolution: A Film by Ken Burns. Each wee
+ k we will show 1 episode. Each episode lasts around 2 hours.\n\nFREE POPCO
+ RN & DRINKS!\n\nThis event is Free but donations are gladly accepted.
+LOCATION:Oconee History Museum\, 123 Brown's Square Drive\, Walhalla\, SC\
+ , 29691\, United States
+URL:https://southcarolina250.com/event/screening-ken-burns-the-revolutiona
+ ry-war/2026-11-25/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Van Tour: The First and Second Cherokee Wars
+DTSTART;TZID=America/New_York:20261128T090000
+DTEND;TZID=America/New_York:20261128T170000
+UID:10003236-1795856400-1795885200@southcarolina250.com
+CATEGORIES:Events,Tours
+DESCRIPTION:A van tour with historian and battlefield preservationist Dura
+ nt Ashmore to sites of the first and second Cherokee Wars: Fort Prince Geo
+ rge\, Keowee\, Eastatoe\, Tomassee\, Esseneca and Fort Rutledge. The Chero
+ kees chose some of the most beautiful places in the state for their towns\
+ , so come enjoy the fall foliage as we study these tragic wars. \nThe tour
+  leaves from Greenville\; meeting spot and end time to be announced. For d
+ etails and reservations\, contact Durant Ashmore on Facebook: https://www.
+ facebook.com/durant.ashmore
+LOCATION:Greenville\, SC (meeting spot TBD)\, TBD\, Greenville\, SC\, 2960
+ 1\, United States
+URL:https://southcarolina250.com/event/van-tour-the-first-and-second-chero
+ kee-wars/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Screening:  Ken Burns The Revolutionary War
+DTSTART;TZID=America/New_York:20261202T180000
+DTEND;TZID=America/New_York:20261202T200000
+UID:10002309-1796234400-1796241600@southcarolina250.com
+ATTACH;FMTTYPE=image/jpeg:https://southcarolina250.com/wp-content/uploads/
+ 2026/03/download-8.jpg
+CATEGORIES:Movie Screenings
+DESCRIPTION:Join us every Wednesday throughout the months of April and May
+  for a screening of The American Revolution: A Film by Ken Burns. Each wee
+ k we will show 1 episode. Each episode lasts around 2 hours.\n\nFREE POPCO
+ RN & DRINKS!\n\nThis event is Free but donations are gladly accepted.
+LOCATION:Oconee History Museum\, 123 Brown's Square Drive\, Walhalla\, SC\
+ , 29691\, United States
+URL:https://southcarolina250.com/event/screening-ken-burns-the-revolutiona
+ ry-war/2026-12-02/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Revolutionary Art: A Conversation with the South Carolina State Ho
+ use Tour Office
+DTSTART;TZID=America/New_York:20261203T150000
+DTEND;TZID=America/New_York:20261203T160000
+UID:10003228-1796310000-1796313600@southcarolina250.com
+ATTACH;FMTTYPE=image/jpeg:https://southcarolina250.com/wp-content/uploads/
+ 2026/11/2026_10_22_09_16_11-scaled.jpg
+CATEGORIES:Events
+DESCRIPTION:Join the South Carolina State Library for a special event\, Re
+ volutionary Art: A Conversation with the South Carolina State House Tour O
+ ffice. Staff from the South Carolina State House Tour Office will discuss 
+ the history and significance of the paintings in the South Carolina State 
+ House\, including important battles and scenes from the American Revolutio
+ n in South Carolina. They will also provide resources from various South C
+ arolina State Parks and Historic Sites\, highlighting Revolutionary War hi
+ story throughout the state.
+LOCATION:South Carolina State Library\, 1500 Senate Street\, Columbia\, SC
+ \, 29201\, United States
+URL:https://southcarolina250.com/event/revolutionary-art-a-conversation-wi
+ th-the-south-carolina-state-house-tour-office/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Revolutionary War Review Homeschool Friday - Battle of Eutaw Sprin
+ gs
+DTSTART;TZID=America/New_York:20261204T110000
+DTEND;TZID=America/New_York:20261204T120000
+UID:10003136-1796382000-1796385600@southcarolina250.com
+ATTACH;FMTTYPE=image/png:https://southcarolina250.com/wp-content/uploads/2
+ 026/08/Screenshot-2026-08-01-153307.png
+CATEGORIES:Lectures,Other
+DESCRIPTION:December 4 – The Battle of Eutaw Springs\, SC (September 8\,
+  1781). \nWe will be looking at the Battle of Eutaw Springs\, SC\, that wa
+ s fought on September 8\, 1781. We’ll go over the various military units
+  and leaders engaged in the fight as we examine the facts of the battle be
+ fore\, during\, and after. Then\, we will track how this impacted the larg
+ er course of the war. \nAs a part of our celebrations and remembrances dur
+ ing the 250th\, the Anderson County Museum is adding a series to our Homes
+ chool Friday program. \nThe Revolutionary War Review series will focus on 
+ several elements of the Revolutionary War and is open to all students.
+LOCATION:Anderson County Museum\, 202 East Greenville Street\, Anderson\, 
+ SC\, 29621\, United States
+URL:https://southcarolina250.com/event/revolutionary-war-review-homeschool
+ -friday-battle-of-eutaw-springs/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:North Myrtle Beach Liberty Tree/Arbor Day Celebration
+DTSTART;TZID=America/New_York:20261204T120000
+DTEND;TZID=America/New_York:20261204T133000
+UID:10003226-1796385600-1796391000@southcarolina250.com
+ATTACH;FMTTYPE=image/png:https://southcarolina250.com/wp-content/uploads/2
+ 026/11/3DAC92D5-B92C-4107-8D48-1EC5859961CA.png
+CATEGORIES:Anniversaries - Commemorations,Events
+DESCRIPTION:December 4th 2026 at noon The City of North Myrtle Beach will 
+ celebrate the 250 anniversary of the United States of America by unveiling
+  a live oak that will henceforth be known as the City of North Myrtle Beac
+ h’s Liberty Tree. \nThe Yaupon Garden Club and the NMB Tree Board are sp
+ onsoring the event which will serve as the City’s Arbor Day Celebration.
+  \nThis community event will be held at Mclean Park located in the heart o
+ f North Myrtle Beach.
+LOCATION:Mclean Park\, Main Street\, North Myrtle Beach SC\, SC\, 29582\, 
+ United States
+URL:https://southcarolina250.com/event/north-myrtle-beach-liberty-tree-arb
+ or-day-celebration/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:SC250 Executive Committee Meeting
+DTSTART;TZID=America/New_York:20261208T140000
+DTEND;TZID=America/New_York:20261208T160000
+UID:10002793-1796738400-1796745600@southcarolina250.com
+CATEGORIES:Commission Events,Meeting Agendas - Minutes
+DESCRIPTION:The SC250 Executive Committee meets virtually on the second Tu
+ esday of each month at 2:00 PM. \nFor the best meeting experience\, please
+  ensure you have the latest version of Zoom installed. Participants joinin
+ g through a web browser may not be able to view presentations\, access the
+  chat feature\, or share their screens. \nhttps://us06web.zoom.us/j/882519
+ 05215?pwd=zJqwWoNvhfNcoRrbCDoASAkcLW9YIK.1
+LOCATION:Virtual
+URL:https://southcarolina250.com/event/sc250-executive-committee-meeting-3
+ /2026-12-08/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Screening:  Ken Burns The Revolutionary War
+DTSTART;TZID=America/New_York:20261209T180000
+DTEND;TZID=America/New_York:20261209T200000
+UID:10002310-1796839200-1796846400@southcarolina250.com
+ATTACH;FMTTYPE=image/jpeg:https://southcarolina250.com/wp-content/uploads/
+ 2026/03/download-8.jpg
+CATEGORIES:Movie Screenings
+DESCRIPTION:Join us every Wednesday throughout the months of April and May
+  for a screening of The American Revolution: A Film by Ken Burns. Each wee
+ k we will show 1 episode. Each episode lasts around 2 hours.\n\nFREE POPCO
+ RN & DRINKS!\n\nThis event is Free but donations are gladly accepted.
+LOCATION:Oconee History Museum\, 123 Brown's Square Drive\, Walhalla\, SC\
+ , 29691\, United States
+URL:https://southcarolina250.com/event/screening-ken-burns-the-revolutiona
+ ry-war/2026-12-09/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Family Revolutionary Sunday: Surrender!
+DTSTART;TZID=America/New_York:20261213T140000
+DTEND;TZID=America/New_York:20261213T150000
+UID:10003190-1797170400-1797174000@southcarolina250.com
+ATTACH;FMTTYPE=image/png:https://southcarolina250.com/wp-content/uploads/2
+ 026/09/Screenshot-2026-09-11-130712.png
+CATEGORIES:Lectures,Other
+DESCRIPTION:As 2026 draws to a close\, so do our Family Revolutionary Sund
+ ays. Learn how the British were finally beaten and what the aftereffects o
+ f Cornwallis’s surrender were in Charleston. In honor of the 250th anniv
+ ersary of the signing of the Declaration of Independence\, The Charleston 
+ Museum is hosting a series of family programs called Revolutionary Sundays
+  throughout 2026. These free with admission or Museum membership programs 
+ will explore different themes\, events\, and people from the Revolutionary
+  War. Revolutionary Sundays include a class or guided tour and a craft or 
+ activity. \nFREE for Members and FREE with admission to The Charleston Mus
+ eum \nFor more information: call 843-722-2996 ext. 236
+LOCATION:The Charleston Museum\, 360 Meeting Street\, Charleston\, SC\, 29
+ 403\, United States
+URL:https://southcarolina250.com/event/family-revolutionary-sunday-surrend
+ er/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Behind Enemy Lyrics
+DTSTART;TZID=America/New_York:20261215T120000
+DTEND;TZID=America/New_York:20261215T130000
+UID:10003229-1797336000-1797339600@southcarolina250.com
+ATTACH;FMTTYPE=image/jpeg:https://southcarolina250.com/wp-content/uploads/
+ 2026/11/Behind-Enemy-Lyrics_CALENDAR.jpg
+CATEGORIES:Lectures
+DESCRIPTION:Join Rev. John Paul Marr at the Anderson County Museum as we e
+ xplore the revolutionary warfare of words. 18th century broadsheet lyrics 
+ functioned as part of the ideological propaganda machine for both the Brit
+ ish and the Patriots. The stories of these songs and their rippling effect
+ s provide another perspective for understanding the founding of the United
+  States of America. Hear the tunes and experience the back-and-forth battl
+ es of singing the songs of the American Revolution.
+LOCATION:Anderson County Museum\, 202 East Greenville Street\, Anderson\, 
+ SC\, 29621\, United States
+URL:https://southcarolina250.com/event/behind-enemy-lyrics/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Screening:  Ken Burns The Revolutionary War
+DTSTART;TZID=America/New_York:20261216T180000
+DTEND;TZID=America/New_York:20261216T200000
+UID:10002311-1797444000-1797451200@southcarolina250.com
+ATTACH;FMTTYPE=image/jpeg:https://southcarolina250.com/wp-content/uploads/
+ 2026/03/download-8.jpg
+CATEGORIES:Movie Screenings
+DESCRIPTION:Join us every Wednesday throughout the months of April and May
+  for a screening of The American Revolution: A Film by Ken Burns. Each wee
+ k we will show 1 episode. Each episode lasts around 2 hours.\n\nFREE POPCO
+ RN & DRINKS!\n\nThis event is Free but donations are gladly accepted.
+LOCATION:Oconee History Museum\, 123 Brown's Square Drive\, Walhalla\, SC\
+ , 29691\, United States
+URL:https://southcarolina250.com/event/screening-ken-burns-the-revolutiona
+ ry-war/2026-12-16/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Eliza - An American Opera
+DTSTART;TZID=America/New_York:20261216T193000
+DTEND;TZID=America/New_York:20261216T213000
+UID:10003224-1797449400-1797456600@southcarolina250.com
+ATTACH;FMTTYPE=image/png:https://southcarolina250.com/wp-content/uploads/2
+ 026/10/90053638-F978-40F2-A857-97A3B8A0318C.png
+CATEGORIES:Events,Other
+DESCRIPTION:ELIZA: A Chamber Opera brings to life the courage\, enterprise
+ \, and resilience of free\, enslaved\, and freed African and African-desce
+ nded market women in relationship with Jewish Femme Soles in Revolutionary
+ -era Charleston\, South Carolina. \nCommissioned by the Jonathan Green Mar
+ itime Cultural Center at the University of South Carolina Beaufort and spo
+ nsored in part by the SC250 Commission\, the opera explores women’s role
+ s in commerce\, community\, and the pursuit of freedom.
+LOCATION:Koger Center for the Performing Arts at the University of South C
+ arolina Columbia\, 1051 Greene St.\, Columbia\, SC\, 29201\, United States
+URL:https://southcarolina250.com/event/eliza-an-american-opera/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Revolutionary War Review Homeschool Friday - The Surrender at York
+ town
+DTSTART;TZID=America/New_York:20261218T110000
+DTEND;TZID=America/New_York:20261218T120000
+UID:10003135-1797591600-1797595200@southcarolina250.com
+ATTACH;FMTTYPE=image/jpeg:https://southcarolina250.com/wp-content/uploads/
+ 2026/08/Surrender_of_Lord_Cornwallis.jpg
+CATEGORIES:Lectures,Other
+DESCRIPTION:December 18 – The Battle and Surrender at Yorktown (October 
+ 19\, 1781). \nWe will be looking at the battle\, siege\, and surrender at 
+ Yorktown. After a siege\, the British forces surrendered on October 19\, 1
+ 781. Come learn why. We’ll go over the various military units and leader
+ s engaged in the fight as we examine the facts of the battle before\, duri
+ ng\, and after. Then\, we will track how this impacted the larger course o
+ f the war. \nAs a part of our celebrations and remembrances during the 250
+ th\, the Anderson County Museum is adding a series to our Homeschool Frida
+ y program. \nThe Revolutionary War Review series will focus on several ele
+ ments of the Revolutionary War and is open to all students.
+LOCATION:Anderson County Museum\, 202 East Greenville Street\, Anderson\, 
+ SC\, 29621\, United States
+URL:https://southcarolina250.com/event/revolutionary-war-review-homeschool
+ -friday-the-surrender-at-yorktown/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Screening:  Ken Burns The Revolutionary War
+DTSTART;TZID=America/New_York:20261223T180000
+DTEND;TZID=America/New_York:20261223T200000
+UID:10002312-1798048800-1798056000@southcarolina250.com
+ATTACH;FMTTYPE=image/jpeg:https://southcarolina250.com/wp-content/uploads/
+ 2026/03/download-8.jpg
+CATEGORIES:Movie Screenings
+DESCRIPTION:Join us every Wednesday throughout the months of April and May
+  for a screening of The American Revolution: A Film by Ken Burns. Each wee
+ k we will show 1 episode. Each episode lasts around 2 hours.\n\nFREE POPCO
+ RN & DRINKS!\n\nThis event is Free but donations are gladly accepted.
+LOCATION:Oconee History Museum\, 123 Brown's Square Drive\, Walhalla\, SC\
+ , 29691\, United States
+URL:https://southcarolina250.com/event/screening-ken-burns-the-revolutiona
+ ry-war/2026-12-23/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Screening:  Ken Burns The Revolutionary War
+DTSTART;TZID=America/New_York:20261230T180000
+DTEND;TZID=America/New_York:20261230T200000
+UID:10002313-1798653600-1798660800@southcarolina250.com
+ATTACH;FMTTYPE=image/jpeg:https://southcarolina250.com/wp-content/uploads/
+ 2026/03/download-8.jpg
+CATEGORIES:Movie Screenings
+DESCRIPTION:Join us every Wednesday throughout the months of April and May
+  for a screening of The American Revolution: A Film by Ken Burns. Each wee
+ k we will show 1 episode. Each episode lasts around 2 hours.\n\nFREE POPCO
+ RN & DRINKS!\n\nThis event is Free but donations are gladly accepted.
+LOCATION:Oconee History Museum\, 123 Brown's Square Drive\, Walhalla\, SC\
+ , 29691\, United States
+URL:https://southcarolina250.com/event/screening-ken-burns-the-revolutiona
+ ry-war/2026-12-30/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Screening:  Ken Burns The Revolutionary War
+DTSTART;TZID=America/New_York:20270106T180000
+DTEND;TZID=America/New_York:20270106T200000
+UID:10002314-1799258400-1799265600@southcarolina250.com
+ATTACH;FMTTYPE=image/jpeg:https://southcarolina250.com/wp-content/uploads/
+ 2026/03/download-8.jpg
+CATEGORIES:Movie Screenings
+DESCRIPTION:Join us every Wednesday throughout the months of April and May
+  for a screening of The American Revolution: A Film by Ken Burns. Each wee
+ k we will show 1 episode. Each episode lasts around 2 hours.\n\nFREE POPCO
+ RN & DRINKS!\n\nThis event is Free but donations are gladly accepted.
+LOCATION:Oconee History Museum\, 123 Brown's Square Drive\, Walhalla\, SC\
+ , 29691\, United States
+URL:https://southcarolina250.com/event/screening-ken-burns-the-revolutiona
+ ry-war/2027-01-06/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:SC250 Executive Committee Meeting
+DTSTART;TZID=America/New_York:20270112T140000
+DTEND;TZID=America/New_York:20270112T160000
+UID:10002794-1799762400-1799769600@southcarolina250.com
+CATEGORIES:Commission Events,Meeting Agendas - Minutes
+DESCRIPTION:The SC250 Executive Committee meets virtually on the second Tu
+ esday of each month at 2:00 PM. \nFor the best meeting experience\, please
+  ensure you have the latest version of Zoom installed. Participants joinin
+ g through a web browser may not be able to view presentations\, access the
+  chat feature\, or share their screens. \nhttps://us06web.zoom.us/j/882519
+ 05215?pwd=zJqwWoNvhfNcoRrbCDoASAkcLW9YIK.1
+LOCATION:Virtual
+URL:https://southcarolina250.com/event/sc250-executive-committee-meeting-3
+ /2027-01-12/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Screening:  Ken Burns The Revolutionary War
+DTSTART;TZID=America/New_York:20270113T180000
+DTEND;TZID=America/New_York:20270113T200000
+UID:10002315-1799863200-1799870400@southcarolina250.com
+ATTACH;FMTTYPE=image/jpeg:https://southcarolina250.com/wp-content/uploads/
+ 2026/03/download-8.jpg
+CATEGORIES:Movie Screenings
+DESCRIPTION:Join us every Wednesday throughout the months of April and May
+  for a screening of The American Revolution: A Film by Ken Burns. Each wee
+ k we will show 1 episode. Each episode lasts around 2 hours.\n\nFREE POPCO
+ RN & DRINKS!\n\nThis event is Free but donations are gladly accepted.
+LOCATION:Oconee History Museum\, 123 Brown's Square Drive\, Walhalla\, SC\
+ , 29691\, United States
+URL:https://southcarolina250.com/event/screening-ken-burns-the-revolutiona
+ ry-war/2027-01-13/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:246th Anniversay The Battle of Cowpens
+DTSTART;TZID=America/New_York:20270117T100000
+DTEND;TZID=America/New_York:20270117T233000
+UID:10003213-1800180000-1800228600@southcarolina250.com
+ATTACH;FMTTYPE=image/jpeg:https://southcarolina250.com/wp-content/uploads/
+ 2026/10/1000032885.jpg
+CATEGORIES:Anniversaries - Commemorations,Demonstrations - Reenactments
+DESCRIPTION:Sons of the American Revolution – Daniel Morgan Chapter SCSS
+ AR\nWreath Laying Ceremony
+LOCATION:Cowpens National Battlefield\, 4001 Chesnee Hwy\, Gaffney\, SC\, 
+ 29340\, United States
+URL:https://southcarolina250.com/event/246th-anniversay-the-battle-of-cowp
+ ens/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:246th Anniversay The Battle of Cowpens
+DTSTART;TZID=America/New_York:20270117T100000
+DTEND;TZID=America/New_York:20270117T233000
+UID:10003238-1800180000-1800228600@southcarolina250.com
+ATTACH;FMTTYPE=image/jpeg:https://southcarolina250.com/wp-content/uploads/
+ 2026/10/1000032885-1.jpg
+CATEGORIES:Anniversaries - Commemorations,Demonstrations - Reenactments
+DESCRIPTION:Sons of the American Revolution – Daniel Morgan Chapter SCSS
+ AR\nWreath Laying Ceremony
+LOCATION:Cowpens National Battlefield\, 4001 Chesnee Hwy\, Gaffney\, SC\, 
+ 29340\, United States
+URL:https://southcarolina250.com/event/246th-anniversay-the-battle-of-cowp
+ ens-2/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Screening:  Ken Burns The Revolutionary War
+DTSTART;TZID=America/New_York:20270120T180000
+DTEND;TZID=America/New_York:20270120T200000
+UID:10002316-1800468000-1800475200@southcarolina250.com
+ATTACH;FMTTYPE=image/jpeg:https://southcarolina250.com/wp-content/uploads/
+ 2026/03/download-8.jpg
+CATEGORIES:Movie Screenings
+DESCRIPTION:Join us every Wednesday throughout the months of April and May
+  for a screening of The American Revolution: A Film by Ken Burns. Each wee
+ k we will show 1 episode. Each episode lasts around 2 hours.\n\nFREE POPCO
+ RN & DRINKS!\n\nThis event is Free but donations are gladly accepted.
+LOCATION:Oconee History Museum\, 123 Brown's Square Drive\, Walhalla\, SC\
+ , 29691\, United States
+URL:https://southcarolina250.com/event/screening-ken-burns-the-revolutiona
+ ry-war/2027-01-20/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:THE BATTLE OF CAMDEN (Theatre)
+DTSTART;TZID=America/New_York:20270122T193000
+DTEND;TZID=America/New_York:20270131T193000
+UID:10003202-1800646200-1801423800@southcarolina250.com
+ATTACH;FMTTYPE=image/png:https://southcarolina250.com/wp-content/uploads/2
+ 026/09/BattleofCamden.png
+CATEGORIES:Performance
+DESCRIPTION:THE BATTLE OF CAMDEN\nPlay by Tony Scully\nDirected by Tracy S
+ teele \nJanuary 22-31\, 2027\nFREE TO THE PUBLIC\nLocation: Black Box Thea
+ tre\nSPONSORED BY SC250 & DUKE ENERGY FOUNDATION\n& LINDA & JOHN SHAYLOR \
+ nTHE ROAD TO AMERICAN INDEPENDENCE RAN THROUGH CAMDEN \nExperience a power
+ ful retelling of one of the Revolutionary War’s most pivotal moments wit
+ h The Battle of Camden. This moving production brings history to life thro
+ ugh the voices of those who shaped — and survived — the Battle of Camd
+ en. \nThis show is free to the public\, but reservations are required due 
+ to limited seating. https://artscenterkc.org/ac/the-battle-of-camden/ \nTh
+ e Arts Center Revolutionary Series is made possible through grant support 
+ from the South Carolina American Revolution Sestercentennial Commission an
+ d the Duke Energy Foundation.
+LOCATION:Arts Center of Kershaw County\, 810 Lyttleton St.\, Camden\, SC\,
+  29020\, United States
+URL:https://southcarolina250.com/event/the-battle-of-camden-theatre/
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Screening:  Ken Burns The Revolutionary War
+DTSTART;TZID=America/New_York:20270127T180000
+DTEND;TZID=America/New_York:20270127T200000
+UID:10002317-1801072800-1801080000@southcarolina250.com
+ATTACH;FMTTYPE=image/jpeg:https://southcarolina250.com/wp-content/uploads/
+ 2026/03/download-8.jpg
+CATEGORIES:Movie Screenings
+DESCRIPTION:Join us every Wednesday throughout the months of April and May
+  for a screening of The American Revolution: A Film by Ken Burns. Each wee
+ k we will show 1 episode. Each episode lasts around 2 hours.\n\nFREE POPCO
+ RN & DRINKS!\n\nThis event is Free but donations are gladly accepted.
+LOCATION:Oconee History Museum\, 123 Brown's Square Drive\, Walhalla\, SC\
+ , 29691\, United States
+URL:https://southcarolina250.com/event/screening-ken-burns-the-revolutiona
+ ry-war/2027-01-27/
+END:VEVENT
+END:VCALENDAR
