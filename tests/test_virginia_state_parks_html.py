@@ -348,6 +348,12 @@ def test_natural_bridge_published_multiday_schedule_uses_both_explicit_dates():
     assert normalized.call_count == 1  # One published span, no invented daily sessions.
 
 
+def test_dcr_sept_abbreviation_on_taurids_meteor_shower_schedule():
+    start, end = va.parse_schedule("Sept. 7, 2026 12:00 a.m. - Dec. 10, 2026 11:00 p.m.")
+    assert start.isoformat() == "2026-09-07T00:00:00-04:00"
+    assert end.isoformat() == "2026-12-10T23:00:00-05:00"
+
+
 def test_explicit_multiday_schedule_preserves_dst_offset_change():
     start, end = va.parse_schedule("Oct. 31, 2026 11:00 p.m. - Nov. 1, 2026 2:30 a.m.")
     assert start.utcoffset() == timedelta(hours=-4)
