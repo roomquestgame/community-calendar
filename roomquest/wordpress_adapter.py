@@ -170,6 +170,10 @@ def collect(source, fetch, *, deadline_at=None):
         from roomquest.iowa_tourism import collect_think
         return collect_think(source, fetch, deadline_at=deadline_at)
     from roomquest.mapsee_adapter import parse_tribe
+    from roomquest import ncma_calendar
+    ncma = source.get('source_key') == ncma_calendar.KEY
+    if ncma and source.get('feed_url') != ncma_calendar.ROOT:
+        raise ValueError('unregistered_ncma_calendar')
     from roomquest import hurrdat_calendar, jpb_basketball
     hurrdat = source.get('source_key') == hurrdat_calendar.KEY
     if hurrdat and (source.get('feed_url'), source.get('timezone')) != (hurrdat_calendar.URL, hurrdat_calendar.ZONE):
@@ -195,7 +199,7 @@ def collect(source, fetch, *, deadline_at=None):
     deadline = min(monotonic() + 35, deadline_at or float('inf'))
     rows = []
     time_reviews = 0
-    rosemont_held = rosemont_excluded = 0
+    rosemont_held = rosemont_excluded = ncma_held = 0
     for page in range(1, MAX_PAGES + 1):
         if monotonic() >= deadline:
             raise ValueError('collection_deadline')
@@ -210,6 +214,9 @@ def collect(source, fetch, *, deadline_at=None):
             payload, held, excluded = _rosemont_review(payload)
             rosemont_held += held
             rosemont_excluded += excluded
+        if ncma:
+            payload, held = ncma_calendar.review(payload)
+            ncma_held += held
         if jpb:
             payload = jpb_basketball.review(payload)
         if hurrdat:
@@ -244,9 +251,9 @@ def collect(source, fetch, *, deadline_at=None):
                         if wall != timestamp(utc, 'UTC'):
                             raise ValueError('publisher_schedule_conflict')
         # Never follow response next links; rebuild only this registered URL.
-        parsed_rows = parse_tribe(payload, strict_public=source.get("source_key") in
+        parsed_rows = parse_tribe(payload, strict_public=ncma or source.get("source_key") in
                                   ("madison_county_parks_ia", "nebraska_game_parks", ROSEMONT_KEY, jpb_basketball.KEY, hurrdat_calendar.KEY),
-                                retain_description=source.get("source_key") in
+                                retain_description=ncma or source.get("source_key") in
                                   ("madison_county_parks_ia", ROSEMONT_KEY, jpb_basketball.KEY, hurrdat_calendar.KEY))
         if rosemont:
             by_id = {str(item['id']): item for item in payload['events']}
@@ -282,6 +289,8 @@ def collect(source, fetch, *, deadline_at=None):
         _rosemont_log('normalized', held=rosemont_held, excluded=rosemont_excluded, records=len(result))
         if not result and rosemont_held:
             raise ValueError('rosemont_event_evidence_unavailable')
+    if not result and ncma_held:
+        raise ValueError('ncma_event_venue_unreviewed')
     if result and not any(e.get('venue_name') or e.get('venue_address') for e in result):
         raise ValueError('venue_extraction_unavailable')
     return result
