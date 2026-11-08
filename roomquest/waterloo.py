@@ -6,7 +6,7 @@ from time import monotonic
 from urllib.parse import urlencode
 from bs4 import BeautifulSoup
 from roomquest.mapsee_adapter import record, plain, timestamp
-from roomquest.publisher_evidence import attach
+from roomquest.publisher_evidence import attach, optional_description
 from roomquest.mycountyparks import cancelled
 
 KEY = 'experience_waterloo_ia'
@@ -51,7 +51,7 @@ def parse_hits(hits, *, now=None):
             continue  # multi-venue attendance has no one verified pin
         description = plain(e.get('content') or e.get('snippet'))[:2000]
         title = plain(e.get('title'))
-        if not description or cancelled(title, description):
+        if not title or cancelled(title, description):
             continue
         url = FEED.rstrip('/') + uri
         row = record(title, start.isoformat(), end.isoformat(), address[0],
@@ -59,7 +59,7 @@ def parse_hits(hits, *, now=None):
                      'waterloo:' + ident, tz='America/Chicago', retain_until_end=True)
         if not row:
             continue
-        row['description'] = description
+        row['description'] = optional_description(KEY, row['id'], description)
         row['publisher_categories'] = [plain(x)[:100] for x in e.get('eventCategories', []) if isinstance(x, str)][:20]
         candidate = e.get('primaryImageUrl')
         # Accept only this publisher's original storage image; the sanitizer

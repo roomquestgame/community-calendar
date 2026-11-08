@@ -6,7 +6,7 @@ from urllib.parse import quote, urlparse
 import xml.etree.ElementTree as ET
 from bs4 import BeautifulSoup
 from roomquest.mapsee_adapter import record, timestamp, plain
-from roomquest.publisher_evidence import attach
+from roomquest.publisher_evidence import attach, optional_description
 from roomquest.mycountyparks import cancelled
 
 SIOUXLAND = 'municipal_chambermaster_siouxland_ia'
@@ -97,7 +97,7 @@ def collect(source, payload, *, now=None):
         if not re.fullmatch(r'[1-9][0-9]{0,19}',ident) or not slug or len(slug)>300 or not all(c.isalnum() or c=='-' for c in slug):
             raise ValueError('publisher_identity_changed')
         title=plain(e.findtext('Name'));description=plain(e.findtext('Description'))[:2000]
-        if not title or not description or cancelled(title,description):continue
+        if not title or cancelled(title,description):continue
         starts=timestamp(e.findtext('StartDate'),identity[1]);ends=timestamp(e.findtext('EndDate'),identity[1])
         if not starts or starts>=now+timedelta(days=60):continue
         if ends and not starts<ends<=starts+timedelta(hours=16):continue
@@ -130,7 +130,7 @@ def collect(source, payload, *, now=None):
         url=base+'/events/details/'+quote(slug if slug.endswith('-'+ident) else slug+'-'+ident,safe='-')
         row=record(title,starts.isoformat(),ends.isoformat() if ends else None,venue,address,event_city,url,ident,tz=identity[1],retain_until_end=True)
         if not row:continue
-        row['description']=description
+        row['description'] = optional_description(key, row['id'], description)
         # Numeric category IDs are not human-readable activity evidence.
         row['publisher_categories']=[]
         costs=plain(e.findtext('AdmissionDesc'))[:400]

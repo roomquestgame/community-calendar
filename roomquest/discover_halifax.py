@@ -7,7 +7,7 @@ from zoneinfo import ZoneInfo
 from bs4 import BeautifulSoup
 
 from roomquest.mapsee_adapter import record, timestamp
-from roomquest.publisher_evidence import attach
+from roomquest.publisher_evidence import attach, optional_description
 from roomquest.reviewed_chambers import STREET_SUFFIX
 
 KEY = 'discover_halifax_va'
@@ -88,7 +88,7 @@ def _detail(payload, url, title, day, clock):
         return None
     detail = page.select_one('.directorist-card-general-section')
     description = _text(detail).removeprefix('Description ').strip()
-    if not description or re.search(r'\b(cancelled|canceled|postponed|online only|virtual only)\b', title+' '+description, re.I):
+    if re.search(r'\b(cancelled|canceled|postponed|online only|virtual only)\b', title+' '+description, re.I):
         return None
     end = _start(_date(fields['End Date']) if fields.get('End Date') else day,
                  fields['End Time']) if fields.get('End Time') else None
@@ -97,7 +97,8 @@ def _detail(payload, url, title, day, clock):
     street = f"{address['number']} {address['street']}, {address['city']}, VA {address['zip']}"
     row = record(title, start, end, address['venue'], street, address['city'], url, url, retain_until_end=True)
     if row:
-        row.update(description=description[:3000], attendance_mode='in_person')
+        row.update(description=optional_description(KEY, row['id'], description[:3000]),
+                   attendance_mode='in_person')
         photos = {tag.get('content') for tag in page.select('meta[property="og:image"]')
                   if PHOTO_URL.fullmatch(tag.get('content', ''))}
         attach(row, KEY, candidate=next(iter(photos)) if len(photos) == 1 else None)

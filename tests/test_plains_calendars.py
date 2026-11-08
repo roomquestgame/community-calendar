@@ -40,7 +40,7 @@ END:VCALENDAR"""
 def test_siouxland_holds_ambiguous_address_and_member_flags():
     def event(number, address, visibility):
         return f"""<EventDisplay><EventID>{number}</EventID><Slug>ribbon-cutting</Slug>
-        <Name>Ribbon Cutting</Name><Description>Join us to celebrate.</Description>
+        <Name>Ribbon Cutting</Name>
         <Status>APPROVED</Status><VisibilityFlags>{visibility}</VisibilityFlags>
         <IsAllDayEvent>false</IsAllDayEvent><StartDate>2026-11-12T15:00:00</StartDate>
         <EndDate>2026-11-12T16:00:00</EndDate>
@@ -57,6 +57,7 @@ def test_siouxland_holds_ambiguous_address_and_member_flags():
     assert row['id'] == '101'
     assert row['starts_at'] == '2026-11-12T21:00:00+00:00'
     assert row['venue_address'] == '525 6th Street, Sioux City, IA 51109'
+    assert row['description'] == ''
 
 
 def test_library_collects_two_sessions_and_keeps_only_own_programs():
@@ -73,7 +74,6 @@ def test_library_collects_two_sessions_and_keeps_only_own_programs():
         <div class="lc-event__branch">Library Branch: {branch}</div>
         <div class="lc-event__room">Room: Meeting Room D</div>
         <div class="lc-event__program-types">{labels}</div>
-        <div class="lc-event__body">Participants learn to sew a small project.</div>
         </article>"""
     pages = {
         library.URL: card(101, '9:00am–11:00am') + card(102, 'All Day') +
@@ -88,5 +88,6 @@ def test_library_collects_two_sessions_and_keeps_only_own_programs():
     assert datetime.fromisoformat(rows[1]['starts_at']).astimezone(ZoneInfo(library.TIMEZONE)) == (
         datetime(day.year, day.month, day.day, 14, tzinfo=ZoneInfo(library.TIMEZONE)))
     assert rows[1]['venue_address'] == library.ADDRESS
+    assert rows[1]['description'] == ''
     assert rows[1]['publisher_categories'] == ['Arts & Crafts']
     assert rows[1]['publisher_details']['meeting_location'] == 'Meeting Room D'

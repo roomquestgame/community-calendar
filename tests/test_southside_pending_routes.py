@@ -67,9 +67,10 @@ def test_discover_halifax_requires_complete_window_and_confirms_detail():
                      f'{k}</span><span class="directorist-single-info__value">{v}</span></div>'
                      for k, v in values.items())
     detail = (f'<link rel="canonical" href="{url}"><h1 class="directorist-listing-details__listing-title">'
-              f'Public Music</h1><div class="directorist-card-general-section">Description Live music.</div>{fields}')
+              f'Public Music</h1>{fields}')
     row = tourism._detail(detail, url, 'Public Music', day, '6:00 PM')
     assert row['venue_address'] == '1142 Hite Drive, Buffalo Springs, VA 24529'
+    assert row['description'] == ''
     assert tourism._detail(detail, url, 'Public Music', day, '5:00 PM') is None
 
 

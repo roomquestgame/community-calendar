@@ -278,7 +278,6 @@ def test_mixed_conflicted_and_missing_address_source_is_not_healthy_empty(record
     ({"event_id": "9999"}, "event_identity_mismatch"),
     ({"title": "Unrelated public program"}, "event_title_mismatch"),
     ({"when": "NOV 14 2026 11:00 AM"}, "event_schedule_mismatch"),
-    ({"summary": ""}, "event_summary_missing"),
 ])
 def test_unknown_detail_errors_still_abort_after_verified_and_withheld_items(updates, reason, record_spy):
     case = TIME_CONFLICT_CASES[0]
@@ -289,6 +288,16 @@ def test_unknown_detail_errors_still_abort_after_verified_and_withheld_items(upd
     with pytest.raises(ValueError, match=reason):
         mcp.collect(mcp.source_for_county(case["county_key"]), fetch, now=NOW)
     assert record_spy.call_count == 1
+
+
+def test_missing_summary_does_not_hold_verified_county_park_event(caplog):
+    event = entry("9991")
+    fetch = Mock(side_effect=[listing(event), detail(event, summary="", registration="")])
+    rows = mcp.collect(mcp.source_for_county("linn"), fetch, now=NOW)
+    row, = rows
+    assert row["venue_address"]
+    assert row["description"] == ""
+    assert "field=description reason=missing" in caplog.text
 
 
 @pytest.mark.parametrize("reason", ["publisher_http_503", "mycountyparks_event_midnight_noon_conflict"])

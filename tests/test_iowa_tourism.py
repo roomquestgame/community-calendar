@@ -101,6 +101,16 @@ def test_mason_actual_card_has_venue_address_and_does_not_invent_export_default_
     assert image_url(music['image_url'], 'mason_city')
 
 
+def test_mason_can_use_verified_detail_without_description(caplog):
+    links = json.loads((FIXTURES/'mason-links.json').read_text())
+    soup = BeautifulSoup((FIXTURES/'mason-5.html').read_text(), 'html.parser')
+    soup.select_one('[itemprop="description"]').decompose()
+    row = tourism.parse_mason(str(soup), 'https://www.visitmasoncityiowa.com'+links[4], now=NOW)
+    assert row['description'] == ''
+    assert row['venue_address'] == '17 North Federal Avenue, Mason City, IA 50401'
+    assert 'field=description reason=missing' in caplog.text
+
+
 def test_mason_fetches_only_canonical_first_page_links_and_accounts_for_all_15():
     links = json.loads((FIXTURES/'mason-links.json').read_text())
     calls = []
