@@ -90,12 +90,15 @@ def parse(soup=None, identity=FINAL, *, listing=None, now=NOW):
     return parser.parse_detail(str(soup or detail()), listing or listings()[identity], now=now)
 
 
-def test_real_five_page_snapshot_yields_one_final_event_and_accounts_for_every_listing(capsys):
+def test_real_five_page_snapshot_yields_tournaments_and_one_final_crawl(capsys):
     calls = []
     rows = run(bundle(), calls=calls)
-    assert len(rows) == 1
-    row = rows[0]
-    assert row['id'] == 'locable_clarksville:667469'
+    assert len(rows) == 9
+    row = next(row for row in rows if row['id'] == 'locable_clarksville:667469')
+    tournaments = [event for event in rows if event is not row]
+    assert all(event['title'] == 'Weekly Poker Tournament' and event['description'] == ''
+               and event['venue_address'] == '600 Virginia Avenue, Clarksville, VA 23927'
+               and event['ends_at'] is None for event in tournaments)
     assert row['starts_at'] == '2026-12-05T15:00:00+00:00'
     assert row['ends_at'] == '2026-12-05T20:00:00+00:00'
     assert row['timezone'] == 'America/New_York'
@@ -120,8 +123,12 @@ def test_real_five_page_snapshot_yields_one_final_event_and_accounts_for_every_l
     assert len(calls) == 15 and all(url.startswith('https://' + parser.HOST + '/') for url, _ in calls)
     diagnostic = json.loads(capsys.readouterr().err.splitlines()[-1])
     assert (diagnostic['upstream_records'], diagnostic['pages'], diagnostic['details'], diagnostic['outside_window']) == (54, 5, 10, 44)
-    assert len(diagnostic['held']) == 8
-    assert {row['reason'] for row in diagnostic['held']} == {'publisher_activity_conflict'}
+    assert not diagnostic['held']
+    assert len(diagnostic['warnings']) == 8
+    assert {warning['id'] for warning in diagnostic['warnings']} == {
+        row['id'].split(':', 1)[1] for row in tournaments}
+    assert {warning['reason'] for warning in diagnostic['warnings']} == {
+        'publisher_activity_conflict_description_omitted'}
     assert diagnostic['duplicates'] == [{'id': TEASER, 'replaced_by': FINAL,
                                          'reason': 'reviewed_matching_teaser_and_final'}]
 
@@ -185,12 +192,17 @@ def test_reviewed_duplicate_requires_matching_current_facts(field, value):
     assert not diagnostics
 
 
-def test_poker_activity_and_same_named_profile_address_conflicts_are_independent_holds():
+def test_conflicting_description_does_not_hide_a_confirmed_poker_title():
+    event = parse(detail('poker_conflict.html'), POKER)
+    assert event.activity_conflict
+    assert event.row['title'] == 'Weekly Poker Tournament'
+    assert event.row['venue_address'] == '600 Virginia Avenue, Clarksville, VA 23927'
+    assert event.row['description'] == ''
+
+
+def test_unreviewed_same_named_profile_address_conflict_still_holds():
     soup = detail('poker_conflict.html')
-    with pytest.raises(parser.EventHold, match='activity_conflict'):
-        parse(soup, POKER)
-    narrative = soup.select_one('[itemprop="description"]')
-    narrative.string = 'Join our weekly poker tournament.'
+    soup.select_one('.adr [itemprop="address"]').string = '602 Virginia Avenue, Clarksville, VA 23927'
     with pytest.raises(parser.EventHold, match='venue_address_conflict'):
         parse(soup, POKER)
 
@@ -383,8 +395,12 @@ def test_malformed_detail_and_export_fail_the_snapshot_instead_of_becoming_healt
 
 
 def test_all_held_is_not_healthy_empty_but_an_explicit_complete_empty_catalog_is():
+    data = bundle([POKER])
+    soup = detail('poker_conflict.html')
+    soup.select_one('.adr [itemprop="address"]').string = '602 Virginia Avenue, Clarksville, VA 23927'
+    data[listings()[POKER].url] = str(soup)
     with pytest.raises(ValueError, match='event_evidence_unavailable'):
-        run(bundle([POKER]))
+        run(data)
     assert run(bundle([])) == []
 
 
