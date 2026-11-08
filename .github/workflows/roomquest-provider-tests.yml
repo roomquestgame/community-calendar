@@ -4,6 +4,11 @@ on:
     types: [labeled]
   workflow_dispatch:
     inputs:
+      holly_hill_recovery_live:
+        description: 'Read-only audit of exactly five reviewed Holly Hill recovery feeds'
+        type: boolean
+        required: false
+        default: false
       holly_hill_live:
         description: 'Read-only full Holly Hill batch audit including existing MapSee feeds'
         type: boolean
@@ -60,16 +65,52 @@ jobs:
         with:
           python-version: '3.12'
       - name: Validate Vercel build selection
-        if: github.event_name != 'workflow_dispatch' || !(inputs.mecklenburg_live || inputs.mecklenburg_batch3_live || inputs.holly_hill_live)
+        if: github.event_name != 'workflow_dispatch' || !(inputs.mecklenburg_live || inputs.mecklenburg_batch3_live || (inputs.holly_hill_live || inputs.holly_hill_recovery_live))
         run: node --test scripts/vercel-ignore.test.mjs
       - run: pip install -r requirements-dev.txt
       - name: Check Holly Hill batch parsers and guarded pipeline
         if: github.event_name != 'workflow_dispatch'
-        run: python -m pytest tests/test_holly_hill_businesses.py tests/test_holly_hill_civic.py tests/test_holly_hill_institutions.py tests/test_holly_hill_pipeline.py tests/test_holly_hill_batch_audit.py -q
+        run: python -m pytest tests/test_holly_hill_businesses.py tests/test_holly_hill_civic.py tests/test_holly_hill_institutions.py tests/test_holly_hill_pipeline.py tests/test_holly_hill_batch_audit.py tests/test_scworks_recovery.py tests/test_holly_hill_institution_recovery.py tests/test_holly_hill_recovery_pipeline.py tests/test_santee_town_calendar.py tests/test_santee_town_pipeline.py tests/test_publisher_admission.py tests/test_recdesk_transport.py -q
       - name: Read-only Holly Hill and regional MapSee audit
         id: holly_hill_audit
-        if: github.event_name == 'workflow_dispatch' && inputs.holly_hill_live
-        run: python scripts/capture_holly_hill_batch.py --output "$RUNNER_TEMP/holly-hill-audit.json"
+        if: github.event_name == 'workflow_dispatch' && (inputs.holly_hill_live || inputs.holly_hill_recovery_live)
+        env:
+          RECOVERY_ONLY: ${{ inputs.holly_hill_recovery_live }}
+        run: |
+          if [ "$RECOVERY_ONLY" = "true" ]; then
+            # Five 45-second source caps plus 15 seconds for local audit overhead.
+            python scripts/capture_holly_hill_batch.py --recovery-only --overall-seconds 240 --output "$RUNNER_TEMP/holly-hill-audit.json"
+          else
+            python scripts/capture_holly_hill_batch.py --output "$RUNNER_TEMP/holly-hill-audit.json"
+          fi
+      - name: Report Holly Hill audit outcomes
+        if: always() && steps.holly_hill_audit.outcome != 'skipped'
+        env:
+          AUDIT_REPORT: ${{ runner.temp }}/holly-hill-audit.json
+          COLLECTOR_SHA: ${{ github.sha }}
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          path = Path(os.environ['AUDIT_REPORT'])
+          if not path.exists():
+              print(json.dumps({'collector_sha': os.environ['COLLECTOR_SHA'], 'audit_report': 'missing'}))
+          else:
+              raw = path.read_bytes()
+              report = json.loads(raw)
+              fields = ('schema_version', 'read_only', 'recovery_only', 'checked_at', 'finished_at',
+                        'complete', 'active_complete', 'duration_seconds', 'counts', 'limits')
+              print(json.dumps({'collector_sha': os.environ['COLLECTOR_SHA'],
+                                'audit_sha256': hashlib.sha256(raw).hexdigest(),
+                                **{key: report.get(key) for key in fields}}, sort_keys=True))
+              for source in report['sources']:
+                  fields = ('source_key', 'outcome', 'error', 'error_category', 'caused_by_http_status',
+                            'candidate_count', 'complete', 'checked_at', 'duration_seconds',
+                            'source_preview_attempted', 'network_skipped')
+                  print(json.dumps({key: source.get(key) for key in fields}, sort_keys=True))
+          PY
       - name: Preserve complete Holly Hill audit results
         if: always() && steps.holly_hill_audit.outcome != 'skipped'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -84,9 +125,9 @@ jobs:
       - name: Check Virginia public calendar parsers
         if: github.event_name != 'workflow_dispatch' || inputs.farmville_south_boston_live
         run: python -m pytest tests/test_farmville_south_boston_calendars.py tests/test_southside_pending_routes.py tests/test_maryland_public_calendars.py -q
-      - if: github.event_name != 'workflow_dispatch' || !(inputs.mecklenburg_live || inputs.mecklenburg_batch3_live || inputs.holly_hill_live)
+      - if: github.event_name != 'workflow_dispatch' || !(inputs.mecklenburg_live || inputs.mecklenburg_batch3_live || (inputs.holly_hill_live || inputs.holly_hill_recovery_live))
         run: python -m pytest tests/test_forward_geocoder.py tests/test_roomquest_entrypoint.py tests/test_mecklenburg_sources.py tests/test_clarksville_tourism.py tests/test_coopers_landing.py tests/test_good_shepherd.py tests/test_mecklenburg_batch3_pipeline.py tests/test_mecklenburg_batch3_audit.py tests/test_revize.py tests/test_south_hill_chamber.py tests/test_mecklenburg_batch2_pipeline.py tests/test_clarksville_players.py tests/test_maccallum_more.py tests/test_mecklenburg_ymca.py tests/test_mecklenburg_library_ics.py tests/test_wordpress_adapter.py tests/test_mapsee_pipeline.py tests/test_roomquest_preview.py tests/test_squarespace_pilot.py tests/test_squarespace_family.py tests/test_jsonld_family.py tests/test_community_formats.py tests/test_ics_family.py tests/test_transient_staging.py tests/test_category_worker.py tests/test_category_entrypoint.py tests/test_chambermate.py tests/test_chambermate_integration.py tests/test_preview_transport_errors.py tests/test_virginia_state_parks_html.py tests/test_virginia_event_details.py tests/test_virginia_offsite_addresses.py tests/test_virginia_relative_event_links.py tests/test_mycountyparks.py tests/test_mycountyparks_integration.py tests/test_mycountyparks_cli.py tests/test_bellevue_times.py tests/test_bellevue_times_integration.py tests/test_publisher_robots_cache.py tests/test_event_media.py tests/test_media_demand.py tests/test_media_entrypoint.py tests/test_venue_resolver.py tests/test_roomquest_scoped_rpc.py -q
-      - if: github.event_name != 'workflow_dispatch' || !(inputs.mecklenburg_live || inputs.mecklenburg_batch3_live || inputs.holly_hill_live)
+      - if: github.event_name != 'workflow_dispatch' || !(inputs.mecklenburg_live || inputs.mecklenburg_batch3_live || (inputs.holly_hill_live || inputs.holly_hill_recovery_live))
         run: python -m pytest tests/test_plains_calendars.py tests/test_nebraska_library_ics.py tests/test_nebraska_venue_sources.py tests/test_raleigh_html.py tests/test_south_carolina_parks.py tests/test_publisher_evidence.py tests/test_madison_quality.py tests/test_iowa_tourism.py tests/test_reviewed_chambers.py tests/test_waterloo.py -q
       - name: Read-only MyCountyParks live verification
         id: mycountyparks_audit
@@ -101,7 +142,7 @@ jobs:
           if-no-files-found: error
           retention-days: 14
       - name: Check bounded Virginia diagnostic
-        if: github.event_name != 'workflow_dispatch' || !(inputs.mecklenburg_live || inputs.mecklenburg_batch3_live || inputs.holly_hill_live)
+        if: github.event_name != 'workflow_dispatch' || !(inputs.mecklenburg_live || inputs.mecklenburg_batch3_live || (inputs.holly_hill_live || inputs.holly_hill_recovery_live))
         run: python -m pytest tests/test_virginia_html_audit.py -q
       - name: Read-only Virginia event HTML capture
         id: virginia_audit

@@ -1,0 +1,65 @@
+{
+  "reviewed_on": "2026-11-08",
+  "exact_capture_times_not_available": true,
+  "source": "Public Town of Santee page/feed captures from the same approved batch; no new requests made by this fixture reduction.",
+  "raw_captures": [
+    {
+      "filename": "santee_index.html",
+      "sha256": "fd6d93374ac4d417438b3d8bc084a7eed25fc533275c7e4bf5049a7f8aaa7dd4",
+      "bytes": 56412
+    },
+    {
+      "filename": "santee_feed.json",
+      "sha256": "a4cf8ea4a8771fc5bd6b6a081183932f1841d3962f0dec2de5a62cf45119dc28",
+      "bytes": 213
+    },
+    {
+      "filename": "santee_parade.html",
+      "sha256": "110472f462e00ebb5d4b5022ca4056f514f33a7012a21e568466edab75a11b4c",
+      "bytes": 51711
+    }
+  ],
+  "known_receipts": [
+    {
+      "url": "https://www.townofsantee-sc.org/upcoming-events-calendars",
+      "status": 200,
+      "final_url": "https://www.townofsantee-sc.org/upcoming-events-calendars",
+      "bytes": 56412,
+      "content_type": "text/html; charset=UTF-8",
+      "sha256": "fd6d93374ac4d417438b3d8bc084a7eed25fc533275c7e4bf5049a7f8aaa7dd4"
+    },
+    {
+      "url": "https://www.townofsantee-sc.org/event/town-santee-christmas-parade",
+      "status": 200,
+      "final_url": "https://www.townofsantee-sc.org/event/town-santee-christmas-parade",
+      "bytes": 51711,
+      "content_type": "text/html; charset=UTF-8",
+      "sha256": "110472f462e00ebb5d4b5022ca4056f514f33a7012a21e568466edab75a11b4c"
+    },
+    {
+      "url": "https://www.townofsantee-sc.org/parks-and-recreation",
+      "status": 200,
+      "final_url": "https://www.townofsantee-sc.org/parks-and-recreation",
+      "bytes": 66441,
+      "content_type": "text/html; charset=UTF-8",
+      "sha256": "0e5f373fd5a044afc44d39f664e9dafecba162ed1504eb9cdf26f55c45f5b8fb"
+    }
+  ],
+  "fixtures": [
+    {
+      "name": "calendar_feed.json",
+      "sha256": "a4cf8ea4a8771fc5bd6b6a081183932f1841d3962f0dec2de5a62cf45119dc28",
+      "bytes": 213
+    },
+    {
+      "name": "calendar_page.html",
+      "sha256": "125928bf9877d0840d17ce1313ba10fd061ece80dc694dcecd64c19f1d43ad4c",
+      "bytes": 901
+    },
+    {
+      "name": "parade_detail.html",
+      "sha256": "6bacf4af208437ba02f95ac37f360cec53fdef3cb11f64a870fe2bdc0557129f",
+      "bytes": 2439
+    }
+  ]
+}

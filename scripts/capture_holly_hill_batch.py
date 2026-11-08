@@ -40,6 +40,9 @@ MAX_SAMPLES = 3
 MAX_INVENTORY_BYTES = 2_000_000
 ZONE = 'America/New_York'
 SCHEMA_VERSION = 'holly_hill_read_only_audit_v1'
+RECOVERY_KEYS = frozenset(('elloree_town_calendar_sc', 'sc_works_trident_sc',
+                           'old_santee_canal_park_sc', 'orangeburg_county_ymca_sc',
+                           'town_of_santee_sc'))
 MAPSEE_IDS = frozenset((*range(2556, 2568), 3304, 3894, 4263, 4347, 4403, 4446, 4682))
 KNOWN_HOLDS = {
     4347: 'source_network_error',
@@ -52,7 +55,7 @@ TRANSPORT_CODES = {
     'dns_unavailable', 'source_network_error', 'source_fetch_deadline',
     'source_audit_timeout', 'collection_deadline', 'overall_audit_deadline',
     'source_unavailable_or_oversized', 'source_too_large', 'robots_unavailable',
-    'publisher_rate_limited',
+    'publisher_rate_limited', 'publisher_pacing_deferred',
 }
 GUARD_CODES = {
     'robots_denied', 'non_public_dns', 'invalid_source_url', 'invalid_redirect_url',
@@ -286,15 +289,26 @@ def _bounded_seconds(value, maximum):
 
 
 def audit(*, catalog_audit=DEFAULT_CATALOG_AUDIT, manifest=DEFAULT_MANIFEST,
-          per_source_seconds=PER_SOURCE_SECONDS, overall_seconds=OVERALL_SECONDS):
+          per_source_seconds=PER_SOURCE_SECONDS, overall_seconds=OVERALL_SECONDS,
+          recovery_only=False):
     per_source_seconds = _bounded_seconds(per_source_seconds, PER_SOURCE_SECONDS)
     overall_seconds = _bounded_seconds(overall_seconds, OVERALL_SECONDS)
     started_at = monotonic()
     overall_deadline = started_at + overall_seconds
-    inventory = build_inventory(catalog_audit, manifest)
+    if type(recovery_only) is not bool:
+        raise ValueError('audit_recovery_scope_invalid')
+    inventory = build_inventory(catalog_audit, None if recovery_only else manifest)
+    if recovery_only:
+        # Explicitly reviewed read-only recheck of five held identities. This
+        # neither changes registration nor releases any publisher/MapSee hold.
+        inventory['entries'] = [entry for entry in inventory['entries']
+                                if entry['source']['source_key'] in RECOVERY_KEYS]
+        if {entry['source']['source_key'] for entry in inventory['entries']} != RECOVERY_KEYS:
+            raise ValueError('audit_recovery_inventory_incomplete')
     result = {
         'schema_version': SCHEMA_VERSION, 'checked_at': datetime.now(timezone.utc).isoformat(),
-        'read_only': True, 'registry_snapshot_as_of': inventory['registry_snapshot_as_of'],
+        'read_only': True, 'recovery_only': recovery_only,
+        'registry_snapshot_as_of': inventory['registry_snapshot_as_of'],
         'source_versions': inventory['source_versions'],
         'limits': {'per_source_seconds': per_source_seconds, 'overall_seconds': overall_seconds,
                    'concurrency': 1, 'samples_per_source': MAX_SAMPLES},
@@ -370,6 +384,8 @@ def audit(*, catalog_audit=DEFAULT_CATALOG_AUDIT, manifest=DEFAULT_MANIFEST,
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--recovery-only', action='store_true',
+                        help='Read-only recheck of exactly the five reviewed recovery feeds')
     parser.add_argument('--catalog-audit', type=Path, default=DEFAULT_CATALOG_AUDIT)
     parser.add_argument('--manifest', type=Path, default=DEFAULT_MANIFEST)
     parser.add_argument('--per-source-seconds', type=float, default=PER_SOURCE_SECONDS)
@@ -377,7 +393,8 @@ def main(argv=None):
     args = parser.parse_args(argv)
     try:
         report = audit(catalog_audit=args.catalog_audit, manifest=args.manifest,
-                       per_source_seconds=args.per_source_seconds, overall_seconds=args.overall_seconds)
+                       per_source_seconds=args.per_source_seconds, overall_seconds=args.overall_seconds,
+                       recovery_only=args.recovery_only)
     except (ValueError, OSError):
         # Fail before any live request when a local inventory or limit is invalid.
         print('audit_configuration_invalid', file=sys.stderr)

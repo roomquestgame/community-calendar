@@ -3,7 +3,7 @@ from copy import deepcopy
 from datetime import datetime, timezone
 import json
 from pathlib import Path
-from unittest.mock import MagicMock, Mock
+from unittest.mock import ANY, MagicMock, Mock
 from urllib.parse import urlsplit
 
 from bs4 import BeautifulSoup
@@ -17,7 +17,9 @@ from roomquest import ics_adapter, preview_worker as worker
 
 FIXTURES = Path(__file__).parent / 'fixtures'
 NOW = datetime(2026, 11, 8, 12, tzinfo=timezone.utc)
-KEYS = tuple(sorted(sources.SOURCES))
+# Original twelve captures; newly recovered feeds have their own pipeline suites.
+KEYS = tuple(sorted({*civic.SOURCES, *businesses.SOURCES, *institutions.SOURCES,
+                     sources.ORANGEBURG_LIBRARY} - {civic.SCWORKS}))
 MEDIA_KEYS = {civic.SANTEE, civic.BEIDLER, civic.SC250, civic.EUTAWVILLE,
               civic.ELLOREE, businesses.D_AND_G, businesses.OUTSIDE_INN}
 V2_KEYS = {institutions.OCTECH, institutions.CANE_BAY, *institutions.ICS,
@@ -150,10 +152,12 @@ def test_captured_publishers_reach_preview_through_normal_host_and_deadline_guar
         assert caplog.text.count('publisher_series_month_conflict') == 9
         assert all(accept == 'text/calendar' for _, accept, _ in calls)
     if key == civic.ELLOREE:
-        render.assert_called_once_with(deadline_at=calls[0][2]['deadline_at'])
+        render.assert_called_once_with(deadline_at=ANY)
+        assert render.call_args.kwargs['deadline_at'] is not None
+        fetch.assert_not_called()
     else:
         render.assert_not_called()
-    assert fetch.called
+        assert fetch.called
 
 
 def test_central_deadline_keeps_worker_reserve_and_transport_failure_is_not_empty(monkeypatch):
@@ -161,7 +165,7 @@ def test_central_deadline_keeps_worker_reserve_and_transport_failure_is_not_empt
     monkeypatch.setattr(worker, 'monotonic', lambda: 100.0)
     seen = []
 
-    def collect(config, fetch, *, deadline_at, fetch_elloree):
+    def collect(config, fetch, *, deadline_at, fetch_elloree, fetch_programs):
         assert config == source and deadline_at == 112.0
         fetch(source['feed_url'], 'text/html')
         return []
@@ -213,6 +217,7 @@ def test_real_fixture_preview_stages_exact_records_before_correct_recording_cont
 
 @pytest.mark.parametrize('key', KEYS)
 def test_collection_failure_records_hold_on_correct_contract_without_staging(monkeypatch, key):
+    monkeypatch.setattr(worker, 'render_elloree_calendar', Mock(side_effect=worker.PreviewError('robots_denied')))
     monkeypatch.setattr(worker, 'fetch_publisher', Mock(side_effect=worker.PreviewError('robots_denied')))
     calls = []
     monkeypatch.setattr(worker, 'supabase_rpc', lambda name, payload: calls.append((name, deepcopy(payload))))
@@ -262,7 +267,7 @@ def test_elloree_render_posts_only_exact_empty_json_under_normal_guards(monkeypa
     assert kwargs['headers']['Referer'] == civic.SOURCES[civic.ELLOREE]['url']
     assert 'Authorization' not in kwargs['headers'] and 'Cookie' not in kwargs['headers']
     dns.assert_called_once_with('connect.elloreesc.com')
-    robots.assert_called_once_with('connect.elloreesc.com', '/api/functions/getPublicCalendarEvents')
+    robots.assert_called_once_with('connect.elloreesc.com', '/api/functions/getPublicCalendarEvents', deadline_at=ANY)
     pace.assert_called_once()
     reply.close.assert_called_once()
 

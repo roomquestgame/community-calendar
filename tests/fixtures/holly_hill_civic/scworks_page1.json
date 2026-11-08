@@ -1,0 +1,1457 @@
+{
+  "total": 85,
+  "total_pages": 2,
+  "events": [
+    {
+      "id": 10003795,
+      "url": "https://scworkstrident.org/event/info-session-6/2026-11-09/",
+      "title": "Info Session",
+      "status": "publish",
+      "description": "<h3><strong>9AM Every Monday at SC Works Dorchester</strong></h3>\n<p><strong>Walk-ins welcome! </strong>Info sessions are a great way to explore training opportunities and receive details about financial assistance and career guidance. Participating in a training program can lead to better employment opportunities while developing new skills.</p>",
+      "start_date": "2026-11-09 09:00:00",
+      "end_date": "2026-11-09 10:00:00",
+      "utc_start_date": "2026-11-09 14:00:00",
+      "utc_end_date": "2026-11-09 15:00:00",
+      "timezone": "America/New_York",
+      "timezone_abbr": "EDT",
+      "all_day": false,
+      "hide_from_listings": false,
+      "is_virtual": false,
+      "cost": "",
+      "categories": [
+        {
+          "name": "Information Session"
+        }
+      ],
+      "image": false,
+      "venue": {
+        "venue": "SC Works Dorchester",
+        "address": "1325-A Boone Hill Road",
+        "city": "Summerville",
+        "state": "SC",
+        "stateprovince": "SC",
+        "zip": "29483"
+      }
+    },
+    {
+      "id": 10003896,
+      "url": "https://scworkstrident.org/event/info-session-8/2026-11-09/",
+      "title": "Info Session",
+      "status": "publish",
+      "description": "<h3><strong>9AM Every Monday at SC Works Berkeley</strong></h3>\n<p><strong>Walk-ins welcome! </strong>Info sessions are a great way to explore training opportunities and receive details about financial assistance and career guidance. Participating in a training program can lead to better employment opportunities while developing new skills.</p>",
+      "start_date": "2026-11-09 09:00:00",
+      "end_date": "2026-11-09 10:00:00",
+      "utc_start_date": "2026-11-09 14:00:00",
+      "utc_end_date": "2026-11-09 15:00:00",
+      "timezone": "America/New_York",
+      "timezone_abbr": "EDT",
+      "all_day": false,
+      "hide_from_listings": false,
+      "is_virtual": false,
+      "cost": "",
+      "categories": [
+        {
+          "name": "Information Session"
+        }
+      ],
+      "image": false,
+      "venue": {
+        "venue": "SC Works Berkeley",
+        "address": "325 East Main Street",
+        "city": "Moncks Corner",
+        "state": "SC",
+        "stateprovince": "SC",
+        "zip": "29461"
+      }
+    },
+    {
+      "id": 10003836,
+      "url": "https://scworkstrident.org/event/info-session-7/2026-11-09/",
+      "title": "Info Session",
+      "status": "publish",
+      "description": "<h3><strong>11AM Every Monday at Berkeley Adult Education</strong></h3>\n<p><strong>Walk-ins welcome! </strong>Info sessions are a great way to explore training opportunities and receive details about financial assistance and career guidance. Participating in a training program can lead to better employment opportunities while developing new skills.</p>",
+      "start_date": "2026-11-09 11:00:00",
+      "end_date": "2026-11-09 12:00:00",
+      "utc_start_date": "2026-11-09 16:00:00",
+      "utc_end_date": "2026-11-09 17:00:00",
+      "timezone": "America/New_York",
+      "timezone_abbr": "EDT",
+      "all_day": false,
+      "hide_from_listings": false,
+      "is_virtual": false,
+      "cost": "",
+      "categories": [
+        {
+          "name": "Information Session"
+        }
+      ],
+      "image": false,
+      "venue": {
+        "venue": "Berkeley Adult Education",
+        "address": "221 Easter Main Street",
+        "city": "Moncks Corner",
+        "stateprovince": "South Carolina",
+        "zip": "29461"
+      }
+    },
+    {
+      "id": 10003591,
+      "url": "https://scworkstrident.org/event/info-session-2/2026-11-09/",
+      "title": "Info Session",
+      "status": "publish",
+      "description": "<h4>3PM Every Monday at SC Works Dorchester</h4>\n<p><strong>Walk-ins welcome! </strong>Info sessions are a great way to explore training opportunities and receive details about financial assistance and career guidance. Participating in a training program can lead to better employment opportunities while developing new skills.</p>",
+      "start_date": "2026-11-09 15:00:00",
+      "end_date": "2026-11-09 16:00:00",
+      "utc_start_date": "2026-11-09 20:00:00",
+      "utc_end_date": "2026-11-09 21:00:00",
+      "timezone": "America/New_York",
+      "timezone_abbr": "EDT",
+      "all_day": false,
+      "hide_from_listings": false,
+      "is_virtual": false,
+      "cost": "",
+      "categories": [
+        {
+          "name": "Information Session"
+        }
+      ],
+      "image": false,
+      "venue": {
+        "venue": "SC Works Dorchester",
+        "address": "1325-A Boone Hill Road",
+        "city": "Summerville",
+        "state": "SC",
+        "stateprovince": "SC",
+        "zip": "29483"
+      }
+    },
+    {
+      "id": 10003696,
+      "url": "https://scworkstrident.org/event/info-session-5/2026-11-10/",
+      "title": "Info Session",
+      "status": "publish",
+      "description": "<h4>9AM Every Tuesday at SC Works Charleston</h4>\n<p><strong>Walk-ins welcome! </strong>Info sessions are a great way to explore training opportunities and receive details about financial assistance and career guidance. Participating in a training program can lead to better employment opportunities while developing new skills.</p>",
+      "start_date": "2026-11-10 09:00:00",
+      "end_date": "2026-11-10 10:00:00",
+      "utc_start_date": "2026-11-10 14:00:00",
+      "utc_end_date": "2026-11-10 15:00:00",
+      "timezone": "America/New_York",
+      "timezone_abbr": "EDT",
+      "all_day": false,
+      "hide_from_listings": false,
+      "is_virtual": false,
+      "cost": "",
+      "categories": [
+        {
+          "name": "Information Session"
+        }
+      ],
+      "image": false,
+      "venue": {
+        "venue": "SC Works Charleston",
+        "address": "1930 Hanahan Road, Suite 200",
+        "city": "North Charleston",
+        "state": "SC",
+        "stateprovince": "SC",
+        "zip": "29406"
+      }
+    },
+    {
+      "id": 5118,
+      "url": "https://scworkstrident.org/event/veterans-day-career-fair/",
+      "title": "Veterans Day Career Fair",
+      "status": "publish",
+      "description": "<h4><img loading=\"lazy\" decoding=\"async\" class=\"alignnone wp-image-5588\" src=\"https://scworkstrident.org/wp-content/uploads/2026/08/TTC-Red.png\" alt=\"\" width=\"252\" height=\"84\" /></h4>\n<h4><span style=\"color: #0047bb;\">Tuesday, November 10, at Trident Technical College, Thornley Campus<br />\n</span>➤ Veterans &amp; Military Spouses: 10 &#8211; 10:30 AM<br />\n➤ General Public: 10:30 AM &#8211; 1 PM</h4>\n<p>Bring multiple copies of your resume &amp; speak with recruiters hiring now across Berkeley, Charleston and Dorchester County.</p>\n<h4>Participating Employers</h4>\n<p><em>*Click one of the employers or partners below for job details and more information.</em></p>\n<ul>\n<li><span style=\"color: #0000ff;\"><a style=\"color: #0000ff;\" href=\"https://tinyurl.com/23vmefdt\">Beekmok Hospitality Collection</a></span></li>\n<li><span style=\"color: #0000ff;\"><a style=\"color: #0000ff;\" href=\"https://tinyurl.com/ydwuxtdn\">Charleston County Consolidated 9-1-1 Center</a></span></li>\n<li><span style=\"color: #0000ff;\"><a style=\"color: #0000ff;\" href=\"https://tinyurl.com/yzsg8aj9\">Charleston County EMS</a></span></li>\n<li><span style=\"color: #0000ff;\"><a style=\"color: #0000ff;\" href=\"https://tinyurl.com/22ue7hj6\">Charleston County School District &#8211; Office of Expanded Learning</a></span></li>\n<li><span style=\"color: #0000ff;\"><a style=\"color: #0000ff;\" href=\"https://tinyurl.com/y4als59n\">Charleston Water System</a></span></li>\n<li><span style=\"color: #0000ff;\"><a style=\"color: #0000ff;\" href=\"https://tinyurl.com/2yfzqg7o\">Coastal Bus Line</a></span></li>\n<li><span style=\"color: #0000ff;\"><a style=\"color: #0000ff;\" href=\"https://tinyurl.com/y8gntsqz\">College of Charleston</a></span></li>\n<li><span style=\"color: #0000ff;\"><a style=\"color: #0000ff;\" href=\"https://tinyurl.com/yg8476k5\">Detyens Shipyard, Inc.</a></span></li>\n<li><span style=\"color: #0000ff;\"><a style=\"color: #0000ff;\" href=\"https://tinyurl.com/ye9em5cu\">Dorchester County Sheriff&#8217;s Office</a></span></li>\n<li><span style=\"color: #0000ff;\"><a style=\"color: #0000ff;\" href=\"https://tinyurl.com/yzgbvhcj\">Heritage Landcare</a></span></li>\n<li><span style=\"color: #0000ff;\"><a style=\"color: #0000ff;\" href=\"https://tinyurl.com/2ymsvtj2\">Home Instead</a></span></li>\n<li><span style=\"color: #0000ff;\"><a style=\"color: #0000ff;\" href=\"https://tinyurl.com/2dcw6b58\">Keel</a></span></li>\n<li><span style=\"color: #0000ff;\"><a style=\"color: #0000ff;\" href=\"https://tinyurl.com/268gzxde\">Medical University of South Carolina &#8211; Health</a></span></li>\n<li><span style=\"color: #0000ff;\"><a style=\"color: #0000ff;\" href=\"https://tinyurl.com/28s4rjsm\">Medical University of South Carolina &#8211; University</a></span></li>\n<li><span style=\"color: #0000ff;\"><a style=\"color: #0000ff;\" href=\"https://tinyurl.com/28k2cfhy\">Morrison Healthcare &#8211; Roper St. Francis</a></span></li>\n<li><span style=\"color: #0000ff;\"><a style=\"color: #0000ff;\" href=\"https://tinyurl.com/2c2pwxze\">Newport News Shipbuilding</a></span></li>\n<li><span style=\"color: #0000ff;\"><a style=\"color: #0000ff;\" href=\"https://tinyurl.com/289lwdwl\">Nordstrom</a></span></li>\n<li><span style=\"color: #0000ff;\"><a style=\"color: #0000ff;\" href=\"https://tinyurl.com/yc9r97e6\">Roper St. Francis Healthcare</a></span></li>\n<li><span style=\"color: #0000ff;\"><a style=\"color: #0000ff;\" href=\"https://tinyurl.com/ypedsy5b\">Sanders Brothers Construction</a></span></li>\n<li><span style=\"color: #0000ff;\"><a style=\"color: #0000ff;\" href=\"https://tinyurl.com/27awmztz\">Schnellecke Logistics</a></span></li>\n<li><span style=\"color: #0000ff;\"><a style=\"color: #0000ff;\" href=\"https://tinyurl.com/2c3lf6su\">Sea Island Land Development</a></span></li>\n<li><span style=\"color: #0000ff;\"><a style=\"color: #0000ff;\" href=\"https://tinyurl.com/28un93ao\">SignaPay Southeast</a></span></li>\n<li><span style=\"color: #0000ff;\"><a style=\"color: #0000ff;\" href=\"https://tinyurl.com/yzaamd3m\">South Carolina Department of Probation, Parole and Pardon Services</a></span></li>\n<li><span style=\"color: #0000ff;\"><a style=\"color: #0000ff;\" href=\"https://tinyurl.com/y9rfhte5\">The Citadel, The Military College of South Carolina</a></span></li>\n</ul>\n<h4>Participating Partners &amp; Resources</h4>\n<ul>\n<li><span style=\"color: #0000ff;\"><a style=\"color: #0000ff;\" href=\"https://ope.sc.gov/\">Operation Palmetto Employment</a></span></li>\n<li><span style=\"color: #0000ff;\"><a style=\"color: #0000ff;\" href=\"https://www.readysc.org/\">readySC</a></span></li>\n<li><span style=\"color: #0000ff;\"><a style=\"color: #0000ff;\" href=\"https://dss.sc.gov/\">South Carolina Department of Social Services</a></span></li>\n<li><span style=\"color: #0000ff;\"><a style=\"color: #0000ff;\" href=\"https://scdva.sc.gov/\">South Carolina Department of Veterans Affairs</a></span></li>\n<li><span style=\"color: #0000ff;\"><a style=\"color: #0000ff;\" href=\"https://www.scvrd.net/\">South Carolina Vocational Rehabilitation Department</a></span></li>\n<li><span style=\"color: #0000ff;\"><a style=\"color: #0000ff;\" href=\"https://www.va.gov/charleston-sc-vet-center/\">The Charleston Vet Center</a></span></li>\n<li><span style=\"color: #0000ff;\"><a style=\"color: #0000ff;\" href=\"https://www.tridenttech.edu/\">Trident Technical College</a></span></li>\n<li><span style=\"color: #0000ff;\"><a style=\"color: #0000ff;\" href=\"https://t2t.org/\">Tunnels to Towers Foundation</a></span></li>\n</ul>",
+      "start_date": "2026-11-10 10:00:00",
+      "end_date": "2026-11-10 13:00:00",
+      "utc_start_date": "2026-11-10 15:00:00",
+      "utc_end_date": "2026-11-10 18:00:00",
+      "timezone": "America/New_York",
+      "timezone_abbr": "EST",
+      "all_day": false,
+      "hide_from_listings": false,
+      "is_virtual": false,
+      "cost": "",
+      "categories": [
+        {
+          "name": "In-Person Event"
+        },
+        {
+          "name": "Job Fair"
+        }
+      ],
+      "image": false,
+      "venue": {
+        "venue": "Trident Technical College, Thornley Campus, Building 410",
+        "address": "7000 Rivers Avenue, Building 410",
+        "city": "North Charleston",
+        "stateprovince": "South Carolina",
+        "zip": "29406"
+      }
+    },
+    {
+      "id": 5655,
+      "url": "https://scworkstrident.org/event/usps-hiring-event-2/",
+      "title": "USPS Hiring Event",
+      "status": "publish",
+      "description": "<p>Speak with recruiters from the United States Postal Service (USPS) team and apply to positions on-the-spot.</p>",
+      "start_date": "2026-11-10 10:00:00",
+      "end_date": "2026-11-10 12:00:00",
+      "utc_start_date": "2026-11-10 15:00:00",
+      "utc_end_date": "2026-11-10 17:00:00",
+      "timezone": "America/New_York",
+      "timezone_abbr": "EST",
+      "all_day": false,
+      "hide_from_listings": false,
+      "is_virtual": false,
+      "cost": "",
+      "categories": [
+        {
+          "name": "In-Person Event"
+        },
+        {
+          "name": "Job Fair"
+        }
+      ],
+      "image": false,
+      "venue": {
+        "venue": "James Island Town Hall",
+        "address": "1122 Dills Bluff Rd.",
+        "city": "Charleston",
+        "stateprovince": "SC",
+        "zip": "29412"
+      }
+    },
+    {
+      "id": 5741,
+      "url": "https://scworkstrident.org/event/closed-for-veterans-day/",
+      "title": "CLOSED FOR VETERANS DAY",
+      "status": "publish",
+      "description": "<p><strong>All SC Works Trident centers will be closed on Wednesday, Nov. 11, in observance of Veterans Day.</strong></p>\n<p>Centers will reopen on Thursday, Nov. 12, at 8:30 a.m., following normal business hours.</p>",
+      "start_date": "2026-11-11 00:00:00",
+      "end_date": "2026-11-11 23:59:59",
+      "utc_start_date": "2026-11-11 05:00:00",
+      "utc_end_date": "2026-11-12 04:59:59",
+      "timezone": "America/New_York",
+      "timezone_abbr": "EST",
+      "all_day": true,
+      "hide_from_listings": false,
+      "is_virtual": false,
+      "cost": "",
+      "categories": [
+        {
+          "name": "In-Person Event"
+        },
+        {
+          "name": "Job Fair"
+        }
+      ],
+      "image": false,
+      "venue": {
+        "venue": "SC Works Charleston",
+        "address": "1930 Hanahan Road, Suite 200",
+        "city": "North Charleston",
+        "state": "SC",
+        "stateprovince": "SC",
+        "zip": "29406"
+      }
+    },
+    {
+      "id": 10002503,
+      "url": "https://scworkstrident.org/event/virtual-workshop-cover-letter-writing/2026-11-11/",
+      "title": "Virtual Workshop: Cover Letter Writing",
+      "status": "publish",
+      "description": "<p>Discover tips to help you craft professional, personalized cover letters for any job you apply to.</p>\n<h4>✅ <a href=\"https://app.brazenconnect.com/app/events/qNn7n#!booth;eventCode=qNn7n;boothCode=booth-1\">Register to attend here.</a></h4>",
+      "start_date": "2026-11-11 10:00:00",
+      "end_date": "2026-11-11 12:00:00",
+      "utc_start_date": "2026-11-11 15:00:00",
+      "utc_end_date": "2026-11-11 17:00:00",
+      "timezone": "America/New_York",
+      "timezone_abbr": "EST",
+      "all_day": false,
+      "hide_from_listings": false,
+      "is_virtual": false,
+      "cost": "",
+      "categories": [
+        {
+          "name": "Virtual Event"
+        }
+      ],
+      "image": false,
+      "venue": []
+    },
+    {
+      "id": 10003318,
+      "url": "https://scworkstrident.org/event/virtual-workshop-resume-writing-2/2026-11-11/",
+      "title": "Virtual Workshop: Resume Writing",
+      "status": "publish",
+      "description": "<p>Turn your work experience into a polished, professional resume that opens doors. Learn how to tailor your resume for each job opportunity.</p>\n<h4>✅ <a href=\"https://app.brazenconnect.com/a/scdew-south-coast/s/GjPDy/next\">Sign up.</a></h4>",
+      "start_date": "2026-11-11 11:00:00",
+      "end_date": "2026-11-11 13:00:00",
+      "utc_start_date": "2026-11-11 16:00:00",
+      "utc_end_date": "2026-11-11 18:00:00",
+      "timezone": "America/New_York",
+      "timezone_abbr": "EST",
+      "all_day": false,
+      "hide_from_listings": false,
+      "is_virtual": false,
+      "cost": "",
+      "categories": [
+        {
+          "name": "Virtual Event"
+        }
+      ],
+      "image": false,
+      "venue": []
+    },
+    {
+      "id": 10003431,
+      "url": "https://scworkstrident.org/event/virtual-workshop-using-sc-works-online-services-scwos-2/2026-11-12/",
+      "title": "Virtual Workshop: Using SC Works Online Services (SCWOS)",
+      "status": "publish",
+      "description": "<p>Navigate <a href=\"https://jobs.scworks.org/vosnet/default.aspx\">SCWOS</a> efficiently and take advantage of meaningful resources like the job search portal, resume builder, skills and career assessments, labor market trends and more.</p>\n<h4>✅ <a href=\"https://app.brazenconnect.com/a/scdew-central/s/4wlOy/next\">Ready to unlock the potential of SCWOS? Register here.</a></h4>",
+      "start_date": "2026-11-12 14:00:00",
+      "end_date": "2026-11-12 16:00:00",
+      "utc_start_date": "2026-11-12 19:00:00",
+      "utc_end_date": "2026-11-12 21:00:00",
+      "timezone": "America/New_York",
+      "timezone_abbr": "EST",
+      "all_day": false,
+      "hide_from_listings": false,
+      "is_virtual": false,
+      "cost": "",
+      "categories": [
+        {
+          "name": "Virtual Event"
+        }
+      ],
+      "image": false,
+      "venue": []
+    },
+    {
+      "id": 10003643,
+      "url": "https://scworkstrident.org/event/info-session-4/2026-11-12/",
+      "title": "Info Session",
+      "status": "publish",
+      "description": "<h4>3PM Every Thursday at SC Works Charleston</h4>\n<p><strong>Walk-ins welcome! </strong>Info sessions are a great way to explore training opportunities and receive details about financial assistance and career guidance. Participating in a training program can lead to better employment opportunities while developing new skills.</p>",
+      "start_date": "2026-11-12 15:00:00",
+      "end_date": "2026-11-12 16:00:00",
+      "utc_start_date": "2026-11-12 20:00:00",
+      "utc_end_date": "2026-11-12 21:00:00",
+      "timezone": "America/New_York",
+      "timezone_abbr": "EDT",
+      "all_day": false,
+      "hide_from_listings": false,
+      "is_virtual": false,
+      "cost": "",
+      "categories": [
+        {
+          "name": "Information Session"
+        }
+      ],
+      "image": false,
+      "venue": {
+        "venue": "SC Works Charleston",
+        "address": "1930 Hanahan Road, Suite 200",
+        "city": "North Charleston",
+        "state": "SC",
+        "stateprovince": "SC",
+        "zip": "29406"
+      }
+    },
+    {
+      "id": 10003796,
+      "url": "https://scworkstrident.org/event/info-session-6/2026-11-16/",
+      "title": "Info Session",
+      "status": "publish",
+      "description": "<h3><strong>9AM Every Monday at SC Works Dorchester</strong></h3>\n<p><strong>Walk-ins welcome! </strong>Info sessions are a great way to explore training opportunities and receive details about financial assistance and career guidance. Participating in a training program can lead to better employment opportunities while developing new skills.</p>",
+      "start_date": "2026-11-16 09:00:00",
+      "end_date": "2026-11-16 10:00:00",
+      "utc_start_date": "2026-11-16 14:00:00",
+      "utc_end_date": "2026-11-16 15:00:00",
+      "timezone": "America/New_York",
+      "timezone_abbr": "EDT",
+      "all_day": false,
+      "hide_from_listings": false,
+      "is_virtual": false,
+      "cost": "",
+      "categories": [
+        {
+          "name": "Information Session"
+        }
+      ],
+      "image": false,
+      "venue": {
+        "venue": "SC Works Dorchester",
+        "address": "1325-A Boone Hill Road",
+        "city": "Summerville",
+        "state": "SC",
+        "stateprovince": "SC",
+        "zip": "29483"
+      }
+    },
+    {
+      "id": 10003897,
+      "url": "https://scworkstrident.org/event/info-session-8/2026-11-16/",
+      "title": "Info Session",
+      "status": "publish",
+      "description": "<h3><strong>9AM Every Monday at SC Works Berkeley</strong></h3>\n<p><strong>Walk-ins welcome! </strong>Info sessions are a great way to explore training opportunities and receive details about financial assistance and career guidance. Participating in a training program can lead to better employment opportunities while developing new skills.</p>",
+      "start_date": "2026-11-16 09:00:00",
+      "end_date": "2026-11-16 10:00:00",
+      "utc_start_date": "2026-11-16 14:00:00",
+      "utc_end_date": "2026-11-16 15:00:00",
+      "timezone": "America/New_York",
+      "timezone_abbr": "EDT",
+      "all_day": false,
+      "hide_from_listings": false,
+      "is_virtual": false,
+      "cost": "",
+      "categories": [
+        {
+          "name": "Information Session"
+        }
+      ],
+      "image": false,
+      "venue": {
+        "venue": "SC Works Berkeley",
+        "address": "325 East Main Street",
+        "city": "Moncks Corner",
+        "state": "SC",
+        "stateprovince": "SC",
+        "zip": "29461"
+      }
+    },
+    {
+      "id": 10003837,
+      "url": "https://scworkstrident.org/event/info-session-7/2026-11-16/",
+      "title": "Info Session",
+      "status": "publish",
+      "description": "<h3><strong>11AM Every Monday at Berkeley Adult Education</strong></h3>\n<p><strong>Walk-ins welcome! </strong>Info sessions are a great way to explore training opportunities and receive details about financial assistance and career guidance. Participating in a training program can lead to better employment opportunities while developing new skills.</p>",
+      "start_date": "2026-11-16 11:00:00",
+      "end_date": "2026-11-16 12:00:00",
+      "utc_start_date": "2026-11-16 16:00:00",
+      "utc_end_date": "2026-11-16 17:00:00",
+      "timezone": "America/New_York",
+      "timezone_abbr": "EDT",
+      "all_day": false,
+      "hide_from_listings": false,
+      "is_virtual": false,
+      "cost": "",
+      "categories": [
+        {
+          "name": "Information Session"
+        }
+      ],
+      "image": false,
+      "venue": {
+        "venue": "Berkeley Adult Education",
+        "address": "221 Easter Main Street",
+        "city": "Moncks Corner",
+        "stateprovince": "South Carolina",
+        "zip": "29461"
+      }
+    },
+    {
+      "id": 10003592,
+      "url": "https://scworkstrident.org/event/info-session-2/2026-11-16/",
+      "title": "Info Session",
+      "status": "publish",
+      "description": "<h4>3PM Every Monday at SC Works Dorchester</h4>\n<p><strong>Walk-ins welcome! </strong>Info sessions are a great way to explore training opportunities and receive details about financial assistance and career guidance. Participating in a training program can lead to better employment opportunities while developing new skills.</p>",
+      "start_date": "2026-11-16 15:00:00",
+      "end_date": "2026-11-16 16:00:00",
+      "utc_start_date": "2026-11-16 20:00:00",
+      "utc_end_date": "2026-11-16 21:00:00",
+      "timezone": "America/New_York",
+      "timezone_abbr": "EDT",
+      "all_day": false,
+      "hide_from_listings": false,
+      "is_virtual": false,
+      "cost": "",
+      "categories": [
+        {
+          "name": "Information Session"
+        }
+      ],
+      "image": false,
+      "venue": {
+        "venue": "SC Works Dorchester",
+        "address": "1325-A Boone Hill Road",
+        "city": "Summerville",
+        "state": "SC",
+        "stateprovince": "SC",
+        "zip": "29483"
+      }
+    },
+    {
+      "id": 10003697,
+      "url": "https://scworkstrident.org/event/info-session-5/2026-11-17/",
+      "title": "Info Session",
+      "status": "publish",
+      "description": "<h4>9AM Every Tuesday at SC Works Charleston</h4>\n<p><strong>Walk-ins welcome! </strong>Info sessions are a great way to explore training opportunities and receive details about financial assistance and career guidance. Participating in a training program can lead to better employment opportunities while developing new skills.</p>",
+      "start_date": "2026-11-17 09:00:00",
+      "end_date": "2026-11-17 10:00:00",
+      "utc_start_date": "2026-11-17 14:00:00",
+      "utc_end_date": "2026-11-17 15:00:00",
+      "timezone": "America/New_York",
+      "timezone_abbr": "EDT",
+      "all_day": false,
+      "hide_from_listings": false,
+      "is_virtual": false,
+      "cost": "",
+      "categories": [
+        {
+          "name": "Information Session"
+        }
+      ],
+      "image": false,
+      "venue": {
+        "venue": "SC Works Charleston",
+        "address": "1930 Hanahan Road, Suite 200",
+        "city": "North Charleston",
+        "state": "SC",
+        "stateprovince": "SC",
+        "zip": "29406"
+      }
+    },
+    {
+      "id": 10002574,
+      "url": "https://scworkstrident.org/event/virtual-workshop-job-searching/2026-11-17/",
+      "title": "Virtual Workshop: Job Searching",
+      "status": "publish",
+      "description": "<p>Enhance your job search strategy with practical tools and tips to uncover new career opportunities.</p>\n<h4>✅ <a href=\"https://app.brazenconnect.com/a/scdew-central/s/a0J0e/next\">I&#8217;m Ready to Sign Up</a></h4>",
+      "start_date": "2026-11-17 10:00:00",
+      "end_date": "2026-11-17 12:00:00",
+      "utc_start_date": "2026-11-17 15:00:00",
+      "utc_end_date": "2026-11-17 17:00:00",
+      "timezone": "America/New_York",
+      "timezone_abbr": "EST",
+      "all_day": false,
+      "hide_from_listings": false,
+      "is_virtual": false,
+      "cost": "",
+      "categories": [
+        {
+          "name": "Virtual Event"
+        }
+      ],
+      "image": false,
+      "venue": []
+    },
+    {
+      "id": 5644,
+      "url": "https://scworkstrident.org/event/operation-employment-career-fair/",
+      "title": "Operation Employment Career Fair",
+      "status": "publish",
+      "description": "<h4><img loading=\"lazy\" decoding=\"async\" class=\"alignnone  wp-image-5649\" src=\"https://scworkstrident.org/wp-content/uploads/2026/10/Yorktown-Site-Banner_3.png\" alt=\"\" width=\"918\" height=\"392\" srcset=\"https://scworkstrident.org/wp-content/uploads/2026/10/Yorktown-Site-Banner_3.png 8001w, https://scworkstrident.org/wp-content/uploads/2026/10/Yorktown-Site-Banner_3-600x256.png 600w, https://scworkstrident.org/wp-content/uploads/2026/10/Yorktown-Site-Banner_3-1030x439.png 1030w, https://scworkstrident.org/wp-content/uploads/2026/10/Yorktown-Site-Banner_3-900x384.png 900w, https://scworkstrident.org/wp-content/uploads/2026/10/Yorktown-Site-Banner_3-1536x655.png 1536w, https://scworkstrident.org/wp-content/uploads/2026/10/Yorktown-Site-Banner_3-2048x874.png 2048w\" sizes=\"auto, (max-width: 918px) 100vw, 918px\" /></h4>\n<h4><span style=\"color: #1d2858;\">Join us aboard the historic USS Yorktown for the Operation Employment Career Fair!</span></h4>\n<p>This event connects veterans, military family members, and job seekers directly to employers across a range of industries. <strong>Admission is free and open to the public.</strong></p>\n<ul>\n<li>Explore open positions in the Tri-County area</li>\n<li>Gain insight into new career paths</li>\n<li>Make connections with hiring managers who value your background and skills.</li>\n</ul>\n<h3><span style=\"color: #0000ff;\"><br />\n<a style=\"color: #0000ff;\" href=\"https://scworks.org/operationemployment\">View Participating Employers &amp; Event Details</a></span></h3>\n<p>&nbsp;</p>\n<h5><span style=\"color: #425563;\"><em>Proudly presented by the SC Department of Employment and Workforce, SC Works Trident, SC Department of Veterans&#8217; Affairs, SC Vocational Rehabilitation, and Patriots Point Naval &amp; Maritime Museum.</em></span></h5>",
+      "start_date": "2026-11-17 10:00:00",
+      "end_date": "2026-11-17 13:00:00",
+      "utc_start_date": "2026-11-17 15:00:00",
+      "utc_end_date": "2026-11-17 18:00:00",
+      "timezone": "America/New_York",
+      "timezone_abbr": "EST",
+      "all_day": false,
+      "hide_from_listings": false,
+      "is_virtual": false,
+      "cost": "",
+      "categories": [
+        {
+          "name": "In-Person Event"
+        },
+        {
+          "name": "Job Fair"
+        }
+      ],
+      "image": false,
+      "venue": {
+        "venue": "USS Yorktown",
+        "address": "40 Patriots Point Rd.",
+        "city": "Mt. Pleasant",
+        "state": "SC",
+        "stateprovince": "SC",
+        "zip": "29464"
+      }
+    },
+    {
+      "id": 10002263,
+      "url": "https://scworkstrident.org/event/virtual-workshop-communicating-effectively-listening-skills-2/2026-11-17/",
+      "title": "Virtual Workshop: Communicating Effectively &#038; Listening Skills",
+      "status": "publish",
+      "description": "<p>Learn how to communicate clearly and listen with purpose to build stronger connections.</p>\n<h4>✅ <a href=\"https://app.brazenconnect.com/a/scdew-greater-upstate/s/aZQBZ/next\">Save your spot here!</a></h4>",
+      "start_date": "2026-11-17 11:00:00",
+      "end_date": "2026-11-17 13:00:00",
+      "utc_start_date": "2026-11-17 16:00:00",
+      "utc_end_date": "2026-11-17 18:00:00",
+      "timezone": "America/New_York",
+      "timezone_abbr": "EST",
+      "all_day": false,
+      "hide_from_listings": false,
+      "is_virtual": false,
+      "cost": "",
+      "categories": [
+        {
+          "name": "Virtual Event"
+        }
+      ],
+      "image": {
+        "url": "https://scworkstrident.org/wp-content/uploads/2025/08/AdobeStock_410423061-scaled-e1756413362939.jpeg"
+      },
+      "venue": []
+    },
+    {
+      "id": 5737,
+      "url": "https://scworkstrident.org/event/wednesday-works-multi-employer-hiring-event-4/",
+      "title": "&#8220;Wednesday Works&#8221; Multi-Employer Hiring Event",
+      "status": "publish",
+      "description": "<p>Meet hiring employers face-to-face, fast-track job searching, and apply on-the-spot at “Wednesday Works.”<br />\n<strong>No appointment needed!</strong> Resume support and printing are available on-site.</p>\n<h4><span style=\"color: #3366ff;\"><strong><br />\nAbout “Wednesday Works”</strong></span></h4>\n<p><span style=\"color: #3366ff;\">“Wednesday Works” is a series of hiring events that will be held every other Wednesday. Each event will feature three to four employers that are actively hiring across Berkeley, Charleston or Dorchester County.</span></p>\n<p><span style=\"color: #3366ff;\">The goal of “Wednesday Works” is to bring job seekers face-to-face with employers for an opportunity to establish genuine connections and discuss work opportunities.</span></p>",
+      "start_date": "2026-11-18 10:00:00",
+      "end_date": "2026-11-18 12:00:00",
+      "utc_start_date": "2026-11-18 15:00:00",
+      "utc_end_date": "2026-11-18 17:00:00",
+      "timezone": "America/New_York",
+      "timezone_abbr": "EST",
+      "all_day": false,
+      "hide_from_listings": false,
+      "is_virtual": false,
+      "cost": "",
+      "categories": [
+        {
+          "name": "In-Person Event"
+        },
+        {
+          "name": "Job Fair"
+        }
+      ],
+      "image": false,
+      "venue": {
+        "venue": "SC Works Charleston",
+        "address": "1930 Hanahan Road, Suite 200",
+        "city": "North Charleston",
+        "state": "SC",
+        "stateprovince": "SC",
+        "zip": "29406"
+      }
+    },
+    {
+      "id": 10002443,
+      "url": "https://scworkstrident.org/event/virtual-workshop-communicating-effectively-listening-skills-3/2026-11-19/",
+      "title": "Virtual Workshop: Communicating Effectively &#038; Listening Skills",
+      "status": "publish",
+      "description": "<p>Learn how to communicate clearly and listen with purpose to build stronger connections.</p>\n<h4>✅ <a href=\"https://app.brazenconnect.com/a/scdew-greater-upstate/s/aZQBZ/next\">Save your spot here!</a></h4>",
+      "start_date": "2026-11-19 14:00:00",
+      "end_date": "2026-11-19 16:00:00",
+      "utc_start_date": "2026-11-19 19:00:00",
+      "utc_end_date": "2026-11-19 21:00:00",
+      "timezone": "America/New_York",
+      "timezone_abbr": "EST",
+      "all_day": false,
+      "hide_from_listings": false,
+      "is_virtual": false,
+      "cost": "",
+      "categories": [
+        {
+          "name": "Virtual Event"
+        }
+      ],
+      "image": false,
+      "venue": []
+    },
+    {
+      "id": 10003644,
+      "url": "https://scworkstrident.org/event/info-session-4/2026-11-19/",
+      "title": "Info Session",
+      "status": "publish",
+      "description": "<h4>3PM Every Thursday at SC Works Charleston</h4>\n<p><strong>Walk-ins welcome! </strong>Info sessions are a great way to explore training opportunities and receive details about financial assistance and career guidance. Participating in a training program can lead to better employment opportunities while developing new skills.</p>",
+      "start_date": "2026-11-19 15:00:00",
+      "end_date": "2026-11-19 16:00:00",
+      "utc_start_date": "2026-11-19 20:00:00",
+      "utc_end_date": "2026-11-19 21:00:00",
+      "timezone": "America/New_York",
+      "timezone_abbr": "EDT",
+      "all_day": false,
+      "hide_from_listings": false,
+      "is_virtual": false,
+      "cost": "",
+      "categories": [
+        {
+          "name": "Information Session"
+        }
+      ],
+      "image": false,
+      "venue": {
+        "venue": "SC Works Charleston",
+        "address": "1930 Hanahan Road, Suite 200",
+        "city": "North Charleston",
+        "state": "SC",
+        "stateprovince": "SC",
+        "zip": "29406"
+      }
+    },
+    {
+      "id": 10003797,
+      "url": "https://scworkstrident.org/event/info-session-6/2026-11-23/",
+      "title": "Info Session",
+      "status": "publish",
+      "description": "<h3><strong>9AM Every Monday at SC Works Dorchester</strong></h3>\n<p><strong>Walk-ins welcome! </strong>Info sessions are a great way to explore training opportunities and receive details about financial assistance and career guidance. Participating in a training program can lead to better employment opportunities while developing new skills.</p>",
+      "start_date": "2026-11-23 09:00:00",
+      "end_date": "2026-11-23 10:00:00",
+      "utc_start_date": "2026-11-23 14:00:00",
+      "utc_end_date": "2026-11-23 15:00:00",
+      "timezone": "America/New_York",
+      "timezone_abbr": "EDT",
+      "all_day": false,
+      "hide_from_listings": false,
+      "is_virtual": false,
+      "cost": "",
+      "categories": [
+        {
+          "name": "Information Session"
+        }
+      ],
+      "image": false,
+      "venue": {
+        "venue": "SC Works Dorchester",
+        "address": "1325-A Boone Hill Road",
+        "city": "Summerville",
+        "state": "SC",
+        "stateprovince": "SC",
+        "zip": "29483"
+      }
+    },
+    {
+      "id": 10003898,
+      "url": "https://scworkstrident.org/event/info-session-8/2026-11-23/",
+      "title": "Info Session",
+      "status": "publish",
+      "description": "<h3><strong>9AM Every Monday at SC Works Berkeley</strong></h3>\n<p><strong>Walk-ins welcome! </strong>Info sessions are a great way to explore training opportunities and receive details about financial assistance and career guidance. Participating in a training program can lead to better employment opportunities while developing new skills.</p>",
+      "start_date": "2026-11-23 09:00:00",
+      "end_date": "2026-11-23 10:00:00",
+      "utc_start_date": "2026-11-23 14:00:00",
+      "utc_end_date": "2026-11-23 15:00:00",
+      "timezone": "America/New_York",
+      "timezone_abbr": "EDT",
+      "all_day": false,
+      "hide_from_listings": false,
+      "is_virtual": false,
+      "cost": "",
+      "categories": [
+        {
+          "name": "Information Session"
+        }
+      ],
+      "image": false,
+      "venue": {
+        "venue": "SC Works Berkeley",
+        "address": "325 East Main Street",
+        "city": "Moncks Corner",
+        "state": "SC",
+        "stateprovince": "SC",
+        "zip": "29461"
+      }
+    },
+    {
+      "id": 10003838,
+      "url": "https://scworkstrident.org/event/info-session-7/2026-11-23/",
+      "title": "Info Session",
+      "status": "publish",
+      "description": "<h3><strong>11AM Every Monday at Berkeley Adult Education</strong></h3>\n<p><strong>Walk-ins welcome! </strong>Info sessions are a great way to explore training opportunities and receive details about financial assistance and career guidance. Participating in a training program can lead to better employment opportunities while developing new skills.</p>",
+      "start_date": "2026-11-23 11:00:00",
+      "end_date": "2026-11-23 12:00:00",
+      "utc_start_date": "2026-11-23 16:00:00",
+      "utc_end_date": "2026-11-23 17:00:00",
+      "timezone": "America/New_York",
+      "timezone_abbr": "EDT",
+      "all_day": false,
+      "hide_from_listings": false,
+      "is_virtual": false,
+      "cost": "",
+      "categories": [
+        {
+          "name": "Information Session"
+        }
+      ],
+      "image": false,
+      "venue": {
+        "venue": "Berkeley Adult Education",
+        "address": "221 Easter Main Street",
+        "city": "Moncks Corner",
+        "stateprovince": "South Carolina",
+        "zip": "29461"
+      }
+    },
+    {
+      "id": 10003593,
+      "url": "https://scworkstrident.org/event/info-session-2/2026-11-23/",
+      "title": "Info Session",
+      "status": "publish",
+      "description": "<h4>3PM Every Monday at SC Works Dorchester</h4>\n<p><strong>Walk-ins welcome! </strong>Info sessions are a great way to explore training opportunities and receive details about financial assistance and career guidance. Participating in a training program can lead to better employment opportunities while developing new skills.</p>",
+      "start_date": "2026-11-23 15:00:00",
+      "end_date": "2026-11-23 16:00:00",
+      "utc_start_date": "2026-11-23 20:00:00",
+      "utc_end_date": "2026-11-23 21:00:00",
+      "timezone": "America/New_York",
+      "timezone_abbr": "EDT",
+      "all_day": false,
+      "hide_from_listings": false,
+      "is_virtual": false,
+      "cost": "",
+      "categories": [
+        {
+          "name": "Information Session"
+        }
+      ],
+      "image": false,
+      "venue": {
+        "venue": "SC Works Dorchester",
+        "address": "1325-A Boone Hill Road",
+        "city": "Summerville",
+        "state": "SC",
+        "stateprovince": "SC",
+        "zip": "29483"
+      }
+    },
+    {
+      "id": 10003698,
+      "url": "https://scworkstrident.org/event/info-session-5/2026-11-24/",
+      "title": "Info Session",
+      "status": "publish",
+      "description": "<h4>9AM Every Tuesday at SC Works Charleston</h4>\n<p><strong>Walk-ins welcome! </strong>Info sessions are a great way to explore training opportunities and receive details about financial assistance and career guidance. Participating in a training program can lead to better employment opportunities while developing new skills.</p>",
+      "start_date": "2026-11-24 09:00:00",
+      "end_date": "2026-11-24 10:00:00",
+      "utc_start_date": "2026-11-24 14:00:00",
+      "utc_end_date": "2026-11-24 15:00:00",
+      "timezone": "America/New_York",
+      "timezone_abbr": "EDT",
+      "all_day": false,
+      "hide_from_listings": false,
+      "is_virtual": false,
+      "cost": "",
+      "categories": [
+        {
+          "name": "Information Session"
+        }
+      ],
+      "image": false,
+      "venue": {
+        "venue": "SC Works Charleston",
+        "address": "1930 Hanahan Road, Suite 200",
+        "city": "North Charleston",
+        "state": "SC",
+        "stateprovince": "SC",
+        "zip": "29406"
+      }
+    },
+    {
+      "id": 10002874,
+      "url": "https://scworkstrident.org/event/virtual-workshop-job-searching-interviewing-2/2026-11-26/",
+      "title": "Virtual Workshop: Job Searching &#038; Interviewing",
+      "status": "publish",
+      "description": "<p>Excel in targeting the right career opportunities for you and prepare to enter your next interview as a strong, successful candidate.</p>\n<h4>✅ <a href=\"https://app.brazenconnect.com/a/scdew-central/s/GKEV9/next\">Register here.</a></h4>",
+      "start_date": "2026-11-26 14:00:00",
+      "end_date": "2026-11-26 16:00:00",
+      "utc_start_date": "2026-11-26 19:00:00",
+      "utc_end_date": "2026-11-26 21:00:00",
+      "timezone": "America/New_York",
+      "timezone_abbr": "EST",
+      "all_day": false,
+      "hide_from_listings": false,
+      "is_virtual": false,
+      "cost": "",
+      "categories": [
+        {
+          "name": "Virtual Event"
+        }
+      ],
+      "image": false,
+      "venue": []
+    },
+    {
+      "id": 10003645,
+      "url": "https://scworkstrident.org/event/info-session-4/2026-11-26/",
+      "title": "Info Session",
+      "status": "publish",
+      "description": "<h4>3PM Every Thursday at SC Works Charleston</h4>\n<p><strong>Walk-ins welcome! </strong>Info sessions are a great way to explore training opportunities and receive details about financial assistance and career guidance. Participating in a training program can lead to better employment opportunities while developing new skills.</p>",
+      "start_date": "2026-11-26 15:00:00",
+      "end_date": "2026-11-26 16:00:00",
+      "utc_start_date": "2026-11-26 20:00:00",
+      "utc_end_date": "2026-11-26 21:00:00",
+      "timezone": "America/New_York",
+      "timezone_abbr": "EDT",
+      "all_day": false,
+      "hide_from_listings": false,
+      "is_virtual": false,
+      "cost": "",
+      "categories": [
+        {
+          "name": "Information Session"
+        }
+      ],
+      "image": false,
+      "venue": {
+        "venue": "SC Works Charleston",
+        "address": "1930 Hanahan Road, Suite 200",
+        "city": "North Charleston",
+        "state": "SC",
+        "stateprovince": "SC",
+        "zip": "29406"
+      }
+    },
+    {
+      "id": 10003798,
+      "url": "https://scworkstrident.org/event/info-session-6/2026-11-30/",
+      "title": "Info Session",
+      "status": "publish",
+      "description": "<h3><strong>9AM Every Monday at SC Works Dorchester</strong></h3>\n<p><strong>Walk-ins welcome! </strong>Info sessions are a great way to explore training opportunities and receive details about financial assistance and career guidance. Participating in a training program can lead to better employment opportunities while developing new skills.</p>",
+      "start_date": "2026-11-30 09:00:00",
+      "end_date": "2026-11-30 10:00:00",
+      "utc_start_date": "2026-11-30 14:00:00",
+      "utc_end_date": "2026-11-30 15:00:00",
+      "timezone": "America/New_York",
+      "timezone_abbr": "EDT",
+      "all_day": false,
+      "hide_from_listings": false,
+      "is_virtual": false,
+      "cost": "",
+      "categories": [
+        {
+          "name": "Information Session"
+        }
+      ],
+      "image": false,
+      "venue": {
+        "venue": "SC Works Dorchester",
+        "address": "1325-A Boone Hill Road",
+        "city": "Summerville",
+        "state": "SC",
+        "stateprovince": "SC",
+        "zip": "29483"
+      }
+    },
+    {
+      "id": 10003899,
+      "url": "https://scworkstrident.org/event/info-session-8/2026-11-30/",
+      "title": "Info Session",
+      "status": "publish",
+      "description": "<h3><strong>9AM Every Monday at SC Works Berkeley</strong></h3>\n<p><strong>Walk-ins welcome! </strong>Info sessions are a great way to explore training opportunities and receive details about financial assistance and career guidance. Participating in a training program can lead to better employment opportunities while developing new skills.</p>",
+      "start_date": "2026-11-30 09:00:00",
+      "end_date": "2026-11-30 10:00:00",
+      "utc_start_date": "2026-11-30 14:00:00",
+      "utc_end_date": "2026-11-30 15:00:00",
+      "timezone": "America/New_York",
+      "timezone_abbr": "EDT",
+      "all_day": false,
+      "hide_from_listings": false,
+      "is_virtual": false,
+      "cost": "",
+      "categories": [
+        {
+          "name": "Information Session"
+        }
+      ],
+      "image": false,
+      "venue": {
+        "venue": "SC Works Berkeley",
+        "address": "325 East Main Street",
+        "city": "Moncks Corner",
+        "state": "SC",
+        "stateprovince": "SC",
+        "zip": "29461"
+      }
+    },
+    {
+      "id": 10003839,
+      "url": "https://scworkstrident.org/event/info-session-7/2026-11-30/",
+      "title": "Info Session",
+      "status": "publish",
+      "description": "<h3><strong>11AM Every Monday at Berkeley Adult Education</strong></h3>\n<p><strong>Walk-ins welcome! </strong>Info sessions are a great way to explore training opportunities and receive details about financial assistance and career guidance. Participating in a training program can lead to better employment opportunities while developing new skills.</p>",
+      "start_date": "2026-11-30 11:00:00",
+      "end_date": "2026-11-30 12:00:00",
+      "utc_start_date": "2026-11-30 16:00:00",
+      "utc_end_date": "2026-11-30 17:00:00",
+      "timezone": "America/New_York",
+      "timezone_abbr": "EDT",
+      "all_day": false,
+      "hide_from_listings": false,
+      "is_virtual": false,
+      "cost": "",
+      "categories": [
+        {
+          "name": "Information Session"
+        }
+      ],
+      "image": false,
+      "venue": {
+        "venue": "Berkeley Adult Education",
+        "address": "221 Easter Main Street",
+        "city": "Moncks Corner",
+        "stateprovince": "South Carolina",
+        "zip": "29461"
+      }
+    },
+    {
+      "id": 10003594,
+      "url": "https://scworkstrident.org/event/info-session-2/2026-11-30/",
+      "title": "Info Session",
+      "status": "publish",
+      "description": "<h4>3PM Every Monday at SC Works Dorchester</h4>\n<p><strong>Walk-ins welcome! </strong>Info sessions are a great way to explore training opportunities and receive details about financial assistance and career guidance. Participating in a training program can lead to better employment opportunities while developing new skills.</p>",
+      "start_date": "2026-11-30 15:00:00",
+      "end_date": "2026-11-30 16:00:00",
+      "utc_start_date": "2026-11-30 20:00:00",
+      "utc_end_date": "2026-11-30 21:00:00",
+      "timezone": "America/New_York",
+      "timezone_abbr": "EDT",
+      "all_day": false,
+      "hide_from_listings": false,
+      "is_virtual": false,
+      "cost": "",
+      "categories": [
+        {
+          "name": "Information Session"
+        }
+      ],
+      "image": false,
+      "venue": {
+        "venue": "SC Works Dorchester",
+        "address": "1325-A Boone Hill Road",
+        "city": "Summerville",
+        "state": "SC",
+        "stateprovince": "SC",
+        "zip": "29483"
+      }
+    },
+    {
+      "id": 10003699,
+      "url": "https://scworkstrident.org/event/info-session-5/2026-12-01/",
+      "title": "Info Session",
+      "status": "publish",
+      "description": "<h4>9AM Every Tuesday at SC Works Charleston</h4>\n<p><strong>Walk-ins welcome! </strong>Info sessions are a great way to explore training opportunities and receive details about financial assistance and career guidance. Participating in a training program can lead to better employment opportunities while developing new skills.</p>",
+      "start_date": "2026-12-01 09:00:00",
+      "end_date": "2026-12-01 10:00:00",
+      "utc_start_date": "2026-12-01 14:00:00",
+      "utc_end_date": "2026-12-01 15:00:00",
+      "timezone": "America/New_York",
+      "timezone_abbr": "EDT",
+      "all_day": false,
+      "hide_from_listings": false,
+      "is_virtual": false,
+      "cost": "",
+      "categories": [
+        {
+          "name": "Information Session"
+        }
+      ],
+      "image": false,
+      "venue": {
+        "venue": "SC Works Charleston",
+        "address": "1930 Hanahan Road, Suite 200",
+        "city": "North Charleston",
+        "state": "SC",
+        "stateprovince": "SC",
+        "zip": "29406"
+      }
+    },
+    {
+      "id": 10002695,
+      "url": "https://scworkstrident.org/event/virtual-workshop-job-searching-2/2026-12-01/",
+      "title": "Virtual Workshop: Job Searching",
+      "status": "publish",
+      "description": "<p>Enhance your job search strategy with practical tools and tips to uncover new career opportunities.</p>\n<h4>✅ <a href=\"https://app.brazenconnect.com/a/scdew-central/s/a0J0e/next\">I&#8217;m Ready to Sign Up</a></h4>",
+      "start_date": "2026-12-01 10:00:00",
+      "end_date": "2026-12-01 12:00:00",
+      "utc_start_date": "2026-12-01 15:00:00",
+      "utc_end_date": "2026-12-01 17:00:00",
+      "timezone": "America/New_York",
+      "timezone_abbr": "EST",
+      "all_day": false,
+      "hide_from_listings": false,
+      "is_virtual": false,
+      "cost": "",
+      "categories": [
+        {
+          "name": "Virtual Event"
+        }
+      ],
+      "image": false,
+      "venue": []
+    },
+    {
+      "id": 10002755,
+      "url": "https://scworkstrident.org/event/virtual-workshop-job-searching-interviewing/2026-12-02/",
+      "title": "Virtual Workshop: Job Searching &#038; Interviewing",
+      "status": "publish",
+      "description": "<p>Excel in targeting the right career opportunities for you and prepare to enter your next interview as a strong, successful candidate.</p>\n<h4>✅ <a href=\"https://app.brazenconnect.com/a/scdew-central/s/a0J0e/next\">Register here.</a></h4>",
+      "start_date": "2026-12-02 10:00:00",
+      "end_date": "2026-12-02 12:00:00",
+      "utc_start_date": "2026-12-02 15:00:00",
+      "utc_end_date": "2026-12-02 17:00:00",
+      "timezone": "America/New_York",
+      "timezone_abbr": "EST",
+      "all_day": false,
+      "hide_from_listings": false,
+      "is_virtual": false,
+      "cost": "",
+      "categories": [
+        {
+          "name": "Virtual Event"
+        }
+      ],
+      "image": false,
+      "venue": []
+    },
+    {
+      "id": 10002084,
+      "url": "https://scworkstrident.org/event/virtual-workshop-communicating-effectively-listening-skills/2026-12-02/",
+      "title": "Virtual Workshop: Communicating Effectively &#038; Listening Skills",
+      "status": "publish",
+      "description": "<p>Learn how to communicate clearly and listen with purpose to build stronger connections.</p>\n<h4>✅ <a href=\"https://app.brazenconnect.com/a/scdew-greater-upstate/s/aZQBZ/next\">Save your spot here!</a></h4>",
+      "start_date": "2026-12-02 11:00:00",
+      "end_date": "2026-12-02 13:00:00",
+      "utc_start_date": "2026-12-02 16:00:00",
+      "utc_end_date": "2026-12-02 18:00:00",
+      "timezone": "America/New_York",
+      "timezone_abbr": "EST",
+      "all_day": false,
+      "hide_from_listings": false,
+      "is_virtual": false,
+      "cost": "",
+      "categories": [
+        {
+          "name": "Virtual Event"
+        }
+      ],
+      "image": {
+        "url": "https://scworkstrident.org/wp-content/uploads/2025/08/AdobeStock_410423061-scaled-e1756413362939.jpeg"
+      },
+      "venue": []
+    },
+    {
+      "id": 10002144,
+      "url": "https://scworkstrident.org/event/virtual-workshop-communicating-effectively-listening-skills-5/2026-12-02/",
+      "title": "Virtual Workshop: Communicating Effectively &#038; Listening Skills",
+      "status": "publish",
+      "description": "<p>Learn how to communicate clearly and listen with purpose to build stronger connections.</p>\n<h4>✅ <a href=\"https://app.brazenconnect.com/a/scdew-greater-upstate/s/aZQBZ/next\">Save your spot here!</a></h4>",
+      "start_date": "2026-12-02 11:00:00",
+      "end_date": "2026-12-02 13:00:00",
+      "utc_start_date": "2026-12-02 16:00:00",
+      "utc_end_date": "2026-12-02 18:00:00",
+      "timezone": "America/New_York",
+      "timezone_abbr": "EST",
+      "all_day": false,
+      "hide_from_listings": false,
+      "is_virtual": false,
+      "cost": "",
+      "categories": [
+        {
+          "name": "Virtual Event"
+        }
+      ],
+      "image": false,
+      "venue": []
+    },
+    {
+      "id": 10002935,
+      "url": "https://scworkstrident.org/event/virtual-workshop-job-searching-resume-writing/2026-12-03/",
+      "title": "Virtual Workshop: Job Searching &#038; Resume Writing",
+      "status": "publish",
+      "description": "<p>Boost your potential to land an interview with effective resume writing and formatting tips and relevant job search techniques.</p>\n<h4>✅ <a href=\"https://app.brazenconnect.com/a/scdew-central/s/GzqMN/next\">Sign up to participate here.</a></h4>",
+      "start_date": "2026-12-03 14:00:00",
+      "end_date": "2026-12-03 16:00:00",
+      "utc_start_date": "2026-12-03 19:00:00",
+      "utc_end_date": "2026-12-03 21:00:00",
+      "timezone": "America/New_York",
+      "timezone_abbr": "EST",
+      "all_day": false,
+      "hide_from_listings": false,
+      "is_virtual": false,
+      "cost": "",
+      "categories": [
+        {
+          "name": "Virtual Event"
+        }
+      ],
+      "image": false,
+      "venue": []
+    },
+    {
+      "id": 10003380,
+      "url": "https://scworkstrident.org/event/virtual-workshop-using-sc-works-online-services-scwos/2026-12-03/",
+      "title": "Virtual Workshop: Using SC Works Online Services (SCWOS)",
+      "status": "publish",
+      "description": "<p>Navigate <a href=\"https://jobs.scworks.org/vosnet/default.aspx\">SCWOS</a> efficiently and take advantage of meaningful resources like the job search portal, resume builder, skills and career assessments, labor market trends and more.</p>\n<h4>✅ <a href=\"https://app.brazenconnect.com/a/scdew-pee-dee/s/ayODm/next\">Ready to unlock the potential of SCWOS? Register here.</a></h4>",
+      "start_date": "2026-12-03 15:00:00",
+      "end_date": "2026-12-03 17:00:00",
+      "utc_start_date": "2026-12-03 20:00:00",
+      "utc_end_date": "2026-12-03 22:00:00",
+      "timezone": "America/New_York",
+      "timezone_abbr": "EST",
+      "all_day": false,
+      "hide_from_listings": false,
+      "is_virtual": false,
+      "cost": "",
+      "categories": [
+        {
+          "name": "Virtual Event"
+        }
+      ],
+      "image": false,
+      "venue": []
+    },
+    {
+      "id": 10003646,
+      "url": "https://scworkstrident.org/event/info-session-4/2026-12-03/",
+      "title": "Info Session",
+      "status": "publish",
+      "description": "<h4>3PM Every Thursday at SC Works Charleston</h4>\n<p><strong>Walk-ins welcome! </strong>Info sessions are a great way to explore training opportunities and receive details about financial assistance and career guidance. Participating in a training program can lead to better employment opportunities while developing new skills.</p>",
+      "start_date": "2026-12-03 15:00:00",
+      "end_date": "2026-12-03 16:00:00",
+      "utc_start_date": "2026-12-03 20:00:00",
+      "utc_end_date": "2026-12-03 21:00:00",
+      "timezone": "America/New_York",
+      "timezone_abbr": "EDT",
+      "all_day": false,
+      "hide_from_listings": false,
+      "is_virtual": false,
+      "cost": "",
+      "categories": [
+        {
+          "name": "Information Session"
+        }
+      ],
+      "image": false,
+      "venue": {
+        "venue": "SC Works Charleston",
+        "address": "1930 Hanahan Road, Suite 200",
+        "city": "North Charleston",
+        "state": "SC",
+        "stateprovince": "SC",
+        "zip": "29406"
+      }
+    },
+    {
+      "id": 10003799,
+      "url": "https://scworkstrident.org/event/info-session-6/2026-12-07/",
+      "title": "Info Session",
+      "status": "publish",
+      "description": "<h3><strong>9AM Every Monday at SC Works Dorchester</strong></h3>\n<p><strong>Walk-ins welcome! </strong>Info sessions are a great way to explore training opportunities and receive details about financial assistance and career guidance. Participating in a training program can lead to better employment opportunities while developing new skills.</p>",
+      "start_date": "2026-12-07 09:00:00",
+      "end_date": "2026-12-07 10:00:00",
+      "utc_start_date": "2026-12-07 14:00:00",
+      "utc_end_date": "2026-12-07 15:00:00",
+      "timezone": "America/New_York",
+      "timezone_abbr": "EDT",
+      "all_day": false,
+      "hide_from_listings": false,
+      "is_virtual": false,
+      "cost": "",
+      "categories": [
+        {
+          "name": "Information Session"
+        }
+      ],
+      "image": false,
+      "venue": {
+        "venue": "SC Works Dorchester",
+        "address": "1325-A Boone Hill Road",
+        "city": "Summerville",
+        "state": "SC",
+        "stateprovince": "SC",
+        "zip": "29483"
+      }
+    },
+    {
+      "id": 10003900,
+      "url": "https://scworkstrident.org/event/info-session-8/2026-12-07/",
+      "title": "Info Session",
+      "status": "publish",
+      "description": "<h3><strong>9AM Every Monday at SC Works Berkeley</strong></h3>\n<p><strong>Walk-ins welcome! </strong>Info sessions are a great way to explore training opportunities and receive details about financial assistance and career guidance. Participating in a training program can lead to better employment opportunities while developing new skills.</p>",
+      "start_date": "2026-12-07 09:00:00",
+      "end_date": "2026-12-07 10:00:00",
+      "utc_start_date": "2026-12-07 14:00:00",
+      "utc_end_date": "2026-12-07 15:00:00",
+      "timezone": "America/New_York",
+      "timezone_abbr": "EDT",
+      "all_day": false,
+      "hide_from_listings": false,
+      "is_virtual": false,
+      "cost": "",
+      "categories": [
+        {
+          "name": "Information Session"
+        }
+      ],
+      "image": false,
+      "venue": {
+        "venue": "SC Works Berkeley",
+        "address": "325 East Main Street",
+        "city": "Moncks Corner",
+        "state": "SC",
+        "stateprovince": "SC",
+        "zip": "29461"
+      }
+    },
+    {
+      "id": 10003840,
+      "url": "https://scworkstrident.org/event/info-session-7/2026-12-07/",
+      "title": "Info Session",
+      "status": "publish",
+      "description": "<h3><strong>11AM Every Monday at Berkeley Adult Education</strong></h3>\n<p><strong>Walk-ins welcome! </strong>Info sessions are a great way to explore training opportunities and receive details about financial assistance and career guidance. Participating in a training program can lead to better employment opportunities while developing new skills.</p>",
+      "start_date": "2026-12-07 11:00:00",
+      "end_date": "2026-12-07 12:00:00",
+      "utc_start_date": "2026-12-07 16:00:00",
+      "utc_end_date": "2026-12-07 17:00:00",
+      "timezone": "America/New_York",
+      "timezone_abbr": "EDT",
+      "all_day": false,
+      "hide_from_listings": false,
+      "is_virtual": false,
+      "cost": "",
+      "categories": [
+        {
+          "name": "Information Session"
+        }
+      ],
+      "image": false,
+      "venue": {
+        "venue": "Berkeley Adult Education",
+        "address": "221 Easter Main Street",
+        "city": "Moncks Corner",
+        "stateprovince": "South Carolina",
+        "zip": "29461"
+      }
+    },
+    {
+      "id": 10003595,
+      "url": "https://scworkstrident.org/event/info-session-2/2026-12-07/",
+      "title": "Info Session",
+      "status": "publish",
+      "description": "<h4>3PM Every Monday at SC Works Dorchester</h4>\n<p><strong>Walk-ins welcome! </strong>Info sessions are a great way to explore training opportunities and receive details about financial assistance and career guidance. Participating in a training program can lead to better employment opportunities while developing new skills.</p>",
+      "start_date": "2026-12-07 15:00:00",
+      "end_date": "2026-12-07 16:00:00",
+      "utc_start_date": "2026-12-07 20:00:00",
+      "utc_end_date": "2026-12-07 21:00:00",
+      "timezone": "America/New_York",
+      "timezone_abbr": "EDT",
+      "all_day": false,
+      "hide_from_listings": false,
+      "is_virtual": false,
+      "cost": "",
+      "categories": [
+        {
+          "name": "Information Session"
+        }
+      ],
+      "image": false,
+      "venue": {
+        "venue": "SC Works Dorchester",
+        "address": "1325-A Boone Hill Road",
+        "city": "Summerville",
+        "state": "SC",
+        "stateprovince": "SC",
+        "zip": "29483"
+      }
+    },
+    {
+      "id": 10003700,
+      "url": "https://scworkstrident.org/event/info-session-5/2026-12-08/",
+      "title": "Info Session",
+      "status": "publish",
+      "description": "<h4>9AM Every Tuesday at SC Works Charleston</h4>\n<p><strong>Walk-ins welcome! </strong>Info sessions are a great way to explore training opportunities and receive details about financial assistance and career guidance. Participating in a training program can lead to better employment opportunities while developing new skills.</p>",
+      "start_date": "2026-12-08 09:00:00",
+      "end_date": "2026-12-08 10:00:00",
+      "utc_start_date": "2026-12-08 14:00:00",
+      "utc_end_date": "2026-12-08 15:00:00",
+      "timezone": "America/New_York",
+      "timezone_abbr": "EDT",
+      "all_day": false,
+      "hide_from_listings": false,
+      "is_virtual": false,
+      "cost": "",
+      "categories": [
+        {
+          "name": "Information Session"
+        }
+      ],
+      "image": false,
+      "venue": {
+        "venue": "SC Works Charleston",
+        "address": "1930 Hanahan Road, Suite 200",
+        "city": "North Charleston",
+        "state": "SC",
+        "stateprovince": "SC",
+        "zip": "29406"
+      }
+    },
+    {
+      "id": 10002504,
+      "url": "https://scworkstrident.org/event/virtual-workshop-cover-letter-writing/2026-12-09/",
+      "title": "Virtual Workshop: Cover Letter Writing",
+      "status": "publish",
+      "description": "<p>Discover tips to help you craft professional, personalized cover letters for any job you apply to.</p>\n<h4>✅ <a href=\"https://app.brazenconnect.com/app/events/qNn7n#!booth;eventCode=qNn7n;boothCode=booth-1\">Register to attend here.</a></h4>",
+      "start_date": "2026-12-09 10:00:00",
+      "end_date": "2026-12-09 12:00:00",
+      "utc_start_date": "2026-12-09 15:00:00",
+      "utc_end_date": "2026-12-09 17:00:00",
+      "timezone": "America/New_York",
+      "timezone_abbr": "EST",
+      "all_day": false,
+      "hide_from_listings": false,
+      "is_virtual": false,
+      "cost": "",
+      "categories": [
+        {
+          "name": "Virtual Event"
+        }
+      ],
+      "image": false,
+      "venue": []
+    },
+    {
+      "id": 10003319,
+      "url": "https://scworkstrident.org/event/virtual-workshop-resume-writing-2/2026-12-09/",
+      "title": "Virtual Workshop: Resume Writing",
+      "status": "publish",
+      "description": "<p>Turn your work experience into a polished, professional resume that opens doors. Learn how to tailor your resume for each job opportunity.</p>\n<h4>✅ <a href=\"https://app.brazenconnect.com/a/scdew-south-coast/s/GjPDy/next\">Sign up.</a></h4>",
+      "start_date": "2026-12-09 11:00:00",
+      "end_date": "2026-12-09 13:00:00",
+      "utc_start_date": "2026-12-09 16:00:00",
+      "utc_end_date": "2026-12-09 18:00:00",
+      "timezone": "America/New_York",
+      "timezone_abbr": "EST",
+      "all_day": false,
+      "hide_from_listings": false,
+      "is_virtual": false,
+      "cost": "",
+      "categories": [
+        {
+          "name": "Virtual Event"
+        }
+      ],
+      "image": false,
+      "venue": []
+    },
+    {
+      "id": 10003432,
+      "url": "https://scworkstrident.org/event/virtual-workshop-using-sc-works-online-services-scwos-2/2026-12-10/",
+      "title": "Virtual Workshop: Using SC Works Online Services (SCWOS)",
+      "status": "publish",
+      "description": "<p>Navigate <a href=\"https://jobs.scworks.org/vosnet/default.aspx\">SCWOS</a> efficiently and take advantage of meaningful resources like the job search portal, resume builder, skills and career assessments, labor market trends and more.</p>\n<h4>✅ <a href=\"https://app.brazenconnect.com/a/scdew-central/s/4wlOy/next\">Ready to unlock the potential of SCWOS? Register here.</a></h4>",
+      "start_date": "2026-12-10 14:00:00",
+      "end_date": "2026-12-10 16:00:00",
+      "utc_start_date": "2026-12-10 19:00:00",
+      "utc_end_date": "2026-12-10 21:00:00",
+      "timezone": "America/New_York",
+      "timezone_abbr": "EST",
+      "all_day": false,
+      "hide_from_listings": false,
+      "is_virtual": false,
+      "cost": "",
+      "categories": [
+        {
+          "name": "Virtual Event"
+        }
+      ],
+      "image": false,
+      "venue": []
+    }
+  ],
+  "next_rest_url": "https://scworkstrident.org/wp-json/tribe/events/v1/events/?per_page=50&start_date=2026-11-08+00%3A00%3A00&end_date=2027-01-07+23%3A59%3A59&status=publish&page=2"
+}

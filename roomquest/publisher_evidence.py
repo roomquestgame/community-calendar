@@ -20,6 +20,12 @@ def family(source_key, event_url):
         from roomquest.holly_hill_businesses import SOURCES as HOLLY_BUSINESSES, event_url as holly_business_url
         if source_key in HOLLY_BUSINESSES:
             return 'holly_hill:' + source_key if holly_business_url(source_key, event_url) else None
+        from roomquest.holly_hill_institution_recovery import SOURCES as HOLLY_RECOVERY, event_url as holly_recovery_url
+        if source_key in HOLLY_RECOVERY:
+            return 'holly_hill:' + source_key if holly_recovery_url(source_key, event_url) else None
+        from roomquest.santee_town_calendar import SOURCES as SANTEE_TOWN, event_url as santee_town_url
+        if source_key in SANTEE_TOWN:
+            return 'holly_hill:' + source_key if santee_town_url(source_key, event_url) else None
         from roomquest.holly_hill_civic import SOURCES as HOLLY_CIVIC, event_url as holly_civic_url
         if source_key in HOLLY_CIVIC:
             return 'holly_hill:' + source_key if holly_civic_url(source_key, event_url) else None
@@ -145,8 +151,15 @@ def image_url(value, publisher):
     if not isinstance(value, str) or len(value) > 2000:
         return None
     if isinstance(publisher, str) and publisher.startswith('holly_hill:'):
+        from roomquest.holly_hill_institution_recovery import SOURCES as HOLLY_RECOVERY, image_url as recovery_image_url
+        key = publisher.removeprefix('holly_hill:')
+        if key in HOLLY_RECOVERY:
+            return recovery_image_url(key, value)
+        from roomquest.santee_town_calendar import SOURCES as SANTEE_TOWN, image_url as santee_image_url
+        if key in SANTEE_TOWN:
+            return santee_image_url(key, value)
         from roomquest.holly_hill_civic import image_url as holly_image_url
-        return holly_image_url(publisher.removeprefix('holly_hill:'), value)
+        return holly_image_url(key, value)
     if isinstance(publisher, str) and publisher.startswith('raleigh:'):
         from roomquest.raleigh_html import photo_url
         return photo_url(publisher.removeprefix('raleigh:'), value)

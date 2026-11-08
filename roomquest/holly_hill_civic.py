@@ -29,6 +29,7 @@ SC250 = 'south_carolina_250_sc'
 SC250_API = 'https://southcarolina250.com/wp-json/tribe/events/v1/events'
 EUTAWVILLE = 'town_of_eutawville_sc'
 ELLOREE = 'elloree_town_calendar_sc'
+SCWORKS = 'sc_works_trident_sc'
 BEIDLER_ROOT = 'https://www.audubon.org/beidler-forest/explore/seasonal-highlights/'
 BEIDLER_PAGES = {
     BEIDLER_ROOT + 'night-exploration': 'Night Exploration',
@@ -47,14 +48,14 @@ SOURCES = {
                 'kind': 'json', 'adapter': 'wordpress', 'hosts': ('townofeutawville.gov',)},
     ELLOREE: {'url': 'https://elloreesc.com/elloree-town-calendar/', 'kind': 'html',
               'adapter': 'html', 'hosts': ('elloreesc.com', 'connect.elloreesc.com')},
+    SCWORKS: {'url': 'https://scworkstrident.org/wp-json/tribe/events/v1/events',
+              'kind': 'json', 'adapter': 'wordpress', 'hosts': ('scworkstrident.org',)},
 }
 # Retain discovery even where no current collection contract exists. These
 # are inventory/hold reasons, not parsers that silently manufacture empty feeds.
 PENDING_SOURCES = {
     'world_grits_festival_sc': ('https://w.worldgritsfestival.com/index.html',
                               'future_annual_dates_outside_window_no_clock_times'),
-    'old_santee_canal_park_sc': ('https://oldsanteecanal.recdesk.com/Community/Program',
-                               'recdesk_public_post_adapter_required'),
     'elloree_heritage_museum_sc': ('https://www.elloreemuseum.org/events',
                                  'no_current_dated_events'),
     'town_of_harleyville_sc': ('https://harleyvillesc.gov/town-events',
@@ -120,7 +121,7 @@ def event_url(key, value):
                 and bool(re.fullmatch(r'/daily-events-calendar/e/[a-z0-9-]+/', p.path)))
     if key == BEIDLER:
         return value in BEIDLER_PAGES
-    if key in (SC250, EUTAWVILLE):
+    if key in (SC250, EUTAWVILLE, SCWORKS):
         return (p.hostname == SOURCES[key]['hosts'][0]
                 and bool(re.fullmatch(r'/event/[a-z0-9%_-]+/(?:20\d{2}-\d{2}-\d{2}/)?', p.path)))
     if key == ELLOREE:
@@ -137,7 +138,7 @@ def image_url(key, value):
         return None
     if key == SANTEE:
         ok = p.hostname == 'iti-images.s3.amazonaws.com' and bool(re.fullmatch(r'/events/[a-zA-Z0-9-]+\.(?:jpe?g|png|webp|gif)', p.path, re.I))
-    elif key in (SC250, EUTAWVILLE):
+    elif key in (SC250, EUTAWVILLE, SCWORKS):
         ok = p.hostname == SOURCES[key]['hosts'][0] and p.path.startswith('/wp-content/uploads/')
     elif key == ELLOREE:
         app = '6959455a632ee423176fe4c3'
@@ -229,7 +230,7 @@ def _address(value):
     state = plain(value.get('addressRegion') or value.get('state') or value.get('stateprovince'))
     postal = plain(value.get('postalCode') or value.get('zip'))
     state = 'SC' if state == 'South Carolina' else state
-    if (not re.match(r'^\d{1,6}[A-Za-z]?(?:[-/]\d+)?\s+[A-Za-z]', street)
+    if (not re.match(r'^\d{1,6}[A-Za-z]?(?:[-/][A-Za-z0-9]+)?\s+[A-Za-z]', street)
             or not city or not re.fullmatch(r'[A-Z]{2}', state)):
         raise EventHold('event_venue_unreviewed')
     street = re.sub(r',?\s*(?:United States|USA|US)\s*$', '', street, flags=re.I)
@@ -474,6 +475,12 @@ def _parse_tec(items, key, now):
                 or item.get('event_status') in ('cancelled', 'canceled', 'postponed')
                 or any(item.get(k) in flags for k in ('all_day', 'hide_from_listings', 'is_virtual', 'virtual'))):
             continue
+        if key == SCWORKS and re.search(
+                r'\b(?:offices?|centers?)\s+(?:are\s+)?closed\b|^\s*closed\b|^\s*virtual\b',
+                title, re.I):
+            # The public API also carries administrative closures and online
+            # workshops. Neither has a physical event location to publish.
+            continue
         if not title or not event_url(key, url):
             raise ValueError('publisher_event_identity_changed')
         venue = item.get('venue')
@@ -510,7 +517,7 @@ def _parse_tec(items, key, now):
 
 def collect_tec(source, fetch, *, deadline_at=None, now=None):
     key = source.get('source_key')
-    if key != EUTAWVILLE:
+    if key not in (EUTAWVILLE, SCWORKS):
         raise ValueError('unregistered_holly_hill_civic_source')
     require_source(source, key)
     now = _now(now)
@@ -786,10 +793,10 @@ def collect_elloree(source, fetch, *, fetch_json=None, deadline_at=None, now=Non
         raise ValueError('elloree_public_post_transport_required')
     deadline = min(monotonic() + 30, deadline_at or float('inf'))
     _check_deadline(deadline)
-    page = fetch(SOURCES[ELLOREE]['url'], 'text/html')
-    if ELLOREE_API not in page or 'getPublicCalendarEvents' not in page:
-        raise ValueError('elloree_calendar_endpoint_changed')
-    _check_deadline(deadline)
+    # The exact advertised display API is a reviewed source contract. Its
+    # independent host policy is enforced by fetch_json. Re-fetching the town
+    # landing page would restart its 60-second crawl delay on every cold worker;
+    # retain that page as attribution without making it a collection dependency.
     payload = fetch_json()
     _check_deadline(deadline)
     return parse_elloree(payload, source, now=now)

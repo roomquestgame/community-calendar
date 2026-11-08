@@ -149,6 +149,7 @@ def test_failed_snapshot_is_not_published():
     ('publisher_http_403', 'access'),
     ('non_public_dns', 'access'),
     ('publisher_http_429', 'transient'),
+    ('publisher_pacing_deferred', 'pacing'),
     ('publisher_http_503', 'transient'),
     ('robots_unavailable', 'transient'),
     ('dns_unavailable', 'transient'),
@@ -530,7 +531,9 @@ def test_rpc_failure_diagnostics_identify_phase_without_changing_outcome(caplog,
         assert not any(path == 'community_collector_publish_category' for path, _, _ in calls)
 
 
-def test_recorded_source_failure_keeps_its_fetch_diagnostic_and_200_result(caplog):
+@pytest.mark.parametrize('code,kind', [('robots_denied', 'access'),
+                                      ('publisher_pacing_deferred', 'pacing')])
+def test_recorded_source_failure_keeps_its_fetch_diagnostic_and_200_result(caplog, code, kind):
     from roomquest import preview_worker as preview
     calls = []
 
@@ -543,14 +546,16 @@ def test_recorded_source_failure_keeps_its_fetch_diagnostic_and_200_result(caplo
 
     with patch.object(w, 'supabase_rpc', side_effect=rpc), \
             patch.object(preview, 'supabase_rpc', side_effect=rpc), \
-            patch.object(preview, 'preview_source', side_effect=PreviewError('robots_denied')):
+            patch.object(preview, 'preview_source', side_effect=PreviewError(code)):
         result = w.collect_category('html', 'private-ticket')
     assert result == {'category': 'html', 'claimed': 1, 'complete': 0, 'failed': 1,
-                      'staged': 0, 'failure_scope': 'source', 'error_kind': 'access',
-                      'error_code': 'robots_denied'}
+                      'staged': 0, 'failure_scope': 'source', 'error_kind': kind,
+                      'error_code': code}
     records = diagnostic_records(caplog)
     assert len(records) == 1 and records[0]['phase'] == 'fetch'
-    assert records[0]['source_id'] == 5003 and records[0]['error_code'] == 'robots_denied'
+    assert records[0]['source_id'] == 5003 and records[0]['error_code'] == code
+    assert records[0]['error_kind'] == kind
+    assert 'upstream_http_status' not in records[0]
     assert 'rpc_operation' not in records[0]
     assert [path for path, _ in calls] == ['community_collector_claim_category',
         'community_collector_record_preview_v2', 'community_collector_finish_category']

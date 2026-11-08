@@ -39,6 +39,8 @@ def failure_details(error_code, *, expected_source_error, phase):
         scope, kind = "worker", "infrastructure"
     elif phase != "collection" or not expected_source_error:
         scope, kind = "worker", "unexpected"
+    elif code == "publisher_pacing_deferred":
+        kind = "pacing"
     elif code in _TRANSIENT_ERRORS:
         kind = "transient"
     elif code in _ACCESS_ERRORS:

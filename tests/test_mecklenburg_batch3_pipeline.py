@@ -1,7 +1,7 @@
 """New calendars retain normal staging, certification and bounded public transport."""
 from copy import deepcopy
 import importlib
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import ANY, MagicMock, Mock, patch
 
 import pytest
 
@@ -110,7 +110,7 @@ def test_only_observed_display_action_is_posted_under_existing_guards(monkeypatc
     assert kw['headers']['User-Agent'].startswith('RoomQuestCommunityCalendar/')
     assert kw['headers']['Referer']=='https://goodshepherdsouthhill.org/welcome/calendar/'
     dns.assert_called_once_with('goodshepherdsouthhill.org')
-    robots.assert_called_once_with('goodshepherdsouthhill.org','/wp-admin/admin-ajax.php')
+    robots.assert_called_once_with('goodshepherdsouthhill.org','/wp-admin/admin-ajax.php', deadline_at=ANY)
     pacing.assert_called_once()
     reply.close.assert_called_once()
 
