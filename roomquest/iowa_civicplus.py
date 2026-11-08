@@ -4,6 +4,8 @@ from zoneinfo import ZoneInfo
 from bs4 import BeautifulSoup
 import logging
 
+from roomquest.publisher_evidence import optional_description
+
 logger = logging.getLogger(__name__)
 
 KEY = 'independence_ia_library_family'
@@ -31,7 +33,7 @@ def enrich(records, source, fetch, deadline):
         local = datetime.fromisoformat(value).replace(tzinfo=ZoneInfo('America/Chicago'))
         if local.astimezone(timezone.utc) != datetime.fromisoformat(record['starts_at']):
             raise ValueError('publisher_detail_schedule_conflict')
-        if len(descriptions) != 1 or len(addresses) != 1:
+        if len(descriptions) > 1 or len(addresses) != 1:
             raise ValueError('publisher_detail_structure_changed')
         address = addresses[0]
         fields = [address.select_one(f'[itemprop="{key}"]') for key in
@@ -50,11 +52,12 @@ def enrich(records, source, fetch, deadline):
         if marker.casefold() in label.casefold():
             record['venue_name'] = label[:label.casefold().index(marker.casefold())].strip()
         summary = record['description'].replace(record['event_url'], '').strip()
-        for element in descriptions[0].select('script,style,[hidden]'):
-            element.decompose()
-        narrative = '\n'.join(p.strip() for p in descriptions[0].get_text('\n', strip=True).splitlines() if p.strip())
-        if not narrative:
-            raise ValueError('publisher_detail_description_missing')
+        narrative = ''
+        if descriptions:
+            for element in descriptions[0].select('script,style,[hidden]'):
+                element.decompose()
+            narrative = '\n'.join(p.strip() for p in descriptions[0].get_text('\n', strip=True).splitlines() if p.strip())
+        narrative = optional_description(KEY, record['id'], narrative)
         record['description'] = (summary + '\n\n' + narrative).strip()[:12000]
         from roomquest.mycountyparks import cancelled
         if cancelled(record['title'], record['description']):

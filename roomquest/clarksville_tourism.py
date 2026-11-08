@@ -22,7 +22,7 @@ from bs4 import BeautifulSoup
 from icalendar import Calendar
 
 from roomquest.mapsee_adapter import plain, record, timestamp
-from roomquest.publisher_evidence import attach
+from roomquest.publisher_evidence import attach, optional_description
 
 SOURCE_KEY = 'clarksville_tourism_va'
 HOST = 'tourism.visitclarksvilleva.com'
@@ -43,6 +43,11 @@ _EVENT_PATH = re.compile(
     r'([1-9]\d{0,11})/([a-z0-9]+(?:-[a-z0-9]+)*)/')
 _TIME = r'(\d{1,2}:\d{2}\s*[AP]M)\s+(E[DS]T)'
 _REVIEWED_REPLACEMENTS = {'636949': '667469'}
+# The organizer lists 600 at https://lakecountrycigarandwine.com/events.
+# Locable's profile says 601; the event listing, detail and export agree on 600.
+_LAKE_COUNTRY_PROFILE = '76463-lake-country-cigar-and-wine'
+_LAKE_COUNTRY_EVENT_ADDRESS = '600 virginia ave clarksville va 23927'
+_LAKE_COUNTRY_PROFILE_ADDRESS = '601 virginia ave clarksville va 23927'
 
 
 class EventHold(ValueError):
@@ -70,6 +75,7 @@ class Event:
     row: dict
     narrative: str
     title: str
+    activity_conflict: bool = False
 
 
 def _log(kind, **fields):
@@ -298,7 +304,7 @@ def _postal(value):
     return match[2]
 
 
-def _profile_address_conflict(soup, section, venue, address):
+def _profile_address_conflict(section, listing, venue, address):
     # A publisher's office is not an offsite event venue. Compare only when the
     # event explicitly names that very profile as its venue.
     container = section.find_parent('div', class_='container')
@@ -319,7 +325,15 @@ def _profile_address_conflict(soup, section, venue, address):
         nodes = adr.select('[itemprop="address"]')
         if len(nodes) != 1:
             raise EventHold('publisher_profile_venue_unresolved')
-        if _address_key(nodes[0].get_text(' ', strip=True)) != _address_key(address):
+        profile_address = _address_key(nodes[0].get_text(' ', strip=True))
+        event_address = _address_key(address)
+        reviewed_profile_discrepancy = (
+            listing.organizer == _LAKE_COUNTRY_PROFILE
+            and _key(venue) == 'lake country cigar and wine'
+            and (event_address, profile_address)
+            == (_LAKE_COUNTRY_EVENT_ADDRESS, _LAKE_COUNTRY_PROFILE_ADDRESS)
+        )
+        if profile_address != event_address and not reviewed_profile_discrepancy:
             raise EventHold('publisher_venue_address_conflict')
 
 
@@ -432,7 +446,7 @@ def parse_detail(payload, listing, *, now=None):
             or (terminal and start < current - timedelta(days=STATUS_LOOKBACK_DAYS))
             or (not terminal and (end or start + timedelta(hours=3)) <= current)):
         return None
-    description_node = _one(section, '[itemprop="description"]', required=not terminal)
+    description_node = _one(section, '[itemprop="description"]', required=False)
     narrative = _text(description_node)
     subtitle = _one(section, '.page-header h3', required=False)
     full_narrative = (plain(subtitle.get_text()) + '\n' if subtitle else '') + narrative
@@ -449,15 +463,15 @@ def parse_detail(payload, listing, *, now=None):
         raise EventHold('publisher_narrative_status_unreviewed')
     if notices and notices != {status}:
         raise EventHold('publisher_status_conflict')
+    activity_conflict = False
     if not terminal:
         _narrative_schedule(full_narrative, start, end)
         if re.search(r'\b(?:private event|members?[-\s]+only|exclusively for members|invitation[-\s]+only|not open to the public)\b', full_narrative + ' ' + title, re.I):
             raise EventExcluded('publisher_nonpublic_event')
-        if (re.search(r'\bpoker\b', title, re.I) and re.search(r'\bpool tournament\b', narrative, re.I)
-                or re.search(r'\bpool\b', title, re.I) and re.search(r'\bpoker tournament\b', narrative, re.I)):
-            raise EventHold('publisher_activity_conflict')
-        if not narrative:
-            raise EventHold('publisher_description_missing')
+        activity_conflict = bool(
+            re.search(r'\bpoker\b', title, re.I) and re.search(r'\bpool tournament\b', narrative, re.I)
+            or re.search(r'\bpool\b', title, re.I) and re.search(r'\bpoker tournament\b', narrative, re.I)
+        )
     venue_node = _one(section, '.event-details [itemprop="location"]', required=False)
     address_node = _one(section, '.event-details [itemprop="address"]', required=False)
     venue = plain(venue_node.get_text()) if venue_node else ''
@@ -470,7 +484,7 @@ def parse_detail(payload, listing, *, now=None):
             raise EventHold('publisher_listing_address_conflict')
         if _address_key(str(event.get('LOCATION', ''))) != _address_key(address):
             raise EventHold('publisher_calendar_address_conflict')
-        _profile_address_conflict(soup, section, venue, address)
+        _profile_address_conflict(section, listing, venue, address)
     except EventHold:
         if not terminal:
             raise
@@ -481,6 +495,12 @@ def parse_detail(payload, listing, *, now=None):
                   tz=TIMEZONE, retain_until_end=True))
     if row is None:
         return None
+    # The calendar card, detail heading and export agree on the title. Leave
+    # conflicting prose out of both the event and its classification evidence.
+    if activity_conflict:
+        narrative = ''
+    elif not terminal:
+        narrative = optional_description(SOURCE_KEY, listing.identity, narrative)
     row.update(venue_name=venue, venue_address=address, venue_city=city, timezone=TIMEZONE,
                description=narrative[:MAX_DESCRIPTION], publisher_status=status,
                location_provenance=('publisher_explicit_status_without_current_venue' if not address
@@ -501,7 +521,7 @@ def parse_detail(payload, listing, *, now=None):
     if re.search(r'\bbring the family\b', narrative, re.I):
         facts['audience'] = 'Bring the family.'
     attach(row, SOURCE_KEY, facts=facts, candidate=_photo(section), evidence_url=listing.url)
-    return Event(listing, row, narrative, title)
+    return Event(listing, row, narrative, title, activity_conflict)
 
 
 def _deduplicate(events, diagnostics):
@@ -594,11 +614,14 @@ def collect(source, fetch, *, deadline_at=None, now=None):
     eligible = [event for event in listings.values() if start_day <= event.day <= end_day]
     if len(eligible) > MAX_DETAILS:
         raise ValueError('tourism_detail_limit')
-    events, diagnostics = [], {'held': [], 'excluded': []}
+    events, diagnostics = [], {'held': [], 'excluded': [], 'warnings': []}
     for listing in sorted(eligible, key=lambda event: (event.day, event.identity)):
         try:
             if event := parse_detail(get(listing.url), listing, now=current):
                 events.append(event)
+                if event.activity_conflict:
+                    diagnostics['warnings'].append({
+                        'id': listing.identity, 'reason': 'publisher_activity_conflict_description_omitted'})
         except EventHold as exc:
             diagnostics['held'].append({'id': listing.identity, 'reason': str(exc), 'event_url': listing.url})
         except EventExcluded as exc:

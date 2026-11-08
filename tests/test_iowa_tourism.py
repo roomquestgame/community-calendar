@@ -4,6 +4,7 @@ from pathlib import Path
 from unittest.mock import Mock, patch
 from urllib.parse import parse_qs, urlsplit
 
+from bs4 import BeautifulSoup
 import pytest
 
 from roomquest import iowa_tourism as tourism
@@ -43,6 +44,20 @@ def test_real_council_sample_preserves_distinct_sessions_real_venues_and_optiona
     assert len(sewing) == 2 and sewing[0]['id'] != sewing[1]['id']
     assert not any('Auto Dealer Renewal' in r['title'] for r in rows)
     assert all(r.get('image_evidence_url') == r['event_url'] for r in rows if r.get('image_url'))
+
+
+def test_council_missing_description_warns_without_losing_the_occurrence(caplog):
+    soup = BeautifulSoup((FIXTURES/'council-sample.html').read_text(), 'html.parser')
+    title = soup.find('a', string='Bison Fest at Botna Bend')
+    card = title.find_parent(class_='event-overlay')
+    for node in card.select('h3, p, ul, ol'):
+        if node is not title.parent:
+            node.decompose()
+    rows = tourism.parse_council(str(soup), now=NOW, expected_month='2026-11')
+    event = next(r for r in rows if r['title'] == 'Bison Fest at Botna Bend')
+    assert event['description'] == ''
+    assert event['venue_address'] == '42926 Mahogany Road, Hancock, IA'
+    assert 'field=description reason=missing' in caplog.text
 
 
 @pytest.mark.parametrize('value,start,end', [('5:00 to 9:00PM', 17, 21),
@@ -86,6 +101,16 @@ def test_mason_actual_card_has_venue_address_and_does_not_invent_export_default_
     assert image_url(music['image_url'], 'mason_city')
 
 
+def test_mason_can_use_verified_detail_without_description(caplog):
+    links = json.loads((FIXTURES/'mason-links.json').read_text())
+    soup = BeautifulSoup((FIXTURES/'mason-5.html').read_text(), 'html.parser')
+    soup.select_one('[itemprop="description"]').decompose()
+    row = tourism.parse_mason(str(soup), 'https://www.visitmasoncityiowa.com'+links[4], now=NOW)
+    assert row['description'] == ''
+    assert row['venue_address'] == '17 North Federal Avenue, Mason City, IA 50401'
+    assert 'field=description reason=missing' in caplog.text
+
+
 def test_mason_fetches_only_canonical_first_page_links_and_accounts_for_all_15():
     links = json.loads((FIXTURES/'mason-links.json').read_text())
     calls = []
@@ -118,6 +143,19 @@ def test_think_sample_does_not_turn_multi_date_entries_into_continuous_attendanc
     assert all(datetime.fromisoformat(r['ends_at']) - datetime.fromisoformat(r['starts_at']) <= timedelta(hours=16) for r in rows)
     assert any(r['venue_address'] == '' and r['lat'] is None for r in rows)
     assert all(r['description'] and 'publisher_categories' in r for r in rows)
+
+
+def test_think_missing_description_keeps_public_event_but_not_hidden_event(caplog):
+    payload = json.loads((FIXTURES/'think-sample.json').read_text())
+    rows = tourism.collect_think(THINK, lambda *_: json.dumps(payload), now=NOW)
+    item = next(item for item in payload['events'] if str(item['id']) == rows[0]['id'])
+    item.pop('description')
+    hidden = {**item, 'id': 99999991, 'hide_from_listings': True}
+    rows = tourism.collect_think(THINK, lambda *_: json.dumps({'events': [item, hidden]}), now=NOW)
+    row, = rows
+    assert row['id'] == str(item['id'])
+    assert row['description'] == ''
+    assert 'field=description reason=missing' in caplog.text
 
 
 def test_think_bounded_pagination_rebuilds_registered_url_and_preserves_distinct_dates():

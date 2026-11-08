@@ -19,7 +19,7 @@ from zoneinfo import ZoneInfo
 from bs4 import BeautifulSoup, Tag
 
 from roomquest.mapsee_adapter import record, timestamp
-from roomquest.publisher_evidence import attach
+from roomquest.publisher_evidence import attach, optional_description
 
 ROOT = "https://www.mycountyparks.com"
 TZ = ZoneInfo("America/Chicago")
@@ -414,8 +414,6 @@ def parse_event(html, event, *, now=None):
     for node in main.select("script,style,nav,footer,dialog,iframe,noscript"):
         node.decompose()
     description = _section_text(main, "Event Summary")
-    if not description:
-        raise ValueError("mycountyparks_event_summary_missing")
     if cancelled(title, description) or excluded_product(title, description):
         return None
     if _key(title) != _key(event.title):
@@ -465,6 +463,7 @@ def parse_event(html, event, *, now=None):
         item["image_url"] = image_url
     extras = [f"Cost: {cost}" if cost else "", f"Registration: {registration}" if registration else ""]
     suffix = "\n\n".join(value for value in extras if value)
+    description = optional_description('mycountyparks_ia_' + event.county, item["id"], description)
     item["description"] = _description_with_suffix(room_note + description, suffix)
     item["publisher_categories"] = [category[:100]] if category else []
     attach(item, 'mycountyparks_ia_' + event.county,

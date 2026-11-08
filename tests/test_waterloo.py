@@ -43,6 +43,14 @@ def test_unsafe_images_stay_absent_and_unsafe_identities_fail_closed(payload):
     broken=copy.deepcopy(good);broken['uri']='//unrelated.example/event/'
     with pytest.raises(ValueError,match='identity_changed'):parse_hits([broken],now=NOW)
 
+
+def test_waterloo_can_use_verified_index_entry_without_description(payload, caplog):
+    item = next(row for row in payload['hits'] if row['id'] == 1209841)
+    row, = parse_hits([{**item, 'content': '', 'snippet': ''}], now=NOW)
+    assert row['description'] == ''
+    assert '503 South Street' in row['venue_address']
+    assert 'field=description reason=missing' in caplog.text
+
 def test_api_pagination_must_complete_and_rebuilds_only_reviewed_index(payload):
     calls=[]
     def fetch(url,accept):

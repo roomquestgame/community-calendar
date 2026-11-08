@@ -1,7 +1,8 @@
 """Shared bounded ICS validation; existing recurrence/VEVENT normalizer retained.
 
 Legacy output fields and media stay intact to preserve venue-cache identity.
-Mapsee URL/address fallbacks stay restricted to its existing catalog records.
+Missing event links use the validated actual feed URL across both paths.
+Venue-address fallback stays on its existing normalization path.
 """
 from collections import defaultdict
 from copy import deepcopy
@@ -271,7 +272,7 @@ def normalize_virginia_civic(records, source_url):
 
 def parse(payload, source, *, legacy=False, include_description=False):
     from icalendar import Calendar
-    from roomquest.preview_worker import parse_ics_preview
+    from roomquest.preview_worker import parse_ics_preview, public_source_url
     mecklenburg = _mecklenburg_source(source)
     include_description = include_description or mecklenburg
     if not payload.lstrip("\ufeff \r\n").upper().startswith("BEGIN:VCALENDAR") or "END:VCALENDAR" not in payload.upper():
@@ -382,13 +383,17 @@ def parse(payload, source, *, legacy=False, include_description=False):
             if not detail_urls.get(uid):
                 raise ValueError('publisher_detail_link_missing')
             e['event_url'] = detail_urls[uid]
+        if not e.get("event_url"):
+            feed_url = source.get("url")
+            if not isinstance(feed_url, str) or not public_source_url(feed_url):
+                raise ValueError("invalid_source_url")
+            e["event_url"] = feed_url
         if legacy and not include_description:
             continue
         if not mecklenburg:
             e.pop("image_url",None)
         e["publisher_categories"]=categories.get(e["id"].split("__",1)[0], [])
         e["category"]=", ".join(e["publisher_categories"])[:80]
-        if not e.get("event_url"):e["event_url"]=source["url"]
         if not e.get("venue_address") and e.get("venue_name"):e["venue_address"]=e["venue_name"]
     if mecklenburg:
         if len({event['id'] for event in result}) != len(result):
