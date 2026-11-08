@@ -170,7 +170,10 @@ def collect(source, fetch, *, deadline_at=None):
         from roomquest.iowa_tourism import collect_think
         return collect_think(source, fetch, deadline_at=deadline_at)
     from roomquest.mapsee_adapter import parse_tribe
-    from roomquest import jpb_basketball
+    from roomquest import hurrdat_calendar, jpb_basketball
+    hurrdat = source.get('source_key') == hurrdat_calendar.KEY
+    if hurrdat and (source.get('feed_url'), source.get('timezone')) != (hurrdat_calendar.URL, hurrdat_calendar.ZONE):
+        raise ValueError('unregistered_hurrdat_source')
     jpb = source.get('source_key') == jpb_basketball.KEY
     if jpb and (source.get('feed_url'), source.get('timezone')) != (jpb_basketball.URL, jpb_basketball.ZONE):
         raise ValueError('unregistered_jpb_calendar')
@@ -209,6 +212,8 @@ def collect(source, fetch, *, deadline_at=None):
             rosemont_excluded += excluded
         if jpb:
             payload = jpb_basketball.review(payload)
+        if hurrdat:
+            payload = hurrdat_calendar.review(payload)
         if source.get('source_key') == 'madison_county_parks_ia':
             # Compare two representations from the same response. Never repair
             # publisher conflicts by guessing an offset or reading prose dates.
@@ -240,15 +245,18 @@ def collect(source, fetch, *, deadline_at=None):
                             raise ValueError('publisher_schedule_conflict')
         # Never follow response next links; rebuild only this registered URL.
         parsed_rows = parse_tribe(payload, strict_public=source.get("source_key") in
-                                  ("madison_county_parks_ia", "nebraska_game_parks", ROSEMONT_KEY, jpb_basketball.KEY),
+                                  ("madison_county_parks_ia", "nebraska_game_parks", ROSEMONT_KEY, jpb_basketball.KEY, hurrdat_calendar.KEY),
                                 retain_description=source.get("source_key") in
-                                  ("madison_county_parks_ia", ROSEMONT_KEY, jpb_basketball.KEY))
+                                  ("madison_county_parks_ia", ROSEMONT_KEY, jpb_basketball.KEY, hurrdat_calendar.KEY))
         if rosemont:
             by_id = {str(item['id']): item for item in payload['events']}
             parsed_rows = [_rosemont_evidence(row, by_id[row['id']]) for row in parsed_rows]
         if jpb:
             by_id = {str(item['id']): item for item in payload['events']}
             parsed_rows = [jpb_basketball.evidence(row, by_id[row['id']]) for row in parsed_rows]
+        if hurrdat:
+            by_id = {str(item['id']): item for item in payload['events']}
+            parsed_rows = [hurrdat_calendar.evidence(row, by_id[row['id']]) for row in parsed_rows]
         if source.get('source_key') == 'madison_county_parks_ia':
             by_id = {str(item.get('id')): item for item in payload['events'] if isinstance(item, dict)}
             parsed_rows = [_madison_evidence(row, by_id[row['id']]) for row in parsed_rows]
