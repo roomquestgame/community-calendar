@@ -34,7 +34,7 @@ requires a fresh successful pacing receipt before allowing the faster handoff.
 
 ## Deploy the backend first
 
-RoomQuest backend migration **20261108035039** must deploy before this
+RoomQuest backend migration **20261108041058** must deploy before this
 collector. It widens v2 to accept exact `ical`/`ical` sources and records a
 successful pacing completion marker in `collection_pacing_checked_at`, matched
 to `preview_checked_at`. The backend uses that fresh recorded success when
