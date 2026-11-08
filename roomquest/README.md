@@ -1,3 +1,7 @@
+## Raleigh catalog feed recovery — November 8, 2026
+
+Seven exact Raleigh-area calendar keys use the existing bounded ICS transport with publisher robots and same-host redirect checks. The normal worker retained descriptions for 226 timed candidates in captured feeds. The companion database migration supplies search coverage and the shared address path for these existing Mapsee and Udell registrations. Counts precede address resolution and publication.
+
 ## Raleigh first approved source batch — November 7, 2026 (prepared)
 
 Eight exact public calendars now have a bounded HTML adapter. JSON/ICS export

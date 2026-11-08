@@ -34,6 +34,15 @@ MAX_PREVIEWS = 10
 STAGING_BATCH_SIZE = 20
 LOOKAHEAD_DAYS = 60
 ROOMQUEST_DB = "https://drpqjuqghpjivtwznfdj.supabase.co"
+RALEIGH_CATALOG_ICS = {
+    "municipal_3ed0f050cdcddf0d03f1b6d5": "https://triangleland.org/events/list/?ical=1",
+    "municipal_78278a6e98fb935c1bade8f8": "https://unitedarts.org/events/?ical=1",
+    "municipal_mapsee_a2a584b18340c80504149da8": "https://durhamcountylibrary.libcal.com/ical_subscribe.php?src=p&cid=14288&cam=1752",
+    "municipal_mapsee_16481cc7b70b0bedc4014223": "https://www.lib.ncsu.edu/api/calendar/events",
+    "municipal_mapsee_232075b2bde6371f2a6b0bf4": "https://www.apexnc.org/common/modules/iCalendar/iCalendar.aspx?catID=23&feed=calendar",
+    "municipal_mapsee_71f780dc81d6d3b9097db7c0": "https://www.hollyspringsnc.gov/common/modules/iCalendar/iCalendar.aspx?catID=24&feed=calendar",
+    "municipal_mapsee_915fd84e82585dad00e9ffba": "https://www.fuquay-varina.org/common/modules/iCalendar/iCalendar.aspx?catID=45&feed=calendar",
+}
 VIRGINIA_CIVIC_ICS = {
     "farmville_parks_rec_va": "https://farmvilleva.com/common/modules/iCalendar/iCalendar.aspx?catID=23&feed=calendar",
     "halifax_county_main_va": "https://www.halifaxcountyva.gov/common/modules/iCalendar/iCalendar.aspx?catID=14&feed=calendar",
@@ -645,6 +654,9 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         from roomquest.ics_adapter import parse
         source_key = source.get("source_key", "")
         civic_ics = source_key in VIRGINIA_CIVIC_ICS
+        raleigh_ics = source_key in RALEIGH_CATALOG_ICS
+        if raleigh_ics and source.get("feed_url") != RALEIGH_CATALOG_ICS[source_key]:
+            raise PreviewError("unregistered_raleigh_catalog_ics")
         if civic_ics and (source.get("feed_url") != VIRGINIA_CIVIC_ICS[source_key]
                           or source.get("timezone") != "America/New_York"):
             raise PreviewError("unregistered_virginia_civic_ics")
@@ -665,13 +677,15 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                     url, accept, respect_robots=True, deadline_at=deadline,
                     allowed_hosts=(urlparse(maryland_sources.ICS[source_key]).hostname,)))
             else:
-                host_scope = {"allowed_hosts": (urlparse(VIRGINIA_CIVIC_ICS[source_key]).hostname,)} if civic_ics else {}
+                host_scope = {}
+                if civic_ics or raleigh_ics:
+                    host_scope["allowed_hosts"] = (urlparse(source["feed_url"]).hostname,)
                 payload = fetch_publisher(
                     source["feed_url"], "text/calendar",
-                    respect_robots=civic_ics or mapsee or source_key == "mecklenburg_va_libraries",
+                    respect_robots=civic_ics or raleigh_ics or mapsee or source_key == "mecklenburg_va_libraries",
                     deadline_at=deadline, **host_scope)
                 records = parse(payload, {"url": source["feed_url"], "source_key": source_key}, legacy=not mapsee,
-                                include_description=civic_ics or source_key == "independence_ia_library_family")
+                                include_description=civic_ics or raleigh_ics or source_key == "independence_ia_library_family")
                 if civic_ics:
                     from roomquest.ics_adapter import normalize_virginia_civic
                     records = normalize_virginia_civic(records, source["feed_url"])
