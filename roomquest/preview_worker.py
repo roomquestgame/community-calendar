@@ -213,7 +213,7 @@ def pace_publisher(host: str, deadline: float, *, reserve=True) -> None:
 
 
 def fetch_publisher(url: str, accept: str, *, respect_robots: bool = False,
-                    deadline_at: float | None = None, allowed_hosts=None) -> str:
+                    deadline_at: float | None = None, allowed_hosts=None) -> str | bytes:
     """Fetch an approved public source with the existing bounded GET transport."""
     return _fetch_publisher_request(url, accept, respect_robots=respect_robots,
                                     deadline_at=deadline_at, allowed_hosts=allowed_hosts)
@@ -241,7 +241,7 @@ def render_good_shepherd_calendar(*, nonce: str, args: str,
 
 def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = False,
                              deadline_at: float | None = None, allowed_hosts=None,
-                             calendar_form=None) -> str:
+                             calendar_form=None) -> str | bytes:
     """Use the shared bounded transport for approved HTTPS publisher content.
 
     Keep URL/DNS validation and bounded downloads. As in upstream Udell,
@@ -344,6 +344,11 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
                 if respect_robots and "charset=" not in response.headers.get("Content-Type", "").lower():
                     encoding = "utf-8-sig"
                 response.close()
+                if accept == 'application/pdf':
+                    payload = b"".join(chunks)
+                    if not payload.startswith(b'%PDF-'):
+                        raise PreviewError('invalid_publisher_pdf')
+                    return payload
                 try:
                     return b"".join(chunks).decode(encoding, errors="strict" if respect_robots else "replace")
                 except UnicodeError as exc:
@@ -750,7 +755,14 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         html_budget = 36
         from roomquest.raleigh_html import SOURCES as RALEIGH_SOURCES
         from roomquest.virginia_wix_events import SOURCES as VA_WIX_SOURCES
-        if source_key in RALEIGH_SOURCES:
+        from roomquest import maryland_public_calendars, maryland_park_programs
+        if source_key in maryland_public_calendars.SOURCES:
+            collect_html = maryland_public_calendars.collect
+            allowed_hosts = (urlparse(maryland_public_calendars.SOURCES[source_key]).hostname,)
+        elif source_key in maryland_park_programs.SOURCES:
+            collect_html = maryland_park_programs.collect
+            allowed_hosts = (maryland_park_programs.HOST,)
+        elif source_key in RALEIGH_SOURCES:
             from roomquest.raleigh_html import collect as collect_html
             allowed_hosts = (urlparse(RALEIGH_SOURCES[source_key][0]).hostname,)
         elif source_key in VA_WIX_SOURCES:
