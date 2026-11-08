@@ -30,3 +30,26 @@ can claim Virginia candidates; the new capability handshake admits other sources
 Release: backend migration, production collector receipt, scoped record repair,
 actual published-content/photo readback and installed-phone acceptance must be
 reported separately. Code or a green workflow alone is not production acceptance.
+
+## Optional facts and event holds
+
+Use `optional_description` after validating the occurrence. A missing
+description produces a warning and an empty field. When a trusted feed
+already provides a summary, keep it if an optional detail page supplies
+no additional prose. Independence Library, Unleash Council Bluffs, Think
+Iowa City and Clarksville Tourism use this policy. Preserve descriptions
+that the publisher provides and evaluate any access or status evidence
+before accepting the occurrence.
+
+When a calendar listing, detail heading and structured export agree on the
+event title, a disagreement in optional marketing copy can be reported as a
+warning. Keep the corroborated title and drop the conflicting description
+before classification. Date, time, public access, status and physical venue
+conflicts still require evidence before publication. Keep an independently
+confirmed venue correction scoped to the exact publisher and address pair.
+
+Clarksville Tourism applies this policy to the poker and pool wording conflict.
+The organizer's events page corroborates poker at 600 Virginia Avenue. The
+Locable listing, event detail and export agree on 600, even though the organizer
+profile on Locable gives 601. Each published occurrence uses the time actually
+listed on the tourism calendar.
