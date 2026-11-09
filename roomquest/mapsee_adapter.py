@@ -111,6 +111,20 @@ def parse_localist(data):
 
 TRIBE_ZERO_OFFSET = re.compile(r"(?:UTC|GMT|Etc/(?:UTC|GMT)|UTC[+-]0{1,2}(?::?00)?)", re.I)
 
+# Reviewed publishers whose WordPress site zone was left at the "UTC+0" default,
+# so Tribe's local and utc_* dates both carry the venue's wall clock. Each zone
+# was confirmed from the publisher's own venue addresses (2026-11-09); only the
+# listed sources are reinterpreted, every other zero-offset event is held.
+TRIBE_UTC_DEFAULT_ZONES = {
+    "municipal_mapsee_e4f0600735a6ef7191c25f5f": "America/New_York",  # MacDill AFB Library, FL
+    "municipal_mapsee_42223f3cfcfe33208ed63601": "America/New_York",  # NC Museum of Art, Raleigh
+    "municipal_mapsee_6b6a983c5d1ea8a1fe3fede2": "America/Chicago",   # BUILD, Chicago IL
+    "municipal_mapsee_5456f7396725fdc4a0bbda86": "America/New_York",  # Community Music Center of Boston
+    "municipal_mapsee_96de39930db49d669fa567c3": "America/New_York",  # Hardeeville Public Library, SC
+    "municipal_mapsee_eb47acc3ae4c308074d03f5e": "America/New_York",  # The PARC at Tysons (Fairfax, VA)
+    "municipal_mapsee_f63b83aa136931e0a77618b3": "America/New_York",  # Main Street Takoma, MD/DC
+}
+
 
 def tribe_timezone(value):
     """WordPress permits fixed UTC offsets as well as IANA timezone names."""
@@ -128,7 +142,7 @@ def tribe_timezone(value):
     return timezone(timedelta(minutes=offset)), name
 
 
-def parse_tribe(data, *, strict_public=False, retain_description=False):
+def parse_tribe(data, *, strict_public=False, retain_description=False, utc_default_zone=None):
     # The same upstream Tribe parser used by Udell, with UTC dates and complete
     # event addresses retained rather than inferred from the publisher's city.
     from scrapers.lib.tribe_events import TribeEventsScraper
@@ -143,14 +157,26 @@ def parse_tribe(data, *, strict_public=False, retain_description=False):
         if strict_public and any(e.get(k) in (True, 1, "1", "true") for k in
                ("hide_from_listings", "is_virtual", "virtual", "all_day")):continue
         tz=e.get("timezone")
+        reinterpret=False
         # WordPress defaults an event zone to "UTC+0"; its utc_* dates then repeat
-        # the local wall clock (9:30 AM local -> 09:30Z). Hold, never guess a zone.
+        # the local wall clock (9:30 AM local -> 09:30Z). Only a reviewed source
+        # zone may reinterpret that wall clock; otherwise hold, never guess a zone.
         if tz and TRIBE_ZERO_OFFSET.fullmatch(str(tz).strip()):
-            logger.warning("tribe_record_withheld id=%s reason=publisher_timezone_utc_default", str(e.get("id",""))[:180])
-            continue
-        zone, tz_name=tribe_timezone(tz) if tz else (None, None); start=e.get("utc_start_date");end=e.get("utc_end_date")
-        if start:start=timestamp(start,"UTC").isoformat()
-        if end:end=timestamp(end,"UTC").isoformat()
+            if not utc_default_zone:
+                logger.warning("tribe_record_withheld id=%s reason=publisher_timezone_utc_default", str(e.get("id",""))[:180])
+                continue
+            tz=utc_default_zone;reinterpret=True
+        zone, tz_name=tribe_timezone(tz) if tz else (None, None)
+        if reinterpret:
+            # Local wall clock in the reviewed zone; strict helper rejects DST gaps/overlaps.
+            start=timestamp(e.get("start_date") or e.get("utc_start_date"),tz)
+            end=e.get("end_date") or e.get("utc_end_date")
+            start=start.astimezone(timezone.utc).isoformat() if start else None
+            end=timestamp(end,tz).astimezone(timezone.utc).isoformat() if end else None
+        else:
+            start=e.get("utc_start_date");end=e.get("utc_end_date")
+            if start:start=timestamp(start,"UTC").isoformat()
+            if end:end=timestamp(end,"UTC").isoformat()
         if not start:
             # Reuse the existing parser only with explicit publisher timezone.
             if not tz:raise ValueError("timezone_unresolved")

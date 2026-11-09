@@ -169,7 +169,7 @@ def collect(source, fetch, *, deadline_at=None):
     if source.get('source_key') == 'think_iowa_city_ia':
         from roomquest.iowa_tourism import collect_think
         return collect_think(source, fetch, deadline_at=deadline_at)
-    from roomquest.mapsee_adapter import parse_tribe
+    from roomquest.mapsee_adapter import TRIBE_UTC_DEFAULT_ZONES, parse_tribe
     from roomquest import ncma_calendar
     ncma = source.get('source_key') == ncma_calendar.KEY
     if ncma and source.get('feed_url') != ncma_calendar.ROOT:
@@ -254,7 +254,8 @@ def collect(source, fetch, *, deadline_at=None):
         parsed_rows = parse_tribe(payload, strict_public=ncma or source.get("source_key") in
                                   ("madison_county_parks_ia", "nebraska_game_parks", ROSEMONT_KEY, jpb_basketball.KEY, hurrdat_calendar.KEY),
                                 retain_description=ncma or source.get("source_key") in
-                                  ("madison_county_parks_ia", ROSEMONT_KEY, jpb_basketball.KEY, hurrdat_calendar.KEY))
+                                  ("madison_county_parks_ia", ROSEMONT_KEY, jpb_basketball.KEY, hurrdat_calendar.KEY),
+                                utc_default_zone=TRIBE_UTC_DEFAULT_ZONES.get(source.get("source_key")))
         if rosemont:
             by_id = {str(item['id']): item for item in payload['events']}
             parsed_rows = [_rosemont_evidence(row, by_id[row['id']]) for row in parsed_rows]
