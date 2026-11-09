@@ -122,8 +122,9 @@ class ParksTests(unittest.TestCase):
    collect(source,lambda *_:json.dumps({'events':[e]}))
   # Its UTC+0 representations are internally consistent, but disagree with
   # the reviewed Iowa source timezone. No six-hour correction is invented.
+  # Without a reviewed zone the WordPress UTC+0 default is held, not published.
   del source['timezone']
-  self.assertEqual(len(collect(source,lambda *_:json.dumps({'events':[e]}))),1)
+  self.assertEqual(collect(source,lambda *_:json.dumps({'events':[e]})),[])
  def test_madison_conflicting_local_and_utc_times_fail_without_guessing(self):
   from zoneinfo import ZoneInfo
   source={'source_key':'madison_county_parks_ia','feed_url':'https://venue.example.org'}
@@ -181,7 +182,9 @@ if __name__=='__main__':unittest.main()
 
 class WordPressOffsetTests(unittest.TestCase):
  def test_fixed_offset_timezone_with_utc_dates(self):
-  for zone,expected in [('UTC+0','UTC'),('UTC-6','Etc/GMT+6'),('UTC+5.5','UTC')]:
+  e=event();e.update(status='publish',timezone='UTC+0')
+  self.assertEqual(collect({'source_key':'madison_county_parks_ia','feed_url':'https://venue.example.org'},lambda *_:json.dumps({'events':[e]})),[])
+  for zone,expected in [('UTC-6','Etc/GMT+6'),('UTC+5.5','UTC')]:
    with self.subTest(zone=zone):
     e=event();e.update(status='publish',timezone=zone)
     rows=collect({'source_key':'madison_county_parks_ia','feed_url':'https://venue.example.org'},lambda *_:json.dumps({'events':[e]}))
