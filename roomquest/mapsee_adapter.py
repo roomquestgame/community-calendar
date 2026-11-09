@@ -10,11 +10,14 @@ from datetime import datetime, timedelta, timezone
 from functools import lru_cache
 import html
 import json
+import logging
 from pathlib import Path
 import re
 from time import monotonic
 from urllib.parse import urlencode, urlsplit
 from zoneinfo import ZoneInfo
+
+logger = logging.getLogger(__name__)
 
 MAX_RECORDS = 500
 MAX_PAGES = 5
@@ -106,6 +109,9 @@ def parse_localist(data):
     return out
 
 
+TRIBE_ZERO_OFFSET = re.compile(r"(?:UTC|GMT|Etc/(?:UTC|GMT)|UTC[+-]0{1,2}(?::?00)?)", re.I)
+
+
 def tribe_timezone(value):
     """WordPress permits fixed UTC offsets as well as IANA timezone names."""
     match = re.fullmatch(r"UTC([+-])(\d{1,2})(?:(?:\.(\d+))|(?::(\d{2})))?", str(value or ""))
@@ -136,7 +142,13 @@ def parse_tribe(data, *, strict_public=False, retain_description=False):
         if strict_public and e.get("event_status") in ("cancelled", "canceled", "postponed"):continue
         if strict_public and any(e.get(k) in (True, 1, "1", "true") for k in
                ("hide_from_listings", "is_virtual", "virtual", "all_day")):continue
-        tz=e.get("timezone"); zone, tz_name=tribe_timezone(tz) if tz else (None, None); start=e.get("utc_start_date");end=e.get("utc_end_date")
+        tz=e.get("timezone")
+        # WordPress defaults an event zone to "UTC+0"; its utc_* dates then repeat
+        # the local wall clock (9:30 AM local -> 09:30Z). Hold, never guess a zone.
+        if tz and TRIBE_ZERO_OFFSET.fullmatch(str(tz).strip()):
+            logger.warning("tribe_record_withheld id=%s reason=publisher_timezone_utc_default", str(e.get("id",""))[:180])
+            continue
+        zone, tz_name=tribe_timezone(tz) if tz else (None, None); start=e.get("utc_start_date");end=e.get("utc_end_date")
         if start:start=timestamp(start,"UTC").isoformat()
         if end:end=timestamp(end,"UTC").isoformat()
         if not start:
