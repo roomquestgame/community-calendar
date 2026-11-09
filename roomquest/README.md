@@ -1,3 +1,22 @@
+## YMCA class description order — November 9, 2026 (prepared)
+
+YMCA narratives now lead with the publisher's specific class description and
+schedule, followed by the full-session note and then the general program text.
+The 2,000-character limit reserves room for the complete full-session note.
+Repeated general text is omitted when it matches the specific text after
+whitespace and case normalization. Full publisher text is still validated
+before truncation; occurrence dates, identities, venue and audience evidence
+retain their existing extraction rules.
+
+The current official [Dance page](https://mecklenburg.recliquecore.com/programs/37/dance/?locations=-1)
+was read on November 9 and matches the captured specific ages 3–5 description
+and Wednesday 4:45–5:30 p.m. Clarksville schedule. Its six occurrences retain
+the full publisher prose in 957 characters. Local validation passed 84 YMCA
+and Mecklenburg pipeline tests, including long descriptions, duplicate or
+missing general text and unchanged structured fields. All seven captured YMCA
+records differ from the baseline only in description. Collector deployment and
+the companion six-record database refresh remain separate release steps.
+
 ## Raleigh–Durham catalog activation — November 8, 2026
 
 Legacy Raleigh–Durham ICS entries now use the same bounded robots-aware publisher transport as the reviewed Raleigh cohort. The collector checks the exact catalog URL and publisher host before fetching. The companion activation migration enrolls permitted feeds in search discovery and leaves explicit publisher blocks outside the activation list.
