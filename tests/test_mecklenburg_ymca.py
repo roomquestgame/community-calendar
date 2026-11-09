@@ -14,6 +14,23 @@ FIXTURES = Path(__file__).with_name('fixtures') / 'mecklenburg_batch2'
 NOW = datetime(2026, 11, 6, 13, tzinfo=timezone.utc)
 SOURCE = {'source_key': parser.SOURCE_KEY, 'feed_url': parser.CALENDAR,
           'kind': 'html', 'platform_adapter': 'html', 'timezone': parser.TIMEZONE}
+DANCE_SPECIFIC = (
+    'Designed for ages 3–5, this playful, story-based 6-week dance class invites tiny dancers '
+    'to use their imaginations as they explore movement, discover what their bodies can do, '
+    'and learn to move through space in different ways. Through music, storytelling, and '
+    'creative play, children build coordination, confidence, and a love of movement in a '
+    'fun, welcoming environment where every child belongs.\n'
+    'Sessions will be held on Wednesdays from 4:45-5:30PM at the Clarksville Branch.'
+)
+DANCE_CONTEXT = ('Registered session dates: 2026-11-11–2026-12-16. '
+                 'This class is part of that full session.')
+DANCE_PROGRAM = (
+    'YMCA dance programs provide a welcoming, inclusive space where every child can explore '
+    'movement, express their creativity, and grow in confidence. Through dance, children '
+    'develop coordination and new skills while building connections, celebrating individuality, '
+    'and experiencing the joy of being part of a community where everyone belongs.\n'
+    'Classes will be held at the Clarksville Branch.'
+)
 
 
 class ClockMeta(type):
@@ -98,6 +115,9 @@ def test_craft_retains_actual_branch_time_image_public_price_and_session_deadlin
     assert row['publisher_details']['cost'] == 'Member $10.00; Non-Member $15.00.'
     assert '11/13/2026' in row['publisher_details']['registration']
     assert 'general pricing table lists 11/16/2026' in row['publisher_details']['registration']
+    assert row['description'].startswith('Let’s create together!\nDecoupage ornament as a keepsake')
+    assert row['description'].index('Chase City: 11/17, 3-5pm') < row['description'].index('Join us for beginner-friendly')
+    assert 'Registered session dates:' not in row['description']
     assert 'Clarksville: 11/19' not in row['description']
     assert any(x['id'].endswith('878:2026-11-19') and x['reason'] == 'session_full' for x in diagnostic['excluded'])
     assert {x['id'] for x in diagnostic['held']} == {
@@ -116,9 +136,46 @@ def test_weekly_course_has_exact_six_occurrences_full_session_fee_and_no_invente
         assert row['publisher_details']['cost'] == 'Full session 2026-11-11–2026-12-16: Member $60.00; Non-Member $75.00.'
         assert '11/09/2026' in row['publisher_details']['registration']
         assert row['publisher_details']['audience'] == 'Ages 3-5'
-        assert 'part of that full session' in row['description']
+        assert row['description'] == '\n\n'.join((DANCE_SPECIFIC, DANCE_CONTEXT, DANCE_PROGRAM))
         assert '7 / 10' not in row['description'] and 'Available' not in row['publisher_details']['registration']
         assert 'image_url' not in row
+
+
+@pytest.mark.parametrize('long_part', ['specific', 'program'])
+def test_description_cap_keeps_class_facts_first_and_the_full_session_note(long_part):
+    baseline = parse(37)
+    soup = program(37)
+    selector = '.division .desc' if long_part == 'specific' else '#single_program .content'
+    soup.select_one(selector).append(' Publisher background.' * 150)
+    rows = parse(37, soup)
+    assert len(rows) == len(baseline) == 6
+    for row, original in zip(rows, baseline):
+        description = row['description']
+        assert len(description) <= 2000
+        assert description.startswith(DANCE_SPECIFIC)
+        assert description.count(DANCE_CONTEXT) == 1
+        assert description.index('4:45-5:30PM at the Clarksville Branch.') < description.index(DANCE_CONTEXT)
+        if long_part == 'specific':
+            assert description.endswith(DANCE_CONTEXT)
+            assert DANCE_PROGRAM not in description
+        else:
+            assert len(description) == 2000
+            assert description.startswith('\n\n'.join((DANCE_SPECIFIC, DANCE_CONTEXT, DANCE_PROGRAM)))
+        # Narrative truncation cannot change the six public identities, times,
+        # venue, full-session prices or explicit audience evidence.
+        assert {key: value for key, value in row.items() if key != 'description'} == {
+            key: value for key, value in original.items() if key != 'description'}
+
+
+@pytest.mark.parametrize('program_copy', [DANCE_SPECIFIC, ' '.join(DANCE_SPECIFIC.split()), ''])
+def test_repeated_or_missing_program_copy_does_not_duplicate_the_class_description(program_copy):
+    soup = program(37)
+    node = soup.select_one('#single_program .content')
+    node.clear()
+    node.append(program_copy)
+    rows = parse(37, soup)
+    assert len(rows) == 6
+    assert all(row['description'] == DANCE_SPECIFIC + '\n\n' + DANCE_CONTEXT for row in rows)
 
 
 def test_closed_full_members_only_and_undated_services_do_not_become_cancellations():

@@ -63,6 +63,16 @@ def _text(node):
     return value
 
 
+def _narrative(specific, context, program_description):
+    """Lead with the class facts, reserving space for full-session terms."""
+    specific, context, program_description = (part.strip() for part in (specific, context, program_description))
+    if ' '.join(program_description.split()).casefold() == ' '.join(specific.split()).casefold():
+        program_description = ''
+    if specific and context:
+        specific = specific[:MAX_DESCRIPTION - len(context) - 2].rstrip()
+    return '\n\n'.join(part for part in (specific, context, program_description) if part)[:MAX_DESCRIPTION]
+
+
 def _title(value):
     return re.sub(r'^\s*(?:cancelled|canceled|postponed)\s*[:–—-]\s*', '', plain(value), flags=re.I)
 
@@ -504,7 +514,7 @@ def parse_program(payload, card, locations, *, now=None, diagnostics=None):
                 series = first != last
                 context = ''
                 if series:
-                    context = f'Registered session dates: {first.isoformat()}–{last.isoformat()}. This class is part of that full session.\n\n'
+                    context = f'Registered session dates: {first.isoformat()}–{last.isoformat()}. This class is part of that full session.'
                 if fees:
                     member, nonmember, register_at, pricing_close = fees
                     facts['cost'] = ((f'Full session {first.isoformat()}–{last.isoformat()}: ' if series else '')
@@ -523,7 +533,7 @@ def parse_program(payload, card, locations, *, now=None, diagnostics=None):
                 specific = '\n'.join(line for line in description.splitlines()
                                      if not re.match(r'^(?:Chase City|Clarksville|Gymnastics):\s*\d{1,2}/\d{1,2}', line)
                                      or (branch and line.startswith(branch + ':')))
-                narrative = (context + program_description + '\n' + specific).strip()
+                narrative = _narrative(specific, context, program_description)
                 for day in days:
                     start = timestamp(datetime.combine(day, clocks[0]).isoformat(), TIMEZONE)
                     end = timestamp(datetime.combine(day, clocks[1]).isoformat(), TIMEZONE) if clocks[1] else None
@@ -537,7 +547,7 @@ def parse_program(payload, card, locations, *, now=None, diagnostics=None):
                                   *venue, url, identity, card['title'], tz=TIMEZONE, retain_until_end=True))
                     if row is None:
                         continue
-                    row.update(timezone=TIMEZONE, description=narrative[:MAX_DESCRIPTION],
+                    row.update(timezone=TIMEZONE, description=narrative,
                                publisher_categories=[card['title']],
                                location_provenance=('publisher_session_branch_and_official_directory' if branch and venue[1] else
                                                     'publisher_event_address_pending_geocode' if venue[1] else
