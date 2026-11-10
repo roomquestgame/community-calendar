@@ -67,6 +67,15 @@ def family(source_key, event_url):
         if source_key == 'shady_shack_bracey_va':
             from roomquest.shady_shack import CALENDAR
             return 'shady_shack' if event_url == CALENDAR else None
+        if source_key == 'mcgregor_hall_henderson_nc':
+            from roomquest.mcgregor_hall import event_url as mcgregor_event_url
+            return source_key if mcgregor_event_url(event_url) else None
+        if source_key == 'victoria_town_calendar_va':
+            from roomquest.victoria_calendar import CALENDAR
+            return source_key if event_url == CALENDAR else None
+        if source_key == 'vance_county_arts_council_nc':
+            from roomquest.vance_arts import event_url as vance_event_url
+            return source_key if vance_event_url(event_url) else None
         if source_key == 'sova_innovation_hub_va':
             from roomquest.sova_workshops import URL
             return source_key if event_url == URL else None
@@ -126,7 +135,7 @@ def family(source_key, event_url):
                 and re.fullmatch(r'/upcoming-events/[a-z0-9-]+/?', p.path) and not p.query):
             return 'chase_city_chamber'
         if (source_key == 'south_hill_town_va' and p.netloc == 'www.southhillva.gov'
-                and p.path == '/calendar.php' and not p.query):
+                and p.path in ('/calendar.php', '/farmers_market.php') and not p.query):
             return 'south_hill_town'
         if (source_key == 'south_hill_chamber_va' and p.netloc == 'members.southhillchamber.com'
                 and re.fullmatch(r'/calendar/Details/[a-z0-9-]+-[1-9][0-9]*', p.path) and not p.query):
@@ -164,6 +173,12 @@ def family(source_key, event_url):
 def image_url(value, publisher):
     if not isinstance(value, str) or len(value) > 2000:
         return None
+    if publisher == 'mcgregor_hall_henderson_nc':
+        from roomquest.mcgregor_hall import photo_url
+        return photo_url(value)
+    if publisher == 'vance_county_arts_council_nc':
+        from roomquest.vance_arts import photo_url
+        return photo_url(value)
     if isinstance(publisher, str) and publisher.startswith('holly_hill:'):
         from roomquest.holly_hill_institution_recovery import SOURCES as HOLLY_RECOVERY, image_url as recovery_image_url
         key = publisher.removeprefix('holly_hill:')

@@ -1,0 +1,42 @@
+{
+  "captured_at": "2026-11-10T09:29:15.636Z",
+  "method": "public browser DOM capture for parser structure; not collector transport approval",
+  "derivation": "Relevant public publisher DOM sections; scripts/styles/maps/navigation removed except event JSON-LD and pagination evidence. Ordinary transport is verified separately by the guarded live audit.",
+  "pages": [
+    {
+      "file": "mcgregor-shows.html",
+      "url": "https://www.mcgregorhall.org/shows-events",
+      "raw_dom_sha256": "172bab46047c84504d9f5acecd02f961d2ec503433ad8b22df684c125ee42cdd",
+      "fixture_sha256": "7eba72dd183696319deb7371b357b8b669e631afbacdd248dd89ffff8eea2627",
+      "fixture_bytes": 20895
+    },
+    {
+      "file": "victoria-calendar.html",
+      "url": "https://victoriava.net/calendar-of-events",
+      "raw_dom_sha256": "4f7a1f2e6653751e369b1d635b9b525e1addeb49c6aa60f66e2d7601a6b01740",
+      "fixture_sha256": "c18dc242942374f63fa73a26a0689374d25a497a621e4b5884e1e5486a73bea8",
+      "fixture_bytes": 1443
+    },
+    {
+      "file": "vance-events.html",
+      "url": "https://vanceartscouncil.com/events/",
+      "raw_dom_sha256": "eb174ec24f3ef9fd9b5b53f5138458724ce86fc51554ffa11f32c013be8eb4d0",
+      "fixture_sha256": "6a79f0563a713e39b4f8343fec12e06265fed6d18340a1baf3d3850cb51c0bd4",
+      "fixture_bytes": 12127
+    },
+    {
+      "file": "vance-concert.html",
+      "url": "https://vanceartscouncil.com/event/tidings-of-comfort-and-joy-2026/",
+      "raw_dom_sha256": "f81cc5a583d4b55be1fe99ce2624d27512a3f4fdc2fd919b9452792b31f5b656",
+      "fixture_sha256": "bf7188915dea221e08643d7f41cbedc59e753a081ba5bc665f0e542210dd6f5b",
+      "fixture_bytes": 15266
+    },
+    {
+      "file": "vance-parade.html",
+      "url": "https://vanceartscouncil.com/event/henderson-nc-christmas-parade-2026/",
+      "raw_dom_sha256": "b27fad83a10b62b463f48901de80aed162627c969588347f55277877d42a09e8",
+      "fixture_sha256": "cba884eabb2b4dd3bb8641ec5b2843e5cbfa24819cf3739fb4b701d47f50b4fa",
+      "fixture_bytes": 16848
+    }
+  ]
+}

@@ -104,7 +104,9 @@ def _http_status(error):
 def _source(key, definition):
     return {'source_key': key, 'feed_url': definition['url'],
             'kind': definition['kind'], 'platform_adapter': definition['adapter'],
-            'timezone': 'America/New_York'}
+            'timezone': 'America/New_York',
+            **({'fetch_checkpoint_version': 1, 'venue_association_contract_version': 1}
+               if key == 'discover_halifax_va' else {})}
 
 
 def _halifax_preview(source, preview_worker, deadline, row):
@@ -171,7 +173,7 @@ def _candidate_receipt(event):
     # payloads. Full event prose and all transport headers remain out of output.
     fields = ('id', 'title', 'starts_at', 'ends_at', 'timezone', 'venue_name',
               'venue_address', 'venue_city', 'event_url', 'image_url',
-              'publisher_status', 'publisher_details', 'location_provenance')
+              'publisher_status', 'publisher_details', 'location_provenance', 'venue_association')
     return {key: event[key] for key in fields if key in event}
 
 
