@@ -64,6 +64,9 @@ def family(source_key, event_url):
         if source_key == 'discover_halifax_va':
             from roomquest.discover_halifax import EVENT_URL
             return source_key if EVENT_URL.fullmatch(event_url) else None
+        if source_key == 'shady_shack_bracey_va':
+            from roomquest.shady_shack import CALENDAR
+            return 'shady_shack' if event_url == CALENDAR else None
         if source_key == 'sova_innovation_hub_va':
             from roomquest.sova_workshops import URL
             return source_key if event_url == URL else None
@@ -198,6 +201,9 @@ def image_url(value, publisher):
         if re.search(r'(?:^|[-_/])(?:logo|favicon|avatar|pixel)(?:[-_.]|$)', value, re.I):
             return None
         return value if PHOTO_URL.fullmatch(value) else None
+    if publisher == 'shady_shack':
+        from roomquest.shady_shack import photo_url
+        return photo_url(value)
     from roomquest.nebraska_venues import PHOTO_URLS as NEBRASKA_PHOTO_URLS
     if publisher in (*NEBRASKA_PHOTO_URLS, 'hurrdat_sports_bar_ne'):
         from roomquest.hurrdat_calendar import PHOTO_URL as HURRDAT_PHOTO_URL
