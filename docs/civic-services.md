@@ -1,5 +1,25 @@
 # Civic and public-service collectors
 
+## Tampa and Howard County
+
+The City of Tampa links its official [agenda calendar](https://www.tampa.gov/agendas)
+to the Hyland calendar. This source reads the embedded regular meeting list and
+uses Old City Hall, the City's published regular-meeting venue. Addenda,
+special meetings, off-site locations and other unreviewed bodies are outside
+this source's coverage. Each selected meeting retains its publisher ID and
+published start time.
+
+Howard County Council links the public feed through its
+[calendar](https://cc.howardcountymd.gov/calendar). The collector reads the
+current feed, publishes the Council's dated office closures without a time
+and accepts qualifying timed meetings where the feed names the George Howard
+Building. Hybrid and off-site entries with an unresolved physical venue stay
+held. County records are assigned to Howard County for Columbia to inherit.
+
+Both use the existing Civic v1 claim, staging and publication paths. The
+read-only civic audit includes these sources. Source checks and candidate
+counts are distinct from database activation and publication.
+
 Prepared November 10, 2026. This cohort extends the existing collector; it does
 not establish deployment, successful live collection, source activation or
 publication. The companion backend starts six new registrations pending, with

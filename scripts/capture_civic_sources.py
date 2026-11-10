@@ -17,7 +17,7 @@ from time import monotonic
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from roomquest import civic_schedule, legistar, municipal_notices, preview_worker, revize, virginia_civic
+from roomquest import civic_local_calendars, civic_schedule, legistar, municipal_notices, preview_worker, revize, virginia_civic
 from roomquest.collector_errors import failure_details
 
 SOURCE_SECONDS = 41
@@ -28,7 +28,7 @@ CODE_PATHS = (
     'scripts/capture_civic_sources.py', 'roomquest/preview_worker.py',
     'roomquest/legistar.py', 'roomquest/virginia_civic.py', 'roomquest/municipal_notices.py',
     'roomquest/civic_schedule.py', 'roomquest/civic_notices.py',
-    'roomquest/revize.py', 'roomquest/ics_adapter.py',
+    'roomquest/revize.py', 'roomquest/ics_adapter.py', 'roomquest/civic_local_calendars.py',
 )
 
 
@@ -36,6 +36,8 @@ def source_specs():
     sources = [(legistar.source_payload(key), 'bounded_api_window', True) for key in legistar.SOURCES]
     sources.extend((virginia_civic.source_payload(key), spec['scope'], True)
                    for key, spec in virginia_civic.SOURCES.items())
+    sources.extend((civic_local_calendars.source_payload(key), spec['scope'], True)
+                   for key, spec in civic_local_calendars.SOURCES.items())
     sources.extend([
         (municipal_notices.source_payload(), 'publisher_news_first_page', True),
         (civic_schedule.public_works_source(), 'verified_request_required_monthly_rule', True),

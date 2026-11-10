@@ -755,10 +755,11 @@ SUPPORTED = {"ical", "jsonld", "growthzone", "wordpress", "squarespace"}
 def preview_source(source: dict, *, deadline_at=None) -> dict:
     from roomquest import maryland_sources, nebraska_library_ics
     from roomquest import holly_hill_sources
-    from roomquest import civic_schedule, legistar, municipal_notices, virginia_civic
+    from roomquest import civic_local_calendars, civic_schedule, legistar, municipal_notices, virginia_civic
     source_key = source.get('source_key')
     if (source_key in legistar.SOURCES or source_key in virginia_civic.SOURCES
-            or source_key in municipal_notices.SOURCES or source_key == civic_schedule.PUBLIC_WORKS_KEY):
+            or source_key in municipal_notices.SOURCES or source_key in civic_local_calendars.SOURCES
+            or source_key == civic_schedule.PUBLIC_WORKS_KEY):
         try:
             if source_key == civic_schedule.PUBLIC_WORKS_KEY:
                 expected = civic_schedule.public_works_source()
@@ -769,8 +770,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                 hosts = (urlparse(expected['feed_url']).hostname,)
                 collect = civic_schedule.collect_public_works
             else:
-                module = (legistar if source_key in legistar.SOURCES else
-                          municipal_notices if source_key in municipal_notices.SOURCES else virginia_civic)
+                module = next(adapter for adapter in (legistar, municipal_notices, virginia_civic, civic_local_calendars)
+                              if source_key in adapter.SOURCES)
                 spec = module.validate(source)
                 hosts = (legistar.HOST,) if module is legistar else spec['hosts']
                 collect = module.collect
@@ -1476,9 +1477,10 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
     html = source.get("kind") == "html" and source.get("platform_adapter") == "html"
     ical = source.get("kind") == "ical" and source.get("platform_adapter") == "ical"
     source_key = str(source.get('source_key', ''))
-    from roomquest import civic_schedule, legistar, municipal_notices, virginia_civic
+    from roomquest import civic_local_calendars, civic_schedule, legistar, municipal_notices, virginia_civic
     civic = (source_key in legistar.SOURCES or source_key in virginia_civic.SOURCES
-             or source_key in municipal_notices.SOURCES or source_key == civic_schedule.PUBLIC_WORKS_KEY)
+             or source_key in municipal_notices.SOURCES or source_key in civic_local_calendars.SOURCES
+             or source_key == civic_schedule.PUBLIC_WORKS_KEY)
     from roomquest.reviewed_chambers import SOURCES as REVIEWED_CHAMBERS
     reviewed_chamber = (source_key in REVIEWED_CHAMBERS and source.get('kind') == 'xml'
                         and source.get('platform_adapter') == 'growthzone')
