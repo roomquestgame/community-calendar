@@ -1,6 +1,8 @@
 from copy import deepcopy
 from datetime import datetime, timezone
 from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -41,7 +43,7 @@ def test_real_source_fixtures_use_guarded_dispatch_and_existing_v2_staging(monke
         requests.append(url)
         assert kwargs['respect_robots'] is True
         assert kwargs['allowed_hosts'] == hosts
-        assert kwargs['deadline_at'] == 125.0
+        assert kwargs['deadline_at'] == (136.0 if source['source_key'] == virginia_civic.DMV else 125.0)
         return (FIXTURES / name).read_text()
 
     def rpc(name, payload):
@@ -131,3 +133,88 @@ def test_public_works_dispatch_requires_integer_capability_before_fetch(monkeypa
     monkeypatch.setattr(worker, 'fetch_publisher', lambda *a, **k: pytest.fail('Network must not be used'))
     with pytest.raises(worker.PreviewError, match='unregistered_public_works_source'):
         worker.preview_source(source)
+
+
+def _dmv_paced_origin(monkeypatch, *, wake_late=0, late_body=False):
+    """Exercise the actual admission/robots/GET path with a controlled origin."""
+    clock = SimpleNamespace(now=100.0, sleeps=[], robots_calls=[], calendar_calls=[])
+    for field in ('_robots_cache', '_robots_delays', '_publisher_next', '_publisher_retry_after'):
+        monkeypatch.setattr(worker, field, getattr(worker, field).__class__())
+    monkeypatch.setattr(worker, 'monotonic', lambda: clock.now)
+    monkeypatch.setattr(virginia_civic, 'monotonic', lambda: clock.now)
+
+    def sleep(seconds):
+        clock.sleeps.append(seconds)
+        clock.now += seconds + wake_late
+
+    monkeypatch.setattr(worker, 'sleep', sleep)
+    monkeypatch.setattr(worker, 'validate_public_dns', lambda host: None)
+
+    def robots(request, timeout):
+        clock.robots_calls.append((request.full_url, timeout))
+        response = MagicMock(status=200, headers={})
+        response.__enter__.return_value = response
+        response.read.return_value = b'User-agent: *\nDisallow: /private/\nCrawl-delay: 30\n'
+        return response
+
+    monkeypatch.setattr(worker, 'build_opener', lambda *_: SimpleNamespace(open=robots))
+    response = MagicMock(status_code=200, headers={'Content-Type': 'text/html'}, encoding='utf-8')
+
+    def chunks(**kwargs):
+        if late_body:
+            clock.now = 134.0
+        yield (FIXTURES / 'dmv_connect.html').read_bytes()
+
+    response.iter_content.side_effect = chunks
+    session = MagicMock()
+    session.__enter__.return_value = session
+
+    def get(url, **kwargs):
+        clock.calendar_calls.append((url, kwargs))
+        return response
+
+    session.get.side_effect = get
+    monkeypatch.setattr(worker.requests, 'Session', lambda: session)
+    return clock
+
+
+def test_dmv_thirty_second_robots_wait_fits_normal_category_budget_and_one_stage_batch(monkeypatch):
+    clock = _dmv_paced_origin(monkeypatch)
+    calls = []
+    monkeypatch.setattr(worker, 'supabase_rpc',
+                        lambda name, payload: calls.append((name, deepcopy(payload))) or len(payload.get('p_events', [])))
+    # collect_category passes invocation start +39; the existing outer reserve
+    # gives preview +35, and DMV's two-second inner reserve gives GET +33.
+    result = worker._process_claimed_source(virginia_civic.source_payload(virginia_civic.DMV), deadline_at=139.0)
+    assert result['complete'] == 1 and result['staged'] == 10
+    assert clock.sleeps == [30] and clock.now == 130
+    assert clock.robots_calls == [('https://www.dmv.virginia.gov/robots.txt', 5)]
+    assert len(clock.calendar_calls) == 1
+    url, request = clock.calendar_calls[0]
+    assert url == virginia_civic.SOURCES[virginia_civic.DMV]['url']
+    assert request['timeout'] == (1.5, 1.5)  # Remaining deadline after admission, not a fresh network budget.
+    assert request['allow_redirects'] is False
+    assert [name for name, _ in calls] == ['community_collector_record_staged_events', 'community_collector_record_preview_v2']
+    assert calls[-1][1]['p_publisher_crawl_delay_seconds'] == 30
+
+
+def test_dmv_short_caller_budget_defers_without_calendar_request_or_retry(monkeypatch):
+    clock = _dmv_paced_origin(monkeypatch)
+    calls = []
+    monkeypatch.setattr(worker, 'supabase_rpc', lambda name, payload: calls.append((name, payload)))
+    result = worker._process_claimed_source(virginia_civic.source_payload(virginia_civic.DMV), deadline_at=130.0)
+    assert result['failed'] == 1 and result['staged'] == 0
+    assert len(clock.robots_calls) == 1 and clock.calendar_calls == [] and clock.sleeps == []
+    assert len(calls) == 1 and calls[0][1]['p_error'] == 'publisher_pacing_deferred'
+    assert calls[0][1]['p_publisher_crawl_delay_seconds'] == 30
+
+
+@pytest.mark.parametrize('wake_late,late_body', [(4, False), (0, True)])
+def test_dmv_late_wake_or_body_cannot_cross_caller_deadline(monkeypatch, wake_late, late_body):
+    clock = _dmv_paced_origin(monkeypatch, wake_late=wake_late, late_body=late_body)
+    calls = []
+    monkeypatch.setattr(worker, 'supabase_rpc', lambda name, payload: calls.append((name, payload)))
+    result = worker._process_claimed_source(virginia_civic.source_payload(virginia_civic.DMV), deadline_at=139.0)
+    assert result['failed'] == 1 and result['staged'] == 0
+    assert len(clock.calendar_calls) == (1 if late_body else 0)
+    assert len(calls) == 1 and calls[0][1]['p_error'] == 'source_fetch_deadline'

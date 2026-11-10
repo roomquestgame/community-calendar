@@ -774,7 +774,13 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                 spec = module.validate(source)
                 hosts = (legistar.HOST,) if module is legistar else spec['hosts']
                 collect = module.collect
-            deadline = min(monotonic() + 25, deadline_at - 8 if deadline_at is not None else float('inf'))
+            # DMV's fixed first page has at most ten rows (one staging batch)
+            # and advertises a 30-second robots delay. Use the available caller
+            # budget for that normal admission wait; never extend its deadline.
+            # The ordinary category lane still reserves its outer four seconds.
+            source_seconds, reserve_seconds = (36, 2) if source_key == virginia_civic.DMV else (25, 8)
+            deadline = min(monotonic() + source_seconds,
+                           deadline_at - reserve_seconds if deadline_at is not None else float('inf'))
             records = collect(
                 source, lambda url, accept: fetch_publisher(
                     url, accept, respect_robots=True, deadline_at=deadline,

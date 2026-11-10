@@ -72,6 +72,26 @@ def test_incomplete_output_and_missing_civic_metadata_are_failed(monkeypatch):
     assert all(source['error'] == 'civic_metadata_missing' for source in result['sources'][:6])
 
 
+def test_timed_notice_receipt_excludes_date_and_window_notices(monkeypatch):
+    def mixed(source, **kwargs):
+        rows = [
+            {'id': 'date', 'civic_notice': True, 'civic': {'version': 1, 'time_precision': 'date'}},
+            {'id': 'window', 'civic_notice': True, 'civic': {'version': 1, 'time_precision': 'window'}},
+            {'id': 'timed-service', 'civic_notice': True, 'civic': {'version': 1, 'time_precision': 'timed'}},
+            {'id': 'meeting', 'civic': {'version': 1, 'time_precision': 'timed'}},
+        ]
+        return {'p_source_key': source['source_key'], 'p_error': None, 'p_events': rows, 'p_future_count': 4}
+
+    monkeypatch.setattr(capture.preview_worker, 'preview_source', mixed)
+    result = capture.audit()
+    assert result['complete']
+    for source in result['sources']:
+        assert source['candidate_count'] == 4
+        assert source['dated_notice_count'] == 2
+        assert source['timed_candidate_count'] == 2
+        assert source['timed_notice_count'] == 1
+
+
 def test_overall_deadline_skips_later_requests_and_still_returns_every_inventory_receipt(monkeypatch):
     clock = iter(range(50))
     monkeypatch.setattr(capture, 'monotonic', lambda: next(clock))
