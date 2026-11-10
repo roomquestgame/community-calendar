@@ -984,8 +984,13 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
             from roomquest.south_boston_speedway import HOST, collect as collect_html
             allowed_hosts = (HOST,)
         elif source_key == 'discover_halifax_va':
-            from roomquest.discover_halifax import collect as collect_html
+            # Manual/older claims have no fenced continuation contract. Keep
+            # their original bounded window until the backend advertises v1.
+            from roomquest.discover_halifax import collect_legacy as collect_html
             allowed_hosts = ('gohalifaxva.com',)
+        elif source_key == 'shady_shack_bracey_va':
+            from roomquest.shady_shack import collect as collect_html
+            allowed_hosts = ('shadyshackgrill.com',)
         elif source_key == 'sova_innovation_hub_va':
             from roomquest.sova_workshops import HOST, collect as collect_html
             allowed_hosts = (HOST,)
@@ -1268,6 +1273,7 @@ def supabase_rpc(path: str, payload: dict, *, timeout: float = 4):
     """
     import urllib.request
     allowed = {"community_collector_claim_category", "community_collector_publish_category", "community_collector_finish_category", "community_collector_claim_previews", "community_collector_claim_demand_preview", "community_collector_claim_chambermaster", "community_collector_record_preview", "community_collector_record_preview_v2", "community_collector_record_preview_v3",
+               "community_collector_read_fetch_checkpoint", "community_collector_write_fetch_checkpoint",
                "community_collector_record_staged_events", "community_collector_geocoder", "community_collector_geocoder_claim",
                "community_collector_venues", "community_collector_media", "community_collector_media_demand"}
     if path not in allowed:
@@ -1284,7 +1290,12 @@ def supabase_rpc(path: str, payload: dict, *, timeout: float = 4):
         method="POST")
     try:
         with urllib.request.urlopen(request, timeout=timeout) as response:
-            raw = response.read(150_000)
+            # Only the private, fenced fetch checkpoint may contain the complete
+            # bounded aggregate. All other RPCs retain their existing limit.
+            maximum = 920_000 if path == "community_collector_read_fetch_checkpoint" else 150_000
+            raw = response.read(maximum + 1)
+            if len(raw) > maximum:
+                raise PreviewError("database_unavailable")
             return json.loads(raw.decode()) if raw else None
     except (HTTPError, URLError, ValueError, OSError) as exc:
         raise PreviewError("database_unavailable") from exc
@@ -1300,22 +1311,108 @@ def _observe_collection_phase(observer, phase, *, operation=None, error=None):
 
 
 def _process_claimed_source(source: dict, *, deadline_at=None, publisher_handoff=None,
-                            observe_phase=None) -> dict:
+                            observe_phase=None, collection_context=None) -> dict:
     """Process a single claimed feed with the existing private staging contract."""
     with capture_publisher_pacing() as pacing:
         return _process_claimed_source_with_pacing(
             source, pacing, deadline_at=deadline_at, publisher_handoff=publisher_handoff,
-            observe_phase=observe_phase)
+            observe_phase=observe_phase, collection_context=collection_context)
+
+
+def _preview_halifax_chunk(source, pacing, *, collection_context, deadline_at,
+                           publisher_handoff=None, observe_phase=None):
+    """Persist one fenced HTML fetch chunk before any staging can begin."""
+    from roomquest import discover_halifax
+
+    operation = None
+    try:
+        if (not isinstance(collection_context, dict)
+                or collection_context.get("p_category") != "html"
+                or not isinstance(collection_context.get("p_ticket"), str)
+                or not collection_context["p_ticket"]):
+            raise PreviewError("fetch_checkpoint_context_missing")
+        args = {"p_category": "html", "p_ticket": collection_context["p_ticket"],
+                "p_source_key": source["source_key"]}
+        operation = "community_collector_read_fetch_checkpoint"
+        _observe_collection_phase(observe_phase, "fetch", operation=operation)
+        saved = supabase_rpc(operation, args)
+        if (not isinstance(saved, dict) or type(saved.get("revision")) is not int
+                or saved["revision"] < 0 or "checkpoint" not in saved
+                or (saved["checkpoint"] is not None and not isinstance(saved["checkpoint"], dict))
+                or (saved["checkpoint"] is None and saved["revision"] != 0)):
+            raise PreviewError("fetch_checkpoint_invalid_response")
+        operation = None
+        _observe_collection_phase(observe_phase, "fetch")
+        # Match the ordinary HTML fetch budget while reserving checkpoint write,
+        # staging and completed-preview time inside the claimed source budget.
+        deadline = min(monotonic() + 36, deadline_at - 9)
+        try:
+            chunk = discover_halifax.collect_chunk(
+                source, lambda url, accept: fetch_publisher(
+                    url, accept, respect_robots=True, deadline_at=deadline,
+                    allowed_hosts=("gohalifaxva.com",)),
+                checkpoint=saved["checkpoint"], deadline_at=deadline)
+        except PreviewError:
+            raise
+        except (ValueError, TypeError, KeyError, OverflowError) as exc:
+            # Adapter messages are controlled diagnostics, never raw HTML or
+            # parser values (for example an unparseable publisher clock).
+            codes = {"unregistered_discover_halifax", "halifax_checkpoint_invalid",
+                     "halifax_checkpoint_size_limit", "halifax_directory_incomplete",
+                     "halifax_directory_event_identity", "halifax_directory_detail_identity",
+                     "halifax_directory_detail_conflict", "collection_deadline"}
+            reason = exc.args[0] if len(exc.args) == 1 else None
+            raise PreviewError(reason if type(reason) is str and reason in codes
+                               else "invalid_html_event_payload") from exc
+        if pacing["wait_unbounded"]:
+            raise PreviewError("publisher_wait_requires_review")
+        operation = "community_collector_write_fetch_checkpoint"
+        _observe_collection_phase(observe_phase, "fetch", operation=operation)
+        acknowledged = supabase_rpc(operation, {
+            **args, "p_expected_revision": saved["revision"],
+            "p_checkpoint": chunk["checkpoint"], **pacing_rpc_fields(pacing)})
+        if (not isinstance(acknowledged, dict) or acknowledged.get("checkpoint_saved") is not True
+                or type(acknowledged.get("revision")) is not int
+                or acknowledged["revision"] != saved["revision"] + 1):
+            raise PreviewError("fetch_checkpoint_invalid_response")
+        if publisher_handoff is not None:
+            publisher_handoff["ready_at"] = monotonic() + max(
+                1, pacing["crawl_delay_seconds"], pacing["retry_after_seconds"])
+        if not chunk["complete"]:
+            return {"fetch_pending": True}
+        # A complete cursor is durable before the ordinary staging path starts.
+        # Its database row is cleared atomically by successful preview recording.
+        records = chunk["events"]
+        samples = records[:MAX_PREVIEWS]
+        while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
+            samples.pop()
+        return {"p_source_key": source["source_key"], "p_samples": samples,
+                "p_future_count": len(records), "p_venue_count": sum(
+                    row.get("lat") is not None for row in records),
+                "p_error": None, "p_events": records,
+                "p_parser_capability": "publisher_event_candidates_v1"}
+    except Exception as exc:
+        _observe_collection_phase(observe_phase, "fetch", operation=operation, error=exc)
+        raise
 
 
 def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, publisher_handoff=None,
-                                       observe_phase=None):
+                                       observe_phase=None, collection_context=None):
     phase, failure = "collection", {}
     operation = None
     try:
         _observe_collection_phase(observe_phase, "fetch")
         deadline = min(monotonic() + 43, deadline_at or float("inf"))
-        output = preview_source(source, deadline_at=deadline - 4)
+        if (source.get("source_key") == "discover_halifax_va" and collection_context is not None
+                and type(source.get("fetch_checkpoint_version")) is int
+                and source["fetch_checkpoint_version"] == 1):
+            output = _preview_halifax_chunk(
+                source, pacing, collection_context=collection_context, deadline_at=deadline,
+                publisher_handoff=publisher_handoff, observe_phase=observe_phase)
+            if output.get("fetch_pending"):
+                return {"complete": 0, "failed": 0, "staged": 0, "fetch_pending": True}
+        else:
+            output = preview_source(source, deadline_at=deadline - 4)
         if pacing["wait_unbounded"]:
             raise PreviewError("publisher_wait_requires_review")
         events = output.pop("p_events", [])
@@ -1379,6 +1476,7 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
                                                   'good_shepherd_food_pantry_south_hill_va'))) or source.get('platform_adapter') == 'south_carolina_parks' or (
                         source_key == 'south_hill_town_va' and source.get('kind') == 'json'
                         and source.get('platform_adapter') == 'revize')
+    publisher_media = publisher_media or (html and source_key == 'shady_shack_bracey_va')
     from roomquest.holly_hill_sources import publisher_media as holly_hill_media
     publisher_media = publisher_media or holly_hill_media(source)
     preview_rpc = ("community_collector_record_preview_v3"

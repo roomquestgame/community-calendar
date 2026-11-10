@@ -383,3 +383,19 @@ existing guarded fetch, staging, geocoder, classifier and media contracts.
 Existing regional MapSee sources retain their source keys and operator holds.
 Run `python scripts/capture_holly_hill_batch.py --output /tmp/holly-hill-audit.json`
 for the bounded read-only batch audit; this does not create demand or write events.
+
+## South Hill continuation: Halifax and Shady Shack
+
+[`docs/south-hill-halifax-recovery.md`](../docs/south-hill-halifax-recovery.md)
+describes the existing Halifax source's 60-day, resumable collection and the
+reviewed Woodbine/The Light corrections. Checkpoint RPCs are used only when
+the backend claim advertises integer `fetch_checkpoint_version: 1`; older
+claims retain the previous bounded seven-day behavior. Shady Shack uses its
+explicit public cards, the owner's year rule, and the shared event pipeline.
+New source registration and activation are separate backend release steps.
+
+The manual `south_hill_recovery_live` workflow audits eleven exact endpoints,
+including complete multi-chunk Halifax and parsed Shady records, through
+ordinary publisher transport. It writes only bounded audit receipts. A fetched
+page without an implemented parser is not a ready source; access and policy
+holds are not cleared by a successful research-browser request.

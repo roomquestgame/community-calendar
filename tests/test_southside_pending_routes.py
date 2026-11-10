@@ -71,7 +71,8 @@ def test_discover_halifax_requires_complete_window_and_confirms_detail():
     row = tourism._detail(detail, url, 'Public Music', day, '6:00 PM')
     assert row['venue_address'] == '1142 Hite Drive, Buffalo Springs, VA 24529'
     assert row['description'] == ''
-    assert tourism._detail(detail, url, 'Public Music', day, '5:00 PM') is None
+    earlier = tourism._detail(detail, url, 'Public Music', day, '5:00 PM')
+    assert earlier['starts_at'] == tourism._start(day, '5:00 PM').astimezone(timezone.utc).isoformat()
 
 
 def test_basketball_requires_verified_home_venue_and_consistent_schedule():

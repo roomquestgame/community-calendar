@@ -35,6 +35,8 @@ _LOGGER = logging.getLogger(__name__)
 _REPORTED = object()
 _PHASES = frozenset(('dispatch', 'claim', 'fetch', 'stage', 'record', 'publish', 'finish'))
 _OPERATIONS = frozenset(('community_collector_claim_category',
+                         'community_collector_read_fetch_checkpoint',
+                         'community_collector_write_fetch_checkpoint',
                          'community_collector_record_staged_events',
                          'community_collector_record_preview',
                          'community_collector_record_preview_v2',
@@ -44,6 +46,11 @@ _OPERATIONS = frozenset(('community_collector_claim_category',
 # This is an explicit diagnostic vocabulary, not a shape-only exception-message
 # filter: even a secret that happens to look like a code must not reach logs.
 _ERROR_CODES = frozenset(('database_unavailable', 'staging_deadline',
+    'fetch_checkpoint_context_missing', 'fetch_checkpoint_invalid_response',
+    'halifax_checkpoint_invalid', 'halifax_checkpoint_size_limit',
+    'halifax_directory_incomplete', 'halifax_directory_event_identity',
+    'halifax_directory_detail_identity', 'halifax_directory_detail_conflict',
+    'unregistered_discover_halifax', 'invalid_html_event_payload',
     'collector_not_configured', 'unsupported_collector_rpc', 'unsupported_category',
     'source_parse_error', 'invalid_calendar_payload', 'event_schedule_missing',
     'dns_unavailable', 'robots_unavailable', 'source_network_error',
@@ -164,7 +171,17 @@ def collect_category(category, ticket):
                                 'observe_phase': diagnostics.observe}
                 if category == 'html':
                     process_args['publisher_handoff'] = publisher_handoff
+                    if (source.get('source_key') == 'discover_halifax_va'
+                            and type(source.get('fetch_checkpoint_version')) is int
+                            and source['fetch_checkpoint_version'] == 1):
+                        process_args['collection_context'] = args
                 result.update(_process_claimed_source(source, **process_args))
+                if result.get('fetch_pending'):
+                    # The saved prefix is incomplete. Finishing this claim
+                    # dispatches a source-bound fetch continuation, without
+                    # staging certification or publishing a partial snapshot.
+                    outcome = 'fetch_pending'
+                    return result
                 if result['failed']:
                     if category == 'html' and result.get('failure_scope') == 'source':
                         # The recorded source hold/retry owns its next attempt.
@@ -190,7 +207,7 @@ def collect_category(category, ticket):
             raise
         finally:
             try:
-                if category == 'html' and outcome in ('complete', 'source_error'):
+                if category == 'html' and outcome in ('complete', 'source_error', 'fetch_pending'):
                     # A local handoff interruption is distinct from a failed
                     # finish RPC, so record it before that operation starts.
                     diagnostics.observe('finish')
