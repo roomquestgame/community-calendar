@@ -1,0 +1,70 @@
+{
+  "captured_at": "2026-11-10T01:12:25.333347+00:00",
+  "sources": [
+    {
+      "fixture": "richmondva_legistar.json",
+      "url": "https://webapi.legistar.com/v1/richmondva/events",
+      "window": [
+        "2026-11-09",
+        "2027-01-08"
+      ],
+      "raw_sha256": "cae519f4da6c5adf3a220a0ae51041ae1c2940c9755aa16aeb3e76772ae8eb9b",
+      "records": 13,
+      "transform": "Only mapped factual fields retained; all returned records kept.",
+      "fixture_sha256": "693d823a715a849aa1a84ce2609ea9952875d7df6529187d77ade29bc12b569e"
+    },
+    {
+      "fixture": "alexandria_legistar.json",
+      "url": "https://webapi.legistar.com/v1/alexandria/events",
+      "window": [
+        "2026-11-09",
+        "2027-01-08"
+      ],
+      "raw_sha256": "09c92b3fb80abb3b454537c24b9a613bc4be03f7ee148e18b76399fb5fb85f48",
+      "records": 5,
+      "transform": "Only mapped factual fields retained; all returned records kept.",
+      "fixture_sha256": "e4f93c81bcad047f769191d10a7e74f01a3ccc1aef7f02882fdf7689ad44dd1e"
+    },
+    {
+      "fixture": "commonwealth.html",
+      "url": "https://commonwealthcalendar.virginia.gov/",
+      "raw_sha256": "ed900e4cc7753677a17994b6755dd007c72915782ab13995bfa7b3bcbc807467",
+      "records": 72,
+      "transform": "Retained date-window inputs and all schedule rows; removed page chrome, scripts and request-verification token. Normalized line endings and stripped line-ending whitespace; published text and schedule nodes retained.",
+      "fixture_sha256": "1ed2256adb4f83001614d8c44533cee3c14c8b7f3ca5f3fec81e0a4dc3dcafe2"
+    },
+    {
+      "fixture": "dmv_connect.html",
+      "url": "https://www.dmv.virginia.gov/locations/dmv-connects",
+      "raw_sha256": "c3b4699c12d840dee8a7c7801eeee488b1f492f9b1404013fdcfa23aa9de7bc4",
+      "records": 10,
+      "publisher_total": 15,
+      "transform": "Retained the exact first-page listing, record summary and pager; removed forms and page chrome. Normalized line endings and stripped line-ending whitespace; published text and schedule nodes retained.",
+      "fixture_sha256": "3a75a485a052e6fbb3391b904f64584fd745d37db2e90de5701b87f213c64d39"
+    },
+    {
+      "fixture": "clarksville_news.html",
+      "url": "https://clarksvilleva.org/news/",
+      "captured_at": "2026-11-10T01:29:07.975544+00:00",
+      "raw_sha256": "281f0605eaa5072811fb2c882b51cf802cc9ffcd28c404fb59b9aabe3f6b0e8e",
+      "transform": "All 12 first-page news article cards retained; chrome, scripts and pager removed. Publication dates remain as negative evidence.",
+      "fixture_sha256": "d22ca695e28fa1a042ce852a75c12f95ee73cba54231b5b5bff283b48d66032a"
+    },
+    {
+      "fixture": "clarksville_closure.html",
+      "url": "https://clarksvilleva.org/7444-2/",
+      "captured_at": "2026-11-10T01:29:07.975673+00:00",
+      "raw_sha256": "af2cdf3cfcf34ff19ad8b688ef973c6599fc7049578b275d4fa15d9c7b44ce60",
+      "transform": "Retained canonical URL, exact heading and article body; decorative image, page chrome and scripts removed.",
+      "fixture_sha256": "4f5d9e5286822971b9debbe04c410d0c88732e546d6f69ade0e540437d90ffed"
+    },
+    {
+      "fixture": "south_hill_public_works.html",
+      "url": "https://www.southhillva.gov/municipal_services/index.php",
+      "reviewed_on": "2026-11-10",
+      "review_timezone": "UTC",
+      "fixture_sha256": "e544c198cf978f87945434e182b2cb420f70cc52301c9111234cb95e232eb9f3",
+      "transform": "Sanitized reviewed official page evidence; only the published third-Wednesday bulky-item pickup by-request rule and booking requirement. No inferred household schedule."
+    }
+  ]
+}

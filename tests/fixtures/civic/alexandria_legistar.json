@@ -1,0 +1,62 @@
+[
+  {
+    "EventId": 2807,
+    "EventGuid": "115F955F-6249-41DF-9824-B6221C5BC44F",
+    "EventBodyName": "Board of Zoning Appeals Public Hearing",
+    "EventDate": "2026-11-09T00:00:00",
+    "EventTime": "7:00 PM",
+    "EventAgendaStatusName": "Final",
+    "EventLocation": "Council Chambers, 4850 Mark Center Drive",
+    "EventAgendaFile": "https://legistar.granicus.com/alexandria/meetings/2026/11/2807_A_Board_of_Zoning_Appeals_Public_Hearing_26-11-09_Docket.pdf",
+    "EventComment": null,
+    "EventInSiteURL": "https://alexandria.legistar.com/MeetingDetail.aspx?LEGID=2807&GID=239&G=188E7221-51C6-4DB4-965D-DA161BCFB1F6"
+  },
+  {
+    "EventId": 2769,
+    "EventGuid": "B594E019-C138-47A1-8353-4C449CD5197D",
+    "EventBodyName": "City Council Legislative Meeting",
+    "EventDate": "2026-11-10T00:00:00",
+    "EventTime": "5:45 PM",
+    "EventAgendaStatusName": "Final",
+    "EventLocation": "Council Chamber",
+    "EventAgendaFile": "https://legistar.granicus.com/alexandria/meetings/2026/11/2769_A_City_Council_Legislative_Meeting_26-11-10_Docket.pdf",
+    "EventComment": "There will be an executive session at 5:45 p.m.  The legislative meeting portion will begin at 7:00 p.m., or shortly thereafter.",
+    "EventInSiteURL": "https://alexandria.legistar.com/MeetingDetail.aspx?LEGID=2769&GID=239&G=188E7221-51C6-4DB4-965D-DA161BCFB1F6"
+  },
+  {
+    "EventId": 2772,
+    "EventGuid": "26D6BCA7-CFF5-4690-8428-8DDECCDF260E",
+    "EventBodyName": "City Council Public Hearing",
+    "EventDate": "2026-11-14T00:00:00",
+    "EventTime": "9:30 AM",
+    "EventAgendaStatusName": "Final",
+    "EventLocation": null,
+    "EventAgendaFile": "https://legistar.granicus.com/alexandria/meetings/2026/11/2772_A_City_Council_Public_Hearing_26-11-14_Docket.pdf",
+    "EventComment": null,
+    "EventInSiteURL": "https://alexandria.legistar.com/MeetingDetail.aspx?LEGID=2772&GID=239&G=188E7221-51C6-4DB4-965D-DA161BCFB1F6"
+  },
+  {
+    "EventId": 2808,
+    "EventGuid": "A3CC8688-E7B4-4161-9CCB-6AF36A695CC7",
+    "EventBodyName": "Board of Architectural Review Public Hearing",
+    "EventDate": "2026-11-18T00:00:00",
+    "EventTime": "7:00 PM",
+    "EventAgendaStatusName": "Final",
+    "EventLocation": "901 Wythe Street",
+    "EventAgendaFile": null,
+    "EventComment": "This is a Preliminary Docket and is subject to change at any time.",
+    "EventInSiteURL": "https://alexandria.legistar.com/MeetingDetail.aspx?LEGID=2808&GID=239&G=188E7221-51C6-4DB4-965D-DA161BCFB1F6"
+  },
+  {
+    "EventId": 2744,
+    "EventGuid": "759DB5BC-4DA7-4FEB-8E22-BFF5ED47A155",
+    "EventBodyName": "Planning Commission Public Hearing",
+    "EventDate": "2026-12-01T00:00:00",
+    "EventTime": "7:00 PM",
+    "EventAgendaStatusName": "Final",
+    "EventLocation": "Council Chambers, 4850 Mark Center Drive, Room 1305",
+    "EventAgendaFile": "https://legistar.granicus.com/alexandria/meetings/2026/12/2744_A_Planning_Commission_Public_Hearing_26-12-01_Docket.pdf",
+    "EventComment": "This is a Preliminary Docket and is subject to change at any time.",
+    "EventInSiteURL": "https://alexandria.legistar.com/MeetingDetail.aspx?LEGID=2744&GID=239&G=188E7221-51C6-4DB4-965D-DA161BCFB1F6"
+  }
+]
