@@ -755,7 +755,44 @@ SUPPORTED = {"ical", "jsonld", "growthzone", "wordpress", "squarespace"}
 def preview_source(source: dict, *, deadline_at=None) -> dict:
     from roomquest import maryland_sources, nebraska_library_ics
     from roomquest import holly_hill_sources
+    from roomquest import civic_schedule, legistar, municipal_notices, virginia_civic
     source_key = source.get('source_key')
+    if (source_key in legistar.SOURCES or source_key in virginia_civic.SOURCES
+            or source_key in municipal_notices.SOURCES or source_key == civic_schedule.PUBLIC_WORKS_KEY):
+        try:
+            if source_key == civic_schedule.PUBLIC_WORKS_KEY:
+                expected = civic_schedule.public_works_source()
+                if (type(source.get('civic_contract_version')) is not int
+                        or any(source.get(key) != value for key, value in expected.items()
+                               if key != 'civic_jurisdiction_name')):
+                    raise ValueError('unregistered_public_works_source')
+                hosts = (urlparse(expected['feed_url']).hostname,)
+                collect = civic_schedule.collect_public_works
+            else:
+                module = (legistar if source_key in legistar.SOURCES else
+                          municipal_notices if source_key in municipal_notices.SOURCES else virginia_civic)
+                spec = module.validate(source)
+                hosts = (legistar.HOST,) if module is legistar else spec['hosts']
+                collect = module.collect
+            deadline = min(monotonic() + 25, deadline_at - 8 if deadline_at is not None else float('inf'))
+            records = collect(
+                source, lambda url, accept: fetch_publisher(
+                    url, accept, respect_robots=True, deadline_at=deadline,
+                    allowed_hosts=hosts), deadline_at=deadline)
+        except PreviewError:
+            raise
+        except (ValueError, TypeError, KeyError, OverflowError) as exc:
+            reason = str(exc)
+            raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}', reason) else 'invalid_civic_payload') from exc
+        if len(records) > 500:
+            raise PreviewError('source_record_limit')
+        samples = records[:MAX_PREVIEWS]
+        while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
+            samples.pop()
+        return {'p_source_key': source_key, 'p_samples': samples,
+                'p_future_count': len(records),
+                'p_venue_count': sum(row.get('lat') is not None for row in records),
+                'p_error': None, 'p_events': records}
     if source_key in holly_hill_sources.SOURCES:
         try:
             spec = holly_hill_sources.validate(source)
@@ -823,7 +860,10 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                     source["feed_url"], "text/calendar",
                     respect_robots=civic_ics or bool(raleigh_url) or mapsee or source_key == "mecklenburg_va_libraries",
                     deadline_at=deadline, **host_scope)
-                records = parse(payload, {"url": source["feed_url"], "source_key": source_key}, legacy=not mapsee,
+                calendar_source = {"url": source["feed_url"], "source_key": source_key,
+                                   **{key: source[key] for key in ('timezone', 'civic_contract_version',
+                                      'civic_jurisdiction_id', 'civic_jurisdiction_name') if key in source}}
+                records = parse(payload, calendar_source, legacy=not mapsee,
                                 include_description=civic_ics or raleigh_ics or source_key == "independence_ia_library_family")
                 if civic_ics:
                     from roomquest.ics_adapter import normalize_virginia_civic
@@ -1314,6 +1354,9 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
     html = source.get("kind") == "html" and source.get("platform_adapter") == "html"
     ical = source.get("kind") == "ical" and source.get("platform_adapter") == "ical"
     source_key = str(source.get('source_key', ''))
+    from roomquest import civic_schedule, legistar, municipal_notices, virginia_civic
+    civic = (source_key in legistar.SOURCES or source_key in virginia_civic.SOURCES
+             or source_key in municipal_notices.SOURCES or source_key == civic_schedule.PUBLIC_WORKS_KEY)
     from roomquest.reviewed_chambers import SOURCES as REVIEWED_CHAMBERS
     reviewed_chamber = (source_key in REVIEWED_CHAMBERS and source.get('kind') == 'xml'
                         and source.get('platform_adapter') == 'growthzone')
@@ -1334,10 +1377,10 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
     publisher_media = publisher_media or holly_hill_media(source)
     preview_rpc = ("community_collector_record_preview_v3"
                    if publisher_media
-                   else "community_collector_record_preview_v2" if html or ical
+                   else "community_collector_record_preview_v2" if html or ical or civic
                    else "community_collector_record_preview")
     _observe_collection_phase(observe_phase, "record", operation=preview_rpc)
-    if html or ical or publisher_media:
+    if html or ical or publisher_media or civic:
         supabase_rpc(preview_rpc, {**output, **pacing_rpc_fields(pacing)})
         if publisher_handoff is not None and not pacing["wait_unbounded"]:
             # The server starts its durable wait while recording the preview.
@@ -1408,4 +1451,3 @@ def collect_bulk_previews(max_sources=15, concurrency=3, deadline_seconds=48) ->
                 for key in ("complete", "failed", "staged"):
                     result[key] += item[key]
     return result
-

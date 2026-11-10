@@ -261,6 +261,8 @@ _VA_CIVIC_VENUES = {
 def normalize_virginia_civic(records, source_url):
     """Use verified named facilities and the VEVENT's published detail link."""
     for item in records:
+        if item.get('civic_notice') is True:
+            continue
         location = _VA_CIVIC_VENUES.get(' '.join(item['venue_name'].split()))
         if not location:
             raise ValueError('civic_venue_requires_review')
@@ -269,6 +271,96 @@ def normalize_virginia_civic(records, source_url):
                                                 source_url) or item['event_url'])
         item['description'] = item.get('description', '')[:2000]
     return records
+
+
+def _civic_enabled(source):
+    return (type(source.get('civic_contract_version')) is int
+            and source.get('civic_contract_version') == 1
+            and all(isinstance(source.get(key), str) and source[key].strip()
+                    for key in ('civic_jurisdiction_id', 'civic_jurisdiction_name', 'timezone')))
+
+
+def _civic_topic(title):
+    """Conservative factual type routing within an explicitly enrolled source."""
+    if re.search(r'\b(?:private|members?[ -]only|invitation[ -]only|workshop|class|festival|concert|fundraiser|party)\b', title, re.I):
+        return None
+    if re.search(r'\b(?:garbage|trash|recycling|bulky(?: items?| waste)?|leaf|brush)\b.{0,60}\b(?:collection|pick[ -]?up|service delay)\b', title, re.I):
+        return 'service', 'waste'
+    if re.search(r'\b(?:election|early voting|voter registration|absentee ballot|ballot deadline)\b', title, re.I):
+        return ('deadline' if re.search(r'\b(?:deadline|last day)\b', title, re.I) else 'window'), 'voting'
+    if re.search(r'\b(?:town hall|city hall|county offices?|town offices?|city offices?|government offices?)\b.*\b(?:closed|closure)\b', title, re.I):
+        return 'service', 'public_services'
+    if re.search(r'\b(?:town council|city council|board of supervisors|planning commission|public hearing)\b', title, re.I):
+        return 'meeting', 'government'
+    return None
+
+
+def _civic_dates(calendar, source):
+    """Preserve explicit RFC DATE notices; unknown activity times remain held.
+
+Recurring DATE series need a separate reviewed rule/exception contract. This
+finite-date path deliberately does not silently inherit a generic expander's
+UID rewriting or invent household route applicability.
+"""
+    if not _civic_enabled(source):
+        return []
+    from roomquest.civic_notices import date_notice
+    from roomquest.mapsee_adapter import plain
+    current = datetime.now(timezone.utc)
+    result, seen = [], {}
+    for event in calendar.walk('VEVENT'):
+        start = event.decoded('DTSTART', None)
+        if not isinstance(start, date) or isinstance(start, datetime):
+            continue
+        title = plain(event.get('SUMMARY'))
+        profile = _civic_topic(title)
+        if profile is None:
+            continue
+        if profile[0] == 'meeting':
+            logger.warning('ics_record_withheld source=%s uid=%s reason=civic_meeting_time_unresolved',
+                           source.get('source_key', ''), str(event.get('UID', ''))[:180])
+            continue
+        if any(event.get(key) for key in ('RRULE', 'RDATE', 'EXDATE', 'EXRULE', 'RECURRENCE-ID')):
+            logger.warning('ics_record_withheld source=%s uid=%s reason=civic_date_recurrence_requires_review',
+                           source.get('source_key', ''), str(event.get('UID', ''))[:180])
+            continue
+        uid = str(event.get('UID', '')).strip()
+        if not uid or len(uid) > 300:
+            raise ValueError('civic_event_identity_missing')
+        serialized = event.to_ical()
+        if uid in seen:
+            if seen[uid] != serialized:
+                raise ValueError('conflicting_civic_identity')
+            continue
+        seen[uid] = serialized
+        end = event.decoded('DTEND', None)
+        duration = event.decoded('DURATION', None)
+        if duration is not None:
+            if (end is not None or not isinstance(duration, timedelta)
+                    or duration.seconds or duration.microseconds or not 0 < duration.days <= 60):
+                raise ValueError('invalid_civic_date_range')
+            end = start + duration
+        kind, topic = profile
+        status = str(event.get('STATUS', '')).upper()
+        if status not in ('', 'CONFIRMED', 'TENTATIVE', 'CANCELLED', 'CANCELED'):
+            raise ValueError('invalid_civic_status')
+        # An exact feed URL is a real official reference, even if the publisher
+        # omits a per-event link. No synthetic calendar.aspx/EID is constructed.
+        source_url = source['url']
+        candidate = str(event.get('URL', ''))
+        if candidate and urlsplit(candidate).scheme == 'https' and urlsplit(candidate).netloc == urlsplit(source_url).netloc:
+            source_url = candidate
+        row = date_notice(identity=uid, title=title, starts_on=start, ends_on=end,
+                          description=plain(event.get('DESCRIPTION')), now=current,
+                          kind=kind, topic=topic,
+                          jurisdiction_id=source['civic_jurisdiction_id'],
+                          jurisdiction_name=source['civic_jurisdiction_name'],
+                          source_url=source_url, tz=source['timezone'],
+                          applicability='address' if topic == 'waste' else 'jurisdiction',
+                          status='cancelled' if status in ('CANCELLED', 'CANCELED') else None)
+        if row is not None:
+            result.append(row)
+    return result
 
 def parse(payload, source, *, legacy=False, include_description=False):
     from icalendar import Calendar
@@ -302,13 +394,19 @@ def parse(payload, source, *, legacy=False, include_description=False):
                 if frequency not in {'DAILY', 'WEEKLY', 'MONTHLY', 'YEARLY'} or density > 24:
                     raise ValueError('unsupported_dense_recurrence')
             end = e.decoded('DTEND') if e.get('DTEND') else start
+            if not isinstance(end, date) or isinstance(end, datetime):
+                raise ValueError('invalid_civic_date_range')
             if max(start, end) >= datetime.now(timezone.utc).date():
                 closure = mecklenburg and str(e.get('SUMMARY', '')).strip().casefold() == 'closed'
-                if not closure:
+                civic_profile = _civic_topic(str(e.get('SUMMARY', ''))) if _civic_enabled(source) else None
+                civic_date = (civic_profile is not None and civic_profile[0] != 'meeting'
+                              and not any(e.get(key) for key in ('RRULE', 'RDATE', 'EXDATE', 'EXRULE', 'RECURRENCE-ID')))
+                if not closure and not civic_date:
                     unsupported.append("unsupported_all_day_time")
-                logger.warning('ics_record_withheld source=%s uid=%s reason=%s',
-                               source.get('source_key', ''), str(e.get('UID', ''))[:180],
-                               'publisher_closure_record' if closure else 'unsupported_all_day_time')
+                if not civic_date:
+                    logger.warning('ics_record_withheld source=%s uid=%s reason=%s',
+                                   source.get('source_key', ''), str(e.get('UID', ''))[:180],
+                                   'publisher_closure_record' if closure else 'unsupported_all_day_time')
             continue
         if start.tzinfo is None:
             if start.date()>=datetime.now(timezone.utc).date():unsupported.append("timezone_unresolved")
@@ -351,8 +449,9 @@ def parse(payload, source, *, legacy=False, include_description=False):
     # parser bound honest instead of silently calling a truncated feed empty.
     if original_event_count>1000:
         raise ValueError("source_record_limit")
+    date_notices = _civic_dates(cal, source)
     result=parse_ics_preview(payload,allow_ongoing=True,include_images=legacy, include_description=include_description)
-    if not result and unsupported:raise ValueError(unsupported[0])
+    if not result and not date_notices and unsupported:raise ValueError(unsupported[0])
     # A feed URL is an actual publisher link when its VEVENT omits URL. Never
     # fabricate a detail URL, venue, publisher host, description or image.
     # Retain the actual publisher labels separately from the legacy single text
@@ -399,5 +498,6 @@ def parse(payload, source, *, legacy=False, include_description=False):
         if len({event['id'] for event in result}) != len(result):
             raise ValueError('recurrence_identity_conflict')
         result = _enrich_mecklenburg(result, cal, expanded)
+    result.extend(date_notices)
     if len(result)>500:raise ValueError("source_record_limit")
     return result

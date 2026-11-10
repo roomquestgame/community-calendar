@@ -1,3 +1,20 @@
+## Civic and public services — November 10, 2026 (prepared)
+
+The reviewed civic cohort adds Richmond/Alexandria meetings, Virginia public
+calendars, Clarksville dated notices and South Hill public works through the
+existing collector. Verified service rules expand into eight weeks of dated
+notices with stable identities and explicit holiday exceptions. The existing
+South Hill calendar gains opt-in administrative notices; finite civic ICS
+support is available but no new ICS source is enrolled.
+
+Read [the civic source contracts and audit guide](../docs/civic-services.md)
+for official URLs, coverage limits, capability gating, date/expiry semantics,
+the v2/v3 pipeline and manual `civic_live` verification. The combined local run
+passed 507 tests and 30 subtests, after a reviewed baseline of 473 tests and
+30 subtests. All seven guarded workspace probes returned `dns_unavailable`.
+New registrations remain pending; these checks do not establish deployment,
+live collection or publication.
+
 ## YMCA class description order — November 9, 2026 (prepared)
 
 YMCA narratives now lead with the publisher's specific class description and

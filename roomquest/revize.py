@@ -20,6 +20,7 @@ from dateutil.rrule import rruleset, rrulestr
 
 from roomquest.mapsee_adapter import plain, record, timestamp
 from roomquest.publisher_evidence import attach
+from roomquest.civic_notices import date_notice, metadata as civic_metadata
 
 SOURCE_KEY = 'south_hill_town_va'
 CALENDAR = 'https://www.southhillva.gov/calendar.php'
@@ -279,7 +280,49 @@ def _status_row(title, begins, ends, venue, address, city, identity, category):
             'category': category[:80], 'reason': 'missing_verified_venue_geo'}
 
 
-def parse(payload, *, now=None, deadline_at=None):
+def _public_closure(title):
+    return bool(re.search(r'\b(?:town hall|town offices?|public works)\b.*\b(?:closed|closure|closing early)\b',
+                          title, re.I))
+
+
+def _closure_notice(item, title, narrative, start, current, status):
+    if item.get('rrule'):
+        raise EventHold('civic_closure_recurrence_requires_review')
+    if (re.search(r'\bclos(?:e|es|ed|ing)\b.{0,100}\bnoon\b', ' '.join(narrative.split()), re.I)
+            and (start.hour, start.minute) != (12, 0)):
+        raise EventHold('publisher_schedule_conflict')
+    # This branch rejects recurrence masters. A finite publisher notice keeps
+    # its vendor ID when its date changes, so corrections replace the old date.
+    identity = 'revize:notice:' + item['id']
+    if item.get('allDay'):
+        if (start.hour, start.minute, start.second) != (0, 0, 0):
+            raise EventHold('publisher_schedule_conflict')
+        end = _local(item['end']) if item.get('end') else None
+        if end is not None and (end.hour, end.minute, end.second) != (0, 0, 0):
+            raise EventHold('publisher_schedule_conflict')
+        return date_notice(identity=identity, title=title, starts_on=start.date(),
+                           ends_on=end.date() if end else None, description=narrative,
+                           now=current, jurisdiction_id='us-va-south-hill',
+                           jurisdiction_name='Town of South Hill', source_url=CALENDAR,
+                           tz=TIMEZONE, status=status)
+    duration = _duration(item, start)
+    end = _wall_instant(_wall(start) + duration)
+    if end <= current or start > current + timedelta(days=LOOKAHEAD_DAYS):
+        return None
+    row = _status_row(title, start, end, '', '', '', identity, 'Civic & Public Services')
+    row.update(description=narrative, timezone=TIMEZONE, civic_notice=True,
+               publisher_categories=['Civic & Public Services'],
+               civic=civic_metadata(kind='service', topic='public_services',
+                                    jurisdiction_id='us-va-south-hill',
+                                    jurisdiction_name='Town of South Hill', source_url=CALENDAR,
+                                    verified_at=current, valid_until=end,
+                                    precision='timed', tz=TIMEZONE))
+    if status:
+        row['publisher_status'] = status
+    return row
+
+
+def parse(payload, *, now=None, deadline_at=None, include_civic=False):
     current = now or datetime.now(timezone.utc)
     if current.tzinfo is None:
         raise ValueError('revize_now_timezone_missing')
@@ -308,11 +351,13 @@ def parse(payload, *, now=None, deadline_at=None):
             continue
         seen[rid] = item
         narrative = _narrative(item.get('desc'))
-        # A closing notice is not an activity. Never turn omission into a
-        # cancellation; backend limited-catalog semantics retain prior facts.
+        # Private events stay excluded. Public office notices use the separate
+        # opt-in civic contract; legacy consumers retain their original shape.
         if (str(item.get('status', '')).casefold() not in ('cancelled', 'canceled', 'postponed')
-                and re.search(r'\b(?:closed|closure|closing\s+early|private\s+(?:event|party|function)|'
-                              r'members?[\s-]+only|invitation[\s-]+only)\b', title + ' ' + narrative, re.I)):
+                and (re.search(r'\b(?:private\s+(?:event|party|function)|members?[\s-]+only|'
+                               r'invitation[\s-]+only)\b', title + ' ' + narrative, re.I)
+                     or (re.search(r'\b(?:closed|closure|closing\s+early)\b', title + ' ' + narrative, re.I)
+                         and not (include_civic and _public_closure(title))))):
             excluded += 1
             continue
         try:
@@ -322,6 +367,11 @@ def parse(payload, *, now=None, deadline_at=None):
             start = _local(item.get('start'))
             if not isinstance(item.get('allDay', False), bool):
                 raise ValueError('invalid_revize_all_day')
+            if include_civic and _public_closure(title):
+                notice = _closure_notice(item, title, narrative, start, current, status)
+                if notice is not None:
+                    records.append(notice)
+                continue
             if item.get('allDay'):
                 if item.get('rrule') or current.date() <= start.date() <= (current + timedelta(days=LOOKAHEAD_DAYS)).date():
                     raise EventHold('unsupported_all_day_time')
@@ -361,6 +411,12 @@ def parse(payload, *, now=None, deadline_at=None):
                            location_provenance=provenance)
                 if status:
                     row['publisher_status'] = status
+                if include_civic and re.search(r'\b(?:town council|planning commission|board of zoning|public hearing)\b', title, re.I):
+                    row['civic'] = civic_metadata(
+                        kind='meeting', topic='government', jurisdiction_id='us-va-south-hill',
+                        jurisdiction_name='Town of South Hill', source_url=CALENDAR,
+                        verified_at=current, valid_until=ends or begins + timedelta(hours=3),
+                        precision='timed', tz=TIMEZONE)
                 attach(row, SOURCE_KEY, facts={})
                 records.append(row)
                 if len(records) > MAX_OCCURRENCES:
@@ -384,4 +440,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
     _check_deadline(deadline)
     payload = fetch(FEED_URL, 'application/json')
     _check_deadline(deadline)
-    return parse(payload, now=now, deadline_at=deadline)
+    include_civic = (type(source.get('civic_contract_version')) is int
+                     and source.get('civic_contract_version') == 1
+                     and source.get('civic_jurisdiction_id') == 'us-va-south-hill')
+    return parse(payload, now=now, deadline_at=deadline, include_civic=include_civic)
