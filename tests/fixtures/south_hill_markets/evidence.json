@@ -1,0 +1,42 @@
+{
+  "reviewed_at": "2026-11-10",
+  "source_key": "south_hill_town_va",
+  "listing_url": "https://www.southhillva.gov/farmers_market.php",
+  "listing_fixture": "market_listing.html",
+  "fixture_kind": "Raw publisher PDFs plus bounded text excerpts, a minimal captured document-link DOM fragment, and a reconstructed listing used for mutation tests.",
+  "documents": [
+    {
+      "url": "https://www.southhillva.gov/Christmas%20Open%20House%202026.pdf?t=202609031321470",
+      "text_fixture": "open_house_2026.txt",
+      "title": "Christmas Open House 2026",
+      "published_date": "2026-11-21",
+      "published_time": "9 a.m. to 2 p.m.",
+      "venue": "South Hill Town Square",
+      "published_street": "105 W Danville Street",
+      "pdf_fixture": "open_house_2026.pdf",
+      "pdf_sha256": "de21d1aba79f6b8b4d08310bc2e9c4f313abdec23985954c57bc5b0f5f1a55da",
+      "pdf_bytes": 120953
+    },
+    {
+      "url": "https://www.southhillva.gov/Christmas%20Application%202026.pdf?t=202609031323400",
+      "text_fixture": "hometown_2026.txt",
+      "title": "Hometown Christmas Market 2026",
+      "published_date": "2026-12-05",
+      "published_time": "9 a.m. to 2 p.m.",
+      "venue": "The Exchange Warehouse",
+      "published_street": "408 W Danville Street",
+      "pdf_fixture": "hometown_2026.pdf",
+      "pdf_sha256": "6a165f3953c6b92213f1d0b964b7e91c15205cef28d44eba84712e1dedff87af",
+      "pdf_bytes": 205305
+    }
+  ],
+  "fee_scope": "The publisher's $25 charge buys a 10 x 10 vendor spot; no attendee price or free-admission claim is inferred.",
+  "transport": "Local guarded fetch returned dns_unavailable. A normal network-enabled collector audit remains required; web research is not runtime transport proof.",
+  "durability": "Runtime discovers current links and parses explicit PDF years, dates, clocks and streets; fixture occurrences are not production constants. No recurring May-October market dates are generated.",
+  "capture_method": "Root downloaded both PDFs from the visible links on the official farmers-market page; no alternate transport or access bypass. This is publisher-structure evidence, not production fetch proof.",
+  "listing_capture": {
+    "fixture": "market_links_capture.html",
+    "raw_dom_sha256": "4edcc0b7558de4cdd71d9cc0fc894df5780b92b449f576c64f0c257a7693f13f",
+    "raw_dom_bytes": 141573
+  }
+}

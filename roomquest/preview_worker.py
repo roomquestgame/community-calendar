@@ -930,11 +930,21 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                 "p_parser_capability": "publisher_event_candidates_v1"}
     if source.get("platform_adapter") == "revize" and source.get("kind") == "json":
         from roomquest.revize import collect
+        from roomquest.south_hill_markets import collect as collect_markets
         deadline = min(monotonic() + 30, deadline_at - 8 if deadline_at is not None else float("inf"))
         try:
-            records = collect(source, lambda url, accept: fetch_publisher(
+            guarded_fetch = lambda url, accept: fetch_publisher(
                 url, accept, respect_robots=True, deadline_at=deadline,
-                allowed_hosts=("www.southhillva.gov",)), deadline_at=deadline)
+                allowed_hosts=("www.southhillva.gov",))
+            records = collect(source, guarded_fetch, deadline_at=deadline)
+            # Older backend claims do not yet accept market evidence URLs.
+            # Enable the supplement only after the exact source advertises its
+            # deployed contract; booleans are not capability version numbers.
+            if (type(source.get('south_hill_market_contract_version')) is int
+                    and source['south_hill_market_contract_version'] == 1):
+                records.extend(collect_markets(source, guarded_fetch, deadline_at=deadline))
+                if len(records) > 500 or len({row['id'] for row in records}) != len(records):
+                    raise ValueError('town_source_record_identity_limit')
         except PreviewError:
             raise
         except (ValueError, TypeError, KeyError, OverflowError) as exc:
@@ -991,6 +1001,15 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         elif source_key == 'shady_shack_bracey_va':
             from roomquest.shady_shack import collect as collect_html
             allowed_hosts = ('shadyshackgrill.com',)
+        elif source_key == 'mcgregor_hall_henderson_nc':
+            from roomquest.mcgregor_hall import collect as collect_html
+            allowed_hosts = ('www.mcgregorhall.org',)
+        elif source_key == 'victoria_town_calendar_va':
+            from roomquest.victoria_calendar import collect as collect_html
+            allowed_hosts = ('victoriava.net',)
+        elif source_key == 'vance_county_arts_council_nc':
+            from roomquest.vance_arts import collect as collect_html
+            allowed_hosts = ('vanceartscouncil.com',)
         elif source_key == 'sova_innovation_hub_va':
             from roomquest.sova_workshops import HOST, collect as collect_html
             allowed_hosts = (HOST,)
@@ -1476,7 +1495,9 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
                                                   'good_shepherd_food_pantry_south_hill_va'))) or source.get('platform_adapter') == 'south_carolina_parks' or (
                         source_key == 'south_hill_town_va' and source.get('kind') == 'json'
                         and source.get('platform_adapter') == 'revize')
-    publisher_media = publisher_media or (html and source_key == 'shady_shack_bracey_va')
+    publisher_media = publisher_media or (html and source_key in (
+        'shady_shack_bracey_va', 'mcgregor_hall_henderson_nc',
+        'victoria_town_calendar_va', 'vance_county_arts_council_nc'))
     from roomquest.holly_hill_sources import publisher_media as holly_hill_media
     publisher_media = publisher_media or holly_hill_media(source)
     preview_rpc = ("community_collector_record_preview_v3"
