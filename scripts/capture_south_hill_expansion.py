@@ -62,7 +62,9 @@ def source(key):
             'platform_adapter': adapter, 'timezone': 'America/New_York',
             **({'civic_contract_version': 1, 'civic_jurisdiction_id': 'us-va-south-hill',
                 'south_hill_market_contract_version': 1}
-               if key == 'south_hill_town_va' else {})}
+               if key == 'south_hill_town_va' else {}),
+            **({'venue_association_contract_version': 1}
+               if key in ('victoria_town_calendar_va', 'vance_county_arts_council_nc') else {})}
 
 
 def _code(error):
@@ -76,7 +78,7 @@ def _candidate(event):
               'publisher_status', 'publisher_details', 'location_provenance',
               'publisher_document', 'details_extractor_version',
               'details_evidence_url', 'image_extractor_version', 'image_evidence_url',
-              'civic')
+              'civic', 'venue_association')
     return {key: event[key] for key in fields if key in event}
 
 
@@ -90,7 +92,7 @@ def _diagnostics(log, key):
         if not isinstance(item, dict) or item.get('source_key') != key:
             continue
         fields = ('event', 'source_key', 'id', 'event_id', 'event_url', 'reason',
-                  'disposition', 'held', 'excluded', 'records', 'cards',
+                  'disposition', 'held', 'excluded', 'inferred', 'records', 'cards',
                   'schedule_cards', 'accounted_count', 'document_url',
                   'source_card_id', 'starts_at', 'ends_at')
         items.append({name: item[name] for name in fields if name in item})

@@ -3,8 +3,9 @@
 Printed local dates/clocks are checked in both representations. The publisher's
 concert currently labels the same wall clock UTC in JSON-LD; only a matching
 visible schedule and complete North Carolina event venue justify local Eastern
-time. Every other schedule discrepancy is held. Parade mailing/lineup addresses
-are never interpreted as venue metadata.
+time. Every other schedule discrepancy is held. A separately disclosed,
+owner-authorized parade lineup reference is gated by the backend receipt
+contract; mailing and registration addresses never become event venues.
 """
 from __future__ import annotations
 
@@ -31,6 +32,18 @@ _PHOTO = re.compile(r'https://vanceartscouncil\.com/wp-content/uploads/20\d{2}/(
 _CLOCK = r'(?:[1-9]|1[0-2]):[0-5]\d\s*[ap]m'
 _DAY_CLOCK = re.compile(r'([A-Za-z]+ \d{1,2}, 20\d{2})\s*@\s*(' + _CLOCK + ')', re.I)
 _PRIVATE = re.compile(r'\b(?:private (?:event|party|function)|members?[ -]+only|invitation[ -]+only)\b', re.I)
+_ORGANIZER_MISSION = (
+    'The Vance County Arts Council works throughout the year to bring quality multicultural arts programming '
+    'to Vance County, with a special focus on school-aged children, at-risk youth, adults with disabilities '
+    'and the community as a whole.')
+ASSOCIATION_METHOD = 'owner_authorized_inferred_venue_association'
+_PARADE_URL = 'https://vanceartscouncil.com/event/henderson-nc-christmas-parade-2026/'
+_PARADE_VENUE = 'Downtown Henderson parade — Raleigh Road lineup reference'
+_PARADE_ADDRESS = '391 Raleigh Road, Henderson, NC 27536'
+_PARADE_DISCLOSURE = (
+    "Venue inferred from the publisher's lineup directions and the official tourism directory. "
+    'Map location is an approximate parade-lineup reference near Burger King on Raleigh Road; '
+    'the parade continues downtown and ends on Rose Avenue. It is not a fixed event venue.')
 
 
 class EventHold(ValueError):
@@ -51,6 +64,15 @@ def photo_url(value):
 
 def _text(tag):
     return plain(tag.get_text(' ', strip=True))
+
+
+def _occurrence_narrative(container):
+    # This exact, separate paragraph describes the organization's year-round
+    # mission. Keep all concert-specific audience and admission statements,
+    # including invitations to families; do not filter classification keywords.
+    parts = [str(child) for child in container.children
+             if not (getattr(child, 'name', None) == 'p' and _text(child) == _ORGANIZER_MISSION)]
+    return _text(BeautifulSoup(''.join(parts), 'html.parser'))
 
 
 def _document(payload):
@@ -199,7 +221,42 @@ def _venue(container, item):
     return venue, f'{street}, {city}, {region} {zipcode}', city
 
 
-def _detail(payload, identity, url, title, expected_start, expected_end, listing_item):
+def _parade_lineup_reference(container, item, listing_item, identity, url, title, start, end, narrative):
+    # Reviewed 2026-11-10 under Ben's authorization to associate known venues.
+    # This is a reference near the publisher's named lineup landmark, not a
+    # claim that the restaurant hosts the parade or that this is its whole route.
+    if (identity != 'vance_arts:1484' or url != _PARADE_URL
+            or title != 'Henderson, NC Christmas Parade 2026'
+            or start.date().isoformat() != '2026-12-05' or start.strftime('%H:%M') != '14:30'
+            or end is None or end.date() != start.date() or end.strftime('%H:%M') != '17:00'
+            or not re.search(r'\bparade participants will line up along Raleigh Road near Burger King\b', narrative, re.I)
+            or not re.search(r'\bparade will conclude on Rose Avenue\b', narrative, re.I)
+            or re.search(r'\b(?:Location|Venue)\s*:|\b(?:moved to|relocated|new location|new route)\b', narrative, re.I)):
+        raise EventHold('event_venue_unreviewed')
+    groups = container.select('.tribe-events-meta-group-venue')
+    names = groups[0].select('.tribe-venue') if len(groups) == 1 else []
+    if (len(names) != 1 or _text(names[0]) != 'Downtown Henderson, NC'
+            or any(_text(tag) for tag in groups[0].select(
+                '.tribe-street-address, .tribe-locality, .tribe-region, .tribe-postal-code'))):
+        raise EventHold('event_venue_unreviewed')
+    for structured in (item, listing_item):
+        location = structured.get('location')
+        address = location.get('address') if isinstance(location, dict) else None
+        if (not isinstance(location, dict) or location.get('name') != 'Downtown Henderson, NC'
+                or not isinstance(address, dict)
+                or any(address.get(key) not in (None, '') for key in (
+                    'streetAddress', 'addressLocality', 'addressRegion', 'postalCode'))):
+            raise EventHold('publisher_venue_conflict')
+    return {
+        'method': ASSOCIATION_METHOD,
+        'evidence_urls': [_PARADE_URL, 'https://www.kerrlake-nc.com/dining'],
+        'matched_activity': title, 'venue_name': _PARADE_VENUE,
+        'venue_address': _PARADE_ADDRESS,
+    }
+
+
+def _detail(payload, identity, url, title, expected_start, expected_end, listing_item,
+            *, allow_inferred_venues=False):
     soup = _document(payload)
     content = soup.select_one('#tribe-events-content.tribe-events-single')
     headings = content.select('.tribe-events-single-event-title') if content else []
@@ -231,24 +288,43 @@ def _detail(payload, identity, url, title, expected_start, expected_end, listing
     descriptions = content.select('.tribe-events-single-event-description')
     if len(descriptions) > 1:
         raise EventHold('publisher_description_structure_unverified')
-    narrative = _text(descriptions[0]) if descriptions else ''
+    narrative = _occurrence_narrative(descriptions[0]) if descriptions else ''
     if len(narrative) > 30_000:
         raise EventHold('publisher_card_text_limit')
     if _PRIVATE.search(title + ' ' + narrative):
         raise EventHold('nonpublic_event')
-    venue, address, city = _venue(content, item)
+    association = None
+    try:
+        venue, address, city = _venue(content, item)
+    except EventHold as error:
+        if str(error) != 'event_venue_unreviewed' or allow_inferred_venues is not True:
+            raise
+        association = _parade_lineup_reference(
+            content, item, listing_item, identity, url, title, start, end, narrative)
+        # The reviewed parade has explicit Eastern offsets in both JSON-LD
+        # copies. An inferred location cannot justify repairing a UTC conflict.
+        if discrepancy or _structured_schedule(listing_item, start, end):
+            raise EventHold('publisher_schedule_conflict')
+        venue, address, city = association['venue_name'], association['venue_address'], 'Henderson'
     # No costs are inferred from prose, parade entry fees, mailing instructions,
     # or an offer numeric zero. Use the event's visible Cost metadata only.
     costs = content.select('.tribe-events-event-cost')
     facts = {'cost': _text(costs[0])[:400]} if len(costs) == 1 and _text(costs[0]) else {}
+    if association:
+        disclosure = _PARADE_DISCLOSURE
+        if facts.get('cost', '').casefold() == 'free':
+            disclosure += ' Spectator admission is listed as free; the registration fees below are for parade entries.'
+        narrative = disclosure + '\n\n' + narrative[:2000 - len(disclosure) - 2]
     row = record(title, start.isoformat(), end.isoformat() if end else None,
                  venue, address, city, url, identity, tz=TIMEZONE, retain_until_end=True)
     if row:
         row.update(timezone=TIMEZONE,
                    description=optional_description(SOURCE_KEY, identity, narrative[:2000]),
-                   location_provenance='publisher_event_address_pending_geocode',
+                   location_provenance=ASSOCIATION_METHOD if association else 'publisher_event_address_pending_geocode',
                    publisher_status=status,
                    publisher_categories=[_text(a) for a in content.select('.tribe-events-event-categories a')][:5])
+        if association:
+            row['venue_association'] = association
         candidate = item.get('image') if item.get('image') == listing_item.get('image') else None
         attach(row, SOURCE_KEY, facts=facts, candidate=photo_url(candidate))
     return row, discrepancy
@@ -272,7 +348,9 @@ def collect(source, fetch, *, deadline_at=None, now=None):
     check()
     manifest = _listing(fetch(CALENDAR, 'text/html'))
     check()
-    rows, held, excluded = [], 0, 0
+    version = source.get('venue_association_contract_version')
+    allow_inferred_venues = type(version) is int and version == 1
+    rows, held, excluded, inferred = [], 0, 0, 0
     for identity, url, title, card, item in manifest:
         check()
         try:
@@ -287,18 +365,23 @@ def collect(source, fetch, *, deadline_at=None, now=None):
                 excluded += 1
                 note('excluded', identity, url, 'outside_window')
                 continue
-            row, detail_discrepancy = _detail(fetch(url, 'text/html'), identity, url, title, start, end, item)
+            row, detail_discrepancy = _detail(
+                fetch(url, 'text/html'), identity, url, title, start, end, item,
+                allow_inferred_venues=allow_inferred_venues)
             check()
             if row:
                 if discrepancy or detail_discrepancy:
                     note('warning', identity, url, 'publisher_utc_default_visible_local_verified')
+                if row.get('venue_association'):
+                    inferred += 1
+                    note('inferred', identity, url, ASSOCIATION_METHOD)
                 rows.append(row)
         except EventHold as error:
             held += 1
             note('held', identity, url, str(error))
     print(json.dumps({'event': 'vance_normalized', 'source_key': SOURCE_KEY,
                       'cards': len(manifest), 'records': len(rows), 'held': held,
-                      'excluded': excluded}), file=sys.stderr)
+                      'excluded': excluded, 'inferred': inferred}), file=sys.stderr)
     if not rows and held:
         raise ValueError('vance_event_evidence_unavailable')
     return sorted(rows, key=lambda row: (row['starts_at'], row['id']))

@@ -1,0 +1,341 @@
+{
+  "method": "Minimal field fixtures reconstructed from primary publisher facts for previously audited holds; two html_fixture entries retain actual browser event-section DOM nodes. Not a live transport receipt.",
+  "research_evidence": "/workspace/scratch/b07536c953f1/audit/halifax-venue-address-research-20261110.json",
+  "cases": [
+    {
+      "url": "https://gohalifaxva.com/directory/downtown-south-boston-farmers-market-28/",
+      "title": "Downtown South Boston Farmers Market",
+      "date": "2026-11-14",
+      "clock": "8:00 AM",
+      "fields": {
+        "Start Date": "November 14, 2026",
+        "Start Time": "8:00 AM",
+        "Address": "Downtown South Boston Farmers Market, Arch Street, South Boston, Halifax County, Virginia, 24592, United States",
+        "Email": "manager@sobofm.com",
+        "End Time": "1:00 PM"
+      },
+      "description": "Public local produce and craft market.",
+      "expected_group": "farmers_market"
+    },
+    {
+      "url": "https://gohalifaxva.com/directory/downtown-south-boston-farmers-market-29/",
+      "title": "Downtown South Boston Farmers Market",
+      "date": "2026-11-21",
+      "clock": "8:00 AM",
+      "fields": {
+        "Start Date": "November 21, 2026",
+        "Start Time": "8:00 AM",
+        "Address": "Downtown South Boston Farmers Market, Arch Street, South Boston, Halifax County, Virginia, 24592, United States",
+        "Email": "manager@sobofm.com",
+        "End Time": "1:00 PM"
+      },
+      "description": "Public local produce and craft market.",
+      "expected_group": "farmers_market"
+    },
+    {
+      "url": "https://gohalifaxva.com/directory/downtown-south-boston-farmers-market-30/",
+      "title": "Downtown South Boston Farmers Market",
+      "date": "2026-11-28",
+      "clock": "8:00 AM",
+      "fields": {
+        "Start Date": "November 28, 2026",
+        "Start Time": "8:00 AM",
+        "Address": "Downtown South Boston Farmers Market, Arch Street, South Boston, Halifax County, Virginia, 24592, United States",
+        "Email": "manager@sobofm.com",
+        "End Time": "1:00 PM"
+      },
+      "description": "Public local produce and craft market.",
+      "expected_group": "farmers_market"
+    },
+    {
+      "url": "https://gohalifaxva.com/directory/downtown-south-boston-farmers-market-31/",
+      "title": "Downtown South Boston Farmers Market",
+      "date": "2026-12-05",
+      "clock": "8:00 AM",
+      "fields": {
+        "Start Date": "December 5, 2026",
+        "Start Time": "8:00 AM",
+        "Address": "Downtown South Boston Farmers Market, Arch Street, South Boston, Halifax County, Virginia, 24592, United States",
+        "Email": "manager@sobofm.com",
+        "End Time": "1:00 PM"
+      },
+      "description": "Public local produce and craft market.",
+      "expected_group": "farmers_market"
+    },
+    {
+      "url": "https://gohalifaxva.com/directory/downtown-south-boston-farmers-market-32/",
+      "title": "Downtown South Boston Farmers Market",
+      "date": "2026-12-12",
+      "clock": "8:00 AM",
+      "fields": {
+        "Start Date": "December 12, 2026",
+        "Start Time": "8:00 AM",
+        "Address": "Downtown South Boston Farmers Market, Arch Street, South Boston, Halifax County, Virginia, 24592, United States",
+        "Email": "manager@sobofm.com",
+        "End Time": "1:00 PM"
+      },
+      "description": "Public local produce and craft market.",
+      "expected_group": "farmers_market"
+    },
+    {
+      "url": "https://gohalifaxva.com/directory/lights-for-hope-drive-thru-holiday-light-show/",
+      "title": "Lights for Hope! Drive-thru Holiday Light Show",
+      "date": "2026-12-04",
+      "clock": "6:00 PM",
+      "fields": {
+        "Start Date": "December 4, 2026",
+        "Start Time": "6:00 PM",
+        "Address": "Halifax County Fairgrounds, 1188, South Boston, Halifax County, Virginia, 24592, United States",
+        "End Time": "9:00 PM",
+        "End Date": "December 13, 2026"
+      },
+      "description": "Enjoy a drive-thru light show this holiday season at the Halifax County Fairgrounds. December 4-5-6 & Dec 11-12-13 6:00 pm-9:00 pm $10 Admission per Car",
+      "expected_group": "fairgrounds",
+      "html_fixture": "lights_for_hope.html"
+    },
+    {
+      "url": "https://gohalifaxva.com/directory/lights-for-hope-drive-thru-holiday-light-show-2/",
+      "title": "Lights for Hope! Drive-thru Holiday Light Show",
+      "date": "2026-12-05",
+      "clock": "6:00 PM",
+      "fields": {
+        "Start Date": "December 5, 2026",
+        "Start Time": "6:00 PM",
+        "Address": "Halifax County Fairgrounds, 1188, South Boston, Halifax County, Virginia, 24592, United States",
+        "End Time": "9:00 PM"
+      },
+      "description": "Enjoy a drive-thru light show this holiday season at the Halifax County Fairgrounds. December 4-5-6 & Dec 11-12-13 6:00 pm-9:00 pm $10 Admission per Car",
+      "expected_group": "fairgrounds"
+    },
+    {
+      "url": "https://gohalifaxva.com/directory/lights-for-hope-drive-thru-holiday-light-show-2-2/",
+      "title": "Lights for Hope! Drive-thru Holiday Light Show",
+      "date": "2026-12-06",
+      "clock": "6:00 PM",
+      "fields": {
+        "Start Date": "December 6, 2026",
+        "Start Time": "6:00 PM",
+        "Address": "Halifax County Fairgrounds, 1188, South Boston, Halifax County, Virginia, 24592, United States",
+        "End Time": "9:00 PM"
+      },
+      "description": "Enjoy a drive-thru light show this holiday season at the Halifax County Fairgrounds. December 4-5-6 & Dec 11-12-13 6:00 pm-9:00 pm $10 Admission per Car",
+      "expected_group": "fairgrounds"
+    },
+    {
+      "url": "https://gohalifaxva.com/directory/lights-for-hope-drive-thru-holiday-light-show-2-3/",
+      "title": "Lights for Hope! Drive-thru Holiday Light Show",
+      "date": "2026-12-11",
+      "clock": "6:00 PM",
+      "fields": {
+        "Start Date": "December 11, 2026",
+        "Start Time": "6:00 PM",
+        "Address": "Halifax County Fairgrounds, 1188, South Boston, Halifax County, Virginia, 24592, United States",
+        "End Time": "9:00 PM"
+      },
+      "description": "Enjoy a drive-thru light show this holiday season at the Halifax County Fairgrounds. December 4-5-6 & Dec 11-12-13 6:00 pm-9:00 pm $10 Admission per Car",
+      "expected_group": "fairgrounds"
+    },
+    {
+      "url": "https://gohalifaxva.com/directory/lights-for-hope-drive-thru-holiday-light-show-2-4/",
+      "title": "Lights for Hope! Drive-thru Holiday Light Show",
+      "date": "2026-12-12",
+      "clock": "6:00 PM",
+      "fields": {
+        "Start Date": "December 12, 2026",
+        "Start Time": "6:00 PM",
+        "Address": "Halifax County Fairgrounds, 1188, South Boston, Halifax County, Virginia, 24592, United States",
+        "End Time": "9:00 PM"
+      },
+      "description": "Enjoy a drive-thru light show this holiday season at the Halifax County Fairgrounds. December 4-5-6 & Dec 11-12-13 6:00 pm-9:00 pm $10 Admission per Car",
+      "expected_group": "fairgrounds"
+    },
+    {
+      "url": "https://gohalifaxva.com/directory/lights-for-hope-drive-thru-holiday-light-show-2-5/",
+      "title": "Lights for Hope! Drive-thru Holiday Light Show",
+      "date": "2026-12-13",
+      "clock": "6:00 PM",
+      "fields": {
+        "Start Date": "December 13, 2026",
+        "Start Time": "6:00 PM",
+        "Address": "Halifax County Fairgrounds, 1188, South Boston, Halifax County, Virginia, 24592, United States",
+        "End Time": "9:00 PM"
+      },
+      "description": "Enjoy a drive-thru light show this holiday season at the Halifax County Fairgrounds. December 4-5-6 & Dec 11-12-13 6:00 pm-9:00 pm $10 Admission per Car",
+      "expected_group": "fairgrounds"
+    },
+    {
+      "url": "https://gohalifaxva.com/directory/walk-the-battlefield-2/",
+      "title": "Walk the Battlefield",
+      "date": "2026-11-11",
+      "clock": "11:00 AM",
+      "fields": {
+        "Start Date": "November 11, 2026",
+        "Start Time": "11:00 AM",
+        "Address": "Staunton River Battlefield State Park, 1035, Randolph, Charlotte County, Virginia, 23962, United States",
+        "Website": "dcr.virginia.gov/state-parks/staunton-river-battlefield"
+      },
+      "description": "Program at Clover Visitor Center. Call 434-454-4312 for information.",
+      "expected_group": "battlefield"
+    },
+    {
+      "url": "https://gohalifaxva.com/directory/fall-scavenger-hunt/",
+      "title": "Fall Scavenger Hunt",
+      "date": "2026-11-14",
+      "clock": "2:00 PM",
+      "fields": {
+        "Start Date": "November 14, 2026",
+        "Start Time": "2:00 PM",
+        "Address": "Staunton River Bridge, Battlefield Trail, Randolph, Charlotte County, Virginia, 23962, United States",
+        "Website": "dcr.virginia.gov/state-parks/staunton-river-battlefield"
+      },
+      "description": "Program at Clover Visitor Center. Call 434-454-4312 for information.",
+      "expected_group": "battlefield"
+    },
+    {
+      "url": "https://gohalifaxva.com/directory/hardtack-coffee/",
+      "title": "Hardtack & Coffee",
+      "date": "2026-11-21",
+      "clock": "11:00 AM",
+      "fields": {
+        "Start Date": "November 21, 2026",
+        "Start Time": "11:00 AM",
+        "Address": "Staunton River Battlefield State Park, 1035, Randolph, Charlotte County, Virginia, 23962, United States",
+        "Website": "dcr.virginia.gov/state-parks/staunton-river-battlefield"
+      },
+      "description": "Program at Clover Visitor Center. Call 434-454-4312 for information.",
+      "expected_group": "battlefield"
+    },
+    {
+      "url": "https://gohalifaxva.com/directory/gobble-gobble/",
+      "title": "Gobble Gobble",
+      "date": "2026-11-22",
+      "clock": "2:00 PM",
+      "fields": {
+        "Start Date": "November 22, 2026",
+        "Start Time": "2:00 PM",
+        "Address": "Staunton River Battlefield State Park, 1035, Randolph, Charlotte County, Virginia, 23962, United States",
+        "Website": "dcr.virginia.gov/state-parks/staunton-river-battlefield"
+      },
+      "description": "Program at the picnic shelter.",
+      "expected_group": "battlefield"
+    },
+    {
+      "url": "https://gohalifaxva.com/directory/hardtack-coffee-2/",
+      "title": "Hardtack & Coffee",
+      "date": "2026-11-22",
+      "clock": "11:00 AM",
+      "fields": {
+        "Start Date": "November 22, 2026",
+        "Start Time": "11:00 AM",
+        "Address": "Staunton River Battlefield State Park, 1035, Randolph, Charlotte County, Virginia, 23962, United States",
+        "Website": "dcr.virginia.gov/state-parks/staunton-river-battlefield"
+      },
+      "description": "Program at Clover Visitor Center. Call 434-454-4312 for information.",
+      "expected_group": "battlefield"
+    },
+    {
+      "url": "https://gohalifaxva.com/directory/breathe-friday-yoga-qigong-fusion/",
+      "title": "Breathe Friday – Yoga & Qigong Fusion",
+      "date": "2026-11-27",
+      "clock": "10:00 AM",
+      "fields": {
+        "Start Date": "November 27, 2026",
+        "Start Time": "10:00 AM",
+        "Address": "The Light Spiritual Wellness",
+        "Website": "thelightspiritualwellness.com"
+      },
+      "description": "Public event at The Light Spiritual Wellness.",
+      "expected_group": "the_light"
+    },
+    {
+      "url": "https://gohalifaxva.com/directory/book-signing-with-ray-robertson/",
+      "title": "Book Signing with Ray Robertson",
+      "date": "2026-11-28",
+      "clock": "1:00 PM",
+      "fields": {
+        "Start Date": "November 28, 2026",
+        "Start Time": "1:00 PM",
+        "Address": "The Light Spiritual Wellness",
+        "Website": "thelightspiritualwellness.com"
+      },
+      "description": "Public event at The Light Spiritual Wellness.",
+      "expected_group": "the_light"
+    },
+    {
+      "url": "https://gohalifaxva.com/directory/holiday-living-show/",
+      "title": "Holiday Living Show",
+      "date": "2026-11-14",
+      "clock": "9:00 AM",
+      "fields": {
+        "Start Date": "November 14, 2026",
+        "Start Time": "9:00 AM",
+        "Address": "1011, Middle School Circle, South Boston, Halifax County, Virginia, 24592, United States",
+        "End Date": "November 15, 2026",
+        "End Time": "4:00 AM",
+        "Phone": "4345724349",
+        "Email": "carylmoore38@gmail.com",
+        "Website": "http://halifaxbusinesswomen.org"
+      },
+      "description": "The Holiday Living Show will be Saturday November 14th from 9:00 am to 4:00 pm and Sunday November 15th from 1:00pm to 4:00 pm at the Halifax County Middle School, 1011 Middle School Circle South Boston, VA",
+      "expected_group": "middle_school",
+      "html_fixture": "holiday_living.html"
+    },
+    {
+      "url": "https://gohalifaxva.com/directory/krush-250/",
+      "title": "Krush 250",
+      "date": "2026-11-14",
+      "clock": "2:00 PM",
+      "fields": {
+        "Start Date": "November 14, 2026",
+        "Start Time": "2:00 PM",
+        "Address": "South Boston Speedway, 1188, James D Hagood Highway, Five Forks, South Boston, Halifax County, Virginia, 24592, United States",
+        "Website": "southbostonspeedway.com"
+      },
+      "description": "Late Model racing at South Boston Speedway.",
+      "expected_group": "speedway"
+    },
+    {
+      "url": "https://gohalifaxva.com/directory/charity-laps-for-victory-junction/",
+      "title": "Charity Laps for Victory Junction",
+      "date": "2026-11-20",
+      "clock": "8:00 AM",
+      "fields": {
+        "Start Date": "November 20, 2026",
+        "Start Time": "8:00 AM",
+        "Address": "Virginia International Raceway, 1245, Pine Tree Road, Halifax County, Virginia, 24520, United States",
+        "Website": "virnow.com",
+        "End Time": "5:00 PM"
+      },
+      "description": "Charity laps on the VIR Full Course.",
+      "expected_group": "vir"
+    },
+    {
+      "url": "https://gohalifaxva.com/directory/pictures-with-santa/",
+      "title": "Pictures with Santa",
+      "date": "2026-11-29",
+      "clock": "11:00 AM",
+      "fields": {
+        "Start Date": "November 29, 2026",
+        "Start Time": "11:00 AM",
+        "Address": "Lake Front Winery, 3655, Highway 58, Mecklenburg County, Virginia, 24529, United States",
+        "End Time": "3:00 PM"
+      },
+      "description": "Pictures with Santa at Lake Front Winery, 3655 Highway 58, Buffalo Junction, VA.",
+      "expected_group": "lake_front"
+    },
+    {
+      "url": "https://gohalifaxva.com/directory/south-boston-christmas-parade/",
+      "title": "South Boston Christmas Parade",
+      "date": "2026-12-05",
+      "clock": "5:00 PM",
+      "fields": {
+        "Start Date": "December 5, 2026",
+        "Start Time": "5:00 PM",
+        "Address": "Main Street, Downtown South Boston",
+        "Website": "downtownsobo.com"
+      },
+      "description": "The parade follows the published downtown route.",
+      "expected_group": null
+    }
+  ]
+}

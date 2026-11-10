@@ -108,13 +108,15 @@ def test_town_supplement_failure_prevents_certification_and_partial_staging():
     assert calls[0][1]['p_error'] == 'publisher_http_403'
 
 
-@pytest.mark.parametrize('key,module_name,expected', [(SPECS[0][0], SPECS[0][1], 6), (SPECS[2][0], SPECS[2][1], 1)])
+@pytest.mark.parametrize('key,module_name,expected', [
+    (SPECS[0][0], SPECS[0][1], 6), (SPECS[1][0], SPECS[1][1], 3), (SPECS[2][0], SPECS[2][1], 2)])
 def test_captured_publisher_documents_flow_through_real_preview_route(key, module_name, expected, monkeypatch):
     module = importlib.import_module('roomquest.' + module_name)
     original_collect = module.collect
     monkeypatch.setattr(worker, '_future_datetime', lambda dt: dt.astimezone(timezone.utc))
     documents = {
         SPECS[0][2].rsplit('/', 1)[0] + '/shows-events': 'mcgregor-shows.html',
+        'https://victoriava.net/calendar-of-events': 'victoria-calendar.html',
         'https://vanceartscouncil.com/events/': 'vance-events.html',
         SPECS[2][2]: 'vance-concert.html',
         'https://vanceartscouncil.com/event/henderson-nc-christmas-parade-2026/': 'vance-parade.html',
@@ -125,6 +127,41 @@ def test_captured_publisher_documents_flow_through_real_preview_route(key, modul
     assert result['p_future_count'] == expected and len(result['p_events']) == expected
     assert all(call.kwargs['respect_robots'] is True for call in transport.call_args_list)
     assert all(call.kwargs['allowed_hosts'] == (urlsplit(source(key)['feed_url']).hostname,) for call in transport.call_args_list)
+
+
+@pytest.mark.parametrize('key,module_name,expected', [
+    (SPECS[1][0], SPECS[1][1], 3), (SPECS[2][0], SPECS[2][1], 1)])
+def test_actual_association_receipts_reach_staging_unchanged_before_v3(key, module_name, expected, monkeypatch):
+    module = importlib.import_module('roomquest.' + module_name)
+    original_collect = module.collect
+    monkeypatch.setattr(worker, '_future_datetime', lambda dt: dt.astimezone(timezone.utc))
+    documents = {
+        'https://victoriava.net/calendar-of-events': 'victoria-calendar.html',
+        'https://vanceartscouncil.com/events/': 'vance-events.html',
+        SPECS[2][2]: 'vance-concert.html',
+        'https://vanceartscouncil.com/event/henderson-nc-christmas-parade-2026/': 'vance-parade.html',
+    }
+    calls = []
+    def rpc(name, payload):
+        calls.append((name, deepcopy(payload)))
+        return len(payload.get('p_events', []))
+    with patch.object(module, 'collect', side_effect=lambda src, fetch, **kwargs: original_collect(src, fetch, now=NOW, **kwargs)), \
+         patch.object(worker, 'fetch_publisher', side_effect=lambda url, accept, **kwargs: (ROOT / documents[url]).read_text()), \
+         patch.object(worker, 'supabase_rpc', side_effect=rpc):
+        result = worker._process_claimed_source(source(key))
+    assert result['complete'] == 1
+    assert [name for name, _ in calls] == ['community_collector_record_staged_events', 'community_collector_record_preview_v3']
+    staged = calls[0][1]['p_events']
+    associated = [row for row in staged if row.get('venue_association')]
+    assert len(associated) == expected
+    for row in associated:
+        assert row['venue_association']['method'] == row['location_provenance']
+        assert row['venue_association']['matched_activity'] == row['title']
+        assert row['venue_association']['venue_address'] == row['venue_address']
+        assert row['description'].startswith('Venue inferred from')
+        assert row['lat'] is row['lng'] is None
+    assert calls[1][1]['p_future_count'] == len(staged)
+    assert calls[1][1]['p_parser_capability'] == 'publisher_event_candidates_v1'
 
 
 @pytest.mark.parametrize('key,url,picture', [

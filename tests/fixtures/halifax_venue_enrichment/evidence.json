@@ -1,0 +1,20 @@
+{
+  "captured_at": "2026-11-10T10:06:25.877Z",
+  "fixtures": [
+    {
+      "fixture": "holiday_living.html",
+      "url": "https://gohalifaxva.com/directory/holiday-living-show/",
+      "capture": "/workspace/shared/south-hill-expansion/halifax-holiday-living.html",
+      "capture_sha256": "b0d8394fd9eda671ff0d3132dec86a7e3d2e5da1517f9992e4b20e1a0f58656b",
+      "method": "Complete event-section DOM nodes retained; canonical identity wrapper is reconstructed from the captured URL/og:url because the browser export selected title/OG metadata and event section only. This is source-structure evidence, not guarded network acceptance."
+    },
+    {
+      "fixture": "lights_for_hope.html",
+      "url": "https://gohalifaxva.com/directory/lights-for-hope-drive-thru-holiday-light-show/",
+      "capture": "/workspace/shared/south-hill-expansion/halifax-lights-for-hope.html",
+      "capture_sha256": "b84ab93a3812036e07938b26a735f5be25923daeaf1cfa7cd1749a630ea4baf1",
+      "method": "Complete event-section DOM nodes retained; canonical identity wrapper is reconstructed from the captured URL/og:url because the browser export selected title/OG metadata and event section only. This is source-structure evidence, not guarded network acceptance."
+    }
+  ],
+  "field_cases": "publisher_cases.json holds explicitly labeled reconstruction of publisher fields for the previously audited address holds. Date/place facts are bound to the referenced primary pages; it is not represented as raw fetched HTML."
+}

@@ -65,6 +65,15 @@ def _text(tag):
     return plain(tag.get_text(' ', strip=True)).replace('\ufeff', '').strip()
 
 
+def _audition_cta(paragraph):
+    """Exclude only a standalone link to a separate audition information page."""
+    links = paragraph.select('a[href]')
+    return (len(links) == 1 and _text(paragraph) == _text(links[0])
+            and re.fullmatch(r'Audition information is available here!', _text(links[0]), re.I)
+            and re.fullmatch(r'https://www\.mcgregorhall\.org/[a-z0-9-]+-auditions-and-information',
+                             urljoin(CALENDAR, links[0]['href'])) is not None)
+
+
 def _note(diagnostics, disposition, identity, reason, url):
     diagnostics.setdefault(disposition, []).append(
         {'id': identity, 'reason': reason, 'event_url': url, 'disposition': disposition})
@@ -155,6 +164,7 @@ def parse(payload, *, now=None, diagnostics=None):
             narrative = '\n\n'.join(_text(node) for node in paragraphs
                 if node.name == 'p' and _text(node)
                 and not _DAY_PREFIX.match(_text(node))
+                and not _audition_cta(node)
                 and not re.fullmatch(r'(?:[A-Za-z]+|\d+) Performances?:', _text(node), re.I))[:2000]
             images = {photo_url(image.get('data-dm-image-path')) for image in card.select('img')}
             images.discard(None)

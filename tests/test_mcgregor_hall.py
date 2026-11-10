@@ -67,6 +67,25 @@ def test_summary_count_never_truncates_or_generates_performances():
     assert [r['id'] for r in hall.parse(text, now=NOW)] == [r['id'] for r in hall.parse(FIXTURE.read_text(), now=NOW)]
 
 
+def test_standalone_audition_link_is_not_part_of_a_performance_description():
+    rows = [row for row in hall.parse(FIXTURE.read_text(), now=NOW) if 'blacknativity' in row['id']]
+    assert len(rows) == 2
+    for row in rows:
+        assert 'Audition information' not in row['description']
+        assert 'Langston Hughes' in row['description']
+        assert 'Directed by Karen-Leigh Albert' in row['description']
+        assert 'a live band' in row['description']
+
+
+def test_audition_keyword_inside_actual_event_prose_is_preserved():
+    soup = BeautifulSoup(FIXTURE.read_text(), 'html.parser')
+    link = soup.select_one('a[href="/black-nativity-auditions-and-information"]')
+    link.parent.insert(0, 'The performance includes a scene about auditions. ')
+    rows = [row for row in hall.parse(str(soup), now=NOW) if 'blacknativity' in row['id']]
+    assert all('The performance includes a scene about auditions.' in row['description'] for row in rows)
+    assert all('Audition information is available here!' in row['description'] for row in rows)
+
+
 @pytest.mark.parametrize('text', ['Private event', 'Moved to a new location', 'Venue: Elsewhere'])
 def test_private_and_offsite_notices_never_inherit_the_hall(text):
     soup = BeautifulSoup(FIXTURE.read_text(), 'html.parser')

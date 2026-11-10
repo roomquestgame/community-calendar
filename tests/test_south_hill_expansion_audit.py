@@ -51,6 +51,11 @@ def test_exact_source_scope_and_real_town_claim_capabilities():
     assert type(town['south_hill_market_contract_version']) is int
     assert town['south_hill_market_contract_version'] == 1
     assert 'civic_contract_version' not in audit.source(KEY)
+    assert 'venue_association_contract_version' not in audit.source(KEY)
+    assert 'venue_association_contract_version' not in town
+    for key in ('victoria_town_calendar_va', 'vance_county_arts_council_nc'):
+        assert type(audit.source(key)['venue_association_contract_version']) is int
+        assert audit.source(key)['venue_association_contract_version'] == 1
     with pytest.raises(ValueError, match='unreviewed_audit_source'):
         audit.audit(['unregistered'])
 
@@ -80,6 +85,22 @@ def test_capture_files_are_exact_fetched_public_bodies_not_extra_requests(setup,
     assert (tmp_path / doc['artifact_file']).read_text() == BODY
     assert transport.call_count == 1
     database.assert_not_called()
+
+
+def test_bounded_candidate_receipt_preserves_inference_evidence(setup):
+    _, _, results, _ = setup
+    association = {'method': 'owner_authorized_inferred_venue_association',
+                   'evidence_urls': ['https://victoriava.net/community-centers'],
+                   'matched_activity': 'Skate Night', 'venue_name': 'Victoria-Lunenburg Community Centre',
+                   'venue_address': '1421 6th Street, Victoria, VA 23974'}
+    results[KEY] = {'p_source_key': KEY, 'p_error': None, 'p_future_count': 1,
+                    'p_parser_capability': 'publisher_event_candidates_v1',
+                    'p_events': [{'id': 'test:one', 'title': 'Skate Night',
+                                  'venue_association': association,
+                                  'location_provenance': association['method']}]}
+    candidate = run()['sources'][0]['candidates'][0]
+    assert candidate['venue_association'] == association
+    assert candidate['location_provenance'] == association['method']
 
 
 @pytest.mark.parametrize('change', [

@@ -38,10 +38,10 @@ def change_json(payload, function):
     return str(soup)
 
 
-def collect(documents=None):
+def collect(documents=None, *, source=SOURCE):
     documents = documents or pages()
     fetch = Mock(side_effect=lambda url, accept: documents[url])
-    return arts.collect(SOURCE, fetch, now=NOW), fetch
+    return arts.collect(source, fetch, now=NOW), fetch
 
 
 def test_actual_concert_uses_printed_local_time_and_parade_stays_held(capsys):
@@ -105,6 +105,27 @@ def test_missing_description_remains_optional():
     docs[CONCERT] = str(soup)
     rows, _ = collect(docs)
     assert len(rows) == 1 and rows[0]['description'] == ''
+
+
+def test_separate_organizer_mission_is_omitted_but_concert_family_invitation_remains():
+    rows, _ = collect()
+    description = rows[0]['description']
+    assert arts._ORGANIZER_MISSION not in description
+    assert 'a special way for families, friends and neighbors' in description
+    assert 'Bring your family and friends' in description
+    assert 'Admission is free.' in description
+    assert 'McGregor Hall Performing Arts Center' in description
+
+
+def test_actual_event_audience_fact_is_not_removed_by_keyword_filtering():
+    docs = pages()
+    soup = BeautifulSoup(docs[CONCERT], 'html.parser')
+    paragraph = soup.new_tag('p')
+    paragraph.string = 'This concert welcomes school-aged children and at-risk youth.'
+    soup.select_one('.tribe-events-single-event-description').append(paragraph)
+    docs[CONCERT] = str(soup)
+    rows, _ = collect(docs)
+    assert 'This concert welcomes school-aged children and at-risk youth.' in rows[0]['description']
 
 
 def test_publisher_explicit_status_survives_without_cancellation_from_absence():
@@ -200,3 +221,121 @@ def test_expired_deadline_never_sends_a_request():
     with pytest.raises(ValueError, match='collection_deadline'):
         arts.collect(SOURCE, fetch, deadline_at=-1, now=NOW)
     fetch.assert_not_called()
+
+
+def test_reviewed_parade_lineup_reference_is_disclosed_and_keeps_publisher_schedule(capsys):
+    legacy, _ = collect()
+    rows, fetch = collect(source={**SOURCE, 'venue_association_contract_version': 1})
+    assert len(rows) == 2 and rows[0] == legacy[0]
+    parade = rows[1]
+    assert parade['id'] == 'vance_arts:1484' and parade['event_url'] == PARADE
+    assert parade['starts_at'] == '2026-12-05T19:30:00+00:00'
+    assert parade['ends_at'] == '2026-12-05T22:00:00+00:00'
+    assert parade['venue_name'] == 'Downtown Henderson parade — Raleigh Road lineup reference'
+    assert parade['venue_address'] == '391 Raleigh Road, Henderson, NC 27536'
+    assert parade['lat'] is parade['lng'] is None
+    assert parade['venue_association'] == {
+        'method': arts.ASSOCIATION_METHOD,
+        'evidence_urls': [PARADE, 'https://www.kerrlake-nc.com/dining'],
+        'matched_activity': parade['title'], 'venue_name': parade['venue_name'],
+        'venue_address': parade['venue_address']}
+    assert parade['location_provenance'] == arts.ASSOCIATION_METHOD
+    assert parade['description'].startswith('Venue inferred from')
+    assert 'approximate parade-lineup reference near Burger King on Raleigh Road' in parade['description']
+    assert 'ends on Rose Avenue. It is not a fixed event venue.' in parade['description']
+    assert 'Spectator admission is listed as free' in parade['description']
+    assert parade['publisher_details'] == {'cost': 'Free'}
+    assert 'Standard entries: $55' in parade['description']
+    assert parade['details_evidence_url'] == parade['image_evidence_url'] == PARADE
+    assert fetch.call_count == 3
+    assert '"event": "vance_inferred"' in capsys.readouterr().err
+
+
+@pytest.mark.parametrize('version', [None, True, False, '1', 0, 2, 1.0])
+def test_parade_association_requires_exact_backend_receipt_capability(version):
+    rows, _ = collect(source={**SOURCE, 'venue_association_contract_version': version})
+    assert [row['id'] for row in rows] == ['vance_arts:1314']
+
+
+@pytest.mark.parametrize(('old', 'new'), [
+    ('Raleigh Road near Burger King', 'Raleigh Road near another landmark'),
+    ('will conclude on Rose Avenue', 'will conclude on another street'),
+    ('The parade will conclude', 'The new route will conclude'),
+    ('The holiday season is just around the corner', 'Venue: A different hall. The holiday season is just around the corner'),
+    ('The holiday season is just around the corner', 'Location: 500 Another Street. The holiday season is just around the corner'),
+    ('Henderson, NC Christmas Parade 2026', 'Henderson, NC Holiday Parade 2026'),
+    ('post-1484', 'post-1485'),
+])
+def test_changed_route_landmark_title_or_identity_cannot_reuse_parade_association(old, new):
+    docs = pages()
+    for url in (arts.CALENDAR, PARADE):
+        docs[url] = docs[url].replace(old, new)
+    if old == 'post-1484':
+        docs[PARADE] = docs[PARADE].replace('postid-1484', 'postid-1485')
+    rows, _ = collect(docs, source={**SOURCE, 'venue_association_contract_version': 1})
+    assert [row['id'] for row in rows] == ['vance_arts:1314']
+
+
+def test_parade_association_does_not_override_partial_publisher_address():
+    docs = pages()
+    soup = BeautifulSoup(docs[PARADE], 'html.parser')
+    tag = soup.new_tag('span', attrs={'class': 'tribe-street-address'})
+    tag.string = '500 Another Street'
+    soup.select_one('.tribe-events-meta-group-venue').append(tag)
+    docs[PARADE] = str(soup)
+    rows, _ = collect(docs, source={**SOURCE, 'venue_association_contract_version': 1})
+    assert [row['id'] for row in rows] == ['vance_arts:1314']
+
+
+@pytest.mark.parametrize('replacements', [
+    [('December 5, 2026', 'December 6, 2026'), ('2026-12-05', '2026-12-06')],
+    [('2:30 pm', '3:30 pm'), ('14:30:00', '15:30:00')],
+    [('5:00 pm', '6:00 pm'), ('17:00:00', '18:00:00')],
+])
+def test_parade_association_is_bounded_to_reviewed_date_and_clocks(replacements):
+    docs = pages()
+    for url in (arts.CALENDAR, PARADE):
+        for old, new in replacements:
+            docs[url] = docs[url].replace(old, new)
+    rows, _ = collect(docs, source={**SOURCE, 'venue_association_contract_version': 1})
+    assert [row['id'] for row in rows] == ['vance_arts:1314']
+
+
+def test_explicit_complete_publisher_venue_takes_precedence_over_lineup_reference():
+    docs = pages()
+    soup = BeautifulSoup(docs[PARADE], 'html.parser')
+    group = soup.select_one('.tribe-events-meta-group-venue')
+    for css, value in [('tribe-street-address', '500 Another Street'), ('tribe-locality', 'Henderson'),
+                       ('tribe-region', 'NC'), ('tribe-postal-code', '27536')]:
+        tag = soup.new_tag('span', attrs={'class': css})
+        tag.string = value
+        group.append(tag)
+    docs[PARADE] = change_json(str(soup), lambda rows: rows[0]['location']['address'].update(
+        streetAddress='500 Another Street', addressLocality='Henderson', addressRegion='NC', postalCode='27536'))
+    rows, _ = collect(docs, source={**SOURCE, 'venue_association_contract_version': 1})
+    parade = rows[1]
+    assert parade['venue_address'] == '500 Another Street, Henderson, NC 27536'
+    assert 'venue_association' not in parade and 'Venue inferred from' not in parade['description']
+    assert parade['location_provenance'] == 'publisher_event_address_pending_geocode'
+
+
+@pytest.mark.parametrize('url', [arts.CALENDAR, PARADE])
+def test_inferred_parade_point_cannot_authorize_utc_schedule_repair(url):
+    docs = pages()
+    def utc(rows):
+        item = next(row for row in rows if row['url'] == PARADE)
+        item['startDate'] = '2026-12-05T14:30:00+00:00'
+        item['endDate'] = '2026-12-05T17:00:00+00:00'
+    docs[url] = change_json(docs[url], utc)
+    rows, _ = collect(docs, source={**SOURCE, 'venue_association_contract_version': 1})
+    assert [row['id'] for row in rows] == ['vance_arts:1314']
+
+
+def test_parade_free_admission_disclosure_tracks_current_cost_not_old_review():
+    docs = pages()
+    soup = BeautifulSoup(docs[PARADE], 'html.parser')
+    soup.select_one('.tribe-events-event-cost').string = '$10'
+    docs[PARADE] = str(soup)
+    rows, _ = collect(docs, source={**SOURCE, 'venue_association_contract_version': 1})
+    assert rows[1]['publisher_details'] == {'cost': '$10'}
+    assert 'Spectator admission is listed as free' not in rows[1]['description']

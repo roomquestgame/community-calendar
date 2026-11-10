@@ -88,7 +88,7 @@ jobs:
         run: python -m pytest tests/test_mcgregor_hall.py tests/test_victoria_calendar.py tests/test_vance_arts.py tests/test_south_hill_markets.py tests/test_south_hill_expansion_pipeline.py tests/test_south_hill_expansion_audit.py -q
       - name: Check South Hill recovery collectors and checkpoints
         if: github.event_name != 'workflow_dispatch' || inputs.south_hill_recovery_live
-        run: python -m pytest tests/test_discover_halifax_chunks.py tests/test_halifax_checkpoint_worker.py tests/test_publisher_schedule.py tests/test_shady_shack.py tests/test_south_hill_recovery_audit.py -q
+        run: python -m pytest tests/test_discover_halifax_chunks.py tests/test_halifax_checkpoint_worker.py tests/test_halifax_venue_enrichment.py tests/test_publisher_schedule.py tests/test_shady_shack.py tests/test_south_hill_recovery_audit.py -q
       - name: Check civic adapters, notices, recurrence and read-only audit
         if: github.event_name != 'workflow_dispatch' || inputs.civic_live
         run: python -m pytest tests/test_legistar.py tests/test_virginia_civic.py tests/test_municipal_notices.py tests/test_civic_pipeline.py tests/test_civic_source_audit.py tests/test_civic_schedule.py tests/test_revize_civic.py tests/test_ics_civic_dates.py -q

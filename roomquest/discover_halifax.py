@@ -20,6 +20,7 @@ from roomquest.mapsee_adapter import record, timestamp
 from roomquest.publisher_evidence import attach, optional_description
 from roomquest.publisher_schedule import earliest_published_time
 from roomquest.reviewed_chambers import STREET_SUFFIX
+from roomquest import halifax_venue_enrichment as venue_enrichment
 
 KEY = 'discover_halifax_va'
 URL = 'https://gohalifaxva.com/events/'
@@ -45,9 +46,11 @@ FAIRE_TICKETS = 'https://www.tickettailor.com/events/fbeconsultingandeventplanni
 log = logging.getLogger(__name__)
 
 
-def _note(diagnostics, url, reason, *, disposition='held'):
+def _note(diagnostics, url, reason, *, disposition='held', occurrence_id=None):
     """Log bounded occurrence identities/reasons, never raw publisher payloads."""
     item = {'event_url': url, 'reason': reason, 'disposition': disposition}
+    if occurrence_id is not None:
+        item['occurrence_id'] = occurrence_id
     if diagnostics is not None:
         diagnostics.append(item)
     log.info('publisher_event_decision source=%s occurrence=%r disposition=%s reason=%s',
@@ -67,7 +70,7 @@ def _start(day, value):
     return timestamp(datetime.combine(day, clock), ZONE)
 
 
-def _directory(payload, today):
+def _directory(payload, today, *, venue_associations=False):
     from roomquest.preview_worker import LOOKAHEAD_DAYS
 
     page = BeautifulSoup(payload, 'html.parser')
@@ -87,13 +90,14 @@ def _directory(payload, today):
         day = _date(_text(card.select_one('.directorist-listing-card-date')))
         # Include the final local calendar day; the shared factual normalizer
         # applies the precise rolling 60-day timestamp boundary to each record.
-        if today <= day <= today + timedelta(days=LOOKAHEAD_DAYS):
+        earliest = today - timedelta(days=1) if venue_associations and url == venue_enrichment.HOLIDAY_URL else today
+        if earliest <= day <= today + timedelta(days=LOOKAHEAD_DAYS):
             found.append((url, _text(link), day, _text(card.select_one('.directorist-listing-card-time'))))
     # Publisher display order is not an identity or a reason to restart work.
     return sorted(found, key=lambda item: (item[2], item[0]))
 
 
-def _detail(payload, url, title, day, clock, *, diagnostics=None):
+def _detail(payload, url, title, day, clock, *, diagnostics=None, venue_associations=False, include_sessions=False):
     page = BeautifulSoup(payload, 'html.parser')
     canonical = page.select_one('link[rel="canonical"]')
     header = page.select_one('h1.directorist-listing-details__listing-title')
@@ -130,29 +134,54 @@ def _detail(payload, url, title, day, clock, *, diagnostics=None):
     if address and (address['city'].lower().endswith(' county')
                     or not re.search(r'\b' + STREET_SUFFIX + r'\b', address['street'], re.I)):
         address = None
+    association = None
     if address:
         venue, city = address['venue'], address['city']
         street = f"{address['number']} {address['street']}, {city}, VA {address['zip']}"
-    elif _reviewed_light_venue(fields, url, day, clock, description):
+    elif venue_associations and (association := venue_enrichment.resolve(fields, url, title, day, description)):
+        venue, city, street = (association[key] for key in ('venue_name', 'venue_city', 'venue_address'))
+    elif not venue_associations and _reviewed_light_venue(fields, url, day, clock, description):
         venue, city, street = 'The Light Spiritual Wellness', 'South Boston', THE_LIGHT_ADDRESS
     else:
         _note(diagnostics, url, 'event_address_unresolved')
         return None
-    end = _start(_date(fields['End Date']) if fields.get('End Date') else day,
-                 fields['End Time']) if fields.get('End Time') else None
+    try:
+        reviewed_end = (venue_enrichment.reviewed_end(fields, url, title, day, description)
+                        if venue_associations else None)
+    except venue_enrichment.SessionHold:
+        _note(diagnostics, url, 'publisher_session_schedule_unresolved')
+        return None
+    end = reviewed_end or (_start(_date(fields['End Date']) if fields.get('End Date') else day,
+                                  fields['End Time']) if fields.get('End Time') else None)
     if end and not start < end <= start + timedelta(hours=24):
         _note(diagnostics, url, 'publisher_end_unverified', disposition='warning')
         end = None
-    row = record(title, start, end, venue, street, city, url, url, retain_until_end=True)
-    if row:
-        row.update(description=optional_description(KEY, row['id'], description[:3000]),
-                   attendance_mode='in_person')
-        photos = {tag.get('content') for tag in page.select('meta[property="og:image"]')
-                  if PHOTO_URL.fullmatch(tag.get('content', ''))}
-        attach(row, KEY, candidate=next(iter(photos)) if len(photos) == 1 else None)
-    else:
-        _note(diagnostics, url, 'outside_shared_event_window', disposition='excluded')
-    return row
+    sessions = [(url, start, end)]
+    if venue_associations and url == venue_enrichment.HOLIDAY_URL and title == 'Holiday Living Show':
+        # Normalize each printed session independently. A Saturday parent must
+        # not disappear while its Sunday session is still future, nor expose
+        # an artificial continuous overnight event to the shared normalizer.
+        plan = venue_enrichment.holiday_plan(day, description)
+        sessions = [(url + '#session-' + begin.date().isoformat(),
+                     min(begin, start) if index == 0 else begin, finish)
+                    for index, (begin, finish) in enumerate(plan)]
+        _note(diagnostics, url, 'publisher_explicit_sessions_separated', disposition='warning')
+    rows = []
+    photos = {tag.get('content') for tag in page.select('meta[property="og:image"]')
+              if PHOTO_URL.fullmatch(tag.get('content', ''))}
+    for identity, begin, finish in sessions:
+        row = record(title, begin, finish, venue, street, city, url, identity, retain_until_end=True)
+        if row:
+            row.update(description=optional_description(KEY, row['id'], description[:3000]),
+                       attendance_mode='in_person')
+            if association:
+                venue_enrichment.associate(row, association)
+            attach(row, KEY, candidate=next(iter(photos)) if len(photos) == 1 else None)
+            rows.append(row)
+        else:
+            _note(diagnostics, url, 'outside_shared_event_window', disposition='excluded',
+                  occurrence_id=identity if len(sessions) > 1 else None)
+    return rows if include_sessions else (rows[0] if rows else None)
 
 
 def _reviewed_light_venue(fields, url, day, clock, description):
@@ -180,7 +209,7 @@ def _reviewed_light_venue(fields, url, day, clock, description):
             and not re.search(r'\b(?:off[ -]site|relocated|moved to|new location|venue:)\b', description, re.I))
 
 
-def _reviewed_sessions(row, diagnostics):
+def _reviewed_sessions(row, diagnostics, *, venue_associations=False):
     """Separate the two explicitly scheduled, separately admitted Nov 21 sessions."""
     if row['event_url'] != FAIRE_EVENT or row['starts_at'][:10] != '2026-11-21':
         return [row]
@@ -243,8 +272,12 @@ def _now(value=None):
     return current.astimezone(timezone.utc)
 
 
-def _manifest(events):
+def _manifest(events, *, venue_associations=False):
     encoded = [[url, title, day.isoformat(), clock] for url, title, day, clock in events]
+    if venue_associations:
+        # Restart a legacy checkpoint when the deployed enrichment contract
+        # changes; never certify cached holds/rows under a different capability.
+        encoded = {'venue_association_contract_version': 1, 'events': encoded}
     return sha256(json.dumps(encoded, ensure_ascii=False, separators=(',', ':')).encode()).hexdigest()
 
 
@@ -274,22 +307,24 @@ def _checkpoint(value, current):
     return deepcopy(value)
 
 
-def _accounted_prefix(state, manifest):
+def _accounted_prefix(state, manifest, *, venue_associations=False):
     """A persisted cursor may only cover explicitly accepted or held details."""
     prefix = {url: day for url, _, day, _ in manifest[:state['cursor']]}
-    accepted, accounted = {}, set()
+    accepted, accounted, excluded_sessions = {}, set(), set()
     for item in state['events']:
         if not isinstance(item, dict) or item.get('event_url') not in prefix:
             raise ValueError('halifax_checkpoint_invalid')
         url, identity = item['event_url'], item.get('id')
-        allowed = ({FAIRE_EVENT + '#faire-20261121', FAIRE_EVENT + '#fantasy-ball-20261121'}
-                   if url == FAIRE_EVENT and prefix[url] == date(2026, 11, 21) else {url})
+        allowed = ({FAIRE_EVENT + '#faire-20261121': prefix[url], FAIRE_EVENT + '#fantasy-ball-20261121': prefix[url]}
+                   if url == FAIRE_EVENT and prefix[url] == date(2026, 11, 21) else {url: prefix[url]})
+        if venue_associations:
+            allowed = venue_enrichment.checkpoint_sessions(url, prefix[url]) or allowed
         if identity not in allowed or identity in accepted:
             raise ValueError('halifax_checkpoint_invalid')
         try:
             begins = datetime.fromisoformat(item['starts_at'])
             if (begins.tzinfo is None or begins.utcoffset() is None
-                    or begins.astimezone(ZoneInfo(ZONE)).date() != prefix[url]):
+                    or begins.astimezone(ZoneInfo(ZONE)).date() != allowed[identity]):
                 raise ValueError
         except (KeyError, TypeError, ValueError):
             raise ValueError('halifax_checkpoint_invalid') from None
@@ -303,12 +338,44 @@ def _accounted_prefix(state, manifest):
             raise ValueError('halifax_checkpoint_invalid')
         if item['disposition'] != 'warning':
             accounted.add(item['event_url'])
+        if item.get('occurrence_id') is not None:
+            permitted = (venue_enrichment.checkpoint_sessions(item['event_url'], prefix[item['event_url']])
+                         if venue_associations else None)
+            identity = item['occurrence_id']
+            if (not permitted or identity not in permitted or identity in accepted or identity in excluded_sessions
+                    or item['disposition'] != 'excluded' or item['reason'] != 'outside_shared_event_window'):
+                raise ValueError('halifax_checkpoint_invalid')
+            excluded_sessions.add(identity)
     if accounted != set(prefix):
         raise ValueError('halifax_checkpoint_invalid')
     split = {identity for identity, url in accepted.items() if url == FAIRE_EVENT}
     if (FAIRE_EVENT in prefix and prefix[FAIRE_EVENT] == date(2026, 11, 21) and split
             and split != {FAIRE_EVENT + '#faire-20261121', FAIRE_EVENT + '#fantasy-ball-20261121'}):
         raise ValueError('halifax_checkpoint_invalid')
+    if venue_associations and venue_enrichment.HOLIDAY_URL in prefix:
+        url = venue_enrichment.HOLIDAY_URL
+        split = {identity for identity, event_url in accepted.items() if event_url == url}
+        resolved = split | excluded_sessions
+        if resolved and resolved != set(venue_enrichment.checkpoint_sessions(url, prefix[url])):
+            raise ValueError('halifax_checkpoint_invalid')
+
+
+def _refresh_session_window(state):
+    """Recheck cached split sessions after a chunk crosses a closing time."""
+    retained = []
+    for row in state['events']:
+        if row.get('event_url') != venue_enrichment.HOLIDAY_URL:
+            retained.append(row)
+            continue
+        current = record(row['title'], row['starts_at'], row.get('ends_at'),
+                         row['venue_name'], row['venue_address'], row['venue_city'],
+                         row['event_url'], row['id'], tz=ZONE, retain_until_end=True)
+        if current:
+            retained.append(row)
+        else:
+            _note(state['diagnostics'], row['event_url'], 'outside_shared_event_window',
+                  disposition='excluded', occurrence_id=row['id'])
+    state['events'] = retained
 
 
 def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
@@ -320,23 +387,26 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
     chunk intact. Each retry validates the listing before reusing cached rows.
     """
     _validate_source(source)
+    associations = venue_enrichment.enabled(source)
     current = _now(now)
     state = _checkpoint(checkpoint, current)
     anchor = date.fromisoformat(state['window_start']) if state else current.astimezone(ZoneInfo(ZONE)).date()
     if deadline_at is not None and monotonic() >= deadline_at:
         raise ValueError('collection_deadline')
     payload = fetch(URL, 'text/html')
-    events = _directory(payload, anchor)
-    digest = _manifest(events)
+    events = _directory(payload, anchor, venue_associations=associations)
+    digest = _manifest(events, venue_associations=associations)
     if state is None or state['manifest_hash'] != digest or state['manifest_count'] != len(events):
         # Never mix facts from a removed/replaced listing with the new snapshot.
         anchor = current.astimezone(ZoneInfo(ZONE)).date()
-        events = _directory(payload, anchor)
+        events = _directory(payload, anchor, venue_associations=associations)
         state = {'version': CHECKPOINT_VERSION, 'source_key': KEY,
                  'started_at': current.isoformat(), 'window_start': anchor.isoformat(),
-                 'manifest_hash': _manifest(events), 'manifest_count': len(events),
+                 'manifest_hash': _manifest(events, venue_associations=associations), 'manifest_count': len(events),
                  'cursor': 0, 'events': [], 'diagnostics': []}
-    _accounted_prefix(state, events)
+    _accounted_prefix(state, events, venue_associations=associations)
+    if associations:
+        _refresh_session_window(state)
     limit = min(MAX_DETAILS_PER_CHUNK, max(1, int(max_details)))
     previous_cursor = state['cursor']
     stop = min(len(events), previous_cursor + limit)
@@ -346,15 +416,17 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
         if deadline_at is not None and monotonic() + MIN_DETAIL_SECONDS >= deadline_at:
             break
         url, title, day, clock = events[offset]
-        row = _detail(fetch(url, 'text/html'), url, title, day, clock,
-                      diagnostics=state['diagnostics'])
-        if row:
-            state['events'].extend(_reviewed_sessions(row, state['diagnostics']))
+        rows = _detail(fetch(url, 'text/html'), url, title, day, clock,
+                       diagnostics=state['diagnostics'], venue_associations=associations, include_sessions=True)
+        for row in rows or []:
+            state['events'].extend(_reviewed_sessions(row, state['diagnostics'], venue_associations=associations))
         state['cursor'] = offset + 1
     if state['cursor'] == previous_cursor < len(events):
         # A slow listing must not cause an immediate zero-progress continuation
         # loop. Keep the prior durable checkpoint and use ordinary retry/backoff.
         raise ValueError('collection_deadline')
+    if len(state['events']) > MAX_CARDS + 1:
+        raise ValueError('halifax_occurrence_limit')
     if len(json.dumps(state, ensure_ascii=False).encode()) > MAX_CHECKPOINT_BYTES:
         raise ValueError('halifax_checkpoint_size_limit')
     complete = state['cursor'] == len(events)
@@ -365,14 +437,17 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
 def collect(source, fetch, *, deadline_at=None):
     """Read-only single-invocation audit; prefixes never masquerade as success."""
     _validate_source(source)
+    associations = venue_enrichment.enabled(source)
     today = datetime.now(ZoneInfo(ZONE)).date()
-    events = _directory(fetch(URL, 'text/html'), today)
+    events = _directory(fetch(URL, 'text/html'), today, venue_associations=associations)
     result, diagnostics = [], []
     for url, title, day, clock in events:
         if deadline_at is not None and monotonic() >= deadline_at:
             raise ValueError('collection_deadline')
-        if row := _detail(fetch(url, 'text/html'), url, title, day, clock, diagnostics=diagnostics):
-            result.extend(_reviewed_sessions(row, diagnostics))
+        rows = _detail(fetch(url, 'text/html'), url, title, day, clock, diagnostics=diagnostics,
+                       venue_associations=associations, include_sessions=True)
+        for row in rows or []:
+            result.extend(_reviewed_sessions(row, diagnostics, venue_associations=associations))
     return result
 
 
@@ -384,8 +459,9 @@ def collect_legacy(source, fetch, *, deadline_at=None):
     runs through ``collect_chunk`` after an integer v1 backend capability.
     """
     _validate_source(source)
+    associations = venue_enrichment.enabled(source)
     today = datetime.now(ZoneInfo(ZONE)).date()
-    events = [item for item in _directory(fetch(URL, 'text/html'), today)
+    events = [item for item in _directory(fetch(URL, 'text/html'), today, venue_associations=associations)
               if item[2] < today + timedelta(days=7)]
     if len(events) > 18:
         raise ValueError('halifax_directory_detail_limit')
@@ -393,6 +469,8 @@ def collect_legacy(source, fetch, *, deadline_at=None):
     for url, title, day, clock in events:
         if deadline_at is not None and monotonic() >= deadline_at:
             raise ValueError('collection_deadline')
-        if row := _detail(fetch(url, 'text/html'), url, title, day, clock):
-            result.append(row)
+        rows = _detail(fetch(url, 'text/html'), url, title, day, clock,
+                       venue_associations=associations, include_sessions=True)
+        for row in rows or []:
+            result.extend(_reviewed_sessions(row, [], venue_associations=True) if associations else [row])
     return result
