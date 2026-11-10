@@ -92,7 +92,8 @@ def audit(*, overall_seconds=DEFAULT_OVERALL_SECONDS):
             dated = sum(row.get('civic', {}).get('time_precision') in {'date', 'window'} for row in rows)
             receipt.update(outcome='complete', complete=True, candidate_count=len(rows),
                            dated_notice_count=dated, timed_candidate_count=len(rows) - dated,
-                           timed_notice_count=sum(row.get('civic_notice') is True for row in rows),
+                           timed_notice_count=sum(row.get('civic_notice') is True
+                               and row.get('civic', {}).get('time_precision') == 'timed' for row in rows),
                            verified_pin_count=sum(row.get('lat') is not None and row.get('lng') is not None for row in rows),
                            explicit_cancellation_count=sum(row.get('publisher_status') in {'cancelled', 'canceled'} for row in rows),
                            events=rows)
