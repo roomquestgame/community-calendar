@@ -754,7 +754,7 @@ SUPPORTED = {"ical", "jsonld", "growthzone", "wordpress", "squarespace"}
 
 def preview_source(source: dict, *, deadline_at=None) -> dict:
     from roomquest import maryland_sources, nebraska_library_ics
-    from roomquest import holly_hill_sources
+    from roomquest import holly_hill_sources, omaha_lincoln
     from roomquest import civic_local_calendars, civic_schedule, legistar, municipal_notices, virginia_civic
     source_key = source.get('source_key')
     if (source_key in legistar.SOURCES or source_key in virginia_civic.SOURCES
@@ -855,6 +855,10 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                 payload = fetch_publisher(source["feed_url"], "text/calendar", respect_robots=True,
                                           deadline_at=deadline, allowed_hosts=(urlparse(source["feed_url"]).hostname,))
                 records = nebraska_library_ics.collect(source, payload)
+            elif source_key in omaha_lincoln.new_ical_feeds():
+                records = omaha_lincoln.collect(source, lambda url, accept: fetch_publisher(
+                    url, accept, respect_robots=True, deadline_at=deadline,
+                    allowed_hosts=(urlparse(omaha_lincoln.new_ical_feeds()[source_key]).hostname,)))
             elif source_key in maryland_sources.ICS:
                 records = maryland_sources.collect_ics(source, lambda url, accept: fetch_publisher(
                     url, accept, respect_robots=True, deadline_at=deadline,
@@ -865,7 +869,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                     host_scope["allowed_hosts"] = (urlparse(source["feed_url"]).hostname,)
                 payload = fetch_publisher(
                     source["feed_url"], "text/calendar",
-                    respect_robots=civic_ics or bool(raleigh_url) or mapsee or source_key == "mecklenburg_va_libraries",
+                    respect_robots=civic_ics or bool(raleigh_url) or mapsee
+                    or source_key in {"mecklenburg_va_libraries", "sarpy_tourism_ne"},
                     deadline_at=deadline, **host_scope)
                 calendar_source = {"url": source["feed_url"], "source_key": source_key,
                                    **{key: source[key] for key in ('timezone', 'civic_contract_version',

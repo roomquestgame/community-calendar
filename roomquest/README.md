@@ -1,3 +1,20 @@
+## Omaha and Lincoln intake — November 11, 2026
+
+
+The Omaha–Lincoln inventory contains 19 entries in batch 1 and 58 in batch 2.
+Batch 1 preserves the Nebraska Game and Parks, La Vista, Sarpy and Bennington
+registry identities. Seven new iCalendar feeds use the shared parser and
+publisher transport with exact feed identities and explicit event venues.
+The RiverFront export requires separate venue evidence. Telegraph District
+events with a venue name alone still need that event's street address.
+
+Run `python scripts/audit_omaha_lincoln_intake.py --batch 1 --offset 0` through
+the collector's normal publisher network. A second run at offset 10 covers the
+rest of batch 1. Batch 2 uses the same offsets in groups of ten. The report
+distinguishes collector results, unresolved adapters and publisher holds.
+Audit counts are candidate counts. Existing holds and the 96-hour
+search-triggered refresh are controlled by the backend source registry.
+
 ## Civic and public services — November 10, 2026 (prepared)
 
 The reviewed civic cohort adds Richmond/Alexandria meetings, Virginia public
