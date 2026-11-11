@@ -4,6 +4,16 @@ on:
     types: [labeled]
   workflow_dispatch:
     inputs:
+      omaha_lincoln_batch:
+        description: 'Omaha and Lincoln read-only intake batch (blank, 1, or 2)'
+        type: string
+        required: false
+        default: ''
+      omaha_lincoln_offset:
+        description: 'Zero-based start within the selected intake batch'
+        type: number
+        required: false
+        default: 0
       south_hill_expansion_live:
         description: 'Read-only McGregor Hall, Victoria, Vance Arts and Town market audit through normal publisher guards'
         type: boolean
@@ -83,6 +93,16 @@ jobs:
         if: github.event_name != 'workflow_dispatch' || !(inputs.south_hill_expansion_live || inputs.south_hill_recovery_live || inputs.civic_live || inputs.mecklenburg_live || inputs.mecklenburg_batch3_live || (inputs.holly_hill_live || inputs.holly_hill_recovery_live))
         run: node --test scripts/vercel-ignore.test.mjs
       - run: pip install -r requirements-dev.txt
+      - name: Check Omaha and Lincoln intake
+        if: github.event_name != 'workflow_dispatch' || inputs.omaha_lincoln_batch != ''
+        run: python -m pytest tests/test_omaha_lincoln.py -q
+      - name: Read-only Omaha and Lincoln publisher audit
+        if: github.event_name == 'workflow_dispatch' && inputs.omaha_lincoln_batch != ''
+        env:
+          INTAKE_BATCH: ${{ inputs.omaha_lincoln_batch }}
+          INTAKE_OFFSET: ${{ inputs.omaha_lincoln_offset }}
+        shell: bash
+        run: python scripts/audit_omaha_lincoln_intake.py --batch "$INTAKE_BATCH" --offset "$INTAKE_OFFSET"
       - name: Check South Hill expansion parsers and shared publication integration
         if: github.event_name != 'workflow_dispatch' || inputs.south_hill_expansion_live
         run: python -m pytest tests/test_mcgregor_hall.py tests/test_victoria_calendar.py tests/test_vance_arts.py tests/test_south_hill_markets.py tests/test_south_hill_expansion_pipeline.py tests/test_south_hill_expansion_audit.py -q
