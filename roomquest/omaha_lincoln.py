@@ -9,6 +9,7 @@ from urllib.parse import urlsplit
 from icalendar import Calendar
 
 from roomquest.ics_adapter import parse
+from roomquest import riverfront
 
 
 @lru_cache(maxsize=1)
@@ -47,6 +48,8 @@ def collect(source, fetch):
         raise ValueError("unregistered_omaha_lincoln_ical")
 
     payload = fetch(url, "text/calendar")
+    if key == riverfront.SOURCE_KEY:
+        payload = riverfront.correct_timezone(payload)
     records = parse(payload, {"url": url, "source_key": key, "timezone": source["timezone"]},
                     legacy=True, include_description=True)
     private_ids = {
@@ -71,6 +74,9 @@ def collect(source, fetch):
                 address += f" {venue['zip']}"
             record.update(venue_name=venue["venue"], venue_address=address,
                           venue_city=venue["city"])
-        record.update(lat=None, lng=None)
+        if key == riverfront.SOURCE_KEY:
+            riverfront.set_venue(record)
+        else:
+            record.update(lat=None, lng=None)
         result.append(record)
     return result
