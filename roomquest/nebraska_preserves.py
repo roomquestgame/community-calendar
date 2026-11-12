@@ -25,7 +25,7 @@ DATE = re.compile(
     r"(?P<day>[A-Za-z]+ \d{1,2}, \d{4})", re.I,
 )
 TIME_RANGE = re.compile(
-    r"[,|]?\s*(?P<start>\d{1,2}(?::\d{2})?)\s*(?P<first>AM|PM)?"
+    r"\s*[,|]?\s*(?P<start>\d{1,2}(?::\d{2})?)\s*(?P<first>AM|PM)?"
     r"\s*[-–—]\s*(?P<end>\d{1,2}(?::\d{2})?)\s*(?P<last>AM|PM)\b", re.I,
 )
 INVALID_TITLE = re.compile(r"\b(cancelled|canceled|postponed|save.the.date)\b", re.I)
