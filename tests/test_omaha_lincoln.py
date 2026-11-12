@@ -96,10 +96,13 @@ def test_riverfront_preview_corrects_omaha_times_and_resolves_reviewed_venues():
     assert all(row["reason"] is None for row in result["p_events"] if row["lat"] is not None)
     assert records["1"]["venue_name"] == "Arches Playground at Gene Leahy Mall"
     assert records["2"]["venue_name"] == "Skate Ribbon at Heartland of America Park"
-    assert records["3"]["venue_name"] == "American Flag at Heartland of America Park"
+    assert records["3"]["venue_name"] == "American Flag at Heartland of America Park (approximate pin)"
     assert "approximate" in records["3"]["description"]
     assert records["4"]["lat"] == records["2"]["lat"]
+    assert records["4"]["venue_name"] == "Heartland of America Park (Skate Ribbon entrance)"
     assert "Skate Ribbon entrance" in records["4"]["description"]
     assert records["5"]["venue_address"] == "1001 Douglas St, Omaha, NE 68102"
+    assert records["1"]["venue_address"] == records["5"]["venue_address"]
+    assert records["2"]["venue_address"] == records["4"]["venue_address"] == "800 Douglas St, Omaha, NE"
     assert records["6"]["venue_name"] == "Library"
     assert records["7"]["lat"] is None
