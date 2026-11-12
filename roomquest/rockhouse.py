@@ -10,6 +10,10 @@ from roomquest.mapsee_adapter import plain, record
 
 ZONE = "America/Chicago"
 SOURCES = {
+    "omaha_sydney_rockhouse_ne": (
+        "https://thesydneybenson.com/events/", "the-sydney-benson/", "The Sydney",
+        "5918 Maple St, Omaha, NE 68104",
+    ),
     "omaha_reverb_lounge_events": (
         "https://reverblounge.com/events/", "reverb-lounge/", "Reverb Lounge",
         "6121 Military Ave, Omaha, NE 68104",
@@ -191,7 +195,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
     payload = fetch(listing, "text/html")
     links = detail_links(payload, listing, suffix)
     observed = {}
-    if source["source_key"] == "omaha_reverb_lounge_events":
+    if source["source_key"] in {"omaha_reverb_lounge_events", "omaha_sydney_rockhouse_ne"}:
         observed = listing_records(payload, listing, links, venue, street, today, horizon)
     result = []
     for link in links:
