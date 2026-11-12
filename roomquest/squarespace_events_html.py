@@ -49,22 +49,21 @@ def first_time(card, *class_names):
 
 
 def trail_location(card):
-    for node in elements(card, "eventlist-meta-address"):
-        for link in node.xpath(".//a/@href"):
-            url = urlsplit(link)
-            if url.scheme != "https" or url.hostname != "maps.google.com":
+    for node in card.xpath(".//a[@href and normalize-space(.)='(map)']"):
+        url = urlsplit(node.get("href"))
+        if url.scheme not in {"http", "https"} or url.hostname not in {"maps.google.com", "www.google.com"}:
+            continue
+        for query in parse_qs(url.query).get("q", []):
+            parts = re.fullmatch(
+                r"(\d{1,6}\s+[^,]+?\s(?:Road|Street|Drive|Avenue|Lane|Boulevard|Trail|Court|Parkway))"
+                r"\s+([A-Za-z][A-Za-z .'-]+),\s*(Nebraska|Iowa|South Dakota),\s*(\d{5})\s+United States",
+                query,
+            )
+            if not parts:
                 continue
-            for query in parse_qs(url.query).get("q", []):
-                parts = re.fullmatch(
-                    r"(\d{1,6}\s+[^,]+?\s(?:Road|Street|Drive|Avenue|Lane|Boulevard|Trail|Court|Parkway))"
-                    r"\s+([A-Za-z][A-Za-z .'-]+),\s*(Nebraska|Iowa|South Dakota),\s*(\d{5})\s+United States",
-                    query,
-                )
-                if not parts:
-                    continue
-                street, city, state, zip_code = parts.groups()
-                state_code = {"Nebraska": "NE", "Iowa": "IA", "South Dakota": "SD"}[state]
-                return plain(node.text_content()).removesuffix("(map)").strip(), f"{street}, {city}, {state_code} {zip_code}", city
+            street, city, state, zip_code = parts.groups()
+            state_code = {"Nebraska": "NE", "Iowa": "IA", "South Dakota": "SD"}[state]
+            return plain(node.getparent().text_content()).removesuffix("(map)").strip() or street, f"{street}, {city}, {state_code} {zip_code}", city
     return None
 
 
