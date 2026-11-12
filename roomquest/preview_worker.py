@@ -1575,6 +1575,9 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
                    if publisher_media
                    else "community_collector_record_preview_v2" if html or ical or civic
                    else "community_collector_record_preview")
+    if not publisher_media:
+        # Only the v3 RPC accepts a parser capability marker.
+        output.pop("p_parser_capability", None)
     _observe_collection_phase(observe_phase, "record", operation=preview_rpc)
     if html or ical or publisher_media or civic:
         supabase_rpc(preview_rpc, {**output, **pacing_rpc_fields(pacing)})

@@ -107,7 +107,10 @@ def test_success_persists_pacing_atomically_with_preview_and_no_legacy_rpc(kind)
     def collect(*_args, **_kwargs):
         observe_crawl_delay(2.1)
         observe_retry_after('60')
-        return output(1)
+        result = output(1)
+        if kind == 'html':
+            result['p_parser_capability'] = 'publisher_event_candidates_v1'
+        return result
     with patch.object(w, 'preview_source', side_effect=collect), patch.object(w, 'supabase_rpc', side_effect=[1, None]) as rpc:
         result = w._process_claimed_source(source)
     assert result == {'complete': 1, 'failed': 0, 'staged': 1}
@@ -117,6 +120,7 @@ def test_success_persists_pacing_atomically_with_preview_and_no_legacy_rpc(kind)
     assert payload['p_publisher_crawl_delay_seconds'] == 3
     assert payload['p_publisher_retry_after_seconds'] == 60
     assert payload['p_publisher_wait_unbounded'] is False
+    assert 'p_parser_capability' not in payload
 
 
 @pytest.mark.parametrize('kind', ['html', 'ical'])
