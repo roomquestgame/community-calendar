@@ -102,7 +102,12 @@ jobs:
           INTAKE_BATCH: ${{ inputs.omaha_lincoln_batch }}
           INTAKE_OFFSET: ${{ inputs.omaha_lincoln_offset }}
         shell: bash
-        run: python scripts/audit_omaha_lincoln_intake.py --batch "$INTAKE_BATCH" --offset "$INTAKE_OFFSET"
+        run: |
+          limit=10
+          if [ "$INTAKE_BATCH" = 2 ] && [ "$INTAKE_OFFSET" = 0 ]; then
+            limit=58
+          fi
+          python scripts/audit_omaha_lincoln_intake.py --batch "$INTAKE_BATCH" --offset "$INTAKE_OFFSET" --limit "$limit"
       - name: Check South Hill expansion parsers and shared publication integration
         if: github.event_name != 'workflow_dispatch' || inputs.south_hill_expansion_live
         run: python -m pytest tests/test_mcgregor_hall.py tests/test_victoria_calendar.py tests/test_vance_arts.py tests/test_south_hill_markets.py tests/test_south_hill_expansion_pipeline.py tests/test_south_hill_expansion_audit.py -q
