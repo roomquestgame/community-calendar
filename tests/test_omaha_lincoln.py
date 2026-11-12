@@ -1,1 +1,146 @@
-ZnJvbSBkYXRldGltZSBpbXBvcnQgZGF0ZXRpbWUsIHRpbWVkZWx0YSwgdGltZXpvbmUKZnJvbSB1bml0dGVzdC5tb2NrIGltcG9ydCBwYXRjaApmcm9tIHpvbmVpbmZvIGltcG9ydCBab25lSW5mbwoKZnJvbSBpY2FsZW5kYXIgaW1wb3J0IENhbGVuZGFyLCBFdmVudAppbXBvcnQgcHl0ZXN0Cgpmcm9tIHJvb21xdWVzdCBpbXBvcnQgb21haGFfbGluY29sbiwgcHJldmlld193b3JrZXIsIHJpdmVyZnJvbnQKCgpkZWYgdGVzdF9pbnRha2VfYmF0Y2hlc19rZWVwX2V4aXN0aW5nX2lkZW50aXRpZXMoKToKICAgIHJvd3MgPSBvbWFoYV9saW5jb2xuLmludGFrZV9yb3dzKCkKICAgIGFzc2VydCBsZW4oe3Jvd1sicHVibGlzaGVyIl0gZm9yIHJvdyBpbiByb3dzfSkgPT0gbGVuKHJvd3MpID09IDc3CiAgICBhc3NlcnQgc3VtKHJvd1siYmF0Y2giXSA9PSAxIGZvciByb3cgaW4gcm93cykgPT0gMTkKICAgIGFzc2VydCBzdW0ocm93WyJiYXRjaCJdID09IDIgZm9yIHJvdyBpbiByb3dzKSA9PSA1OAogICAgYXNzZXJ0IHtyb3dbImV4aXN0aW5nX2lkIl0gZm9yIHJvdyBpbiByb3dzIGlmIHJvd1siYmF0Y2giXSA9PSAxIGFuZCAiZXhpc3RpbmdfaWQiIGluIHJvd30gPT0gewogICAgICAgIDMxNzcsIDQzMDEsIDQ5MDEsIDUxMzEsCiAgICB9CiAgICBhc3NlcnQgbGVuKG9tYWhhX2xpbmNvbG4ubmV3X2ljYWxfZmVlZHMoKSkgPT0gNwoKCmRlZiB0ZXN0X3ByZXZpZXdfcHJlc2VydmVzX2V4cGxpY2l0X3ZlbnVlc19hbmRfZmlsdGVyc19wcml2YXRlX3JlY29yZHMoKToKICAgIHJvdyA9IG5leHQocm93IGZvciByb3cgaW4gb21haGFfbGluY29sbi5pbnRha2Vfcm93cygpIGlmIHJvd1sicHVibGlzaGVyIl0gPT0gIlRlbGVncmFwaCBEaXN0cmljdCIpCiAgICBzb3VyY2UgPSBkaWN0KHNvdXJjZV9rZXk9cm93WyJzb3VyY2Vfa2V5Il0sIGZlZWRfdXJsPXJvd1siZmVlZF91cmwiXSwga2luZD0iaWNhbCIsCiAgICAgICAgICAgICAgICAgIHBsYXRmb3JtX2FkYXB0ZXI9ImljYWwiLCB0aW1lem9uZT0iQW1lcmljYS9DaGljYWdvIikKICAgIHN0YXJ0ID0gZGF0ZXRpbWUubm93KHRpbWV6b25lLnV0YykgKyB0aW1lZGVsdGEoZGF5cz00KQogICAgZW5kID0gc3RhcnQgKyB0aW1lZGVsdGEoaG91cnM9MSkKICAgIGxpbmVzID0gWyJCRUdJTjpWQ0FMRU5EQVIiLCAiVkVSU0lPTjoyLjAiLCAiUFJPRElEOi0vL0V2ZW50UXVlc3QgVGVzdC8vRU4iXQogICAgZm9yIHVpZCwgdGl0bGUsIGxvY2F0aW9uLCB2aXNpYmlsaXR5IGluICgKICAgICAgICAoIjEiLCAiQm9vayBjbHViIiwgciJIdWIgQ2FmZVwsIDI1MCBOIDIxc3QgU3RcLCBMaW5jb2xuXCwgTkVcLCBVbml0ZWQgU3RhdGVzIiwgIlBVQkxJQyIpLAogICAgICAgICgiMiIsICJLYXJhb2tlIiwgIlRoZSBQb3N0IiwgIlBVQkxJQyIpLAogICAgICAgICgiMyIsICJTdGFmZiBtZWV0aW5nIiwgIk9mZmljZSIsICJQUklWQVRFIiksCiAgICAgICAgKCI0IiwgIlByaXZhdGUgZXZlbnQiLCAiT2ZmaWNlIiwgIlBVQkxJQyIpLAogICAgKToKICAgICAgICBsaW5lcy5leHRlbmQoKCJCRUdJTjpWRVZFTlQiLCBmIlVJRDp7dWlkfSIsIGYiU1VNTUFSWTp7dGl0bGV9IiwgZiJMT0NBVElPTjp7bG9jYXRpb259IiwKICAgICAgICAgICAgICAgICAgICAgIGYiQ0xBU1M6e3Zpc2liaWxpdHl9IiwgZiJEVFNUQVJUOntzdGFydDolWSVtJWRUJUglTSVTWn0iLAogICAgICAgICAgICAgICAgICAgICAgZiJEVEVORDp7ZW5kOiVZJW0lZFQlSCVNJVNafSIsCiAgICAgICAgICAgICAgICAgICAgICBmIlVSTDpodHRwczovL3RlbGVncmFwaGRpc3RyaWN0LmNvbS9ldmVudC97dWlkfS8iLCAiRU5EOlZFVkVOVCIpKQogICAgbGluZXMuYXBwZW5kKCJFTkQ6VkNBTEVOREFSIikKICAgIHdpdGggcGF0Y2gub2JqZWN0KHByZXZpZXdfd29ya2VyLCAiZmV0Y2hfcHVibGlzaGVyIiwgcmV0dXJuX3ZhbHVlPSJcclxuIi5qb2luKGxpbmVzKSkgYXMgZmV0Y2g6CiAgICAgICAgcmVjb3JkcyA9IHByZXZpZXdfd29ya2VyLnByZXZpZXdfc291cmNlKHNvdXJjZSlbInBfZXZlbnRzIl0KICAgICAgICBhc3NlcnQgZmV0Y2guY2FsbF9hcmdzLmt3YXJnc1sicmVzcGVjdF9yb2JvdHMiXQogICAgICAgIGFzc2VydCBmZXRjaC5jYWxsX2FyZ3Mua3dhcmdzWyJhbGxvd2VkX2hvc3RzIl0gPT0gKCJ0ZWxlZ3JhcGhkaXN0cmljdC5jb20iLCkKICAgIGFzc2VydCB7cmVjb3JkWyJ0aXRsZSJdIGZvciByZWNvcmQgaW4gcmVjb3Jkc30gPT0geyJCb29rIGNsdWIiLCAiS2FyYW9rZSJ9CiAgICBib29rID0gbmV4dChyZWNvcmQgZm9yIHJlY29yZCBpbiByZWNvcmRzIGlmIHJlY29yZFsidGl0bGUiXSA9PSAiQm9vayBjbHViIikKICAgIGFzc2VydCAoYm9va1sidmVudWVfbmFtZSJdLCBib29rWyJ2ZW51ZV9hZGRyZXNzIl0sIGJvb2tbInZlbnVlX2NpdHkiXSkgPT0gKAogICAgICAgICJIdWIgQ2FmZSIsICIyNTAgTiAyMXN0IFN0LCBMaW5jb2xuLCBORSIsICJMaW5jb2xuIiwKICAgICkKICAgIGthcmFva2UgPSBuZXh0KHJlY29yZCBmb3IgcmVjb3JkIGluIHJlY29yZHMgaWYgcmVjb3JkWyJ0aXRsZSJdID09ICJLYXJhb2tlIikKICAgIGFzc2VydCBrYXJhb2tlWyJ2ZW51ZV9hZGRyZXNzIl0gPT0gIlRoZSBQb3N0IgogICAgYXNzZXJ0IGFsbChyZWNvcmRbImxhdCJdIGlzIE5vbmUgYW5kIHJlY29yZFsibG5nIl0gaXMgTm9uZSBmb3IgcmVjb3JkIGluIHJlY29yZHMpCiAgICB3aXRoIHBhdGNoLm9iamVjdChwcmV2aWV3X3dvcmtlciwgImZldGNoX3B1Ymxpc2hlciIpIGFzIGZldGNoOgogICAgICAgIHdpdGggcHl0ZXN0LnJhaXNlcyhwcmV2aWV3X3dvcmtlci5QcmV2aWV3RXJyb3IsIG1hdGNoPSJ1bnJlZ2lzdGVyZWRfb21haGFfbGluY29sbl9pY2FsIik6CiAgICAgICAgICAgIHByZXZpZXdfd29ya2VyLnByZXZpZXdfc291cmNlKHsqKnNvdXJjZSwgImZlZWRfdXJsIjogImh0dHBzOi8vZXhhbXBsZS5vcmcvZXZlbnRzLmljcyJ9KQogICAgICAgIGZldGNoLmFzc2VydF9ub3RfY2FsbGVkKCkKCgpkZWYgdGVzdF9yaXZlcmZyb250X3ByZXZpZXdfY29ycmVjdHNfb21haGFfdGltZXNfYW5kX3Jlc29sdmVzX3Jldmlld2VkX3ZlbnVlcygpOgogICAgc291cmNlID0gZGljdChzb3VyY2Vfa2V5PXJpdmVyZnJvbnQuU09VUkNFX0tFWSwKICAgICAgICAgICAgICAgICAgZmVlZF91cmw9b21haGFfbGluY29sbi5uZXdfaWNhbF9mZWVkcygpW3JpdmVyZnJvbnQuU09VUkNFX0tFWV0sCiAgICAgICAgICAgICAgICAgIGtpbmQ9ImljYWwiLCBwbGF0Zm9ybV9hZGFwdGVyPSJpY2FsIiwgdGltZXpvbmU9IkFtZXJpY2EvQ2hpY2FnbyIpCiAgICBzdGFydCA9IChkYXRldGltZS5ub3coWm9uZUluZm8oIkFtZXJpY2EvTmV3X1lvcmsiKSkgKyB0aW1lZGVsdGEoZGF5cz00KSkucmVwbGFjZSgKICAgICAgICBob3VyPTE3LCBtaW51dGU9MCwgc2Vjb25kPTAsIG1pY3Jvc2Vjb25kPTApCiAgICBjYWxlbmRhciA9IENhbGVuZGFyKCkKICAgIGNhbGVuZGFyLmFkZCgidmVyc2lvbiIsICIyLjAiKQogICAgZm9yIHVpZCwgdGl0bGUsIHBhcmssIGRlc2NyaXB0aW9uLCBsb2NhdGlvbiBpbiAoCiAgICAgICAgKCIxIiwgIlN0b3J5IFdhbGsiLCByaXZlcmZyb250LkdFTkVfTEVBSFksICJWaXNpdCBBcmNoZXMgUGxheWdyb3VuZC4iLCAiIiksCiAgICAgICAgKCIyIiwgIlNrYXRpbmcgREogTmlnaHQiLCByaXZlcmZyb250LkhFQVJUTEFORCwgIlZpc2l0IHRoZSBTa2F0ZSBSaWJib24uIiwgIiIpLAogICAgICAgICgiMyIsICJWZXRlcmFucyBEYXkgU3Rvcnl3YWxrIiwgcml2ZXJmcm9udC5IRUFSVExBTkQsICJNZWV0IGF0IHRoZSBBbWVyaWNhbiBGbGFnLiIsICIiKSwKICAgICAgICAoIjQiLCAiVGhlIFJpdmVyRnJvbnQgSG9sbHkgRGF5cyIsIHJpdmVyZnJvbnQuSEVBUlRMQU5ELCAiRXhwbG9yZSB0aGUgcGFyay4iLCAiIiksCiAgICAgICAgKCI1IiwgIkhvbGlkYXkgTGlnaHRzIExpZ2h0aW5nIENlcmVtb255Iiwgcml2ZXJmcm9udC5HRU5FX0xFQUhZLCAiRW5qb3kgdGhlIGxpZ2h0cy4iLCAiIiksCiAgICAgICAgKCI2IiwgIk9mZi1zaXRlIFN0b3J5IFdhbGsiLCByaXZlcmZyb250LkdFTkVfTEVBSFksICJNZWV0IG5lYXIgQXJjaGVzIFBsYXlncm91bmQuIiwKICAgICAgICAgIkxpYnJhcnksIDEyMyBNYWluIFN0LCBPbWFoYSwgTkUgNjgxMDIiKSwKICAgICAgICAoIjciLCAiVW5yZXNvbHZlZCIsICJTZWFzb25hbCBFdmVudHMiLCAiTWVldCB1cCB0byBleHBsb3JlLiIsICIiKSwKICAgICk6CiAgICAgICAgZXZlbnQgPSBFdmVudCgpCiAgICAgICAgZXZlbnQuYWRkKCJ1aWQiLCB1aWQpCiAgICAgICAgZXZlbnQuYWRkKCJzdW1tYXJ5IiwgdGl0bGUpCiAgICAgICAgZXZlbnQuYWRkKCJkdHN0YXJ0Iiwgc3RhcnQpCiAgICAgICAgZXZlbnQuYWRkKCJkdGVuZCIsIHN0YXJ0ICsgdGltZWRlbHRhKGhvdXJzPTIpKQogICAgICAgIGV2ZW50LmFkZCgiY2F0ZWdvcmllcyIsIFtwYXJrXSkKICAgICAgICBldmVudC5hZGQoImRlc2NyaXB0aW9uIiwgZGVzY3JpcHRpb24pCiAgICAgICAgZXZlbnQuYWRkKCJ1cmwiLCBmImh0dHBzOi8vdGhlcml2ZXJmcm9udG9tYWhhLmNvbS9ldmVudC97dWlkfS8iKQogICAgICAgIGlmIGxvY2F0aW9uOgogICAgICAgICAgICBldmVudC5hZGQoImxvY2F0aW9uIiwgbG9jYXRpb24pCiAgICAgICAgY2FsZW5kYXIuYWRkX2NvbXBvbmVudChldmVudCkKCiAgICB3aXRoIHBhdGNoLm9iamVjdChwcmV2aWV3X3dvcmtlciwgImZldGNoX3B1Ymxpc2hlciIsIHJldHVybl92YWx1ZT1jYWxlbmRhci50b19pY2FsKCkuZGVjb2RlKCkpOgogICAgICAgIHJlc3VsdCA9IHByZXZpZXdfd29ya2VyLnByZXZpZXdfc291cmNlKHNvdXJjZSkKCiAgICByZWNvcmRzID0ge3JlY29yZFsiaWQiXTogcmVjb3JkIGZvciByZWNvcmQgaW4gcmVzdWx0WyJwX2V2ZW50cyJdfQogICAgYXNzZXJ0IHJlc3VsdFsicF9mdXR1cmVfY291bnQiXSA9PSA3CiAgICBhc3NlcnQgcmVzdWx0WyJwX3ZlbnVlX2NvdW50Il0gPT0gNQogICAgYXNzZXJ0IGFsbChkYXRldGltZS5mcm9taXNvZm9ybWF0KHJvd1sic3RhcnRzX2F0Il0pLmFzdGltZXpvbmUoWm9uZUluZm8oIkFtZXJpY2EvQ2hpY2FnbyIpKS5ob3VyID09IDE3CiAgICAgICAgICAgICAgIGZvciByb3cgaW4gcmVjb3Jkcy52YWx1ZXMoKSkKICAgIGFzc2VydCBhbGwocm93WyJyZWFzb24iXSBpcyBOb25lIGZvciByb3cgaW4gcmVzdWx0WyJwX2V2ZW50cyJdIGlmIHJvd1sibGF0Il0gaXMgbm90IE5vbmUpCiAgICBhc3NlcnQgcmVjb3Jkc1siMSJdWyJ2ZW51ZV9uYW1lIl0gPT0gIkFyY2hlcyBQbGF5Z3JvdW5kIGF0IEdlbmUgTGVhaHkgTWFsbCIKICAgIGFzc2VydCByZWNvcmRzWyIyIl1bInZlbnVlX25hbWUiXSA9PSAiU2thdGUgUmliYm9uIGF0IEhlYXJ0bGFuZCBvZiBBbWVyaWNhIFBhcmsiCiAgICBhc3NlcnQgcmVjb3Jkc1siMyJdWyJ2ZW51ZV9uYW1lIl0gPT0gIkFtZXJpY2FuIEZsYWcgYXQgSGVhcnRsYW5kIG9mIEFtZXJpY2EgUGFyayAoYXBwcm94aW1hdGUgcGluKSIKICAgIGFzc2VydCAiYXBwcm94aW1hdGUiIGluIHJlY29yZHNbIjMiXVsiZGVzY3JpcHRpb24iXQogICAgYXNzZXJ0IHJlY29yZHNbIjQiXVsibGF0Il0gPT0gcmVjb3Jkc1siMiJdWyJsYXQiXQogICAgYXNzZXJ0IHJlY29yZHNbIjQiXVsidmVudWVfbmFtZSJdID09ICJIZWFydGxhbmQgb2YgQW1lcmljYSBQYXJrIChTa2F0ZSBSaWJib24gZW50cmFuY2UpIgogICAgYXNzZXJ0ICJTa2F0ZSBSaWJib24gZW50cmFuY2UiIGluIHJlY29yZHNbIjQiXVsiZGVzY3JpcHRpb24iXQogICAgYXNzZXJ0IHJlY29yZHNbIjUiXVsidmVudWVfYWRkcmVzcyJdID09ICIxMDAxIERvdWdsYXMgU3QsIE9tYWhhLCBORSA2ODEwMiIKICAgIGFzc2VydCByZWNvcmRzWyIxIl1bInZlbnVlX2FkZHJlc3MiXSA9PSByZWNvcmRzWyI1Il1bInZlbnVlX2FkZHJlc3MiXQogICAgYXNzZXJ0IHJlY29yZHNbIjIiXVsidmVudWVfYWRkcmVzcyJdID09IHJlY29yZHNbIjQiXVsidmVudWVfYWRkcmVzcyJdID09ICI4MDAgRG91Z2xhcyBTdCwgT21haGEsIE5FIgogICAgYXNzZXJ0IHJlY29yZHNbIjYiXVsidmVudWVfbmFtZSJdID09ICJMaWJyYXJ5IgogICAgYXNzZXJ0IHJlY29yZHNbIjciXVsibGF0Il0gaXMgTm9uZQoKCkBweXRlc3QubWFyay5wYXJhbWV0cml6ZSgoInNvdXJjZV9rZXkiLCAiZXZlbnRzIiwgImV4cGVjdGVkX3BpbnMiKSwgWwogICAgKG9tYWhhX2xpbmNvbG4uRlJBTkNJRV9BTkRfRklOQ0gsICgKICAgICAgICAoIlZpc2l0aW5nIEF1dGhvciIsICJGcmFuY2llICYgRmluY2ggQm9va3Nob3AsIDEzMCBTLiAxM3RoIFN0cmVldCwgTGluY29sbiwgTkUgNjg1MDgiKSwKICAgICAgICAoIk9mZi1zaXRlIFJlYWRpbmciLCAiRnJhbmNpZSAmIEZpbmNoIEJvb2tzaG9wLCAxMDAgUyAxM3RoIFN0LCBMaW5jb2xuLCBORSA2ODUwOCIpLAogICAgICAgICgiVmVudWUgVG8gQmUgQW5ub3VuY2VkIiwgIiIpLAogICAgKSwgeyJWaXNpdGluZyBBdXRob3IiOiAoNDAuODEyOTYwMywgLTk2LjcwMjI5NTYpLCAiT2ZmLXNpdGUgUmVhZGluZyI6IChOb25lLCBOb25lKSwKICAgICAgICAiVmVudWUgVG8gQmUgQW5ub3VuY2VkIjogKE5vbmUsIE5vbmUpfSksCiAgICAob21haGFfbGluY29sbi5DUk9PS19IT1VTRSwgKAogICAgICAgICgiSGlzdG9yeSAmIEFwcHJlY2lhdGlvbiBvZiBBbnRpcXVlcyBDbGFzcyIsICJHZW5lcmFsIENyb29rIEhvdXNlIE11c2V1bSwgNTczMCBOIDMwdGggU3QuLCBPbWFoYSwgTkUgNjgxMTEiKSwKICAgICAgICAoIk5vIENsYXNzIFRoaXMgV2VlazogSGlzdG9yeSAmIEFwcHJlY2lhdGlvbiBvZiBBbnRpcXVlcyIsICJHZW5lcmFsIENyb29rIEhvdXNlIE11c2V1bSwgNTczMCBOIDMwdGggU3QuLCBPbWFoYSwgTkUgNjgxMTEiKSwKICAgICksIHsiSGlzdG9yeSAmIEFwcHJlY2lhdGlvbiBvZiBBbnRpcXVlcyBDbGFzcyI6IChOb25lLCBOb25lKX0pLApdKQpkZWYgdGVzdF9yZXZpZXdlZF92ZW51ZV9hbmRfY2FuY2VsbGF0aW9uX3J1bGVzKHNvdXJjZV9rZXksIGV2ZW50cywgZXhwZWN0ZWRfcGlucyk6CiAgICBmZWVkX3VybCA9IG9tYWhhX2xpbmNvbG4ubmV3X2ljYWxfZmVlZHMoKVtzb3VyY2Vfa2V5XQogICAgaG9zdCA9IGZlZWRfdXJsLnNwbGl0KCIvIilbMl0KICAgIHNvdXJjZSA9IGRpY3Qoc291cmNlX2tleT1zb3VyY2Vfa2V5LCBmZWVkX3VybD1mZWVkX3VybCwga2luZD0iaWNhbCIsCiAgICAgICAgICAgICAgICAgIHBsYXRmb3JtX2FkYXB0ZXI9ImljYWwiLCB0aW1lem9uZT0iQW1lcmljYS9DaGljYWdvIikKICAgIGNhbGVuZGFyID0gQ2FsZW5kYXIoKQogICAgY2FsZW5kYXIuYWRkKCJ2ZXJzaW9uIiwgIjIuMCIpCiAgICBzdGFydCA9IGRhdGV0aW1lLm5vdyh0aW1lem9uZS51dGMpICsgdGltZWRlbHRhKGRheXM9NCkKICAgIGZvciBpbmRleCwgKHRpdGxlLCBsb2NhdGlvbikgaW4gZW51bWVyYXRlKGV2ZW50cyk6CiAgICAgICAgZXZlbnQgPSBFdmVudCgpCiAgICAgICAgZXZlbnQuYWRkKCJ1aWQiLCBzdHIoaW5kZXgpKQogICAgICAgIGV2ZW50LmFkZCgic3VtbWFyeSIsIHRpdGxlKQogICAgICAgIGV2ZW50LmFkZCgiZHRzdGFydCIsIHN0YXJ0KQogICAgICAgIGV2ZW50LmFkZCgiZHRlbmQiLCBzdGFydCArIHRpbWVkZWx0YShob3Vycz0xKSkKICAgICAgICBldmVudC5hZGQoInVybCIsIGYiaHR0cHM6Ly97aG9zdH0vZXZlbnQve2luZGV4fS8iKQogICAgICAgIGlmIGxvY2F0aW9uOgogICAgICAgICAgICBldmVudC5hZGQoImxvY2F0aW9uIiwgbG9jYXRpb24pCiAgICAgICAgY2FsZW5kYXIuYWRkX2NvbXBvbmVudChldmVudCkKCiAgICB3aXRoIHBhdGNoLm9iamVjdChwcmV2aWV3X3dvcmtlciwgImZldGNoX3B1Ymxpc2hlciIsIHJldHVybl92YWx1ZT1jYWxlbmRhci50b19pY2FsKCkuZGVjb2RlKCkpOgogICAgICAgIHJlc3VsdCA9IHByZXZpZXdfd29ya2VyLnByZXZpZXdfc291cmNlKHNvdXJjZSkKCiAgICBhc3NlcnQge3Jvd1sidGl0bGUiXTogKHJvd1sibGF0Il0sIHJvd1sibG5nIl0pIGZvciByb3cgaW4gcmVzdWx0WyJwX2V2ZW50cyJdfSA9PSBleHBlY3RlZF9waW5zCiAgICBhc3NlcnQgcmVzdWx0WyJwX3ZlbnVlX2NvdW50Il0gPT0gc3VtKGxhdCBpcyBub3QgTm9uZSBmb3IgbGF0LCBfIGluIGV4cGVjdGVkX3BpbnMudmFsdWVzKCkpCg==
+from datetime import datetime, timedelta, timezone
+from unittest.mock import patch
+from zoneinfo import ZoneInfo
+
+from icalendar import Calendar, Event
+import pytest
+
+from roomquest import omaha_lincoln, preview_worker, riverfront
+
+
+def test_intake_batches_keep_existing_identities():
+    rows = omaha_lincoln.intake_rows()
+    assert len({row["publisher"] for row in rows}) == len(rows) == 77
+    assert sum(row["batch"] == 1 for row in rows) == 19
+    assert sum(row["batch"] == 2 for row in rows) == 58
+    assert {row["existing_id"] for row in rows if row["batch"] == 1 and "existing_id" in row} == {
+        3177, 4301, 4901, 5131,
+    }
+    assert len(omaha_lincoln.new_ical_feeds()) == 7
+
+
+def test_preview_preserves_explicit_venues_and_filters_private_records():
+    row = next(row for row in omaha_lincoln.intake_rows() if row["publisher"] == "Telegraph District")
+    source = dict(source_key=row["source_key"], feed_url=row["feed_url"], kind="ical",
+                  platform_adapter="ical", timezone="America/Chicago")
+    start = datetime.now(timezone.utc) + timedelta(days=4)
+    end = start + timedelta(hours=1)
+    lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//EventQuest Test//EN"]
+    for uid, title, location, visibility in (
+        ("1", "Book club", r"Hub Cafe\, 250 N 21st St\, Lincoln\, NE\, United States", "PUBLIC"),
+        ("2", "Karaoke", "The Post", "PUBLIC"),
+        ("3", "Staff meeting", "Office", "PRIVATE"),
+        ("4", "Private event", "Office", "PUBLIC"),
+    ):
+        lines.extend(("BEGIN:VEVENT", f"UID:{uid}", f"SUMMARY:{title}", f"LOCATION:{location}",
+                      f"CLASS:{visibility}", f"DTSTART:{start:%Y%m%dT%H%M%SZ}",
+                      f"DTEND:{end:%Y%m%dT%H%M%SZ}",
+                      f"URL:https://telegraphdistrict.com/event/{uid}/", "END:VEVENT"))
+    lines.append("END:VCALENDAR")
+    with patch.object(preview_worker, "fetch_publisher", return_value="\r\n".join(lines)) as fetch:
+        records = preview_worker.preview_source(source)["p_events"]
+        assert fetch.call_args.kwargs["respect_robots"]
+        assert fetch.call_args.kwargs["allowed_hosts"] == ("telegraphdistrict.com",)
+    assert {record["title"] for record in records} == {"Book club", "Karaoke"}
+    book = next(record for record in records if record["title"] == "Book club")
+    assert (book["venue_name"], book["venue_address"], book["venue_city"]) == (
+        "Hub Cafe", "250 N 21st St, Lincoln, NE", "Lincoln",
+    )
+    karaoke = next(record for record in records if record["title"] == "Karaoke")
+    assert karaoke["venue_address"] == "The Post"
+    assert all(record["lat"] is None and record["lng"] is None for record in records)
+    with patch.object(preview_worker, "fetch_publisher") as fetch:
+        with pytest.raises(preview_worker.PreviewError, match="unregistered_omaha_lincoln_ical"):
+            preview_worker.preview_source({**source, "feed_url": "https://example.org/events.ics"})
+        fetch.assert_not_called()
+
+
+def test_riverfront_preview_corrects_omaha_times_and_resolves_reviewed_venues():
+    source = dict(source_key=riverfront.SOURCE_KEY,
+                  feed_url=omaha_lincoln.new_ical_feeds()[riverfront.SOURCE_KEY],
+                  kind="ical", platform_adapter="ical", timezone="America/Chicago")
+    start = (datetime.now(ZoneInfo("America/New_York")) + timedelta(days=4)).replace(
+        hour=17, minute=0, second=0, microsecond=0)
+    calendar = Calendar()
+    calendar.add("version", "2.0")
+    for uid, title, park, description, location in (
+        ("1", "Story Walk", riverfront.GENE_LEAHY, "Visit Arches Playground.", ""),
+        ("2", "Skating DJ Night", riverfront.HEARTLAND, "Visit the Skate Ribbon.", ""),
+        ("3", "Veterans Day Storywalk", riverfront.HEARTLAND, "Meet at the American Flag.", ""),
+        ("4", "The RiverFront Holly Days", riverfront.HEARTLAND, "Explore the park.", ""),
+        ("5", "Holiday Lights Lighting Ceremony", riverfront.GENE_LEAHY, "Enjoy the lights.", ""),
+        ("6", "Off-site Story Walk", riverfront.GENE_LEAHY, "Meet near Arches Playground.",
+         "Library, 123 Main St, Omaha, NE 68102"),
+        ("7", "Unresolved", "Seasonal Events", "Meet up to explore.", ""),
+    ):
+        event = Event()
+        event.add("uid", uid)
+        event.add("summary", title)
+        event.add("dtstart", start)
+        event.add("dtend", start + timedelta(hours=2))
+        event.add("categories", [park])
+        event.add("description", description)
+        event.add("url", f"https://theriverfrontomaha.com/event/{uid}/")
+        if location:
+            event.add("location", location)
+        calendar.add_component(event)
+
+    with patch.object(preview_worker, "fetch_publisher", return_value=calendar.to_ical().decode()):
+        result = preview_worker.preview_source(source)
+
+    records = {record["id"]: record for record in result["p_events"]}
+    assert result["p_future_count"] == 7
+    assert result["p_venue_count"] == 5
+    assert all(datetime.fromisoformat(row["starts_at"]).astimezone(ZoneInfo("America/Chicago")).hour == 17
+               for row in records.values())
+    assert all(row["reason"] is None for row in result["p_events"] if row["lat"] is not None)
+    assert records["1"]["venue_name"] == "Arches Playground at Gene Leahy Mall"
+    assert records["2"]["venue_name"] == "Skate Ribbon at Heartland of America Park"
+    assert records["3"]["venue_name"] == "American Flag at Heartland of America Park (approximate pin)"
+    assert "approximate" in records["3"]["description"]
+    assert records["4"]["lat"] == records["2"]["lat"]
+    assert records["4"]["venue_name"] == "Heartland of America Park (Skate Ribbon entrance)"
+    assert "Skate Ribbon entrance" in records["4"]["description"]
+    assert records["5"]["venue_address"] == "1001 Douglas St, Omaha, NE 68102"
+    assert records["1"]["venue_address"] == records["5"]["venue_address"]
+    assert records["2"]["venue_address"] == records["4"]["venue_address"] == "800 Douglas St, Omaha, NE"
+    assert records["6"]["venue_name"] == "Library"
+    assert records["7"]["lat"] is None
+
+
+@pytest.mark.parametrize(("source_key", "events", "expected_pins"), [
+    (omaha_lincoln.FRANCIE_AND_FINCH, (
+        ("Visiting Author", "Francie & Finch Bookshop, 130 S. 13th Street, Lincoln, NE 68508"),
+        ("Off-site Reading", "Francie & Finch Bookshop, 100 S 13th St, Lincoln, NE 68508"),
+        ("Venue To Be Announced", ""),
+    ), {"Visiting Author": (40.8129603, -96.7022956), "Off-site Reading": (None, None),
+        "Venue To Be Announced": (None, None)}),
+    (omaha_lincoln.CROOK_HOUSE, (
+        ("History & Appreciation of Antiques Class", "General Crook House Museum, 5730 N 30th St., Omaha, NE 68111"),
+        ("No Class This Week: History & Appreciation of Antiques", "General Crook House Museum, 5730 N 30th St., Omaha, NE 68111"),
+    ), {"History & Appreciation of Antiques Class": (None, None)}),
+])
+def test_reviewed_venue_and_cancellation_rules(source_key, events, expected_pins):
+    feed_url = omaha_lincoln.new_ical_feeds()[source_key]
+    host = feed_url.split("/")[2]
+    source = dict(source_key=source_key, feed_url=feed_url, kind="ical",
+                  platform_adapter="ical", timezone="America/Chicago")
+    calendar = Calendar()
+    calendar.add("version", "2.0")
+    start = datetime.now(timezone.utc) + timedelta(days=4)
+    for index, (title, location) in enumerate(events):
+        event = Event()
+        event.add("uid", str(index))
+        event.add("summary", title)
+        event.add("dtstart", start)
+        event.add("dtend", start + timedelta(hours=1))
+        event.add("url", f"https://{host}/event/{index}/")
+        if location:
+            event.add("location", location)
+        calendar.add_component(event)
+
+    with patch.object(preview_worker, "fetch_publisher", return_value=calendar.to_ical().decode()):
+        result = preview_worker.preview_source(source)
+
+    assert {row["title"]: (row["lat"], row["lng"]) for row in result["p_events"]} == expected_pins
+    assert result["p_venue_count"] == sum(lat is not None for lat, _ in expected_pins.values())
