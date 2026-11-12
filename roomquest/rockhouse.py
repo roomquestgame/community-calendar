@@ -105,6 +105,17 @@ def show_date(match, today, horizon):
     return None
 
 
+def timed_record(title, day, show, url, venue, street):
+    hour, minute, half = show.groups()
+    hour = int(hour)
+    if not 1 <= hour <= 12:
+        raise ValueError("rockhouse_show_time_invalid")
+    starts = datetime.combine(day, datetime.min.time()).replace(
+        hour=hour % 12 + (12 if half.casefold() == "p" else 0), minute=int(minute or 0),
+    )
+    return record(title, starts.isoformat(), None, venue, street, "Omaha", url, url, tz=ZONE)
+
+
 def event_record(payload, url, venue, street, today, horizon):
     doc = Document(payload)
     title = plain(" ".join(doc.heading))
@@ -123,14 +134,48 @@ def event_record(payload, url, venue, street, today, horizon):
     show = SHOW.search(body[date_match.end():])
     if not show:
         return None
-    hour, minute, half = show.groups()
-    hour = int(hour)
-    if not 1 <= hour <= 12:
-        raise ValueError("rockhouse_show_time_invalid")
-    starts = datetime.combine(day, datetime.min.time()).replace(
-        hour=hour % 12 + (12 if half.casefold() == "p" else 0), minute=int(minute or 0),
-    )
-    return record(title, starts.isoformat(), None, venue, street, "Omaha", url, url, tz=ZONE)
+    return timed_record(title, day, show, url, venue, street)
+
+
+def listing_records(payload, listing, links, venue, street, today, horizon):
+    from bs4 import BeautifulSoup
+
+    soup = BeautifulSoup(payload, "html.parser")
+    allowed = set(links)
+    observed = {}
+    for view in soup.select(".generalView"):
+        month = None
+        for item in view.find_all(recursive=False):
+            classes = item.get("class", [])
+            if "rhp-events-list-separator-month" in classes:
+                month = datetime.strptime(item.get_text(" ", strip=True), "%B %Y")
+                continue
+            if "rhpSingleEvent" not in classes:
+                continue
+            heading = item.select_one("a#eventTitle[href]")
+            date = item.select_one(".singleEventDate")
+            time = item.select_one(".rhp-event__time-text--list")
+            if heading is None or date is None or month is None:
+                continue
+            url = urljoin(listing, heading["href"])
+            title = plain(heading.get_text(" ", strip=True))
+            if url not in allowed or not title:
+                continue
+            date_text = date.get_text(" ", strip=True)
+            day = datetime.strptime(f"{date_text} {month.year}", "%a, %b %d %Y").date()
+            if day.month != month.month or day.strftime("%a").casefold() != date_text.split(",")[0].casefold():
+                raise ValueError("rockhouse_calendar_date_mismatch")
+            show = SHOW.search(time.get_text(" ", strip=True)) if time is not None else None
+            cancelled = CANCELLED.match(title) or any(CANCELLED.fullmatch(line) for line in item.stripped_strings)
+            row = None
+            if not cancelled and today <= day <= horizon:
+                if show is None:
+                    continue
+                row = timed_record(title, day, show, url, venue, street)
+            if url in observed and observed[url] != row:
+                raise ValueError("rockhouse_calendar_duplicate_conflict")
+            observed[url] = row
+    return observed
 
 
 def collect(source, fetch, *, deadline_at=None, now=None):
@@ -142,11 +187,18 @@ def collect(source, fetch, *, deadline_at=None, now=None):
     listing, suffix, venue, street = profile
     today = (now or datetime.now(timezone.utc)).astimezone(ZoneInfo(ZONE)).date()
     horizon = today + timedelta(days=60)
+    payload = fetch(listing, "text/html")
+    links = detail_links(payload, listing, suffix)
+    observed = {}
+    if source["source_key"] == "omaha_reverb_lounge_events":
+        observed = listing_records(payload, listing, links, venue, street, today, horizon)
     result = []
-    for link in detail_links(fetch(listing, "text/html"), listing, suffix):
+    for link in links:
         if deadline_at is not None and monotonic() >= deadline_at:
             raise ValueError("collection_deadline")
-        row = event_record(fetch(link, "text/html"), link, venue, street, today, horizon)
+        row = observed[link] if link in observed else event_record(
+            fetch(link, "text/html"), link, venue, street, today, horizon,
+        )
         if row is not None:
             result.append(row)
     return sorted(result, key=lambda row: (row["starts_at"], row["id"]))
