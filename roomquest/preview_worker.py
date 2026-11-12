@@ -757,6 +757,22 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
     from roomquest import holly_hill_sources, omaha_lincoln
     from roomquest import civic_local_calendars, civic_schedule, legistar, municipal_notices, virginia_civic
     source_key = source.get('source_key')
+    from roomquest import chesapeake_library
+    if source_key == chesapeake_library.KEY:
+        deadline = min(monotonic() + 25, deadline_at - 8 if deadline_at is not None else float('inf'))
+        try:
+            records = chesapeake_library.collect(source, lambda url, accept: fetch_publisher(
+                url, accept, respect_robots=True, deadline_at=deadline,
+                allowed_hosts=(chesapeake_library.HOST,)))
+        except (ValueError, TypeError, KeyError, OverflowError) as exc:
+            reason = str(exc)
+            raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}', reason) else 'invalid_chesapeake_library_payload') from exc
+        samples = records[:MAX_PREVIEWS]
+        while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
+            samples.pop()
+        return {'p_source_key': source_key, 'p_samples': samples, 'p_future_count': len(records),
+                'p_venue_count': sum(row['lat'] is not None for row in records),
+                'p_error': None, 'p_events': records}
     if (source_key in legistar.SOURCES or source_key in virginia_civic.SOURCES
             or source_key in municipal_notices.SOURCES or source_key in civic_local_calendars.SOURCES
             or source_key == civic_schedule.PUBLIC_WORKS_KEY):
