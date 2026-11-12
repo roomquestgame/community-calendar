@@ -1,6 +1,6 @@
 import unittest
-from datetime import date
-from unittest.mock import patch
+from datetime import date, datetime, timezone
+from unittest.mock import Mock, patch
 
 from roomquest import rockhouse
 
@@ -28,3 +28,23 @@ class RockhouseTest(unittest.TestCase):
         payload = '<body><h1>A Show</h1><div>Friday, November 20</div><div>Doors: 7 pm</div></body>'
         self.assertIsNone(rockhouse.event_record(payload, self.detail, self.venue, self.address,
                                                 self.today, self.horizon))
+
+    def test_reverb_uses_listing_show_time_and_month_heading(self):
+        key = "omaha_reverb_lounge_events"
+        listing, suffix, _, _ = rockhouse.SOURCES[key]
+        detail = "https://reverblounge.com/event/a-show/" + suffix
+        source = {"source_key": key, "feed_url": listing, "timezone": rockhouse.ZONE,
+                  "kind": "html", "platform_adapter": "html"}
+        payload = f"""<body><h1>Upcoming Events</h1><div class="generalView">
+            <div class="rhp-events-list-separator-month">January 2027</div>
+            <div class="rhpSingleEvent">
+              <span class="singleEventDate">Sat, Jan 2</span>
+              <a id="eventTitle" href="{detail}"><h2>A Show</h2></a>
+              <span class="rhp-event__time-text--list">Doors: 7 pm // Show: 8:15 pm</span>
+            </div></div></body>"""
+        fetch = Mock(return_value=payload)
+        with patch.object(rockhouse, "record", return_value={"id": detail, "starts_at": "start"}) as record:
+            rows = rockhouse.collect(source, fetch, now=datetime(2026, 12, 30, tzinfo=timezone.utc))
+        fetch.assert_called_once_with(listing, "text/html")
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(record.call_args.args[1], "2027-01-02T20:15:00")
