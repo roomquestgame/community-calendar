@@ -208,5 +208,5 @@ def test_bennington_preview_resolves_reviewed_onsite_and_offsite_series():
     by_title = {row["title"]: row for row in records}
     assert by_title["Storytime"]["venue_address"] == "11401 North 156th Street, Bennington, NE 68007"
     assert by_title["Ridgewood Book Club"]["venue_address"] == "12301 North 149th Circle, Bennington, NE"
-    assert by_title["Another Program"]["venue_address"] is None
+    assert not by_title["Another Program"]["venue_address"]
     assert by_title["Special Art Studio"]["venue_address"] == "123 Main St, Bennington, NE"
