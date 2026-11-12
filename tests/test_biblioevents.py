@@ -1,1 +1,91 @@
-aW1wb3J0IGpzb24KaW1wb3J0IHVuaXR0ZXN0CmZyb20gZGF0ZXRpbWUgaW1wb3J0IGRhdGV0aW1lLCB0aW1lZGVsdGEsIHRpbWV6b25lCmZyb20gdW5pdHRlc3QubW9jayBpbXBvcnQgcGF0Y2gKCmZyb20gcm9vbXF1ZXN0IGltcG9ydCBiaWJsaW9ldmVudHMKClNPVVJDRSA9IHsKICAgICJzb3VyY2Vfa2V5IjogIm9tYWhhX3B1YmxpY19saWJyYXJ5X2JpYmxpb2V2ZW50c19uZSIsCiAgICAiZmVlZF91cmwiOiAiaHR0cHM6Ly9vbWFoYS5iaWJsaW9jb21tb25zLmNvbS92Mi9ldmVudHMiLAogICAgInRpbWV6b25lIjogIkFtZXJpY2EvQ2hpY2FnbyIsCiAgICAia2luZCI6ICJodG1sIiwKICAgICJwbGF0Zm9ybV9hZGFwdGVyIjogImh0bWwiLAp9CgoKY2xhc3MgQmlibGlvRXZlbnRzVGVzdCh1bml0dGVzdC5UZXN0Q2FzZSk6CiAgICBkZWYgc2V0VXAoc2VsZik6CiAgICAgICAgc2VsZi5ub3cgPSBkYXRldGltZSgyMDI2LCAxMSwgMTIsIDE4LCB0emluZm89dGltZXpvbmUudXRjKQogICAgICAgIHNlbGYuc3RhcnQgPSAoc2VsZi5ub3cgKyB0aW1lZGVsdGEoZGF5cz0xKSkuaXNvZm9ybWF0KCkKCiAgICBkZWYgcGFnZShzZWxmLCBkZWZpbml0aW9uLCBsb2NhdGlvbnMpOgogICAgICAgIHJldHVybiBqc29uLmR1bXBzKHsKICAgICAgICAgICAgImV2ZW50cyI6IHsiaXRlbXMiOiBbImFiYzEyMyJdfSwKICAgICAgICAgICAgImVudGl0aWVzIjogewogICAgICAgICAgICAgICAgImV2ZW50cyI6IHsiYWJjMTIzIjogewogICAgICAgICAgICAgICAgICAgICJpbmRleFN0YXJ0Ijogc2VsZi5zdGFydCwKICAgICAgICAgICAgICAgICAgICAiZGVmaW5pdGlvbiI6IHsidGl0bGUiOiAiRmFtaWx5IFN0b3J5dGltZSIsICoqZGVmaW5pdGlvbn0sCiAgICAgICAgICAgICAgICB9fSwKICAgICAgICAgICAgICAgICJsb2NhdGlvbnMiOiBsb2NhdGlvbnMsCiAgICAgICAgICAgIH0sCiAgICAgICAgfSkKCiAgICBkZWYgY29sbGVjdChzZWxmLCBwYXlsb2FkKToKICAgICAgICBjYWxscyA9IFtdCiAgICAgICAgZGVmIGZldGNoKHVybCwgYWNjZXB0KToKICAgICAgICAgICAgY2FsbHMuYXBwZW5kKCh1cmwsIGFjY2VwdCkpCiAgICAgICAgICAgIGlmIGxlbihjYWxscykgPT0gMToKICAgICAgICAgICAgICAgIHJldHVybiBwYXlsb2FkCiAgICAgICAgICAgIHJldHVybiAneyJldmVudHMiOnsiaXRlbXMiOltdfX0nCiAgICAgICAgd2l0aCBwYXRjaC5vYmplY3QoYmlibGlvZXZlbnRzLCAicmVjb3JkIiwgc2lkZV9lZmZlY3Q9bGFtYmRhICphLCAqKms6IHsKICAgICAgICAgICAgInN0YXJ0c19hdCI6IGFbMV0sICJ2ZW51ZSI6IGFbM10sICJhZGRyZXNzIjogYVs0XSwgInVybCI6IGFbNl0sICJpZCI6IGFbN10sCiAgICAgICAgfSk6CiAgICAgICAgICAgIHJlc3VsdCA9IGJpYmxpb2V2ZW50cy5jb2xsZWN0KFNPVVJDRSwgZmV0Y2gsIG5vdz1zZWxmLm5vdykKICAgICAgICBzZWxmLmFzc2VydEVxdWFsKGxlbihjYWxscyksIDIpCiAgICAgICAgc2VsZi5hc3NlcnRJbigiL3YyL2xpYnJhcmllcy9vbWFoYS9ldmVudHM/bGltaXQ9MTAwJnBhZ2U9MSIsIGNhbGxzWzBdWzBdKQogICAgICAgIHJldHVybiByZXN1bHQKCiAgICBkZWYgdGVzdF9icmFuY2hfYWRkcmVzc19hbmRfbGluayhzZWxmKToKICAgICAgICByb3csID0gc2VsZi5jb2xsZWN0KHNlbGYucGFnZSgKICAgICAgICAgICAgeyJicmFuY2hMb2NhdGlvbklkIjogImJyYW5jaCJ9LCB7ImJyYW5jaCI6IHsibmFtZSI6ICJCZW5zb24gQnJhbmNoIn19LAogICAgICAgICkpCiAgICAgICAgc2VsZi5hc3NlcnRFcXVhbChyb3dbImFkZHJlc3MiXSwgIjYwMTUgQmlubmV5IFN0LCBPbWFoYSwgTkUgNjgxMDQiKQogICAgICAgIHNlbGYuYXNzZXJ0RXF1YWwocm93WyJ1cmwiXSwgU09VUkNFWyJmZWVkX3VybCJdICsgIi9hYmMxMjMiKQoKICAgIGRlZiB0ZXN0X29mZnNpdGVfYWRkcmVzc19pc19ub3RfcmVwbGFjZWRfYnlfYnJhbmNoKHNlbGYpOgogICAgICAgIHJvdywgPSBzZWxmLmNvbGxlY3Qoc2VsZi5wYWdlKAogICAgICAgICAgICB7ImJyYW5jaExvY2F0aW9uSWQiOiAiYnJhbmNoIiwgIm5vbkJyYW5jaExvY2F0aW9uSWQiOiAib2ZmIn0sCiAgICAgICAgICAgIHsiYnJhbmNoIjogeyJuYW1lIjogIkJlbnNvbiBCcmFuY2gifSwgIm9mZiI6IHsibmFtZSI6ICJQYXJ0bmVyIFZlbnVlIn19LAogICAgICAgICkpCiAgICAgICAgc2VsZi5hc3NlcnRFcXVhbChyb3dbInZlbnVlIl0sICJQYXJ0bmVyIFZlbnVlIikKICAgICAgICBzZWxmLmFzc2VydEVxdWFsKHJvd1siYWRkcmVzcyJdLCAiIikKCiAgICBkZWYgdGVzdF9vZmZzaXRlX3N0cnVjdHVyZWRfYWRkcmVzcyhzZWxmKToKICAgICAgICByb3csID0gc2VsZi5jb2xsZWN0KHNlbGYucGFnZSgKICAgICAgICAgICAgeyJicmFuY2hMb2NhdGlvbklkIjogImJyYW5jaCIsICJub25CcmFuY2hMb2NhdGlvbklkIjogIm9mZiJ9LAogICAgICAgICAgICB7ImJyYW5jaCI6IHsibmFtZSI6ICJCZW5zb24gQnJhbmNoIn0sICJvZmYiOiB7CiAgICAgICAgICAgICAgICAibmFtZSI6ICJQYXJ0bmVyIFZlbnVlIiwgImFkZHJlc3MiOiB7CiAgICAgICAgICAgICAgICAgICAgInN0cmVldEFkZHJlc3MiOiAiMTAxIFRlc3QgU3QiLCAiYWRkcmVzc0xvY2FsaXR5IjogIk9tYWhhIiwKICAgICAgICAgICAgICAgICAgICAiYWRkcmVzc1JlZ2lvbiI6ICJORSIsICJwb3N0YWxDb2RlIjogIjY4MTA0IiwKICAgICAgICAgICAgICAgIH0sCiAgICAgICAgICAgIH19LAogICAgICAgICkpCiAgICAgICAgc2VsZi5hc3NlcnRFcXVhbChyb3dbImFkZHJlc3MiXSwgIjEwMSBUZXN0IFN0LCBPbWFoYSwgTkUgNjgxMDQiKQoKICAgIGRlZiB0ZXN0X2NhbmNlbGxlZF9ldmVudF9pc19za2lwcGVkKHNlbGYpOgogICAgICAgIHNlbGYuYXNzZXJ0RXF1YWwoc2VsZi5jb2xsZWN0KHNlbGYucGFnZSgKICAgICAgICAgICAgeyJicmFuY2hMb2NhdGlvbklkIjogImJyYW5jaCIsICJpc0NhbmNlbGxlZCI6IFRydWV9LAogICAgICAgICAgICB7ImJyYW5jaCI6IHsibmFtZSI6ICJCZW5zb24gQnJhbmNoIn19LAogICAgICAgICkpLCBbXSkKCiAgICBkZWYgdGVzdF9yZXBlYXRlZF9wYWdlX2ZhaWxzX2Nsb3NlZChzZWxmKToKICAgICAgICBwYXlsb2FkID0gc2VsZi5wYWdlKHsiYnJhbmNoTG9jYXRpb25JZCI6ICJicmFuY2gifSwgeyJicmFuY2giOiB7Im5hbWUiOiAiQmVuc29uIEJyYW5jaCJ9fSkKICAgICAgICB3aXRoIHBhdGNoLm9iamVjdChiaWJsaW9ldmVudHMsICJyZWNvcmQiLCByZXR1cm5fdmFsdWU9Tm9uZSk6CiAgICAgICAgICAgIHdpdGggc2VsZi5hc3NlcnRSYWlzZXNSZWdleChWYWx1ZUVycm9yLCAiaW52YWxpZF9iaWJsaW9ldmVudHNfcGFnaW5hdGlvbiIpOgogICAgICAgICAgICAgICAgYmlibGlvZXZlbnRzLmNvbGxlY3QoU09VUkNFLCBsYW1iZGEgKl86IHBheWxvYWQsIG5vdz1zZWxmLm5vdykKCiAgICBkZWYgdGVzdF9taXNtYXRjaGVkX3NvdXJjZV91cmxfaXNfcmVqZWN0ZWQoc2VsZik6CiAgICAgICAgd2l0aCBzZWxmLmFzc2VydFJhaXNlc1JlZ2V4KFZhbHVlRXJyb3IsICJ1bnJlZ2lzdGVyZWRfYmlibGlvZXZlbnRzX3NvdXJjZSIpOgogICAgICAgICAgICBiaWJsaW9ldmVudHMuY29sbGVjdCh7KipTT1VSQ0UsICJmZWVkX3VybCI6ICJodHRwczovL2Fub3RoZXIuZXhhbXBsZS92Mi9ldmVudHMifSwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBsYW1iZGEgKl86IHNlbGYuZmFpbCgidW5leHBlY3RlZCBmZXRjaCIpKQo=
+import json
+import unittest
+from datetime import datetime, timedelta, timezone
+from unittest.mock import patch
+
+from roomquest import biblioevents
+
+SOURCE = {
+    "source_key": "omaha_public_library_biblioevents_ne",
+    "feed_url": "https://omaha.bibliocommons.com/v2/events",
+    "timezone": "America/Chicago",
+    "kind": "html",
+    "platform_adapter": "html",
+}
+
+
+class BiblioEventsTest(unittest.TestCase):
+    def setUp(self):
+        self.now = datetime(2026, 11, 12, 18, tzinfo=timezone.utc)
+        self.start = (self.now + timedelta(days=1)).isoformat()
+
+    def page(self, definition, locations):
+        return json.dumps({
+            "events": {"items": ["abc123"]},
+            "entities": {
+                "events": {"abc123": {
+                    "indexStart": self.start,
+                    "definition": {"title": "Family Storytime", **definition},
+                }},
+                "locations": locations,
+            },
+        })
+
+    def collect(self, payload):
+        calls = []
+        def fetch(url, accept):
+            calls.append((url, accept))
+            if len(calls) == 1:
+                return payload
+            return '{"events":{"items":[]}}'
+        with patch.object(biblioevents, "record", side_effect=lambda *a, **k: {
+            "starts_at": a[1], "venue": a[3], "address": a[4], "url": a[6], "id": a[7],
+        }):
+            result = biblioevents.collect(SOURCE, fetch, now=self.now)
+        self.assertEqual(len(calls), 2)
+        self.assertIn("/v2/libraries/omaha/events?limit=100&page=1", calls[0][0])
+        return result
+
+    def test_branch_address_and_link(self):
+        row, = self.collect(self.page(
+            {"branchLocationId": "branch"}, {"branch": {"name": "Benson Branch"}},
+        ))
+        self.assertEqual(row["address"], "6015 Binney St, Omaha, NE 68104")
+        self.assertEqual(row["url"], SOURCE["feed_url"] + "/abc123")
+
+    def test_offsite_address_is_not_replaced_by_branch(self):
+        row, = self.collect(self.page(
+            {"branchLocationId": "branch", "nonBranchLocationId": "off"},
+            {"branch": {"name": "Benson Branch"}, "off": {"name": "Partner Venue"}},
+        ))
+        self.assertEqual(row["venue"], "Partner Venue")
+        self.assertEqual(row["address"], "")
+
+    def test_offsite_structured_address(self):
+        row, = self.collect(self.page(
+            {"branchLocationId": "branch", "nonBranchLocationId": "off"},
+            {"branch": {"name": "Benson Branch"}, "off": {
+                "name": "Partner Venue", "address": {
+                    "streetAddress": "101 Test St", "addressLocality": "Omaha",
+                    "addressRegion": "NE", "postalCode": "68104",
+                },
+            }},
+        ))
+        self.assertEqual(row["address"], "101 Test St, Omaha, NE 68104")
+
+    def test_cancelled_event_is_skipped(self):
+        self.assertEqual(self.collect(self.page(
+            {"branchLocationId": "branch", "isCancelled": True},
+            {"branch": {"name": "Benson Branch"}},
+        )), [])
+
+    def test_repeated_page_fails_closed(self):
+        payload = self.page({"branchLocationId": "branch"}, {"branch": {"name": "Benson Branch"}})
+        with patch.object(biblioevents, "record", return_value=None):
+            with self.assertRaisesRegex(ValueError, "invalid_biblioevents_pagination"):
+                biblioevents.collect(SOURCE, lambda *_: payload, now=self.now)
+
+    def test_mismatched_source_url_is_rejected(self):
+        with self.assertRaisesRegex(ValueError, "unregistered_biblioevents_source"):
+            biblioevents.collect({**SOURCE, "feed_url": "https://another.example/v2/events"},
+                                lambda *_: self.fail("unexpected fetch"))
