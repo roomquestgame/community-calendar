@@ -23,10 +23,26 @@ def intake_rows():
 @lru_cache(maxsize=1)
 def new_ical_feeds():
     return {
-        row["source_key"]: row["feed_url"] for row in intake_rows()
-        if row.get("adapter") == "ical" and "existing_id" not in row
+        BENNINGTON: BENNINGTON_FEED,
+        **{row["source_key"]: row["feed_url"] for row in intake_rows()
+           if row.get("adapter") == "ical" and "existing_id" not in row},
     }
 
+
+BENNINGTON = "bennington_public_library_ical_ne"
+BENNINGTON_FEED = "https://benningtonlibrary.org/events/list/?ical=1"
+BENNINGTON_LIBRARY_VENUE = (
+    "Bennington Public Library", "11401 North 156th Street, Bennington, NE 68007",
+)
+BENNINGTON_PROGRAMS = {
+    "thursday-storytime", "thursday-storytime-2", "1st-saturday-storytime",
+    "3rd-saturday-storytime", "preschool-steam-3", "open-art-studio-4",
+    "lego-your-library-5", "voyager-1-light-day-lego-your-library",
+    "teen-crochet-corner-4", "teen-crochet-corner-3-2", "read-with-a-dog-5",
+}
+BENNINGTON_RIDGEWOOD = (
+    "Ridgewood Senior Living", "12301 North 149th Circle, Bennington, NE",
+)
 
 FRANCIE_AND_FINCH = "municipal_5e01aa207622e684433576ed"
 CROOK_HOUSE = "municipal_ab8764ae8583f76b90fc6de9"
@@ -93,6 +109,16 @@ def collect(source, fetch):
                 address += f" {venue['zip']}"
             record.update(venue_name=venue["venue"], venue_address=address,
                           venue_city=venue["city"])
+        if key == BENNINGTON and not (record.get("venue_name") or record.get("venue_address")):
+            # The publisher's series pages identify these library programs
+            # and separately locate the Ridgewood book club off-site.
+            parts = event_url.path.strip("/").split("/")
+            if len(parts) in (2, 3) and parts[0] == "event":
+                slug = parts[1]
+                venue = BENNINGTON_RIDGEWOOD if slug == "ridgewood-book-club-2" else (
+                    BENNINGTON_LIBRARY_VENUE if slug in BENNINGTON_PROGRAMS else None)
+                if venue:
+                    record.update(venue_name=venue[0], venue_address=venue[1], venue_city="Bennington")
         if key == riverfront.SOURCE_KEY:
             riverfront.set_venue(record)
         elif (key == FRANCIE_AND_FINCH

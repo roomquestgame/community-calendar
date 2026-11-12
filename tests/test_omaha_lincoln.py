@@ -16,7 +16,7 @@ def test_intake_batches_keep_existing_identities():
     assert {row["existing_id"] for row in rows if row["batch"] == 1 and "existing_id" in row} == {
         3177, 4301, 4901, 5131,
     }
-    assert len(omaha_lincoln.new_ical_feeds()) == 7
+    assert len(omaha_lincoln.new_ical_feeds()) == 8
 
 
 def test_preview_preserves_explicit_venues_and_filters_private_records():
@@ -177,3 +177,36 @@ def test_unl_public_preview_links_to_local_dated_event_and_skips_virtual_events(
         with pytest.raises(preview_worker.PreviewError, match="unregistered_unl_public_calendar"):
             preview_worker.preview_source({**source, "feed_url": "https://events.unl.edu/upcoming/"})
         fetch.assert_not_called()
+
+
+def test_bennington_preview_resolves_reviewed_onsite_and_offsite_series():
+    source = dict(source_key=omaha_lincoln.BENNINGTON, feed_url=omaha_lincoln.BENNINGTON_FEED,
+                  kind="ical", platform_adapter="ical", timezone="America/Chicago")
+    start = datetime.now(timezone.utc) + timedelta(days=4)
+    calendar = Calendar()
+    calendar.add("version", "2.0")
+    for slug, title, location in (
+        ("thursday-storytime-2", "Storytime", ""),
+        ("ridgewood-book-club-2", "Ridgewood Book Club", ""),
+        ("another-program", "Another Program", ""),
+        ("open-art-studio-4", "Special Art Studio", "Other Hall, 123 Main St, Bennington, NE"),
+    ):
+        event = Event()
+        event.add("uid", slug)
+        event.add("summary", title)
+        event.add("dtstart", start)
+        event.add("dtend", start + timedelta(hours=1))
+        event.add("url", f"https://benningtonlibrary.org/event/{slug}/")
+        if location:
+            event.add("location", location)
+        calendar.add_component(event)
+
+    with patch.object(preview_worker, "fetch_publisher", return_value=calendar.to_ical().decode()) as fetch:
+        records = preview_worker.preview_source(source)["p_events"]
+        assert fetch.call_args.kwargs["respect_robots"]
+        assert fetch.call_args.kwargs["allowed_hosts"] == ("benningtonlibrary.org",)
+    by_title = {row["title"]: row for row in records}
+    assert by_title["Storytime"]["venue_address"] == "11401 North 156th Street, Bennington, NE 68007"
+    assert by_title["Ridgewood Book Club"]["venue_address"] == "12301 North 149th Circle, Bennington, NE"
+    assert not by_title["Another Program"]["venue_address"]
+    assert by_title["Special Art Studio"]["venue_address"] == "123 Main St, Bennington, NE"
