@@ -36,6 +36,7 @@ class RockhouseTest(unittest.TestCase):
         source = {"source_key": key, "feed_url": listing, "timezone": rockhouse.ZONE,
                   "kind": "html", "platform_adapter": "html"}
         payload = f"""<body><h1>Upcoming Events</h1><div class="generalView">
+            <!-- Calendar template marker -->
             <div class="rhp-events-list-separator-month">January 2027</div>
             <div class="rhpSingleEvent">
               <span class="singleEventDate">Sat, Jan 2</span>
