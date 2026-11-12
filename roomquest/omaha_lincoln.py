@@ -26,6 +26,15 @@ def new_ical_feeds():
     }
 
 
+FRANCIE_AND_FINCH = "municipal_5e01aa207622e684433576ed"
+CROOK_HOUSE = "municipal_ab8764ae8583f76b90fc6de9"
+BOOKSHOP_ADDRESS = re.compile(
+    r"130\s+S\.?\s+13th\s+(?:Street|St\.?),\s*Lincoln,\s*NE(?:\s+68508)?",
+    re.IGNORECASE,
+)
+CROOK_HOUSE_NO_CLASS = re.compile(r"^No Class This Week\s*:", re.IGNORECASE)
+
+
 VENUE = re.compile(
     r"(?P<venue>.+?),\s*(?P<street>[0-9]+\s+[^,]+),\s*"
     r"(?P<city>[A-Za-z][A-Za-z .'-]+),\s*(?:NE|Nebraska)"
@@ -61,6 +70,8 @@ def collect(source, fetch):
     for record in records:
         if record["id"].split("__", 1)[0] in private_ids or NON_PUBLIC.fullmatch(record["title"]):
             continue
+        if key == CROOK_HOUSE and CROOK_HOUSE_NO_CLASS.match(record["title"]):
+            continue
         event_url = urlsplit(record["event_url"] or "")
         if event_url.scheme != "https" or event_url.hostname != host:
             continue
@@ -76,6 +87,11 @@ def collect(source, fetch):
                           venue_city=venue["city"])
         if key == riverfront.SOURCE_KEY:
             riverfront.set_venue(record)
+        elif (key == FRANCIE_AND_FINCH
+              and (record.get("venue_name") or "").strip().casefold() == "francie & finch bookshop"
+              and BOOKSHOP_ADDRESS.fullmatch(record.get("venue_address") or "")):
+            # Publisher contact address matches the existing EventQuest bookshop pin.
+            record.update(lat=40.8129603, lng=-96.7022956)
         else:
             record.update(lat=None, lng=None)
         result.append(record)

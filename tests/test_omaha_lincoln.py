@@ -106,3 +106,41 @@ def test_riverfront_preview_corrects_omaha_times_and_resolves_reviewed_venues():
     assert records["2"]["venue_address"] == records["4"]["venue_address"] == "800 Douglas St, Omaha, NE"
     assert records["6"]["venue_name"] == "Library"
     assert records["7"]["lat"] is None
+
+
+@pytest.mark.parametrize(("source_key", "events", "expected_pins"), [
+    (omaha_lincoln.FRANCIE_AND_FINCH, (
+        ("Visiting Author", "Francie & Finch Bookshop, 130 S. 13th Street, Lincoln, NE 68508"),
+        ("Off-site Reading", "Francie & Finch Bookshop, 100 S 13th St, Lincoln, NE 68508"),
+        ("Venue To Be Announced", ""),
+    ), {"Visiting Author": (40.8129603, -96.7022956), "Off-site Reading": (None, None),
+        "Venue To Be Announced": (None, None)}),
+    (omaha_lincoln.CROOK_HOUSE, (
+        ("History & Appreciation of Antiques Class", "General Crook House Museum, 5730 N 30th St., Omaha, NE 68111"),
+        ("No Class This Week: History & Appreciation of Antiques", "General Crook House Museum, 5730 N 30th St., Omaha, NE 68111"),
+    ), {"History & Appreciation of Antiques Class": (None, None)}),
+])
+def test_reviewed_venue_and_cancellation_rules(source_key, events, expected_pins):
+    feed_url = omaha_lincoln.new_ical_feeds()[source_key]
+    host = feed_url.split("/")[2]
+    source = dict(source_key=source_key, feed_url=feed_url, kind="ical",
+                  platform_adapter="ical", timezone="America/Chicago")
+    calendar = Calendar()
+    calendar.add("version", "2.0")
+    start = datetime.now(timezone.utc) + timedelta(days=4)
+    for index, (title, location) in enumerate(events):
+        event = Event()
+        event.add("uid", str(index))
+        event.add("summary", title)
+        event.add("dtstart", start)
+        event.add("dtend", start + timedelta(hours=1))
+        event.add("url", f"https://{host}/event/{index}/")
+        if location:
+            event.add("location", location)
+        calendar.add_component(event)
+
+    with patch.object(preview_worker, "fetch_publisher", return_value=calendar.to_ical().decode()):
+        result = preview_worker.preview_source(source)
+
+    assert {row["title"]: (row["lat"], row["lng"]) for row in result["p_events"]} == expected_pins
+    assert result["p_venue_count"] == sum(lat is not None for lat, _ in expected_pins.values())
