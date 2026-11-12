@@ -16,7 +16,7 @@ def test_intake_batches_keep_existing_identities():
     assert {row["existing_id"] for row in rows if row["batch"] == 1 and "existing_id" in row} == {
         3177, 4301, 4901, 5131,
     }
-    assert len(omaha_lincoln.new_ical_feeds()) == 8
+    assert len(omaha_lincoln.new_ical_feeds()) == 9
 
 
 def test_preview_preserves_explicit_venues_and_filters_private_records():
@@ -210,3 +210,72 @@ def test_bennington_preview_resolves_reviewed_onsite_and_offsite_series():
     assert by_title["Ridgewood Book Club"]["venue_address"] == "12301 North 149th Circle, Bennington, NE"
     assert not by_title["Another Program"]["venue_address"]
     assert by_title["Special Art Studio"]["venue_address"] == "123 Main St, Bennington, NE"
+
+
+def test_bottle_rocket_preview_keeps_public_taproom_programs_only():
+    source = dict(source_key=omaha_lincoln.BOTTLE_ROCKET, feed_url=omaha_lincoln.BOTTLE_ROCKET_FEED,
+                  kind="ical", platform_adapter="ical", timezone="America/Chicago")
+    start = datetime.now(timezone.utc) + timedelta(days=4)
+    calendar = Calendar()
+    calendar.add("version", "2.0")
+    for index, (title, venue, visibility) in enumerate((
+        ("Comedy night", "", "PUBLIC"),
+        ("food truck ?", "", "PUBLIC"),
+        ("Hog Wild BBQ Food Truck", "", "PRIVATE"),
+        ("Wagon Wheel Food truck", "Different venue", "PUBLIC"),
+    )):
+        event = Event()
+        event.add("uid", str(index))
+        event.add("summary", title)
+        event.add("class", visibility)
+        event.add("dtstart", start)
+        event.add("dtend", start + timedelta(hours=1))
+        if venue:
+            event.add("location", venue)
+        calendar.add_component(event)
+
+    with patch.object(preview_worker, "fetch_publisher", return_value=calendar.to_ical().decode()) as fetch:
+        row, = preview_worker.preview_source(source)["p_events"]
+        assert fetch.call_args.kwargs["respect_robots"]
+        assert fetch.call_args.kwargs["allowed_hosts"] == ("calendar.google.com",)
+    assert row["title"] == "Comedy night"
+    assert row["venue_address"] == "230 South 5th Street, Seward, NE 68434"
+    assert row["event_url"] == "https://bottlerocketbrewing.com/brewery-events/"
+
+
+def test_la_vista_library_keeps_each_venue_and_skips_closures():
+    feed = omaha_lincoln.LA_VISTA_FEED
+    records = [
+        dict(title="Teen Dungeons & Dragons", event_url=feed,
+             venue_address="<p>La Vista Public Library</p> - 9110 Giles Rd.  La Vista NE 68128"),
+        dict(title="Noon Year's Eve Party", event_url=feed,
+             venue_address="<p>Community Center</p> - 8116 Park View Blvd.  La Vista NE 68128"),
+        dict(title="Library Closed - Thanksgiving", event_url=feed),
+        dict(title="Other Location", event_url=feed, venue_address="Venue to be announced"),
+    ]
+    library, center, unknown = omaha_lincoln.normalize_la_vista_library(records)
+    assert library["venue_address"] == "9110 Giles Road, La Vista, NE 68128"
+    assert center["venue_address"] == "8116 Park View Boulevard, La Vista, NE 68128"
+    assert library["event_url"] == "https://www.cityoflavista.org/LibraryCalendar"
+    assert unknown["venue_address"] == "Venue to be announced"
+
+
+def test_clair_memorial_only_defaults_venue_for_the_published_worship_series():
+    source = dict(source_key=omaha_lincoln.CLAIR_MEMORIAL, feed_url=omaha_lincoln.CLAIR_MEMORIAL_FEED,
+                  kind="ical", platform_adapter="ical", timezone="America/Chicago")
+    start = datetime.now(timezone.utc) + timedelta(days=4)
+    calendar = Calendar()
+    calendar.add("version", "2.0")
+    for slug, title in (("sunday-worship", "Sunday Worship"), ("special-event", "Special Event")):
+        event = Event()
+        event.add("uid", slug)
+        event.add("summary", title)
+        event.add("dtstart", start)
+        event.add("dtend", start + timedelta(hours=1))
+        event.add("url", f"https://www.cmumc.net/events/{slug}/{start:%Y-%m-%d}")
+        calendar.add_component(event)
+    with patch.object(preview_worker, "fetch_publisher", return_value=calendar.to_ical().decode()):
+        records = preview_worker.preview_source(source)["p_events"]
+    by_title = {record["title"]: record for record in records}
+    assert by_title["Sunday Worship"]["venue_address"] == "5544 Ames Avenue, Omaha, NE"
+    assert not by_title["Special Event"]["venue_address"]

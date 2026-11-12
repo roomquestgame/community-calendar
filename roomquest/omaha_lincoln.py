@@ -24,10 +24,15 @@ def intake_rows():
 def new_ical_feeds():
     return {
         BENNINGTON: BENNINGTON_FEED,
+        CLAIR_MEMORIAL: CLAIR_MEMORIAL_FEED,
         **{row["source_key"]: row["feed_url"] for row in intake_rows()
            if row.get("adapter") == "ical" and "existing_id" not in row},
     }
 
+
+CLAIR_MEMORIAL = "clair_memorial_umc_omaha_ne"
+CLAIR_MEMORIAL_FEED = "https://www.cmumc.net/events.ics"
+CLAIR_WORSHIP_PATH = re.compile(r"/events/sunday-worship/20[0-9]{2}-[0-9]{2}-[0-9]{2}/?")
 
 BENNINGTON = "bennington_public_library_ical_ne"
 BENNINGTON_FEED = "https://benningtonlibrary.org/events/list/?ical=1"
@@ -46,6 +51,28 @@ BENNINGTON_RIDGEWOOD = (
 
 FRANCIE_AND_FINCH = "municipal_5e01aa207622e684433576ed"
 CROOK_HOUSE = "municipal_ab8764ae8583f76b90fc6de9"
+LA_VISTA_LIBRARY = "municipal_mapsee_853907f4222c2608e7bf5e67"
+LA_VISTA_FEED = ("https://www.cityoflavista.org/common/modules/iCalendar/"
+                 "iCalendar.aspx?catID=17&feed=calendar")
+LA_VISTA_CALENDAR = "https://www.cityoflavista.org/LibraryCalendar"
+LA_VISTA_VENUE = re.compile(r"<p>([^<]+)</p>\s*-\s*(.+?)\s+La Vista\s+NE\s+68128", re.I)
+LA_VISTA_ADDRESSES = {
+    ("la vista public library", "9110 giles rd"): ("La Vista Public Library", "9110 Giles Road"),
+    ("la vista public library", "9110 giles road"): ("La Vista Public Library", "9110 Giles Road"),
+    ("community center", "8116 park view blvd"): ("La Vista Community Center", "8116 Park View Boulevard"),
+}
+
+BOTTLE_ROCKET = "bottle_rocket_brewing_seward_ne"
+BOTTLE_ROCKET_FEED = (
+    "https://calendar.google.com/calendar/ical/"
+    "dcpbes1grqdipacmhaq7gh1cdk%40group.calendar.google.com/public/basic.ics"
+)
+BOTTLE_ROCKET_EVENTS = "https://bottlerocketbrewing.com/brewery-events/"
+BOTTLE_ROCKET_ADDRESS = "230 South 5th Street, Seward, NE 68434"
+BOTTLE_ROCKET_PROGRAMS = {
+    "comedy night", "hog wild bbq food truck", "wagon wheel food truck", "homerun bbq food truck",
+}
+
 UNL_PUBLIC = "unl_main_events_ical_ne"
 UNL_HOST = "events.unl.edu"
 UNL_FEED = f"https://{UNL_HOST}/audience/?audience=Public&format=ics&limit=100"
@@ -109,6 +136,11 @@ def collect(source, fetch):
                 address += f" {venue['zip']}"
             record.update(venue_name=venue["venue"], venue_address=address,
                           venue_city=venue["city"])
+        if (key == CLAIR_MEMORIAL and CLAIR_WORSHIP_PATH.fullmatch(event_url.path)
+                and record["title"].strip().casefold() == "sunday worship"
+                and not (record.get("venue_name") or record.get("venue_address"))):
+            record.update(venue_name="Clair Memorial United Methodist Church",
+                          venue_address="5544 Ames Avenue, Omaha, NE", venue_city="Omaha")
         if key == BENNINGTON and not (record.get("venue_name") or record.get("venue_address")):
             # The publisher's series pages identify these library programs
             # and separately locate the Ridgewood book club off-site.
@@ -159,5 +191,51 @@ def collect_unl_public(source, fetch):
             url = urlsplit(event_url)
             if url.scheme != "https" or url.netloc != UNL_HOST or not UNL_DETAIL_PATH.fullmatch(url.path):
                 continue
+        result.append(record)
+    return result
+
+
+def collect_bottle_rocket(source, fetch):
+    """Read public taproom programs from the brewery's embedded event calendar."""
+    if (source.get("source_key"), source.get("feed_url"), source.get("kind"),
+            source.get("platform_adapter"), source.get("timezone")) != (
+            BOTTLE_ROCKET, BOTTLE_ROCKET_FEED, "ical", "ical", "America/Chicago"):
+        raise ValueError("unregistered_bottle_rocket_calendar")
+
+    payload = fetch(BOTTLE_ROCKET_FEED, "text/calendar")
+    records = parse(payload, {"url": BOTTLE_ROCKET_FEED, "source_key": BOTTLE_ROCKET,
+                              "timezone": source["timezone"]}, legacy=True)
+    private_ids = {
+        str(event.get("UID", "")) for event in Calendar.from_ical(payload).walk("VEVENT")
+        if str(event.get("CLASS", "PUBLIC")).strip().upper() != "PUBLIC"
+    }
+    result = []
+    for record in records:
+        if (record["id"].split("__", 1)[0] in private_ids
+                or record["title"].strip().casefold() not in BOTTLE_ROCKET_PROGRAMS
+                or record.get("venue_address") or record.get("venue_name")):
+            continue
+        record.update(venue_name="Bottle Rocket Brewing", venue_address=BOTTLE_ROCKET_ADDRESS,
+                      venue_city="Seward", event_url=BOTTLE_ROCKET_EVENTS, lat=None, lng=None)
+        result.append(record)
+    return result
+
+
+def normalize_la_vista_library(records):
+    """Separate the city's marked-up event location and skip library closures."""
+    result = []
+    for record in records:
+        if re.match(r"^library closed\b", record["title"].strip(), re.I):
+            continue
+        match = LA_VISTA_VENUE.fullmatch((record.get("venue_address") or "").strip())
+        if match:
+            venue, street = (part.strip().rstrip(".").casefold() for part in match.groups())
+            address = LA_VISTA_ADDRESSES.get((venue, street))
+            if address:
+                record.update(venue_name=address[0],
+                              venue_address=f"{address[1]}, La Vista, NE 68128",
+                              venue_city="La Vista")
+        if record.get("event_url") == LA_VISTA_FEED:
+            record["event_url"] = LA_VISTA_CALENDAR
         result.append(record)
     return result

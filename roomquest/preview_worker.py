@@ -892,6 +892,10 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                 payload = fetch_publisher(source["feed_url"], "text/calendar", respect_robots=True,
                                           deadline_at=deadline, allowed_hosts=(urlparse(source["feed_url"]).hostname,))
                 records = nebraska_library_ics.collect(source, payload)
+            elif source_key == omaha_lincoln.BOTTLE_ROCKET:
+                records = omaha_lincoln.collect_bottle_rocket(source, lambda url, accept: fetch_publisher(
+                    url, accept, respect_robots=True, deadline_at=deadline,
+                    allowed_hosts=("calendar.google.com",)))
             elif source_key == omaha_lincoln.UNL_PUBLIC:
                 records = omaha_lincoln.collect_unl_public(source, lambda url, accept: fetch_publisher(
                     url, accept, respect_robots=True, deadline_at=deadline,
@@ -918,6 +922,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                                       'civic_jurisdiction_id', 'civic_jurisdiction_name') if key in source}}
                 records = parse(payload, calendar_source, legacy=not mapsee,
                                 include_description=civic_ics or raleigh_ics or source_key == "independence_ia_library_family")
+                if source_key == omaha_lincoln.LA_VISTA_LIBRARY and source["feed_url"] == omaha_lincoln.LA_VISTA_FEED:
+                    records = omaha_lincoln.normalize_la_vista_library(records)
                 if civic_ics:
                     from roomquest.ics_adapter import normalize_virginia_civic
                     records = normalize_virginia_civic(records, source["feed_url"])
