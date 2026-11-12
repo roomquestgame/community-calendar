@@ -790,6 +790,7 @@ SUPPORTED = {"ical", "jsonld", "growthzone", "wordpress", "squarespace"}
 def preview_source(source: dict, *, deadline_at=None) -> dict:
     from roomquest import maryland_sources, nebraska_library_ics
     from roomquest import holly_hill_sources, omaha_lincoln
+    from roomquest import nebraska_public_calendars
     from roomquest.firespring import SOURCES as FIRESPRING_SOURCES
     from roomquest.rockhouse import SOURCES as ROCKHOUSE_SOURCES
     from roomquest import civic_local_calendars, civic_schedule, legistar, municipal_notices, virginia_civic
@@ -917,6 +918,10 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                 records = omaha_lincoln.collect_unl_public(source, lambda url, accept: fetch_publisher(
                     url, accept, respect_robots=True, deadline_at=deadline,
                     allowed_hosts=(omaha_lincoln.UNL_HOST,)))
+            elif source_key in nebraska_public_calendars.SOURCES:
+                records = nebraska_public_calendars.collect(source, lambda url, accept: fetch_publisher(
+                    url, accept, respect_robots=True, deadline_at=deadline,
+                    allowed_hosts=(urlparse(nebraska_public_calendars.SOURCES[source_key][0]).hostname,)))
             elif source_key in omaha_lincoln.new_ical_feeds():
                 records = omaha_lincoln.collect(source, lambda url, accept: fetch_publisher(
                     url, accept, respect_robots=True, deadline_at=deadline,
@@ -1095,6 +1100,9 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
             allowed_hosts = (urlparse(SOURCES[source_key][0]).hostname,)
         elif source_key == 'cellar_426_events_ne':
             from roomquest.cellar_calendar import HOST, collect as collect_html
+            allowed_hosts = (HOST,)
+        elif source_key == 'friends_omaha_library_mec_ne':
+            from roomquest.friends_omaha_calendar import HOST, collect as collect_html
             allowed_hosts = (HOST,)
         elif source_key == 'omaha_first_united_methodist_mec_ne':
             from roomquest.mec_calendar import HOST, collect as collect_html
