@@ -93,8 +93,8 @@ def collect(source, fetch, *, deadline_at=None, now=None):
         raise ValueError("unregistered_biblioevents_source")
     horizon = (now or datetime.now(timezone.utc)) + HORIZON
     events = {}
-    seen = set()
-    last_start = None
+    seen = {}
+    past_horizon_pages = 0
     for page in range(1, MAX_PAGES + 1):
         if deadline_at is not None and monotonic() >= deadline_at:
             raise ValueError("collection_deadline")
@@ -103,11 +103,14 @@ def collect(source, fetch, *, deadline_at=None, now=None):
         rows = page_rows(fetch(url, "application/json"), zone)
         if not rows:
             return sorted(events.values(), key=lambda row: (row["starts_at"], row["id"]))
+        new_count = 0
         for identity, item, definition, locations, start in rows:
-            if identity in seen or (last_start is not None and start < last_start):
-                raise ValueError("invalid_biblioevents_pagination")
-            seen.add(identity)
-            last_start = start
+            if identity in seen:
+                if seen[identity] != item:
+                    raise ValueError("conflicting_biblioevents_identity")
+                continue
+            seen[identity] = item
+            new_count += 1
             if start > horizon or definition.get("isCancelled") is True:
                 continue
             if str(definition.get("attendanceMode", "")).casefold() in {"online", "virtual"}:
@@ -121,6 +124,14 @@ def collect(source, fetch, *, deadline_at=None, now=None):
                          f"{listing}/{identity}", identity, tz=zone)
             if row is not None:
                 events[identity] = row
-        if last_start > horizon:
+        if not new_count:
+            raise ValueError("invalid_biblioevents_pagination")
+        # The public gateway can promote listings out of chronological order.
+        # Require two full pages beyond the horizon before stopping early.
+        if min(row[4] for row in rows) > horizon:
+            past_horizon_pages += 1
+        else:
+            past_horizon_pages = 0
+        if past_horizon_pages >= 2:
             return sorted(events.values(), key=lambda row: (row["starts_at"], row["id"]))
     raise ValueError("biblioevents_pagination_limit")

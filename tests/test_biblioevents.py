@@ -85,6 +85,23 @@ class BiblioEventsTest(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "invalid_biblioevents_pagination"):
                 biblioevents.collect(SOURCE, lambda *_: payload, now=self.now)
 
+    def test_overlapping_out_of_order_pages_are_collected(self):
+        first = json.loads(self.page(
+            {"branchLocationId": "branch"}, {"branch": {"name": "Benson Branch"}},
+        ))
+        second = json.loads(json.dumps(first))
+        second["events"]["items"].insert(0, "early")
+        second["entities"]["events"]["early"] = {
+            "indexStart": (self.now + timedelta(hours=1)).isoformat(),
+            "definition": {"title": "Book Club", "branchLocationId": "branch"},
+        }
+        pages = iter([json.dumps(first), json.dumps(second), '{"events":{"items":[]}}'])
+        with patch.object(biblioevents, "record", side_effect=lambda *a, **k: {
+            "starts_at": a[1], "id": a[7],
+        }):
+            rows = biblioevents.collect(SOURCE, lambda *_: next(pages), now=self.now)
+        self.assertEqual([row["id"] for row in rows], ["early", "abc123"])
+
     def test_mismatched_source_url_is_rejected(self):
         with self.assertRaisesRegex(ValueError, "unregistered_biblioevents_source"):
             biblioevents.collect({**SOURCE, "feed_url": "https://another.example/v2/events"},
