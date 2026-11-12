@@ -13,9 +13,11 @@ from roomquest.mapsee_adapter import plain, record
 ZONE = "America/Chicago"
 PARKS = "lincoln_parks_opencities_ne"
 RUN = "omaha_running_club_eventon_ne"
+GOATZ = "goatz_hitchcock_experience_ne"
 SOURCES = {
     PARKS: "https://www.lincoln.ne.gov/City/Departments/Parks-and-Recreation/Calendar-and-Events",
     RUN: "https://omaharun.org/race-calendar/",
+    GOATZ: "https://www.goatz.org/the-hitchcock-experience",
 }
 PARK_VENUES = {
     "sunken gardens": ("Sunken Gardens", "2601 D Street, Lincoln, NE 68502"),
@@ -105,6 +107,21 @@ def club_events(document, today):
         raise ValueError("missing_omaha_running_calendar")
 
 
+def hitchcock_events(document, today):
+    text = plain(" ".join(document.xpath("//main//text()")))
+    day = re.search(r"Race Date:\s*Saturday[-–]Sunday,\s*([A-Za-z]+ \d{1,2})[-–]\d{1,2},\s*(\d{4})", text, re.I)
+    starts = re.search(r"Start Time:\s*(\d{1,2}) a\.m\..*?;\s*(\d{1,2}) p\.m\. 50M", text, re.I)
+    if not day or not starts or "27792 Ski Hill Loop" not in text:
+        raise ValueError("missing_hitchcock_race_schedule")
+    date = datetime.strptime(f"{day[1]} {day[2]}", "%B %d %Y").date()
+    if not today <= date <= today + timedelta(days=59):
+        return
+    for title, hour in (("Hitchcock Experience Endurance Runs", int(starts[1])),
+                        ("Hitchcock Experience 50 Mile Night Start", int(starts[2]) + 12)):
+        yield build(title, datetime(date.year, date.month, date.day, hour), None, "Hitchcock Nature Center",
+                    "27792 Ski Hill Loop, Honey Creek, IA 51542", "Honey Creek", SOURCES[GOATZ])
+
+
 def collect(source, fetch, *, deadline_at=None, now=None):
     key = source.get("source_key")
     url = SOURCES.get(key)
@@ -115,5 +132,8 @@ def collect(source, fetch, *, deadline_at=None, now=None):
     zone = ZoneInfo(ZONE)
     today = (now or datetime.now(zone)).astimezone(zone).date()
     document = html.fromstring(fetch(url, "text/html"))
-    rows = park_events(document, fetch, today) if key == PARKS else club_events(document, today)
+    if key == PARKS:
+        rows = park_events(document, fetch, today)
+    else:
+        rows = (club_events if key == RUN else hitchcock_events)(document, today)
     return sorted((row for row in rows if row is not None), key=lambda row: (row["starts_at"], row["id"]))
