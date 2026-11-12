@@ -15,7 +15,7 @@ CALENDAR = f'https://{HOST}/connect/events?calendar=public-meetings'
 SOURCE = 'municipal_376911a33eeef7ed0d9df1a0'
 ZONE = ZoneInfo('America/New_York')
 DETAIL = re.compile(r'/connect/events/[a-z0-9-]+(?:/\d{4}-\d{2}-\d{2})?/?')
-LOCATION = re.compile(r'^(\d+ [^,]+)(?:, [^,]+)*, Virginia Beach, (?:Virginia|VA) (\d{5})$', re.I)
+LOCATION = re.compile(r'^(\d+ [^,]+)((?:, [^,]+)*), Virginia Beach, (?:Virginia|VA) (\d{5})$', re.I)
 
 
 def _meeting(fetch, url):
@@ -40,13 +40,19 @@ def _meeting(fetch, url):
             continue
         match = LOCATION.fullmatch(parts[-1])
         if match:
-            street, zipcode = match.groups()
+            street, qualifiers, zipcode = match.groups()
             address = f'{street}, Virginia Beach, VA {zipcode}'
-            addresses[address] = parts[0] if len(parts) > 1 else street
+            label = ' '.join(parts[:-1]) or street
+            details = [detail for detail in qualifiers.removeprefix(', ').split(', ')
+                       if detail and not re.search(rf'\b{re.escape(detail)}\b', label, re.I)]
+            label = ', '.join([label, *details])
+            labels = addresses.setdefault(address, [])
+            if label not in labels:
+                labels.append(label)
     if len(addresses) != 1:
         return None
-    address, name = next(iter(addresses.items()))
-    return event, name, address
+    address, labels = next(iter(addresses.items()))
+    return event, ' / '.join(labels), address
 
 
 def collect(source, fetch, *, deadline_at=None, now=None):
