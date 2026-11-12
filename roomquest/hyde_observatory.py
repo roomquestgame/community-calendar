@@ -45,7 +45,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
         start = datetime(day.year, day.month, day.day, 19)
         end = datetime(day.year, day.month, day.day, 22)
         row = record("Saturday Astronomy Programs at Hyde Observatory", start.isoformat(), end.isoformat(),
-                     "Hyde Memorial Observatory", "Holmes South Shore Rd, Lincoln, NE 68506",
+                     "Hyde Memorial Observatory", "3701 S 70th St, Lincoln, NE 68506",
                      "Lincoln", URL, f"hyde-{day.isoformat()}", lat=40.777812, lng=-96.636292,
                      tz=ZONE, publisher_geo=True)
         if row is not None:
