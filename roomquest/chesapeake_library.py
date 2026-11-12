@@ -1,5 +1,4 @@
 """Collect timed Chesapeake Public Library programs from the city's public calendar."""
-from calendar import monthrange
 from datetime import datetime, timedelta
 import json
 import re
@@ -54,46 +53,44 @@ def collect(source, fetch, *, today=None):
         raise ValueError('unregistered_chesapeake_library_source')
     today = today or datetime.now(ZoneInfo(ZONE)).date()
     before = today + timedelta(days=60)
-    month = today.replace(day=1)
+    # The calendar's date filter supports the full window in one public request.
+    # This keeps the city’s advertised crawl delay within the worker budget.
+    query = urlencode({'startDate': today.isoformat(), 'endDate': (before - timedelta(days=1)).isoformat(), 'cat': 43})
+    items = json.loads(fetch(f'{MONTH_URL}?{query}', 'application/json'))
+    if not isinstance(items, list) or len(items) > 500:
+        raise ValueError('invalid_chesapeake_library_date_range')
     rows = {}
-    while month < before:
-        end = month.replace(day=monthrange(month.year, month.month)[1])
-        query = urlencode({'startDate': month.isoformat(), 'endDate': end.isoformat(), 'cat': 43})
-        items = json.loads(fetch(f'{MONTH_URL}?{query}', 'application/json'))
-        if not isinstance(items, list) or len(items) > 500:
-            raise ValueError('invalid_chesapeake_library_month')
-        for item in items:
-            props = item.get('extendedProps') if isinstance(item, dict) else None
-            if not isinstance(props, dict) or props.get('category') != 'Chesapeake Public Library':
-                raise ValueError('invalid_chesapeake_library_event')
-            # All-day programs do not have a timed occurrence in this feed.
-            if item.get('allDay') is not False:
-                continue
-            venue = plain(props.get('location'))
-            address = BRANCHES.get(venue.partition(' -')[0])
-            if not address:
-                continue
-            identity = item.get('id')
-            raw_start = item.get('start')
-            if not isinstance(identity, str) or not identity.isdigit() or not isinstance(raw_start, str) or 'T' not in raw_start:
-                raise ValueError('invalid_chesapeake_library_occurrence')
-            start = timestamp(raw_start, ZONE)
-            local_day = start.astimezone(ZoneInfo(ZONE)).date()
-            if not today <= local_day < before:
-                continue
-            if props.get('date') != local_day.isoformat():
-                raise ValueError('chesapeake_library_date_conflict')
-            finish = _end(start, item, props)
-            navigation = f'/m/calendar/event/detail/{identity}'
-            event_url = f'https://{HOST}{navigation}' if props.get('isActionable') is True and props.get('navigationUrl') == navigation else URL
-            row = record(item.get('title'), start.isoformat(), finish.isoformat() if finish else None,
-                         venue, address, 'Chesapeake', event_url, identity, 'Library', tz=ZONE,
-                         retain_until_end=True)
-            if row:
-                row['description'] = plain(props.get('description'))[:2000]
-                key = (identity, row['starts_at'])
-                if key in rows and rows[key] != row:
-                    raise ValueError('conflicting_chesapeake_library_occurrence')
-                rows[key] = row
-        month = end + timedelta(days=1)
+    for item in items:
+        props = item.get('extendedProps') if isinstance(item, dict) else None
+        if not isinstance(props, dict) or props.get('category') != 'Chesapeake Public Library':
+            raise ValueError('invalid_chesapeake_library_event')
+        # All-day programs do not have a timed occurrence in this feed.
+        if item.get('allDay') is not False:
+            continue
+        venue = plain(props.get('location'))
+        address = BRANCHES.get(venue.partition(' -')[0])
+        if not address:
+            continue
+        identity = item.get('id')
+        raw_start = item.get('start')
+        if not isinstance(identity, str) or not identity.isdigit() or not isinstance(raw_start, str) or 'T' not in raw_start:
+            raise ValueError('invalid_chesapeake_library_occurrence')
+        start = timestamp(raw_start, ZONE)
+        local_day = start.astimezone(ZoneInfo(ZONE)).date()
+        if not today <= local_day < before:
+            continue
+        if props.get('date') != local_day.isoformat():
+            raise ValueError('chesapeake_library_date_conflict')
+        finish = _end(start, item, props)
+        navigation = f'/m/calendar/event/detail/{identity}'
+        event_url = f'https://{HOST}{navigation}' if props.get('isActionable') is True and props.get('navigationUrl') == navigation else URL
+        row = record(item.get('title'), start.isoformat(), finish.isoformat() if finish else None,
+                     venue, address, 'Chesapeake', event_url, identity, 'Library', tz=ZONE,
+                     retain_until_end=True)
+        if row:
+            row['description'] = plain(props.get('description'))[:2000]
+            key = (identity, row['starts_at'])
+            if key in rows and rows[key] != row:
+                raise ValueError('conflicting_chesapeake_library_occurrence')
+            rows[key] = row
     return sorted(rows.values(), key=lambda row: (row['starts_at'], row['id']))
