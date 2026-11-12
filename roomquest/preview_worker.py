@@ -775,6 +775,7 @@ SUPPORTED = {"ical", "jsonld", "growthzone", "wordpress", "squarespace"}
 def preview_source(source: dict, *, deadline_at=None) -> dict:
     from roomquest import maryland_sources, nebraska_library_ics
     from roomquest import holly_hill_sources, omaha_lincoln
+    from roomquest.firespring import SOURCES as FIRESPRING_SOURCES
     from roomquest import civic_local_calendars, civic_schedule, legistar, municipal_notices, virginia_civic
     source_key = source.get('source_key')
     from roomquest import chesapeake_library, visit_norfolk
@@ -1066,6 +1067,10 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         elif source_key == 'sova_innovation_hub_va':
             from roomquest.sova_workshops import HOST, collect as collect_html
             allowed_hosts = (HOST,)
+        elif source_key in FIRESPRING_SOURCES:
+            from roomquest.firespring import collect as collect_html
+            allowed_hosts = (urlparse(FIRESPRING_SOURCES[source_key][0]).hostname,)
+            html_budget = 36
         elif source_key == 'omaha_public_library_biblioevents_ne':
             from roomquest.biblioevents import GATEWAY, collect as collect_html
             allowed_hosts = (GATEWAY,)
