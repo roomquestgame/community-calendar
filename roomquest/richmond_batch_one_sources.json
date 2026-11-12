@@ -132,6 +132,16 @@
       "country": "US",
       "config": {},
       "replaces_url": "https://sportsbackers.org/events/?ical=1"
+    },
+    {
+      "name": "Agecroft Hall & Gardens",
+      "type": "squarespace",
+      "url": "https://www.agecrofthall.org/events?format=json",
+      "canonical_url": "https://agecrofthall.org/events?format=json",
+      "source_key": "municipal_mapsee_816f4fff75a148ac9ff37db3",
+      "platform_adapter": "squarespace",
+      "country": "US",
+      "config": {}
     }
   ]
 }
