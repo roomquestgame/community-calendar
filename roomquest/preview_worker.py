@@ -1124,6 +1124,9 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         elif source_key == 'mana_games_topdeck_ne':
             from roomquest.mana_games import HOST, collect as collect_html
             allowed_hosts = (HOST,)
+        elif source_key == 'hyde_observatory_programs_ne':
+            from roomquest.hyde_observatory import HOST, collect as collect_html
+            allowed_hosts = (HOST,)
         elif source_key == 'omaha_kiewit_luminarium_ne':
             from roomquest.kiewit_luminarium import HOST, collect as collect_html
             allowed_hosts = (HOST,)
