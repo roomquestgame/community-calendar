@@ -46,6 +46,17 @@ BENNINGTON_RIDGEWOOD = (
 
 FRANCIE_AND_FINCH = "municipal_5e01aa207622e684433576ed"
 CROOK_HOUSE = "municipal_ab8764ae8583f76b90fc6de9"
+LA_VISTA_LIBRARY = "municipal_mapsee_853907f4222c2608e7bf5e67"
+LA_VISTA_FEED = ("https://www.cityoflavista.org/common/modules/iCalendar/"
+                 "iCalendar.aspx?catID=17&feed=calendar")
+LA_VISTA_CALENDAR = "https://www.cityoflavista.org/LibraryCalendar"
+LA_VISTA_VENUE = re.compile(r"<p>([^<]+)</p>\s*-\s*(.+?)\s+La Vista\s+NE\s+68128", re.I)
+LA_VISTA_ADDRESSES = {
+    ("la vista public library", "9110 giles rd"): ("La Vista Public Library", "9110 Giles Road"),
+    ("la vista public library", "9110 giles road"): ("La Vista Public Library", "9110 Giles Road"),
+    ("community center", "8116 park view blvd"): ("La Vista Community Center", "8116 Park View Boulevard"),
+}
+
 BOTTLE_ROCKET = "bottle_rocket_brewing_seward_ne"
 BOTTLE_ROCKET_FEED = (
     "https://calendar.google.com/calendar/ical/"
@@ -196,5 +207,25 @@ def collect_bottle_rocket(source, fetch):
             continue
         record.update(venue_name="Bottle Rocket Brewing", venue_address=BOTTLE_ROCKET_ADDRESS,
                       venue_city="Seward", event_url=BOTTLE_ROCKET_EVENTS, lat=None, lng=None)
+        result.append(record)
+    return result
+
+
+def normalize_la_vista_library(records):
+    """Separate the city's marked-up event location and skip library closures."""
+    result = []
+    for record in records:
+        if re.match(r"^library closed\b", record["title"].strip(), re.I):
+            continue
+        match = LA_VISTA_VENUE.fullmatch((record.get("venue_address") or "").strip())
+        if match:
+            venue, street = (part.strip().rstrip(".").casefold() for part in match.groups())
+            address = LA_VISTA_ADDRESSES.get((venue, street))
+            if address:
+                record.update(venue_name=address[0],
+                              venue_address=f"{address[1]}, La Vista, NE 68128",
+                              venue_city="La Vista")
+        if record.get("event_url") == LA_VISTA_FEED:
+            record["event_url"] = LA_VISTA_CALENDAR
         result.append(record)
     return result
