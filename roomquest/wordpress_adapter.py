@@ -16,6 +16,27 @@ MAX_MADISON_TIME_REVIEWS = 5
 ROSEMONT_KEY = 'rosemont_of_virginia'
 ROSEMONT_URL = 'https://rosemontofvirginia.com/wp-json/tribe/events/v1/events'
 ROSEMONT_TIMEZONE = 'America/New_York'
+HAMPTON_TRIBE_SOURCES = {
+    'municipal_e3269f28ac6baa042d42de36': 'https://beacheventsvb.com/wp-json/tribe/events/v1/events',
+    'municipal_2ec2b4eebdf3998055908a82': 'https://virginiamoca.org/wp-json/tribe/events/v1/events',
+}
+BEACH_EVENTS = 'municipal_e3269f28ac6baa042d42de36'
+VIRGINIA_MOCA = 'municipal_2ec2b4eebdf3998055908a82'
+
+
+def _hampton_venue(source_key, row):
+    """Fill missing street addresses only for named venues reviewed on the publisher sites."""
+    from roomquest.mapsee_adapter import plain
+    venue = plain(row.get('venue_name')).casefold()
+    address = row.get('venue_address') or ''
+    if re.search(r'\b\d{1,6}\s+[A-Za-z]', address):
+        return row
+    if source_key == VIRGINIA_MOCA and venue in {'virginia moca', 'virginia museum of contemporary art'}:
+        address = '5811 Wesleyan Drive, Virginia Beach, VA 23455'
+    elif source_key == BEACH_EVENTS and venue == '31st street park oceanfront':
+        # Neptune statue is the park's street-addressed landmark.
+        address = '3001 Atlantic Avenue, Virginia Beach, VA 23451'
+    return dict(row, venue_address=address) if address else row
 
 
 def _rosemont_log(kind, **fields):
@@ -166,6 +187,10 @@ def _madison_display_schedule(item, source, fetch):
 
 
 def collect(source, fetch, *, deadline_at=None):
+    source_key = source.get('source_key')
+    hampton_url = HAMPTON_TRIBE_SOURCES.get(source_key)
+    if hampton_url and (source.get('feed_url'), source.get('timezone')) != (hampton_url, 'America/New_York'):
+        raise ValueError('unregistered_hampton_wordpress_source')
     if source.get('source_key') == 'think_iowa_city_ia':
         from roomquest.iowa_tourism import collect_think
         return collect_think(source, fetch, deadline_at=deadline_at)
@@ -204,8 +229,13 @@ def collect(source, fetch, *, deadline_at=None):
         if monotonic() >= deadline:
             raise ValueError('collection_deadline')
         params['page'] = page
-        payload = json.loads(fetch(urlunsplit((root.scheme, root.netloc, path,
-                                               urlencode(params), '')), 'application/json'))
+        page_params = params
+        if source_key == BEACH_EVENTS:
+            # This publisher exposes the default upcoming list on its public API.
+            # Keep later pages on the same endpoint and use its default page size.
+            page_params = {} if page == 1 else {'page': page}
+        url = urlunsplit((root.scheme, root.netloc, path, urlencode(page_params), ''))
+        payload = json.loads(fetch(url, 'application/json'))
         if not isinstance(payload, dict) or not isinstance(payload.get('events'), list):
             raise ValueError('unsupported_wordpress_payload')
         if len(payload['events']) > 100:
@@ -251,11 +281,14 @@ def collect(source, fetch, *, deadline_at=None):
                         if wall != timestamp(utc, 'UTC'):
                             raise ValueError('publisher_schedule_conflict')
         # Never follow response next links; rebuild only this registered URL.
-        parsed_rows = parse_tribe(payload, strict_public=ncma or source.get("source_key") in
+        utc_default_zone = 'America/New_York' if source_key == VIRGINIA_MOCA else TRIBE_UTC_DEFAULT_ZONES.get(source_key)
+        parsed_rows = parse_tribe(payload, strict_public=bool(hampton_url) or ncma or source.get("source_key") in
                                   ("madison_county_parks_ia", "nebraska_game_parks", ROSEMONT_KEY, jpb_basketball.KEY, hurrdat_calendar.KEY),
-                                retain_description=ncma or source.get("source_key") in
+                                retain_description=bool(hampton_url) or ncma or source.get("source_key") in
                                   ("madison_county_parks_ia", ROSEMONT_KEY, jpb_basketball.KEY, hurrdat_calendar.KEY),
-                                utc_default_zone=TRIBE_UTC_DEFAULT_ZONES.get(source.get("source_key")))
+                                utc_default_zone=utc_default_zone)
+        if hampton_url:
+            parsed_rows = [_hampton_venue(source_key, row) for row in parsed_rows]
         if rosemont:
             by_id = {str(item['id']): item for item in payload['events']}
             parsed_rows = [_rosemont_evidence(row, by_id[row['id']]) for row in parsed_rows]
