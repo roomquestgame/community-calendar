@@ -1068,6 +1068,9 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         elif source_key == 'sova_innovation_hub_va':
             from roomquest.sova_workshops import HOST, collect as collect_html
             allowed_hosts = (HOST,)
+        elif source_key == 'omaha_lauritzen_gardens_events':
+            from roomquest.eventer import HOST, collect as collect_html
+            allowed_hosts = (HOST,)
         elif source_key == 'omaha_henry_doorly_zoo_events':
             from roomquest.sitewrench_calendar import HOST, collect as collect_html
             allowed_hosts = (HOST,)
