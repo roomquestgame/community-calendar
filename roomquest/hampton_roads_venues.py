@@ -58,9 +58,15 @@ def _seven(fetch, url):
         day = occurrence.select_one('.showings_date .m-date__singleDate')
         clock = occurrence.select_one('.first_wrapper .time')
         if day and clock:
-            date = plain(day.get_text(' ', strip=True)).split(',', 1)[-1].replace(',', ' ')
-            when = ' '.join(f'{date} {clock.get_text(" ", strip=True)}'.split())
-            dates.append(datetime.strptime(when, '%b %d %Y %I:%M %p'))
+            date = plain(day.get_text(' ', strip=True)).split(',', 1)[-1].replace(',', ' ').split()
+            if len(date) != 3:
+                continue
+            month, day_number, year = date
+            when = f'{month[:3]} {day_number} {year} {plain(clock.get_text(" ", strip=True))}'
+            try:
+                dates.append(datetime.strptime(when, '%b %d %Y %I:%M %p'))
+            except ValueError:
+                continue
     return location, dates
 
 
