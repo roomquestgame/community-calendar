@@ -142,6 +142,16 @@
       "platform_adapter": "squarespace",
       "country": "US",
       "config": {}
+    },
+    {
+      "name": "Gallery5",
+      "type": "squarespace",
+      "url": "https://gallery5arts.org/calendar?format=json",
+      "canonical_url": "https://gallery5arts.org/calendar?format=json",
+      "source_key": "municipal_mapsee_9697116ac0607060d6947aa0",
+      "platform_adapter": "squarespace",
+      "country": "US",
+      "config": {}
     }
   ]
 }
