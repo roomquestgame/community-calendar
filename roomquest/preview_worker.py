@@ -264,6 +264,14 @@ def fetch_publisher(url: str, accept: str, *, respect_robots: bool = False,
                                     deadline_at=deadline_at, allowed_hosts=allowed_hosts)
 
 
+def render_cfengage_calendar(*, deadline_at: float | None = None) -> str:
+    """Read the anonymous display endpoint used by CFengage's public calendar."""
+    from roomquest.richmond_public_calendars import CF_API, CF_HOST, calendar_form
+    return _fetch_publisher_request(
+        CF_API, 'application/json', respect_robots=True, deadline_at=deadline_at,
+        allowed_hosts=(CF_HOST,), calendar_form=calendar_form())
+
+
 def render_good_shepherd_calendar(*, nonce: str, args: str,
                                   deadline_at: float | None = None) -> str:
     """Read the one public calendar render action observed in publisher markup.
@@ -362,10 +370,14 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
             json_referer = 'https://culture.virginiabeach.gov/events'
         if recdesk:
             json_content_type = 'application/json; charset=utf-8'
+    cfengage_form = False
     if calendar_form is not None:
+        from roomquest.richmond_public_calendars import CF_API, CF_HOST, calendar_form as cfengage_window
+        cfengage_form = (url == CF_API and accept == 'application/json' and respect_robots
+                         and allowed_hosts == (CF_HOST,) and calendar_form == cfengage_window())
         # A second boundary keeps internal callers from turning this into an
         # arbitrary write-capable transport. Never replay a POST on redirect.
-        if (url != 'https://goodshepherdsouthhill.org/wp-admin/admin-ajax.php'
+        if not cfengage_form and (url != 'https://goodshepherdsouthhill.org/wp-admin/admin-ajax.php'
                 or accept != 'text/html' or not respect_robots
                 or allowed_hosts != ('goodshepherdsouthhill.org',)
                 or not isinstance(calendar_form, dict)
@@ -387,7 +399,10 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
     }
     if calendar_form is not None:
         headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8'
-        headers['Referer'] = 'https://goodshepherdsouthhill.org/welcome/calendar/'
+        headers['Referer'] = ('https://www.cfengage.org/calendar' if cfengage_form
+                              else 'https://goodshepherdsouthhill.org/welcome/calendar/')
+        if cfengage_form:
+            headers['X-Requested-With'] = 'XMLHttpRequest'
     elif calendar_json is not None:
         headers['Content-Type'] = json_content_type
         headers['Referer'] = json_referer
@@ -457,7 +472,7 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
                     raise PreviewError("publisher_http_" + str(code))
                 if (calendar_form is not None and
                         response.headers.get('Content-Type', '').split(';', 1)[0].strip().lower()
-                        != 'text/html'):
+                        not in ({'application/json', 'text/html'} if cfengage_form else {'text/html'})):
                     response.close()
                     raise PreviewError('invalid_calendar_render_content_type')
                 if (calendar_json is not None and
@@ -1021,7 +1036,11 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         from roomquest.virginia_wix_events import SOURCES as VA_WIX_SOURCES
         from roomquest import maryland_public_calendars, maryland_park_programs
         from roomquest.nebraska_venues import SOURCES as NEBRASKA_VENUES
-        if source_key in NEBRASKA_VENUES:
+        from roomquest import richmond_public_calendars
+        if source_key in richmond_public_calendars.SOURCES:
+            collect_html = richmond_public_calendars.collect
+            allowed_hosts = richmond_public_calendars.SOURCES[source_key][1]
+        elif source_key in NEBRASKA_VENUES:
             from roomquest.nebraska_venues import collect as collect_html
             allowed_hosts = (urlparse(NEBRASKA_VENUES[source_key]).hostname,)
         elif source_key in maryland_public_calendars.SOURCES:
@@ -1193,6 +1212,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         deadline = min(monotonic() + html_budget, deadline_at - 5 if deadline_at is not None else float("inf"))
         try:
             extra = {}
+            if source_key == richmond_public_calendars.CFENGAGE:
+                extra['render_volunteers'] = lambda: render_cfengage_calendar(deadline_at=deadline)
             if source_key == 'good_shepherd_food_pantry_south_hill_va':
                 extra['render_calendar'] = lambda *, nonce, args: render_good_shepherd_calendar(
                     nonce=nonce, args=args, deadline_at=deadline)
