@@ -1,1 +1,126 @@
-IiIiQ29sbGVjdCBwdWJsaWMgQmlibGlvRXZlbnRzIGxpc3RpbmdzIHRocm91Z2ggdGhlIGJvdW5kZWQgY29tbXVuaXR5IHdvcmtlci4iIiIKZnJvbSBkYXRldGltZSBpbXBvcnQgZGF0ZXRpbWUsIHRpbWVkZWx0YSwgdGltZXpvbmUKaW1wb3J0IGpzb24KaW1wb3J0IHJlCmZyb20gdGltZSBpbXBvcnQgbW9ub3RvbmljCmZyb20gdXJsbGliLnBhcnNlIGltcG9ydCB1cmxlbmNvZGUKCmZyb20gcm9vbXF1ZXN0Lm1hcHNlZV9hZGFwdGVyIGltcG9ydCBhZGRyZXNzLCBwbGFpbiwgcmVjb3JkLCB0aW1lc3RhbXAKCkdBVEVXQVkgPSAiZ2F0ZXdheS5iaWJsaW9jb21tb25zLmNvbSIKUEFHRV9TSVpFID0gMTAwCk1BWF9QQUdFUyA9IDgKSE9SSVpPTiA9IHRpbWVkZWx0YShkYXlzPTYwKQoKIyBodHRwczovL29tYWhhbGlicmFyeS5vcmcvbG9jYXRpb25zLwpPTUFIQV9CUkFOQ0hFUyA9IHsKICAgICJhLnYuIHNvcmVuc2VuIGJyYW5jaCI6ICI0ODA4IENhc3MgU3QsIE9tYWhhLCBORSA2ODEzMiIsCiAgICAiYmVuc29uIGJyYW5jaCI6ICI2MDE1IEJpbm5leSBTdCwgT21haGEsIE5FIDY4MTA0IiwKICAgICJiZXNzIGpvaG5zb24gZWxraG9ybiBicmFuY2giOiAiMjEwMCBSZWFkaW5nIFBsYXphLCBFbGtob3JuLCBORSA2ODAyMiIsCiAgICAiY2VudHJhbCBsaWJyYXJ5IjogIjcyMDUgRG9kZ2UgU3QsIE9tYWhhLCBORSA2ODExNCIsCiAgICAiY2hhcmxlcyBiLiB3YXNoaW5ndG9uIGJyYW5jaCI6ICIyODY4IEFtZXMgQXZlLCBPbWFoYSwgTkUgNjgxMTEiLAogICAgImRvd250b3duIGJyYW5jaCI6ICIxNDAxIEpvbmVzIFN0LCBPbWFoYSwgTkUgNjgxMDIiLAogICAgImZsb3JlbmNlIGJyYW5jaCI6ICIyOTIwIEJvbmRlc3NvbiBTdCwgT21haGEsIE5FIDY4MTEyIiwKICAgICJtaWxsYXJkIGJyYW5jaCI6ICIxMzIxNCBXZXN0d29vZCBMbiwgT21haGEsIE5FIDY4MTQ0IiwKICAgICJtaWx0b24gci4gYWJyYWhhbXMgYnJhbmNoIjogIjUxMTEgTiA5MHRoIFN0LCBPbWFoYSwgTkUgNjgxMzQiLAogICAgInNhZGRsZWJyb29rIGJyYW5jaCI6ICIxNDg1MCBMYXVyZWwgQXZlLCBPbWFoYSwgTkUgNjgxMTYiLAogICAgInNvdXRoIG9tYWhhIGxpYnJhcnkiOiAiMjgwOCBRIFN0LCBPbWFoYSwgTkUgNjgxMDciLAogICAgIncuIGNsYXJrZSBzd2Fuc29uIGJyYW5jaCI6ICI5MTAxIFcgRG9kZ2UgUmQsIE9tYWhhLCBORSA2ODExNCIsCiAgICAid2lsbGEgY2F0aGVyIGJyYW5jaCI6ICIxOTA1IFMgNDR0aCBTdCwgT21haGEsIE5FIDY4MTA1IiwKfQpTT1VSQ0VTID0gewogICAgIm9tYWhhX3B1YmxpY19saWJyYXJ5X2JpYmxpb2V2ZW50c19uZSI6ICgib21haGEiLCAiQW1lcmljYS9DaGljYWdvIiwgT01BSEFfQlJBTkNIRVMpLAp9CkVWRU5UX0lEID0gcmUuY29tcGlsZShyIlthLXpBLVowLTlfLV17MSwxMDB9IikKUE9TVEFMX0FERFJFU1MgPSByZS5jb21waWxlKHIiXlxkezEsNn1ccytbXixdKyxccypbXixdKyxccypbQS1aXXsyfSg/OlxzK1xkezV9KD86LVxkezR9KT8pPyQiKQoKCmRlZiBldmVudF92ZW51ZShkZWZpbml0aW9uLCBsb2NhdGlvbnMsIGJyYW5jaGVzKToKICAgICMgQW4gb2ZmLXNpdGUgdmVudWUgdGFrZXMgcHJlY2VkZW5jZSBldmVuIHdoZW4gaXRzIGRldGFpbHMgYXJlIGluY29tcGxldGUuCiAgICBvZmZzaXRlX2lkID0gZGVmaW5pdGlvbi5nZXQoIm5vbkJyYW5jaExvY2F0aW9uSWQiKQogICAgYnJhbmNoX2lkID0gZGVmaW5pdGlvbi5nZXQoImJyYW5jaExvY2F0aW9uSWQiKQogICAgbG9jYXRpb24gPSBsb2NhdGlvbnMuZ2V0KG9mZnNpdGVfaWQgb3IgYnJhbmNoX2lkKQogICAgaWYgbm90IGlzaW5zdGFuY2UobG9jYXRpb24sIGRpY3QpOgogICAgICAgIHJldHVybiAiIiwgIiIKICAgIG5hbWUgPSBwbGFpbihsb2NhdGlvbi5nZXQoIm5hbWUiKSkKICAgIHJhdyA9IGxvY2F0aW9uLmdldCgiYWRkcmVzcyIpCiAgICBzdHJlZXQgPSBhZGRyZXNzKHJhdykgaWYgaXNpbnN0YW5jZShyYXcsIChzdHIsIGRpY3QpKSBlbHNlICIiCiAgICBzdHJlZXQgPSByZS5zdWIociIsXHMqKFxkezV9KD86LVxkezR9KT8pJCIsIHIiIFwxIiwgc3RyZWV0KQogICAgaWYgbm90IFBPU1RBTF9BRERSRVNTLmZ1bGxtYXRjaChzdHJlZXQpOgogICAgICAgIHN0cmVldCA9ICIiIGlmIG9mZnNpdGVfaWQgZWxzZSBicmFuY2hlcy5nZXQobmFtZS5jYXNlZm9sZCgpLCAiIikKICAgIHJldHVybiBuYW1lLCBzdHJlZXQKCgpkZWYgcGFnZV9yb3dzKHBheWxvYWQsIHpvbmUpOgogICAgZGF0YSA9IGpzb24ubG9hZHMocGF5bG9hZCkKICAgIGlmIG5vdCBpc2luc3RhbmNlKGRhdGEsIGRpY3QpIG9yIG5vdCBpc2luc3RhbmNlKGRhdGEuZ2V0KCJldmVudHMiKSwgZGljdCk6CiAgICAgICAgcmFpc2UgVmFsdWVFcnJvcigiaW52YWxpZF9iaWJsaW9ldmVudHNfcGFnZSIpCiAgICBpZHMgPSBkYXRhWyJldmVudHMiXS5nZXQoIml0ZW1zIikKICAgIGlmIG5vdCBpc2luc3RhbmNlKGlkcywgbGlzdCkgb3IgbGVuKGlkcykgPiBQQUdFX1NJWkU6CiAgICAgICAgcmFpc2UgVmFsdWVFcnJvcigiaW52YWxpZF9iaWJsaW9ldmVudHNfcGFnZSIpCiAgICBpZiBub3QgaWRzOgogICAgICAgIHJldHVybiBbXQogICAgZW50aXRpZXMgPSBkYXRhLmdldCgiZW50aXRpZXMiKQogICAgaWYgbm90IGlzaW5zdGFuY2UoZW50aXRpZXMsIGRpY3QpOgogICAgICAgIHJhaXNlIFZhbHVlRXJyb3IoImludmFsaWRfYmlibGlvZXZlbnRzX2VudGl0aWVzIikKICAgIGV2ZW50cywgbG9jYXRpb25zID0gZW50aXRpZXMuZ2V0KCJldmVudHMiKSwgZW50aXRpZXMuZ2V0KCJsb2NhdGlvbnMiLCB7fSkKICAgIGlmIG5vdCBpc2luc3RhbmNlKGV2ZW50cywgZGljdCkgb3Igbm90IGlzaW5zdGFuY2UobG9jYXRpb25zLCBkaWN0KToKICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCJpbnZhbGlkX2JpYmxpb2V2ZW50c19lbnRpdGllcyIpCiAgICByb3dzID0gW10KICAgIGZvciBpZGVudGl0eSBpbiBpZHM6CiAgICAgICAgaWYgbm90IGlzaW5zdGFuY2UoaWRlbnRpdHksIHN0cikgb3Igbm90IEVWRU5UX0lELmZ1bGxtYXRjaChpZGVudGl0eSk6CiAgICAgICAgICAgIHJhaXNlIFZhbHVlRXJyb3IoImludmFsaWRfYmlibGlvZXZlbnRzX2lkZW50aXR5IikKICAgICAgICBpdGVtID0gZXZlbnRzLmdldChpZGVudGl0eSkKICAgICAgICBkZWZpbml0aW9uID0gaXRlbS5nZXQoImRlZmluaXRpb24iKSBpZiBpc2luc3RhbmNlKGl0ZW0sIGRpY3QpIGVsc2UgTm9uZQogICAgICAgIGlmIG5vdCBpc2luc3RhbmNlKGRlZmluaXRpb24sIGRpY3QpOgogICAgICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCJtaXNzaW5nX2JpYmxpb2V2ZW50c19kZWZpbml0aW9uIikKICAgICAgICBzdGFydCA9IHRpbWVzdGFtcChpdGVtLmdldCgiaW5kZXhTdGFydCIpIG9yIGRlZmluaXRpb24uZ2V0KCJzdGFydCIpLCB6b25lKQogICAgICAgIGlmIHN0YXJ0IGlzIE5vbmU6CiAgICAgICAgICAgIHJhaXNlIFZhbHVlRXJyb3IoImV2ZW50X3RpbWVfbWlzc2luZyIpCiAgICAgICAgcm93cy5hcHBlbmQoKGlkZW50aXR5LCBpdGVtLCBkZWZpbml0aW9uLCBsb2NhdGlvbnMsIHN0YXJ0KSkKICAgIHJldHVybiByb3dzCgoKZGVmIGNvbGxlY3Qoc291cmNlLCBmZXRjaCwgKiwgZGVhZGxpbmVfYXQ9Tm9uZSwgbm93PU5vbmUpOgogICAgIiIiVXNlIHRoZSB1cHN0cmVhbSBCaWJsaW9FdmVudHMgZ2F0ZXdheSBzaGFwZSB3aXRoIHRoZSB3b3JrZXIncyBzYWZlIHRyYW5zcG9ydC4iIiIKICAgIGNvbmZpZyA9IFNPVVJDRVMuZ2V0KHNvdXJjZS5nZXQoInNvdXJjZV9rZXkiKSkKICAgIGlmIGNvbmZpZyBpcyBOb25lOgogICAgICAgIHJhaXNlIFZhbHVlRXJyb3IoInVucmVnaXN0ZXJlZF9iaWJsaW9ldmVudHNfc291cmNlIikKICAgIHNsdWcsIHpvbmUsIGJyYW5jaGVzID0gY29uZmlnCiAgICBsaXN0aW5nID0gZiJodHRwczovL3tzbHVnfS5iaWJsaW9jb21tb25zLmNvbS92Mi9ldmVudHMiCiAgICBpZiAoc291cmNlLmdldCgiZmVlZF91cmwiKSwgc291cmNlLmdldCgidGltZXpvbmUiKSwgc291cmNlLmdldCgia2luZCIpLAogICAgICAgICAgICBzb3VyY2UuZ2V0KCJwbGF0Zm9ybV9hZGFwdGVyIikpICE9IChsaXN0aW5nLCB6b25lLCAiaHRtbCIsICJodG1sIik6CiAgICAgICAgcmFpc2UgVmFsdWVFcnJvcigidW5yZWdpc3RlcmVkX2JpYmxpb2V2ZW50c19zb3VyY2UiKQogICAgaG9yaXpvbiA9IChub3cgb3IgZGF0ZXRpbWUubm93KHRpbWV6b25lLnV0YykpICsgSE9SSVpPTgogICAgZXZlbnRzID0ge30KICAgIHNlZW4gPSBzZXQoKQogICAgbGFzdF9zdGFydCA9IE5vbmUKICAgIGZvciBwYWdlIGluIHJhbmdlKDEsIE1BWF9QQUdFUyArIDEpOgogICAgICAgIGlmIGRlYWRsaW5lX2F0IGlzIG5vdCBOb25lIGFuZCBtb25vdG9uaWMoKSA+PSBkZWFkbGluZV9hdDoKICAgICAgICAgICAgcmFpc2UgVmFsdWVFcnJvcigiY29sbGVjdGlvbl9kZWFkbGluZSIpCiAgICAgICAgcXVlcnkgPSB1cmxlbmNvZGUoeyJsaW1pdCI6IFBBR0VfU0laRSwgInBhZ2UiOiBwYWdlfSkKICAgICAgICB1cmwgPSBmImh0dHBzOi8ve0dBVEVXQVl9L3YyL2xpYnJhcmllcy97c2x1Z30vZXZlbnRzP3txdWVyeX0iCiAgICAgICAgcm93cyA9IHBhZ2Vfcm93cyhmZXRjaCh1cmwsICJhcHBsaWNhdGlvbi9qc29uIiksIHpvbmUpCiAgICAgICAgaWYgbm90IHJvd3M6CiAgICAgICAgICAgIHJldHVybiBzb3J0ZWQoZXZlbnRzLnZhbHVlcygpLCBrZXk9bGFtYmRhIHJvdzogKHJvd1sic3RhcnRzX2F0Il0sIHJvd1siaWQiXSkpCiAgICAgICAgZm9yIGlkZW50aXR5LCBpdGVtLCBkZWZpbml0aW9uLCBsb2NhdGlvbnMsIHN0YXJ0IGluIHJvd3M6CiAgICAgICAgICAgIGlmIGlkZW50aXR5IGluIHNlZW4gb3IgKGxhc3Rfc3RhcnQgaXMgbm90IE5vbmUgYW5kIHN0YXJ0IDwgbGFzdF9zdGFydCk6CiAgICAgICAgICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCJpbnZhbGlkX2JpYmxpb2V2ZW50c19wYWdpbmF0aW9uIikKICAgICAgICAgICAgc2Vlbi5hZGQoaWRlbnRpdHkpCiAgICAgICAgICAgIGxhc3Rfc3RhcnQgPSBzdGFydAogICAgICAgICAgICBpZiBzdGFydCA+IGhvcml6b24gb3IgZGVmaW5pdGlvbi5nZXQoImlzQ2FuY2VsbGVkIikgaXMgVHJ1ZToKICAgICAgICAgICAgICAgIGNvbnRpbnVlCiAgICAgICAgICAgIGlmIHN0cihkZWZpbml0aW9uLmdldCgiYXR0ZW5kYW5jZU1vZGUiLCAiIikpLmNhc2Vmb2xkKCkgaW4geyJvbmxpbmUiLCAidmlydHVhbCJ9OgogICAgICAgICAgICAgICAgY29udGludWUKICAgICAgICAgICAgdmVudWUsIHN0cmVldCA9IGV2ZW50X3ZlbnVlKGRlZmluaXRpb24sIGxvY2F0aW9ucywgYnJhbmNoZXMpCiAgICAgICAgICAgIGlmIG5vdCB2ZW51ZToKICAgICAgICAgICAgICAgIGNvbnRpbnVlCiAgICAgICAgICAgIGVuZCA9IGl0ZW0uZ2V0KCJpbmRleEVuZCIpIG9yIGRlZmluaXRpb24uZ2V0KCJlbmQiKQogICAgICAgICAgICBjaXR5ID0gc3RyZWV0LnNwbGl0KCIsIilbMV0uc3RyaXAoKSBpZiBzdHJlZXQgZWxzZSAiIgogICAgICAgICAgICByb3cgPSByZWNvcmQoZGVmaW5pdGlvbi5nZXQoInRpdGxlIiksIHN0YXJ0Lmlzb2Zvcm1hdCgpLCBlbmQsIHZlbnVlLCBzdHJlZXQsIGNpdHksCiAgICAgICAgICAgICAgICAgICAgICAgICBmIntsaXN0aW5nfS97aWRlbnRpdHl9IiwgaWRlbnRpdHksIHR6PXpvbmUpCiAgICAgICAgICAgIGlmIHJvdyBpcyBub3QgTm9uZToKICAgICAgICAgICAgICAgIGV2ZW50c1tpZGVudGl0eV0gPSByb3cKICAgICAgICBpZiBsYXN0X3N0YXJ0ID4gaG9yaXpvbjoKICAgICAgICAgICAgcmV0dXJuIHNvcnRlZChldmVudHMudmFsdWVzKCksIGtleT1sYW1iZGEgcm93OiAocm93WyJzdGFydHNfYXQiXSwgcm93WyJpZCJdKSkKICAgIHJhaXNlIFZhbHVlRXJyb3IoImJpYmxpb2V2ZW50c19wYWdpbmF0aW9uX2xpbWl0IikK
+"""Collect public BiblioEvents listings through the bounded community worker."""
+from datetime import datetime, timedelta, timezone
+import json
+import re
+from time import monotonic
+from urllib.parse import urlencode
+
+from roomquest.mapsee_adapter import address, plain, record, timestamp
+
+GATEWAY = "gateway.bibliocommons.com"
+PAGE_SIZE = 100
+MAX_PAGES = 8
+HORIZON = timedelta(days=60)
+
+# https://omahalibrary.org/locations/
+OMAHA_BRANCHES = {
+    "a.v. sorensen branch": "4808 Cass St, Omaha, NE 68132",
+    "benson branch": "6015 Binney St, Omaha, NE 68104",
+    "bess johnson elkhorn branch": "2100 Reading Plaza, Elkhorn, NE 68022",
+    "central library": "7205 Dodge St, Omaha, NE 68114",
+    "charles b. washington branch": "2868 Ames Ave, Omaha, NE 68111",
+    "downtown branch": "1401 Jones St, Omaha, NE 68102",
+    "florence branch": "2920 Bondesson St, Omaha, NE 68112",
+    "millard branch": "13214 Westwood Ln, Omaha, NE 68144",
+    "milton r. abrahams branch": "5111 N 90th St, Omaha, NE 68134",
+    "saddlebrook branch": "14850 Laurel Ave, Omaha, NE 68116",
+    "south omaha library": "2808 Q St, Omaha, NE 68107",
+    "w. clarke swanson branch": "9101 W Dodge Rd, Omaha, NE 68114",
+    "willa cather branch": "1905 S 44th St, Omaha, NE 68105",
+}
+SOURCES = {
+    "omaha_public_library_biblioevents_ne": ("omaha", "America/Chicago", OMAHA_BRANCHES),
+}
+EVENT_ID = re.compile(r"[a-zA-Z0-9_-]{1,100}")
+POSTAL_ADDRESS = re.compile(r"^\d{1,6}\s+[^,]+,\s*[^,]+,\s*[A-Z]{2}(?:\s+\d{5}(?:-\d{4})?)?$")
+
+
+def event_venue(definition, locations, branches):
+    # An off-site venue takes precedence even when its details are incomplete.
+    offsite_id = definition.get("nonBranchLocationId")
+    branch_id = definition.get("branchLocationId")
+    location = locations.get(offsite_id or branch_id)
+    if not isinstance(location, dict):
+        return "", ""
+    name = plain(location.get("name"))
+    raw = location.get("address")
+    street = address(raw) if isinstance(raw, (str, dict)) else ""
+    street = re.sub(r",\s*(\d{5}(?:-\d{4})?)$", r" \1", street)
+    if not POSTAL_ADDRESS.fullmatch(street):
+        street = "" if offsite_id else branches.get(name.casefold(), "")
+    return name, street
+
+
+def page_rows(payload, zone):
+    data = json.loads(payload)
+    if not isinstance(data, dict) or not isinstance(data.get("events"), dict):
+        raise ValueError("invalid_biblioevents_page")
+    ids = data["events"].get("items")
+    if not isinstance(ids, list) or len(ids) > PAGE_SIZE:
+        raise ValueError("invalid_biblioevents_page")
+    if not ids:
+        return []
+    entities = data.get("entities")
+    if not isinstance(entities, dict):
+        raise ValueError("invalid_biblioevents_entities")
+    events, locations = entities.get("events"), entities.get("locations", {})
+    if not isinstance(events, dict) or not isinstance(locations, dict):
+        raise ValueError("invalid_biblioevents_entities")
+    rows = []
+    for identity in ids:
+        if not isinstance(identity, str) or not EVENT_ID.fullmatch(identity):
+            raise ValueError("invalid_biblioevents_identity")
+        item = events.get(identity)
+        definition = item.get("definition") if isinstance(item, dict) else None
+        if not isinstance(definition, dict):
+            raise ValueError("missing_biblioevents_definition")
+        start = timestamp(item.get("indexStart") or definition.get("start"), zone)
+        if start is None:
+            raise ValueError("event_time_missing")
+        rows.append((identity, item, definition, locations, start))
+    return rows
+
+
+def collect(source, fetch, *, deadline_at=None, now=None):
+    """Use the upstream BiblioEvents gateway shape with the worker's safe transport."""
+    config = SOURCES.get(source.get("source_key"))
+    if config is None:
+        raise ValueError("unregistered_biblioevents_source")
+    slug, zone, branches = config
+    listing = f"https://{slug}.bibliocommons.com/v2/events"
+    if (source.get("feed_url"), source.get("timezone"), source.get("kind"),
+            source.get("platform_adapter")) != (listing, zone, "html", "html"):
+        raise ValueError("unregistered_biblioevents_source")
+    horizon = (now or datetime.now(timezone.utc)) + HORIZON
+    events = {}
+    seen = set()
+    last_start = None
+    for page in range(1, MAX_PAGES + 1):
+        if deadline_at is not None and monotonic() >= deadline_at:
+            raise ValueError("collection_deadline")
+        query = urlencode({"limit": PAGE_SIZE, "page": page})
+        url = f"https://{GATEWAY}/v2/libraries/{slug}/events?{query}"
+        rows = page_rows(fetch(url, "application/json"), zone)
+        if not rows:
+            return sorted(events.values(), key=lambda row: (row["starts_at"], row["id"]))
+        for identity, item, definition, locations, start in rows:
+            if identity in seen or (last_start is not None and start < last_start):
+                raise ValueError("invalid_biblioevents_pagination")
+            seen.add(identity)
+            last_start = start
+            if start > horizon or definition.get("isCancelled") is True:
+                continue
+            if str(definition.get("attendanceMode", "")).casefold() in {"online", "virtual"}:
+                continue
+            venue, street = event_venue(definition, locations, branches)
+            if not venue:
+                continue
+            end = item.get("indexEnd") or definition.get("end")
+            city = street.split(",")[1].strip() if street else ""
+            row = record(definition.get("title"), start.isoformat(), end, venue, street, city,
+                         f"{listing}/{identity}", identity, tz=zone)
+            if row is not None:
+                events[identity] = row
+        if last_start > horizon:
+            return sorted(events.values(), key=lambda row: (row["starts_at"], row["id"]))
+    raise ValueError("biblioevents_pagination_limit")
