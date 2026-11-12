@@ -195,3 +195,29 @@ def test_runsignup_uses_registration_identity_and_ignores_mailing_lists():
     assert calendars.race_listing(payload, now) == {
         "123": "https://runsignup.com/Race/VA/Henrico/Run",
     }
+
+
+def test_runsignup_public_detail_publishes_named_timed_race_at_location():
+    import json
+    from datetime import datetime, timedelta
+    from zoneinfo import ZoneInfo
+    from roomquest import richmond_public_calendars as calendars
+
+    now = datetime.now(ZoneInfo(calendars.ZONE))
+    start = (now + timedelta(days=1)).isoformat()
+    item = {
+        "@type": "SportsEvent", "name": "Community 5K", "startDate": start,
+        "location": {"@type": "Place", "address": {
+            "streetAddress": "Dorey Park", "addressLocality": "Henrico",
+            "addressRegion": "VA", "postalCode": "23231",
+        }},
+    }
+    page = '<h2 class="rsuWebsiteSection__title">Race Location</h2>'
+    page += '<p>Dorey Park<br>2999 Darbytown Rd<br>Henrico, VA 23231 US</p>'
+    for data in (item, item | {"name": "Virtual 5K"}, item | {"additionalType": "Product"}):
+        page += f'<script type="application/ld+json">{json.dumps(data)}</script>'
+    [event] = calendars.race_events(
+        page, "123", "https://runsignup.com/Race/VA/Henrico/Run", now,
+    )
+    assert event["venue_address"] == "2999 Darbytown Rd, Henrico, VA 23231"
+    assert event["ends_at"] is None

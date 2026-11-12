@@ -16,7 +16,7 @@ ZONE = "America/New_York"
 CFENGAGE = "cfengage_volunteer_richmond_va"
 ROAD_RUNNERS = "richmond_road_runners_runsignup_va"
 CF_HOST = "www.cfengage.org"
-RACE_HOST = "api.runsignup.com"
+RACE_HOST = "runsignup.com"
 SOURCES = {
     CFENGAGE: (f"https://{CF_HOST}/calendar", (CF_HOST,)),
     ROAD_RUNNERS: (
@@ -113,38 +113,66 @@ def race_listing(payload, now):
     return races
 
 
+def race_street(soup, venue, city, zip_code):
+    # The event schema often holds a place name in the streetAddress field.
+    # Prefer the actual Location block when the page lists it.
+    for heading in soup.select("h2.rsuWebsiteSection__title"):
+        if heading.get_text(" ", strip=True) not in {"Location", "Race Location", "Place"}:
+            continue
+        place = heading.find_next_sibling("p")
+        if place is None:
+            continue
+        lines = list(place.stripped_strings)
+        for i, line in enumerate(lines[:-1]):
+            if re.fullmatch(r"[1-9]\d{1,5} .{2,95}", line) and lines[i + 1].startswith(f"{city}, VA {zip_code}"):
+                return line
+    # City of Richmond's official park directory confirms this named venue.
+    if (venue, city, zip_code) == ("Joseph Bryan Park", "Richmond", "23227"):
+        return "4308 Hermitage Road"
+    return ""
+
+
 def race_events(payload, identity, listing_url, now):
-    race = json.loads(payload).get("race")
-    if not isinstance(race, dict) or str(race.get("race_id")) != identity:
-        raise ValueError("invalid_runsignup_race")
-    if (race.get("is_private_race") != "F" or race.get("is_draft_race") != "F"
-            or race.get("timezone") != ZONE or race.get("url") != listing_url):
-        return []
-    addr = race.get("address") or {}
-    city, state, zip_code = (plain(addr.get(k)) for k in ("city", "state", "zipcode"))
-    address_lines = [plain(addr.get(k)) for k in ("street", "street2")]
-    street = next((line for line in address_lines if re.match(r"^\d+\s+\w", line)), "")
-    if not street or not city or state != "VA" or not re.fullmatch(r"\d{5}", zip_code):
-        return []
-    venue = next((line for line in address_lines if line and line != street), street)
-    rows = []
-    for event in race.get("events") or []:
-        event_type = event.get("event_type")
+    soup = BeautifulSoup(payload, "html.parser")
+    nodes = soup.select('script[type="application/ld+json"]')
+    if not nodes:
+        raise ValueError("runsignup_event_data_missing")
+    rows = {}
+    for node in nodes:
+        try:
+            event = json.loads(node.string or "")
+        except json.JSONDecodeError:
+            continue
+        if not isinstance(event, dict) or event.get("@type") != "SportsEvent" or event.get("additionalType"):
+            continue
         label = plain(event.get("name"))
-        if event_type != "running_race" or not label or NON_EVENT.search(label):
+        if not label or NON_EVENT.search(label) or re.search(r"\b(?:virtual|volunteer|expo)\b", label, re.I):
             continue
-        start = datetime.strptime(event["start_time"], "%m/%d/%Y %H:%M").replace(tzinfo=ZoneInfo(ZONE))
-        if not now <= start <= now + timedelta(days=60):
+        if str(event.get("eventStatus") or "").rsplit("/", 1)[-1] in {"EventCancelled", "EventPostponed"}:
             continue
-        end = datetime.strptime(event["end_time"], "%m/%d/%Y %H:%M").replace(tzinfo=ZoneInfo(ZONE)) if event.get("end_time") else None
-        race_name = plain(race["name"])
-        title = label if label.casefold() in race_name.casefold() else f"{race_name} — {label}"
-        row = record(title, start.isoformat(), end.isoformat() if end else None, venue,
-                     f"{street}, {city}, {state} {zip_code}", city, listing_url,
-                     f"{identity}:{event['event_id']}", "running")
+        starts = event.get("startDate")
+        if not starts:
+            continue
+        start = datetime.fromisoformat(starts)
+        if start.tzinfo is None or not now <= start <= now + timedelta(days=60):
+            continue
+        location = event.get("location") or {}
+        if location.get("@type") != "Place":
+            continue
+        addr = location.get("address") or {}
+        city, state, zip_code = (plain(addr.get(k)) for k in ("addressLocality", "addressRegion", "postalCode"))
+        if state != "VA" or not city or not re.fullmatch(r"\d{5}", zip_code):
+            continue
+        venue = plain(addr.get("streetAddress"))
+        street = venue if re.match(r"^\d+\s+\w", venue) else race_street(soup, venue, city, zip_code)
+        if not street:
+            continue
+        # The race website assigns three-hour end estimates to untimed finishes.
+        row = record(label, start.isoformat(), None, venue, f"{street}, {city}, VA {zip_code}",
+                     city, listing_url, f"{identity}:{label}", "running")
         if row:
-            rows.append(row)
-    return rows
+            rows[row["id"], row["starts_at"]] = row
+    return list(rows.values())
 
 
 def collect(source, fetch, *, deadline_at=None, render_volunteers=None):
@@ -158,6 +186,6 @@ def collect(source, fetch, *, deadline_at=None, render_volunteers=None):
     now = datetime.now(ZoneInfo(ZONE))
     rows = []
     for identity, url in race_listing(fetch(config[0], "text/html"), now).items():
-        payload = fetch(f"https://{RACE_HOST}/rest/race/{identity}?format=json", "application/json")
+        payload = fetch(url, "text/html")
         rows.extend(race_events(payload, identity, url, now))
     return sorted(rows, key=lambda row: (row["starts_at"], row["id"]))
