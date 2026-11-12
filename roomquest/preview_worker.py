@@ -1059,6 +1059,9 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
             from roomquest.chase_city_chamber import collect as collect_html
             allowed_hosts = ("chasecitychamber.com",)
             html_budget = 20
+        elif source_key == "municipal_749460d8567ccf71cade6771":
+            from roomquest.neon_district import HOST, collect as collect_html
+            allowed_hosts = (HOST,)
         elif source_key == "municipal_38cad94cfdc8628a8ce8ee90":
             from roomquest.lynnhaven_river import HOST, collect as collect_html
             allowed_hosts = (HOST,)
