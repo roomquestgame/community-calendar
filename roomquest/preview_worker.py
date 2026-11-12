@@ -69,7 +69,7 @@ class RejectRedirects(HTTPRedirectHandler):
 
 
 class ReviewedRobotsRedirects(RejectRedirects):
-    """One reviewed vendor route; no general robots redirect permission."""
+    """Allow only reviewed robots redirects."""
     def redirect_request(self, request, fp, code, msg, headers, newurl):
         # Observed November 6: this API host routes a nonexistent robots file
         # to its vendor's explicit 404 endpoint. Recheck the original each
@@ -78,6 +78,14 @@ class ReviewedRobotsRedirects(RejectRedirects):
                 and newurl == 'https://algolia.net/1/404'
                 and code in (301, 302, 307, 308)):
             validate_public_dns('algolia.net')
+            return Request(newurl, headers={
+                'User-Agent': 'RoomQuestCommunityCalendar/0.1 (community-event research)'
+            }, method='GET')
+        # The club serves its robots rules at this same-origin WordPress endpoint.
+        if (request.full_url == 'https://omaharun.org/robots.txt'
+                and newurl == 'https://omaharun.org/?robots=1'
+                and code in (301, 302, 303, 307, 308)):
+            validate_public_dns('omaharun.org')
             return Request(newurl, headers={
                 'User-Agent': 'RoomQuestCommunityCalendar/0.1 (community-event research)'
             }, method='GET')
@@ -163,7 +171,7 @@ def _cache_robots(host, parser):
 def _robots_rules(host: str, *, deadline_at: float | None = None):
     """Cache each publisher's rules for five minutes after a valid response.
 
-    Only the exact reviewed API-vendor robots redirect is permitted; every
+    Only exact reviewed robots redirects are permitted; every
     other redirect and every private-network destination remains blocked.
     404/410 mean no robots rules; all other HTTP/network failures fail closed.
     Actual denial and temporary unavailability retain distinct error codes.
