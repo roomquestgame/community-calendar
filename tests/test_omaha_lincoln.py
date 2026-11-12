@@ -16,7 +16,7 @@ def test_intake_batches_keep_existing_identities():
     assert {row["existing_id"] for row in rows if row["batch"] == 1 and "existing_id" in row} == {
         3177, 4301, 4901, 5131,
     }
-    assert len(omaha_lincoln.new_ical_feeds()) == 8
+    assert len(omaha_lincoln.new_ical_feeds()) == 9
 
 
 def test_preview_preserves_explicit_venues_and_filters_private_records():
@@ -258,3 +258,24 @@ def test_la_vista_library_keeps_each_venue_and_skips_closures():
     assert center["venue_address"] == "8116 Park View Boulevard, La Vista, NE 68128"
     assert library["event_url"] == "https://www.cityoflavista.org/LibraryCalendar"
     assert unknown["venue_address"] == "Venue to be announced"
+
+
+def test_clair_memorial_only_defaults_venue_for_the_published_worship_series():
+    source = dict(source_key=omaha_lincoln.CLAIR_MEMORIAL, feed_url=omaha_lincoln.CLAIR_MEMORIAL_FEED,
+                  kind="ical", platform_adapter="ical", timezone="America/Chicago")
+    start = datetime.now(timezone.utc) + timedelta(days=4)
+    calendar = Calendar()
+    calendar.add("version", "2.0")
+    for slug, title in (("sunday-worship", "Sunday Worship"), ("special-event", "Special Event")):
+        event = Event()
+        event.add("uid", slug)
+        event.add("summary", title)
+        event.add("dtstart", start)
+        event.add("dtend", start + timedelta(hours=1))
+        event.add("url", f"https://www.cmumc.net/events/{slug}/{start:%Y-%m-%d}")
+        calendar.add_component(event)
+    with patch.object(preview_worker, "fetch_publisher", return_value=calendar.to_ical().decode()):
+        records = preview_worker.preview_source(source)["p_events"]
+    by_title = {record["title"]: record for record in records}
+    assert by_title["Sunday Worship"]["venue_address"] == "5544 Ames Avenue, Omaha, NE"
+    assert not by_title["Special Event"]["venue_address"]
