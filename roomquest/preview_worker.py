@@ -1101,7 +1101,7 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         elif source_key in ('spielbound_meetup_ne', 'americas_pub_quiz_ne', 'spring_creek_prairie_audubon_ne'):
             from roomquest.nebraska_event_listings import SOURCES, collect as collect_html
             allowed_hosts = (urlparse(SOURCES[source_key]).hostname,)
-        elif source_key in ('lincoln_parks_opencities_ne', 'omaha_running_club_eventon_ne'):
+        elif source_key in ('lincoln_parks_opencities_ne', 'omaha_running_club_eventon_ne', 'goatz_hitchcock_experience_ne'):
             from roomquest.nebraska_recreation import SOURCES, collect as collect_html
             allowed_hosts = (urlparse(SOURCES[source_key]).hostname,)
         elif source_key == 'cellar_426_events_ne':
