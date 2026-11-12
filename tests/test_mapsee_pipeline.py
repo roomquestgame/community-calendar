@@ -26,7 +26,16 @@ class MapseeTests(unittest.TestCase):
 
     def test_source_count_and_positive_us_evidence(self):
         data=profiles()
-        self.assertEqual(len(data),2632)
+        root=Path(__file__).resolve().parents[1] / "roomquest"
+        original=json.loads((root / "mapsee_sources.json").read_text())["sources"]
+        richmond=json.loads((root / "richmond_batch_one_sources.json").read_text())["sources"]
+        self.assertEqual(len(original),2632)
+        self.assertEqual(set(data),{row["source_key"] for row in original + richmond})
+        for row in richmond:
+            self.assertEqual(data[row["source_key"]],row)
+        sports=data["municipal_mapsee_16f3d8df46cc20cc3e1ac587"]
+        self.assertEqual(sports["url"],"https://www.sportsbackers.org/events/?ical=1")
+        self.assertEqual(sports["replaces_url"],"https://sportsbackers.org/events/?ical=1")
         self.assertTrue(all(s["country"]=="US" for s in data.values()))
         self.assertNotIn("US",country_evidence({"name":"Paris Club","geocode_suffix":", Paris","url":"https://example.fr/calendar.ics"})[:1])
         self.assertEqual(country_evidence({"geocode_suffix":", Raleigh, North Carolina"})[0],"US")

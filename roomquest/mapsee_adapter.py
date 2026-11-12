@@ -26,8 +26,18 @@ SUPPORTED_TYPES = {"ics", "jsonld", "tribe", "localist", "squarespace", "opendat
 
 @lru_cache(maxsize=1)
 def profiles():
-    path = Path(__file__).with_name("mapsee_sources.json")
-    return {x["source_key"]: x for x in json.loads(path.read_text())["sources"]}
+    base = Path(__file__).with_name("mapsee_sources.json")
+    result = {row["source_key"]: row for row in json.loads(base.read_text())["sources"]}
+    supplemental = base.with_name("richmond_batch_one_sources.json")
+    for row in json.loads(supplemental.read_text())["sources"]:
+        key = row["source_key"]
+        existing = result.get(key)
+        if existing and row.get("replaces_url") != existing["url"]:
+            raise ValueError("conflicting_mapsee_source_profile")
+        if not existing and row.get("replaces_url"):
+            raise ValueError("missing_mapsee_source_profile")
+        result[key] = row
+    return result
 
 
 def plain(value):

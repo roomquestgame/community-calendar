@@ -194,7 +194,7 @@ def collect(source, fetch, *, deadline_at=None):
     if source.get('source_key') == 'think_iowa_city_ia':
         from roomquest.iowa_tourism import collect_think
         return collect_think(source, fetch, deadline_at=deadline_at)
-    from roomquest.mapsee_adapter import TRIBE_UTC_DEFAULT_ZONES, parse_tribe
+    from roomquest.mapsee_adapter import TRIBE_UTC_DEFAULT_ZONES, parse_tribe, profiles
     from roomquest import ncma_calendar
     ncma = source.get('source_key') == ncma_calendar.KEY
     if ncma and source.get('feed_url') != ncma_calendar.ROOT:
@@ -211,6 +211,8 @@ def collect(source, fetch, *, deadline_at=None):
                      or source.get('timezone', ROSEMONT_TIMEZONE) != ROSEMONT_TIMEZONE):
         raise ValueError('unregistered_rosemont_source')
     root = urlsplit(source['feed_url'])
+    profile = profiles().get(source_key) if (source_key or '').startswith('municipal_mapsee_') else None
+    public_calendar = bool(profile and profile.get('config', {}).get('strict_public') is True)
     if '/wp-json/tribe/events/v1/events' in root.path:
         if root.path.rstrip('/').split('/wp-json/', 1)[1] != 'tribe/events/v1/events':
             raise ValueError('unsupported_wordpress_endpoint')
@@ -282,7 +284,7 @@ def collect(source, fetch, *, deadline_at=None):
                             raise ValueError('publisher_schedule_conflict')
         # Never follow response next links; rebuild only this registered URL.
         utc_default_zone = 'America/New_York' if source_key == VIRGINIA_MOCA else TRIBE_UTC_DEFAULT_ZONES.get(source_key)
-        parsed_rows = parse_tribe(payload, strict_public=bool(hampton_url) or ncma or source.get("source_key") in
+        parsed_rows = parse_tribe(payload, strict_public=public_calendar or bool(hampton_url) or ncma or source.get("source_key") in
                                   ("madison_county_parks_ia", "nebraska_game_parks", ROSEMONT_KEY, jpb_basketball.KEY, hurrdat_calendar.KEY),
                                 retain_description=bool(hampton_url) or ncma or source.get("source_key") in
                                   ("madison_county_parks_ia", ROSEMONT_KEY, jpb_basketball.KEY, hurrdat_calendar.KEY),
