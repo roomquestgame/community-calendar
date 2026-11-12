@@ -144,3 +144,36 @@ def test_reviewed_venue_and_cancellation_rules(source_key, events, expected_pins
 
     assert {row["title"]: (row["lat"], row["lng"]) for row in result["p_events"]} == expected_pins
     assert result["p_venue_count"] == sum(lat is not None for lat, _ in expected_pins.values())
+
+
+def test_unl_public_preview_links_to_local_dated_event_and_skips_virtual_events():
+    source = dict(source_key=omaha_lincoln.UNL_PUBLIC, feed_url=omaha_lincoln.UNL_FEED,
+                  kind="ical", platform_adapter="ical", timezone="America/Chicago")
+    start = (datetime.now(timezone.utc) + timedelta(days=4)).replace(hour=1, minute=30)
+    local_start = start.astimezone(ZoneInfo("America/Chicago"))
+    calendar = Calendar()
+    calendar.add("version", "2.0")
+    for uid, title, venue in (
+        ("203744-981405@events.unl.edu", "Arcadia", "Temple Building Room Howell Theater"),
+        ("204155@events.unl.edu", "Office Hours", "Zoom - Register Here"),
+        ("unexpected@example.org", "Unknown publisher ID", "Temple Building"),
+    ):
+        event = Event()
+        event.add("uid", uid)
+        event.add("summary", title)
+        event.add("location", venue)
+        event.add("dtstart", start)
+        event.add("dtend", start + timedelta(hours=1))
+        calendar.add_component(event)
+
+    with patch.object(preview_worker, "fetch_publisher", return_value=calendar.to_ical().decode()) as fetch:
+        row, = preview_worker.preview_source(source)["p_events"]
+        assert fetch.call_args.kwargs["respect_robots"]
+        assert fetch.call_args.kwargs["allowed_hosts"] == ("events.unl.edu",)
+
+    assert row["title"] == "Arcadia"
+    assert row["event_url"] == f"https://events.unl.edu/{local_start:%Y/%m/%d}/203744/"
+    with patch.object(preview_worker, "fetch_publisher") as fetch:
+        with pytest.raises(preview_worker.PreviewError, match="unregistered_unl_public_calendar"):
+            preview_worker.preview_source({**source, "feed_url": "https://events.unl.edu/upcoming/"})
+        fetch.assert_not_called()

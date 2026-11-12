@@ -1,10 +1,12 @@
 """Reviewed Omaha and Lincoln publisher identities and iCalendar normalization."""
 
+from datetime import datetime
 from functools import lru_cache
 import json
 from pathlib import Path
 import re
 from urllib.parse import urlsplit
+from zoneinfo import ZoneInfo
 
 from icalendar import Calendar
 
@@ -28,6 +30,12 @@ def new_ical_feeds():
 
 FRANCIE_AND_FINCH = "municipal_5e01aa207622e684433576ed"
 CROOK_HOUSE = "municipal_ab8764ae8583f76b90fc6de9"
+UNL_PUBLIC = "unl_main_events_ical_ne"
+UNL_HOST = "events.unl.edu"
+UNL_FEED = f"https://{UNL_HOST}/audience/?audience=Public&format=ics&limit=100"
+UNL_UID = re.compile(r"([1-9][0-9]{0,11})(?:-[1-9][0-9]{0,11})?@events[.]unl[.]edu")
+UNL_DETAIL_PATH = re.compile(r"/[0-9]{4}/[0-9]{2}/[0-9]{2}/[1-9][0-9]{0,11}/")
+UNL_ONLINE_VENUE = re.compile(r"^(?:https?://|(?:zoom|virtual|online|webinar)\b)", re.I)
 BOOKSHOP_ADDRESS = re.compile(
     r"130\s+S\.?\s+13th\s+(?:Street|St\.?),\s*Lincoln,\s*NE(?:\s+68508)?",
     re.IGNORECASE,
@@ -94,5 +102,36 @@ def collect(source, fetch):
             record.update(lat=40.8129603, lng=-96.7022956)
         else:
             record.update(lat=None, lng=None)
+        result.append(record)
+    return result
+
+
+def collect_unl_public(source, fetch):
+    """Collect timed, in-person listings from UNL's publisher-filtered public export."""
+    if (source.get("source_key"), source.get("feed_url"), source.get("kind"),
+            source.get("platform_adapter"), source.get("timezone")) != (
+            UNL_PUBLIC, UNL_FEED, "ical", "ical", "America/Chicago"):
+        raise ValueError("unregistered_unl_public_calendar")
+
+    payload = fetch(UNL_FEED, "text/calendar")
+    records = parse(payload, {"url": UNL_FEED, "source_key": UNL_PUBLIC,
+                              "timezone": source["timezone"]}, legacy=True)
+    zone = ZoneInfo(source["timezone"])
+    result = []
+    for record in records:
+        venue = (record.get("venue_name") or "").strip()
+        uid = UNL_UID.fullmatch(record["id"].split("__", 1)[0])
+        if not venue or UNL_ONLINE_VENUE.match(venue) or not uid:
+            continue
+        event_url = record.get("event_url")
+        if not event_url or event_url == UNL_FEED:
+            # UNL's public listing uses the local calendar date and the
+            # event ID preceding any occurrence ID in its exported UID.
+            day = datetime.fromisoformat(record["starts_at"]).astimezone(zone)
+            record["event_url"] = f"https://{UNL_HOST}/{day:%Y/%m/%d}/{uid[1]}/"
+        else:
+            url = urlsplit(event_url)
+            if url.scheme != "https" or url.netloc != UNL_HOST or not UNL_DETAIL_PATH.fullmatch(url.path):
+                continue
         result.append(record)
     return result
