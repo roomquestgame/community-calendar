@@ -364,12 +364,17 @@ UID rewriting or invent household route applicability.
 
 def parse(payload, source, *, legacy=False, include_description=False):
     from icalendar import Calendar
+    from roomquest import odu_campusgroups
     from roomquest.preview_worker import parse_ics_preview, public_source_url
     mecklenburg = _mecklenburg_source(source)
-    include_description = include_description or mecklenburg
+    odu = source.get('source_key') == odu_campusgroups.KEY
+    include_description = include_description or mecklenburg or odu
     if not payload.lstrip("\ufeff \r\n").upper().startswith("BEGIN:VCALENDAR") or "END:VCALENDAR" not in payload.upper():
         raise ValueError("invalid_calendar_payload")
     cal=Calendar.from_ical(payload)
+    odu_addresses = odu_campusgroups.filter_snapshot(cal, source) if odu else {}
+    if odu:
+        payload = cal.to_ical().decode()
     events=cal.walk("VEVENT")
     original_event_count = len(events)
     if len(events)>5000:raise ValueError("source_record_limit")
@@ -477,6 +482,8 @@ def parse(payload, source, *, legacy=False, include_description=False):
             detail_urls[uid] = civicplus_detail_url(str(event.get('DESCRIPTION', '')), uid, source['url'])
 
     for e in result:
+        if odu:
+            e['venue_address'] = odu_addresses[e['id']]
         if include_description and source.get('source_key') == 'independence_ia_library_family':
             uid = e['id'].split('__', 1)[0]
             if not detail_urls.get(uid):
