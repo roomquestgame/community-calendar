@@ -1089,6 +1089,10 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         elif source_key == "municipal_175e7cdf657e22645f5d5ef6":
             from roomquest.downtown_norfolk import HOST, collect as collect_html
             allowed_hosts = (HOST,)
+        elif source_key == "municipal_675453b56a7c6bd1a1458ce2":
+            from roomquest.odu_public_calendar import HOST, collect as collect_html
+            allowed_hosts = (HOST,)
+            html_budget = 40
         elif source_key == "municipal_2c72672bcb8c47b895b8cb3e":
             from roomquest.virginia_beach_cultural import HOST, collect as collect_html
             allowed_hosts = (HOST,)

@@ -52,6 +52,9 @@ def _east_beach(text, days):
 
 
 SCHEDULES = dict(zip(SOURCES, (_shore, _old_beach, _east_beach)))
+# The organizer places this market on 18th between Cypress and Mediterranean.
+# Street midpoint from the City of Virginia Beach GIS street segment 13090.
+OLD_BEACH_PIN = (36.844967, -75.982314)
 
 
 def collect(source, fetch, *, deadline_at=None, now=None):
@@ -71,12 +74,13 @@ def collect(source, fetch, *, deadline_at=None, now=None):
         hidden.decompose()
     text = ' '.join(' '.join(page.stripped_strings).split()).casefold()
     selected = SCHEDULES[key](text, days)
+    lat, lng = OLD_BEACH_PIN if key == 'municipal_fbeab18ea945d530eccf2189' else (None, None)
     rows = []
     for day in selected:
         starts = datetime(day.year, day.month, day.day, 9)
         ends = datetime(day.year, day.month, day.day, 12)
         row = record(title, starts.isoformat(), ends.isoformat(), venue, street, city,
-                     url, f'{urlsplit(url).path}:{day.isoformat()}', 'Market', tz=ZONE)
+                     url, f'{urlsplit(url).path}:{day.isoformat()}', 'Market', lat=lat, lng=lng, tz=ZONE)
         if row:
             rows.append(row)
     return rows
