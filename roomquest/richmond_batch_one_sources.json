@@ -1,0 +1,137 @@
+{
+  "sources": [
+    {
+      "name": "Coalition Theater",
+      "type": "tribe",
+      "url": "https://rvacomedy.com",
+      "canonical_url": "https://rvacomedy.com/",
+      "source_key": "municipal_mapsee_b5b7429c07489969155f9a8f",
+      "platform_adapter": "wordpress",
+      "country": "US",
+      "config": {
+        "strict_public": true
+      }
+    },
+    {
+      "name": "Richmond Ballet",
+      "type": "tribe",
+      "url": "https://richmondballet.com",
+      "canonical_url": "https://richmondballet.com/",
+      "source_key": "municipal_mapsee_c76eb062b114468a26ee5c9a",
+      "platform_adapter": "wordpress",
+      "country": "US",
+      "config": {
+        "strict_public": true
+      }
+    },
+    {
+      "name": "Henrico Sports & Events Center",
+      "type": "tribe",
+      "url": "https://henricosea.com",
+      "canonical_url": "https://henricosea.com/",
+      "source_key": "municipal_mapsee_ed304d124e802e2721617f0f",
+      "platform_adapter": "wordpress",
+      "country": "US",
+      "config": {
+        "strict_public": true
+      }
+    },
+    {
+      "name": "Poe Museum",
+      "type": "tribe",
+      "url": "https://poemuseum.org",
+      "canonical_url": "https://poemuseum.org/",
+      "source_key": "municipal_mapsee_c4ebe624ad06275996ebd99e",
+      "platform_adapter": "wordpress",
+      "country": "US",
+      "config": {
+        "strict_public": true
+      }
+    },
+    {
+      "name": "Virginia Holocaust Museum",
+      "type": "tribe",
+      "url": "https://www.vaholocaust.org",
+      "canonical_url": "https://vaholocaust.org/",
+      "source_key": "municipal_mapsee_29772858d6c1de59e6e65d6b",
+      "platform_adapter": "wordpress",
+      "country": "US",
+      "config": {
+        "strict_public": true
+      }
+    },
+    {
+      "name": "Richmond Symphony",
+      "type": "tribe",
+      "url": "https://www.richmondsymphony.com",
+      "canonical_url": "https://richmondsymphony.com/",
+      "source_key": "municipal_mapsee_080b63905df9b7ae2b1f1017",
+      "platform_adapter": "wordpress",
+      "country": "US",
+      "config": {
+        "strict_public": true
+      }
+    },
+    {
+      "name": "Hardywood Richmond",
+      "type": "squarespace",
+      "url": "https://www.hardywood.com/richmond-events",
+      "canonical_url": "https://hardywood.com/richmond-events",
+      "source_key": "municipal_mapsee_2efb4c9a68b2798755ec0be4",
+      "platform_adapter": "squarespace",
+      "country": "US",
+      "config": {}
+    },
+    {
+      "name": "Hardywood West Creek",
+      "type": "squarespace",
+      "url": "https://www.hardywood.com/west-creek-events",
+      "canonical_url": "https://hardywood.com/west-creek-events",
+      "source_key": "municipal_mapsee_0636e9ebe61e5d578568dcb8",
+      "platform_adapter": "squarespace",
+      "country": "US",
+      "config": {}
+    },
+    {
+      "name": "Main Line Brewery",
+      "type": "squarespace",
+      "url": "https://www.mainlinerva.com/eventsatmainline",
+      "canonical_url": "https://mainlinerva.com/eventsatmainline",
+      "source_key": "municipal_mapsee_2103b13acd7489b9cee9faf7",
+      "platform_adapter": "squarespace",
+      "country": "US",
+      "config": {}
+    },
+    {
+      "name": "The Canal Club",
+      "type": "jsonld",
+      "url": "https://thecanalclub.com/events/",
+      "canonical_url": "https://thecanalclub.com/events",
+      "source_key": "municipal_mapsee_ddd6b253496c3d48335e9bc1",
+      "platform_adapter": "jsonld",
+      "country": "US",
+      "config": {}
+    },
+    {
+      "name": "Shalom Farms",
+      "type": "ics",
+      "url": "https://shalomfarms.org/upcoming-events/?ical=1",
+      "canonical_url": "https://shalomfarms.org/upcoming-events?ical=1",
+      "source_key": "municipal_mapsee_a6c54b8a26135bf1bbf4a6f4",
+      "platform_adapter": "ical",
+      "country": "US",
+      "config": {}
+    },
+    {
+      "name": "Sports Backers (Richmond VA community fitness)",
+      "type": "ics",
+      "url": "https://www.sportsbackers.org/events/?ical=1",
+      "canonical_url": "https://sportsbackers.org/events?ical=1",
+      "source_key": "municipal_mapsee_16f3d8df46cc20cc3e1ac587",
+      "platform_adapter": "ical",
+      "country": "US",
+      "config": {},
+      "replaces_url": "https://sportsbackers.org/events/?ical=1"
+    }
+  ]
+}
