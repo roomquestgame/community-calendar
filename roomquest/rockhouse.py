@@ -147,7 +147,7 @@ def listing_records(payload, listing, links, venue, street, today, horizon):
     for view in document.xpath(f"//*[{has_class}]", class_name=" generalView "):
         month = None
         for item in view:
-            classes = item.get("class", "").split()
+            classes = (item.get("class") or "").split()
             if "rhp-events-list-separator-month" in classes:
                 month = datetime.strptime(plain(item.text_content()), "%B %Y")
                 continue
