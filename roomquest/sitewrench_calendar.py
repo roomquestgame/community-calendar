@@ -66,7 +66,7 @@ def featured_events(payload, today, horizon):
     document = html.fromstring(payload)
     headings = elements(document, "upcoming-events-name")
     if not headings:
-        raise ValueError("missing_sitewrench_featured_events")
+        return None
     records = {}
     for heading in headings:
         cards = heading.xpath("ancestor::li[1]")
@@ -108,6 +108,11 @@ def collect(source, fetch, *, deadline_at=None, now=None):
         raise ValueError("unregistered_sitewrench_calendar")
     today = (now or datetime.now(timezone.utc)).astimezone(ZoneInfo(ZONE)).date()
     horizon = today + timedelta(days=59)
+    # The zoo's full listing is rendered in the browser. Its featured widget
+    # already has dated links in the HTML and can be collected in one request.
+    featured = featured_events(fetch(f"https://{HOST}/", "text/html"), today, horizon)
+    if featured is not None:
+        return featured
     params = {"startDate": today.isoformat(), "endDate": horizon.isoformat(),
               "pageSize": 60, "sortBy": "startDate"}
     records = {}
@@ -118,9 +123,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
         query = urlencode({PARAMETER + name: value for name, value in params.items()})
         document = html.fromstring(fetch(f"{CALENDAR}?{query}", "text/html"))
         if not elements(document, "swCalEvents"):
-            if page > 1:
-                raise ValueError("missing_sitewrench_calendar_page")
-            return featured_events(fetch(f"https://{HOST}/", "text/html"), today, horizon)
+            raise ValueError("missing_sitewrench_calendar")
         cards = elements(document, "CalendarListEvent")
         if page > 1 and not cards:
             raise ValueError("empty_sitewrench_page")
