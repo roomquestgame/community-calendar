@@ -124,14 +124,27 @@ def collect(source, fetch, *, deadline_at=None, now=None):
         month = (month + timedelta(days=32)).replace(day=1)
 
     result = []
+    exports_found = 0
     for detail in sorted(details):
-        path = urlsplit(detail).path
-        expected = urlsplit(detail)._replace(path=path.replace("/event/", "/ical/", 1)).geturl()
-        # A detail is collected only if Firespring advertises this exact feed link.
-        if expected not in links(read(detail, "text/html"), detail):
-            raise ValueError("missing_firespring_icalendar_link")
-        identity = EVENT.search(path).group(5)
-        row = event_record(read(expected, "text/calendar"), detail, identity)
+        parsed_detail = urlsplit(detail)
+        event = EVENT.search(parsed_detail.path)
+        identity = event.group(5)
+        prefix = re.escape(root) + r"/ical/\d{4}/\d{2}/\d{2}/[a-z0-9-]+/"
+        exports = []
+        for link in links(read(detail, "text/html"), detail):
+            parsed = urlsplit(link)
+            if (parsed.scheme == "https" and parsed.netloc == parsed_detail.netloc
+                    and not parsed.query and not parsed.fragment
+                    and re.fullmatch(prefix + identity + r"/?", parsed.path)):
+                exports.append(link)
+        if not exports:
+            continue
+        if len(exports) != 1:
+            raise ValueError("ambiguous_firespring_icalendar_link")
+        exports_found += 1
+        row = event_record(read(exports[0], "text/calendar"), detail, identity)
         if row is not None:
             result.append(row)
+    if details and not exports_found:
+        raise ValueError("missing_firespring_icalendar_link")
     return sorted(result, key=lambda row: (row["starts_at"], row["id"]))
