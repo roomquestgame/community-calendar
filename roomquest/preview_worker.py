@@ -309,6 +309,21 @@ def render_old_santee_programs(*, deadline_at: float | None = None) -> str:
             'Pagination': {'CurrentPageIndex': 1, 'LoadMore': False}})
 
 
+def _virginia_beach_cultural_window():
+    start = datetime.now(ZoneInfo('America/New_York')).date()
+    end = start + timedelta(days=60)
+    return {'startDate': f'{start.isoformat()}T00:00', 'endDate': f'{end.isoformat()}T23:59',
+            'productionSeasonIdFilter': [], 'keywordIds': None}
+
+
+def render_virginia_beach_cultural_calendar(*, deadline_at: float | None = None) -> str:
+    """Read the anonymous Tessitura calendar listing with a bounded date window."""
+    from roomquest.virginia_beach_cultural import API, HOST
+    return _fetch_publisher_request(
+        API, 'application/json', respect_robots=True, deadline_at=deadline_at,
+        allowed_hosts=(HOST,), calendar_json=_virginia_beach_cultural_window())
+
+
 def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = False,
                              deadline_at: float | None = None, allowed_hosts=None,
                              calendar_form=None, calendar_json=None) -> str | bytes:
@@ -335,11 +350,16 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
                        'Pagination': {'CurrentPageIndex': 1, 'LoadMore': False}}
                    and type(calendar_json['Pagination']['CurrentPageIndex']) is int
                    and calendar_json['Pagination']['LoadMore'] is False)
-        if calendar_form is not None or not respect_robots or not (elloree or recdesk):
+        cultural = (url == 'https://culture.virginiabeach.gov/api/products/productionseasons'
+                    and accept == 'application/json' and allowed_hosts == ('culture.virginiabeach.gov',)
+                    and isinstance(calendar_json, dict) and calendar_json == _virginia_beach_cultural_window())
+        if calendar_form is not None or not respect_robots or not (elloree or recdesk or cultural):
             raise PreviewError('invalid_calendar_render_parameters')
-        render_content_type = 'application/json' if elloree else 'text/html'
+        render_content_type = 'text/html' if recdesk else 'application/json'
         json_referer = ('https://elloreesc.com/elloree-town-calendar/' if elloree
                         else 'https://oldsanteecanal.recdesk.com/Community/Program')
+        if cultural:
+            json_referer = 'https://culture.virginiabeach.gov/events'
         if recdesk:
             json_content_type = 'application/json; charset=utf-8'
     if calendar_form is not None:
@@ -1063,6 +1083,9 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                             "municipal_cafd15041a039d27e1a37fc3"):
             from roomquest.hampton_roads_markets import collect as collect_html
             allowed_hosts = (urlparse(source['feed_url']).hostname,)
+        elif source_key == "municipal_2c72672bcb8c47b895b8cb3e":
+            from roomquest.virginia_beach_cultural import HOST, collect as collect_html
+            allowed_hosts = (HOST,)
         elif source_key == "municipal_1e4397337c81260b0712c2df":
             from roomquest.tidewater_college import HOST, collect as collect_html
             allowed_hosts = (HOST,)
@@ -1108,6 +1131,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
             if source_key == 'good_shepherd_food_pantry_south_hill_va':
                 extra['render_calendar'] = lambda *, nonce, args: render_good_shepherd_calendar(
                     nonce=nonce, args=args, deadline_at=deadline)
+            if source_key == 'municipal_2c72672bcb8c47b895b8cb3e':
+                extra['render_calendar'] = lambda: render_virginia_beach_cultural_calendar(deadline_at=deadline)
             records = collect_html(
                 source, lambda url, accept: fetch_publisher(
                     url, accept, respect_robots=True, deadline_at=deadline,
