@@ -4,12 +4,13 @@ import json
 import re
 from time import monotonic
 from urllib.parse import urlencode
+from zoneinfo import ZoneInfo
 
 from roomquest.mapsee_adapter import address, plain, record, timestamp
 
 GATEWAY = "gateway.bibliocommons.com"
 PAGE_SIZE = 100
-MAX_PAGES = 8
+MAX_PAGES = 24
 HORIZON = timedelta(days=60)
 
 # https://omahalibrary.org/locations/
@@ -91,14 +92,19 @@ def collect(source, fetch, *, deadline_at=None, now=None):
     if (source.get("feed_url"), source.get("timezone"), source.get("kind"),
             source.get("platform_adapter")) != (listing, zone, "html", "html"):
         raise ValueError("unregistered_biblioevents_source")
-    horizon = (now or datetime.now(timezone.utc)) + HORIZON
+    window_start = (now or datetime.now(timezone.utc)).astimezone(ZoneInfo(zone))
+    horizon = window_start + HORIZON
     events = {}
     seen = {}
     past_horizon_pages = 0
     for page in range(1, MAX_PAGES + 1):
         if deadline_at is not None and monotonic() >= deadline_at:
             raise ValueError("collection_deadline")
-        query = urlencode({"limit": PAGE_SIZE, "page": page})
+        query = urlencode({
+            "limit": PAGE_SIZE, "page": page,
+            "startDate": window_start.date().isoformat(),
+            "endDate": (horizon.date() + timedelta(days=1)).isoformat(),
+        })
         url = f"https://{GATEWAY}/v2/libraries/{slug}/events?{query}"
         rows = page_rows(fetch(url, "application/json"), zone)
         if not rows:
