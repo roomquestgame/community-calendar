@@ -27,8 +27,9 @@ PARK_TIME = re.compile(
     r"Next date:\s*(\w+, \w+ \d{1,2}, \d{4})\s*\|\s*(\d{1,2}:\d{2} [AP]M)\s+to\s+(\d{1,2}:\d{2} [AP]M)",
 )
 RUN_TIME = re.compile(r"(\d{4})-(\d{1,2})-(\d{1,2})T(\d{2}):(\d{2})[+-]\d{1,2}:\d{2}")
+THANKSGIVING = "https://omaharun.org/events/orc-thanksgiving-day-run/"
 RUN_LOCATION = {
-    "orc thanksgiving day run": ("Lake Zorinsky Boat Ramp", "156th Street and F Street, Omaha, NE"),
+    "orc thanksgiving day run": ("Zorinsky Lake Park – Southeast (Shelter 5)", "3808 S 156th Street, Omaha, NE"),
     "orc holiday lights run": ("10th and Harney", "10th Street and Harney Street, Omaha, NE"),
 }
 EXCLUDED = re.compile(r"\b(cancelled|canceled|postponed|closed)\b", re.I)
@@ -82,8 +83,16 @@ def race_time(text):
     return datetime(*(int(part) for part in match.groups())) if match else None
 
 
-def club_events(document, today):
-    found = False
+def club_events(document, fetch, today):
+    rows = list(club_rows(document, today))
+    if rows:
+        yield from rows
+        return
+    detail = html.fromstring(fetch(THANKSGIVING, "text/html"))
+    yield from club_rows(detail, today)
+
+
+def club_rows(document, today):
     for script in document.xpath("//script[@type='application/ld+json']"):
         try:
             row = json.loads(script.text or "null")
@@ -91,7 +100,6 @@ def club_events(document, today):
             continue
         if not isinstance(row, dict) or row.get("@type") != "Event":
             continue
-        found = True
         title = row.get("name") or ""
         venue = RUN_LOCATION.get(title.casefold())
         if not venue or not str(row.get("eventStatus", "")).endswith("/EventScheduled"):
@@ -103,8 +111,6 @@ def club_events(document, today):
         start, end = race_time(row.get("startDate")), race_time(row.get("endDate"))
         if start and today <= start.date() <= today + timedelta(days=59):
             yield build(title, start, end, venue[0], venue[1], "Omaha", url)
-    if not found:
-        raise ValueError("missing_omaha_running_calendar")
 
 
 def hitchcock_events(document, today):
@@ -134,6 +140,8 @@ def collect(source, fetch, *, deadline_at=None, now=None):
     document = html.fromstring(fetch(url, "text/html"))
     if key == PARKS:
         rows = park_events(document, fetch, today)
+    elif key == RUN:
+        rows = club_events(document, fetch, today)
     else:
-        rows = (club_events if key == RUN else hitchcock_events)(document, today)
+        rows = hitchcock_events(document, today)
     return sorted((row for row in rows if row is not None), key=lambda row: (row["starts_at"], row["id"]))

@@ -15,6 +15,7 @@ URL = f"https://{HOST}/managames"
 ZONE = "America/Chicago"
 START = re.compile(r"^([A-Za-z]{3} \d{1,2}, \d{4} \d{1,2}:\d{2} [AP]M) C[SD]T\b")
 ADDRESS = "1400 Pioneers Blvd, Lincoln, NE 68502"
+LEAGUE_PATH = "/event/mana-games-commander-league-fall-bracket-2"
 
 
 def collect(source, fetch, *, deadline_at=None, now=None):
@@ -26,8 +27,6 @@ def collect(source, fetch, *, deadline_at=None, now=None):
     today = (now or datetime.now(zone)).astimezone(zone).date()
     document = html.fromstring(fetch(URL, "text/html"))
     cards = document.xpath("//*[@data-placement='upcoming' and @data-event-id]")
-    if not cards and not document.xpath("//*[@data-placement and @data-event-id]"):
-        raise ValueError("missing_topdeck_events")
     links = {}
     for card in cards:
         anchors = card.xpath(".//a[starts-with(@href,'/event/')]")
@@ -41,6 +40,8 @@ def collect(source, fetch, *, deadline_at=None, now=None):
                 not re.fullmatch(r"/event/[^/]+", target.path) or not title):
             continue
         links[url] = title
+    if not links:
+        links[urljoin(URL, LEAGUE_PATH)] = "Mana Games Commander League Fall - Bracket 2"
     if len(links) > 12:
         raise ValueError("mana_games_event_detail_limit")
     results = []
@@ -52,6 +53,8 @@ def collect(source, fetch, *, deadline_at=None, now=None):
                          plain(detail.text_content()), re.I):
             continue
         fields = detail.xpath("//*[@id='EDate']/text()")
+        if not fields and urlsplit(url).path == LEAGUE_PATH:
+            raise ValueError("missing_topdeck_event_time")
         match = START.match(plain(" ".join(fields)))
         if not match:
             continue
