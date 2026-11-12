@@ -1,0 +1,163 @@
+"""Public HandsOn Connect shifts and RunSignup club-calendar races."""
+
+from datetime import datetime, timedelta, timezone
+from html import unescape
+import json
+import re
+from urllib.parse import urlsplit
+from zoneinfo import ZoneInfo
+
+from bs4 import BeautifulSoup
+
+from roomquest.mapsee_adapter import plain, record
+
+
+ZONE = "America/New_York"
+CFENGAGE = "cfengage_volunteer_richmond_va"
+ROAD_RUNNERS = "richmond_road_runners_runsignup_va"
+CF_HOST = "www.cfengage.org"
+RACE_HOST = "api.runsignup.com"
+SOURCES = {
+    CFENGAGE: (f"https://{CF_HOST}/calendar", (CF_HOST,)),
+    ROAD_RUNNERS: (
+        "https://richmondroadrunnersclub.rsupartner.com/upcoming-rrrc-races-events-volunteer-opportunities",
+        ("richmondroadrunnersclub.rsupartner.com", RACE_HOST),
+    ),
+}
+CF_API = f"https://{CF_HOST}/search/getOpportunitiesCalendar"
+STREET = re.compile(
+    r"\b[1-9][0-9]{1,5}\s+(?:[A-Za-z][\w'’-]*\s+){1,7}"
+    r"(?:Street|Road|Avenue|Boulevard|Drive|Lane|Court|Way|St|Rd|Ave|Blvd|Dr|Ln)\b(?=[.,;)]|$|\s+(?:Richmond|Henrico|Ashland|Highland Springs|North Chesterfield)\b)",
+    re.IGNORECASE,
+)
+PUBLIC_OPPORTUNITY = re.compile(r"https://www\.cfengage\.org/opportunity/[A-Za-z0-9]{15,18}")
+RACE_URL = re.compile(r"https://runsignup\.com/Race/[A-Z]{2}/[^/?#]+/[^/?#]+/?")
+RACE_ID = re.compile(r"/races/race([1-9][0-9]{0,9})-")
+NON_EVENT = re.compile(r"\b(?:mailing list|interest list|notifications?|donations? only)\b", re.I)
+
+
+def calendar_form(now=None):
+    today = (now or datetime.now(timezone.utc)).astimezone(ZoneInfo(ZONE)).date()
+    return {
+        "searchvo_startfrom": today.isoformat(),
+        "searchvo_endfrom": (today + timedelta(days=21)).isoformat(),
+    }
+
+
+def volunteer_shifts(payload):
+    days = json.loads(payload).get("items")
+    if not isinstance(days, list) or len(days) > 23:
+        raise ValueError("invalid_handson_calendar")
+    rows = {}
+    for day in days:
+        if day.get("overMaxToReturn"):
+            raise ValueError("handson_calendar_truncated")
+        for shift in day["occurrences"]:
+            if (shift.get("locationType") != "Address"
+                    or shift.get("locationState") != "VA"
+                    or shift.get("timezone") != ZONE
+                    or shift.get("opportunityType") != "Project"
+                    or not str(shift.get("volunteersStillNeeded", "")).isdigit()
+                    or int(shift["volunteersStillNeeded"]) == 0):
+                continue
+            url = shift.get("opportunityLink") or ""
+            if not PUBLIC_OPPORTUNITY.fullmatch(url):
+                continue
+            # This surface withholds many street addresses. Take a single
+            # publicly stated street from the event text, never the host's HQ.
+            description = BeautifulSoup(shift.get("description") or "", "html.parser").get_text(" ", strip=True)
+            streets = set(STREET.findall(description))
+            city = plain(shift.get("locationCity"))
+            zip_code = str(shift.get("locationZipCode") or "")
+            if len(streets) != 1 or not city or not re.fullmatch(r"\d{5}", zip_code):
+                continue
+            organizer = plain(unescape(shift.get("organizationServedName") or ""))
+            starts, ends = shift.get("startDateTimeISO"), shift.get("endDateTimeISO")
+            if not organizer or not starts or not ends:
+                continue
+            street = f"{streets.pop()}, {city}, VA {zip_code}"
+            row = record(unescape(shift["opportunityName"]), starts, ends, organizer, street,
+                         city, url, shift["occurrenceId"], "volunteering", tz=ZONE)
+            if row:
+                rows[row["id"], row["starts_at"]] = row
+    return list(rows.values())
+
+
+def race_listing(payload, now):
+    soup = BeautifulSoup(payload, "html.parser")
+    table = soup.select_one("table.upcoming-races-table")
+    if table is None:
+        raise ValueError("runsignup_listing_missing")
+    races = {}
+    for tr in table.select("tr"):
+        link = tr.select_one(".race-title a[href]")
+        date = tr.select_one(".calendar-race-date")
+        if not link or not date or NON_EVENT.search(link.get_text(" ", strip=True)):
+            continue
+        day = " ".join(date.get_text(" ", strip=True).split()).split(" - ")[0]
+        try:
+            day = datetime.strptime(day, "%a, %b %d %Y").date()
+        except ValueError:
+            continue
+        if day < now.date() or day > now.date() + timedelta(days=60):
+            continue
+        url = link["href"]
+        logo = tr.select_one("img[src]")
+        identity = RACE_ID.search(urlsplit(logo["src"]).path) if logo else None
+        register = tr.select_one('a[href^="https://runsignup.com/Race/Register?raceId="]')
+        race_id = register["href"].rsplit("=", 1)[-1] if register else identity[1] if identity else ""
+        if re.fullmatch(r"[1-9][0-9]{0,9}", race_id) and RACE_URL.fullmatch(url):
+            races[race_id] = url
+    if len(races) > 18:
+        raise ValueError("runsignup_detail_limit")
+    return races
+
+
+def race_events(payload, identity, listing_url, now):
+    race = json.loads(payload).get("race")
+    if not isinstance(race, dict) or str(race.get("race_id")) != identity:
+        raise ValueError("invalid_runsignup_race")
+    if (race.get("is_private_race") != "F" or race.get("is_draft_race") != "F"
+            or race.get("timezone") != ZONE or race.get("url") != listing_url):
+        return []
+    addr = race.get("address") or {}
+    city, state, zip_code = (plain(addr.get(k)) for k in ("city", "state", "zipcode"))
+    address_lines = [plain(addr.get(k)) for k in ("street", "street2")]
+    street = next((line for line in address_lines if re.match(r"^\d+\s+\w", line)), "")
+    if not street or not city or state != "VA" or not re.fullmatch(r"\d{5}", zip_code):
+        return []
+    venue = next((line for line in address_lines if line and line != street), street)
+    rows = []
+    for event in race.get("events") or []:
+        event_type = event.get("event_type")
+        label = plain(event.get("name"))
+        if event_type != "running_race" or not label or NON_EVENT.search(label):
+            continue
+        start = datetime.strptime(event["start_time"], "%m/%d/%Y %H:%M").replace(tzinfo=ZoneInfo(ZONE))
+        if not now <= start <= now + timedelta(days=60):
+            continue
+        end = datetime.strptime(event["end_time"], "%m/%d/%Y %H:%M").replace(tzinfo=ZoneInfo(ZONE)) if event.get("end_time") else None
+        race_name = plain(race["name"])
+        title = label if label.casefold() in race_name.casefold() else f"{race_name} — {label}"
+        row = record(title, start.isoformat(), end.isoformat() if end else None, venue,
+                     f"{street}, {city}, {state} {zip_code}", city, listing_url,
+                     f"{identity}:{event['event_id']}", "running")
+        if row:
+            rows.append(row)
+    return rows
+
+
+def collect(source, fetch, *, deadline_at=None, render_volunteers=None):
+    key = source.get("source_key")
+    config = SOURCES.get(key)
+    if not config or (source.get("feed_url"), source.get("timezone"),
+                      source.get("kind"), source.get("platform_adapter")) != (config[0], ZONE, "html", "html"):
+        raise ValueError("unregistered_richmond_public_calendar")
+    if key == CFENGAGE:
+        return volunteer_shifts(render_volunteers())
+    now = datetime.now(ZoneInfo(ZONE))
+    rows = []
+    for identity, url in race_listing(fetch(config[0], "text/html"), now).items():
+        payload = fetch(f"https://{RACE_HOST}/rest/race/{identity}?format=json", "application/json")
+        rows.extend(race_events(payload, identity, url, now))
+    return sorted(rows, key=lambda row: (row["starts_at"], row["id"]))

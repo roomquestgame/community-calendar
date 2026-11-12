@@ -145,3 +145,53 @@ class PreviewSafetyTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def test_public_shift_requires_posted_street_and_keeps_occurrence_identity():
+    from datetime import datetime, timedelta
+    from zoneinfo import ZoneInfo
+    import json
+    import pytest
+    from roomquest import richmond_public_calendars as calendars
+
+    day_start = (datetime.now(ZoneInfo(calendars.ZONE)) + timedelta(days=1)).replace(hour=9, minute=0)
+    shift = {
+        "opportunityName": "Park Cleanup", "organizationServedName": "Friends of the Park",
+        "locationType": "Address", "locationState": "VA", "locationCity": "Richmond",
+        "locationZipCode": "23223", "timezone": calendars.ZONE, "opportunityType": "Project",
+        "volunteersStillNeeded": "5", "description": "Meet at 50 Evergreen Road, Richmond.",
+        "startDateTimeISO": day_start.isoformat(),
+        "endDateTimeISO": (day_start + timedelta(hours=2)).isoformat(),
+        "opportunityLink": "https://www.cfengage.org/opportunity/a0CNw0000JM6ICdMQN",
+        "occurrenceId": "a0CNw0000JM6ICdMQN",
+    }
+    changes = [
+        {"description": "Address shared with registered volunteers."},
+        {"locationType": "Virtual"},
+        {"opportunityLink": "https://another.example/opportunity/a0CNw0000JM6ICdMQN"},
+        {"volunteersStillNeeded": "0"},
+        {"description": "Volunteers must be 26 if a volunteer is court ordered."},
+    ]
+    day = {"overMaxToReturn": False, "occurrences": [shift, *(shift | change for change in changes)]}
+    [row] = calendars.volunteer_shifts(json.dumps({"items": [day]}))
+    assert row["id"] == shift["occurrenceId"]
+    assert row["venue_address"] == "50 Evergreen Road, Richmond, VA 23223"
+    day["overMaxToReturn"] = True
+    with pytest.raises(ValueError, match="handson_calendar_truncated"):
+        calendars.volunteer_shifts(json.dumps({"items": [day]}))
+
+
+def test_runsignup_uses_registration_identity_and_ignores_mailing_lists():
+    from datetime import datetime
+    from zoneinfo import ZoneInfo
+    from roomquest import richmond_public_calendars as calendars
+
+    now = datetime(2026, 11, 12, tzinfo=ZoneInfo(calendars.ZONE))
+    item = """<tr><td class="calendar-race-date">Sun, Nov 15 2026</td>
+        <td class="race-title"><a href="https://runsignup.com/Race/VA/Henrico/Run">{title}</a></td>
+        <td><a href="https://runsignup.com/Race/Register?raceId={id}">Register</a></td></tr>"""
+    payload = '<table class="upcoming-races-table">' + item.format(title="Run", id=123)
+    payload += item.format(title="Run Mailing List", id=456) + "</table>"
+    assert calendars.race_listing(payload, now) == {
+        "123": "https://runsignup.com/Race/VA/Henrico/Run",
+    }
