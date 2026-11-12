@@ -48,7 +48,8 @@ def collect(source, fetch, *, deadline_at=None, now=None):
             continue
         url = urljoin(URL, path)
         identity = sha256(f"{url}:{start.isoformat()}".encode()).hexdigest()
-        row = record(title, start.isoformat(), None, VENUE, ADDRESS, "Lincoln", url, identity, tz=ZONE)
+        row = record(title, start.isoformat(), None, VENUE, ADDRESS, "Lincoln", url, identity,
+                     lat=40.82155, lng=-96.624067, tz=ZONE)
         if row is not None:
             results[row["id"]] = row
     return sorted(results.values(), key=lambda row: (row["starts_at"], row["id"]))
