@@ -2,7 +2,7 @@
 from datetime import date, datetime, timedelta, timezone
 from hashlib import sha256
 import re
-from urllib.parse import urljoin, urlsplit
+from urllib.parse import parse_qs, urljoin, urlsplit
 from zoneinfo import ZoneInfo
 
 from lxml import html
@@ -13,13 +13,18 @@ ZONE = "America/Chicago"
 SOURCES = {
     "pageturners_lounge_omaha_ne": (
         "https://www.pageturnersomaha.com/event-calendar",
-        "Pageturners Lounge", "5004 Dodge St, Omaha, NE 68132", "5004 Dodge",
+        "Pageturners Lounge", "5004 Dodge St, Omaha, NE 68132", "5004 Dodge", "Omaha",
     ),
     "blue_sky_bar_patio_omaha_ne": (
         "https://www.blueskyomaha.com/upcoming-events",
-        "Blue Sky Bar & Patio", "10730 Pacific St, Omaha, NE 68114", "10730 Pacific",
+        "Blue Sky Bar & Patio", "10730 Pacific St, Omaha, NE 68114", "10730 Pacific", "Omaha",
+    ),
+    "saro_cider_lincoln_ne": (
+        "https://www.sarocider.com/upcoming-events",
+        "Saro Cider Lincoln Taproom", "1746 N St, Lincoln, NE 68508", "1746 N St", "Lincoln",
     ),
 }
+REQUIRE_CARD_LOCATION = {"saro_cider_lincoln_ne"}
 HAS_CLASS = "contains(concat(' ', normalize-space(@class), ' '), $class_name)"
 
 
@@ -47,7 +52,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
     if profile is None or (source.get("feed_url"), source.get("timezone"), source.get("kind"),
                            source.get("platform_adapter")) != (profile[0], ZONE, "html", "html"):
         raise ValueError("unregistered_squarespace_venue")
-    listing, venue, address, street_prefix = profile
+    listing, venue, address, street_prefix, city = profile
     origin = urlsplit(listing)
     today = (now or datetime.now(timezone.utc)).astimezone(ZoneInfo(ZONE)).date()
     document = html.fromstring(fetch(listing, "text/html"))
@@ -66,7 +71,16 @@ def collect(source, fetch, *, deadline_at=None, now=None):
         if not title or re.match(r"^(cancelled|canceled|postponed)\b", title, re.I):
             continue
         addresses = elements(card, "eventlist-meta-address")
-        if addresses and street_prefix.casefold() not in plain(addresses[0].text_content()).casefold():
+        if source["source_key"] in REQUIRE_CARD_LOCATION:
+            maps = [urlsplit(url) for url in card.xpath(".//a/@href")]
+            if not any(
+                url.hostname in {"maps.google.com", "www.google.com"}
+                and any(query.casefold().startswith("1746 n street lincoln")
+                        for query in parse_qs(url.query).get("q", []))
+                for url in maps
+            ):
+                continue
+        elif addresses and street_prefix.casefold() not in plain(addresses[0].text_content()).casefold():
             continue
         link = urljoin(listing, titles[0].get("href", ""))
         target = urlsplit(link)
@@ -81,7 +95,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
             end = None
         identity = sha256(f"{target.path}:{day.isoformat()}".encode()).hexdigest()
         row = record(title, start.isoformat(), end.isoformat() if end else None, venue, address,
-                     "Omaha", link, identity, tz=ZONE)
+                     city, link, identity, tz=ZONE)
         if row is not None:
             previous = events.setdefault(row["id"], row)
             if previous != row:
