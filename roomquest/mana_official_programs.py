@@ -13,7 +13,7 @@ URL = f"https://{HOST}/events"
 ZONE = "America/Chicago"
 ADDRESS = "1400 Pioneers Blvd, Lincoln, NE 68502"
 ANNOUNCEMENT = re.compile(
-    r"Upcoming, we have Mana Drag Brunch\b[^.!]{0,130} at "
+    r"Mana Drag Brunch\b.{0,130}?\bat\s+"
     r"(\d{1,2})(?::(\d{2}))?\s*(am|pm) on ([A-Za-z]{3})\.?\s*(\d{1,2})(?:st|nd|rd|th)",
     re.I,
 )
@@ -34,9 +34,9 @@ def collect(source, fetch, *, deadline_at=None, now=None):
     if not today <= VERIFIED_START.date() <= today + timedelta(days=59):
         return []
     document = html.fromstring(fetch(URL, "text/html"))
-    match = ANNOUNCEMENT.search(plain(" ".join(document.xpath("//main//text()"))))
+    match = ANNOUNCEMENT.search(plain(" ".join(document.xpath("//body//text()"))))
     if not match:
-        return []
+        raise ValueError("missing_verified_mana_announcement")
     hour, minute, period, month, day = match.groups()
     date_text = f"{month} {day} {VERIFIED_START.year} {hour}:{minute or '00'} {period.upper()}"
     if datetime.strptime(date_text, "%b %d %Y %I:%M %p") != VERIFIED_START:
