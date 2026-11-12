@@ -11,7 +11,8 @@ from roomquest.mapsee_adapter import address, plain, record, timestamp
 GATEWAY = "gateway.bibliocommons.com"
 PAGE_SIZE = 100
 MAX_PAGES = 24
-HORIZON = timedelta(days=60)
+# Keep Omaha's dense schedule within the shared staging deadline.
+HORIZON = timedelta(days=21)
 
 # https://omahalibrary.org/locations/
 OMAHA_BRANCHES = {
