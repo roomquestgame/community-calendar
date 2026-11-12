@@ -138,35 +138,36 @@ def event_record(payload, url, venue, street, today, horizon):
 
 
 def listing_records(payload, listing, links, venue, street, today, horizon):
-    from bs4 import BeautifulSoup
+    from lxml import html
 
-    soup = BeautifulSoup(payload, "html.parser")
+    document = html.fromstring(payload)
+    has_class = "contains(concat(' ', normalize-space(@class), ' '), $class_name)"
     allowed = set(links)
     observed = {}
-    for view in soup.select(".generalView"):
+    for view in document.xpath(f"//*[{has_class}]", class_name=" generalView "):
         month = None
-        for item in view.find_all(recursive=False):
-            classes = item.get("class", [])
+        for item in view:
+            classes = item.get("class", "").split()
             if "rhp-events-list-separator-month" in classes:
-                month = datetime.strptime(item.get_text(" ", strip=True), "%B %Y")
+                month = datetime.strptime(plain(item.text_content()), "%B %Y")
                 continue
             if "rhpSingleEvent" not in classes:
                 continue
-            heading = item.select_one("a#eventTitle[href]")
-            date = item.select_one(".singleEventDate")
-            time = item.select_one(".rhp-event__time-text--list")
-            if heading is None or date is None or month is None:
+            headings = item.xpath(".//a[@id='eventTitle' and @href]")
+            dates = item.xpath(f".//*[{has_class}]", class_name=" singleEventDate ")
+            times = item.xpath(f".//*[{has_class}]", class_name=" rhp-event__time-text--list ")
+            if not headings or not dates or month is None:
                 continue
-            url = urljoin(listing, heading["href"])
-            title = plain(heading.get_text(" ", strip=True))
+            url = urljoin(listing, headings[0].get("href"))
+            title = plain(headings[0].text_content())
             if url not in allowed or not title:
                 continue
-            date_text = date.get_text(" ", strip=True)
+            date_text = plain(dates[0].text_content())
             day = datetime.strptime(f"{date_text} {month.year}", "%a, %b %d %Y").date()
             if day.month != month.month or day.strftime("%a").casefold() != date_text.split(",")[0].casefold():
                 raise ValueError("rockhouse_calendar_date_mismatch")
-            show = SHOW.search(time.get_text(" ", strip=True)) if time is not None else None
-            cancelled = CANCELLED.match(title) or any(CANCELLED.fullmatch(line) for line in item.stripped_strings)
+            show = SHOW.search(plain(times[0].text_content())) if times else None
+            cancelled = CANCELLED.match(title) or any(CANCELLED.fullmatch(line.strip()) for line in item.itertext())
             row = None
             if not cancelled and today <= day <= horizon:
                 if show is None:
