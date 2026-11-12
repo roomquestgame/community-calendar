@@ -38,12 +38,14 @@ END:VCALENDAR"""
 
 
 def test_siouxland_holds_ambiguous_address_and_member_flags():
+    now = datetime.now(timezone.utc)
+    day = (now.astimezone(ZoneInfo("America/Chicago")) + timedelta(days=5)).date()
     def event(number, address, visibility):
         return f"""<EventDisplay><EventID>{number}</EventID><Slug>ribbon-cutting</Slug>
         <Name>Ribbon Cutting</Name>
         <Status>APPROVED</Status><VisibilityFlags>{visibility}</VisibilityFlags>
-        <IsAllDayEvent>false</IsAllDayEvent><StartDate>2026-11-12T15:00:00</StartDate>
-        <EndDate>2026-11-12T16:00:00</EndDate>
+        <IsAllDayEvent>false</IsAllDayEvent><StartDate>{day.isoformat()}T15:00:00</StartDate>
+        <EndDate>{day.isoformat()}T16:00:00</EndDate>
         <LocationDesc><![CDATA[Fixture Hall<br>{address}<br>Sioux City, IA 51109]]></LocationDesc>
         </EventDisplay>"""
     body = '<ArrayOfEventDisplay>' + ''.join([
@@ -53,9 +55,9 @@ def test_siouxland_holds_ambiguous_address_and_member_flags():
     ]) + '</ArrayOfEventDisplay>'
     key = chamber.SIOUXLAND
     row, = chamber.collect(source(key, chamber.SOURCES[key][0], 'xml', 'growthzone'), body,
-                           now=datetime(2026, 11, 7, 12, tzinfo=timezone.utc))
+                           now=now)
     assert row['id'] == '101'
-    assert row['starts_at'] == '2026-11-12T21:00:00+00:00'
+    assert row['starts_at'] == datetime.combine(day, datetime.min.time(), ZoneInfo('America/Chicago')).replace(hour=15).astimezone(timezone.utc).isoformat()
     assert row['venue_address'] == '525 6th Street, Sioux City, IA 51109'
     assert row['description'] == ''
 
