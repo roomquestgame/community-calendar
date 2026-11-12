@@ -210,3 +210,34 @@ def test_bennington_preview_resolves_reviewed_onsite_and_offsite_series():
     assert by_title["Ridgewood Book Club"]["venue_address"] == "12301 North 149th Circle, Bennington, NE"
     assert not by_title["Another Program"]["venue_address"]
     assert by_title["Special Art Studio"]["venue_address"] == "123 Main St, Bennington, NE"
+
+
+def test_bottle_rocket_preview_keeps_public_taproom_programs_only():
+    source = dict(source_key=omaha_lincoln.BOTTLE_ROCKET, feed_url=omaha_lincoln.BOTTLE_ROCKET_FEED,
+                  kind="ical", platform_adapter="ical", timezone="America/Chicago")
+    start = datetime.now(timezone.utc) + timedelta(days=4)
+    calendar = Calendar()
+    calendar.add("version", "2.0")
+    for index, (title, venue, visibility) in enumerate((
+        ("Comedy night", "", "PUBLIC"),
+        ("food truck ?", "", "PUBLIC"),
+        ("Hog Wild BBQ Food Truck", "", "PRIVATE"),
+        ("Wagon Wheel Food truck", "Different venue", "PUBLIC"),
+    )):
+        event = Event()
+        event.add("uid", str(index))
+        event.add("summary", title)
+        event.add("class", visibility)
+        event.add("dtstart", start)
+        event.add("dtend", start + timedelta(hours=1))
+        if venue:
+            event.add("location", venue)
+        calendar.add_component(event)
+
+    with patch.object(preview_worker, "fetch_publisher", return_value=calendar.to_ical().decode()) as fetch:
+        row, = preview_worker.preview_source(source)["p_events"]
+        assert fetch.call_args.kwargs["respect_robots"]
+        assert fetch.call_args.kwargs["allowed_hosts"] == ("calendar.google.com",)
+    assert row["title"] == "Comedy night"
+    assert row["venue_address"] == "230 South 5th Street, Seward, NE 68434"
+    assert row["event_url"] == "https://bottlerocketbrewing.com/brewery-events/"
