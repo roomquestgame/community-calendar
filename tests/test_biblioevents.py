@@ -44,7 +44,7 @@ class BiblioEventsTest(unittest.TestCase):
             result = biblioevents.collect(SOURCE, fetch, now=self.now)
         self.assertEqual(len(calls), 2)
         self.assertIn("/v2/libraries/omaha/events?limit=100&page=1", calls[0][0])
-        self.assertIn("startDate=2026-11-12&endDate=2027-01-12", calls[0][0])
+        self.assertIn("startDate=2026-11-12&endDate=2026-12-04", calls[0][0])
         return result
 
     def test_branch_address_and_link(self):
