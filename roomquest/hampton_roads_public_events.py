@@ -1,4 +1,4 @@
-"""Collect published bookstore events and individually timed Sandler Center shows."""
+"""Collect published bookstore events and Sandler Center performances."""
 from datetime import datetime, timedelta
 import re
 from urllib.parse import urljoin, urlsplit
@@ -59,19 +59,35 @@ def _book_event(fetch, key, url):
             name or street, street, city)
 
 
-def _sandler_event(link):
+def _sandler_time(day, clock):
+    date = plain(day.get_text(' ', strip=True)).replace('/', ' ')
+    return datetime.strptime(' '.join(f'{date} {clock}'.split()), '%b %d %Y %I:%M %p').isoformat()
+
+
+def _sandler_events(fetch, link, url):
     info = link.find_parent(class_='info')
-    if not info:
-        return None
+    if not info or UNAVAILABLE.search(plain(info.get_text(' ', strip=True))):
+        return []
     day = info.select_one('.m-date__singleDate')
     clock = info.select_one('.time .start')
-    # A range or multiple performance listing needs its own occurrence times.
-    if not day or not clock or UNAVAILABLE.search(plain(info.get_text(' ', strip=True))):
-        return None
-    when = plain(day.get_text(' ', strip=True)).replace('/', ' ') + ' ' + clock.get_text(' ', strip=True)
-    start = datetime.strptime(' '.join(when.split()), '%b %d %Y %I:%M %p')
-    return (plain(link.get_text(' ', strip=True)), start.isoformat(), None,
-            'Sandler Center for the Performing Arts', '201 Market Street, Virginia Beach, VA 23462', 'Virginia Beach')
+    if day and clock:
+        starts = [_sandler_time(day, clock.get_text(' ', strip=True))]
+    else:
+        detail = BeautifulSoup(fetch(url, 'text/html'), 'html.parser')
+        starts = []
+        for showing in detail.select('.event_showings li[id^="showing_"]'):
+            if UNAVAILABLE.search(plain(showing.get_text(' ', strip=True))):
+                continue
+            day = showing.select_one('.showings_date .m-date__singleDate')
+            clock = showing.select_one('.wrapper .time')
+            time = re.fullmatch(r'[A-Za-z]+ at (\d{1,2}:\d{2})\s*(am|pm)',
+                                clock.get_text(' ', strip=True), re.I) if clock else None
+            if day and time:
+                starts.append(_sandler_time(day, f'{time[1]} {time[2].upper()}'))
+    title = plain(link.get_text(' ', strip=True))
+    return [(title, start, None, 'Sandler Center for the Performing Arts',
+             '201 Market Street, Virginia Beach, VA 23462', 'Virginia Beach')
+            for start in sorted(set(starts))]
 
 
 def collect(source, fetch, *, deadline_at=None, now=None):
@@ -91,22 +107,26 @@ def collect(source, fetch, *, deadline_at=None, now=None):
 
     now = (now or datetime.now(ZONE)).astimezone(ZONE)
     stop = now + timedelta(days=60)
-    rows = {}
+    seen_urls = set()
+    rows = []
     for link in links:
         url = urljoin(base, link['href'])
         target = urlsplit(url)
         if (target.scheme != 'https' or target.netloc != urlsplit(base).netloc
                 or target.query or target.fragment or not re.fullmatch(path, target.path)):
             raise ValueError('invalid_hampton_roads_event_link')
-        if url in rows:
+        if url in seen_urls:
             continue
-        rows[url] = None
-        event = _sandler_event(link) if key == SANDLER else _book_event(fetch, key, url)
-        if not event:
-            continue
-        title, starts, ends, venue, street, city = event
-        begins = timestamp(starts, ZONE.key)
-        if not begins or not now <= begins < stop or UNAVAILABLE.search(title):
-            continue
-        rows[url] = record(title, starts, ends, venue, street, city, url, url, tz=ZONE.key)
-    return sorted((row for row in rows.values() if row), key=lambda row: (row['starts_at'], row['id']))
+        seen_urls.add(url)
+        events = _sandler_events(fetch, link, url) if key == SANDLER else [_book_event(fetch, key, url)]
+        for event in events:
+            if not event:
+                continue
+            title, starts, ends, venue, street, city = event
+            begins = timestamp(starts, ZONE.key)
+            if not begins or not now <= begins < stop or UNAVAILABLE.search(title):
+                continue
+            row = record(title, starts, ends, venue, street, city, url, url, tz=ZONE.key)
+            if row:
+                rows.append(row)
+    return sorted(rows, key=lambda row: (row['starts_at'], row['id']))
