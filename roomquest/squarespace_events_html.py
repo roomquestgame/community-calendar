@@ -23,6 +23,7 @@ SOURCES = {
         "https://www.sarocider.com/upcoming-events",
         "Saro Cider Lincoln Taproom", "1746 N St, Lincoln, NE 68508", "1746 N St", "Lincoln",
     ),
+    "thor_trails_squarespace_ne": ("https://www.thortrails.org/events", "", "", "", ""),
 }
 REQUIRE_CARD_LOCATION = {"saro_cider_lincoln_ne"}
 HAS_CLASS = "contains(concat(' ', normalize-space(@class), ' '), $class_name)"
@@ -44,6 +45,26 @@ def first_time(card, *class_names):
         nodes = elements(card, name, "time")
         if nodes:
             return event_time(nodes[0])
+    return None
+
+
+def trail_location(card):
+    for node in elements(card, "eventlist-meta-address"):
+        for link in node.xpath(".//a/@href"):
+            url = urlsplit(link)
+            if url.scheme != "https" or url.hostname != "maps.google.com":
+                continue
+            for query in parse_qs(url.query).get("q", []):
+                parts = re.fullmatch(
+                    r"(\d{1,6}\s+[^,]+?\s(?:Road|Street|Drive|Avenue|Lane|Boulevard|Trail|Court|Parkway))"
+                    r"\s+([A-Za-z][A-Za-z .'-]+),\s*(Nebraska|Iowa|South Dakota),\s*(\d{5})\s+United States",
+                    query,
+                )
+                if not parts:
+                    continue
+                street, city, state, zip_code = parts.groups()
+                state_code = {"Nebraska": "NE", "Iowa": "IA", "South Dakota": "SD"}[state]
+                return plain(node.text_content()).removesuffix("(map)").strip(), f"{street}, {city}, {state_code} {zip_code}", city
     return None
 
 
@@ -71,7 +92,12 @@ def collect(source, fetch, *, deadline_at=None, now=None):
         if not title or re.match(r"^(cancelled|canceled|postponed)\b", title, re.I):
             continue
         addresses = elements(card, "eventlist-meta-address")
-        if source["source_key"] in REQUIRE_CARD_LOCATION:
+        if source["source_key"] == "thor_trails_squarespace_ne":
+            location = trail_location(card)
+            if location is None:
+                continue
+            venue, address, city = location
+        elif source["source_key"] in REQUIRE_CARD_LOCATION:
             maps = [urlsplit(url) for url in card.xpath(".//a/@href")]
             if not any(
                 url.hostname in {"maps.google.com", "www.google.com"}
