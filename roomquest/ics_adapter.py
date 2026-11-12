@@ -14,6 +14,14 @@ from zoneinfo import ZoneInfo
 
 logger = logging.getLogger(__name__)
 
+ELIZABETH_RIVER_TRAIL_KEY = 'municipal_72638c5f3fc856f8aea5fa1f'
+ELIZABETH_RIVER_TRAIL_FEED = 'https://tockify.com/api/feeds/ics/ertpublic'
+_ELIZABETH_RIVER_TRAIL_LOCATION = re.compile(
+    r'(?P<name>.+?),\s*(?P<address>[0-9]{1,6}\s+[A-Za-z][^,]+,\s*'
+    r'Norfolk,\s*VA\s+[0-9]{5})(?:,\s*USA)?',
+    re.IGNORECASE,
+)
+
 MECKLENBURG_LIBRARY_KEY = 'mecklenburg_va_libraries'
 MECKLENBURG_LIBRARY_FEED = 'https://calendar.google.com/calendar/ical/mecklib.org%40gmail.com/public/basic.ics'
 MECKLENBURG_LIBRARY_CALENDAR = 'https://www.youseemore.com/mecklib/calendar.asp'
@@ -57,6 +65,14 @@ _MECKLENBURG_SERIES = {
     'dnqendor8l3s7i44vquu5mbqln@google.com': ('South Hill Story Time', 'south_hill'),
     '54gq15h3o25rhbnss876dj7s81_R20260716T143000@google.com': ('Boydton Storytime', 'boydton'),
 }
+
+
+def _split_elizabeth_river_trail_location(event):
+    location = str(event.get('venue_name') or '').strip()
+    match = _ELIZABETH_RIVER_TRAIL_LOCATION.fullmatch(location)
+    if match:
+        event['venue_name'] = match['name'].strip()
+        event['venue_address'] = match['address']
 
 
 def _mecklenburg_source(source):
@@ -371,8 +387,11 @@ def parse(payload, source, *, legacy=False, include_description=False):
     include_description = include_description or mecklenburg or odu
     if not payload.lstrip("\ufeff \r\n").upper().startswith("BEGIN:VCALENDAR") or "END:VCALENDAR" not in payload.upper():
         raise ValueError("invalid_calendar_payload")
-    if (source.get('source_key') == 'municipal_72638c5f3fc856f8aea5fa1f'
-            and source.get('feed_url', source.get('url')) == 'https://tockify.com/api/feeds/ics/ertpublic'):
+    elizabeth_river_trail = (
+        source.get('source_key') == ELIZABETH_RIVER_TRAIL_KEY
+        and source.get('feed_url', source.get('url')) == ELIZABETH_RIVER_TRAIL_FEED
+    )
+    if elizabeth_river_trail:
         # Tockify uses a missing time designator in this calendar's refresh
         # metadata. Only normalize the calendar header, leaving VEVENTs intact.
         header, separator, body = payload.partition('BEGIN:VEVENT')
@@ -491,6 +510,8 @@ def parse(payload, source, *, legacy=False, include_description=False):
     for e in result:
         if odu:
             e['venue_address'] = odu_addresses[e['id']]
+        if elizabeth_river_trail:
+            _split_elizabeth_river_trail_location(e)
         if include_description and source.get('source_key') == 'independence_ia_library_family':
             uid = e['id'].split('__', 1)[0]
             if not detail_urls.get(uid):
