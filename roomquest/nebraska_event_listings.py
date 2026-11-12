@@ -24,6 +24,14 @@ CLOCK = re.compile(r"\b(\d{1,2}:\d{2})\s*([ap]m)\b", re.I)
 EXCLUDED = re.compile(r"\b(canceled|cancelled|postponed|closed)\b", re.I)
 QUIZ_CITY = re.compile(r"([A-Za-z][A-Za-z .'-]+),\s*NE", re.I)
 STREET = re.compile(r"\d{1,6}\s+\S")
+QUIZ_VENUES = {
+    ("Barred Owl", "2101 Transformation Dr 6th Floor, Lincoln, NE"):
+        ("2101 Transformation Dr, Lincoln, NE", 40.833715, -96.6921),
+    ("Blue Sky Bar & Patio", "10730 Pacific St, #150, Omaha, NE"):
+        ("10730 Pacific St, Omaha, NE", 41.24907, -96.081173),
+    ("Bison Witches Bar & Deli", "1320 P St #100, Lincoln, NE 68508, Lincoln, NE"):
+        ("1320 P Street, Lincoln, NE 68508", None, None),
+}
 
 
 def elements(node, name, tag="*"):
@@ -40,10 +48,10 @@ def clocks(text, day):
             for value, period in CLOCK.findall(text)]
 
 
-def event(title, start, end, venue, address, city, url):
+def event(title, start, end, venue, address, city, url, *, lat=None, lng=None):
     identity = sha256(f"{url}:{start.isoformat()}".encode()).hexdigest()
     return record(title, start.isoformat(), end.isoformat() if end and end > start else None,
-                  venue, address, city, url, identity, tz=ZONE)
+                  venue, address, city, url, identity, lat=lat, lng=lng, tz=ZONE)
 
 
 def meetup(document, today):
@@ -77,7 +85,7 @@ def meetup(document, today):
             if start.tzinfo is None or end is not None and end.tzinfo is None:
                 continue
             yield event(item["name"], start, end, "Spielbound Board Game Cafe",
-                        "3229 Harney St, Omaha, NE 68131", "Omaha", url)
+                        "3229 Harney St, Omaha, NE 68131", "Omaha", url, lat=41.2566, lng=-95.9612)
     if not found and not re.search(r"no upcoming events", document.text_content(), re.I):
         raise ValueError("missing_meetup_event_data")
 
@@ -120,8 +128,9 @@ def quiz(document, today):
         start = clocks(schedule, day)
         if city is None or len(start) != 1 or EXCLUDED.search(label):
             continue
-        yield event(f"{label} at {venue}", start[0], None, venue,
-                    f"{addresses[0]}, {addresses[1]}", city[1], url)
+        address = f"{addresses[0]}, {addresses[1]}"
+        address, lat, lng = QUIZ_VENUES.get((venue, address), (address, None, None))
+        yield event(f"{label} at {venue}", start[0], None, venue, address, city[1], url, lat=lat, lng=lng)
 
 
 def audubon(document, today):
