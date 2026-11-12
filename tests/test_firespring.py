@@ -38,12 +38,17 @@ class FirespringTest(unittest.TestCase):
             firespring.collect(self.source, fetch, now=self.now)
 
     def test_export_uses_canonical_detail_for_attribution(self):
+        alternate_export = self.export.replace("/13/", "/12/") + "/"
+        missing = self.detail.replace("/123", "/124")
+
         def fetch(url, _):
             if "/calendar/" in url:
-                return f'<a href="{self.detail}">Event</a><a href="#">Go to Next</a>'
+                return f'<a href="{self.detail}">Event</a><a href="{missing}">Other</a><a href="#">Go to Next</a>'
             if url == self.detail:
-                return f'<a href="{self.export}">Add To My Calendar</a>'
-            self.assertEqual(url, self.export)
+                return f'<a href="{alternate_export}">Add To My Calendar</a>'
+            if url == missing:
+                return '<p>No publisher export</p>'
+            self.assertEqual(url, alternate_export)
             return "publisher export"
         with patch.object(firespring, "event_record", return_value={
             "starts_at": "2026-11-13T18:00:00+00:00", "id": "123",
