@@ -24,10 +24,15 @@ def intake_rows():
 def new_ical_feeds():
     return {
         BENNINGTON: BENNINGTON_FEED,
+        CLAIR_MEMORIAL: CLAIR_MEMORIAL_FEED,
         **{row["source_key"]: row["feed_url"] for row in intake_rows()
            if row.get("adapter") == "ical" and "existing_id" not in row},
     }
 
+
+CLAIR_MEMORIAL = "clair_memorial_umc_omaha_ne"
+CLAIR_MEMORIAL_FEED = "https://www.cmumc.net/events.ics"
+CLAIR_WORSHIP_PATH = re.compile(r"/events/sunday-worship/20[0-9]{2}-[0-9]{2}-[0-9]{2}/?")
 
 BENNINGTON = "bennington_public_library_ical_ne"
 BENNINGTON_FEED = "https://benningtonlibrary.org/events/list/?ical=1"
@@ -131,6 +136,11 @@ def collect(source, fetch):
                 address += f" {venue['zip']}"
             record.update(venue_name=venue["venue"], venue_address=address,
                           venue_city=venue["city"])
+        if (key == CLAIR_MEMORIAL and CLAIR_WORSHIP_PATH.fullmatch(event_url.path)
+                and record["title"].strip().casefold() == "sunday worship"
+                and not (record.get("venue_name") or record.get("venue_address"))):
+            record.update(venue_name="Clair Memorial United Methodist Church",
+                          venue_address="5544 Ames Avenue, Omaha, NE", venue_city="Omaha")
         if key == BENNINGTON and not (record.get("venue_name") or record.get("venue_address")):
             # The publisher's series pages identify these library programs
             # and separately locate the Ridgewood book club off-site.
