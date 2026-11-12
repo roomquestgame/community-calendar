@@ -241,3 +241,20 @@ def test_bottle_rocket_preview_keeps_public_taproom_programs_only():
     assert row["title"] == "Comedy night"
     assert row["venue_address"] == "230 South 5th Street, Seward, NE 68434"
     assert row["event_url"] == "https://bottlerocketbrewing.com/brewery-events/"
+
+
+def test_la_vista_library_keeps_each_venue_and_skips_closures():
+    feed = omaha_lincoln.LA_VISTA_FEED
+    records = [
+        dict(title="Teen Dungeons & Dragons", event_url=feed,
+             venue_address="<p>La Vista Public Library</p> - 9110 Giles Rd.  La Vista NE 68128"),
+        dict(title="Noon Year's Eve Party", event_url=feed,
+             venue_address="<p>Community Center</p> - 8116 Park View Blvd.  La Vista NE 68128"),
+        dict(title="Library Closed - Thanksgiving", event_url=feed),
+        dict(title="Other Location", event_url=feed, venue_address="Venue to be announced"),
+    ]
+    library, center, unknown = omaha_lincoln.normalize_la_vista_library(records)
+    assert library["venue_address"] == "9110 Giles Road, La Vista, NE 68128"
+    assert center["venue_address"] == "8116 Park View Boulevard, La Vista, NE 68128"
+    assert library["event_url"] == "https://www.cityoflavista.org/LibraryCalendar"
+    assert unknown["venue_address"] == "Venue to be announced"
