@@ -46,6 +46,17 @@ BENNINGTON_RIDGEWOOD = (
 
 FRANCIE_AND_FINCH = "municipal_5e01aa207622e684433576ed"
 CROOK_HOUSE = "municipal_ab8764ae8583f76b90fc6de9"
+BOTTLE_ROCKET = "bottle_rocket_brewing_seward_ne"
+BOTTLE_ROCKET_FEED = (
+    "https://calendar.google.com/calendar/ical/"
+    "dcpbes1grqdipacmhaq7gh1cdk%40group.calendar.google.com/public/basic.ics"
+)
+BOTTLE_ROCKET_EVENTS = "https://bottlerocketbrewing.com/brewery-events/"
+BOTTLE_ROCKET_ADDRESS = "230 South 5th Street, Seward, NE 68434"
+BOTTLE_ROCKET_PROGRAMS = {
+    "comedy night", "hog wild bbq food truck", "wagon wheel food truck", "homerun bbq food truck",
+}
+
 UNL_PUBLIC = "unl_main_events_ical_ne"
 UNL_HOST = "events.unl.edu"
 UNL_FEED = f"https://{UNL_HOST}/audience/?audience=Public&format=ics&limit=100"
@@ -159,5 +170,31 @@ def collect_unl_public(source, fetch):
             url = urlsplit(event_url)
             if url.scheme != "https" or url.netloc != UNL_HOST or not UNL_DETAIL_PATH.fullmatch(url.path):
                 continue
+        result.append(record)
+    return result
+
+
+def collect_bottle_rocket(source, fetch):
+    """Read public taproom programs from the brewery's embedded event calendar."""
+    if (source.get("source_key"), source.get("feed_url"), source.get("kind"),
+            source.get("platform_adapter"), source.get("timezone")) != (
+            BOTTLE_ROCKET, BOTTLE_ROCKET_FEED, "ical", "ical", "America/Chicago"):
+        raise ValueError("unregistered_bottle_rocket_calendar")
+
+    payload = fetch(BOTTLE_ROCKET_FEED, "text/calendar")
+    records = parse(payload, {"url": BOTTLE_ROCKET_FEED, "source_key": BOTTLE_ROCKET,
+                              "timezone": source["timezone"]}, legacy=True)
+    private_ids = {
+        str(event.get("UID", "")) for event in Calendar.from_ical(payload).walk("VEVENT")
+        if str(event.get("CLASS", "PUBLIC")).strip().upper() != "PUBLIC"
+    }
+    result = []
+    for record in records:
+        if (record["id"].split("__", 1)[0] in private_ids
+                or record["title"].strip().casefold() not in BOTTLE_ROCKET_PROGRAMS
+                or record.get("venue_address") or record.get("venue_name")):
+            continue
+        record.update(venue_name="Bottle Rocket Brewing", venue_address=BOTTLE_ROCKET_ADDRESS,
+                      venue_city="Seward", event_url=BOTTLE_ROCKET_EVENTS, lat=None, lng=None)
         result.append(record)
     return result
