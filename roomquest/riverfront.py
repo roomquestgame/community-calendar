@@ -21,15 +21,15 @@ FLAG = "American Flag"
 # Park addresses and pins: https://www.lewisandclark.travel/listing/gene-leahy-mall/
 # and https://www.lewisandclark.travel/listing/heartland-of-america-park/.
 PARKS = {
-    GENE_LEAHY: ("1001 Douglas St, Omaha, NE 68102", 41.2586, -95.9292),
-    HEARTLAND: ("800 Douglas St, Omaha, NE", 41.2567, -95.9248),
+    GENE_LEAHY: ("1001 Douglas St, Omaha, NE 68102", (41.2586, -95.9292)),
+    HEARTLAND: ("800 Douglas St, Omaha, NE", (41.2567, -95.9248)),
 }
 
 # Publisher locations: https://theriverfrontomaha.com/visit-the-riverfront/.
 # Landmark coordinates: https://mapcarta.com/N10014265280 and
 # https://skaterground.com/item/skate-ribbon/.
-ARCHES_PIN = ("11th St & Farnam St, Omaha, NE", 41.25782, -95.93155)
-RIBBON_PIN = ("8th St & Farnam St, Omaha, NE", 41.25782, -95.92556)
+ARCHES_PIN = (41.25782, -95.93155)
+RIBBON_PIN = (41.25782, -95.92556)
 
 
 def correct_timezone(payload):
@@ -49,21 +49,25 @@ def set_venue(record):
 
     park = parks.pop()
     name = park
-    pin = PARKS[park]
+    # Publication requires a postal address. The park supplies that address,
+    # and the point and venue label can identify a landmark within the park.
+    address, pin = PARKS[park]
     description = record.get("description") or ""
     note = "Map pin shows the park's general location."
     if park == GENE_LEAHY and ARCHES.casefold() in description.casefold():
-        name, pin, note = f"{ARCHES} at {park}", ARCHES_PIN, ""
+        name, pin = f"{ARCHES} at {park}", ARCHES_PIN
+        note = "Arches Playground is near 11th Street and Farnam Street."
     elif park == HEARTLAND and RIBBON.casefold() in description.casefold():
-        name, pin, note = f"{RIBBON} at {park}", RIBBON_PIN, ""
+        name, pin = f"{RIBBON} at {park}", RIBBON_PIN
+        note = "The Skate Ribbon is at 8th Street and Farnam Street."
     elif park == HEARTLAND and FLAG.casefold() in description.casefold():
-        name = f"{FLAG} at {park}"
+        name = f"{FLAG} at {park} (approximate pin)"
         note = "Map pin is approximate. The event is at the American Flag."
     elif park == HEARTLAND and record["title"].casefold() == "the riverfront holly days":
-        pin = RIBBON_PIN
+        name, pin = f"{park} ({RIBBON} entrance)", RIBBON_PIN
         note = "Map pin shows the Skate Ribbon entrance. Activities take place throughout the park."
 
-    address, lat, lng = pin
+    lat, lng = pin
     record.update(venue_name=name, venue_address=address, venue_city="Omaha",
                   lat=lat, lng=lng, reason=None)
     if note:
