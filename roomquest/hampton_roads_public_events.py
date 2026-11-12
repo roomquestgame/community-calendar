@@ -42,19 +42,22 @@ def _book_event(fetch, key, url):
     city = plain(postal.get('addressLocality'))
     state = plain(postal.get('addressRegion'))
     name = plain(place.get('name'))
+    zipcode = plain(postal.get('postalCode'))
     if key == PRINCE:
         # The site repeats the street inside addressLocality on in-store events.
         if re.fullmatch(r'109 e\.? main (?:st\.?|street)', street, re.I):
             name, city, state = 'Prince Books', 'Norfolk', 'VA'
+            zipcode = zipcode or '23510'
         elif not street:
             content = BeautifulSoup(raw, 'html.parser').find('main')
             copy = plain(content.get_text(' ', strip=True)) if content else ''
             if re.search(r'\b(?:at prince books|the store will be filled)\b', copy, re.I):
                 name, street, city, state = 'Prince Books', '109 E. Main Street', 'Norfolk', 'VA'
+                zipcode = '23510'
     if not re.match(r'^\d+\s', street) or not city or state != 'VA':
         return None
     if not re.search(r',\s*VA(?:\s|$)', street):
-        street = ', '.join((street, city, ('VA ' + plain(postal.get('postalCode'))).strip()))
+        street = ', '.join((street, city, ('VA ' + zipcode).strip()))
     return (plain(event.get('name')), event.get('startDate'), event.get('endDate'),
             name or street, street, city)
 

@@ -18,7 +18,7 @@ SOURCES = {
     VIBRANT: ('https://vibrantshorebrewingcompany.com/virginia-beach-vibe-creative-district-vibrant-shore-brewing-company-events',
               'Vibrant Shore Brewing Company', '505 18th Street, Virginia Beach, VA 23451', 'Virginia Beach'),
     AFTERGLOW: ('https://afterglowbrewing.com/norfolk-rail-yard-of-norfolk-afterglow-brewing-events',
-                'Afterglow Brewing', '2330 Bowdens Ferry Road, Norfolk, VA 23508', 'Norfolk'),
+                'Afterglow Brewing', '2330 Bowdens Ferry Road Suite 600, Norfolk, VA 23508', 'Norfolk'),
 }
 DAY = re.compile(r'([A-Za-z]+) ([A-Za-z]+) (\d{1,2})(?:st|nd|rd|th)')
 CLOCK = re.compile(r'(\d{1,2}:\d{2} [AP]M)(?:\s*-\s*(\d{1,2}:\d{2} [AP]M)?)?')
