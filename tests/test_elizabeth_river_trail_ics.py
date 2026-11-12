@@ -1,1 +1,21 @@
-ZnJvbSByb29tcXVlc3QuaWNzX2FkYXB0ZXIgaW1wb3J0IF9zcGxpdF9lbGl6YWJldGhfcml2ZXJfdHJhaWxfbG9jYXRpb24KCgpkZWYgdGVzdF9zcGxpdF9wdWJsaXNoZWRfZWxpemFiZXRoX3JpdmVyX3RyYWlsX2xvY2F0aW9uKCk6CiAgICBldmVudCA9IHsKICAgICAgICAidmVudWVfbmFtZSI6ICgKICAgICAgICAgICAgIkVsaXphYmV0aCBSaXZlciBUcmFpbCwgVGhlIEVsaXphYmV0aCBSaXZlciBUcmFpbCBGb3VuZGF0aW9uLCAiCiAgICAgICAgICAgICI3MTUgT3JhcGF4IFN0IFN0ZS4gRSwgTm9yZm9saywgVkEgMjM1MDcsIFVTQSIKICAgICAgICApCiAgICB9CiAgICBfc3BsaXRfZWxpemFiZXRoX3JpdmVyX3RyYWlsX2xvY2F0aW9uKGV2ZW50KQogICAgYXNzZXJ0IGV2ZW50ID09IHsKICAgICAgICAidmVudWVfbmFtZSI6ICJFbGl6YWJldGggUml2ZXIgVHJhaWwsIFRoZSBFbGl6YWJldGggUml2ZXIgVHJhaWwgRm91bmRhdGlvbiIsCiAgICAgICAgInZlbnVlX2FkZHJlc3MiOiAiNzE1IE9yYXBheCBTdCBTdGUuIEUsIE5vcmZvbGssIFZBIDIzNTA3IiwKICAgIH0KCgpkZWYgdGVzdF9sZWF2ZV91bnNwZWNpZmllZF9lbGl6YWJldGhfcml2ZXJfdHJhaWxfbG9jYXRpb25fZm9yX3JldmlldygpOgogICAgZXZlbnQgPSB7InZlbnVlX25hbWUiOiAiTm9yZm9saywgVkEifQogICAgX3NwbGl0X2VsaXphYmV0aF9yaXZlcl90cmFpbF9sb2NhdGlvbihldmVudCkKICAgIGFzc2VydCBldmVudCA9PSB7InZlbnVlX25hbWUiOiAiTm9yZm9saywgVkEifQo=
+from roomquest.ics_adapter import _split_elizabeth_river_trail_location
+
+
+def test_split_published_elizabeth_river_trail_location():
+    event = {
+        "venue_name": (
+            "Elizabeth River Trail, The Elizabeth River Trail Foundation, "
+            "715 Orapax St Ste. E, Norfolk, VA 23507, USA"
+        )
+    }
+    _split_elizabeth_river_trail_location(event)
+    assert event == {
+        "venue_name": "Elizabeth River Trail, The Elizabeth River Trail Foundation",
+        "venue_address": "715 Orapax St Ste. E, Norfolk, VA 23507",
+    }
+
+
+def test_leave_unspecified_elizabeth_river_trail_location_for_review():
+    event = {"venue_name": "Norfolk, VA"}
+    _split_elizabeth_river_trail_location(event)
+    assert event == {"venue_name": "Norfolk, VA"}
