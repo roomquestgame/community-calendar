@@ -371,6 +371,13 @@ def parse(payload, source, *, legacy=False, include_description=False):
     include_description = include_description or mecklenburg or odu
     if not payload.lstrip("\ufeff \r\n").upper().startswith("BEGIN:VCALENDAR") or "END:VCALENDAR" not in payload.upper():
         raise ValueError("invalid_calendar_payload")
+    if (source.get('source_key') == 'municipal_72638c5f3fc856f8aea5fa1f'
+            and source.get('feed_url', source.get('url')) == 'https://tockify.com/api/feeds/ics/ertpublic'):
+        # Tockify uses a missing time designator in this calendar's refresh
+        # metadata. Only normalize the calendar header, leaving VEVENTs intact.
+        header, separator, body = payload.partition('BEGIN:VEVENT')
+        header = re.sub(r'(?m)^(REFRESH-INTERVAL|X-PUBLISHED-TTL):P15M(?=\r?$)', r'\1:PT15M', header)
+        payload = header + separator + body
     cal=Calendar.from_ical(payload)
     odu_addresses = odu_campusgroups.filter_snapshot(cal, source) if odu else {}
     if odu:
