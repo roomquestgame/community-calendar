@@ -16,7 +16,7 @@ class SiteWrenchCalendarTest(unittest.TestCase):
               </article></div>{next_link}</div>"""
 
         link = '<nav class="CalendarListPagination"><a href="?cal-414412-page=2">Next</a></nav>'
-        fetch = Mock(side_effect=[page(18, link), page(19)])
+        fetch = Mock(side_effect=["<main>No featured widget</main>", page(18, link), page(19)])
         source = {"source_key": zoo.KEY, "feed_url": zoo.CALENDAR, "timezone": zoo.ZONE,
                   "kind": "html", "platform_adapter": "html"}
         with patch.object(zoo, "record", side_effect=lambda title, start, end, venue, address,
@@ -28,7 +28,7 @@ class SiteWrenchCalendarTest(unittest.TestCase):
         self.assertEqual(rows[0]["ends_at"], "2026-11-18T21:30:00")
         self.assertIn("cal-414412-page=2", fetch.call_args.args[0])
 
-    def test_featured_fallback_uses_dated_official_link(self):
+    def test_featured_widget_uses_dated_official_link_in_one_request(self):
         featured = """<ul><li>
           <p class="upcoming-events-date"><span class="upcoming-events-month">Nov</span>
           <span class="upcoming-events-date">18</span>
@@ -37,9 +37,9 @@ class SiteWrenchCalendarTest(unittest.TestCase):
           </li></ul>"""
         source = {"source_key": zoo.KEY, "feed_url": zoo.CALENDAR, "timezone": zoo.ZONE,
                   "kind": "html", "platform_adapter": "html"}
-        fetch = Mock(side_effect=["<main>Special Events</main>", featured])
+        fetch = Mock(return_value=featured)
         with patch.object(zoo, "record", return_value={"id": "42:2026-11-18", "starts_at": "start"}) as record:
             rows = zoo.collect(source, fetch, now=datetime(2026, 11, 12, tzinfo=timezone.utc))
         self.assertEqual(len(rows), 1)
         self.assertEqual(record.call_args.args[1:3], ("2026-11-18T18:00:00", "2026-11-18T21:30:00"))
-        self.assertEqual(fetch.call_args.args, ("https://www.omahazoo.com/", "text/html"))
+        fetch.assert_called_once_with("https://www.omahazoo.com/", "text/html")
