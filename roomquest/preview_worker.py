@@ -757,16 +757,17 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
     from roomquest import holly_hill_sources, omaha_lincoln
     from roomquest import civic_local_calendars, civic_schedule, legistar, municipal_notices, virginia_civic
     source_key = source.get('source_key')
-    from roomquest import chesapeake_library
-    if source_key == chesapeake_library.KEY:
-        deadline = min(monotonic() + 25, deadline_at - 8 if deadline_at is not None else float('inf'))
+    from roomquest import chesapeake_library, visit_norfolk
+    if source_key in (chesapeake_library.KEY, visit_norfolk.KEY):
+        adapter = chesapeake_library if source_key == chesapeake_library.KEY else visit_norfolk
+        deadline = min(monotonic() + 32, deadline_at - 8 if deadline_at is not None else float('inf'))
         try:
-            records = chesapeake_library.collect(source, lambda url, accept: fetch_publisher(
+            records = adapter.collect(source, lambda url, accept: fetch_publisher(
                 url, accept, respect_robots=True, deadline_at=deadline,
-                allowed_hosts=(chesapeake_library.HOST,)))
+                allowed_hosts=(adapter.HOST,)))
         except (ValueError, TypeError, KeyError, OverflowError) as exc:
             reason = str(exc)
-            raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}', reason) else 'invalid_chesapeake_library_payload') from exc
+            raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}', reason) else 'invalid_calendar_payload') from exc
         samples = records[:MAX_PREVIEWS]
         while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
             samples.pop()
