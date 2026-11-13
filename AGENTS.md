@@ -1,5 +1,15 @@
 # Agent Strategies for Calendar Source Discovery
 
+## EventQuest GitHub Actions policy — owner decision, November 13, 2026
+
+For `roomquestgame/community-calendar`, routine GitHub checks are disabled.
+Do not apply `ci:validate`, require a passing provider-test run, or dispatch test
+and audit workflows automatically when a PR is opened, updated, merged or deployed.
+The provider-test workflow and existing test/audit tools remain available by
+explicit manual dispatch when Ben requests diagnostics. This decision supersedes
+older instructions requiring routine GitHub validation. Collector deployments,
+backend schedules and provider processing retain their existing behavior.
+
 ## Required External Guidance
 
 Required: at the start of every session, and before analysis or edits, read

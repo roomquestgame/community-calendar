@@ -1,7 +1,6 @@
 name: RoomQuest Provider Tests
 on:
-  pull_request:
-    types: [labeled]
+  # Owner decision, 2026-11-13: diagnostics are opt-in, never part of a routine deployment.
   workflow_dispatch:
     inputs:
       omaha_lincoln_batch:
@@ -78,7 +77,7 @@ permissions:
   contents: read
 jobs:
   provider-tests:
-    if: github.event_name == 'workflow_dispatch' || (github.event.label.name == 'ci:validate' && !github.event.pull_request.draft)
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
