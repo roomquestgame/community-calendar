@@ -912,6 +912,10 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
     if source.get("kind", "ical") == "ical" and source.get("platform_adapter") == "ical":
         from roomquest.ics_adapter import parse
         source_key = source.get("source_key", "")
+        from roomquest.ics_adapter import PORTSMOUTH_VENUE_FEEDS
+        portsmouth_url = PORTSMOUTH_VENUE_FEEDS.get(source_key)
+        if portsmouth_url and (source.get('feed_url'), source.get('timezone')) != (portsmouth_url, 'America/New_York'):
+            raise PreviewError('unregistered_portsmouth_venue_calendar')
         civic_ics = source_key in VIRGINIA_CIVIC_ICS
         raleigh_ics = source_key in RALEIGH_CATALOG_ICS
         raleigh_url = RALEIGH_CATALOG_ICS.get(source_key) or RALEIGH_UDELL_ICS.get(source_key)
@@ -954,11 +958,11 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                     allowed_hosts=(urlparse(maryland_sources.ICS[source_key]).hostname,)))
             else:
                 host_scope = {}
-                if civic_ics or raleigh_url:
+                if civic_ics or raleigh_url or portsmouth_url:
                     host_scope["allowed_hosts"] = (urlparse(source["feed_url"]).hostname,)
                 payload = fetch_publisher(
                     source["feed_url"], "text/calendar",
-                    respect_robots=civic_ics or bool(raleigh_url) or mapsee
+                    respect_robots=civic_ics or bool(raleigh_url or portsmouth_url) or mapsee
                     or source_key in {"mecklenburg_va_libraries", "sarpy_tourism_ne"},
                     deadline_at=deadline, **host_scope)
                 calendar_source = {"url": source["feed_url"], "source_key": source_key,
@@ -1213,7 +1217,7 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         elif source_key in ("municipal_c95c95a5b06056f26da007e7", "municipal_8f59bd98f751e3f218ee5ce1", "municipal_cdbebcd2be97bebce865a8fb"):
             from roomquest.hampton_roads_spothopper import SOURCES, collect as collect_html
             allowed_hosts = (urlparse(SOURCES[source_key][0]).hostname,)
-        elif source_key == "municipal_376911a33eeef7ed0d9df1a0":
+        elif source_key in ("municipal_376911a33eeef7ed0d9df1a0", "municipal_4c5a2b0a7c39f7beb74e6342"):
             from roomquest.virginia_beach_meetings import HOST, collect as collect_html
             allowed_hosts = (HOST,)
             html_budget = 40
