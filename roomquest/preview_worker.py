@@ -1245,9 +1245,12 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         elif source_key == "municipal_38cad94cfdc8628a8ce8ee90":
             from roomquest.lynnhaven_river import HOST, collect as collect_html
             allowed_hosts = (HOST,)
-        elif source_key == "municipal_5effc448d9e900b8cdd14958":
-            from roomquest.hampton_roads_chamber import HOST, collect as collect_html
+        elif source_key in ("sarpy_recurring_tourism_html_ne", "sarpy_sports_tourism_html_ne"):
+            from roomquest.sarpy_calendar_html import HOST, collect as collect_html
             allowed_hosts = (HOST,)
+        elif source_key in ("municipal_5effc448d9e900b8cdd14958", "greater_omaha_chamber_growthzone_html_ne"):
+            from roomquest.hampton_roads_chamber import HOST, OMAHA_HOST, OMAHA_KEY, collect as collect_html
+            allowed_hosts = (OMAHA_HOST if source_key == OMAHA_KEY else HOST,)
         elif source_key == "south_hill_chamber_va":
             from roomquest.south_hill_chamber import collect as collect_html
             allowed_hosts = ("members.southhillchamber.com",)
