@@ -1,5 +1,6 @@
 """Read the final Nebraska sources through their public calendars."""
 from datetime import datetime, time, timedelta, timezone
+from hashlib import sha256
 import json
 import re
 from urllib.parse import urlencode
@@ -18,10 +19,12 @@ GRETNA = "gretna_public_library_localhop_ne"
 SKYYBOX = "skyybox_trivia_ne"
 POSTSCRIPT = "postscript_elfsight_ne"
 ELLEINAD = "elleinad_storytimes_ne"
+ZOO_BAR = "zoo_bar_lincoln_html_ne"
 PARKS = "calendar.outdoornebraska.gov"
 ELFSIGHT = "core.service.elfsight.com"
 WIDGET = "bf123e26-8031-4a6e-9df8-15c815d921b6"
 SOURCES = {
+    ZOO_BAR: ("https://zoobar.com/calendar/zoo-bar-calendar-list-form/", ("zoobar.com",)),
     LINCOLN: ("https://www.lincolnlibraries.org/programs-and-events/events-calendar/",
               (LOCALHOP_HOST, "events.getlocalhop.com")),
     GRETNA: ("https://gretnahub.org/", (LOCALHOP_HOST, "events.getlocalhop.com")),
@@ -163,6 +166,52 @@ def elleinad(fetch, now):
     return output
 
 
+def zoo_bar(fetch, now):
+    url = SOURCES[ZOO_BAR][0]
+    document = html.fromstring(fetch(url, "text/html"))
+
+    def has_class(node, name):
+        return name in (node.get("class") or "").split()
+
+    rows = [node for node in document.iter("li") if has_class(node, "simcal-event")]
+    if not any(has_class(node, "simcal-calendar-list") for node in document.iter()):
+        raise ValueError("missing_zoo_bar_calendar")
+
+    output = {}
+    for row in rows:
+        # Rich event descriptions can nest the next listing in recovered HTML.
+        fields = {}
+        for node in row.iterdescendants():
+            owner = next((parent for parent in node.iterancestors("li")
+                          if has_class(parent, "simcal-event")), None)
+            if owner is not row:
+                continue
+            for name in ("simcal-event-title", "simcal-event-start-time", "simcal-event-end-time"):
+                if has_class(node, name):
+                    fields.setdefault(name, node)
+        title_node = fields.get("simcal-event-title")
+        start_node = fields.get("simcal-event-start-time")
+        if title_node is None or start_node is None:
+            continue
+        title = plain(title_node.text_content())
+        if not title or EXCLUDED.search(title):
+            continue
+        start = datetime.fromtimestamp(int(start_node.get("data-event-start", "")), timezone.utc)
+        if not now < start < now + timedelta(days=60):
+            continue
+        end_node = fields.get("simcal-event-end-time")
+        end = (datetime.fromtimestamp(int(end_node.get("data-event-end", "")), timezone.utc)
+               if end_node is not None else None)
+        if end is not None and end <= start:
+            continue
+        identity = sha256(f"{start.isoformat()}|{title.casefold()}".encode()).hexdigest()
+        output[identity] = record(title, start.isoformat(), end.isoformat() if end else None,
+                                  "The Zoo Bar", "136 N 14th St, Lincoln, NE 68508", "Lincoln",
+                                  url, identity, "Music", lat=40.814061685175, lng=-96.701083776601,
+                                  tz=ZONE)
+    return list(output.values())
+
+
 def collect(source, fetch, *, deadline_at=None, fetch_localhop=None, now=None):
     key = source.get("source_key")
     if key not in SOURCES or tuple(source.get(field) for field in
@@ -172,5 +221,5 @@ def collect(source, fetch, *, deadline_at=None, fetch_localhop=None, now=None):
     if key in GROUPS:
         rows = localhop(key, fetch, fetch_localhop, now)
     else:
-        rows = {SKYYBOX: skyybox, POSTSCRIPT: postscript, ELLEINAD: elleinad}[key](fetch, now)
+        rows = {SKYYBOX: skyybox, POSTSCRIPT: postscript, ELLEINAD: elleinad, ZOO_BAR: zoo_bar}[key](fetch, now)
     return sorted((row for row in rows if row is not None), key=lambda row: (row["starts_at"], row["id"]))
