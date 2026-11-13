@@ -74,12 +74,16 @@ def test_duke_dispatch_falls_back_only_for_missing_or_rejected_event_url(event_u
     reviewed = {**source(DUKE_KEY), 'feed_url': DUKE_FEED}
     with patch('roomquest.preview_worker.fetch_publisher', return_value=raw) as fetch:
         out = preview_source(reviewed)
-    # Equality preserves identity, times, venue, category and image; it also
-    # catches accidentally enabling the legacy description/address rewrites.
-    assert out['p_events'] == out['p_samples'] == expected
+    # Narrative and full publisher labels are now retained. All pre-existing
+    # identity, time, venue and image fields still match the legacy parser.
+    actual = out['p_events']
+    assert actual == out['p_samples']
+    assert [{k: v for k, v in row.items() if k not in ('description', 'publisher_categories')}
+            for row in actual] == expected
     assert out['p_error'] is None and out['p_future_count'] == 1
     assert expected[0]['image_url'] == 'https://venue.example.org/fixture.jpg'
-    assert 'description' not in out['p_events'][0]
+    assert out['p_events'][0]['description'] == 'Fixture narrative remains on the existing legacy path.'
+    assert out['p_events'][0]['publisher_categories'] == ['Arts', 'Community']
     fetch.assert_called_once()
     assert fetch.call_args.args == (DUKE_FEED, 'text/calendar')
     assert fetch.call_args.kwargs['respect_robots'] is True
@@ -155,7 +159,8 @@ def test_empty_and_invalid_are_distinct(legacy):
  assert parse('BEGIN:VCALENDAR\r\nVERSION:2.0\r\nEND:VCALENDAR\r\n',{},legacy=legacy)==[]
  with pytest.raises(ValueError):parse('<html>unavailable</html>',{},legacy=legacy)
 def test_legacy_cache_media_and_category_fields_preserved():
- assert parse(feed(),{},legacy=True)==parse_ics_preview(feed(),allow_ongoing=True,include_images=True)
+ actual=parse(feed(),{},legacy=True)
+ assert [{k:v for k,v in row.items() if k not in ('description','publisher_categories')} for row in actual]==parse_ics_preview(feed(),allow_ongoing=True,include_images=True)
 @pytest.mark.parametrize('legacy',[False,True])
 def test_date_only_is_not_false_empty(legacy):
  raw=feed().replace('DTSTART:'+START,'DTSTART;VALUE=DATE:'+(datetime.now(timezone.utc)+timedelta(days=2)).strftime('%Y%m%d'))

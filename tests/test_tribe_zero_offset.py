@@ -86,4 +86,8 @@ def test_wordpress_collect_passes_reviewed_zone(monkeypatch):
         seen['zone'] = kw.get('utc_default_zone')
         return real(payload, **kw)
     monkeypatch.setattr(adapter, 'parse_tribe', spy)
-    assert 'utc_default_zone=TRIBE_UTC_DEFAULT_ZONES.get(source.get("source_key"))' in open(wp.__file__).read()
+    import json
+    key, zone = next(iter(adapter.TRIBE_UTC_DEFAULT_ZONES.items()))
+    wp.collect({'source_key': key, 'feed_url': 'https://example.org'},
+               lambda *_: json.dumps({'events': [], 'total_pages': 1}))
+    assert seen['zone'] == zone

@@ -182,12 +182,11 @@ class ParksTests(unittest.TestCase):
    bad=dict(e);bad[field]=datetime.fromisoformat(e['utc_'+field]).replace(tzinfo=None).isoformat()
    with self.subTest(field=field),self.assertRaisesRegex(ValueError,'publisher_schedule_conflict'):
     collect(source,lambda *_:json.dumps({'events':[bad]}))
- def test_madison_narrative_is_clean_bounded_and_source_scoped(self):
+ def test_shared_wordpress_narrative_is_clean_and_bounded(self):
   e=event();e.update(status='publish',description='<p>Learn &amp; build.</p><script>bad()</script><p>Bring tools.</p>')
   for key in ('madison_county_parks_ia','nebraska_game_parks','municipal_mapsee_fixture'):
    rows=collect({'source_key':key,'feed_url':'https://venue.example.org'},lambda *_:json.dumps({'events':[e]}))
-   if key=='madison_county_parks_ia':self.assertEqual(rows[0]['description'],'Learn & build.\nBring tools.')
-   else:self.assertNotIn('description',rows[0])
+   self.assertEqual(rows[0]['description'],'Learn & build.\nBring tools.')
   e['description']='x'*2100
   rows=collect({'source_key':'madison_county_parks_ia','feed_url':'https://venue.example.org'},lambda *_:json.dumps({'events':[e]}))
   self.assertEqual(len(rows[0]['description']),2000)

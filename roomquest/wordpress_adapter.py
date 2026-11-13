@@ -346,8 +346,7 @@ def collect(source, fetch, *, deadline_at=None):
         utc_default_zone = 'America/New_York' if source_key == VIRGINIA_MOCA else TRIBE_UTC_DEFAULT_ZONES.get(source_key)
         parsed_rows = parse_tribe(payload, strict_public=public_calendar or reading_room or bool(hampton_url) or ncma or source.get("source_key") in
                                   ("madison_county_parks_ia", "nebraska_game_parks", ROSEMONT_KEY, jpb_basketball.KEY, hurrdat_calendar.KEY),
-                                retain_description=bool(hampton_url) or ncma or source.get("source_key") in
-                                  ("madison_county_parks_ia", ROSEMONT_KEY, jpb_basketball.KEY, hurrdat_calendar.KEY),
+                                retain_description=True,
                                 utc_default_zone=utc_default_zone)
         if hampton_url:
             parsed_rows = [_hampton_venue(source_key, row) for row in parsed_rows]

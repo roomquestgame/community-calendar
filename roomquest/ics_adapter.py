@@ -615,7 +615,13 @@ def parse(payload, source, *, legacy=False, include_description=False):
     if original_event_count>1000:
         raise ValueError("source_record_limit")
     date_notices = _civic_dates(cal, source)
-    result=parse_ics_preview(payload,allow_ongoing=True,include_images=legacy, include_description=include_description)
+    # Narrative retention is independent of the legacy image/venue contract.
+    # Enabling the older include_description switch also changes those fields.
+    result=parse_ics_preview(payload,allow_ongoing=True,include_images=legacy, include_description=True)
+    if not include_description:
+        from roomquest.event_description import description
+        for row in result:
+            row['description'] = description(row.get('description'))
     if not result and not date_notices and unsupported:raise ValueError(unsupported[0])
     # A feed URL is an actual publisher link when its VEVENT omits URL. Never
     # fabricate a detail URL, venue, publisher host, description or image.
@@ -660,6 +666,7 @@ def parse(payload, source, *, legacy=False, include_description=False):
                 raise ValueError("invalid_source_url")
             e["event_url"] = feed_url
         if legacy and not include_description:
+            e['publisher_categories'] = categories.get(e['id'].split('__', 1)[0], [])
             continue
         if not mecklenburg:
             e.pop("image_url",None)

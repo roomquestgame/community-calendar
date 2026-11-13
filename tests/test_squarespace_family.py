@@ -56,7 +56,7 @@ def test_mapsee_legacy_fields_keep_identical_factual_identity():
     from roomquest.mapsee_adapter import record
     e=data['upcoming'][0]
     before=record(e['title'],e['startDate'],e['endDate'],v['addressTitle'],'12 Main St, Raleigh, NC','',BASE+'/concert',e['id'],'Music',35.8,-78.6)
-    assert parse_registered(data,BASE)==[before]
+    assert parse_registered(data,BASE)==[{**before, 'description': ''}]
 
 def test_conflicting_geo_is_held_without_discarding_address():
     data=payload();data['upcoming'][0]['location'].update(mapLat=40.0,mapLng=-74.0)

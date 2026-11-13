@@ -107,7 +107,9 @@ def collect(source, fetch, *, deadline_at=None, now=None):
             "endDate": (horizon.date() + timedelta(days=1)).isoformat(),
         })
         url = f"https://{GATEWAY}/v2/libraries/{slug}/events?{query}"
-        rows = page_rows(fetch(url, "application/json"), zone)
+        payload = fetch(url, "application/json")
+        rows = page_rows(payload, zone)
+        event_types = (json.loads(payload).get('entities') or {}).get('eventTypes') or {}
         if not rows:
             return sorted(events.values(), key=lambda row: (row["starts_at"], row["id"]))
         new_count = 0
@@ -130,6 +132,13 @@ def collect(source, fetch, *, deadline_at=None, now=None):
             row = record(definition.get("title"), start.isoformat(), end, venue, street, city,
                          f"{listing}/{identity}", identity, tz=zone)
             if row is not None:
+                from roomquest.event_description import description
+                row['description'] = description(definition.get('description'))
+                row['publisher_categories'] = list(dict.fromkeys(
+                    plain(event_types[type_id].get('name'))[:100]
+                    for type_id in (definition.get('typeIds') or [])[:20]
+                    if isinstance(event_types.get(type_id), dict)
+                    and plain(event_types[type_id].get('name'))))
                 events[identity] = row
         if not new_count:
             raise ValueError("invalid_biblioevents_pagination")

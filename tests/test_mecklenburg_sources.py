@@ -95,7 +95,7 @@ def test_rosemont_contract_does_not_expand_other_wordpress_sources():
     item['description'] = '<p>Existing generic policy.</p>'
     source = dict(ROSEMONT_SOURCE, source_key='unrelated_wordpress')
     row = wp(one_event(item), source)[0]
-    assert 'description' not in row and 'image_url' not in row
+    assert row['description'] == 'Existing generic policy.' and 'image_url' not in row
     assert 'details_extractor_version' not in row
 
 

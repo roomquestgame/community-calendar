@@ -101,6 +101,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
         if row:
             narrative = detail.select_one('.single-content')
             if narrative:
-                row['description'] = plain(narrative.get_text(' ', strip=True))[:2000]
+                from roomquest.event_description import description
+                row['description'] = description(str(narrative))
             rows.append(row)
     return sorted(rows, key=lambda row: (row['starts_at'], row['id']))
