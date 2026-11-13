@@ -1,1 +1,176 @@
-IiIiUmVhZCB0aGUgZmluYWwgTmVicmFza2Egc291cmNlcyB0aHJvdWdoIHRoZWlyIHB1YmxpYyBjYWxlbmRhcnMuIiIiCmZyb20gZGF0ZXRpbWUgaW1wb3J0IGRhdGV0aW1lLCB0aW1lLCB0aW1lZGVsdGEsIHRpbWV6b25lCmltcG9ydCBqc29uCmltcG9ydCByZQpmcm9tIHVybGxpYi5wYXJzZSBpbXBvcnQgdXJsZW5jb2RlCmZyb20gem9uZWluZm8gaW1wb3J0IFpvbmVJbmZvCgpmcm9tIGx4bWwgaW1wb3J0IGh0bWwKCmZyb20gcm9vbXF1ZXN0Lm1hcHNlZV9hZGFwdGVyIGltcG9ydCBwbGFpbiwgcmVjb3JkCgpaT05FID0gIkFtZXJpY2EvQ2hpY2FnbyIKTE9DQUxIT1BfSE9TVCA9ICJhcGkuZ2V0bG9jYWxob3AuY29tIgpMT0NBTEhPUF9BUEkgPSBmImh0dHBzOi8ve0xPQ0FMSE9QX0hPU1R9LzEvY2xhc3Nlcy9FdmVudEluc3RhbmNlIgpMT0NBTEhPUF9FTUJFRCA9ICJodHRwczovL2V2ZW50cy5nZXRsb2NhbGhvcC5jb20vd2lkZ2V0cy9lbWJlZC1jYWxlbmRhci1qcyIKTElOQ09MTiA9ICJsaW5jb2xuX2NpdHlfbGlicmFyaWVzX2xvY2FsaG9wX25lIgpHUkVUTkEgPSAiZ3JldG5hX3B1YmxpY19saWJyYXJ5X2xvY2FsaG9wX25lIgpTS1lZQk9YID0gInNreXlib3hfdHJpdmlhX25lIgpQT1NUU0NSSVBUID0gInBvc3RzY3JpcHRfZWxmc2lnaHRfbmUiCkVMTEVJTkFEID0gImVsbGVpbmFkX3N0b3J5dGltZXNfbmUiClBBUktTID0gImNhbGVuZGFyLm91dGRvb3JuZWJyYXNrYS5nb3YiCkVMRlNJR0hUID0gImNvcmUuc2VydmljZS5lbGZzaWdodC5jb20iCldJREdFVCA9ICJiZjEyM2UyNi04MDMxLTRhNmUtOWRmOC0xNWM4MTVkOTIxYjYiClNPVVJDRVMgPSB7CiAgICBMSU5DT0xOOiAoImh0dHBzOi8vd3d3LmxpbmNvbG5saWJyYXJpZXMub3JnL3Byb2dyYW1zLWFuZC1ldmVudHMvZXZlbnRzLWNhbGVuZGFyLyIsCiAgICAgICAgICAgICAgKExPQ0FMSE9QX0hPU1QsICJldmVudHMuZ2V0bG9jYWxob3AuY29tIikpLAogICAgR1JFVE5BOiAoImh0dHBzOi8vZ3JldG5haHViLm9yZy8iLCAoTE9DQUxIT1BfSE9TVCwgImV2ZW50cy5nZXRsb2NhbGhvcC5jb20iKSksCiAgICBTS1lZQk9YOiAoImh0dHBzOi8vd3d3LnNreXlib3hiYXJhbmRncmlsbC5jb20vZXZlbnRzIiwKICAgICAgICAgICAgICAoInd3dy5za3l5Ym94YmFyYW5kZ3JpbGwuY29tIiwgIm1pZHdlc3RwdWJ0cml2aWEuY29tIikpLAogICAgUE9TVFNDUklQVDogKCJodHRwczovL3Bvc3RzY3JpcHQucHJlc3MvcGFnZXMvZXZlbnQtc2NoZWR1bGUiLCAoRUxGU0lHSFQsICJwb3N0c2NyaXB0LnByZXNzIikpLAogICAgRUxMRUlOQUQ6IChmImh0dHBzOi8ve1BBUktTfS9ldmVudC90dXJrZXktc3Rvcnl0aW1lLyIsIChQQVJLUywpKSwKfQpHUk9VUFMgPSB7CiAgICBMSU5DT0xOOiAoIjZBdGFWbkdQRUciLCAibks1dkJaZTQ4NCIsICI4MEhScmdlRHdUIiwgIjQ1NjRzbmprTEciLCAiNjNnenlNZ0VLOSIsCiAgICAgICAgICAgICAgImx2NU5SdUtCSHEiLCAiU25wSkRZR3dKZCIsICIyZWcxMlpXQ2xMIiwgIlJFMnc4QUlTZ3MiLCAiVWhGSTBXNXJZWSIpLAogICAgR1JFVE5BOiAoImtUVWZTMm1vaUIiLCksCn0KSUQgPSByZS5jb21waWxlKHIiW0EtWmEtejAtOV8tXXsxLDgwfSIpClNUUkVFVCA9IHJlLmNvbXBpbGUociJcZHsxLDZ9XHMrW0EtWmEtel0iKQpFWENMVURFRCA9IHJlLmNvbXBpbGUociJcYihjYW5jZWxsZWR8Y2FuY2VsZWR8cG9zdHBvbmVkfGNsb3NlZClcYiIsIHJlLkkpCgoKZGVmIGRhdGVfdmFsdWUodmFsdWUpOgogICAgcmV0dXJuIHsiX190eXBlIjogIkRhdGUiLCAiaXNvIjogdmFsdWUuaXNvZm9ybWF0KHRpbWVzcGVjPSJtaWxsaXNlY29uZHMiKS5yZXBsYWNlKCIrMDA6MDAiLCAiWiIpfQoKCmRlZiBsb2NhbGhvcChrZXksIGZldGNoLCBmZXRjaF9sb2NhbGhvcCwgbm93KToKICAgIGVtYmVkID0gZmV0Y2goTE9DQUxIT1BfRU1CRUQsICJ0ZXh0L2phdmFzY3JpcHQiKQogICAgYXBwID0gcmUuc2VhcmNoKHInd2luZG93XC5BcHBDb25maWdcLlBhcnNlQXBwSWRccyo9XHMqIihbQS1aYS16MC05XXsyMCw4MH0pIicsIGVtYmVkKQogICAgaWYgbm90IGFwcDoKICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCJsb2NhbGhvcF9wdWJsaWNfYXBwX21pc3NpbmciKQogICAgYmVnaW4gPSBub3cucmVwbGFjZShob3VyPTAsIG1pbnV0ZT0wLCBzZWNvbmQ9MCwgbWljcm9zZWNvbmQ9MCkKICAgIHdoZXJlID0gewogICAgICAgICJvcmdhbml6YXRpb24iOiB7IiRpbiI6IFsKICAgICAgICAgICAgeyJfX3R5cGUiOiAiUG9pbnRlciIsICJjbGFzc05hbWUiOiAiT3JnYW5pemF0aW9uIiwgIm9iamVjdElkIjogZ3JvdXB9CiAgICAgICAgICAgIGZvciBncm91cCBpbiBHUk9VUFNba2V5XQogICAgICAgIF19LAogICAgICAgICJzdGFuZGFyZFN0YXJ0RGF0ZSI6IHsiJGd0ZSI6IGRhdGVfdmFsdWUoYmVnaW4pLCAiJGx0ZSI6IGRhdGVfdmFsdWUoYmVnaW4gKyB0aW1lZGVsdGEoZGF5cz02MCkpfSwKICAgICAgICAic3RhdHVzIjogInB1Ymxpc2giLAogICAgfQogICAgaWYga2V5ID09IEdSRVROQToKICAgICAgICB3aGVyZVsibXlDYWxlbmRhck9ubHkiXSA9IHsiJG5lIjogVHJ1ZX0KICAgIHVybCA9IExPQ0FMSE9QX0FQSSArICI/IiArIHVybGVuY29kZSh7CiAgICAgICAgIm9yZGVyIjogInN0YW5kYXJkU3RhcnREYXRlLG9iamVjdElkIiwgImxpbWl0IjogNTAwLCAiaW5jbHVkZSI6ICJldmVudCIsCiAgICAgICAgIndoZXJlIjoganNvbi5kdW1wcyh3aGVyZSwgc2VwYXJhdG9ycz0oIiwiLCAiOiIpKSwKICAgIH0pCiAgICByb3dzID0ganNvbi5sb2FkcyhmZXRjaF9sb2NhbGhvcCh1cmwsIGFwcC5ncm91cCgxKSkpLmdldCgicmVzdWx0cyIpCiAgICBpZiBub3QgaXNpbnN0YW5jZShyb3dzLCBsaXN0KSBvciBsZW4ocm93cykgPj0gNTAwOgogICAgICAgIHJhaXNlIFZhbHVlRXJyb3IoImludmFsaWRfbG9jYWxob3BfY2FsZW5kYXIiKQogICAgb3V0cHV0ID0gW10KICAgIGZvciByb3cgaW4gcm93czoKICAgICAgICBldmVudCA9IHJvdy5nZXQoImV2ZW50Iikgb3Ige30KICAgICAgICBwbGFjZSA9IGV2ZW50LmdldCgiYWRkcmVzcyIpIG9yIHt9CiAgICAgICAgZ2VvID0gcm93LmdldCgiYWRkcmVzc0xhdExuZyIpIG9yIGV2ZW50LmdldCgiYWRkcmVzc0xhdExuZyIpIG9yIHt9CiAgICAgICAgdGl0bGUgPSBwbGFpbihldmVudC5nZXQoIm5hbWUiKSkKICAgICAgICBzdHJlZXQsIGNpdHkgPSBwbGFpbihwbGFjZS5nZXQoImFkZHJlc3MxIikpLCBwbGFpbihwbGFjZS5nZXQoImNpdHkiKSkKICAgICAgICBldmVudF9pZCwgaW5zdGFuY2VfaWQgPSBldmVudC5nZXQoIm9iamVjdElkIiwgIiIpLCByb3cuZ2V0KCJvYmplY3RJZCIsICIiKQogICAgICAgIHN0YXJ0ID0gKHJvdy5nZXQoImFjdHVhbFN0YXJ0RGF0ZSIpIG9yIHt9KS5nZXQoImlzbyIpCiAgICAgICAgZW5kID0gKHJvdy5nZXQoImFjdHVhbEVuZERhdGUiKSBvciB7fSkuZ2V0KCJpc28iKQogICAgICAgIGlmIChub3Qgc3RhcnQgb3Igbm90IHRpdGxlIG9yIEVYQ0xVREVELnNlYXJjaCh0aXRsZSkgb3IgZXZlbnQuZ2V0KCJ2aXJ0dWFsIikgb3Igcm93LmdldCgiYWxsRGF5IikKICAgICAgICAgICAgICAgIG9yIHJvdy5nZXQoInN0YXR1cyIpICE9ICJwdWJsaXNoIiBvciBldmVudC5nZXQoInN0YXR1cyIpICE9ICJwdWJsaXNoIgogICAgICAgICAgICAgICAgb3IgKHJvdy5nZXQoIm9yZ2FuaXphdGlvbiIpIG9yIHt9KS5nZXQoIm9iamVjdElkIikgbm90IGluIEdST1VQU1trZXldCiAgICAgICAgICAgICAgICBvciBwbGFjZS5nZXQoInN0YXRlIikgIT0gIk5FIiBvciBub3QgY2l0eSBvciBub3QgU1RSRUVULm1hdGNoKHN0cmVldCkKICAgICAgICAgICAgICAgIG9yIG5vdCBJRC5mdWxsbWF0Y2goZXZlbnRfaWQpIG9yIG5vdCBJRC5mdWxsbWF0Y2goaW5zdGFuY2VfaWQpKToKICAgICAgICAgICAgY29udGludWUKICAgICAgICBpZiBkYXRldGltZS5mcm9taXNvZm9ybWF0KHN0YXJ0KSA8IG5vdzoKICAgICAgICAgICAgY29udGludWUKICAgICAgICBhZGRyZXNzID0gZiJ7c3RyZWV0fSwge2NpdHl9LCBORSB7cGxhaW4ocGxhY2UuZ2V0KCdwb3N0YWxDb2RlJykpfSIucnN0cmlwKCkKICAgICAgICBsaW5rID0gZiJ7U09VUkNFU1trZXldWzBdfSMvZXZlbnRzL3tldmVudF9pZH0vaW5zdGFuY2VzL3tpbnN0YW5jZV9pZH0vIgogICAgICAgIG91dHB1dC5hcHBlbmQocmVjb3JkKHRpdGxlLCBzdGFydCwgZW5kLCBwbGFpbihwbGFjZS5nZXQoInBsYWNlIikpIG9yIHN0cmVldCwgYWRkcmVzcywgY2l0eSwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICBsaW5rLCBpbnN0YW5jZV9pZCwgbGF0PWdlby5nZXQoImxhdGl0dWRlIiksIGxuZz1nZW8uZ2V0KCJsb25naXR1ZGUiKSwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICB0ej1aT05FKSkKICAgIHJldHVybiBvdXRwdXQKCgpkZWYgc2t5eWJveChmZXRjaCwgbm93KToKICAgIHVybCA9IFNPVVJDRVNbU0tZWUJPWF1bMF0KICAgIHBhZ2UgPSBwbGFpbihodG1sLmZyb21zdHJpbmcoZmV0Y2godXJsLCAidGV4dC9odG1sIikpLnRleHRfY29udGVudCgpKQogICAgb3JnYW5pemVyID0gcGxhaW4oaHRtbC5mcm9tc3RyaW5nKGZldGNoKAogICAgICAgICJodHRwczovL21pZHdlc3RwdWJ0cml2aWEuY29tL2xvY2F0aW9ucy1kYXRlcy8iLCAidGV4dC9odG1sIikpLnRleHRfY29udGVudCgpKQogICAgaWYgKG5vdCByZS5zZWFyY2gociJldmVyeSB0dWVzZGF5LnswLDIyMH10cml2aWEuezAsMTMwfTdccypwIiwgcGFnZSwgcmUuSSkKICAgICAgICAgICAgb3Igbm90IHJlLnNlYXJjaChyIlNreXlib3ggR3JpbGwgYW5kIEJhci57MCwyNjB9VHVlc2RheS57MCwzNX03OjAwXHMqUE0iLCBvcmdhbml6ZXIsIHJlLkkpCiAgICAgICAgICAgIG9yIG5vdCByZS5zZWFyY2gociI2NzIwXHMrU1wuP1xzKzE2OHRoXHMrU3QiLCBwYWdlLCByZS5JKSk6CiAgICAgICAgcmV0dXJuIFtdCiAgICBkYXkgPSBub3cuYXN0aW1lem9uZShab25lSW5mbyhaT05FKSkuZGF0ZSgpCiAgICBvdXRwdXQgPSBbXQogICAgZm9yIG9mZnNldCBpbiByYW5nZSgoMSAtIGRheS53ZWVrZGF5KCkpICUgNywgMzUsIDcpOgogICAgICAgIHN0YXJ0ID0gZGF0ZXRpbWUuY29tYmluZShkYXkgKyB0aW1lZGVsdGEoZGF5cz1vZmZzZXQpLCB0aW1lKDE5KSwgWm9uZUluZm8oWk9ORSkpCiAgICAgICAgaWYgc3RhcnQgPiBub3c6CiAgICAgICAgICAgIG91dHB1dC5hcHBlbmQocmVjb3JkKCJUdWVzZGF5IFRyaXZpYSBhdCBTa3l5Ym94Iiwgc3RhcnQuaXNvZm9ybWF0KCksIE5vbmUsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICJTa3l5Ym94IEdyaWxsICYgQmFyIiwgIjY3MjAgUyAxNjh0aCBTdCwgT21haGEsIE5FIDY4MTM1IiwgIk9tYWhhIiwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgdXJsLCBzdGFydC5kYXRlKCkuaXNvZm9ybWF0KCksIGxhdD00MS4xOTI0MTY0MjI2ODEsIGxuZz0tOTYuMTc3NTg2NTgwNDQ1LAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB0ej1aT05FKSkKICAgIHJldHVybiBvdXRwdXQKCgpkZWYgcG9zdHNjcmlwdChmZXRjaCwgbm93KToKICAgIHVybCA9IFNPVVJDRVNbUE9TVFNDUklQVF1bMF0KICAgIG1hcmt1cCA9IGZldGNoKHVybCwgInRleHQvaHRtbCIpCiAgICBpZiBmImVsZnNpZ2h0LWFwcC17V0lER0VUfSIgbm90IGluIG1hcmt1cDoKICAgICAgICByYWlzZSBWYWx1ZUVycm9yKCJwb3N0c2NyaXB0X3dpZGdldF9taXNzaW5nIikKICAgIGVuZHBvaW50ID0gZiJodHRwczovL3tFTEZTSUdIVH0vcC9ib290Lz8iICsgdXJsZW5jb2RlKHsidyI6IFdJREdFVCwgInBhZ2UiOiB1cmx9KQogICAgd2lkZ2V0ID0ganNvbi5sb2FkcyhmZXRjaChlbmRwb2ludCwgImFwcGxpY2F0aW9uL2pzb24iKSlbImRhdGEiXVsid2lkZ2V0cyJdW1dJREdFVF1bImRhdGEiXQogICAgaWYgd2lkZ2V0LmdldCgiYXBwIikgIT0gImV2ZW50LWNhbGVuZGFyIiBvciBub3QgaXNpbnN0YW5jZSh3aWRnZXRbInNldHRpbmdzIl0uZ2V0KCJldmVudHMiKSwgbGlzdCk6CiAgICAgICAgcmFpc2UgVmFsdWVFcnJvcigiaW52YWxpZF9wb3N0c2NyaXB0X3dpZGdldCIpCiAgICBvdXRwdXQgPSBbXQogICAgZm9yIGl0ZW0gaW4gd2lkZ2V0WyJzZXR0aW5ncyJdWyJldmVudHMiXToKICAgICAgICBzdGFydCwgZW5kID0gaXRlbS5nZXQoInN0YXJ0Iikgb3Ige30sIGl0ZW0uZ2V0KCJlbmQiKSBvciB7fQogICAgICAgIHRpdGxlID0gcGxhaW4oaXRlbS5nZXQoIm5hbWUiKSkKICAgICAgICBpZiAoaXRlbS5nZXQoInJlcGVhdFBlcmlvZCIpICE9ICJub1JlcGVhdCIgb3IgaXRlbS5nZXQoImlzQWxsRGF5IikKICAgICAgICAgICAgICAgIG9yIGl0ZW0uZ2V0KCJ0aW1lWm9uZSIpICE9IFpPTkUgb3Igc3RhcnQuZ2V0KCJ0eXBlIikgIT0gImRhdGV0aW1lIgogICAgICAgICAgICAgICAgb3Igbm90IHRpdGxlIG9yIEVYQ0xVREVELnNlYXJjaCh0aXRsZSkgb3IgaXRlbS5nZXQoImxvY2F0aW9uIikpOgogICAgICAgICAgICBjb250aW51ZQogICAgICAgIHN0YXJ0cyA9IGRhdGV0aW1lLmZyb21pc29mb3JtYXQoZiJ7c3RhcnRbJ2RhdGUnXX1Ue3N0YXJ0Wyd0aW1lJ119IikucmVwbGFjZSh0emluZm89Wm9uZUluZm8oWk9ORSkpCiAgICAgICAgaWYgbm90IG5vdyA8IHN0YXJ0cyA8IG5vdyArIHRpbWVkZWx0YShkYXlzPTYwKToKICAgICAgICAgICAgY29udGludWUKICAgICAgICBlbmRzID0gZiJ7ZW5kWydkYXRlJ119VHtlbmRbJ3RpbWUnXX0iIGlmIGVuZC5nZXQoImRhdGUiKSBhbmQgZW5kLmdldCgidGltZSIpIGVsc2UgTm9uZQogICAgICAgIG91dHB1dC5hcHBlbmQocmVjb3JkKHRpdGxlLCBzdGFydHMuaXNvZm9ybWF0KCksIGVuZHMsICJQb3N0c2NyaXB0IiwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAiMTQzNCBTaWx2ZXIgU3QsIEFzaGxhbmQsIE5FIDY4MDAzIiwgIkFzaGxhbmQiLCB1cmwsIGl0ZW1bImlkIl0sCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgbGF0PTQxLjAzOTE2NjM2MTc5NiwgbG5nPS05Ni4zNjg3ODQ3NjUxOTIsIHR6PVpPTkUpKQogICAgcmV0dXJuIG91dHB1dAoKCmRlZiBlbGxlaW5hZChmZXRjaCwgbm93KToKICAgIG91dHB1dCA9IFtdCiAgICBmb3Igc2x1ZyBpbiAoInR1cmtleS1zdG9yeXRpbWUiLCAid2ludGVyLWJpcmRzLXN0b3J5dGltZSIpOgogICAgICAgIHVybCA9IGYiaHR0cHM6Ly97UEFSS1N9L2V2ZW50L3tzbHVnfS8iCiAgICAgICAgZG9jdW1lbnQgPSBodG1sLmZyb21zdHJpbmcoZmV0Y2godXJsLCAidGV4dC9odG1sIikpCiAgICAgICAgZm9yIHJhdyBpbiBkb2N1bWVudC54cGF0aCgnLy9zY3JpcHRbQHR5cGU9ImFwcGxpY2F0aW9uL2xkK2pzb24iXS90ZXh0KCknKToKICAgICAgICAgICAgcGF5bG9hZCA9IGpzb24ubG9hZHMocmF3KQogICAgICAgICAgICBmb3IgaXRlbSBpbiBwYXlsb2FkIGlmIGlzaW5zdGFuY2UocGF5bG9hZCwgbGlzdCkgZWxzZSBbcGF5bG9hZF06CiAgICAgICAgICAgICAgICBpZiBpdGVtLmdldCgiQHR5cGUiKSAhPSAiRXZlbnQiOgogICAgICAgICAgICAgICAgICAgIGNvbnRpbnVlCiAgICAgICAgICAgICAgICB2ZW51ZSA9IGl0ZW0uZ2V0KCJsb2NhdGlvbiIpIG9yIHt9CiAgICAgICAgICAgICAgICBzdGFydCA9IGl0ZW0uZ2V0KCJzdGFydERhdGUiKQogICAgICAgICAgICAgICAgaWYgKHZlbnVlLmdldCgibmFtZSIpICE9ICJFbGxlaW5hZCBCb29rcyIgb3Igbm90IHN0YXJ0CiAgICAgICAgICAgICAgICAgICAgICAgIG9yIGRhdGV0aW1lLmZyb21pc29mb3JtYXQoc3RhcnQpIDw9IG5vdwogICAgICAgICAgICAgICAgICAgICAgICBvciBub3Qgc3RyKGl0ZW0uZ2V0KCJldmVudFN0YXR1cyIsICIiKSkuZW5kc3dpdGgoIi9FdmVudFNjaGVkdWxlZCIpKToKICAgICAgICAgICAgICAgICAgICBjb250aW51ZQogICAgICAgICAgICAgICAgb3V0cHV0LmFwcGVuZChyZWNvcmQoaXRlbS5nZXQoIm5hbWUiKSwgc3RhcnQsIGl0ZW0uZ2V0KCJlbmREYXRlIiksICJFbGxlaW5hZCBCb29rcyIsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAiNDcyNCBQcmVzY290dCBBdmUsIExpbmNvbG4sIE5FIDY4NTA2IiwgIkxpbmNvbG4iLCB1cmwsIHNsdWcsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBsYXQ9NDAuNzcyOTY5Mzg4MDEsIGxuZz0tOTYuNjU1MDcxNDg3NzI5LCB0ej1aT05FKSkKICAgIHJldHVybiBvdXRwdXQKCgpkZWYgY29sbGVjdChzb3VyY2UsIGZldGNoLCAqLCBkZWFkbGluZV9hdD1Ob25lLCBmZXRjaF9sb2NhbGhvcD1Ob25lLCBub3c9Tm9uZSk6CiAgICBrZXkgPSBzb3VyY2UuZ2V0KCJzb3VyY2Vfa2V5IikKICAgIGlmIGtleSBub3QgaW4gU09VUkNFUyBvciB0dXBsZShzb3VyY2UuZ2V0KGZpZWxkKSBmb3IgZmllbGQgaW4KICAgICAgICAgICAgKCJmZWVkX3VybCIsICJ0aW1lem9uZSIsICJraW5kIiwgInBsYXRmb3JtX2FkYXB0ZXIiKSkgIT0gKFNPVVJDRVNba2V5XVswXSwgWk9ORSwgImh0bWwiLCAiaHRtbCIpOgogICAgICAgIHJhaXNlIFZhbHVlRXJyb3IoInVucmVnaXN0ZXJlZF9uZWJyYXNrYV9maW5hbF9zb3VyY2UiKQogICAgbm93ID0gbm93IG9yIGRhdGV0aW1lLm5vdyh0aW1lem9uZS51dGMpCiAgICBpZiBrZXkgaW4gR1JPVVBTOgogICAgICAgIHJvd3MgPSBsb2NhbGhvcChrZXksIGZldGNoLCBmZXRjaF9sb2NhbGhvcCwgbm93KQogICAgZWxzZToKICAgICAgICByb3dzID0ge1NLWVlCT1g6IHNreXlib3gsIFBPU1RTQ1JJUFQ6IHBvc3RzY3JpcHQsIEVMTEVJTkFEOiBlbGxlaW5hZH1ba2V5XShmZXRjaCwgbm93KQogICAgcmV0dXJuIHNvcnRlZCgocm93IGZvciByb3cgaW4gcm93cyBpZiByb3cgaXMgbm90IE5vbmUpLCBrZXk9bGFtYmRhIHJvdzogKHJvd1sic3RhcnRzX2F0Il0sIHJvd1siaWQiXSkpCg==
+"""Read the final Nebraska sources through their public calendars."""
+from datetime import datetime, time, timedelta, timezone
+import json
+import re
+from urllib.parse import urlencode
+from zoneinfo import ZoneInfo
+
+from lxml import html
+
+from roomquest.mapsee_adapter import plain, record
+
+ZONE = "America/Chicago"
+LOCALHOP_HOST = "api.getlocalhop.com"
+LOCALHOP_API = f"https://{LOCALHOP_HOST}/1/classes/EventInstance"
+LOCALHOP_EMBED = "https://events.getlocalhop.com/widgets/embed-calendar-js"
+LINCOLN = "lincoln_city_libraries_localhop_ne"
+GRETNA = "gretna_public_library_localhop_ne"
+SKYYBOX = "skyybox_trivia_ne"
+POSTSCRIPT = "postscript_elfsight_ne"
+ELLEINAD = "elleinad_storytimes_ne"
+PARKS = "calendar.outdoornebraska.gov"
+ELFSIGHT = "core.service.elfsight.com"
+WIDGET = "bf123e26-8031-4a6e-9df8-15c815d921b6"
+SOURCES = {
+    LINCOLN: ("https://www.lincolnlibraries.org/programs-and-events/events-calendar/",
+              (LOCALHOP_HOST, "events.getlocalhop.com")),
+    GRETNA: ("https://gretnahub.org/", (LOCALHOP_HOST, "events.getlocalhop.com")),
+    SKYYBOX: ("https://www.skyyboxbarandgrill.com/events",
+              ("www.skyyboxbarandgrill.com", "midwestpubtrivia.com")),
+    POSTSCRIPT: ("https://postscript.press/pages/event-schedule", (ELFSIGHT, "postscript.press")),
+    ELLEINAD: (f"https://{PARKS}/event/turkey-storytime/", (PARKS,)),
+}
+GROUPS = {
+    LINCOLN: ("6AtaVnGPEG", "nK5vBZe484", "80HRrgeDwT", "4564snjkLG", "63gzyMgEK9",
+              "lv5NRuKBHq", "SnpJDYGwJd", "2eg12ZWClL", "RE2w8AISgs", "UhFI0W5rYY"),
+    GRETNA: ("kTUfS2moiB",),
+}
+ID = re.compile(r"[A-Za-z0-9_-]{1,80}")
+STREET = re.compile(r"\d{1,6}\s+[A-Za-z]")
+EXCLUDED = re.compile(r"\b(cancelled|canceled|postponed|closed)\b", re.I)
+
+
+def date_value(value):
+    return {"__type": "Date", "iso": value.isoformat(timespec="milliseconds").replace("+00:00", "Z")}
+
+
+def localhop(key, fetch, fetch_localhop, now):
+    embed = fetch(LOCALHOP_EMBED, "text/javascript")
+    app = re.search(r'window\.AppConfig\.ParseAppId\s*=\s*"([A-Za-z0-9]{20,80})"', embed)
+    if not app:
+        raise ValueError("localhop_public_app_missing")
+    begin = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    where = {
+        "organization": {"$in": [
+            {"__type": "Pointer", "className": "Organization", "objectId": group}
+            for group in GROUPS[key]
+        ]},
+        "standardStartDate": {"$gte": date_value(begin), "$lte": date_value(begin + timedelta(days=60))},
+        "status": "publish",
+    }
+    if key == GRETNA:
+        where["myCalendarOnly"] = {"$ne": True}
+    url = LOCALHOP_API + "?" + urlencode({
+        "order": "standardStartDate,objectId", "limit": 500, "include": "event",
+        "where": json.dumps(where, separators=(",", ":")),
+    })
+    rows = json.loads(fetch_localhop(url, app.group(1))).get("results")
+    if not isinstance(rows, list) or len(rows) >= 500:
+        raise ValueError("invalid_localhop_calendar")
+    output = []
+    for row in rows:
+        event = row.get("event") or {}
+        place = event.get("address") or {}
+        geo = row.get("addressLatLng") or event.get("addressLatLng") or {}
+        title = plain(event.get("name"))
+        street, city = plain(place.get("address1")), plain(place.get("city"))
+        event_id, instance_id = event.get("objectId", ""), row.get("objectId", "")
+        start = (row.get("actualStartDate") or {}).get("iso")
+        end = (row.get("actualEndDate") or {}).get("iso")
+        if (not start or not title or EXCLUDED.search(title) or event.get("virtual") or row.get("allDay")
+                or row.get("status") != "publish" or event.get("status") != "publish"
+                or (row.get("organization") or {}).get("objectId") not in GROUPS[key]
+                or place.get("state") != "NE" or not city or not STREET.match(street)
+                or not ID.fullmatch(event_id) or not ID.fullmatch(instance_id)):
+            continue
+        if datetime.fromisoformat(start) < now:
+            continue
+        address = f"{street}, {city}, NE {plain(place.get('postalCode'))}".rstrip()
+        link = f"{SOURCES[key][0]}#/events/{event_id}/instances/{instance_id}/"
+        output.append(record(title, start, end, plain(place.get("place")) or street, address, city,
+                             link, instance_id, lat=geo.get("latitude"), lng=geo.get("longitude"),
+                             tz=ZONE))
+    return output
+
+
+def skyybox(fetch, now):
+    url = SOURCES[SKYYBOX][0]
+    page = plain(html.fromstring(fetch(url, "text/html")).text_content())
+    organizer = plain(html.fromstring(fetch(
+        "https://midwestpubtrivia.com/locations-dates/", "text/html")).text_content())
+    if (not re.search(r"every tuesday.{0,220}trivia.{0,130}7\s*p", page, re.I)
+            or not re.search(r"Skyybox Grill and Bar.{0,260}Tuesday.{0,35}7:00\s*PM", organizer, re.I)
+            or not re.search(r"6720\s+S\.?\s+168th\s+St", page, re.I)):
+        return []
+    day = now.astimezone(ZoneInfo(ZONE)).date()
+    output = []
+    for offset in range((1 - day.weekday()) % 7, 35, 7):
+        start = datetime.combine(day + timedelta(days=offset), time(19), ZoneInfo(ZONE))
+        if start > now:
+            output.append(record("Tuesday Trivia at Skyybox", start.isoformat(), None,
+                                 "Skyybox Grill & Bar", "6720 S 168th St, Omaha, NE 68135", "Omaha",
+                                 url, start.date().isoformat(), lat=41.192416422681, lng=-96.177586580445,
+                                 tz=ZONE))
+    return output
+
+
+def postscript(fetch, now):
+    url = SOURCES[POSTSCRIPT][0]
+    markup = fetch(url, "text/html")
+    if f"elfsight-app-{WIDGET}" not in markup:
+        raise ValueError("postscript_widget_missing")
+    endpoint = f"https://{ELFSIGHT}/p/boot/?" + urlencode({"w": WIDGET, "page": url})
+    widget = json.loads(fetch(endpoint, "application/json"))["data"]["widgets"][WIDGET]["data"]
+    if widget.get("app") != "event-calendar" or not isinstance(widget["settings"].get("events"), list):
+        raise ValueError("invalid_postscript_widget")
+    output = []
+    for item in widget["settings"]["events"]:
+        start, end = item.get("start") or {}, item.get("end") or {}
+        title = plain(item.get("name"))
+        if (item.get("repeatPeriod") != "noRepeat" or item.get("isAllDay")
+                or item.get("timeZone") != ZONE or start.get("type") != "datetime"
+                or not title or EXCLUDED.search(title) or item.get("location")):
+            continue
+        starts = datetime.fromisoformat(f"{start['date']}T{start['time']}").replace(tzinfo=ZoneInfo(ZONE))
+        if not now < starts < now + timedelta(days=60):
+            continue
+        ends = f"{end['date']}T{end['time']}" if end.get("date") and end.get("time") else None
+        output.append(record(title, starts.isoformat(), ends, "Postscript",
+                             "1434 Silver St, Ashland, NE 68003", "Ashland", url, item["id"],
+                             lat=41.039166361796, lng=-96.368784765192, tz=ZONE))
+    return output
+
+
+def elleinad(fetch, now):
+    output = []
+    for slug in ("turkey-storytime", "winter-birds-storytime"):
+        url = f"https://{PARKS}/event/{slug}/"
+        document = html.fromstring(fetch(url, "text/html"))
+        for raw in document.xpath('//script[@type="application/ld+json"]/text()'):
+            payload = json.loads(raw)
+            for item in payload if isinstance(payload, list) else [payload]:
+                if item.get("@type") != "Event":
+                    continue
+                venue = item.get("location") or {}
+                start = item.get("startDate")
+                if (venue.get("name") != "Elleinad Books" or not start
+                        or datetime.fromisoformat(start) <= now
+                        or not str(item.get("eventStatus", "")).endswith("/EventScheduled")):
+                    continue
+                output.append(record(item.get("name"), start, item.get("endDate"), "Elleinad Books",
+                                     "4724 Prescott Ave, Lincoln, NE 68506", "Lincoln", url, slug,
+                                     lat=40.77296938801, lng=-96.655071487729, tz=ZONE))
+    return output
+
+
+def collect(source, fetch, *, deadline_at=None, fetch_localhop=None, now=None):
+    key = source.get("source_key")
+    if key not in SOURCES or tuple(source.get(field) for field in
+            ("feed_url", "timezone", "kind", "platform_adapter")) != (SOURCES[key][0], ZONE, "html", "html"):
+        raise ValueError("unregistered_nebraska_final_source")
+    now = now or datetime.now(timezone.utc)
+    if key in GROUPS:
+        rows = localhop(key, fetch, fetch_localhop, now)
+    else:
+        rows = {SKYYBOX: skyybox, POSTSCRIPT: postscript, ELLEINAD: elleinad}[key](fetch, now)
+    return sorted((row for row in rows if row is not None), key=lambda row: (row["starts_at"], row["id"]))
