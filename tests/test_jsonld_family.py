@@ -35,7 +35,7 @@ def test_coalition_uses_publisher_occurrence_and_exact_venue():
 def test_legacy_fields_and_identity_are_unchanged():
     from roomquest.mapsee_adapter import record
     e=event();expected=record(e['name'],e['startDate'],e['endDate'],'Actual Hall','12 Main St, Raleigh, NC','Raleigh', 'https://venue.example.org/event/one','stable-event','Music',35.8,-78.6)
-    assert parse(html(e),BASE)==[expected]
+    assert parse(html(e),BASE)==[{**expected, 'description': ''}]
 
 @pytest.mark.parametrize('wrapper',[lambda e:e,lambda e:[e],lambda e:{'@graph':[e]},lambda e:{'@type':'ItemList','itemListElement':[{'item':e}]},lambda e:{'event':e}])
 def test_common_wrappers_and_raw_json(wrapper):

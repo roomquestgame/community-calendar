@@ -185,6 +185,8 @@ def parse_registered(data, base):
                      venue, street, '', urljoin(base, path), e['id'],
                      ', '.join(str(x) for x in e.get('categories', [])), lat, lng)
         if row:
+            from roomquest.event_description import description
+            row['description'] = description(e.get('body')) or description(e.get('excerpt'))
             key = (row['id'], row['starts_at'])
             if key in out and out[key] != row:
                 raise ValueError('conflicting_event_occurrence')

@@ -90,9 +90,13 @@ def localhop(key, fetch, fetch_localhop, now):
             continue
         address = f"{street}, {city}, NE {plain(place.get('postalCode'))}".rstrip()
         link = f"{SOURCES[key][0]}#/events/{event_id}/instances/{instance_id}/"
-        output.append(record(title, start, end, plain(place.get("place")) or street, address, city,
+        item = record(title, start, end, plain(place.get("place")) or street, address, city,
                              link, instance_id, lat=geo.get("latitude"), lng=geo.get("longitude"),
-                             tz=ZONE))
+                             tz=ZONE)
+        if item is not None:
+            from roomquest.event_description import description
+            item['description'] = description(event.get('description'))
+            output.append(item)
     return output
 
 
@@ -138,9 +142,13 @@ def postscript(fetch, now):
         if not now < starts < now + timedelta(days=60):
             continue
         ends = f"{end['date']}T{end['time']}" if end.get("date") and end.get("time") else None
-        output.append(record(title, starts.isoformat(), ends, "Postscript",
-                             "1434 Silver St, Ashland, NE 68003", "Ashland", url, item["id"],
-                             lat=41.039166361796, lng=-96.368784765192, tz=ZONE))
+        row = record(title, starts.isoformat(), ends, "Postscript",
+                     "1434 Silver St, Ashland, NE 68003", "Ashland", url, item["id"],
+                     lat=41.039166361796, lng=-96.368784765192, tz=ZONE)
+        if row is not None:
+            from roomquest.event_description import description
+            row['description'] = description(item.get('description'))
+            output.append(row)
     return output
 
 
@@ -160,9 +168,13 @@ def elleinad(fetch, now):
                         or datetime.fromisoformat(start) <= now
                         or not str(item.get("eventStatus", "")).endswith("/EventScheduled")):
                     continue
-                output.append(record(item.get("name"), start, item.get("endDate"), "Elleinad Books",
+                row = record(item.get("name"), start, item.get("endDate"), "Elleinad Books",
                                      "4724 Prescott Ave, Lincoln, NE 68506", "Lincoln", url, slug,
-                                     lat=40.77296938801, lng=-96.655071487729, tz=ZONE))
+                                     lat=40.77296938801, lng=-96.655071487729, tz=ZONE)
+                if row is not None:
+                    from roomquest.event_description import description
+                    row['description'] = description(item.get('description'))
+                    output.append(row)
     return output
 
 

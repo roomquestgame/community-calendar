@@ -144,6 +144,8 @@ def parse(payload, base=''):
             urljoin(base, link), e.get('@id') or e.get('url'), e.get('keywords', ''),
             lat, lng)
         if row:
+            from roomquest.event_description import description
+            row['description'] = description(e.get('description'))
             key = (row['id'], row['starts_at'])
             if key in out and out[key] != row:
                 raise ValueError('conflicting_event_occurrence')

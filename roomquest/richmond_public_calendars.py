@@ -79,6 +79,8 @@ def volunteer_shifts(payload):
             row = record(unescape(shift["opportunityName"]), starts, ends, organizer, street,
                          city, url, shift["occurrenceId"], "volunteering", tz=ZONE)
             if row:
+                from roomquest.event_description import description as narrative
+                row['description'] = narrative(shift.get('description'))
                 rows[row["id"], row["starts_at"]] = row
     return list(rows.values())
 
@@ -171,6 +173,8 @@ def race_events(payload, identity, listing_url, now):
         row = record(label, start.isoformat(), None, venue, f"{street}, {city}, VA {zip_code}",
                      city, listing_url, f"{identity}:{label}", "running")
         if row:
+            from roomquest.event_description import description
+            row['description'] = description(event.get('description'))
             rows[row["id"], row["starts_at"]] = row
     return list(rows.values())
 
