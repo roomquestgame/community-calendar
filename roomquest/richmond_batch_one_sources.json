@@ -256,6 +256,36 @@
       "platform_adapter": "jsonld",
       "country": "US",
       "config": {}
+    },
+    {
+      "name": "Maymont",
+      "type": "ics",
+      "url": "https://maymont.org/event-calendar/?ical=1",
+      "canonical_url": "https://maymont.org/event-calendar/?ical=1",
+      "source_key": "municipal_mapsee_b4e234e302f06e1221963140",
+      "platform_adapter": "ical",
+      "country": "US",
+      "config": {}
+    },
+    {
+      "name": "Richmond SPCA",
+      "type": "ics",
+      "url": "https://richmondspca.org/upcoming-events/?ical=1",
+      "canonical_url": "https://richmondspca.org/upcoming-events/?ical=1",
+      "source_key": "municipal_mapsee_263b9839de98a9b575ce2a9b",
+      "platform_adapter": "ical",
+      "country": "US",
+      "config": {}
+    },
+    {
+      "name": "St. Stephen’s Farmers Market",
+      "type": "ics",
+      "url": "https://ststephensrva.org/events/?ical=1",
+      "canonical_url": "https://ststephensrva.org/events/?ical=1",
+      "source_key": "municipal_mapsee_0525caa27a69a6a146766db7",
+      "platform_adapter": "ical",
+      "country": "US",
+      "config": {}
     }
   ]
 }
