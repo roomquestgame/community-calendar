@@ -186,6 +186,16 @@
       "config": {
         "strict_public": true
       }
+    },
+    {
+      "name": "Coalition Theater via CultureWorks",
+      "type": "jsonld",
+      "url": "https://calendar.richmondcultureworks.org/organizations/coalition-theater/",
+      "canonical_url": "https://calendar.richmondcultureworks.org/organizations/coalition-theater",
+      "source_key": "municipal_mapsee_8000fb8c18bf23f709b53465",
+      "platform_adapter": "jsonld",
+      "country": "US",
+      "config": {}
     }
   ]
 }

@@ -13,6 +13,25 @@ def event():
       'location':{'@type':'Place','name':'Actual Hall','address':{'streetAddress':'12 Main St','addressLocality':'Raleigh','addressRegion':'NC'},'geo':{'latitude':35.8,'longitude':-78.6}}}
 def html(data):return "<SCRIPT TYPE='application/ld+json; charset=utf-8'>"+json.dumps(data)+'</SCRIPT>'
 
+
+def test_coalition_uses_publisher_occurrence_and_exact_venue():
+    from roomquest.jsonld_adapter import COALITION_KEY, COALITION_URL, collect
+
+    item = event()
+    item['url'] = 'https://calendar.richmondcultureworks.org/events/matinee/'
+    item['location'] = {'@type': 'Place', 'name': 'Coalition Theater', 'address': {
+        'streetAddress': '8 W Broad St', 'addressLocality': 'Richmond',
+        'addressRegion': 'VA', 'postalCode': '23220'}}
+    day = item['startDate'][:10]
+    index = ('<section class="ao-assoc-events">'
+             f'<a class="ao-event-card" href="{item["url"]}"><time datetime="{day}"></time></a>'
+             '</section>')
+    source = {'source_key': COALITION_KEY, 'feed_url': COALITION_URL, 'timezone': 'America/New_York'}
+    [row] = collect(source, lambda url, _: {COALITION_URL: index, item['url']: html(item)}[url])
+    assert row['event_url'] == item['url']
+    assert row['venue_address'] == '8 W Broad St, Richmond, VA, 23220'
+    assert row['lat'] == pytest.approx(37.54579)
+
 def test_legacy_fields_and_identity_are_unchanged():
     from roomquest.mapsee_adapter import record
     e=event();expected=record(e['name'],e['startDate'],e['endDate'],'Actual Hall','12 Main St, Raleigh, NC','Raleigh', 'https://venue.example.org/event/one','stable-event','Music',35.8,-78.6)
