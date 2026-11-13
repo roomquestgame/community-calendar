@@ -264,3 +264,14 @@ def test_independence_keeps_feed_summary_if_detail_has_no_description(caplog):
     assert event['description'] == 'Lego activity.'
     assert event['venue_address'] == '805 1st St East, Independence, IA 50644'
     assert 'field=description reason=missing' in caplog.text
+
+
+def test_richmond_church_mapping_uses_host_public_window_and_skips_private_rows():
+    from roomquest.ics_adapter import PLEASANT_GROVE, richmond_church_events
+
+    race = {'title': 'Operation Harvest', 'venue_address': 'Richmond International Raceway',
+            'starts_at': '2026-11-19T14:30:00+00:00'}
+    private = {'title': 'Executive Board Meeting', 'venue_address': ''}
+    [row] = richmond_church_events([race, private], PLEASANT_GROVE)
+    assert row['starts_at'] == '2026-11-19T20:00:00+00:00'
+    assert row['venue_address'] == '600 E Laburnum Ave, Richmond, VA 23222'

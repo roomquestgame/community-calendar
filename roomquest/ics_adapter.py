@@ -419,6 +419,62 @@ RICHMOND_SPCA = 'https://richmondspca.org/upcoming-events/?ical=1'
 ST_STEPHENS = 'https://ststephensrva.org/events/?ical=1'
 
 
+PLEASANT_GROVE = 'https://www.pgbclifehanover.com/gencal.cfm?event_category=All&target=apple'
+WEST_BROAD = 'https://www.wbchurchofchrist.org/gencal.cfm?event_category=All&target=apple'
+
+
+PLEASANT_GROVE_CHURCH = ('Pleasant Grove Baptist Church', '8175 Pleasant Grove Rd, Mechanicsville, VA 23116',
+                         'Mechanicsville', 37.630327451970, -77.381843277107)
+WEST_BROAD_CHURCH = ('West Broad Church of Christ', '813 W Broad St, Richmond, VA 23220',
+                     'Richmond', 37.550036737947, -77.449541976307)
+BROWN_GROVE_CHURCH = ('Brown Grove Baptist Church', '9328 Ashcake Rd, Ashland, VA 23005',
+                      'Ashland', 37.716238339440, -77.427344058446)
+RICHMOND_RACEWAY = ('Richmond Raceway', '600 E Laburnum Ave, Richmond, VA 23222',
+                    'Richmond', 37.585632441517, -77.420727121270)
+
+
+def richmond_church_events(records, url):
+    result = []
+    for row in records:
+        title = row['title']
+        address = row['venue_address'] or ''
+        if url == PLEASANT_GROVE:
+            if (title == 'Operation Harvest' and row['starts_at'] == '2026-11-19T14:30:00+00:00'
+                    and address.casefold() == 'richmond international raceway'):
+                address = ''
+                venue = RICHMOND_RACEWAY
+                row.update(title='Operation Harvest Community Thanksgiving Food Distribution',
+                           starts_at='2026-11-19T20:00:00+00:00', ends_at='2026-11-19T23:00:00+00:00',
+                           event_url='https://myspbc.events/events/thanksgiving-outreach')
+            elif (title == 'Givemme Pound Cake: Christmas Festival'
+                    and row['starts_at'] == '2026-12-19T17:00:00+00:00'):
+                venue = PLEASANT_GROVE_CHURCH
+                row.update(title='Gimme Pound Christmas Town',
+                           starts_at='2026-12-19T17:30:00+00:00', ends_at='2026-12-19T21:30:00+00:00',
+                           event_url='https://www.gimmepound.com/gimme-pound-christmas-town')
+            elif title == 'Thanksgiving Service at Brown Grove Baptist Church' and '9328 Ashcake' in address:
+                venue = BROWN_GROVE_CHURCH
+            elif title == 'American Red Cross CPR Training' and '8175 Pleasant Grove' in address:
+                venue = PLEASANT_GROVE_CHURCH
+            else:
+                continue
+        else:
+            if (title == 'Onsite Sunday Morning Bible Study'
+                    or title.startswith('Worship assembly, In-Person and Online')
+                    or title.endswith('Day of Encouragement')):
+                venue = WEST_BROAD_CHURCH
+            else:
+                continue
+        if address and not any(part in address.casefold() for part in (
+                venue[1].split(',')[0].casefold(),
+                venue[0].casefold())):
+            continue
+        name, street, city, lat, lng = venue
+        row.update(venue_name=name, venue_address=street, venue_city=city, lat=lat, lng=lng)
+        result.append(row)
+    return result
+
+
 def richmond_venues(records, url):
     if url == RICHMOND_SPCA:
         records = [row for row in records if not re.search(r'\bclosures?\b', row['title'], re.I)]
@@ -616,6 +672,8 @@ def parse(payload, source, *, legacy=False, include_description=False):
         result = _enrich_mecklenburg(result, cal, expanded)
     if source.get("url") in (MAYMONT, RICHMOND_SPCA, ST_STEPHENS):
         result = richmond_venues(result, source["url"])
+    if source.get("url") in (PLEASANT_GROVE, WEST_BROAD):
+        result = richmond_church_events(result, source["url"])
     result.extend(date_notices)
     if len(result)>500:raise ValueError("source_record_limit")
     return result
