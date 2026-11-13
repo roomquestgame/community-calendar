@@ -196,6 +196,56 @@
       "platform_adapter": "jsonld",
       "country": "US",
       "config": {}
+    },
+    {
+      "name": "Aquarian Bookshop",
+      "type": "squarespace",
+      "url": "https://www.aquarianbookshop.com/classes-events?format=json",
+      "canonical_url": "https://www.aquarianbookshop.com/classes-events?format=json",
+      "source_key": "municipal_mapsee_7873ebe438c8d35a71d20c81",
+      "platform_adapter": "squarespace",
+      "country": "US",
+      "config": {}
+    },
+    {
+      "name": "Humble Haven Yoga",
+      "type": "squarespace",
+      "url": "https://www.humblehavenyoga.com/workshops?format=json",
+      "canonical_url": "https://www.humblehavenyoga.com/workshops?format=json",
+      "source_key": "municipal_mapsee_793e511746d82367b1779139",
+      "platform_adapter": "squarespace",
+      "country": "US",
+      "config": {}
+    },
+    {
+      "name": "SCRAP RVA",
+      "type": "jsonld",
+      "url": "https://events.humanitix.com/host/scrap-rva",
+      "canonical_url": "https://events.humanitix.com/host/scrap-rva",
+      "source_key": "municipal_mapsee_2791d37769ea36ed160fa92d",
+      "platform_adapter": "jsonld",
+      "country": "US",
+      "config": {}
+    },
+    {
+      "name": "Feed More public events",
+      "type": "ics",
+      "url": "https://feedmore.org/events/?ical=1",
+      "canonical_url": "https://feedmore.org/events/?ical=1",
+      "source_key": "municipal_mapsee_adfda88318ad5ccca60abe03",
+      "platform_adapter": "ical",
+      "country": "US",
+      "config": {}
+    },
+    {
+      "name": "rvaMORE",
+      "type": "squarespace",
+      "url": "https://rvamore.org/events-1?format=json",
+      "canonical_url": "https://rvamore.org/events-1?format=json",
+      "source_key": "municipal_mapsee_73e02adcf3fb9fb0baf9e29e",
+      "platform_adapter": "squarespace",
+      "country": "US",
+      "config": {}
     }
   ]
 }

@@ -84,3 +84,15 @@ def test_family_dispatch_retains_registry_and_robots_guards():
     with patch('roomquest.mapsee_adapter.profiles',return_value={}),patch('roomquest.preview_worker.fetch_publisher') as fetch:
         with pytest.raises(PreviewError,match='unregistered_mapsee_source'):preview_source(source)
         fetch.assert_not_called()
+
+
+def test_scrap_rva_keeps_the_offsite_venue_and_normalizes_its_address():
+    from roomquest.jsonld_adapter import SCRAP_RVA_URL
+
+    item = event()
+    item['location'] = {'@type': 'Place', 'name': 'The Camel', 'address': {
+        'streetAddress': '1621 W Broad St, Richmond, VA 23220, USA',
+        'addressLocality': 'Richmond', 'addressRegion': 'VA', 'postalCode': '23220'}}
+    [row] = parse(html(item), SCRAP_RVA_URL)
+    assert row['venue_address'] == '1621 W Broad St, Richmond, VA 23220'
+    assert row['lat'] == pytest.approx(37.55449)

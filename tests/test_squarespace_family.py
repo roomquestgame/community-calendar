@@ -97,3 +97,18 @@ def test_registered_family_dispatch_and_protected_transport():
     with patch('roomquest.mapsee_adapter.profiles',return_value={}),patch('roomquest.preview_worker.fetch_publisher') as fetch:
         with pytest.raises(PreviewError,match='unregistered_mapsee_source'):preview_source(source)
         fetch.assert_not_called()
+
+
+def test_reviewed_aquarian_venue_does_not_replace_explicit_location():
+    from roomquest.squarespace import AQUARIAN
+
+    data = payload()
+    entry = data['upcoming'][0]
+    entry['id'] = '6ae20b8f4691e86544fdc6ef'
+    assert parse_registered(data, AQUARIAN)[0]['venue_name'] == 'Actual Hall'
+    entry['location'] = {'mapLat': 40.72, 'mapLng': -74.0}
+    [row] = parse_registered(data, AQUARIAN)
+    assert row['venue_address'] == '12 S Thompson St, Richmond, VA 23221'
+    assert row['lat'] == pytest.approx(37.55704)
+    entry['id'] = 'unreviewed'
+    assert parse_registered(data, AQUARIAN) == []
