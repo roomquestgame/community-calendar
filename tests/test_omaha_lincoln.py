@@ -146,6 +146,69 @@ def test_reviewed_venue_and_cancellation_rules(source_key, events, expected_pins
     assert result["p_venue_count"] == sum(lat is not None for lat, _ in expected_pins.values())
 
 
+def test_francie_long_description_fits_staging_and_preserves_reviewed_event_facts():
+    feed_url = omaha_lincoln.new_ical_feeds()[omaha_lincoln.FRANCIE_AND_FINCH]
+    source = dict(source_key=omaha_lincoln.FRANCIE_AND_FINCH, feed_url=feed_url,
+                  kind="ical", platform_adapter="ical", timezone="America/Chicago")
+    start = (datetime.now(timezone.utc) + timedelta(days=4)).replace(microsecond=0)
+    end = start + timedelta(hours=1)
+    narrative = ("The author reads selected passages and discusses the book with readers. " * 50).strip()
+    assert len(narrative) > 2000
+    calendar = Calendar()
+    calendar.add("version", "2.0")
+    event = Event()
+    event.add("uid", "francie-long-description")
+    event.add("summary", "Visiting Author")
+    event.add("dtstart", start)
+    event.add("dtend", end)
+    event.add("location", "Francie & Finch Bookshop, 130 S. 13th Street, Lincoln, NE 68508")
+    event.add("url", "https://francieandfinch.com/event/visiting-author/")
+    event.add("description", "<p>" + narrative + "</p><style>.layout { display: none; }</style>")
+    calendar.add_component(event)
+
+    with patch.object(preview_worker, "fetch_publisher", return_value=calendar.to_ical().decode()) as fetch:
+        result = preview_worker.preview_source(source)
+
+    row, = result["p_events"]
+    assert row["description"] == narrative[:2000]
+    assert row["id"] == "francie-long-description"
+    assert row["event_url"] == "https://francieandfinch.com/event/visiting-author/"
+    assert (row["starts_at"], row["ends_at"]) == (start.isoformat(), end.isoformat())
+    assert (row["venue_name"], row["venue_address"], row["venue_city"]) == (
+        "Francie & Finch Bookshop", "130 S. 13th Street, Lincoln, NE 68508", "Lincoln",
+    )
+    assert (row["lat"], row["lng"]) == (40.8129603, -96.7022956)
+    assert result["p_future_count"] == result["p_venue_count"] == 1
+    assert fetch.call_count == 1
+    assert fetch.call_args.args == (feed_url, "text/calendar")
+    assert fetch.call_args.kwargs["respect_robots"]
+    assert fetch.call_args.kwargs["allowed_hosts"] == ("francieandfinch.com",)
+
+
+def test_regional_description_is_bounded_after_riverfront_venue_evidence():
+    source = dict(source_key=riverfront.SOURCE_KEY,
+                  feed_url=omaha_lincoln.new_ical_feeds()[riverfront.SOURCE_KEY],
+                  kind="ical", platform_adapter="ical", timezone="America/Chicago")
+    calendar = Calendar()
+    calendar.add("version", "2.0")
+    event = Event()
+    event.add("uid", "late-venue-evidence")
+    event.add("summary", "Veterans Day Storywalk")
+    event.add("dtstart", datetime.now(timezone.utc) + timedelta(days=4))
+    event.add("categories", [riverfront.HEARTLAND])
+    event.add("description", ("Explore the park and enjoy the story. " * 70) + "Meet at the American Flag.")
+    event.add("url", "https://theriverfrontomaha.com/event/late-venue-evidence/")
+    calendar.add_component(event)
+
+    with patch.object(preview_worker, "fetch_publisher", return_value=calendar.to_ical().decode()):
+        row, = preview_worker.preview_source(source)["p_events"]
+
+    assert row["venue_name"] == "American Flag at Heartland of America Park (approximate pin)"
+    assert row["lat"] is not None and row["lng"] is not None
+    assert "approximate" in row["description"]
+    assert len(row["description"]) <= 2000
+
+
 def test_unl_public_preview_links_to_local_dated_event_and_skips_virtual_events():
     source = dict(source_key=omaha_lincoln.UNL_PUBLIC, feed_url=omaha_lincoln.UNL_FEED,
                   kind="ical", platform_adapter="ical", timezone="America/Chicago")

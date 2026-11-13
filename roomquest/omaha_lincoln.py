@@ -10,6 +10,7 @@ from zoneinfo import ZoneInfo
 
 from icalendar import Calendar
 
+from roomquest.event_description import description
 from roomquest.ics_adapter import parse
 from roomquest import riverfront
 
@@ -160,6 +161,8 @@ def collect(source, fetch):
             record.update(lat=40.8129603, lng=-96.7022956)
         else:
             record.update(lat=None, lng=None)
+        # Venue rules need the full publisher text; staging accepts 2,000 chars.
+        record["description"] = description(record.get("description"))
         result.append(record)
     return result
 

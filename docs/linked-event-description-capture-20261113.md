@@ -77,3 +77,24 @@ Doorways layout section with explicitly synthetic prose beyond the old limit,
 the generic Doorways ICS route, and Sarpy's URL-only feed route. The fixture is
 not a raw publisher replay: normal local feed transport failed at DNS resolution.
 A fresh production Doorways snapshot is required to verify recovered real prose.
+
+The production follow-up completed at 22:53:26 UTC. Both original Doorways
+occurrences now retain actual publisher narrative without shortcodes: Sip & Shop
+describes the shops, complimentary wine and fundraising contribution; the VCU
+Gala describes its ensembles, benefit purpose and ticket prices. Event URLs
+remained unchanged. This receipt verifies staging, not public delivery.
+
+## Omaha/Lincoln regional description bound
+
+Francie & Finch's fresh collection reached staging but was rejected four times
+with HTTP 400. The source-scoped database log identifies the error as
+`HTML event description too long`. The regional collector still used the legacy
+ICS parser's 12,000-character narrative, while all nine reviewed feeds in this
+collector have a 2,000-character staging contract.
+
+Keep the full parsed description for the reviewed venue/address rules, then
+apply the shared narrative sanitizer at the final record boundary. This retains
+identity, URL, dates, addresses and pins and adds no network requests. 51 targeted
+tests pass, including Francie's long-description preview route and RiverFront
+venue evidence occurring beyond the display cap. No retry deadline was reset;
+normal production retry after deployment must verify Francie's real snapshot.
