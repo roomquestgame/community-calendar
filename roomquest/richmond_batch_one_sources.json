@@ -246,6 +246,16 @@
       "platform_adapter": "squarespace",
       "country": "US",
       "config": {}
+    },
+    {
+      "name": "Friends of the James River Park",
+      "type": "jsonld",
+      "url": "https://jamesriverpark.org/events/",
+      "canonical_url": "https://jamesriverpark.org/events/",
+      "source_key": "municipal_mapsee_05b863a96e5baf8d94d75605",
+      "platform_adapter": "jsonld",
+      "country": "US",
+      "config": {}
     }
   ]
 }

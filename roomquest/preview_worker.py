@@ -382,13 +382,24 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
         if recdesk:
             json_content_type = 'application/json; charset=utf-8'
     cfengage_form = False
+    eventon_form = False
     if calendar_form is not None:
         from roomquest.richmond_public_calendars import CF_API, CF_HOST, calendar_form as cfengage_window
         cfengage_form = (url == CF_API and accept == 'application/json' and respect_robots
                          and allowed_hosts == (CF_HOST,) and calendar_form == cfengage_window())
+        from roomquest import eventon
+        eventon_form = (url == eventon.ENDPOINT and accept == 'application/json'
+                        and respect_robots and allowed_hosts == (eventon.HOST,)
+                        and isinstance(calendar_form, dict) and len(calendar_form) <= 150
+                        and all(isinstance(v, str) and len(v) <= 2048
+                                for v in calendar_form.values())
+                        and re.fullmatch(r'[a-zA-Z0-9]{8,24}', calendar_form.get('nonce', ''))
+                        and all(k == 'nonce' or re.fullmatch(
+                            r'(?:global|cals\[evcal_calendar_277\]\[sc\])(?:\[[a-zA-Z0-9_-]+\])+', k)
+                                for k in calendar_form))
         # A second boundary keeps internal callers from turning this into an
         # arbitrary write-capable transport. Never replay a POST on redirect.
-        if not cfengage_form and (url != 'https://goodshepherdsouthhill.org/wp-admin/admin-ajax.php'
+        if not (cfengage_form or eventon_form) and (url != 'https://goodshepherdsouthhill.org/wp-admin/admin-ajax.php'
                 or accept != 'text/html' or not respect_robots
                 or allowed_hosts != ('goodshepherdsouthhill.org',)
                 or not isinstance(calendar_form, dict)
@@ -421,7 +432,9 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
         headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8'
         headers['Referer'] = ('https://www.cfengage.org/calendar' if cfengage_form
                               else 'https://goodshepherdsouthhill.org/welcome/calendar/')
-        if cfengage_form:
+        if eventon_form:
+            headers['Referer'] = eventon.CALENDAR
+        if cfengage_form or eventon_form:
             headers['X-Requested-With'] = 'XMLHttpRequest'
     elif calendar_json is not None:
         headers['Content-Type'] = json_content_type
@@ -494,7 +507,8 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
                     raise PreviewError("publisher_http_" + str(code))
                 if (calendar_form is not None and
                         response.headers.get('Content-Type', '').split(';', 1)[0].strip().lower()
-                        not in ({'application/json', 'text/html'} if cfengage_form else {'text/html'})):
+                        not in ({'application/json', 'text/html'} if cfengage_form else
+                                {'application/json'} if eventon_form else {'text/html'})):
                     response.close()
                     raise PreviewError('invalid_calendar_render_content_type')
                 if (calendar_json is not None and
@@ -1249,12 +1263,9 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         elif source_key == "municipal_38cad94cfdc8628a8ce8ee90":
             from roomquest.lynnhaven_river import HOST, collect as collect_html
             allowed_hosts = (HOST,)
-        elif source_key in ("sarpy_recurring_tourism_html_ne", "sarpy_sports_tourism_html_ne"):
-            from roomquest.sarpy_calendar_html import HOST, collect as collect_html
+        elif source_key == "municipal_5effc448d9e900b8cdd14958":
+            from roomquest.hampton_roads_chamber import HOST, collect as collect_html
             allowed_hosts = (HOST,)
-        elif source_key in ("municipal_5effc448d9e900b8cdd14958", "greater_omaha_chamber_growthzone_html_ne"):
-            from roomquest.hampton_roads_chamber import HOST, OMAHA_HOST, OMAHA_KEY, collect as collect_html
-            allowed_hosts = (OMAHA_HOST if source_key == OMAHA_KEY else HOST,)
         elif source_key == "south_hill_chamber_va":
             from roomquest.south_hill_chamber import collect as collect_html
             allowed_hosts = ("members.southhillchamber.com",)
@@ -1386,8 +1397,17 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
             raise PreviewError("unregistered_jsonld_source")
         deadline = min(monotonic() + 20, deadline_at - 8 if deadline_at is not None else float("inf"))
         try:
-            records = collect_jsonld(source, lambda url, accept: fetch_publisher(
-                url, accept, respect_robots=True, deadline_at=deadline))
+            from roomquest import eventon
+            if source['feed_url'] == eventon.CALENDAR:
+                page = fetch_publisher(eventon.CALENDAR, 'text/html', respect_robots=True,
+                                       deadline_at=deadline, allowed_hosts=(eventon.HOST,))
+                body = _fetch_publisher_request(
+                    eventon.ENDPOINT, 'application/json', respect_robots=True, deadline_at=deadline,
+                    allowed_hosts=(eventon.HOST,), calendar_form=eventon.calendar_form(page))
+                records = eventon.parse(body)
+            else:
+                records = collect_jsonld(source, lambda url, accept: fetch_publisher(
+                    url, accept, respect_robots=True, deadline_at=deadline))
         except PreviewError:
             # Transport errors are already safe, bounded codes (including HTTP digits).
             raise
