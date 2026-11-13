@@ -414,6 +414,48 @@ UID rewriting or invent household route applicability.
             result.append(row)
     return result
 
+MAYMONT = 'https://maymont.org/event-calendar/?ical=1'
+RICHMOND_SPCA = 'https://richmondspca.org/upcoming-events/?ical=1'
+ST_STEPHENS = 'https://ststephensrva.org/events/?ical=1'
+
+
+def richmond_venues(records, url):
+    if url == RICHMOND_SPCA:
+        records = [row for row in records if not re.search(r'\bclosures?\b', row['title'], re.I)]
+    elif url == ST_STEPHENS:
+        records = [row for row in records if row['title'] == 'Farmers Market']
+
+    for row in records:
+        location = row['venue_address']
+        title = row['title']
+        venue = None
+        if url == RICHMOND_SPCA and location.startswith('Richmond SPCA, 2519 Hermitage Rd,'):
+            venue = ('Richmond SPCA', '2519 Hermitage Rd, Richmond, VA 23220',
+                     37.565705055366, -77.460401697427)
+        elif url == ST_STEPHENS and '6000 Grove Ave' in location:
+            venue = ('St. Stephen’s Farmers Market', '6000 Grove Ave, Richmond, VA 23226',
+                     37.572961432557, -77.521848836314)
+        elif url == MAYMONT:
+            if (location == 'The Robins Nature Center' or
+                    (not location and title in {'Adult Night Hike', 'Toddler Time',
+                      'Trail Trek: Virginia Wildlife Trail Guided Tour',
+                      '"In Our Nature" Film Screening', 'A Very Merry Wild Night'})):
+                venue = ('Robins Nature Center' if location or title == 'Adult Night Hike'
+                         else 'Robins Nature Center (likely entrance)',
+                         '2201 Shields Lake Dr, Richmond, VA 23220',
+                         37.538512146818, -77.475005122112)
+            elif (location.startswith('Maymont Mansion, 1700 Hampton Street,') or
+                    location == 'Carriage House Lawn' or (not location and title == 'Wreath Workshop')):
+                venue = ('Maymont Hampton Street Entrance' if location
+                         else 'Maymont Hampton Street Entrance (likely entrance)',
+                         '1700 Hampton St, Richmond, VA 23220',
+                         37.534071811395, -77.474335631903)
+        if venue:
+            name, street, lat, lng = venue
+            row.update(venue_name=name, venue_address=street, venue_city='Richmond', lat=lat, lng=lng)
+    return records
+
+
 def parse(payload, source, *, legacy=False, include_description=False):
     from icalendar import Calendar
     from roomquest import odu_campusgroups
@@ -572,6 +614,8 @@ def parse(payload, source, *, legacy=False, include_description=False):
         if len({event['id'] for event in result}) != len(result):
             raise ValueError('recurrence_identity_conflict')
         result = _enrich_mecklenburg(result, cal, expanded)
+    if source.get("url") in (MAYMONT, RICHMOND_SPCA, ST_STEPHENS):
+        result = richmond_venues(result, source["url"])
     result.extend(date_notices)
     if len(result)>500:raise ValueError("source_record_limit")
     return result
