@@ -1,5 +1,5 @@
 """The two owner-approved Squarespace JSON calendars; no HTML/detail requests."""
-from datetime import datetime, timezone
+from datetime import datetime, time, timezone
 import json
 import math
 import re
@@ -33,7 +33,20 @@ REVIEWED_LOCATIONS = {
         '6aa1eccec3189b43fc8c5ee5': (
             'Carillon Shelter at Barker Field', '1300 Blanton Ave, Richmond, VA 23221',
             37.539107, -77.482023),
+        '6aa1eec64bc7ba3a71ba7132': (
+            'North Bank Park (approximate trail access)', '1941 Texas Ave, Richmond, VA 23220',
+            37.532156937701, -77.469442346874),
     },
+}
+
+# The organizer lists the individual sessions inside these two dated series.
+HUMBLE_SESSIONS = {
+    '6a905562c3e1427a7c39e258': [
+        (day, time(10, 30), time(11, 30)) for day in ('2026-11-14', '2026-12-12')
+    ],
+    '6ab30c2ba24e932b32c9e978': [
+        (f'2026-12-{day:02d}', time(19), time(20, 15)) for day in (1, 8, 15, 22, 29)
+    ],
 }
 
 SOURCES = {
@@ -143,6 +156,22 @@ def parse_registered(data, base):
             street = '304 Henry Street, Ashland, VA 23005'
             lat, lng = 37.761459795707, -77.477667720372
         venue = plain(v.get('addressTitle'))
+        sessions = HUMBLE_SESSIONS.get(e['id']) if base == HUMBLE_HAVEN else None
+        if sessions and not venue and not street:
+            path = e.get('fullUrl')
+            if not isinstance(path, str) or not path.startswith('/workshops/'):
+                raise ValueError('invalid_event_link')
+            for day, start_time, end_time in sessions:
+                zone = ZoneInfo('America/New_York')
+                start = datetime.combine(datetime.strptime(day, '%Y-%m-%d').date(), start_time, zone)
+                end = datetime.combine(start.date(), end_time, zone)
+                row = record(e.get('title'), start.isoformat(), end.isoformat(),
+                             'Humble Haven Yoga (likely studio)', '6980 Forest Ave, Richmond, VA 23230',
+                             'Richmond', urljoin(base, path), f'{e["id"]}:{day}', '',
+                             37.602130960539, -77.523501945619)
+                if row:
+                    out[(row['id'], row['starts_at'])] = row
+            continue
         if not venue and not street:
             reviewed = REVIEWED_LOCATIONS.get(base, {}).get(e['id'])
             if reviewed:
