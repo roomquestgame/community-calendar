@@ -10,6 +10,16 @@ from lxml import html
 from roomquest.mapsee_adapter import plain, record
 
 ZONE = "America/Chicago"
+ELEANOR = "municipal_91c26eb4ef4205c03947decd"
+ELEANOR_ZONE = "America/New_York"
+ELEANOR_SHOP = ("Eleanor’s Norfolk", "801 Boush Street, Unit B, Norfolk, VA 23510")
+ELEANOR_GALLERY = ("Baron and Ellin Gordon Art Galleries", "4509 Monarch Way, Norfolk, VA 23508")
+ELEANOR_SHOP_EVENTS = {
+    "anarchiststudygroupnov26",
+    "buy-nothing-book-swap",
+    "northernnightsnorthernlights",
+    "scapegoatclarefollman",
+}
 SOURCES = {
     "pageturners_lounge_omaha_ne": (
         "https://www.pageturnersomaha.com/event-calendar",
@@ -24,6 +34,7 @@ SOURCES = {
         "Saro Cider Lincoln Taproom", "1746 N St, Lincoln, NE 68508", "1746 N St", "Lincoln",
     ),
     "thor_trails_squarespace_ne": ("https://www.thortrails.org/events", "", "", "", ""),
+    ELEANOR: ("https://www.eleanorsnfk.com/events", *ELEANOR_SHOP, "801 Boush", "Norfolk"),
 }
 REQUIRE_CARD_LOCATION = {"saro_cider_lincoln_ne"}
 HAS_CLASS = "contains(concat(' ', normalize-space(@class), ' '), $class_name)"
@@ -68,10 +79,14 @@ def trail_location(card):
 
 
 def collect(source, fetch, *, deadline_at=None, now=None):
-    profile = SOURCES.get(source.get("source_key"))
+    source_key = source.get("source_key")
+    profile = SOURCES.get(source_key)
+    zone = ELEANOR_ZONE if source_key == ELEANOR else ZONE
     if profile is None or (source.get("feed_url"), source.get("timezone"), source.get("kind"),
-                           source.get("platform_adapter")) != (profile[0], ZONE, "html", "html"):
+                           source.get("platform_adapter")) != (profile[0], zone, "html", "html"):
         raise ValueError("unregistered_squarespace_venue")
+    if source_key == ELEANOR:
+        return collect_eleanor(profile[0], fetch, now)
     listing, venue, address, street_prefix, city = profile
     origin = urlsplit(listing)
     today = (now or datetime.now(timezone.utc)).astimezone(ZoneInfo(ZONE)).date()
@@ -126,3 +141,43 @@ def collect(source, fetch, *, deadline_at=None, now=None):
             if previous != row:
                 raise ValueError("conflicting_squarespace_venue_event")
     return sorted(events.values(), key=lambda row: (row["starts_at"], row["id"]))
+
+
+def collect_eleanor(listing, fetch, now):
+    local_now = (now or datetime.now(timezone.utc)).astimezone(ZoneInfo(ELEANOR_ZONE)).replace(tzinfo=None)
+    stop = local_now + timedelta(days=60)
+    document = html.fromstring(fetch(listing, "text/html"))
+    links = {}
+    for title in elements(document, "summary-title-link", "a"):
+        path = title.get("href", "")
+        if re.fullmatch(r"/event-details/[a-z0-9-]+", path):
+            links[path] = urljoin(listing, path)
+    if not links or len(links) > 30:
+        raise ValueError("invalid_squarespace_summary_links")
+
+    events = []
+    for path, link in links.items():
+        detail = html.fromstring(fetch(link, "text/html"))
+        titles = elements(detail, "eventitem-title", "h1")
+        start = first_time(detail, "event-time-localized-start", "event-time-12hr-start")
+        if not titles or start is None or not local_now <= start < stop:
+            continue
+        title = plain(titles[0].text_content())
+        if re.search(r"\b(?:cancelled|canceled|postponed)\b", title, re.I):
+            continue
+        body = elements(detail, "eventitem-column-content")
+        copy = plain(body[0].text_content()).casefold() if body else ""
+        normalized_title = title.casefold()
+        if "gordon art gallery" in normalized_title:
+            venue, address = ELEANOR_GALLERY
+        elif ("801 boush" in copy or re.search(r"\b(?:at|to) eleanor[’']s", copy)
+              or "at eleanor’s" in normalized_title or path.rsplit("/", 1)[-1] in ELEANOR_SHOP_EVENTS):
+            venue, address = ELEANOR_SHOP
+        else:
+            continue
+        end = first_time(detail, "event-time-localized-end", "event-time-12hr-end")
+        row = record(title, start.isoformat(), end.isoformat() if end and end > start else None,
+                     venue, address, "Norfolk", link, path, tz=ELEANOR_ZONE)
+        if row:
+            events.append(row)
+    return sorted(events, key=lambda row: (row["starts_at"], row["id"]))

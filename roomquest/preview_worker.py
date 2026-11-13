@@ -1135,7 +1135,11 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         elif source_key == 'sova_innovation_hub_va':
             from roomquest.sova_workshops import HOST, collect as collect_html
             allowed_hosts = (HOST,)
-        elif source_key in ('pageturners_lounge_omaha_ne', 'blue_sky_bar_patio_omaha_ne', 'saro_cider_lincoln_ne', 'thor_trails_squarespace_ne'):
+        elif source_key == 'municipal_5a87362d39d182aed1cf4a6c':
+            from roomquest.veil_events import URL, collect as collect_html
+            allowed_hosts = (urlparse(URL).hostname,)
+        elif source_key in ('pageturners_lounge_omaha_ne', 'blue_sky_bar_patio_omaha_ne', 'saro_cider_lincoln_ne',
+                           'thor_trails_squarespace_ne', 'municipal_91c26eb4ef4205c03947decd'):
             from roomquest.squarespace_events_html import SOURCES, collect as collect_html
             allowed_hosts = (urlparse(SOURCES[source_key][0]).hostname,)
         elif source_key in ('prairie_pines_events_ne', 'glacier_creek_preserve_events_ne'):
