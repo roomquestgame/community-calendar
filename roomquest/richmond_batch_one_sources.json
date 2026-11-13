@@ -152,6 +152,40 @@
       "platform_adapter": "squarespace",
       "country": "US",
       "config": {}
+    },
+    {
+      "name": "Ashland Museum",
+      "type": "squarespace",
+      "url": "https://ashlandmuseum.org/upcoming-events?format=json",
+      "canonical_url": "https://ashlandmuseum.org/upcoming-events?format=json",
+      "source_key": "municipal_mapsee_f243e5545a10e26b1f853c9b",
+      "platform_adapter": "squarespace",
+      "country": "US",
+      "config": {}
+    },
+    {
+      "name": "Lewis Ginter Botanical Garden",
+      "type": "tribe",
+      "url": "https://www.lewisginter.org",
+      "canonical_url": "https://lewisginter.org/",
+      "source_key": "municipal_mapsee_b9b104f07a6dd62cb2e9fb90",
+      "platform_adapter": "wordpress",
+      "country": "US",
+      "config": {
+        "strict_public": true
+      }
+    },
+    {
+      "name": "Virginia Repertory Theatre",
+      "type": "tribe",
+      "url": "https://va-rep.org/calendar/",
+      "canonical_url": "https://va-rep.org/calendar",
+      "source_key": "municipal_mapsee_aa77c4b1e09ccc6dfb9d1bba",
+      "platform_adapter": "wordpress",
+      "country": "US",
+      "config": {
+        "strict_public": true
+      }
     }
   ]
 }

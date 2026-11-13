@@ -8,6 +8,8 @@ from zoneinfo import ZoneInfo
 
 from roomquest.mapsee_adapter import plain, timestamp
 
+ASHLAND_MUSEUM = 'https://ashlandmuseum.org/upcoming-events?format=json'
+
 SOURCES = {
     'https://fraziermuseum.org/calendar?format=json': {
         'timezone': 'America/Kentucky/Louisville', 'state': r'(?:KY|Kentucky)',
@@ -109,6 +111,11 @@ def parse_registered(data, base):
                 lat, lng = marker
         if isinstance(lat, bool) or isinstance(lng, bool):
             lat = lng = None
+        if (base == ASHLAND_MUSEUM
+                and plain(v.get('addressTitle')) == 'Truist Theater in Brock Commons'
+                and street == 'Randolph-Macon College, Henry Street, Ashland, VA 23005'):
+            street = '304 Henry Street, Ashland, VA 23005'
+            lat, lng = 37.761459795707, -77.477667720372
         path = e.get('fullUrl') or e.get('urlId')
         if not isinstance(path, str) or not path.strip():
             raise ValueError('event_link_missing')

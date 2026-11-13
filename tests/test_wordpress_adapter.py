@@ -34,6 +34,51 @@ def event(i=1):
  return {'id':i,'title':'Public concert','utc_start_date':start.isoformat(),'utc_end_date':(start+timedelta(hours=2)).isoformat(),
  'url':'https://venue.example.org/event/'+str(i),'venue':{'venue':'Hall','address':'12 Main St','city':'Raleigh','state':'NC','geo_lat':35.8,'geo_lng':-78.6},'categories':[{'name':'Music'}]}
 
+
+def test_lewis_ginter_supplies_the_garden_address_only_for_missing_venues():
+    from roomquest.wordpress_adapter import _lewis_ginter_events
+
+    at_garden = {'title': 'Public garden workshop', 'start_date': '2027-01-12 13:00:00',
+                 'end_date': '2027-01-12 15:00:00', 'venue': []}
+    offsite = dict(at_garden, venue={'venue': 'Other Hall'})
+    members = dict(at_garden, title='Members-Only Preview')
+    multiday = dict(at_garden, end_date='2027-01-13 15:00:00')
+    rows = _lewis_ginter_events({'events': [at_garden, offsite, members, multiday]})['events']
+    assert len(rows) == 2
+    assert rows[0]['venue']['address'] == '1800 Lakeside Avenue'
+    assert rows[1]['venue'] == offsite['venue']
+
+
+def test_virginia_rep_preserves_multiple_performances_on_the_same_day():
+    from calendar import monthrange
+    from zoneinfo import ZoneInfo
+    from roomquest.richmond_performances import ZONE, parse_month
+
+    zone = ZoneInfo(ZONE)
+    now = datetime.now(zone)
+    show_day = (now + timedelta(days=2)).date()
+    month = show_day.replace(day=1)
+    performances = ''.join(
+        f'<li class="performance"><div class="action__time">'
+        f'<a href="https://tickets.va-rep.org/42/{i}">{hour}</a></div>'
+        '<p class="venue__title">November Theatre</p>'
+        '<p class="venue__address">114 West Broad Street Richmond, Virginia 23220</p></li>'
+        for i, hour in ((1, '2:00pm'), (2, '7:30pm'))
+    )
+    event = ('<ul class="events"><li class="event"><a href="https://va-rep.org/events/test/">'
+             '<span class="event__title">Test Show</span></a>'
+             f'<ul class="performances">{performances}</ul></li></ul>')
+    cells = []
+    for number in range(1, monthrange(month.year, month.month)[1] + 1):
+        midnight = datetime(month.year, month.month, number, tzinfo=zone)
+        markup = event if midnight.date() == show_day else ''
+        cells.append(f'<div class="day" id="day-{int(midnight.timestamp())}">{markup}</div>')
+    rows = parse_month('<main class="month">' + ''.join(cells) + '</main>', month, now)
+    assert [row['id'] for row in rows] == ['va-rep-42-1', 'va-rep-42-2']
+    assert [datetime.fromisoformat(row['starts_at']).astimezone(zone).hour for row in rows] == [14, 19]
+    assert all(row['venue_address'] == '114 West Broad Street, Richmond, VA 23220' for row in rows)
+    assert all(row['ends_at'] is None for row in rows)
+
 class WordPressTests(unittest.TestCase):
  def test_endpoint_preserves_filters_and_does_not_duplicate_path(self):
   calls=[]
