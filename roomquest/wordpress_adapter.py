@@ -13,6 +13,9 @@ from urllib.parse import urlsplit, urlunsplit, parse_qsl, urlencode
 MAX_PAGES = 5
 MAX_RECORDS = 500
 MAX_MADISON_TIME_REVIEWS = 5
+READING_ROOM_KEY = 'reading_room_omaha_wordpress_ne'
+READING_ROOM_URL = 'https://readingroomomaha.com/wp-json/tribe/events/v1/events'
+READING_ROOM_ZONE = 'America/Chicago'
 ROSEMONT_KEY = 'rosemont_of_virginia'
 ROSEMONT_URL = 'https://rosemontofvirginia.com/wp-json/tribe/events/v1/events'
 ROSEMONT_TIMEZONE = 'America/New_York'
@@ -44,6 +47,27 @@ def _lewis_ginter_events(payload):
             continue
         events.append(dict(item, venue=item.get('venue') or venue))
     return dict(payload, events=events)
+
+
+def _reading_room_events(payload):
+    from roomquest.mapsee_adapter import plain
+    events = []
+    for item in payload['events']:
+        if not isinstance(item, dict):
+            raise ValueError('invalid_calendar_record')
+        title = plain(item.get('title'))
+        if re.search(r'\b(?:private\s+(?:event|party|function|booking)|members?[- ]only|closed)\b',
+                     title, re.I):
+            continue
+        venue = item.get('venue')
+        if isinstance(venue, dict) and plain(venue.get('venue')).casefold() in {
+                'reading room', 'the reading room', 'the reading room omaha'}:
+            if not any(plain(venue.get(field)) for field in ('address', 'city', 'state', 'zip')):
+                venue = {**venue, 'address': '1505 Farnam St', 'city': 'Omaha',
+                         'state': 'NE', 'zip': '68102'}
+                item = {**item, 'venue': venue}
+        events.append(item)
+    return {**payload, 'events': events}
 
 
 def _hampton_venue(source_key, row):
@@ -216,6 +240,10 @@ def collect(source, fetch, *, deadline_at=None):
     if source_key == LEWIS_GINTER and (source.get('feed_url'), source.get('timezone')) != (
             LEWIS_GINTER_ROOT, 'America/New_York'):
         raise ValueError('unregistered_lewis_ginter_calendar')
+    reading_room = source_key == READING_ROOM_KEY
+    if reading_room and (source.get('feed_url'), source.get('timezone')) != (
+            READING_ROOM_URL, READING_ROOM_ZONE):
+        raise ValueError('unregistered_reading_room_calendar')
     hampton_url = HAMPTON_TRIBE_SOURCES.get(source_key)
     if hampton_url and (source.get('feed_url'), source.get('timezone')) != (hampton_url, 'America/New_York'):
         raise ValueError('unregistered_hampton_wordpress_source')
@@ -270,6 +298,8 @@ def collect(source, fetch, *, deadline_at=None):
             raise ValueError('unsupported_wordpress_payload')
         if len(payload['events']) > 100:
             raise ValueError('source_record_limit')
+        if reading_room:
+            payload = _reading_room_events(payload)
         if source_key == LEWIS_GINTER:
             payload = _lewis_ginter_events(payload)
         if rosemont:
@@ -314,7 +344,7 @@ def collect(source, fetch, *, deadline_at=None):
                             raise ValueError('publisher_schedule_conflict')
         # Never follow response next links; rebuild only this registered URL.
         utc_default_zone = 'America/New_York' if source_key == VIRGINIA_MOCA else TRIBE_UTC_DEFAULT_ZONES.get(source_key)
-        parsed_rows = parse_tribe(payload, strict_public=public_calendar or bool(hampton_url) or ncma or source.get("source_key") in
+        parsed_rows = parse_tribe(payload, strict_public=public_calendar or reading_room or bool(hampton_url) or ncma or source.get("source_key") in
                                   ("madison_county_parks_ia", "nebraska_game_parks", ROSEMONT_KEY, jpb_basketball.KEY, hurrdat_calendar.KEY),
                                 retain_description=bool(hampton_url) or ncma or source.get("source_key") in
                                   ("madison_county_parks_ia", ROSEMONT_KEY, jpb_basketball.KEY, hurrdat_calendar.KEY),
