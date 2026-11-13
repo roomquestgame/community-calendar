@@ -22,6 +22,28 @@ HAMPTON_TRIBE_SOURCES = {
 }
 BEACH_EVENTS = 'municipal_e3269f28ac6baa042d42de36'
 VIRGINIA_MOCA = 'municipal_2ec2b4eebdf3998055908a82'
+LEWIS_GINTER = 'municipal_mapsee_b9b104f07a6dd62cb2e9fb90'
+LEWIS_GINTER_ROOT = 'https://www.lewisginter.org'
+
+
+def _lewis_ginter_events(payload):
+    # The garden's official directions supply its entrance coordinates. Preserve
+    # any venue supplied by the event itself, and skip ambiguous multi-day times.
+    from roomquest.mapsee_adapter import plain
+    venue = {'venue': 'Lewis Ginter Botanical Garden', 'address': '1800 Lakeside Avenue',
+             'city': 'Henrico', 'state': 'VA', 'zip': '23228',
+             'geo_lat': 37.6199722, 'geo_lng': -77.47075}
+    events = []
+    for item in payload['events']:
+        if not isinstance(item, dict):
+            raise ValueError('invalid_calendar_record')
+        start, end = item.get('start_date') or '', item.get('end_date') or ''
+        if item.get('all_day') or (end and start[:10] != end[:10]):
+            continue
+        if re.search(r'\bmembers?[- ]only\b', plain(item.get('title')), re.I):
+            continue
+        events.append(dict(item, venue=item.get('venue') or venue))
+    return dict(payload, events=events)
 
 
 def _hampton_venue(source_key, row):
@@ -188,6 +210,12 @@ def _madison_display_schedule(item, source, fetch):
 
 def collect(source, fetch, *, deadline_at=None):
     source_key = source.get('source_key')
+    from roomquest import richmond_performances
+    if source_key == richmond_performances.KEY:
+        return richmond_performances.collect(source, fetch)
+    if source_key == LEWIS_GINTER and (source.get('feed_url'), source.get('timezone')) != (
+            LEWIS_GINTER_ROOT, 'America/New_York'):
+        raise ValueError('unregistered_lewis_ginter_calendar')
     hampton_url = HAMPTON_TRIBE_SOURCES.get(source_key)
     if hampton_url and (source.get('feed_url'), source.get('timezone')) != (hampton_url, 'America/New_York'):
         raise ValueError('unregistered_hampton_wordpress_source')
@@ -242,6 +270,8 @@ def collect(source, fetch, *, deadline_at=None):
             raise ValueError('unsupported_wordpress_payload')
         if len(payload['events']) > 100:
             raise ValueError('source_record_limit')
+        if source_key == LEWIS_GINTER:
+            payload = _lewis_ginter_events(payload)
         if rosemont:
             payload, held, excluded = _rosemont_review(payload)
             rosemont_held += held

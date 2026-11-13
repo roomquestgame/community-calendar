@@ -17,6 +17,20 @@ def payload():
         'location': {'addressTitle': 'Actual Hall', 'addressLine1': '12 Main St',
                      'addressLine2': 'Raleigh, NC', 'markerLat': 35.8, 'markerLng': -78.6}}], 'past': []}
 
+def test_ashland_museum_uses_the_reviewed_offsite_address():
+    from roomquest.squarespace import ASHLAND_MUSEUM
+
+    data = payload()
+    data['upcoming'][0]['location'] = {
+        'addressTitle': 'Truist Theater in Brock Commons',
+        'addressLine1': 'Randolph-Macon College, Henry Street',
+        'addressLine2': 'Ashland, VA 23005',
+        'mapLat': 40.720882, 'mapLng': -74.000988,
+    }
+    rows = parse_registered(data, ASHLAND_MUSEUM)
+    assert rows[0]['venue_address'] == '304 Henry Street, Ashland, VA 23005'
+    assert rows[0]['lat'] == pytest.approx(37.76146)
+
 def test_confirmed_archive_cursor_is_not_fetched_or_treated_as_truncation():
     data = payload(); data['past'] = [{'publishOn': 1000, 'endDate': 2000}]
     data['pagination'] = {'nextPage': 'https://evil.example.org/', 'nextPageOffset': 1000}
