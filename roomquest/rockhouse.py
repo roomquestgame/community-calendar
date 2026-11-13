@@ -138,6 +138,70 @@ def event_description(payload, title):
     return description(html.tostring(bodies[0], encoding="unicode", with_tail=False))
 
 
+def description_from_detail(payload, row):
+    """Read narrative only from the exact linked performance's matched page."""
+    from lxml import etree, html
+
+    url = row.get("event_url")
+    if not isinstance(url, str):
+        raise ValueError("rockhouse_detail_identity_mismatch")
+    target = urlsplit(url)
+    profile = next((profile for profile in SOURCES.values()
+                    if target.netloc == urlsplit(profile[0]).netloc
+                    and re.fullmatch(r"/event/[a-z0-9]+(?:-[a-z0-9]+)*/"
+                                     + re.escape(profile[1]), target.path)), None)
+    if profile is None or target.scheme != "https" or target.query or target.fragment:
+        raise ValueError("rockhouse_detail_identity_mismatch")
+    try:
+        document = html.fromstring(payload)
+    except (etree.ParserError, TypeError):
+        raise ValueError("rockhouse_detail_structure_missing") from None
+    canonicals = document.xpath(
+        "//link[contains(concat(' ', normalize-space(translate(@rel, "
+        "'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')), ' '), ' canonical ')]/@href")
+    if (len(canonicals) != 1
+            or urljoin(url, canonicals[0]).rstrip("/") != url.rstrip("/")):
+        raise ValueError("rockhouse_detail_identity_mismatch")
+    has_class = "contains(concat(' ', normalize-space(@class), ' '), $class_name)"
+    sections = document.xpath(f"//*[@id='RhpEventsSingle']//*[{has_class}]", class_name=" singleEventDetails ")
+    if len(sections) != 1:
+        raise ValueError("rockhouse_detail_structure_missing")
+    section = sections[0]
+    headings = section.xpath(".//h1")
+    title = plain(row.get("title"))
+    if not title or len(headings) != 1 or plain(headings[0].text_content()).casefold() != title.casefold():
+        raise ValueError("rockhouse_detail_identity_mismatch")
+    try:
+        begins = datetime.fromisoformat(row["starts_at"])
+        if begins.tzinfo is None or begins.utcoffset() is None:
+            raise ValueError
+        local = begins.astimezone(ZoneInfo(ZONE))
+        dates = section.xpath(f".//*[{has_class}]", class_name=" eventStDate ")
+        times = section.xpath(f".//*[{has_class}]", class_name=" eventDoorStartDate ")
+        if len(dates) != 1 or len(times) != 1:
+            raise ValueError
+        dated = DAY.search(plain(dates[0].text_content()))
+        day = show_date(dated, local.date(), local.date()) if dated else None
+        show = SHOW.search(plain(times[0].text_content()))
+        if day is None or show is None:
+            raise ValueError
+        hour, minute, half = show.groups()
+        if not 1 <= int(hour) <= 12:
+            raise ValueError
+        if (local.hour, local.minute, local.second, local.microsecond) != (
+                int(hour) % 12 + (12 if half.casefold() == "p" else 0), int(minute or 0), 0, 0):
+            raise ValueError
+    except (KeyError, TypeError, ValueError):
+        raise ValueError("rockhouse_detail_identity_mismatch") from None
+    bodies = section.xpath(f".//*[{has_class}]", class_name=" singleEventDescription ")
+    if len(bodies) > 1:
+        raise ValueError("rockhouse_detail_structure_missing")
+    if not bodies:
+        return ""
+    narrative = description(html.tostring(bodies[0], encoding="unicode", with_tail=False))
+    return "" if plain(narrative).casefold() == title.casefold() else narrative
+
+
 def event_record(payload, url, venue, street, today, horizon):
     doc = Document(payload)
     title = plain(" ".join(doc.heading))
@@ -204,7 +268,7 @@ def listing_records(payload, listing, links, venue, street, today, horizon):
     return observed
 
 
-def collect(source, fetch, *, deadline_at=None, now=None):
+def collect(source, fetch, *, deadline_at=None, now=None, enrich_details=False):
     profile = SOURCES.get(source.get("source_key"))
     if profile is None or (source.get("feed_url"), source.get("timezone"),
                            source.get("kind"), source.get("platform_adapter")) != (
@@ -226,5 +290,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
             fetch(link, "text/html"), link, venue, street, today, horizon,
         )
         if row is not None:
+            if enrich_details and link in observed:
+                row["description"] = description_from_detail(fetch(link, "text/html"), row)
             result.append(row)
     return sorted(result, key=lambda row: (row["starts_at"], row["id"]))

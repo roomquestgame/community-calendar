@@ -5,6 +5,7 @@ import re
 from time import monotonic, sleep
 from urllib.error import HTTPError, URLError
 from roomquest.collector_errors import failure_details
+from roomquest.linked_event_descriptions import PROFILES as LINKED_DESCRIPTION_PROFILES
 from roomquest.preview_worker import PreviewError, supabase_rpc, _process_claimed_source
 
 CATEGORIES = frozenset(('ical', 'wordpress', 'jsonld', 'squarespace', 'library',
@@ -50,6 +51,11 @@ _ERROR_CODES = frozenset(('database_unavailable', 'staging_deadline',
     'halifax_checkpoint_invalid', 'halifax_checkpoint_size_limit',
     'halifax_directory_incomplete', 'halifax_directory_event_identity',
     'halifax_directory_detail_identity', 'halifax_directory_detail_conflict',
+    'unregistered_linked_description_source', 'linked_description_checkpoint_invalid',
+    'linked_description_manifest_invalid', 'linked_description_checkpoint_size_limit',
+    'rockhouse_detail_identity_mismatch', 'rockhouse_detail_structure_missing',
+    'invalid_downtown_norfolk_detail_identity', 'invalid_downtown_norfolk_detail_content',
+    'invalid_sandler_detail_identity', 'invalid_sandler_detail_content',
     'unregistered_discover_halifax', 'invalid_html_event_payload',
     'collector_not_configured', 'unsupported_collector_rpc', 'unsupported_category',
     'source_parse_error', 'invalid_calendar_payload', 'event_schedule_missing',
@@ -171,7 +177,8 @@ def collect_category(category, ticket):
                                 'observe_phase': diagnostics.observe}
                 if category == 'html':
                     process_args['publisher_handoff'] = publisher_handoff
-                    if (source.get('source_key') == 'discover_halifax_va'
+                    if ((source.get('source_key') == 'discover_halifax_va'
+                            or source.get('source_key') in LINKED_DESCRIPTION_PROFILES)
                             and type(source.get('fetch_checkpoint_version')) is int
                             and source['fetch_checkpoint_version'] == 1):
                         process_args['collection_context'] = args

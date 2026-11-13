@@ -10,7 +10,7 @@ _WORKER_ERRORS = frozenset({
     "database_unavailable", "staging_deadline", "collector_not_configured",
     "unsupported_collector_rpc",
     "fetch_checkpoint_context_missing", "fetch_checkpoint_invalid_response",
-    "halifax_checkpoint_invalid",
+    "halifax_checkpoint_invalid", "linked_description_checkpoint_invalid",
 })
 _TRANSIENT_ERRORS = frozenset({
     "dns_unavailable", "robots_unavailable", "source_network_error",

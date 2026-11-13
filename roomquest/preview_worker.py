@@ -1591,8 +1591,26 @@ def _process_claimed_source(source: dict, *, deadline_at=None, publisher_handoff
 
 def _preview_halifax_chunk(source, pacing, *, collection_context, deadline_at,
                            publisher_handoff=None, observe_phase=None):
-    """Persist one fenced HTML fetch chunk before any staging can begin."""
     from roomquest import discover_halifax
+
+    return _preview_fetch_chunk(source, pacing, adapter=discover_halifax,
+        allowed_hosts=("gohalifaxva.com",), collection_context=collection_context,
+        deadline_at=deadline_at, publisher_handoff=publisher_handoff, observe_phase=observe_phase)
+
+
+def _preview_linked_description_chunk(source, pacing, *, collection_context, deadline_at,
+                                      publisher_handoff=None, observe_phase=None):
+    from roomquest import linked_event_descriptions
+
+    return _preview_fetch_chunk(source, pacing, adapter=linked_event_descriptions,
+        allowed_hosts=(linked_event_descriptions.PROFILES[source["source_key"]][2],),
+        collection_context=collection_context, deadline_at=deadline_at,
+        publisher_handoff=publisher_handoff, observe_phase=observe_phase)
+
+
+def _preview_fetch_chunk(source, pacing, *, adapter, allowed_hosts, collection_context,
+                         deadline_at, publisher_handoff=None, observe_phase=None):
+    """Persist one lease-fenced complete-manifest chunk before any staging."""
 
     operation = None
     try:
@@ -1617,10 +1635,10 @@ def _preview_halifax_chunk(source, pacing, *, collection_context, deadline_at,
         # staging and completed-preview time inside the claimed source budget.
         deadline = min(monotonic() + 36, deadline_at - 9)
         try:
-            chunk = discover_halifax.collect_chunk(
+            chunk = adapter.collect_chunk(
                 source, lambda url, accept: fetch_publisher(
                     url, accept, respect_robots=True, deadline_at=deadline,
-                    allowed_hosts=("gohalifaxva.com",)),
+                    allowed_hosts=allowed_hosts),
                 checkpoint=saved["checkpoint"], deadline_at=deadline)
         except PreviewError:
             raise
@@ -1630,7 +1648,12 @@ def _preview_halifax_chunk(source, pacing, *, collection_context, deadline_at,
             codes = {"unregistered_discover_halifax", "halifax_checkpoint_invalid",
                      "halifax_checkpoint_size_limit", "halifax_directory_incomplete",
                      "halifax_directory_event_identity", "halifax_directory_detail_identity",
-                     "halifax_directory_detail_conflict", "collection_deadline"}
+                     "halifax_directory_detail_conflict", "collection_deadline",
+                     "unregistered_linked_description_source", "linked_description_checkpoint_invalid",
+                     "linked_description_manifest_invalid", "linked_description_checkpoint_size_limit",
+                     "rockhouse_detail_identity_mismatch", "rockhouse_detail_structure_missing",
+                     "invalid_downtown_norfolk_detail_identity", "invalid_downtown_norfolk_detail_content",
+                     "invalid_sandler_detail_identity", "invalid_sandler_detail_content"}
             reason = exc.args[0] if len(exc.args) == 1 else None
             raise PreviewError(reason if type(reason) is str and reason in codes
                                else "invalid_html_event_payload") from exc
@@ -1668,15 +1691,21 @@ def _preview_halifax_chunk(source, pacing, *, collection_context, deadline_at,
 
 def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, publisher_handoff=None,
                                        observe_phase=None, collection_context=None):
+    from roomquest.linked_event_descriptions import PROFILES as linked_description_profiles
+
     phase, failure = "collection", {}
     operation = None
     try:
         _observe_collection_phase(observe_phase, "fetch")
         deadline = min(monotonic() + 43, deadline_at or float("inf"))
-        if (source.get("source_key") == "discover_halifax_va" and collection_context is not None
+        checkpoint_key = source.get("source_key")
+        if ((checkpoint_key == "discover_halifax_va" or checkpoint_key in linked_description_profiles)
+                and collection_context is not None
                 and type(source.get("fetch_checkpoint_version")) is int
                 and source["fetch_checkpoint_version"] == 1):
-            output = _preview_halifax_chunk(
+            preview_chunk = (_preview_halifax_chunk if checkpoint_key == "discover_halifax_va"
+                             else _preview_linked_description_chunk)
+            output = preview_chunk(
                 source, pacing, collection_context=collection_context, deadline_at=deadline,
                 publisher_handoff=publisher_handoff, observe_phase=observe_phase)
             if output.get("fetch_pending"):
