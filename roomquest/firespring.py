@@ -6,6 +6,7 @@ from time import monotonic
 from urllib.parse import urljoin, urlsplit
 from zoneinfo import ZoneInfo
 
+from roomquest.event_description import description
 from roomquest.mapsee_adapter import plain, record
 
 SOURCES = {
@@ -95,8 +96,11 @@ def event_record(payload, detail, identity):
     name, street, city = venue_fields(event.get("LOCATION"))
     if not name or re.search(r"https?://|^online\b|^virtual\b|^zoom\b", name, re.I):
         return None
-    return record(event.get("SUMMARY"), start.isoformat(), end.isoformat() if end else None,
-                  name, street, city, detail, identity, tz=ZONE)
+    row = record(event.get("SUMMARY"), start.isoformat(), end.isoformat() if end else None,
+                 name, street, city, detail, identity, tz=ZONE)
+    if row is not None:
+        row["description"] = description(str(event.get("DESCRIPTION", "")))
+    return row
 
 
 def collect(source, fetch, *, deadline_at=None, now=None):

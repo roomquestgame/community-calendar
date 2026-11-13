@@ -6,6 +6,7 @@ from zoneinfo import ZoneInfo
 
 from bs4 import BeautifulSoup
 
+from roomquest.event_description import description
 from roomquest.jsonld_adapter import Blocks
 from roomquest.mapsee_adapter import plain, record, timestamp
 
@@ -59,7 +60,7 @@ def _book_event(fetch, key, url):
     if not re.search(r',\s*VA(?:\s|$)', street):
         street = ', '.join((street, city, ('VA ' + zipcode).strip()))
     return (plain(event.get('name')), event.get('startDate'), event.get('endDate'),
-            name or street, street, city)
+            name or street, street, city, description(event.get('description')))
 
 
 def _sandler_time(day, clock):
@@ -73,10 +74,12 @@ def _sandler_events(fetch, link, url):
         return []
     day = info.select_one('.m-date__singleDate')
     clock = info.select_one('.time .start')
+    narrative = info.select_one('.event_description')
     if day and clock:
         starts = [_sandler_time(day, clock.get_text(' ', strip=True))]
     else:
         detail = BeautifulSoup(fetch(url, 'text/html'), 'html.parser')
+        narrative = detail.select_one('.event_description') or narrative
         starts = []
         for showing in detail.select('.event_showings li[id^="showing_"]'):
             if UNAVAILABLE.search(plain(showing.get_text(' ', strip=True))):
@@ -88,8 +91,9 @@ def _sandler_events(fetch, link, url):
             if day and time:
                 starts.append(_sandler_time(day, f'{time[1]} {time[2].upper()}'))
     title = plain(link.get_text(' ', strip=True))
+    narrative = description(str(narrative) if narrative else None)
     return [(title, start, None, 'Sandler Center for the Performing Arts',
-             '201 Market Street, Virginia Beach, VA 23462', 'Virginia Beach')
+             '201 Market Street, Virginia Beach, VA 23462', 'Virginia Beach', narrative)
             for start in sorted(set(starts))]
 
 
@@ -125,11 +129,12 @@ def collect(source, fetch, *, deadline_at=None, now=None):
         for event in events:
             if not event:
                 continue
-            title, starts, ends, venue, street, city = event
+            title, starts, ends, venue, street, city, narrative = event
             begins = timestamp(starts, ZONE.key)
             if not begins or not now <= begins < stop or UNAVAILABLE.search(title):
                 continue
             row = record(title, starts, ends, venue, street, city, url, url, tz=ZONE.key)
             if row:
+                row['description'] = narrative
                 rows.append(row)
     return sorted(rows, key=lambda row: (row['starts_at'], row['id']))

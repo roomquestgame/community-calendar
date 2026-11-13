@@ -7,6 +7,7 @@ from zoneinfo import ZoneInfo
 
 from bs4 import BeautifulSoup
 
+from roomquest.event_description import description
 from roomquest.mapsee_adapter import plain, record
 
 ZONE = ZoneInfo('America/New_York')
@@ -50,7 +51,7 @@ def _seven(fetch, url):
     venue = page.select_one('.sidebar_event_venue a[href]')
     location = VENUES.get(urlsplit(venue['href']).path.rstrip('/').rsplit('/', 1)[-1]) if venue else None
     if not location:
-        return None, []
+        return None, [], ''
     dates = []
     for occurrence in page.select('.event_showings [id^="showing_"]'):
         if UNAVAILABLE.search(plain(occurrence.get_text(' ', strip=True))):
@@ -67,7 +68,8 @@ def _seven(fetch, url):
                 dates.append(datetime.strptime(when, '%b %d %Y %I:%M %p'))
             except ValueError:
                 continue
-    return location, dates
+    narrative = page.select_one('.event_description')
+    return location, dates, description(str(narrative) if narrative else None)
 
 
 def collect(source, fetch, *, deadline_at=None, now=None):
@@ -97,7 +99,11 @@ def collect(source, fetch, *, deadline_at=None, now=None):
         seen.add(url)
         if len(seen) > 24:
             break
-        venue, dates = _nauticus(link, fetch, url) if key == NAUTICUS else _seven(fetch, url)
+        if key == NAUTICUS:
+            venue, dates = _nauticus(link, fetch, url)
+            narrative = ''
+        else:
+            venue, dates, narrative = _seven(fetch, url)
         if not venue:
             continue
         name, street = venue
@@ -107,5 +113,6 @@ def collect(source, fetch, *, deadline_at=None, now=None):
                 row = record(title, starts.isoformat(), None, name, f'{street}, Norfolk, VA 23510',
                              'Norfolk', url, url, tz=ZONE.key)
                 if row:
+                    row['description'] = narrative
                     rows.append(row)
     return sorted(rows, key=lambda row: (row['starts_at'], row['id']))
