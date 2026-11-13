@@ -1,4 +1,6 @@
 """Links to another page do not count as publisher event narrative."""
+from datetime import datetime, timedelta, timezone
+
 import pytest
 
 from roomquest.event_description import description
@@ -35,3 +37,32 @@ def test_useful_prose_and_short_actionable_text_are_preserved(value, expected):
 def test_url_only_detection_precedes_bounding_without_changing_prose_limit():
     assert description('https://publisher.example/a-long-event-link', limit=12) == ''
     assert description('Bring art supplies. https://publisher.example/info', limit=12) == 'Bring art su'
+
+
+def test_sarpy_county_generic_ics_route_drops_bare_link_without_changing_event_url(monkeypatch):
+    from roomquest import preview_worker
+
+    feed = 'https://www.sarpy.gov/common/modules/iCalendar/iCalendar.aspx?catID=34&feed=calendar'
+    start = (datetime.now(timezone.utc) + timedelta(days=2)).strftime('%Y%m%dT%H%M%SZ')
+    payload = '\r\n'.join([
+        'BEGIN:VCALENDAR', 'VERSION:2.0', 'BEGIN:VEVENT', 'UID:url-only-fixture',
+        'SUMMARY:Community Program', 'DTSTART:' + start, 'LOCATION:Community Center',
+        'GEO:41.28;-96.01', 'DESCRIPTION:https://www.sarpy.gov/calendar.aspx?EID=1071',
+        'END:VEVENT', 'END:VCALENDAR', '',
+    ])
+    calls = []
+
+    def fetch(url, accept, **kwargs):
+        calls.append((url, accept))
+        return payload
+
+    monkeypatch.setattr(preview_worker, 'fetch_publisher', fetch)
+    result = preview_worker.preview_source({
+        'source_key': 'sarpy_county_tourism_ical_ne', 'feed_url': feed,
+        'timezone': 'America/Chicago', 'kind': 'ical', 'platform_adapter': 'ical',
+    })
+    row, = result['p_events']
+    assert row['description'] == ''
+    assert row['event_url'] == feed
+    assert row['id'] == 'url-only-fixture'
+    assert calls == [(feed, 'text/calendar')]
