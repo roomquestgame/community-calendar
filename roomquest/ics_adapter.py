@@ -22,6 +22,42 @@ _ELIZABETH_RIVER_TRAIL_LOCATION = re.compile(
     re.IGNORECASE,
 )
 
+PORTSMOUTH_MUSEUM = 'municipal_d2112082bcec59bdf9eec167'
+OLDE_TOWNE = 'municipal_98ea6e452d539ab43648eb93'
+PORTSMOUTH_VENUE_FEEDS = {
+    PORTSMOUTH_MUSEUM: 'https://portsvaevents.com/venue/childrens-museum-of-virginia/?hide_subsequent_recurrences=1&ical=1',
+    OLDE_TOWNE: 'https://portsvaevents.com/venue/olde-towne-portsmouth/?hide_subsequent_recurrences=1&ical=1',
+}
+# Use event-specific landmarks for city listings that name the entire district.
+OLDE_TOWNE_LANDMARKS = {
+    'tree-lighting-party-kick-off-to-the-holidays': (
+        'Portsmouth Art & Cultural Center Courtyard', '400 High Street'),
+    'holiday-market-on-high-street': (
+        'High Street in Olde Towne (reference point)', '400 High Street'),
+    'olde-towne-holiday-music-festival-2': (
+        'Middle Street Mall near Portsmouth Welcome Center', '206 High Street'),
+}
+
+
+def _portsmouth_venue(event, source_key):
+    link = urlsplit(event.get('event_url') or '')
+    location = (event.get('venue_name') or '').strip()
+    if link.scheme != 'https' or link.netloc != 'portsvaevents.com':
+        return
+    if source_key == PORTSMOUTH_MUSEUM and re.match(
+            r"Children['’]s Museum of Virginia,\s*221 High Street,\s*Portsmouth,\s*VA,?\s*23704\b",
+            location, re.I):
+        event.update(venue_name='Children’s Museum of Virginia',
+                     venue_address='221 High Street, Portsmouth, VA 23704', venue_city='Portsmouth')
+    elif source_key == OLDE_TOWNE and location.casefold().startswith('olde towne portsmouth,'):
+        parts = link.path.strip('/').split('/')
+        landmark = OLDE_TOWNE_LANDMARKS.get(parts[1]) if len(parts) >= 2 and parts[0] == 'event' else None
+        if landmark:
+            venue, street = landmark
+            event.update(venue_name=venue, venue_address=f'{street}, Portsmouth, VA 23704',
+                         venue_city='Portsmouth')
+
+
 MECKLENBURG_LIBRARY_KEY = 'mecklenburg_va_libraries'
 MECKLENBURG_LIBRARY_FEED = 'https://calendar.google.com/calendar/ical/mecklib.org%40gmail.com/public/basic.ics'
 MECKLENBURG_LIBRARY_CALENDAR = 'https://www.youseemore.com/mecklib/calendar.asp'
@@ -508,6 +544,9 @@ def parse(payload, source, *, legacy=False, include_description=False):
             detail_urls[uid] = civicplus_detail_url(str(event.get('DESCRIPTION', '')), uid, source['url'])
 
     for e in result:
+        source_key = source.get('source_key')
+        if source_key in PORTSMOUTH_VENUE_FEEDS and source.get('url') == PORTSMOUTH_VENUE_FEEDS[source_key]:
+            _portsmouth_venue(e, source_key)
         if odu:
             e['venue_address'] = odu_addresses[e['id']]
         if elizabeth_river_trail:
