@@ -286,6 +286,26 @@
       "platform_adapter": "ical",
       "country": "US",
       "config": {}
+    },
+    {
+      "name": "Pleasant Grove Baptist Church",
+      "type": "ics",
+      "url": "https://www.pgbclifehanover.com/gencal.cfm?event_category=All&target=apple",
+      "canonical_url": "https://www.pgbclifehanover.com/gencal.cfm?event_category=All&target=apple",
+      "source_key": "municipal_mapsee_5ef54c6cf37409e1d99ed9c9",
+      "platform_adapter": "ical",
+      "country": "US",
+      "config": {}
+    },
+    {
+      "name": "West Broad Church of Christ",
+      "type": "ics",
+      "url": "https://www.wbchurchofchrist.org/gencal.cfm?event_category=All&target=apple",
+      "canonical_url": "https://www.wbchurchofchrist.org/gencal.cfm?event_category=All&target=apple",
+      "source_key": "municipal_mapsee_ef08e481dded44357607f6fb",
+      "platform_adapter": "ical",
+      "country": "US",
+      "config": {}
     }
   ]
 }
