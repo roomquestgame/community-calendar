@@ -226,6 +226,9 @@ def _robots_rules(host: str, *, deadline_at: float | None = None):
             _reserve_known_crawl_delay(host)
     parser = RobotFileParser()
     lines = raw.decode("utf-8-sig", errors="replace").splitlines()
+    if host == "core.service.elfsight.com":
+        # A trailing wildcard is a prefix match. RobotFileParser treats it literally.
+        lines = ["Allow: /p/" if line.strip() == "Allow: /p/*" else line for line in lines]
     parser.parse(lines)
     _robots_delays[host] = robots_crawl_delay(lines, "RoomQuestCommunityCalendar")
     # The newly learned delay also separates this robots response from the
@@ -342,7 +345,7 @@ def render_virginia_beach_cultural_calendar(*, deadline_at: float | None = None)
 
 def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = False,
                              deadline_at: float | None = None, allowed_hosts=None,
-                             calendar_form=None, calendar_json=None) -> str | bytes:
+                             calendar_form=None, calendar_json=None, localhop_app_id=None) -> str | bytes:
     """Use the shared bounded transport for approved HTTPS publisher content.
 
     Keep URL/DNS validation and bounded downloads. As in upstream Udell,
@@ -398,7 +401,16 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
                 or not re.fullmatch(r'[0-9a-f]{10}', str(calendar_form.get('r34ics_nonce', '')))
                 or not re.fullmatch(r'[0-9a-f]{40}', str(calendar_form.get('args', '')))):
             raise PreviewError('invalid_calendar_render_parameters')
-    if not public_source_url(url):
+    if localhop_app_id is not None:
+        from roomquest.nebraska_final import LOCALHOP_API, LOCALHOP_HOST
+        if (not url.startswith(LOCALHOP_API + "?") or len(url) > 2400 or not respect_robots
+                or allowed_hosts != (LOCALHOP_HOST,) or accept != "application/json"
+                or not re.fullmatch(r"[A-Za-z0-9]{20,80}", localhop_app_id)):
+            raise PreviewError("invalid_localhop_request")
+        safe_url = LOCALHOP_API
+    else:
+        safe_url = url
+    if not public_source_url(safe_url):
         raise PreviewError("invalid_source_url")
     headers = {
         "User-Agent": ("RoomQuestCommunityCalendar/0.2 (+https://roomquestapp.vercel.app/)" if respect_robots
@@ -414,6 +426,8 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
     elif calendar_json is not None:
         headers['Content-Type'] = json_content_type
         headers['Referer'] = json_referer
+    if localhop_app_id is not None:
+        headers["X-Parse-Application-Id"] = localhop_app_id
     current = url
     admission_deadline = deadline_at if deadline_at is not None else monotonic() + 18
     deadline = min(admission_deadline, monotonic() + 18)
@@ -423,7 +437,7 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
             parsed = urlparse(current)
             if allowed_hosts is not None and parsed.hostname not in allowed_hosts:
                 raise PreviewError("redirect_host_not_approved")
-            if not public_source_url(current):
+            if not public_source_url(safe_url if localhop_app_id is not None else current):
                 raise PreviewError("invalid_redirect_url")
             current_deadline = deadline if network_started else admission_deadline
             if respect_robots and monotonic() >= current_deadline:
@@ -464,7 +478,7 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
                         response.close()
                         raise
                 if response.status_code in (301, 302, 303, 307, 308):
-                    if calendar_form is not None or calendar_json is not None:
+                    if calendar_form is not None or calendar_json is not None or localhop_app_id is not None:
                         response.close()
                         raise PreviewError('calendar_render_redirect_blocked')
                     from urllib.parse import urljoin
@@ -1049,8 +1063,11 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         from roomquest.virginia_wix_events import SOURCES as VA_WIX_SOURCES
         from roomquest import maryland_public_calendars, maryland_park_programs
         from roomquest.nebraska_venues import SOURCES as NEBRASKA_VENUES
-        from roomquest import richmond_public_calendars
-        if source_key in richmond_public_calendars.SOURCES:
+        from roomquest import nebraska_final, richmond_public_calendars
+        if source_key in nebraska_final.SOURCES:
+            collect_html = nebraska_final.collect
+            allowed_hosts = nebraska_final.SOURCES[source_key][1]
+        elif source_key in richmond_public_calendars.SOURCES:
             collect_html = richmond_public_calendars.collect
             allowed_hosts = richmond_public_calendars.SOURCES[source_key][1]
         elif source_key in NEBRASKA_VENUES:
@@ -1261,6 +1278,10 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         deadline = min(monotonic() + html_budget, deadline_at - 5 if deadline_at is not None else float("inf"))
         try:
             extra = {}
+            if source_key in nebraska_final.GROUPS:
+                extra["fetch_localhop"] = lambda url, app_id: _fetch_publisher_request(
+                    url, "application/json", respect_robots=True, deadline_at=deadline,
+                    allowed_hosts=(nebraska_final.LOCALHOP_HOST,), localhop_app_id=app_id)
             if source_key == richmond_public_calendars.CFENGAGE:
                 extra['render_volunteers'] = lambda: render_cfengage_calendar(deadline_at=deadline)
             if source_key == 'good_shepherd_food_pantry_south_hill_va':
