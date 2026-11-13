@@ -8,6 +8,7 @@ from zoneinfo import ZoneInfo
 
 from lxml import html
 
+from roomquest.event_description import description
 from roomquest.mapsee_adapter import plain, record
 
 ZONE = "America/Chicago"
@@ -84,8 +85,11 @@ def meetup(document, today):
             end = datetime.fromisoformat(item["endDate"]) if item.get("endDate") else None
             if start.tzinfo is None or end is not None and end.tzinfo is None:
                 continue
-            yield event(item["name"], start, end, "Spielbound Board Game Cafe",
+            row = event(item["name"], start, end, "Spielbound Board Game Cafe",
                         "3229 Harney St, Omaha, NE 68131", "Omaha", url, lat=41.2566, lng=-95.9612)
+            if row is not None:
+                row["description"] = description(item.get("description"))
+                yield row
     if not found and not re.search(r"no upcoming events", document.text_content(), re.I):
         raise ValueError("missing_meetup_event_data")
 

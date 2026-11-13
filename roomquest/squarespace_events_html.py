@@ -7,6 +7,7 @@ from zoneinfo import ZoneInfo
 
 from lxml import html
 
+from roomquest.event_description import description
 from roomquest.mapsee_adapter import plain, record
 
 ZONE = "America/Chicago"
@@ -42,6 +43,16 @@ HAS_CLASS = "contains(concat(' ', normalize-space(@class), ' '), $class_name)"
 
 def elements(node, class_name, tag="*"):
     return node.xpath(f".//{tag}[{HAS_CLASS}]", class_name=f" {class_name} ")
+
+
+def narrative(node, *class_names, title=""):
+    for name in class_names:
+        containers = elements(node, name)
+        if containers:
+            text = description(html.tostring(containers[0], encoding="unicode", with_tail=False))
+            if text and plain(text).casefold() != plain(title).casefold():
+                return text
+    return ""
 
 
 def event_time(node):
@@ -137,6 +148,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
         row = record(title, start.isoformat(), end.isoformat() if end else None, venue, address,
                      city, link, identity, tz=ZONE)
         if row is not None:
+            row["description"] = narrative(card, "eventlist-description", "eventlist-excerpt", title=title)
             previous = events.setdefault(row["id"], row)
             if previous != row:
                 raise ValueError("conflicting_squarespace_venue_event")
@@ -179,5 +191,7 @@ def collect_eleanor(listing, fetch, now):
         row = record(title, start.isoformat(), end.isoformat() if end and end > start else None,
                      venue, address, "Norfolk", link, path, tz=ELEANOR_ZONE)
         if row:
+            # The sibling content footer contains tags, not event narrative.
+            row["description"] = narrative(body[0], "sqs-layout", title=title) if body else ""
             events.append(row)
     return sorted(events, key=lambda row: (row["starts_at"], row["id"]))

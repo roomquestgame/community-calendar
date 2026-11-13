@@ -6,6 +6,7 @@ from time import monotonic
 from urllib.parse import urljoin, urlsplit
 from zoneinfo import ZoneInfo
 
+from roomquest.event_description import description
 from roomquest.mapsee_adapter import plain, record
 
 ZONE = "America/Chicago"
@@ -120,6 +121,23 @@ def timed_record(title, day, show, url, venue, street):
     return record(title, starts.isoformat(), None, venue, street, "Omaha", url, url, tz=ZONE)
 
 
+def event_description(payload, title):
+    from lxml import html
+
+    document = html.fromstring(payload)
+    has_class = "contains(concat(' ', normalize-space(@class), ' '), $class_name)"
+    sections = document.xpath(f"//*[@id='RhpEventsSingle']//*[{has_class}]", class_name=" singleEventDetails ")
+    if len(sections) != 1:
+        return ""
+    headings = sections[0].xpath(".//h1")
+    if len(headings) != 1 or plain(headings[0].text_content()) != title:
+        return ""
+    bodies = sections[0].xpath(f".//*[{has_class}]", class_name=" singleEventDescription ")
+    if len(bodies) != 1:
+        return ""
+    return description(html.tostring(bodies[0], encoding="unicode", with_tail=False))
+
+
 def event_record(payload, url, venue, street, today, horizon):
     doc = Document(payload)
     title = plain(" ".join(doc.heading))
@@ -138,7 +156,10 @@ def event_record(payload, url, venue, street, today, horizon):
     show = SHOW.search(body[date_match.end():])
     if not show:
         return None
-    return timed_record(title, day, show, url, venue, street)
+    row = timed_record(title, day, show, url, venue, street)
+    if row is not None and (narrative := event_description(payload, title)):
+        row["description"] = narrative
+    return row
 
 
 def listing_records(payload, listing, links, venue, street, today, horizon):
