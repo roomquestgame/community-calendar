@@ -63,3 +63,17 @@ The companion backend migrations repair queued publication and extend the
 existing lease/token/CAS-bounded checkpoint contract to these exact sources.
 Deploy through the normal current-head PR and live-schema rehearsal gates,
 then validate source completion and compare staged/public prose separately.
+
+## Publisher formatting follow-up
+
+The fresh Doorways ICS snapshot contained Visual Composer layout shortcodes
+that consumed the description limit before useful copy. The shared sanitizer
+now removes only recognized layout/control shortcode names before HTML cleanup
+and truncation, retaining enclosed text. Arbitrary brackets and unrecognized
+shortcodes remain unchanged. This adds no requests or link traversal.
+
+54 targeted tests pass, including the exact complete 1,922-character staged
+Doorways layout section with explicitly synthetic prose beyond the old limit,
+the generic Doorways ICS route, and Sarpy's URL-only feed route. The fixture is
+not a raw publisher replay: normal local feed transport failed at DNS resolution.
+A fresh production Doorways snapshot is required to verify recovered real prose.
