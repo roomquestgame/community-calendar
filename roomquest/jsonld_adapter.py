@@ -15,6 +15,14 @@ COALITION_KEY = 'municipal_mapsee_8000fb8c18bf23f709b53465'
 COALITION_URL = 'https://calendar.richmondcultureworks.org/organizations/coalition-theater/'
 COALITION_VENUE = '8 W Broad St, Richmond, VA, 23220'
 
+SCRAP_RVA_URL = 'https://events.humanitix.com/host/scrap-rva'
+SCRAP_RVA_LOCATIONS = {
+    '322 W Brookland Park Blvd, Richmond, VA 23222, USA': (
+        '322 W Brookland Park Blvd, Richmond, VA 23222', 37.571723815738, -77.436572103988),
+    '1621 W Broad St, Richmond, VA 23220, USA': (
+        '1621 W Broad St, Richmond, VA 23220', 37.554492788162, -77.457006423537),
+}
+
 def decode(raw):
     try:
         return json.loads(raw)
@@ -125,10 +133,16 @@ def parse(payload, base=''):
         link = e.get('url') or e.get('@id')
         if not isinstance(link, str) or not link:
             raise ValueError('event_link_missing')
+        street = address(a)
+        lat, lng = g.get('latitude'), g.get('longitude')
+        if base == SCRAP_RVA_URL and isinstance(a, dict):
+            reviewed = SCRAP_RVA_LOCATIONS.get(a.get('streetAddress'))
+            if reviewed:
+                street, lat, lng = reviewed
         row = record(e.get('name'), e.get('startDate'), e.get('endDate'), v.get('name'),
-            address(a), a.get('addressLocality', '') if isinstance(a, dict) else '',
+            street, a.get('addressLocality', '') if isinstance(a, dict) else '',
             urljoin(base, link), e.get('@id') or e.get('url'), e.get('keywords', ''),
-            g.get('latitude'), g.get('longitude'))
+            lat, lng)
         if row:
             key = (row['id'], row['starts_at'])
             if key in out and out[key] != row:

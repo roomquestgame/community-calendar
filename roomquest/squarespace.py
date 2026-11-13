@@ -10,6 +10,32 @@ from roomquest.mapsee_adapter import plain, timestamp
 
 ASHLAND_MUSEUM = 'https://ashlandmuseum.org/upcoming-events?format=json'
 
+AQUARIAN = 'https://www.aquarianbookshop.com/classes-events?format=json'
+HUMBLE_HAVEN = 'https://www.humblehavenyoga.com/workshops?format=json'
+RVA_MORE = 'https://rvamore.org/events-1?format=json'
+
+# Match reviewed event IDs when the publisher's Squarespace location is blank.
+# Unknown events still need their own venue evidence.
+BOOKSHOP = ('Aquarian Bookshop', '12 S Thompson St, Richmond, VA 23221',
+            37.557043790662, -77.4884388226)
+REVIEWED_LOCATIONS = {
+    AQUARIAN: dict.fromkeys((
+        '6ac3b47ba4e9d84f5d57dea6', '6ac3b0f2c9d5b445500076be',
+        '6aedfee2397241543ce3ab2d', '6ae20b8f4691e86544fdc6ef',
+        '6af1f4d1eec5085560662c7d', '6835fa5c404c154ce914477f',
+    ), BOOKSHOP),
+    HUMBLE_HAVEN: {
+        '6ab30b176f03ee7c5a8ca7b5': (
+            'Humble Haven Yoga (likely studio)', '6980 Forest Ave, Richmond, VA 23230',
+            37.602130960539, -77.523501945619),
+    },
+    RVA_MORE: {
+        '6aa1eccec3189b43fc8c5ee5': (
+            'Carillon Shelter at Barker Field', '1300 Blanton Ave, Richmond, VA 23221',
+            37.539107, -77.482023),
+    },
+}
+
 SOURCES = {
     'https://fraziermuseum.org/calendar?format=json': {
         'timezone': 'America/Kentucky/Louisville', 'state': r'(?:KY|Kentucky)',
@@ -116,11 +142,18 @@ def parse_registered(data, base):
                 and street == 'Randolph-Macon College, Henry Street, Ashland, VA 23005'):
             street = '304 Henry Street, Ashland, VA 23005'
             lat, lng = 37.761459795707, -77.477667720372
+        venue = plain(v.get('addressTitle'))
+        if not venue and not street:
+            reviewed = REVIEWED_LOCATIONS.get(base, {}).get(e['id'])
+            if reviewed:
+                venue, street, lat, lng = reviewed
+            elif base in REVIEWED_LOCATIONS:
+                continue  # Skip unresolved venues, appointment slots and undivided series.
         path = e.get('fullUrl') or e.get('urlId')
         if not isinstance(path, str) or not path.strip():
             raise ValueError('event_link_missing')
         row = record(e.get('title'), e.get('startDate'), e.get('endDate'),
-                     v.get('addressTitle'), street, '', urljoin(base, path), e['id'],
+                     venue, street, '', urljoin(base, path), e['id'],
                      ', '.join(str(x) for x in e.get('categories', [])), lat, lng)
         if row:
             key = (row['id'], row['starts_at'])
