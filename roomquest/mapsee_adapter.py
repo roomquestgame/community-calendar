@@ -200,18 +200,13 @@ def parse_tribe(data, *, strict_public=False, retain_description=False, utc_defa
                  ", ".join(x.get("name","") for x in e.get("categories",[]) if isinstance(x,dict)),venue.get("geo_lat"),venue.get("geo_lng"),tz, publisher_geo=strict_public)
         if r:
             if retain_description:
-                from bs4 import BeautifulSoup
+                from roomquest.event_description import description
                 value = e.get("description")
                 if value is not None and not isinstance(value, str):
                     raise ValueError("invalid_wordpress_description")
-                soup = BeautifulSoup(value or "", "html.parser")
-                for tag in soup.select("script, style, template, noscript"):
-                    tag.decompose()
-                narrative = "\n".join(line.strip() for line in
-                    soup.get_text("\n").splitlines() if line.strip())
                 # Existing JSON publication contract is 2,000 characters.
                 # Missing publisher prose stays empty; never copy title/category.
-                r["description"] = narrative[:2000]
+                r["description"] = description(value)
             if strict_public and tz:
                 r["timezone"] = tz_name
             out.append(r)
