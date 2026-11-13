@@ -439,7 +439,9 @@ def richmond_church_events(records, url):
         title = row['title']
         address = row['venue_address'] or ''
         if url == PLEASANT_GROVE:
-            if title == 'Operation Harvest' and row['starts_at'] == '2026-11-19T14:30:00+00:00':
+            if (title == 'Operation Harvest' and row['starts_at'] == '2026-11-19T14:30:00+00:00'
+                    and address.casefold() == 'richmond international raceway'):
+                address = ''
                 venue = RICHMOND_RACEWAY
                 row.update(title='Operation Harvest Community Thanksgiving Food Distribution',
                            starts_at='2026-11-19T20:00:00+00:00', ends_at='2026-11-19T23:00:00+00:00',
