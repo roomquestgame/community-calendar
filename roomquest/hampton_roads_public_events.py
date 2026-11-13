@@ -68,7 +68,35 @@ def _sandler_time(day, clock):
     return datetime.strptime(' '.join(f'{date} {clock}'.split()), '%b %d %Y %I:%M %p').isoformat()
 
 
-def _sandler_events(fetch, link, url):
+def description_from_detail(payload, row):
+    """Return Sandler's prose from the exact linked, title-matched event page."""
+    url = row.get('event_url', '')
+    target = urlsplit(url)
+    if (target.scheme != 'https' or target.netloc != 'www.sandlercenter.org'
+            or target.query or target.fragment or not re.fullmatch(SOURCES[SANDLER][2], target.path)):
+        raise ValueError('invalid_sandler_detail_identity')
+    page = BeautifulSoup(payload, 'html.parser')
+    identities = [node.get('href') for node in page.select('link[rel~=canonical]')]
+    identities.extend(node.get('content') for node in page.select('meta[property="og:url"]'))
+    primary = page.select('#content[role="main"] .event_detail')
+    if not identities or any(identity != url for identity in identities) or len(primary) != 1:
+        raise ValueError('invalid_sandler_detail_identity')
+    # The live template repeats the same h1 for its two responsive headings.
+    headings = primary[0].select('h1.title')
+    title = plain(row.get('title')).casefold()
+    if not title or not headings or any(
+            plain(heading.get_text(' ', strip=True))[:180].strip().casefold() != title for heading in headings):
+        raise ValueError('invalid_sandler_detail_identity')
+    columns = primary[0].select('#column_1 .leftColumn')
+    if len(columns) != 1:
+        raise ValueError('invalid_sandler_detail_content')
+    narratives = columns[0].find_all(class_='event_description', recursive=False)
+    if len(narratives) > 1:
+        raise ValueError('invalid_sandler_detail_content')
+    return description(str(narratives[0])) if narratives else ''
+
+
+def _sandler_events(fetch, link, url, *, listing_only=False):
     info = link.find_parent(class_='info')
     if not info or UNAVAILABLE.search(plain(info.get_text(' ', strip=True))):
         return []
@@ -91,19 +119,27 @@ def _sandler_events(fetch, link, url):
             if day and time:
                 starts.append(_sandler_time(day, f'{time[1]} {time[2].upper()}'))
     title = plain(link.get_text(' ', strip=True))
-    narrative = description(str(narrative) if narrative else None)
+    narrative = '' if listing_only else description(str(narrative) if narrative else None)
     return [(title, start, None, 'Sandler Center for the Performing Arts',
              '201 Market Street, Virginia Beach, VA 23462', 'Virginia Beach', narrative)
             for start in sorted(set(starts))]
 
 
-def collect(source, fetch, *, deadline_at=None, now=None):
+def collect(source, fetch, *, deadline_at=None, now=None, listing_only=False):
+    """Collect legacy facts, or Sandler facts for the exact-link checkpoint.
+
+    Sandler single-show dates come from listing cards. Multi-show cards still
+    require their existing detail fetch for times; the checkpoint caller can
+    reuse that payload when it validates and extracts the same page's prose.
+    """
     key = source.get('source_key')
     profile = SOURCES.get(key)
     if not profile or tuple(source.get(k) for k in ('feed_url', 'kind', 'platform_adapter', 'timezone')) != (
         profile[0], 'html', 'html', ZONE.key,
     ):
         raise ValueError('unregistered_hampton_roads_public_events')
+    if listing_only and key != SANDLER:
+        raise ValueError('unregistered_sandler_listing_source')
     base, selector, path = profile
     page = BeautifulSoup(fetch(base, 'text/html'), 'html.parser')
     links = page.select(selector)
@@ -125,7 +161,8 @@ def collect(source, fetch, *, deadline_at=None, now=None):
         if url in seen_urls:
             continue
         seen_urls.add(url)
-        events = _sandler_events(fetch, link, url) if key == SANDLER else [_book_event(fetch, key, url)]
+        events = (_sandler_events(fetch, link, url, listing_only=listing_only)
+                  if key == SANDLER else [_book_event(fetch, key, url)])
         for event in events:
             if not event:
                 continue

@@ -4,8 +4,9 @@ import re
 from urllib.parse import urljoin, urlsplit
 from zoneinfo import ZoneInfo
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Comment
 
+from roomquest.event_description import description
 from roomquest.lynnhaven_river import _clock
 from roomquest.mapsee_adapter import plain, record
 
@@ -32,6 +33,49 @@ VENUES = {
 def _value(card, selector):
     node = card.select_one(selector)
     return plain(node.get_text(' ', strip=True)) if node else ''
+
+
+def description_from_detail(payload, row):
+    """Read only this linked event's Details section; never follow its links.
+
+    The publisher puts Dates, Location and Details in one primary column. Stay
+    within that observed column so the following image column, navigation and
+    footer cannot become event prose. The checkpoint worker owns fetching and
+    complete-snapshot certification; this helper never changes event facts.
+    """
+    url = row.get('event_url', '')
+    target = urlsplit(url)
+    if (target.scheme != 'https' or target.netloc != HOST or target.query or target.fragment
+            or not DETAIL.fullmatch(target.path)):
+        raise ValueError('invalid_downtown_norfolk_detail_identity')
+    page = BeautifulSoup(payload, 'html.parser')
+    canonical = page.select('link[rel~=canonical]')
+    main = page.select('main#page-content')
+    if len(canonical) != 1 or canonical[0].get('href') != url or len(main) != 1:
+        raise ValueError('invalid_downtown_norfolk_detail_identity')
+    headings = main[0].select('h1')
+    if (len(headings) != 1 or not plain(row.get('title'))
+            or plain(headings[0].get_text(' ', strip=True))[:180].strip().casefold()
+            != plain(row['title']).casefold()):
+        raise ValueError('invalid_downtown_norfolk_detail_identity')
+    columns = main[0].select('div.col-lg-6.col-xl-5.padding-bottom')
+    if len(columns) != 1:
+        raise ValueError('invalid_downtown_norfolk_detail_content')
+    details = [heading for heading in columns[0].find_all('h2', class_='on-detail', recursive=False)
+               if plain(heading.get_text(' ', strip=True)).casefold() == 'details']
+    if len(details) > 1:
+        raise ValueError('invalid_downtown_norfolk_detail_content')
+    if not details:
+        return ''
+    fragments = []
+    for node in details[0].next_siblings:
+        if isinstance(node, Comment):
+            continue
+        if getattr(node, 'name', None) in {'h1', 'h2', 'h3', 'h4', 'h5', 'h6'}:
+            break
+        if getattr(node, 'name', None) not in {'aside', 'footer'}:
+            fragments.append(str(node))
+    return description(''.join(fragments))
 
 
 def collect(source, fetch, *, deadline_at=None, now=None):

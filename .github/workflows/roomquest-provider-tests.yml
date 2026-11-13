@@ -98,7 +98,7 @@ jobs:
         run: python -m pytest tests/test_omaha_lincoln.py -q
       - name: Check expansion event descriptions
         if: github.event_name != 'workflow_dispatch'
-        run: python -m pytest tests/test_expansion_narrative_mapping.py tests/test_hampton_roads_descriptions.py -q
+        run: python -m pytest tests/test_expansion_narrative_mapping.py tests/test_hampton_roads_descriptions.py tests/test_linked_event_descriptions.py tests/test_linked_description_worker.py tests/test_rockhouse_detail_descriptions.py tests/test_downtown_sandler_descriptions.py tests/test_description_url_only.py -q
       - name: Read-only Omaha and Lincoln publisher audit
         if: github.event_name == 'workflow_dispatch' && inputs.omaha_lincoln_batch != ''
         env:
