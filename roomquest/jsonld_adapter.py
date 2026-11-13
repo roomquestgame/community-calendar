@@ -3,11 +3,17 @@
 Only embedded facts are read. No JS execution, page crawl, remote @context,
 geocoding, guessed timezone or publisher-wide location is introduced.
 """
+from datetime import date, datetime
 from html.parser import HTMLParser
 import json
-from urllib.parse import urljoin
+import re
+from urllib.parse import urljoin, urlsplit
+from zoneinfo import ZoneInfo
 from roomquest.mapsee_adapter import record, address
 
+COALITION_KEY = 'municipal_mapsee_8000fb8c18bf23f709b53465'
+COALITION_URL = 'https://calendar.richmondcultureworks.org/organizations/coalition-theater/'
+COALITION_VENUE = '8 W Broad St, Richmond, VA, 23220'
 
 def decode(raw):
     try:
@@ -135,4 +141,40 @@ def parse(payload, base=''):
 
 
 def collect(source, fetch):
+    if source.get('source_key') == COALITION_KEY:
+        if source['feed_url'] != COALITION_URL or source.get('timezone') != 'America/New_York':
+            raise ValueError('unregistered_coalition_calendar')
+        return collect_coalition(fetch)
     return parse(fetch(source['feed_url'], 'text/html,application/ld+json'), source['feed_url'])
+
+
+def collect_coalition(fetch):
+    from bs4 import BeautifulSoup
+
+    snapshot = BeautifulSoup(fetch(COALITION_URL, 'text/html'), 'html.parser')
+    section = snapshot.select_one('section.ao-assoc-events')
+    if section is None:
+        raise ValueError('coalition_event_list_missing')
+    cards = section.select('a.ao-event-card[href]')
+    if not cards or len(cards) > 12:
+        raise ValueError('coalition_event_list_invalid')
+    today = datetime.now(ZoneInfo('America/New_York')).date()
+    links = set()
+    for card in cards:
+        day = card.select_one('time[datetime]')
+        link = card['href']
+        parts = urlsplit(link)
+        if (day is None or parts.scheme != 'https' or parts.netloc != urlsplit(COALITION_URL).netloc
+                or not re.fullmatch(r'/events/[a-z0-9-]+/', parts.path) or parts.query or parts.fragment):
+            raise ValueError('coalition_event_link_invalid')
+        if date.fromisoformat(day['datetime']) >= today:
+            links.add(link)
+    rows = []
+    for link in sorted(links):
+        for row in parse(fetch(link, 'text/html,application/ld+json'), link):
+            if row['event_url'] != link:
+                raise ValueError('coalition_event_identity_conflict')
+            if row['venue_name'] == 'Coalition Theater' and row['venue_address'] == COALITION_VENUE:
+                row.update(lat=37.545791754629, lng=-77.441952646962)
+            rows.append(row)
+    return sorted(rows, key=lambda row: (row['starts_at'], row['id']))
