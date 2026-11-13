@@ -12,7 +12,7 @@ from roomquest.mapsee_adapter import plain, record
 ZONE = "America/Chicago"
 ELEANOR = "municipal_91c26eb4ef4205c03947decd"
 ELEANOR_ZONE = "America/New_York"
-ELEANOR_SHOP = ("Eleanor’s Norfolk", "801 Boush Street, Unit B, Norfolk, VA 23510")
+ELEANOR_SHOP = ("Eleanor’s Norfolk", "801 Boush Street Unit B, Norfolk, VA 23510")
 ELEANOR_GALLERY = ("Baron and Ellin Gordon Art Galleries", "4509 Monarch Way, Norfolk, VA 23508")
 ELEANOR_SHOP_EVENTS = {
     "anarchiststudygroupnov26",

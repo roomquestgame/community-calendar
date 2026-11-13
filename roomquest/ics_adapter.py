@@ -56,6 +56,9 @@ def _portsmouth_venue(event, source_key):
             venue, street = landmark
             event.update(venue_name=venue, venue_address=f'{street}, Portsmouth, VA 23704',
                          venue_city='Portsmouth')
+            if street == '206 High Street':
+                # Geocodio matched the reviewed festival reference point in Portsmouth.
+                event.update(lat=36.835822, lng=-76.299047)
 
 
 MECKLENBURG_LIBRARY_KEY = 'mecklenburg_va_libraries'
