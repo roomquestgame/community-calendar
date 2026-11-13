@@ -152,6 +152,16 @@
       "platform_adapter": "squarespace",
       "country": "US",
       "config": {}
+    },
+    {
+      "name": "Ashland Museum",
+      "type": "squarespace",
+      "url": "https://ashlandmuseum.org/upcoming-events?format=json",
+      "canonical_url": "https://ashlandmuseum.org/upcoming-events?format=json",
+      "source_key": "municipal_mapsee_f243e5545a10e26b1f853c9b",
+      "platform_adapter": "squarespace",
+      "country": "US",
+      "config": {}
     }
   ]
 }
