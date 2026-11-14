@@ -9,6 +9,7 @@ from roomquest import gulf_recurring as gulf
 
 
 NOW = datetime(2026, 11, 14, 14, 40, tzinfo=timezone.utc)
+MAPLE_POLICY = ('<span>ALL SHOWS 21+</span><p>Everyone must show a valid form of ID at the door.</p>')
 
 
 @pytest.fixture(autouse=True)
@@ -72,13 +73,15 @@ def wix_event(key=gulf.WAMA):
     }
 
 
-def wix_page(key, events, *, has_more=False, featured=None):
+def wix_page(key, events, *, has_more=False, featured=None, policy=None):
     widgets = {'calendar': {'events': {'hasMore': has_more, 'moreLoading': False, 'events': events}}}
     if featured is not None:
         widgets['featured'] = {'events': {'events': [featured], 'moreLoading': False}}
     data = {'appsWarmupData': {gulf.WIX_APP: widgets}}
+    if policy is None:
+        policy = MAPLE_POLICY if key == gulf.MAPLE else ''
     return page(gulf.SOURCES[key], '<script id="wix-warmup-data" type="application/json">'
-                + json.dumps(data) + '</script>')
+                + json.dumps(data) + '</script>' + policy)
 
 
 @pytest.mark.parametrize('key', list(gulf.SOURCES))
@@ -140,6 +143,27 @@ def test_wix_uses_complete_list_and_does_not_expand_recurrence():
     payload = wix_page(gulf.MAPLE, [first, far], featured=first)
     rows, _ = collect(gulf.MAPLE, {gulf.SOURCES[gulf.MAPLE]: payload})
     assert [row['id'] for row in rows] == [first['id']]
+
+
+def test_maple_preserves_visible_21_plus_calendar_policy_for_every_event():
+    first = wix_event(gulf.MAPLE)
+    second = deepcopy(first)
+    second.update(id='73e0745c-56ad-43b5-ba84-208de3e2a437', slug='second-show')
+    rows, calls = collect(gulf.MAPLE, {gulf.SOURCES[gulf.MAPLE]: wix_page(gulf.MAPLE, [first, second])})
+    assert len(rows) == 2 and calls == [gulf.SOURCES[gulf.MAPLE]]
+    for row in rows:
+        assert row['publisher_details']['audience'] == (
+            '21+; valid ID required at the door. Calendar policy: https://www.mapleleafbar.com/calendar')
+        assert row['details_evidence_url'] == row['event_url']
+    other, _ = collect(gulf.WAMA, {gulf.SOURCES[gulf.WAMA]: wix_page(gulf.WAMA, [wix_event()], policy=MAPLE_POLICY)})
+    assert 'audience' not in other[0]['publisher_details']
+
+
+@pytest.mark.parametrize('policy', ['', MAPLE_POLICY.replace('21+', '18+'),
+                                    '<script>' + MAPLE_POLICY + '</script>'])
+def test_maple_does_not_emit_unverified_or_script_only_audience_policy(policy):
+    with pytest.raises(ValueError, match='gulf_maple_audience_unverified'):
+        collect(gulf.MAPLE, {gulf.SOURCES[gulf.MAPLE]: wix_page(gulf.MAPLE, [wix_event(gulf.MAPLE)], policy=policy)})
 
 
 def test_wix_pagination_and_conflicting_duplicates_fail_closed():
