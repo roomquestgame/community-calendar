@@ -265,3 +265,89 @@ def test_bike_bus_estimate_requires_exact_publisher_link_body_and_clock():
 def test_transalt_private_address_cannot_use_reviewed_previous_public_point():
     with pytest.raises(ValueError,match='event_not_public'):
         ny._transalt_rows({'id':783377,'sponsor':{'id':35772},'is_virtual':False,'visibility':'PUBLIC','address_visibility':'PRIVATE','approval_status':'APPROVED'},NOW)
+
+
+def wave_fetch(count=20):
+    where=next(p['native_identity'] for p in ny.PLACES if p['source_key']==ny.WAVE)
+    urls=[f'https://www.wavehill.org/calendar/walk-{i:02}' for i in range(count)]
+    listing=''.join('<div class="event-wrapper"><a href="'+url+'"><h2 class="event__title">Garden Walk</h2>'
+        '<time datetime="'+START.isoformat()+'"></time><time datetime="'+(START+timedelta(hours=1)).isoformat()+'"></time></a></div>' for url in urls)
+    detail=('<main class="page__program"><h1>Garden Walk</h1><section class="page__detail">'
+        '<h2 class="page__detail-subtitle">Where</h2><p class="page__detail-title">'+where+'</p></section>'
+        '<div class="page__entry--rich-text"><p>Complete garden walk and accessibility instructions.</p></div></main>')
+    calls=[]
+    def fetch(url,accept):
+        calls.append(url)
+        return listing if url==ny.SOURCES[ny.WAVE][0] else detail
+    return fetch,calls,urls
+
+
+@pytest.mark.parametrize('key',[ny.BKUP,ny.WAVE])
+def test_pending_long_calendar_cap_is_twelve_and_respects_explicit_smaller_limit(key):
+    factory=bk_fetch if key==ny.BKUP else wave_fetch
+    fetch,calls,_=factory(20)
+    result=ny.collect_chunk(source(key),fetch,now=NOW,max_details=100)
+    assert not result['complete'] and result['events']==[]
+    assert result['checkpoint']['cursor']==12 and len(calls)==13
+    saved=result['checkpoint']
+    result=ny.collect_chunk(source(key),fetch,now=NOW+timedelta(seconds=1),checkpoint=saved,max_details=2)
+    assert result['checkpoint']['cursor']==14 and len(calls)==15
+    assert saved['cursor']==12
+    assert result['checkpoint']['manifest_hash']==saved['manifest_hash']
+    assert result['checkpoint']['started_at']==saved['started_at']
+
+
+@pytest.mark.parametrize('key',[ny.BKUP,ny.WAVE])
+def test_larger_cap_still_stops_before_consuming_eighteen_second_reserve(key,monkeypatch):
+    factory=bk_fetch if key==ny.BKUP else wave_fetch
+    original,calls,_=factory(20)
+    elapsed=[0.0]
+    monkeypatch.setattr(ny,'monotonic',lambda:elapsed[0])
+    def paced_fetch(url,accept):
+        if url!=ny.SOURCES[key][0]:
+            assert elapsed[0]+18<30
+        value=original(url,accept)
+        elapsed[0]+=3.0
+        return value
+    result=ny.collect_chunk(source(key),paced_fetch,now=NOW,deadline_at=30)
+    # The listing plus three details exhaust the useful work allowance. The
+    # larger ceiling cannot authorize a fourth request with only18s remaining.
+    assert result['checkpoint']['cursor']==3 and len(calls)==4 and elapsed[0]==12
+    assert not result['complete'] and result['events']==[]
+
+
+def test_unrelated_checkpoint_sources_retain_three_detail_ceiling(monkeypatch):
+    assert set(ny.MAX_DETAILS_BY_SOURCE)=={ny.BKUP,ny.WAVE}
+    for key in (ny.BRONX,ny.NYRR):
+        queue=[{'url':ny.SOURCES[key][0]+f'/detail-{i}'} for i in range(20)]
+        monkeypatch.setattr(ny,'_manifest',lambda *args:queue)
+        monkeypatch.setattr(ny,'_bronx_detail',lambda *args:(_ for _ in ()).throw(ValueError('event_not_public')))
+        monkeypatch.setattr(ny,'_nyrr_detail',lambda *args:(_ for _ in ()).throw(ValueError('event_not_public')))
+        calls=[]
+        def fetch(url,accept):calls.append(url);return 'native page'
+        result=ny.collect_chunk(source(key),fetch,now=NOW,max_details=100)
+        assert result['checkpoint']['cursor']==3 and len(calls)==3
+
+
+def test_transport_error_preserves_saved_prefix_and_retry_replays_no_skips():
+    from copy import deepcopy
+    from roomquest.preview_worker import PreviewError
+    fetch,_,_=bk_fetch(20)
+    saved=ny.collect_chunk(source(ny.BKUP),fetch,now=NOW,max_details=2)['checkpoint']
+    original=deepcopy(saved)
+    calls=[]
+    def limited(url,accept):
+        calls.append(url)
+        if len(calls)==2:
+            raise PreviewError('publisher_rate_limited')
+        return fetch(url,accept)
+    with pytest.raises(PreviewError,match='publisher_rate_limited'):
+        ny.collect_chunk(source(ny.BKUP),limited,now=NOW+timedelta(seconds=1),checkpoint=saved)
+    assert saved==original
+    retry=ny.collect_chunk(source(ny.BKUP),fetch,now=NOW+timedelta(seconds=2),checkpoint=saved)
+    assert retry['checkpoint']['cursor']==14 and len(retry['checkpoint']['events'])==14
+    assert len({e['id'] for e in retry['checkpoint']['events']})==14
+    assert retry['checkpoint']['events'][:2]==saved['events']
+    complete=ny.collect_chunk(source(ny.BKUP),fetch,now=NOW+timedelta(seconds=3),checkpoint=retry['checkpoint'])
+    assert complete['complete'] and complete['checkpoint']['cursor']==20 and len(complete['events'])==20
+    assert ny.MAX_MANIFEST==200 and ny.MAX_CHECKPOINT_BYTES==900000
