@@ -1,0 +1,621 @@
+{
+  "reviewed_at": "2026-11-14T22:22:29.509045+00:00",
+  "status": "implemented_and_captured_replay_verified_not_yet_deployed",
+  "sources": [
+    {
+      "source_key": "vagabond_eht_nj",
+      "publisher_name": "Vagabond EHT",
+      "feed_url": "https://www.vagabondkitchenandtap.com/home-eht",
+      "kind": "html",
+      "platform_adapter": "html",
+      "timezone": "America/New_York",
+      "coverage_lat": 39.3643,
+      "coverage_lng": -74.4229,
+      "coverage_radius_miles": 30,
+      "needs_checkpoint": false,
+      "expected_occurrences": 18,
+      "note": "Current official homepage and exact SHA-256 reviewed poster bodies; fixed Santa Dec5 09:30–12:00 and explicit Tue18:00/Wed19:00 schedules capped through Jan12,2027. No unknown ends inferred. Exact publisher EHT street and NJOGIS score100 PointAddress."
+    },
+    {
+      "source_key": "charity_league_atlantic_county_nj",
+      "publisher_name": "Charity League of Atlantic County",
+      "feed_url": "https://charityleague-ac.com/",
+      "kind": "html",
+      "platform_adapter": "html",
+      "timezone": "America/New_York",
+      "coverage_lat": 39.3643,
+      "coverage_lng": -74.4229,
+      "coverage_radius_miles": 30,
+      "needs_checkpoint": false,
+      "expected_occurrences": 1,
+      "note": "Current official GoDaddy gallery and exact SHA-256 reviewed complete flyer body for Nov20,2026 10:00–19:00 Christmas Mart. No annual projection. Linwood Country Club500ShoreRoadNJ08221 official venue street and NJOGIS score100 PointAddress."
+    }
+  ],
+  "focused_tests": {
+    "command": "python -m unittest tests.test_atlantic_city_reviewed_posters -q",
+    "passed": 12
+  },
+  "validation": {
+    "captured_occurrences": 19,
+    "blank_descriptions": 0,
+    "descriptions_over_limit": 0,
+    "complete_publisher_text_mismatches": 0,
+    "incomplete_streets": 0,
+    "missing_points": 0,
+    "known_end_occurrences": 2,
+    "unknown_end_occurrences": 17,
+    "description_min_chars": 58,
+    "description_max_chars": 246,
+    "source_identity_guards": true,
+    "changed_edition_rejected": true,
+    "complete_snapshot_only": true
+  },
+  "freshness": {
+    "reviewed_from": "2026-11-14",
+    "reviewed_through_inclusive": "2027-01-12",
+    "reason": "Fixed 60-day qualification horizon from November14,2026. January13 Wednesday19:00 lies outside the original60-day datetime window; no automatic rolling extension.",
+    "after_horizon": "reviewed_poster_freshness_expired; new publisher review required",
+    "fixed_date_programs": "Christmas Mart November20,2026 and Breakfast with Santa December5,2026; no annual projection"
+  },
+  "description_contract": "Complete reviewed publisher program text is tied to exact current page/image identity and actual image SHA-256. No generated alt text, invented paragraph, blank filler or truncation. Weekly posters are short because the publisher supplies only that complete program text.",
+  "posters": [
+    {
+      "key": "breakfast-with-santa-2026",
+      "source_key": "vagabond_eht_nj",
+      "image_url": "https://images.squarespace-cdn.com/content/v1/5e1f48802f478d24fc7e1ae1/fdce64d2-0e4e-4940-9775-07e804780b6f/santa+breakfast+2026.jpg",
+      "image_sha256": "5edaf898a37553369378b0571bb75bdfeae1da0ec73588cbde8355f55d74e874",
+      "complete_description": "Breakfast with Santa\nFace Painting\nEHT Vagabond Kitchen & Taphouse\nSaturday December 5th\n9:30 to 12\nBreakfast Buffet\n$25 adults $10 kids\nSpace is limited call or email to book today.\n$5 Bloody Marys $5 Mimosas",
+      "description_chars": 209,
+      "description_sha256": "0abe02d5108c150dcb83ed9bc94ea9d008991ad09630373014aa8f529bc91814",
+      "date": "2026-12-05",
+      "weekday": null,
+      "start_clock": "09:30",
+      "end_clock": "12:00"
+    },
+    {
+      "key": "dj-trivia-wednesdays",
+      "source_key": "vagabond_eht_nj",
+      "image_url": "https://images.squarespace-cdn.com/content/v1/5e1f48802f478d24fc7e1ae1/6f874a31-4784-41be-8e9e-3b2d6d3d05bb/dj+trivia+wensdays+new.jpg",
+      "image_sha256": "0d2b2359394337c8e9a40a12aed5fcf429c118dc0f1cebbf2d9ca59fe0a05d6f",
+      "complete_description": "DJ Trivia\nWednesdays @ 7PM\nEHT Vagabond Kitchen & Taphouse",
+      "description_chars": 58,
+      "description_sha256": "0b77ce27321ad80157e472a0e4c4909991f5b30155a9c0fc412894339a667689",
+      "date": null,
+      "weekday": 2,
+      "start_clock": "19:00",
+      "end_clock": null
+    },
+    {
+      "key": "dj-bingo-tuesdays",
+      "source_key": "vagabond_eht_nj",
+      "image_url": "https://images.squarespace-cdn.com/content/v1/5e1f48802f478d24fc7e1ae1/2358eea4-3e9a-4b15-9183-904e87f267a2/DJ+Bingo.jpg",
+      "image_sha256": "c27fb9f114232d50a74b40487a93ac7f8e2b0ee442b11554022775d86738b51d",
+      "complete_description": "Music Bingo\nDJ Bingo\nChance to win $300\nTuesdays @ 6pm\nEHT Vagabond Kitchen & Taphouse",
+      "description_chars": 86,
+      "description_sha256": "49cdcc6f52847a19608eeb9397bd0e3f363c28266f6eb58511281bc9697f8ff7",
+      "date": null,
+      "weekday": 1,
+      "start_clock": "18:00",
+      "end_clock": null
+    },
+    {
+      "key": "christmas-mart-2026",
+      "source_key": "charity_league_atlantic_county_nj",
+      "image_url": "https://img1.wsimg.com/isteam/ip/49e5abf6-2631-4fb4-bb2f-8b2740c6c62a/Picture1.jpeg",
+      "image_sha256": "f59019ca22f7bd67aa8ef79a3a1ad27636746bbf7ea1a47eb8e590d08e470c79",
+      "complete_description": "CHARITY LEAGUE OF ATLANTIC COUNTY\n79TH ANNUAL Christmas MART\nONE DAY ONLY\nFRIDAY NOVEMBER 20, 2026\n10 AM to 7 PM\nLinwood Country Club\n500 Shore Road, Linwood\nVisit Linwoodcountryclub.com for dining reservations\nSUPPORTING OUR COMMUNITY SINCE 1946",
+      "description_chars": 246,
+      "description_sha256": "8ffe82ba2775ebef3d713c9fb49694563fc9373ccd3c2b9fb7b4737f71c1e2ce",
+      "date": "2026-11-20",
+      "weekday": null,
+      "start_clock": "10:00",
+      "end_clock": "19:00"
+    }
+  ],
+  "venue_points": [
+    {
+      "source_key": "vagabond_eht_nj",
+      "venue_name": "EHT Vagabond Kitchen & Taphouse",
+      "publisher_street": "3016 Ocean Heights Ave, Egg Harbor Township, NJ 08234",
+      "publisher_evidence_url": "https://www.vagabondkitchenandtap.com/home-eht",
+      "official_geocoder_url": "https://geo.nj.gov/arcgis/rest/services/Tasks/NJ_Geocode/GeocodeServer/findAddressCandidates?SingleLine=3016+Ocean+Heights+Ave%2C+Egg+Harbor+Township%2C+NJ+08234&outSR=4326&outFields=Match_addr%2CAddr_type%2CCity%2CPostal%2CRegion&f=pjson",
+      "score": 100,
+      "address_type": "PointAddress",
+      "matched_street": "3016 Ocean Heights Avenue, Egg Harbor Township, New Jersey, 08234",
+      "latitude": 39.360186000003,
+      "longitude": -74.615697000001,
+      "provenance": "reviewed_nj_ogis_point_address",
+      "precision_note": "Exact publisher street destination; no room, doorway or entrance precision is claimed."
+    },
+    {
+      "source_key": "charity_league_atlantic_county_nj",
+      "venue_name": "Linwood Country Club",
+      "publisher_street": "500 Shore Road, Linwood, NJ 08221",
+      "publisher_evidence_url": "https://www.linwoodcountryclub.com/contact/",
+      "official_geocoder_url": "https://geo.nj.gov/arcgis/rest/services/Tasks/NJ_Geocode/GeocodeServer/findAddressCandidates?SingleLine=500+Shore+Road%2C+Linwood%2C+NJ+08221&outSR=4326&outFields=Match_addr%2CAddr_type%2CCity%2CPostal%2CRegion&f=pjson",
+      "score": 100,
+      "address_type": "PointAddress",
+      "matched_street": "500 Shore Road, Linwood, New Jersey, 08221",
+      "latitude": 39.352284000003,
+      "longitude": -74.561652000001,
+      "provenance": "reviewed_nj_ogis_point_address",
+      "precision_note": "Exact publisher street destination; no room, doorway or entrance precision is claimed."
+    }
+  ],
+  "source_requests": {
+    "vagabond_eht_nj": [
+      {
+        "url": "https://www.vagabondkitchenandtap.com/home-eht",
+        "accept": "text/html"
+      },
+      {
+        "url": "https://images.squarespace-cdn.com/content/v1/5e1f48802f478d24fc7e1ae1/fdce64d2-0e4e-4940-9775-07e804780b6f/santa+breakfast+2026.jpg",
+        "accept": "image/jpeg"
+      },
+      {
+        "url": "https://images.squarespace-cdn.com/content/v1/5e1f48802f478d24fc7e1ae1/6f874a31-4784-41be-8e9e-3b2d6d3d05bb/dj+trivia+wensdays+new.jpg",
+        "accept": "image/jpeg"
+      },
+      {
+        "url": "https://images.squarespace-cdn.com/content/v1/5e1f48802f478d24fc7e1ae1/2358eea4-3e9a-4b15-9183-904e87f267a2/DJ+Bingo.jpg",
+        "accept": "image/jpeg"
+      }
+    ],
+    "charity_league_atlantic_county_nj": [
+      {
+        "url": "https://charityleague-ac.com/",
+        "accept": "text/html"
+      },
+      {
+        "url": "https://img1.wsimg.com/blobby/go/fa9bc72d-4b07-402f-99de-a8fadd57ce62/gpub/147f856b6ed8691c/script.js",
+        "accept": "application/javascript"
+      },
+      {
+        "url": "https://img1.wsimg.com/blobby/go/fa9bc72d-4b07-402f-99de-a8fadd57ce62/gpub/a4bcaa670b293f7c/script.js",
+        "accept": "application/javascript"
+      },
+      {
+        "url": "https://img1.wsimg.com/isteam/ip/49e5abf6-2631-4fb4-bb2f-8b2740c6c62a/Picture1.jpeg",
+        "accept": "image/jpeg"
+      }
+    ]
+  },
+  "access_proof": [
+    {
+      "file": "www.balicwinery.com-robots.txt",
+      "status": 200,
+      "bytes": 261,
+      "sha256": "23a638ac26d47d2ee23cd14e101b7d071107caea07a80e3f2a43c2fbdae27972",
+      "observation": "Initial guarded research capture; CDN robots 404 is no rules under the existing production fetch contract."
+    },
+    {
+      "file": "balic.html",
+      "status": 200,
+      "bytes": 219840,
+      "sha256": "a062d42688fe5637a9e9e3fcec64d7e7acfc2a712ee1966833b848526281bece",
+      "observation": "Initial guarded research capture; CDN robots 404 is no rules under the existing production fetch contract."
+    },
+    {
+      "file": "balic-1.jpg",
+      "status": 200,
+      "bytes": 216747,
+      "sha256": "f4520c111867064b4adba04521d9bc0ab1e1355d00dd3b2f319f73dda33ea2e4",
+      "observation": "Initial guarded research capture; CDN robots 404 is no rules under the existing production fetch contract."
+    },
+    {
+      "file": "www.vagabondkitchenandtap.com-robots.txt",
+      "status": 200,
+      "bytes": 1520,
+      "sha256": "f772976b7f98c17af037b4339e86d4dc870b945837fd93fe423f996ba8644288",
+      "observation": "Initial guarded research capture; CDN robots 404 is no rules under the existing production fetch contract."
+    },
+    {
+      "file": "vagabond-eht.html",
+      "status": 200,
+      "bytes": 386586,
+      "sha256": "52027a3aaf2d8732e72e09d27e5663652b3ff54b958fb77a5926581a9d85c739",
+      "observation": "Initial guarded research capture; CDN robots 404 is no rules under the existing production fetch contract."
+    },
+    {
+      "file": "images.squarespace-cdn.com-robots.txt",
+      "status": 404,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observation": "Initial guarded research capture; CDN robots 404 is no rules under the existing production fetch contract."
+    },
+    {
+      "url": "https://images.squarespace-cdn.com/content/v1/5e1f48802f478d24fc7e1ae1/fdce64d2-0e4e-4940-9775-07e804780b6f/santa+breakfast+2026.jpg",
+      "file": "vagabond-eht-2.jpg",
+      "status": 200,
+      "content_type": "image/jpeg",
+      "sha256": "5edaf898a37553369378b0571bb75bdfeae1da0ec73588cbde8355f55d74e874",
+      "bytes": 360676,
+      "robots_status": 404,
+      "robots_allowed": true,
+      "captured_at": "2026-11-14T22:15:20.210618+00:00"
+    },
+    {
+      "url": "https://images.squarespace-cdn.com/content/v1/5e1f48802f478d24fc7e1ae1/6f874a31-4784-41be-8e9e-3b2d6d3d05bb/dj+trivia+wensdays+new.jpg",
+      "file": "vagabond-eht-6.jpg",
+      "status": 200,
+      "content_type": "image/jpeg",
+      "sha256": "0d2b2359394337c8e9a40a12aed5fcf429c118dc0f1cebbf2d9ca59fe0a05d6f",
+      "bytes": 175107,
+      "robots_status": 404,
+      "robots_allowed": true,
+      "captured_at": "2026-11-14T22:15:21.516360+00:00"
+    },
+    {
+      "url": "https://images.squarespace-cdn.com/content/v1/5e1f48802f478d24fc7e1ae1/2358eea4-3e9a-4b15-9183-904e87f267a2/DJ+Bingo.jpg",
+      "file": "vagabond-eht-7.jpg",
+      "status": 200,
+      "content_type": "image/jpeg",
+      "sha256": "c27fb9f114232d50a74b40487a93ac7f8e2b0ee442b11554022775d86738b51d",
+      "bytes": 303430,
+      "robots_status": 404,
+      "robots_allowed": true,
+      "captured_at": "2026-11-14T22:15:22.906557+00:00"
+    },
+    {
+      "url": "https://images.squarespace-cdn.com/content/v1/5e1f48802f478d24fc7e1ae1/eb1641db-d6fd-4919-871b-10d948336780/Flyers+Special.jpg",
+      "file": "vagabond-eht-3.jpg",
+      "status": 200,
+      "content_type": "image/jpeg",
+      "sha256": "61419d305010878a140155dae4d6c2046c78e28e283093a4c22f7254953acf69",
+      "bytes": 144434,
+      "robots_status": 404,
+      "robots_allowed": true,
+      "captured_at": "2026-11-14T22:16:25.050294+00:00"
+    },
+    {
+      "url": "https://images.squarespace-cdn.com/content/v1/5e1f48802f478d24fc7e1ae1/a8747bae-ce89-4ac3-ac8d-c63b57a6f3d3/sunday+funday.jpg",
+      "file": "vagabond-eht-4.jpg",
+      "status": 200,
+      "content_type": "image/webp",
+      "sha256": "baf23129defabb0008f6b23f9d4897ca3b26856b2325017c4d3aeb419a3c2ccd",
+      "bytes": 187200,
+      "robots_status": 404,
+      "robots_allowed": true,
+      "captured_at": "2026-11-14T22:16:29.462148+00:00"
+    }
+  ],
+  "guarded_live_attempts": [
+    {
+      "source_key": "vagabond_eht_nj",
+      "status": "failed",
+      "observed_at": "2026-11-14T22:21:42.671289+00:00",
+      "seconds": 0.001,
+      "error": "dns_unavailable",
+      "requests": []
+    },
+    {
+      "source_key": "charity_league_atlantic_county_nj",
+      "status": "failed",
+      "observed_at": "2026-11-14T22:21:42.671539+00:00",
+      "seconds": 0.001,
+      "error": "dns_unavailable",
+      "requests": []
+    }
+  ],
+  "guarded_live_note": "This local environment cannot resolve these public hostnames in validate_public_dns. Both exact guarded live attempts stopped before any HTTP request. No guard was bypassed. Fresh direct publisher captures and exact-byte replay are verified; the combined production batch must confirm the normal guarded pipeline.",
+  "event_receipts": [
+    {
+      "id": "vagabond_eht_nj:dj-bingo-tuesdays:2026-11-17",
+      "title": "DJ Bingo — Music Bingo",
+      "starts_at": "2026-11-17T23:00:00+00:00",
+      "ends_at": null,
+      "event_url": "https://www.vagabondkitchenandtap.com/home-eht",
+      "venue_name": "EHT Vagabond Kitchen & Taphouse",
+      "venue_address": "3016 Ocean Heights Ave, Egg Harbor Township, NJ 08234",
+      "lat": 39.360186000003,
+      "lng": -74.615697000001,
+      "source_key": "vagabond_eht_nj",
+      "description_chars": 86,
+      "description_sha256": "49cdcc6f52847a19608eeb9397bd0e3f363c28266f6eb58511281bc9697f8ff7"
+    },
+    {
+      "id": "vagabond_eht_nj:dj-trivia-wednesdays:2026-11-18",
+      "title": "DJ Trivia",
+      "starts_at": "2026-11-19T00:00:00+00:00",
+      "ends_at": null,
+      "event_url": "https://www.vagabondkitchenandtap.com/home-eht",
+      "venue_name": "EHT Vagabond Kitchen & Taphouse",
+      "venue_address": "3016 Ocean Heights Ave, Egg Harbor Township, NJ 08234",
+      "lat": 39.360186000003,
+      "lng": -74.615697000001,
+      "source_key": "vagabond_eht_nj",
+      "description_chars": 58,
+      "description_sha256": "0b77ce27321ad80157e472a0e4c4909991f5b30155a9c0fc412894339a667689"
+    },
+    {
+      "id": "vagabond_eht_nj:dj-bingo-tuesdays:2026-11-24",
+      "title": "DJ Bingo — Music Bingo",
+      "starts_at": "2026-11-24T23:00:00+00:00",
+      "ends_at": null,
+      "event_url": "https://www.vagabondkitchenandtap.com/home-eht",
+      "venue_name": "EHT Vagabond Kitchen & Taphouse",
+      "venue_address": "3016 Ocean Heights Ave, Egg Harbor Township, NJ 08234",
+      "lat": 39.360186000003,
+      "lng": -74.615697000001,
+      "source_key": "vagabond_eht_nj",
+      "description_chars": 86,
+      "description_sha256": "49cdcc6f52847a19608eeb9397bd0e3f363c28266f6eb58511281bc9697f8ff7"
+    },
+    {
+      "id": "vagabond_eht_nj:dj-trivia-wednesdays:2026-11-25",
+      "title": "DJ Trivia",
+      "starts_at": "2026-11-26T00:00:00+00:00",
+      "ends_at": null,
+      "event_url": "https://www.vagabondkitchenandtap.com/home-eht",
+      "venue_name": "EHT Vagabond Kitchen & Taphouse",
+      "venue_address": "3016 Ocean Heights Ave, Egg Harbor Township, NJ 08234",
+      "lat": 39.360186000003,
+      "lng": -74.615697000001,
+      "source_key": "vagabond_eht_nj",
+      "description_chars": 58,
+      "description_sha256": "0b77ce27321ad80157e472a0e4c4909991f5b30155a9c0fc412894339a667689"
+    },
+    {
+      "id": "vagabond_eht_nj:dj-bingo-tuesdays:2026-12-01",
+      "title": "DJ Bingo — Music Bingo",
+      "starts_at": "2026-12-01T23:00:00+00:00",
+      "ends_at": null,
+      "event_url": "https://www.vagabondkitchenandtap.com/home-eht",
+      "venue_name": "EHT Vagabond Kitchen & Taphouse",
+      "venue_address": "3016 Ocean Heights Ave, Egg Harbor Township, NJ 08234",
+      "lat": 39.360186000003,
+      "lng": -74.615697000001,
+      "source_key": "vagabond_eht_nj",
+      "description_chars": 86,
+      "description_sha256": "49cdcc6f52847a19608eeb9397bd0e3f363c28266f6eb58511281bc9697f8ff7"
+    },
+    {
+      "id": "vagabond_eht_nj:dj-trivia-wednesdays:2026-12-02",
+      "title": "DJ Trivia",
+      "starts_at": "2026-12-03T00:00:00+00:00",
+      "ends_at": null,
+      "event_url": "https://www.vagabondkitchenandtap.com/home-eht",
+      "venue_name": "EHT Vagabond Kitchen & Taphouse",
+      "venue_address": "3016 Ocean Heights Ave, Egg Harbor Township, NJ 08234",
+      "lat": 39.360186000003,
+      "lng": -74.615697000001,
+      "source_key": "vagabond_eht_nj",
+      "description_chars": 58,
+      "description_sha256": "0b77ce27321ad80157e472a0e4c4909991f5b30155a9c0fc412894339a667689"
+    },
+    {
+      "id": "vagabond_eht_nj:breakfast-with-santa-2026:2026-12-05",
+      "title": "Breakfast with Santa",
+      "starts_at": "2026-12-05T14:30:00+00:00",
+      "ends_at": "2026-12-05T17:00:00+00:00",
+      "event_url": "https://www.vagabondkitchenandtap.com/home-eht",
+      "venue_name": "EHT Vagabond Kitchen & Taphouse",
+      "venue_address": "3016 Ocean Heights Ave, Egg Harbor Township, NJ 08234",
+      "lat": 39.360186000003,
+      "lng": -74.615697000001,
+      "source_key": "vagabond_eht_nj",
+      "description_chars": 209,
+      "description_sha256": "0abe02d5108c150dcb83ed9bc94ea9d008991ad09630373014aa8f529bc91814"
+    },
+    {
+      "id": "vagabond_eht_nj:dj-bingo-tuesdays:2026-12-08",
+      "title": "DJ Bingo — Music Bingo",
+      "starts_at": "2026-12-08T23:00:00+00:00",
+      "ends_at": null,
+      "event_url": "https://www.vagabondkitchenandtap.com/home-eht",
+      "venue_name": "EHT Vagabond Kitchen & Taphouse",
+      "venue_address": "3016 Ocean Heights Ave, Egg Harbor Township, NJ 08234",
+      "lat": 39.360186000003,
+      "lng": -74.615697000001,
+      "source_key": "vagabond_eht_nj",
+      "description_chars": 86,
+      "description_sha256": "49cdcc6f52847a19608eeb9397bd0e3f363c28266f6eb58511281bc9697f8ff7"
+    },
+    {
+      "id": "vagabond_eht_nj:dj-trivia-wednesdays:2026-12-09",
+      "title": "DJ Trivia",
+      "starts_at": "2026-12-10T00:00:00+00:00",
+      "ends_at": null,
+      "event_url": "https://www.vagabondkitchenandtap.com/home-eht",
+      "venue_name": "EHT Vagabond Kitchen & Taphouse",
+      "venue_address": "3016 Ocean Heights Ave, Egg Harbor Township, NJ 08234",
+      "lat": 39.360186000003,
+      "lng": -74.615697000001,
+      "source_key": "vagabond_eht_nj",
+      "description_chars": 58,
+      "description_sha256": "0b77ce27321ad80157e472a0e4c4909991f5b30155a9c0fc412894339a667689"
+    },
+    {
+      "id": "vagabond_eht_nj:dj-bingo-tuesdays:2026-12-15",
+      "title": "DJ Bingo — Music Bingo",
+      "starts_at": "2026-12-15T23:00:00+00:00",
+      "ends_at": null,
+      "event_url": "https://www.vagabondkitchenandtap.com/home-eht",
+      "venue_name": "EHT Vagabond Kitchen & Taphouse",
+      "venue_address": "3016 Ocean Heights Ave, Egg Harbor Township, NJ 08234",
+      "lat": 39.360186000003,
+      "lng": -74.615697000001,
+      "source_key": "vagabond_eht_nj",
+      "description_chars": 86,
+      "description_sha256": "49cdcc6f52847a19608eeb9397bd0e3f363c28266f6eb58511281bc9697f8ff7"
+    },
+    {
+      "id": "vagabond_eht_nj:dj-trivia-wednesdays:2026-12-16",
+      "title": "DJ Trivia",
+      "starts_at": "2026-12-17T00:00:00+00:00",
+      "ends_at": null,
+      "event_url": "https://www.vagabondkitchenandtap.com/home-eht",
+      "venue_name": "EHT Vagabond Kitchen & Taphouse",
+      "venue_address": "3016 Ocean Heights Ave, Egg Harbor Township, NJ 08234",
+      "lat": 39.360186000003,
+      "lng": -74.615697000001,
+      "source_key": "vagabond_eht_nj",
+      "description_chars": 58,
+      "description_sha256": "0b77ce27321ad80157e472a0e4c4909991f5b30155a9c0fc412894339a667689"
+    },
+    {
+      "id": "vagabond_eht_nj:dj-bingo-tuesdays:2026-12-22",
+      "title": "DJ Bingo — Music Bingo",
+      "starts_at": "2026-12-22T23:00:00+00:00",
+      "ends_at": null,
+      "event_url": "https://www.vagabondkitchenandtap.com/home-eht",
+      "venue_name": "EHT Vagabond Kitchen & Taphouse",
+      "venue_address": "3016 Ocean Heights Ave, Egg Harbor Township, NJ 08234",
+      "lat": 39.360186000003,
+      "lng": -74.615697000001,
+      "source_key": "vagabond_eht_nj",
+      "description_chars": 86,
+      "description_sha256": "49cdcc6f52847a19608eeb9397bd0e3f363c28266f6eb58511281bc9697f8ff7"
+    },
+    {
+      "id": "vagabond_eht_nj:dj-trivia-wednesdays:2026-12-23",
+      "title": "DJ Trivia",
+      "starts_at": "2026-12-24T00:00:00+00:00",
+      "ends_at": null,
+      "event_url": "https://www.vagabondkitchenandtap.com/home-eht",
+      "venue_name": "EHT Vagabond Kitchen & Taphouse",
+      "venue_address": "3016 Ocean Heights Ave, Egg Harbor Township, NJ 08234",
+      "lat": 39.360186000003,
+      "lng": -74.615697000001,
+      "source_key": "vagabond_eht_nj",
+      "description_chars": 58,
+      "description_sha256": "0b77ce27321ad80157e472a0e4c4909991f5b30155a9c0fc412894339a667689"
+    },
+    {
+      "id": "vagabond_eht_nj:dj-bingo-tuesdays:2026-12-29",
+      "title": "DJ Bingo — Music Bingo",
+      "starts_at": "2026-12-29T23:00:00+00:00",
+      "ends_at": null,
+      "event_url": "https://www.vagabondkitchenandtap.com/home-eht",
+      "venue_name": "EHT Vagabond Kitchen & Taphouse",
+      "venue_address": "3016 Ocean Heights Ave, Egg Harbor Township, NJ 08234",
+      "lat": 39.360186000003,
+      "lng": -74.615697000001,
+      "source_key": "vagabond_eht_nj",
+      "description_chars": 86,
+      "description_sha256": "49cdcc6f52847a19608eeb9397bd0e3f363c28266f6eb58511281bc9697f8ff7"
+    },
+    {
+      "id": "vagabond_eht_nj:dj-trivia-wednesdays:2026-12-30",
+      "title": "DJ Trivia",
+      "starts_at": "2026-12-31T00:00:00+00:00",
+      "ends_at": null,
+      "event_url": "https://www.vagabondkitchenandtap.com/home-eht",
+      "venue_name": "EHT Vagabond Kitchen & Taphouse",
+      "venue_address": "3016 Ocean Heights Ave, Egg Harbor Township, NJ 08234",
+      "lat": 39.360186000003,
+      "lng": -74.615697000001,
+      "source_key": "vagabond_eht_nj",
+      "description_chars": 58,
+      "description_sha256": "0b77ce27321ad80157e472a0e4c4909991f5b30155a9c0fc412894339a667689"
+    },
+    {
+      "id": "vagabond_eht_nj:dj-bingo-tuesdays:2027-01-05",
+      "title": "DJ Bingo — Music Bingo",
+      "starts_at": "2027-01-05T23:00:00+00:00",
+      "ends_at": null,
+      "event_url": "https://www.vagabondkitchenandtap.com/home-eht",
+      "venue_name": "EHT Vagabond Kitchen & Taphouse",
+      "venue_address": "3016 Ocean Heights Ave, Egg Harbor Township, NJ 08234",
+      "lat": 39.360186000003,
+      "lng": -74.615697000001,
+      "source_key": "vagabond_eht_nj",
+      "description_chars": 86,
+      "description_sha256": "49cdcc6f52847a19608eeb9397bd0e3f363c28266f6eb58511281bc9697f8ff7"
+    },
+    {
+      "id": "vagabond_eht_nj:dj-trivia-wednesdays:2027-01-06",
+      "title": "DJ Trivia",
+      "starts_at": "2027-01-07T00:00:00+00:00",
+      "ends_at": null,
+      "event_url": "https://www.vagabondkitchenandtap.com/home-eht",
+      "venue_name": "EHT Vagabond Kitchen & Taphouse",
+      "venue_address": "3016 Ocean Heights Ave, Egg Harbor Township, NJ 08234",
+      "lat": 39.360186000003,
+      "lng": -74.615697000001,
+      "source_key": "vagabond_eht_nj",
+      "description_chars": 58,
+      "description_sha256": "0b77ce27321ad80157e472a0e4c4909991f5b30155a9c0fc412894339a667689"
+    },
+    {
+      "id": "vagabond_eht_nj:dj-bingo-tuesdays:2027-01-12",
+      "title": "DJ Bingo — Music Bingo",
+      "starts_at": "2027-01-12T23:00:00+00:00",
+      "ends_at": null,
+      "event_url": "https://www.vagabondkitchenandtap.com/home-eht",
+      "venue_name": "EHT Vagabond Kitchen & Taphouse",
+      "venue_address": "3016 Ocean Heights Ave, Egg Harbor Township, NJ 08234",
+      "lat": 39.360186000003,
+      "lng": -74.615697000001,
+      "source_key": "vagabond_eht_nj",
+      "description_chars": 86,
+      "description_sha256": "49cdcc6f52847a19608eeb9397bd0e3f363c28266f6eb58511281bc9697f8ff7"
+    },
+    {
+      "id": "charity_league_atlantic_county_nj:christmas-mart-2026:2026-11-20",
+      "title": "79th Annual Christmas Mart",
+      "starts_at": "2026-11-20T15:00:00+00:00",
+      "ends_at": "2026-11-21T00:00:00+00:00",
+      "event_url": "https://charityleague-ac.com/",
+      "venue_name": "Linwood Country Club",
+      "venue_address": "500 Shore Road, Linwood, NJ 08221",
+      "lat": 39.352284000003,
+      "lng": -74.561652000001,
+      "source_key": "charity_league_atlantic_county_nj",
+      "description_chars": 246,
+      "description_sha256": "8ffe82ba2775ebef3d713c9fb49694563fc9373ccd3c2b9fb7b4737f71c1e2ce"
+    }
+  ],
+  "remaining_held_source": {
+    "source_key": "balic_winery_nj",
+    "publisher_name": "Balić Winery",
+    "feed_url": "https://www.balicwinery.com/events.html",
+    "status": "held_missing_start_clocks",
+    "venue_address": "6623 Harding Hwy, Mays Landing, NJ 08330",
+    "address_evidence": "The same current official event page explicitly prints Route 40 (6623 Harding Hwy), Mays Landing, NJ 08330.",
+    "publisher_access": {
+      "page_http": 200,
+      "robots_http": 200,
+      "robots_allowed": true,
+      "image_http": 200
+    },
+    "poster_url": "https://www.balicwinery.com/uploads/6/8/4/3/68439105/published/balic-winery-gala-2026-entainters-fall-1024.jpg?1793131015",
+    "poster_sha256": "f4520c111867064b4adba04521d9bc0ab1e1355d00dd3b2f319f73dda33ea2e4",
+    "freshness": "Current page explicitly advertises November 21, 22, 27, 28 and 29. The publisher-linked poster filename says 2026 and all printed weekdays match November 2026.",
+    "full_poster_transcription": "Balic Winery\nHoliday Galas\nSat, November 21 - Acoustic Breeze Trio\n/They bring the lively and upbeat atmosphere to winery/\nSun, November 22 - Fran The Piano Man\nFri, November 27 - Bitter Sweet Duo\nSat, November 28 - Beth Tinnon\nSun, November 29 - Once Upon a Full Moon Night",
+    "body_text": "Live Music November 21, 22, 27, 28, & 29th\nFor more information please call us at 609 625 2166",
+    "held_occurrences": [
+      {
+        "date": "2026-11-21",
+        "performer": "Acoustic Breeze Trio",
+        "start_clock": null
+      },
+      {
+        "date": "2026-11-22",
+        "performer": "Fran The Piano Man",
+        "start_clock": null
+      },
+      {
+        "date": "2026-11-27",
+        "performer": "Bitter Sweet Duo",
+        "start_clock": null
+      },
+      {
+        "date": "2026-11-28",
+        "performer": "Beth Tinnon",
+        "start_clock": null
+      },
+      {
+        "date": "2026-11-29",
+        "performer": "Once Upon a Full Moon Night",
+        "start_clock": null
+      }
+    ],
+    "ready_occurrences": 0,
+    "reason": "All five current event dates and performers are known, but the complete holiday poster and surrounding event text provide no start clocks. Tasting-room opening hours and generic terrace copy cannot supply event times or event-specific narratives. This is a concrete missing-publisher-data hold, not an implementation-scope hold."
+  },
+  "scratch_full_rows": {
+    "vagabond_eht_nj": "research-ac/flyer-qualification/vagabond_eht_nj-replay.json",
+    "charity_league_atlantic_county_nj": "research-ac/flyer-qualification/charity_league_atlantic_county_nj-replay.json"
+  }
+}

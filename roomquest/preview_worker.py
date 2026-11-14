@@ -353,9 +353,35 @@ def render_virginia_beach_cultural_calendar(*, deadline_at: float | None = None)
         allowed_hosts=(HOST,), calendar_json=_virginia_beach_cultural_window())
 
 
+def _valid_cardboard_calendar_window(starts_at, ends_at):
+    pattern = r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z'
+    if any(not isinstance(value, str) or not re.fullmatch(pattern, value)
+           for value in (starts_at, ends_at)):
+        return False
+    try:
+        start, end = (datetime.fromisoformat(value.replace('Z', '+00:00'))
+                      for value in (starts_at, ends_at))
+        return timedelta(0) < end - start <= timedelta(days=62)
+    except ValueError:
+        return False
+
+
+def render_cardboard_arena_calendar(*, starts_at, ends_at, deadline_at=None):
+    """Read one store's public dated event list using its public routing ID."""
+    from urllib.parse import urlencode
+    if not _valid_cardboard_calendar_window(starts_at, ends_at):
+        raise PreviewError('invalid_cardboard_calendar_parameters')
+    url = ('https://api.carde.io/api/play/establishments/'
+           '0571b1bc-5f97-40ac-bd29-b73170f3df8b/events?' + urlencode({
+               'startsAt': starts_at, 'endsAt': ends_at, 'limit': '100', 'page': '1'}))
+    return _fetch_publisher_request(url, 'application/json', respect_robots=True,
+        deadline_at=deadline_at, allowed_hosts=('api.carde.io',), cardboard_arena_calendar=True)
+
+
 def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = False,
                              deadline_at: float | None = None, allowed_hosts=None,
-                             calendar_form=None, calendar_json=None, localhop_app_id=None) -> str | bytes:
+                             calendar_form=None, calendar_json=None, localhop_app_id=None,
+                             cardboard_arena_calendar=False) -> str | bytes:
     """Use the shared bounded transport for approved HTTPS publisher content.
 
     Keep URL/DNS validation and bounded downloads. As in upstream Udell,
@@ -363,6 +389,20 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
     destination URLs still pass public-network checks before each GET redirect.
     Reviewed display-only POSTs are source scoped and never redirected.
     """
+    if cardboard_arena_calendar is not False:
+        from urllib.parse import parse_qs
+        parsed = urlparse(url)
+        query = parse_qs(parsed.query, keep_blank_values=True)
+        if (cardboard_arena_calendar is not True or not respect_robots
+                or accept != 'application/json' or allowed_hosts != ('api.carde.io',)
+                or calendar_form is not None or calendar_json is not None or localhop_app_id is not None
+                or parsed.scheme != 'https' or parsed.netloc != 'api.carde.io' or parsed.fragment
+                or parsed.path != '/api/play/establishments/0571b1bc-5f97-40ac-bd29-b73170f3df8b/events'
+                or set(query) != {'startsAt', 'endsAt', 'limit', 'page'}
+                or query.get('limit') != ['100'] or query.get('page') != ['1']
+                or len(query.get('startsAt', [])) != 1 or len(query.get('endsAt', [])) != 1
+                or not _valid_cardboard_calendar_window(query['startsAt'][0], query['endsAt'][0])):
+            raise PreviewError('invalid_cardboard_calendar_parameters')
     render_content_type = None
     json_content_type = 'application/json'
     json_referer = None
@@ -451,6 +491,10 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
         headers['Referer'] = json_referer
     if localhop_app_id is not None:
         headers["X-Parse-Application-Id"] = localhop_app_id
+    if cardboard_arena_calendar:
+        # Public GenericEvents routing identity published in the store's SSR.
+        # This is neither a credential nor an arbitrary caller-supplied header.
+        headers['game-id'] = '2f532764-e06a-494b-9ca1-3e5dfea425ec'
     current = url
     admission_deadline = deadline_at if deadline_at is not None else monotonic() + 18
     deadline = min(admission_deadline, monotonic() + 18)
@@ -501,7 +545,7 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
                         response.close()
                         raise
                 if response.status_code in (301, 302, 303, 307, 308):
-                    if calendar_form is not None or calendar_json is not None or localhop_app_id is not None:
+                    if calendar_form is not None or calendar_json is not None or localhop_app_id is not None or cardboard_arena_calendar:
                         response.close()
                         raise PreviewError('calendar_render_redirect_blocked')
                     from urllib.parse import urljoin
@@ -526,6 +570,14 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
                         != render_content_type):
                     response.close()
                     raise PreviewError('invalid_calendar_render_content_type')
+                if (cardboard_arena_calendar and response.headers.get('Content-Type', '').split(';', 1)[0].strip().lower()
+                        != 'application/json'):
+                    response.close()
+                    raise PreviewError('invalid_calendar_render_content_type')
+                if (accept in ('image/jpeg', 'image/png') and response.headers.get('Content-Type', '').split(';', 1)[0].strip().lower()
+                        != accept):
+                    response.close()
+                    raise PreviewError('invalid_publisher_image_content_type')
                 length = int(response.headers.get("Content-Length") or 0)
                 body_limit = _publisher_body_limit(current, accept, allowed_hosts, respect_robots)
                 if length > body_limit:
@@ -545,6 +597,12 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
                 if respect_robots and "charset=" not in response.headers.get("Content-Type", "").lower():
                     encoding = "utf-8-sig"
                 response.close()
+                if accept in ('image/jpeg', 'image/png'):
+                    payload = b''.join(chunks)
+                    signature = b'\xff\xd8\xff' if accept == 'image/jpeg' else b'\x89PNG\r\n\x1a\n'
+                    if not payload.startswith(signature):
+                        raise PreviewError('invalid_publisher_image')
+                    return payload
                 if accept == 'application/pdf':
                     payload = b"".join(chunks)
                     if not payload.startswith(b'%PDF-'):
@@ -847,10 +905,12 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
     from roomquest import atlantic_city_library_chamber, atlantic_city_nightlife_more, atlantic_city_outdoors_more
     from roomquest import atlantic_city_social, atlantic_city_independent_venues
     from roomquest import atlantic_city_recreation, atlantic_city_markets_gaming
+    from roomquest import atlantic_city_reviewed_posters, atlantic_city_studio, atlantic_city_cardboard_arena
     continuation_adapters = (atlantic_city_library_chamber, atlantic_city_nightlife_more,
                              atlantic_city_outdoors_more, atlantic_city_social,
                              atlantic_city_independent_venues, atlantic_city_recreation,
-                             atlantic_city_markets_gaming)
+                             atlantic_city_markets_gaming, atlantic_city_reviewed_posters,
+                             atlantic_city_studio, atlantic_city_cardboard_arena)
     continuation_adapter = next((module for module in continuation_adapters
                                  if source_key in module.SOURCES), None)
     if (source_key in atlantic_city_community.SOURCES
@@ -1731,8 +1791,10 @@ def _preview_greatday_chunk(source, pacing, *, collection_context, deadline_at,
 def _preview_atlantic_continuation_chunk(source, pacing, *, collection_context, deadline_at,
                                          publisher_handoff=None, observe_phase=None):
     from roomquest import atlantic_city_library_chamber, atlantic_city_nightlife_more
+    from roomquest import atlantic_city_studio, atlantic_city_cardboard_arena
 
-    adapter = next((module for module in (atlantic_city_library_chamber, atlantic_city_nightlife_more)
+    adapter = next((module for module in (atlantic_city_library_chamber, atlantic_city_nightlife_more,
+                                         atlantic_city_studio, atlantic_city_cardboard_arena)
                     if source['source_key'] in module.CHECKPOINT_KEYS), None)
     if adapter is None:
         raise PreviewError('publisher_checkpoint_required')
@@ -1769,17 +1831,71 @@ def _preview_fetch_chunk(source, pacing, *, adapter, allowed_hosts, collection_c
         # staging and completed-preview time inside the claimed source budget.
         deadline = min(monotonic() + 36, deadline_at - 9)
         try:
+            adapter_args = {}
+            from roomquest import atlantic_city_cardboard_arena
+            if adapter is atlantic_city_cardboard_arena:
+                adapter_args['render_calendar'] = lambda **window: render_cardboard_arena_calendar(
+                    **window, deadline_at=deadline)
             chunk = adapter.collect_chunk(
                 source, lambda url, accept: fetch_publisher(
                     url, accept, respect_robots=True, deadline_at=deadline,
                     allowed_hosts=allowed_hosts),
-                checkpoint=saved["checkpoint"], deadline_at=deadline)
+                checkpoint=saved["checkpoint"], deadline_at=deadline, **adapter_args)
         except PreviewError:
             raise
         except (ValueError, TypeError, KeyError, OverflowError) as exc:
             # Adapter messages are controlled diagnostics, never raw HTML or
             # parser values (for example an unparseable publisher clock).
-            codes = {"unregistered_discover_halifax", "halifax_checkpoint_invalid",
+            codes = {"unregistered_discover_halifax",
+                     'atlantic_studio_checkpoint_invalid',
+                     'atlantic_studio_checkpoint_size_limit',
+                     'atlantic_studio_clock_conflict',
+                     'atlantic_studio_detail_identity',
+                     'atlantic_studio_detail_invalid',
+                     'atlantic_studio_duplicate_session',
+                     'atlantic_studio_eligibility_invalid',
+                     'atlantic_studio_html_invalid',
+                     'atlantic_studio_instructions_invalid',
+                     'atlantic_studio_location_changed',
+                     'atlantic_studio_manifest_invalid',
+                     'atlantic_studio_session_identity',
+                     'cardboard_calendar_shape_changed',
+                     'cardboard_checkpoint_invalid',
+                     'cardboard_checkpoint_size_limit',
+                     'cardboard_description_limit',
+                     'cardboard_description_missing',
+                     'cardboard_detail_changed',
+                     'cardboard_event_identity_changed',
+                     'cardboard_manifest_incomplete',
+                     'cardboard_public_calendar_identity_changed',
+                     'cardboard_public_renderer_required',
+                     'cardboard_schedule_changed',
+                     'collection_deadline',
+                     'invalid_cardboard_calendar_parameters',
+                     'invalid_publisher_image',
+                     'invalid_publisher_image_content_type',
+                     'publisher_checkpoint_required',
+                     'publisher_description_limit',
+                     'publisher_description_missing',
+                     'reviewed_poster_description_limit',
+                     'reviewed_poster_description_missing',
+                     'reviewed_poster_duplicate_identity',
+                     'reviewed_poster_edition_changed',
+                     'reviewed_poster_freshness_expired',
+                     'reviewed_poster_gallery_changed',
+                     'reviewed_poster_gallery_incomplete',
+                     'reviewed_poster_invalid_image',
+                     'reviewed_poster_manifest_changed',
+                     'reviewed_poster_page_changed',
+                     'reviewed_poster_page_identity',
+                     'reviewed_poster_record_limit',
+                     'reviewed_poster_script_changed',
+                     'reviewed_poster_source_identity',
+                     'reviewed_poster_timezone_required',
+                     'reviewed_poster_venue_changed',
+                     'source_record_limit',
+                     'unregistered_atlantic_studio_source',
+                     'unregistered_cardboard_arena_source', "halifax_checkpoint_invalid",
                      "halifax_checkpoint_size_limit", "halifax_directory_incomplete",
                      "halifax_directory_event_identity", "halifax_directory_detail_identity",
                      "halifax_directory_detail_conflict", "collection_deadline",
@@ -1865,8 +1981,11 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
                                        observe_phase=None, collection_context=None):
     from roomquest.linked_event_descriptions import PROFILES as linked_description_profiles
     from roomquest import atlantic_city_library_chamber, atlantic_city_nightlife_more
+    from roomquest import atlantic_city_studio, atlantic_city_cardboard_arena
     continuation_checkpoint_keys = (atlantic_city_library_chamber.CHECKPOINT_KEYS
-                                    | atlantic_city_nightlife_more.CHECKPOINT_KEYS)
+                                    | atlantic_city_nightlife_more.CHECKPOINT_KEYS
+                                    | atlantic_city_studio.CHECKPOINT_KEYS
+                                    | atlantic_city_cardboard_arena.CHECKPOINT_KEYS)
 
     phase, failure = "collection", {}
     operation = None

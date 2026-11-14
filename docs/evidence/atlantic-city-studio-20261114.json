@@ -1,0 +1,310 @@
+{
+  "captured_parser_verification_at": "2026-11-14T22:22:18.997397+00:00",
+  "status": "Implementation and captured parser verification; canonical production status is maintained by release owner.",
+  "source": {
+    "source_key": "hummingbird_yoga_nj",
+    "feed_url": "https://www.hummingbirdyoganj.com/classes",
+    "kind": "html",
+    "platform_adapter": "html",
+    "timezone": "America/New_York"
+  },
+  "coverage": "One explicit nextBookableSession per each of the six current reviewed public classes. No recurring-period expansion and no claim of a complete 60-day studio calendar.",
+  "contract": {
+    "checkpoint_keys": [
+      "hummingbird_yoga_nj"
+    ],
+    "version": 1,
+    "contract": "atlantic_city_studio_v1",
+    "manifest_count": 6,
+    "max_details_per_chunk": 2,
+    "max_checkpoint_age_hours": 4,
+    "max_checkpoint_bytes": 120000,
+    "complete_snapshot_only": true,
+    "max_description_characters": 12000,
+    "oversized_description": "reject, never clip",
+    "allowed_hosts": [
+      "www.hummingbirdyoganj.com",
+      "www.wellnessliving.com"
+    ]
+  },
+  "transport": {
+    "capture_method": "Ordinary anonymous public HTTP; robots checked before used routes.",
+    "production_guarded_transport_verified": false,
+    "local_guarded_transport_limit": "Scratch environment previously reports dns_unavailable; no transport guard bypass.",
+    "widget_host": "widgets.wellnessliving.com robots returned HTTP403; no widget loader or API fetched.",
+    "budget_reason": "Five sequential ordinary public class captures took roughly 35 seconds with one-second pacing; production collector uses at most two details plus the own-site manifest within each 36-second worker budget.",
+    "robots": [
+      {
+        "url": "https://www.hummingbirdyoganj.com/robots.txt",
+        "status": 200,
+        "bytes": 79,
+        "sha256": "8f71e9f7e85736af65c650c71c1de12f264e6b01d7515494647f0d485daf926f",
+        "used_paths_allowed": true
+      },
+      {
+        "url": "https://www.wellnessliving.com/robots.txt",
+        "status": 200,
+        "bytes": 893,
+        "sha256": "800c6d6399a60dd12098ab848bd2f4572aa183598da427dd3bce2cc4e09deb4a",
+        "used_paths_allowed": true
+      }
+    ],
+    "captures": [
+      {
+        "url": "https://www.hummingbirdyoganj.com/classes",
+        "status": 200,
+        "bytes": 27322,
+        "sha256": "df1bed78ec0bb531b78643b4633e16a1a0db66a1e2bddac5da526f8f47640a41",
+        "captured_at": "2026-11-14T22:14:35.047715+00:00"
+      },
+      {
+        "url": "https://www.wellnessliving.com/explore/locations/yoga/us-nj-northfield/hummingbirdyoga/schedule/classes/kripalu-141251444005/",
+        "status": 200,
+        "bytes": 63136,
+        "sha256": "a28aeca817316622ec4e02834f3edc312377e1ba09583007372165fd2d3e2dd6",
+        "captured_at": "2026-11-14T22:15:07.038707+00:00"
+      },
+      {
+        "url": "https://www.wellnessliving.com/explore/locations/yoga/us-nj-northfield/hummingbirdyoga/schedule/classes/joyful-morning-yoga-141251444002/",
+        "status": 200,
+        "bytes": 61179,
+        "sha256": "a689128a1409297aaed981247e5886c8f28bdec56eca8a598cf0239f4fcaf61d",
+        "captured_at": "2026-11-14T22:17:29.475799+00:00"
+      },
+      {
+        "url": "https://www.wellnessliving.com/explore/locations/yoga/us-nj-northfield/hummingbirdyoga/schedule/classes/soulful-stretch-141251657493/",
+        "status": 200,
+        "bytes": 63453,
+        "sha256": "733dd5794acd30a96a2ee5eb51990cbb4af39248dd67dc0447f2f2cd337d6e8f",
+        "captured_at": "2026-11-14T22:17:37.386875+00:00"
+      },
+      {
+        "url": "https://www.wellnessliving.com/explore/locations/yoga/us-nj-northfield/hummingbirdyoga/schedule/classes/flow-and-restore-141251877223/",
+        "status": 200,
+        "bytes": 60792,
+        "sha256": "2fe28670f649418d47b68940ac51532ad0dffc994123f1bdbdf78f9e38ad28db",
+        "captured_at": "2026-11-14T22:17:43.533080+00:00"
+      },
+      {
+        "url": "https://www.wellnessliving.com/explore/locations/yoga/us-nj-northfield/hummingbirdyoga/schedule/classes/restorative-yin-141251444006/",
+        "status": 200,
+        "bytes": 61515,
+        "sha256": "b7f263121349fab83161357d9db983cb94cba73304f8ef908879ce829b040272",
+        "captured_at": "2026-11-14T22:17:50.058872+00:00"
+      },
+      {
+        "url": "https://www.wellnessliving.com/explore/locations/yoga/us-nj-northfield/hummingbirdyoga/schedule/classes/mindful-movement-141251521671/",
+        "status": 200,
+        "bytes": 60482,
+        "sha256": "f61d06c10e8d0cb3a98cb2324202f59df2a238fb0cbc29d9a9c7091cc1522f44",
+        "captured_at": "2026-11-14T22:17:56.276994+00:00"
+      }
+    ]
+  },
+  "venue": {
+    "name": "Hummingbird Yoga NJ",
+    "street_address": "1637 New Road Suite 2, Northfield, NJ 08225",
+    "city": "Northfield",
+    "lat": 39.3706889,
+    "lng": -74.5584344,
+    "provenance": "publisher_wellnessliving_location",
+    "evidence_url": "https://www.wellnessliving.com/explore/locations/yoga/us-nj-northfield/hummingbirdyoga/schedule/classes/kripalu-141251444005/",
+    "native_field": "props.pageProps.defaults.location; repeated exact location in props.pageProps.locations",
+    "native_business_id": 146915,
+    "native_location_id": 141251,
+    "address_estimated": false,
+    "map_point_approximate": false
+  },
+  "public_eligibility": {
+    "official_studio_public_drop_in_offer_usd": 20,
+    "native_purchase_options_enabled": true,
+    "native_online_booking_enabled": true,
+    "native_client_must_sign_in": false,
+    "prerequisites": [],
+    "native_sessions_bookable_with_free_places": 6
+  },
+  "verification": {
+    "focused_tests_passed": 18,
+    "chunks": [
+      {
+        "cursor": 2,
+        "complete": false,
+        "emitted_rows": 0
+      },
+      {
+        "cursor": 4,
+        "complete": false,
+        "emitted_rows": 0
+      },
+      {
+        "cursor": 6,
+        "complete": true,
+        "emitted_rows": 6
+      }
+    ],
+    "total_capture_replay_requests": 9,
+    "accepted": 6,
+    "held_in_six_class_manifest": 0,
+    "full_description_matches": 6,
+    "blank_descriptions": 0,
+    "minimum_description_characters": 95,
+    "maximum_description_characters": 547,
+    "complete_streets": 6,
+    "native_venue_points": 6
+  },
+  "events": [
+    {
+      "title": "Kripalu",
+      "class_id": 444005,
+      "session_id": "226009459",
+      "event_url": "https://www.wellnessliving.com/explore/locations/yoga/us-nj-northfield/hummingbirdyoga/schedule/classes/kripalu-141251444005/",
+      "starts_at": "2026-11-15T15:00:00+00:00",
+      "ends_at": "2026-11-15T16:00:00+00:00",
+      "local_start": "2026-11-15 10:00:00",
+      "duration_minutes": 60,
+      "bookable": true,
+      "cancelled": false,
+      "capacity": 15,
+      "places_taken": 0,
+      "native_course_characters": 432,
+      "description_characters": 432,
+      "description_sha256": "a81fdb0db4568885faf8f8795a791f9d9fb06750bc36cbf68a06856897e5a3f6",
+      "full_native_narrative_match": true,
+      "description_origin": "native_course_description",
+      "description_source_url": "https://www.wellnessliving.com/explore/locations/yoga/us-nj-northfield/hummingbirdyoga/schedule/classes/kripalu-141251444005/",
+      "instruction_fields_included": []
+    },
+    {
+      "title": "Joyful Morning Yoga",
+      "class_id": 444002,
+      "session_id": "226012664",
+      "event_url": "https://www.wellnessliving.com/explore/locations/yoga/us-nj-northfield/hummingbirdyoga/schedule/classes/joyful-morning-yoga-141251444002/",
+      "starts_at": "2026-11-16T15:00:00+00:00",
+      "ends_at": "2026-11-16T16:00:00+00:00",
+      "local_start": "2026-11-16 10:00:00",
+      "duration_minutes": 60,
+      "bookable": true,
+      "cancelled": false,
+      "capacity": 10,
+      "places_taken": 0,
+      "native_course_characters": 347,
+      "description_characters": 347,
+      "description_sha256": "2434419b9de5a666ff5813de66eaa11f52d9934cd811b1b95dede94cde2f5db3",
+      "full_native_narrative_match": true,
+      "description_origin": "native_course_description",
+      "description_source_url": "https://www.wellnessliving.com/explore/locations/yoga/us-nj-northfield/hummingbirdyoga/schedule/classes/joyful-morning-yoga-141251444002/",
+      "instruction_fields_included": []
+    },
+    {
+      "title": "Soulful Stretch",
+      "class_id": 657493,
+      "session_id": "226012677",
+      "event_url": "https://www.wellnessliving.com/explore/locations/yoga/us-nj-northfield/hummingbirdyoga/schedule/classes/soulful-stretch-141251657493/",
+      "starts_at": "2026-11-17T22:30:00+00:00",
+      "ends_at": "2026-11-17T23:30:00+00:00",
+      "local_start": "2026-11-17 17:30:00",
+      "duration_minutes": 60,
+      "bookable": true,
+      "cancelled": false,
+      "capacity": 10,
+      "places_taken": 0,
+      "native_course_characters": 129,
+      "description_characters": 329,
+      "description_sha256": "59ceb26fad016c68ee987bb8b7b36b218813f4cace3707e0e3743a710d253b83",
+      "full_native_narrative_match": true,
+      "description_origin": "native_course_description",
+      "description_source_url": "https://www.wellnessliving.com/explore/locations/yoga/us-nj-northfield/hummingbirdyoga/schedule/classes/soulful-stretch-141251657493/",
+      "instruction_fields_included": [
+        "dated_session"
+      ]
+    },
+    {
+      "title": "Flow and Restore",
+      "class_id": 877223,
+      "session_id": "226012703",
+      "event_url": "https://www.wellnessliving.com/explore/locations/yoga/us-nj-northfield/hummingbirdyoga/schedule/classes/flow-and-restore-141251877223/",
+      "starts_at": "2026-11-18T15:00:00+00:00",
+      "ends_at": "2026-11-18T16:00:00+00:00",
+      "local_start": "2026-11-18 10:00:00",
+      "duration_minutes": 60,
+      "bookable": true,
+      "cancelled": false,
+      "capacity": 10,
+      "places_taken": 0,
+      "native_course_characters": 178,
+      "description_characters": 178,
+      "description_sha256": "a2d44f3b70ffda3636334847f9a8e9df31f173181199b04b46329ff99d7b2477",
+      "full_native_narrative_match": true,
+      "description_origin": "native_course_description",
+      "description_source_url": "https://www.wellnessliving.com/explore/locations/yoga/us-nj-northfield/hummingbirdyoga/schedule/classes/flow-and-restore-141251877223/",
+      "instruction_fields_included": []
+    },
+    {
+      "title": "Restorative Yin",
+      "class_id": 444006,
+      "session_id": "226012716",
+      "event_url": "https://www.wellnessliving.com/explore/locations/yoga/us-nj-northfield/hummingbirdyoga/schedule/classes/restorative-yin-141251444006/",
+      "starts_at": "2026-11-18T22:30:00+00:00",
+      "ends_at": "2026-11-18T23:30:00+00:00",
+      "local_start": "2026-11-18 17:30:00",
+      "duration_minutes": 60,
+      "bookable": true,
+      "cancelled": false,
+      "capacity": 10,
+      "places_taken": 0,
+      "native_course_characters": 547,
+      "description_characters": 547,
+      "description_sha256": "88373deaebcb4151894c19d8a6f4ccaf161ab56f0fe35303a053f79f4db53eb2",
+      "full_native_narrative_match": true,
+      "description_origin": "native_course_description",
+      "description_source_url": "https://www.wellnessliving.com/explore/locations/yoga/us-nj-northfield/hummingbirdyoga/schedule/classes/restorative-yin-141251444006/",
+      "instruction_fields_included": []
+    },
+    {
+      "title": "Mindful Movement",
+      "class_id": 521671,
+      "session_id": "226012902",
+      "event_url": "https://www.wellnessliving.com/explore/locations/yoga/us-nj-northfield/hummingbirdyoga/schedule/classes/mindful-movement-141251521671/",
+      "starts_at": "2026-11-20T15:00:00+00:00",
+      "ends_at": "2026-11-20T16:00:00+00:00",
+      "local_start": "2026-11-20 10:00:00",
+      "duration_minutes": 60,
+      "bookable": true,
+      "cancelled": false,
+      "capacity": 10,
+      "places_taken": 1,
+      "native_course_characters": 0,
+      "description_characters": 95,
+      "description_sha256": "eb57b48c62da3463c95716904f16af2baad74f00485b8be1281cfc22cbaf2713",
+      "full_native_narrative_match": true,
+      "description_origin": "exact_native_own_site_class_card",
+      "description_source_url": "https://www.hummingbirdyoganj.com/classes?class=521671",
+      "instruction_fields_included": []
+    }
+  ],
+  "qualification_holds": [
+    {
+      "name": "Hummingbird Heartfulness Meditation",
+      "source_url": "https://www.hummingbirdyoganj.com/classes",
+      "reason": "Official site supplies a Thursday 7 p.m. weekly card but no dated native booking session; the current card offers telephone contact. No dated occurrence or duration is invented under this next-session contract."
+    },
+    {
+      "name": "Proshot Friendsgiving 2026",
+      "source_url": "https://www.playproshot.net/programs/-friendsgiving-2026-proshot-pickleball",
+      "status": "held_sold_out",
+      "starts_at": "2026-11-15T15:00:00-05:00",
+      "ends_at": "2026-11-15T18:00:00-05:00",
+      "publisher_session_status": "full",
+      "publisher_status_excerpt": "Upcoming sessions Sun, Nov 15 03:00 PM - 06:00 PM full",
+      "reason": "The only qualified future dated session is explicitly full. It is not enrolled or emitted.",
+      "capture_sha256": "f37f21c7b87e7eac28bcef4c68bae8824beb2f33f5eecba61310769c04d7716e",
+      "capture_bytes": 118622
+    },
+    {
+      "name": "Proshot free introductory Wednesday program",
+      "source_url": "https://playproshot.com/proshot_events/1499/",
+      "status": "held_clock_missing",
+      "reason": "The publisher paragraph gives Wednesday night and one-hour duration, without an exact start clock; no clock is guessed."
+    }
+  ]
+}

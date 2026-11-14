@@ -1,0 +1,20 @@
+{
+  "reviewed_at": "2026-11-14T22:24:15.566981+00:00",
+  "scope": {
+    "candidate_sources": 4,
+    "candidate_occurrences": 33,
+    "active_existing_cohort_occurrences": 1228,
+    "radius_miles": 30,
+    "window_days": 60
+  },
+  "method": "Read-only production check across every provider: active venues within150m of allfour verified destinations, plus named Christmas Mart,Neuroscape,Hummingbird andVagabond matches within30miles; exact street/clock/title comparison would be required for any candidate match. No existing records matched the location or name probes.",
+  "query": "select now() observed_at,e.id,e.provider,e.source_key,e.provider_event_id,e.title,e.starts_at,e.ends_at,e.end_time_verified,e.venue_name,e.venue_address,e.external_url,extensions.st_y(e.location::extensions.geometry) lat,extensions.st_x(e.location::extensions.geometry) lng from public.external_events e where not e.hidden_for_review and e.status='scheduled' and e.expires_at>now() and e.starts_at<now()+interval '60 days' and (case when e.end_time_verified and e.ends_at>e.starts_at then e.ends_at else e.starts_at+interval '3 hours' end)>now() and (exists(select 1 from (values (39.360186,-74.615697),(39.352284,-74.561652),(39.3706889,-74.5584344),(39.616767,-74.7754785)) v(lat,lng) where extensions.st_dwithin(e.location,extensions.st_setsrid(extensions.st_makepoint(v.lng,v.lat),4326)::extensions.geography,150)) or ((lower(e.title) like any(array['%christmas mart%','%neuroscape%','%hummingbird%','%vagabond%'])) and extensions.st_dwithin(e.location,extensions.st_setsrid(extensions.st_makepoint(-74.4229,39.3643),4326)::extensions.geography,30*1609.344))) order by e.starts_at,e.title;",
+  "matching_existing_rows": [],
+  "confirmed_duplicates": [],
+  "candidate_counts": {
+    "cardboard_arena_nj": 8,
+    "charity_league_atlantic_county_nj": 1,
+    "hummingbird_yoga_nj": 6,
+    "vagabond_eht_nj": 18
+  }
+}

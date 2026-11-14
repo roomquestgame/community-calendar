@@ -1,0 +1,303 @@
+{
+  "verified_at": "2026-11-14T22:25:35.942499+00:00",
+  "status": "captured_and_tested_pending_batched_production_proof",
+  "source": {
+    "source_key": "cardboard_arena_nj",
+    "feed_url": "https://play.carde.io/stores/0571b1bc-5f97-40ac-bd29-b73170f3df8b",
+    "kind": "html",
+    "platform_adapter": "html",
+    "timezone": "America/New_York"
+  },
+  "expected_captured_occurrences": 8,
+  "all_native_detail_pages_http200": 8,
+  "native_complete_pagination": {
+    "activePage": 1,
+    "nextPage": null,
+    "totalPages": 1,
+    "resultsThisPage": 8,
+    "totalResults": 8
+  },
+  "full_descriptions": {
+    "blank": 0,
+    "min_chars": 83,
+    "max_chars": 83,
+    "native_html_equality": 8,
+    "mismatches": [],
+    "source_field": "each published activities[].descriptionHtml; all bodies retained; parent body included when present; no generic title/game fallback"
+  },
+  "venue": {
+    "name": "Cardboard Arena",
+    "street": "15 8th Street, Hammonton, NJ 08037",
+    "street_evidence": [
+      "https://cardboardarena.com/",
+      "https://play.carde.io/stores/0571b1bc-5f97-40ac-bd29-b73170f3df8b"
+    ],
+    "native_point": {
+      "lat": 39.616767,
+      "lng": -74.77547849999999
+    },
+    "point_source": "event.address.geo and matching publisher establishment address; all8 occurrences match",
+    "numeric_street_handling": "15, 8th St normalized to15 8th Street; full address verified before passing native point through legacy alphabetic-street heuristic",
+    "missing_address_count": 0,
+    "missing_point_count": 0
+  },
+  "schedule": {
+    "timezone": "America/New_York",
+    "first_local_date": "2026-11-14",
+    "last_local_date": "2027-01-02",
+    "local_clocks": "18:00–22:00",
+    "native_occurrences_only": true,
+    "recurrence_metadata_not_expanded": true
+  },
+  "public_access_contract": {
+    "feed": "https://play.carde.io/stores/0571b1bc-5f97-40ac-bd29-b73170f3df8b",
+    "allowed_hosts": [
+      "play.carde.io",
+      "api.carde.io"
+    ],
+    "public_game_id": "2f532764-e06a-494b-9ca1-3e5dfea425ec",
+    "header_kind": "public tenant routing identifier from current SSR pgGame object, not account authentication",
+    "fixed_renderer": {
+      "method": "GET",
+      "host": "api.carde.io",
+      "path": "/api/play/establishments/0571b1bc-5f97-40ac-bd29-b73170f3df8b/events",
+      "fixed_query": {
+        "limit": 100,
+        "page": 1
+      },
+      "bounded_query_keys": [
+        "startsAt",
+        "endsAt"
+      ],
+      "signature": "render_calendar(*, starts_at, ends_at)",
+      "fixed_public_header": {
+        "game-id": "2f532764-e06a-494b-9ca1-3e5dfea425ec"
+      },
+      "redirect_policy": "blocked by worker scoped renderer"
+    },
+    "api_proof": {
+      "without_header_http": 400,
+      "without_header_reason": "game-id header not set",
+      "with_public_header_http": 200,
+      "captured_listing_request": {
+        "url": "https://api.carde.io/api/play/establishments/0571b1bc-5f97-40ac-bd29-b73170f3df8b/events?startsAt=2026-11-14T00%3A00%3A00.000Z&endsAt=2027-01-13T00%3A00%3A00.000Z&limit=100&page=1",
+        "status": 200,
+        "bytes": 16916,
+        "file": "cardboard-store-events.json",
+        "keys": [
+          "data",
+          "pagination"
+        ]
+      }
+    },
+    "store_route_proof": "Current SSR params.storeId exactly0571b1bc-5f97-40ac-bd29-b73170f3df8b and pgGame.id public GenericEvents context validated on every manifest refresh",
+    "public_javascript": [
+      "https://play.carde.io/_next/static/chunks/6793-cc27e6856a5e5f12.js",
+      "https://play.carde.io/_next/static/chunks/app/stores/%5BstoreId%5D/page-11bb1310c763f3a1.js"
+    ],
+    "detail_contract": "GET https://play.carde.io/events/<native UUID>, ordinary HTML without extra headers; inert self.__next_f.push JSON plus bounded referenced UTF-8 text frames, never execute JavaScript",
+    "robots": [
+      {
+        "url": "https://play.carde.io/robots.txt",
+        "status": 404,
+        "policy_result": "allowed by existing missing-robots policy"
+      },
+      {
+        "url": "https://api.carde.io/robots.txt",
+        "status": 404,
+        "policy_result": "allowed by existing missing-robots policy"
+      }
+    ],
+    "url_gate_checks": {
+      "all_observed_fetch_urls_pass_public_source_url": true,
+      "render_query_urls_pass_public_source_url": true,
+      "unchanged_max_body_bytes": 3000000,
+      "largest_captured_detail_bytes": 375434
+    },
+    "transport_limit": "Local captured replay uses normal callback interfaces; production DNS/robots/pacing/redirect checks are unchanged and production guarded fetch remains to verify."
+  },
+  "checkpoint": {
+    "max_details_per_chunk": 2,
+    "max_manifest": 100,
+    "max_bytes": 900000,
+    "ttl_hours": 4,
+    "no_partial_rows": true,
+    "chunks": [
+      {
+        "chunk": 1,
+        "cursor": 2,
+        "manifest_count": 8,
+        "complete": false,
+        "public_rows": 0,
+        "checkpoint_bytes": 8015
+      },
+      {
+        "chunk": 2,
+        "cursor": 4,
+        "manifest_count": 8,
+        "complete": false,
+        "public_rows": 0,
+        "checkpoint_bytes": 9403
+      },
+      {
+        "chunk": 3,
+        "cursor": 6,
+        "manifest_count": 8,
+        "complete": false,
+        "public_rows": 0,
+        "checkpoint_bytes": 10791
+      },
+      {
+        "chunk": 4,
+        "cursor": 8,
+        "manifest_count": 8,
+        "complete": true,
+        "public_rows": 8,
+        "checkpoint_bytes": 12179
+      }
+    ],
+    "replay_seconds": 0.683,
+    "completion_removes_ended_occurrences": true
+  },
+  "tests": {
+    "command": "python -m unittest tests.test_atlantic_city_cardboard_arena -v",
+    "count": 18,
+    "result": "OK",
+    "seconds": 0.193,
+    "coverage": [
+      "exact source and public routing identity",
+      "2-argument HTML fetch plus keyword-only fixed renderer",
+      "complete pagination; no truncation or speculative recurrence",
+      "full long native prose and UTF-8 text-frame references",
+      "escaped literal angle text preserved",
+      "all activity bodies complete or record held",
+      "full ZIP streets and real numeric-street native GPS",
+      "explicit offsite addresses retained without store point",
+      "checkpoint partition/title/venue/GPS/type checks",
+      "expired checkpoint restart and changed manifest reset",
+      "no partial publish; ended rows removed at completion",
+      "deadline prevents I/O"
+    ]
+  },
+  "row_proof": [
+    {
+      "source_key": "cardboard_arena_nj",
+      "id": "cardboard-arena:7ef9a22b-39c3-4db5-80f6-139ab4a51057",
+      "title": "Casual Neuroscape",
+      "starts_at": "2026-11-14T23:00:00+00:00",
+      "ends_at": "2026-11-15T03:00:00+00:00",
+      "event_url": "https://play.carde.io/events/7ef9a22b-39c3-4db5-80f6-139ab4a51057",
+      "venue_name": "Cardboard Arena",
+      "venue_address": "15 8th Street, Hammonton, NJ 08037",
+      "lat": 39.616767,
+      "lng": -74.77547849999999,
+      "description_length": 83,
+      "description_sha256": "0fc500cbdd372da139ec298f571087468c25e79a2abbe7da1a42ccb9f8cb69da"
+    },
+    {
+      "source_key": "cardboard_arena_nj",
+      "id": "cardboard-arena:7f716f70-1df5-4312-8ea3-2c35b82c6d10",
+      "title": "Casual Neuroscape",
+      "starts_at": "2026-11-21T23:00:00+00:00",
+      "ends_at": "2026-11-22T03:00:00+00:00",
+      "event_url": "https://play.carde.io/events/7f716f70-1df5-4312-8ea3-2c35b82c6d10",
+      "venue_name": "Cardboard Arena",
+      "venue_address": "15 8th Street, Hammonton, NJ 08037",
+      "lat": 39.616767,
+      "lng": -74.77547849999999,
+      "description_length": 83,
+      "description_sha256": "0fc500cbdd372da139ec298f571087468c25e79a2abbe7da1a42ccb9f8cb69da"
+    },
+    {
+      "source_key": "cardboard_arena_nj",
+      "id": "cardboard-arena:dda06306-846d-4b11-a681-89a022a4b37a",
+      "title": "Casual Neuroscape",
+      "starts_at": "2026-11-28T23:00:00+00:00",
+      "ends_at": "2026-11-29T03:00:00+00:00",
+      "event_url": "https://play.carde.io/events/dda06306-846d-4b11-a681-89a022a4b37a",
+      "venue_name": "Cardboard Arena",
+      "venue_address": "15 8th Street, Hammonton, NJ 08037",
+      "lat": 39.616767,
+      "lng": -74.77547849999999,
+      "description_length": 83,
+      "description_sha256": "0fc500cbdd372da139ec298f571087468c25e79a2abbe7da1a42ccb9f8cb69da"
+    },
+    {
+      "source_key": "cardboard_arena_nj",
+      "id": "cardboard-arena:7489eef1-fc8a-4778-9efd-60338b418e68",
+      "title": "Casual Neuroscape",
+      "starts_at": "2026-12-05T23:00:00+00:00",
+      "ends_at": "2026-12-06T03:00:00+00:00",
+      "event_url": "https://play.carde.io/events/7489eef1-fc8a-4778-9efd-60338b418e68",
+      "venue_name": "Cardboard Arena",
+      "venue_address": "15 8th Street, Hammonton, NJ 08037",
+      "lat": 39.616767,
+      "lng": -74.77547849999999,
+      "description_length": 83,
+      "description_sha256": "0fc500cbdd372da139ec298f571087468c25e79a2abbe7da1a42ccb9f8cb69da"
+    },
+    {
+      "source_key": "cardboard_arena_nj",
+      "id": "cardboard-arena:34a826f4-a117-4674-b71f-317b0f8e471d",
+      "title": "Casual Neuroscape",
+      "starts_at": "2026-12-12T23:00:00+00:00",
+      "ends_at": "2026-12-13T03:00:00+00:00",
+      "event_url": "https://play.carde.io/events/34a826f4-a117-4674-b71f-317b0f8e471d",
+      "venue_name": "Cardboard Arena",
+      "venue_address": "15 8th Street, Hammonton, NJ 08037",
+      "lat": 39.616767,
+      "lng": -74.77547849999999,
+      "description_length": 83,
+      "description_sha256": "0fc500cbdd372da139ec298f571087468c25e79a2abbe7da1a42ccb9f8cb69da"
+    },
+    {
+      "source_key": "cardboard_arena_nj",
+      "id": "cardboard-arena:15847a1c-33f4-4bfa-94fa-ab6381a4f854",
+      "title": "Casual Neuroscape",
+      "starts_at": "2026-12-19T23:00:00+00:00",
+      "ends_at": "2026-12-20T03:00:00+00:00",
+      "event_url": "https://play.carde.io/events/15847a1c-33f4-4bfa-94fa-ab6381a4f854",
+      "venue_name": "Cardboard Arena",
+      "venue_address": "15 8th Street, Hammonton, NJ 08037",
+      "lat": 39.616767,
+      "lng": -74.77547849999999,
+      "description_length": 83,
+      "description_sha256": "0fc500cbdd372da139ec298f571087468c25e79a2abbe7da1a42ccb9f8cb69da"
+    },
+    {
+      "source_key": "cardboard_arena_nj",
+      "id": "cardboard-arena:789b1bea-0bed-47d6-96dd-0ea6b47a1732",
+      "title": "Casual Neuroscape",
+      "starts_at": "2026-12-26T23:00:00+00:00",
+      "ends_at": "2026-12-27T03:00:00+00:00",
+      "event_url": "https://play.carde.io/events/789b1bea-0bed-47d6-96dd-0ea6b47a1732",
+      "venue_name": "Cardboard Arena",
+      "venue_address": "15 8th Street, Hammonton, NJ 08037",
+      "lat": 39.616767,
+      "lng": -74.77547849999999,
+      "description_length": 83,
+      "description_sha256": "0fc500cbdd372da139ec298f571087468c25e79a2abbe7da1a42ccb9f8cb69da"
+    },
+    {
+      "source_key": "cardboard_arena_nj",
+      "id": "cardboard-arena:a67b7bb7-4686-4766-854c-74707501d35b",
+      "title": "Casual Neuroscape",
+      "starts_at": "2027-01-02T23:00:00+00:00",
+      "ends_at": "2027-01-03T03:00:00+00:00",
+      "event_url": "https://play.carde.io/events/a67b7bb7-4686-4766-854c-74707501d35b",
+      "venue_name": "Cardboard Arena",
+      "venue_address": "15 8th Street, Hammonton, NJ 08037",
+      "lat": 39.616767,
+      "lng": -74.77547849999999,
+      "description_length": 83,
+      "description_sha256": "0fc500cbdd372da139ec298f571087468c25e79a2abbe7da1a42ccb9f8cb69da"
+    }
+  ],
+  "scratch_paths": {
+    "listing": "research-ac/remaining-markets/cardboard-store-events.json",
+    "detail_captures": "research-ac/remaining-markets/cardboard-details/",
+    "full_rows": "research-ac/remaining-markets/cardboard_arena_nj-replay.json",
+    "expected_proof": "research-ac/remaining-markets/cardboard-production-proof-expected.json",
+    "url_request_log": "research-ac/remaining-markets/cardboard-url-proof.json"
+  }
+}

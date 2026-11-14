@@ -8,6 +8,8 @@ from roomquest.collector_errors import failure_details
 from roomquest.linked_event_descriptions import PROFILES as LINKED_DESCRIPTION_PROFILES
 from roomquest.atlantic_city_library_chamber import CHECKPOINT_KEYS as ATLANTIC_LIBRARY_CHECKPOINT_KEYS
 from roomquest.atlantic_city_nightlife_more import CHECKPOINT_KEYS as ATLANTIC_NIGHTLIFE_CHECKPOINT_KEYS
+from roomquest.atlantic_city_studio import CHECKPOINT_KEYS as ATLANTIC_STUDIO_CHECKPOINT_KEYS
+from roomquest.atlantic_city_cardboard_arena import CHECKPOINT_KEYS as ATLANTIC_CARDBOARD_CHECKPOINT_KEYS
 from roomquest.preview_worker import PreviewError, supabase_rpc, _process_claimed_source
 
 CATEGORIES = frozenset(('ical', 'wordpress', 'jsonld', 'squarespace', 'library',
@@ -49,6 +51,55 @@ _OPERATIONS = frozenset(('community_collector_claim_category',
 # This is an explicit diagnostic vocabulary, not a shape-only exception-message
 # filter: even a secret that happens to look like a code must not reach logs.
 _ERROR_CODES = frozenset(('database_unavailable', 'staging_deadline',
+    'atlantic_studio_checkpoint_invalid',
+    'atlantic_studio_checkpoint_size_limit',
+    'atlantic_studio_clock_conflict',
+    'atlantic_studio_detail_identity',
+    'atlantic_studio_detail_invalid',
+    'atlantic_studio_duplicate_session',
+    'atlantic_studio_eligibility_invalid',
+    'atlantic_studio_html_invalid',
+    'atlantic_studio_instructions_invalid',
+    'atlantic_studio_location_changed',
+    'atlantic_studio_manifest_invalid',
+    'atlantic_studio_session_identity',
+    'cardboard_calendar_shape_changed',
+    'cardboard_checkpoint_invalid',
+    'cardboard_checkpoint_size_limit',
+    'cardboard_description_limit',
+    'cardboard_description_missing',
+    'cardboard_detail_changed',
+    'cardboard_event_identity_changed',
+    'cardboard_manifest_incomplete',
+    'cardboard_public_calendar_identity_changed',
+    'cardboard_public_renderer_required',
+    'cardboard_schedule_changed',
+    'collection_deadline',
+    'invalid_cardboard_calendar_parameters',
+    'invalid_publisher_image',
+    'invalid_publisher_image_content_type',
+    'publisher_checkpoint_required',
+    'publisher_description_limit',
+    'publisher_description_missing',
+    'reviewed_poster_description_limit',
+    'reviewed_poster_description_missing',
+    'reviewed_poster_duplicate_identity',
+    'reviewed_poster_edition_changed',
+    'reviewed_poster_freshness_expired',
+    'reviewed_poster_gallery_changed',
+    'reviewed_poster_gallery_incomplete',
+    'reviewed_poster_invalid_image',
+    'reviewed_poster_manifest_changed',
+    'reviewed_poster_page_changed',
+    'reviewed_poster_page_identity',
+    'reviewed_poster_record_limit',
+    'reviewed_poster_script_changed',
+    'reviewed_poster_source_identity',
+    'reviewed_poster_timezone_required',
+    'reviewed_poster_venue_changed',
+    'source_record_limit',
+    'unregistered_atlantic_studio_source',
+    'unregistered_cardboard_arena_source',
     'fetch_checkpoint_context_missing', 'fetch_checkpoint_invalid_response',
     'halifax_checkpoint_invalid', 'halifax_checkpoint_size_limit',
     'halifax_directory_incomplete', 'halifax_directory_event_identity',
@@ -346,7 +397,9 @@ def collect_category(category, ticket):
                     if ((source.get('source_key') in ('discover_halifax_va', 'visit_atlantic_city_nj', 'noyes_arts_atlantic_city_nj', 'atlantic_city_municipal_nj', 'greatday_atlantic_city_nj')
                             or source.get('source_key') in LINKED_DESCRIPTION_PROFILES
                             or source.get('source_key') in ATLANTIC_LIBRARY_CHECKPOINT_KEYS
-                            or source.get('source_key') in ATLANTIC_NIGHTLIFE_CHECKPOINT_KEYS)
+                            or source.get('source_key') in ATLANTIC_NIGHTLIFE_CHECKPOINT_KEYS
+                            or source.get('source_key') in ATLANTIC_STUDIO_CHECKPOINT_KEYS
+                            or source.get('source_key') in ATLANTIC_CARDBOARD_CHECKPOINT_KEYS)
                             and type(source.get('fetch_checkpoint_version')) is int
                             and source['fetch_checkpoint_version'] == 1):
                         process_args['collection_context'] = args
