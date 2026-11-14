@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "checked_at": "2026-11-14T23:17:54.721334+00:00",
+  "scope": "Supplementary read-only check of the two route-only Transit Museum walks held from the frozen B3 capture",
+  "data_user_agent": "RoomQuestCommunityCalendar/0.2 (+https://roomquestapp.vercel.app/)",
+  "robots_user_agent": "RoomQuestCommunityCalendar/0.1 (community-event research)",
+  "transport": "ordinary public HTTP; robots404 permits ordinary access under existing policy; no challenge bypass",
+  "source_key": "ny_transit_museum_ny",
+  "events": [
+    {
+      "url": "https://51281.blackbaudhosting.com/51281/Transit-Walk-Downtown-Brooklyn-21Nov2026",
+      "robots_status": 404,
+      "allowed": true,
+      "status": 200,
+      "final_url": "https://51281.blackbaudhosting.com/51281/Transit-Walk-Downtown-Brooklyn-21Nov2026",
+      "bytes": 57119,
+      "payload_sha256": "1ec4ec7003b78f679a72fc625b6d8d3848d485afa623c4d7b929e9fa58709a09",
+      "visible_text_characters": 1845,
+      "finding": "The public ticket page gives the route/program narrative and date/time, but no precise public starting street or meeting station. It says additional program information arrives by email after booking. No form submission, booking, login or email access was attempted."
+    },
+    {
+      "url": "https://51281.blackbaudhosting.com/51281/Transit-Walk-Second-Avenues-Art-and-Transit-History-21Nov2026",
+      "robots_status": 404,
+      "allowed": true,
+      "status": 200,
+      "final_url": "https://51281.blackbaudhosting.com/51281/Transit-Walk-Second-Avenues-Art-and-Transit-History-21Nov2026",
+      "bytes": 57588,
+      "payload_sha256": "7b114441ed3c18647c628c7f97d55e5257409a80fe364111592924ffedf9829d",
+      "visible_text_characters": 2000,
+      "finding": "The public ticket page gives the route/program narrative and date/time, but no precise public starting street or meeting station. It says additional program information arrives by email after booking. No form submission, booking, login or email access was attempted."
+    }
+  ],
+  "disposition": "Continue holding these two events for missing starting meeting-location data. Preserve the other17 verified source events and their frozen capture.",
+  "checked_at_basis": "completion timestamp of the saved direct HTTP receipt"
+}

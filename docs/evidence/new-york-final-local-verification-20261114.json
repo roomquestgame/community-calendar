@@ -1,0 +1,25 @@
+{
+  "checked_at": "2026-11-14T23:34:54.229676+00:00",
+  "collector_base_commit": "ab26ae577893604965a3e6f02fdd58d6e67f8b95",
+  "focused_tests_passed": 179,
+  "subtests_passed": 58,
+  "result": "passed",
+  "command": "python -m pytest -q tests/test_new_york_worker.py tests/test_new_york_arts_final.py tests/test_new_york_social_final.py tests/test_new_york_outdoors_final.py tests/test_new_york_family_final.py tests/test_new_york_arts_remaining.py tests/test_publisher_robots_cache.py",
+  "scope": "Focused local collector tests on a fresh main worktree preserving concurrent Boston and Atlantic City integrations. Does not claim live publisher success, real DB lease/auth execution, or production publication. No GitHub test/audit workflow was run.",
+  "code_sha256": {
+    "roomquest/new_york_arts_final.py": "4d63b5905b5f63a60b4d308ab66ccbfd1f1711c96e5ecf18f545d1dec9eb8014",
+    "roomquest/new_york_arts_remaining.py": "15d755bde9016102748d9c388bff2424b55d6e69a5cedba30a43c6414b5ae974",
+    "roomquest/new_york_family_final.py": "29a99d3c8e30aa76f00abb70837cebcc8b97bf92eba86fd738e1dcbdd8af9ae1",
+    "roomquest/new_york_outdoors_final.py": "cce8bc09a8108eb4fbefa0b1aba78ee39452a7cf42b3fc1a57cbf53813136d15",
+    "roomquest/new_york_social_final.py": "dc2418b6a1b4aa48dcdf953c9941e9bdb0e4bf46e77a0383d00e482b9cef05bd",
+    "roomquest/new_york_sources.py": "b4007c4bb639811ad4eaafd82b4eaeff80446161da0546a3a224e090ca3424ec",
+    "roomquest/preview_worker.py": "7a67e5051b18ab2db80c0528b4bb21e51e722c5244e409e44d4028cdb75bfee5",
+    "tests/test_new_york_arts_final.py": "06973f4df8d79d10ed9911b2117edc5ab70a20d6c7eb639dbf9853510c132f7d",
+    "tests/test_new_york_arts_remaining.py": "f15e310fe6599aebeebc6886c18ff505c4964c1932a18fe4bf86e9b901a77f19",
+    "tests/test_new_york_family_final.py": "91d285b2d9b560941a5d3012d3d706ad89a6016b8a90a98644d9747e0914fbf9",
+    "tests/test_new_york_outdoors_final.py": "70bfea2ec5c5ea4bfaea5baab903fe174a1d8e08841473feb30eec57d968483b",
+    "tests/test_new_york_social_final.py": "fb2006e7bdcb022a0bcdb85457d9c31e2573b2f9c1e6b1ed11f6b4f2fc0af674",
+    "tests/test_new_york_worker.py": "39f345a0bf00b7a89707b2e087aeadbe040ea119b98a98ae69a19504358529ee",
+    "tests/test_publisher_robots_cache.py": "2257abdacc1019fa71726bd72a33c263fbf0c044a4ae0f3a8e28420ae6ee204f"
+  }
+}

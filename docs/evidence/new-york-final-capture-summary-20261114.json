@@ -1,0 +1,60 @@
+{
+  "source_count": 23,
+  "captured_count": 902,
+  "per_source": {
+    "bkup_brooklyn_ny": 66,
+    "bronx_alehouse_bronx_ny": 9,
+    "bronx_river_alliance_ny": 6,
+    "bronx_zoo_holiday_lights_ny": 28,
+    "brooklyn_bridge_park_ny": 44,
+    "brooklyn_childrens_museum_ny": 24,
+    "brooklyn_community_board_6_ny": 62,
+    "brooklyn_public_library_presents_ny": 12,
+    "flushing_town_hall_ny": 12,
+    "fordham_university_ny": 15,
+    "greenbelt_conservancy_staten_island_ny": 5,
+    "makerspace_nyc_ny": 8,
+    "municipal_mapsee_0e46855a44eb788f36a2c0ab": 346,
+    "new_york_aquarium_holiday_tides_ny": 6,
+    "ny_transit_museum_ny": 17,
+    "nyc_pauper_league_ny": 6,
+    "nyrr_open_run_ny": 95,
+    "os_nyc_new_york_ny": 8,
+    "radegast_hall_brooklyn_ny": 12,
+    "sip_and_play_brooklyn_ny": 28,
+    "transportation_alternatives_ny": 11,
+    "wave_hill_ny": 78,
+    "wild_east_brooklyn_ny": 4
+  },
+  "blank_descriptions": 0,
+  "blank_streets": 0,
+  "missing_points": 0,
+  "outside_nyc_bbox": 0,
+  "longest_description": 7004,
+  "descriptions_over_2000": 161,
+  "visibly_approximate_occurrences": 308,
+  "capture_sha256": "1cbbfd1e2a2f09bca80c8f5a760b4b01f22b46c9f60ff50082330ddd6ab5534b",
+  "inputs": [
+    {
+      "family": "arts",
+      "path": "docs/evidence/new-york-arts-final-capture-2026-11-14.json",
+      "sha256": "2e37cb1fa11820e5e0dae4c0a8bd6e65a3bf5a16a4fc6c62b67cb83e3b7fa6d0"
+    },
+    {
+      "family": "social",
+      "path": "docs/evidence/new-york-social-final-capture-2026-11-14.json",
+      "sha256": "fcf35548eca3f707abc51b55bc2d2c48252c3e5af34b4a1c47827ca0d8d71728"
+    },
+    {
+      "family": "outdoors",
+      "path": "docs/evidence/new-york-outdoors-final-capture-2026-11-14.json",
+      "sha256": "af76824fc40dd52bd321246383bea2ade57f7d886ffa1b3f5248e5be106916ba"
+    },
+    {
+      "family": "family",
+      "path": "docs/evidence/new-york-family-final-capture-2026-11-14.json",
+      "sha256": "b343f739ffaa3e1a6019871e64e5f7ffe3a213b0b5256505e982ceb425a5ca81"
+    }
+  ],
+  "scope": "Complete real publisher-response replays validated with the shared collector boundary. Capture counts are not production counts; live ingestion and publication are verified after deployment."
+}

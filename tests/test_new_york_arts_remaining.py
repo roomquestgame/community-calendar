@@ -108,6 +108,19 @@ class RemainingArtsTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "pagination_limit"):
             ny.collect(source(ny.COMMONPOINT), Mock(return_value=cp_payload(cp_event(), total_pages=38)), now=NOW)
 
+    def test_commonpoint_bronx_point_requires_exact_native_identity_and_street(self):
+        venue = dict(id=69030, venue="Commonpoint Bronx", address="1665 Hoe Ave",
+                     city="The Bronx", state="NY", zip="10460")
+        row = ny.collect(source(ny.COMMONPOINT), Mock(return_value=cp_payload(cp_event(venue=venue))), now=NOW)[0]
+        self.assertEqual((row['lat'],row['lng']),(40.835703,-73.887896))
+        self.assertEqual(row['location_provenance'],'reviewed_nyc_pad_exact_address')
+        self.assertIsNone(row['reason'])
+        for changed in ({**venue,'id':69031},{**venue,'venue':'Another Center'},
+                        {**venue,'address':'1667 Hoe Ave'}):
+            with self.subTest(venue=changed):
+                row = ny.collect(source(ny.COMMONPOINT), Mock(return_value=cp_payload(cp_event(venue=changed))), now=NOW)[0]
+                self.assertIsNone(row.get('lat'))
+
     def test_commonpoint_holds_conflicting_native_festival_hour(self):
         e = cp_event(145501, title="Hanukkah Festival", description="Join on Sunday from 1-3pm!",
                      start_date="2026-12-06 01:00:00", end_date="2026-12-06 15:00:00",

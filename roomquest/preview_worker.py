@@ -241,6 +241,12 @@ def _robots_rules(host: str, *, deadline_at: float | None = None):
         lines = ["Allow: /p/" if line.strip() == "Allow: /p/*" else line for line in lines]
     parser.parse(lines)
     _robots_delays[host] = robots_crawl_delay(lines, "RoomQuestCommunityCalendar")
+    if host in ("nytransitmuseum.org", "www.nytransitmuseum.org"):
+        # The reviewed publisher places its 10-second Crawl-delay before the
+        # first User-agent group. Honor that stated wait even though the
+        # standard parser ignores the orphan directive. Path permissions and
+        # any stronger selected delay remain unchanged.
+        _robots_delays[host] = max(10, _robots_delays[host])
     # The newly learned delay also separates this robots response from the
     # first calendar request. An oversized value is held before that request.
     _reserve_known_crawl_delay(host)
