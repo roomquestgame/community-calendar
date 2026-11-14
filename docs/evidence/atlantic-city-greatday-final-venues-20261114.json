@@ -1,0 +1,39 @@
+{
+  "observed_at": "2026-11-14",
+  "carnegie": {
+    "venue_name": "Carnegie Center",
+    "venue_address": "35 S Dr Martin Luther King Boulevard, Atlantic City, NJ 08401",
+    "latitude": 39.3593871,
+    "longitude": -74.4307969,
+    "source_url": "https://mapsdep.nj.gov/arcgis/rest/services/Features/Land/MapServer/54/query?objectIds=43261&outFields=*&outSR=4326&f=json",
+    "evidence_file": "docs/evidence/atlantic-city-carnegie-njdep-feature-20261114.json",
+    "feature_id": 43261,
+    "NJEMS_SIID": 77043309,
+    "publisher_name": "Atlantic City Free Public Library",
+    "publisher_historic_address": "35 South Illinois Avenue",
+    "publisher_location_quality": "HIGH",
+    "publisher_digitizing_source": "Digital parcel data",
+    "basis": "NJDEP official building point, not a regional center. Historic street name reconciled by city Master Plan; Carnegie identity and current35SDrMLK address corroborated city ordinance and BOEM property16.",
+    "street_rename_source": "https://www.acnj.gov/_Content/pdf/Atlantic-City-Master-Plan-2008.pdf",
+    "street_rename_pdf_page": 177,
+    "street_rename_quote": "Illinois Avenue has been changed to Martin Luther King Jr. Boulevard.",
+    "current_identity_source": "https://ecode360.com/AT0848/laws/LF1608408.pdf",
+    "current_identity": "City-owned35SDrMartinLutherKingJrBlvd,Block154Lot11.02,commonlyknownCarnegieLibrary.",
+    "data_credit": "This report was developed using New Jersey Department of Environmental Protection Geographic Information System digital data, but this secondary product has not been verified by NJDEP and is not state-authorized or endorsed."
+  },
+  "pop_lloyd": {
+    "venue_name": "Pop Lloyd Stadium",
+    "venue_address": "1200 N Doctor Martin Luther King Jr Boulevard, Atlantic City, NJ 08401",
+    "latitude": 39.3725712,
+    "longitude": -74.4398345,
+    "source_url": "https://www.visitatlanticcity.com/listing/pop-lloyd-stadium/4863/",
+    "evidence_file": "docs/evidence/atlantic-city-pop-lloyd-venue-20261114.json",
+    "basis": "Official tourism SportsActivityLocation JSON-LD explicitly associates exactPopLloydname,1200NDoctorM.L.K.Blvd,AtlanticCityNJ08401 andGeoCoordinates; samepointinlistingdata."
+  },
+  "verification": {
+    "accepted_events": 13,
+    "reviewed_point_events": 11,
+    "completed_chunks": 4,
+    "all_retained_descriptions_times_addresses_titles_unchanged": true
+  }
+}

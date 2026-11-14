@@ -24,7 +24,7 @@ from urllib.parse import parse_qs, urlencode, urljoin, urlsplit
 from zoneinfo import ZoneInfo
 
 from bs4 import BeautifulSoup
-from icalendar import Calendar, Event, vRecur
+from icalendar import Calendar, Event, vRecur, vText
 
 from roomquest.event_description import description
 from roomquest.ics_adapter import parse as parse_ics
@@ -191,14 +191,30 @@ def _county_location(value, narrative):
     return address.split(',', 1)[0], address, city
 
 
-def _normalize_ics(raw, source_key, *, locations=None, closures=()):
+def _normalize_ics(raw, source_key, *, locations=None, closures=(), already_normalized=False):
     cal = Calendar.from_ical(raw)
     events = cal.walk('VEVENT')
     if len(events) > 1000:
         raise ValueError('source_record_limit')
     for event in events:
-        # Validate before the shared transport/storage cap can hide a suffix.
-        _full_description(str(event.get('DESCRIPTION', '')))
+        # Preserve the shared parser's malformed-component rejection before
+        # serialization could discard the original parser error metadata.
+        if event.errors:
+            if any(str(error[0]).upper() in {'RRULE', 'RDATE', 'EXDATE', 'RECURRENCE-ID'}
+                   for error in event.errors):
+                raise ValueError('recurrence_invalid')
+            raise ValueError('invalid_ical_component')
+        # The shared parser caps raw DESCRIPTION at 12,000 characters. Strip
+        # markup first, so a long HTML attribute cannot clip valid prose that
+        # fits the actual description limit. Normalize every component,
+        # including recurrence overrides, before the existing expansion path.
+        text = str(event.get('DESCRIPTION', ''))
+        if not already_normalized:
+            text = _full_description(text)
+        if len(text) > MAX_DESCRIPTION:
+            raise ValueError('publisher_description_limit')
+        event['DESCRIPTION'] = vText(text)
+    raw = cal.to_ical().decode('utf-8')
     by_id = {str(event.get('UID', '')): event for event in events if not event.get('RECURRENCE-ID')}
     rows = parse_ics(raw, {'url': SOURCES[source_key][0], 'source_key': source_key},
                      legacy=False, include_description=True)
@@ -206,8 +222,12 @@ def _normalize_ics(raw, source_key, *, locations=None, closures=()):
     for row in rows:
         identity = row['id'].split('__', 1)[0]
         original = by_id.get(identity)
-        text = _full_description(row.get('description', ''))
-        if not text or NONPUBLIC.search(row['title']):
+        # Already normalized before expansion; parsing it as HTML again would
+        # erase escaped literal text such as the publisher's "<bring ID>".
+        text = row.get('description', '')
+        if not isinstance(text, str) or len(text) > MAX_DESCRIPTION:
+            raise ValueError('publisher_description_limit')
+        if not text.strip() or NONPUBLIC.search(row['title']):
             _hold(source_key, row['id'], 'description_unavailable_or_nonpublic')
             continue
         if not event_url(source_key, row.get('event_url')):
@@ -832,5 +852,6 @@ def collect(source, fetch, *, deadline_at=None, now=None):
         if not any(frame['src'] == 'https://embed.styledcalendar.com/#' + LIBRARY_WIDGET_ID for frame in frames):
             raise ValueError('publisher_widget_identity_changed')
         raw, locations, closures = _styled_ical(fetch(LIBRARY_WIDGET, 'application/json'), now=now)
-        return _normalize_ics(raw, key, locations=locations, closures=closures)
+        return _normalize_ics(raw, key, locations=locations, closures=closures,
+                              already_normalized=True)
     return _squarespace(key, fetch, now)
