@@ -17,6 +17,7 @@ from datetime import date, datetime, timedelta, timezone
 from hashlib import sha256
 import json
 import logging
+import math
 import re
 from time import monotonic
 from urllib.parse import parse_qs, urlencode, urljoin, urlsplit
@@ -58,6 +59,7 @@ MAX_DETAILS_PER_CHUNK = 6
 MIN_DETAIL_SECONDS = 18
 MAX_CHECKPOINT_BYTES = 900_000
 MAX_CHECKPOINT_AGE = timedelta(hours=4)
+VENUE_POINT_CONTRACT_VERSION = 1
 
 # Addresses reviewed against the publisher's own branch directory (2026-11-14).
 # Match the street supplied by the event, rather than inheriting a system HQ.
@@ -80,6 +82,41 @@ MAIN_LIBRARY = ('Atlantic City Free Public Library — Main Library',
                 '1 North Tennessee Avenue, Atlantic City, NJ 08401', 'Atlantic City')
 RICHMOND_LIBRARY = ('Atlantic City Free Public Library — Richmond Branch',
                     '4115 Ventnor Avenue, Atlantic City, NJ 08401', 'Atlantic City')
+
+# Exact venue associations, reviewed 2026-11-14. These are destination points
+# published for the named buildings, never source-coverage centers. Each tuple
+# includes the venue name AND full street so relocation cannot inherit a pin.
+REVIEWED_VENUE_POINTS = {
+    # Official ACAF event metadata identifies this exact Main Library address;
+    # the library's current hours/locations page independently confirms it.
+    # https://atlanticcityartsfoundation.org/calendar/community-meeting-may-mkbs2
+    # https://acfpl.org/about-us-new/hours-locations-menu.html
+    (CITY_LIBRARY, MAIN_LIBRARY[0], MAIN_LIBRARY[1]): (39.3625922, -74.4281244),
+    # Current county ICS supplies this point for Bored? Games! at the Senior
+    # Center. Independent Noyes/Somers Point Arts Commission event metadata
+    # places the same named building about 6.5 metres away, and the city venue
+    # directory confirms the exact street. Preserve existing native ICS GPS.
+    # https://atlanticcounty.librarycalendar.com/event/copy-bored-games-40570
+    # https://visitsomerspoint.com/venue/somers-point-senior-center/
+    # https://noyesmuseum.org/all-noyes-events/2025/10/8/access-to-art-senior-art-class-with-the-somers-point-arts-commission-rkg6k
+    (COUNTY, 'Somers Point Senior Center',
+     '22 North Ambler Road, Somers Point, NJ 08244'): (39.3252475, -74.6081318),
+    # Episcopal Asset Map publishes both the street and GeoCoordinates for
+    # this church; its directions link contains the same destination point.
+    # https://www.episcopalassetmap.org/dioceses/diocese-new-jersey/list/st-augustines-church
+    (CITY, 'St. Augustine’s Episcopal Church',
+     '1709 Arctic Ave., Atlantic City, NJ 08401'): (39.361884, -74.433525),
+}
+
+
+def _apply_reviewed_venue_point(row, source_key):
+    if row.get('lat') is not None or row.get('lng') is not None:
+        return
+    point = REVIEWED_VENUE_POINTS.get((source_key, row.get('venue_name'), row.get('venue_address')))
+    if point is not None:
+        row['lat'], row['lng'] = point
+        if row.get('reason') == 'missing_verified_venue_geo':
+            row['reason'] = None
 
 
 def event_url(source_key, value):
@@ -190,6 +227,7 @@ def _normalize_ics(raw, source_key, *, locations=None, closures=()):
             continue
         row.update(venue_name=location[0], venue_address=location[1], venue_city=location[2],
                    description=text, timezone=ZONE)
+        _apply_reviewed_venue_point(row, source_key)
         if original is not None and original.get('IMAGE'):
             row['image_url'] = str(original['IMAGE'])
         result.append(row)
@@ -219,6 +257,46 @@ def _google_times(node):
     return start, end if end > start else None, query
 
 
+def _squarespace_venue_point(soup, main, link, published_location):
+    """Accept only this event's destination metadata tied to its own street.
+
+    Squarespace also emits a generic Manhattan point on location-less pages.
+    That value must not become event GPS. The reviewed southern New Jersey
+    bounds include these publishers' current venues; points outside them are
+    left to ordinary address resolution, without discarding the event.
+    """
+    canonical = soup.select('meta[property="og:url"]')
+    latitude = soup.select('meta[property="og:latitude"]')
+    longitude = soup.select('meta[property="og:longitude"]')
+    maps = main.select('.eventitem-meta-address-maplink[href]')
+    if (len(canonical) != 1 or canonical[0].get('content') != link
+            or len(latitude) != 1 or len(longitude) != 1 or len(maps) != 1
+            or not _nj_address(published_location)):
+        return None
+    target = urlsplit(maps[0]['href'])
+    query = parse_qs(target.query).get('q')
+    if (target.scheme not in ('http', 'https') or target.hostname not in ('maps.google.com', 'www.google.com')
+            or target.path not in ('', '/', '/maps') or not query or len(query) != 1):
+        return None
+    # Squarespace omits commas in the map link while retaining them in its
+    # calendar-export location. Require all actual address characters to agree.
+    fingerprint = lambda value: re.sub(r'[^a-z0-9]', '', plain(value).casefold())
+    if fingerprint(query[0]) != fingerprint(published_location):
+        return None
+    lines = main.select('.eventitem-meta-address-line:not(.eventitem-meta-address-line--title)')
+    visible_address = ' '.join(node.get_text(' ', strip=True) for node in lines)
+    if not lines or fingerprint(visible_address) != fingerprint(published_location):
+        return None
+    try:
+        lat, lng = float(latitude[0]['content']), float(longitude[0]['content'])
+    except (KeyError, TypeError, ValueError):
+        return None
+    if (not math.isfinite(lat) or not math.isfinite(lng)
+            or not 39.0 <= lat <= 39.85 or not -75.2 <= lng <= -74.2):
+        return None
+    return lat, lng
+
+
 def _squarespace_detail(key, link, payload, now):
     soup = BeautifulSoup(payload, 'html.parser')
     main = soup.select_one('.eventitem') or soup
@@ -243,7 +321,8 @@ def _squarespace_detail(key, link, payload, now):
     if plain((facts.get('text') or [''])[0]) != title:
         raise ValueError('publisher_event_identity_changed')
     text = _full_description(str(body))
-    location = _nj_address((facts.get('location') or [''])[0])
+    published_location = (facts.get('location') or [''])[0]
+    location = _nj_address(published_location)
     # One Noyes film listing prints 08240 for Stockton's Galloway campus.
     # Stockton's own address is 101 Vera King Farris Drive, Galloway NJ 08205.
     # https://stockton.edu/maps/
@@ -261,9 +340,12 @@ def _squarespace_detail(key, link, payload, now):
     venue_text = plain(venue_node.get_text())
     numbered = re.search(r'\b\d{1,6}\s', venue_text)
     venue = venue_text[:numbered.start()].strip(' ,') if numbered else venue_text
+    point = _squarespace_venue_point(soup, main, link, published_location)
     row = record(title, start.isoformat(), end.isoformat() if end else None,
                  venue or location[0].split(',')[0], location[0], location[1], link,
-                 sha256(urlsplit(link).path.encode()).hexdigest(), tz=ZONE, retain_until_end=True)
+                 sha256(urlsplit(link).path.encode()).hexdigest(),
+                 lat=point[0] if point else None, lng=point[1] if point else None,
+                 tz=ZONE, retain_until_end=True)
     if row:
         row['description'] = text
         row['timezone'] = ZONE
@@ -401,6 +483,12 @@ def _community_checkpoint(value, now, key=NOYES):
     return deepcopy(value)
 
 
+def _noyes_manifest_digest(links, ordered):
+    encoded = {'venue_point_contract_version': VENUE_POINT_CONTRACT_VERSION,
+               'events': [[url, links[url].isoformat()] for url in ordered]}
+    return sha256(json.dumps(encoded, separators=(',', ':')).encode()).hexdigest()
+
+
 def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
                   max_details=MAX_DETAILS_PER_CHUNK):
     """Read Noyes or municipal details in durable, complete-window chunks.
@@ -428,14 +516,12 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
     payload = fetch(SOURCES[NOYES][0], 'text/html')
     links = _squarespace_links(NOYES, payload, anchor)
     base = sorted(links, key=lambda url: (links[url], url))
-    digest = sha256(json.dumps([[url, links[url].isoformat()] for url in base],
-                               separators=(',', ':')).encode()).hexdigest()
+    digest = _noyes_manifest_digest(links, base)
     if state is None or state['manifest_hash'] != digest or state['base_urls'] != base:
         anchor = current
         links = _squarespace_links(NOYES, payload, anchor)
         base = sorted(links, key=lambda url: (links[url], url))
-        digest = sha256(json.dumps([[url, links[url].isoformat()] for url in base],
-                                   separators=(',', ':')).encode()).hexdigest()
+        digest = _noyes_manifest_digest(links, base)
         state = {'version': 1, 'source_key': NOYES, 'started_at': current.isoformat(),
                  'window_start': current.astimezone(ZoneInfo(ZONE)).date().isoformat(),
                  'manifest_hash': digest, 'manifest_count': len(base), 'cursor': 0,
@@ -557,6 +643,7 @@ def _municipal_detail(url, manifest, payload):
                  sha256(urlsplit(url).path.encode()).hexdigest(), tz=ZONE, retain_until_end=True)
     if row:
         row.update(description=narrative, timezone=ZONE)
+        _apply_reviewed_venue_point(row, CITY)
     return row
 
 
@@ -578,8 +665,9 @@ def _municipal_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=No
         'start': anchor.isoformat(), 'end': (anchor + timedelta(days=61)).isoformat()})
     manifest = _municipal_manifest(fetch(listing, 'application/json'))
     base = sorted(manifest, key=lambda url: (manifest[url]['start'], url))
-    digest = sha256(json.dumps([[url, manifest[url]] for url in base],
-                               separators=(',', ':'), sort_keys=True).encode()).hexdigest()
+    encoded = {'venue_point_contract_version': VENUE_POINT_CONTRACT_VERSION,
+               'events': [[url, manifest[url]] for url in base]}
+    digest = sha256(json.dumps(encoded, separators=(',', ':'), sort_keys=True).encode()).hexdigest()
     if state is None or state['manifest_hash'] != digest or state['base_urls'] != base:
         state = {'version': 1, 'source_key': CITY, 'started_at': current.isoformat(),
                  'window_start': current.astimezone(ZoneInfo(ZONE)).date().isoformat(),

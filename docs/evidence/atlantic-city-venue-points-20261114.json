@@ -1,0 +1,337 @@
+{
+  "reviewed_at": "2026-11-14",
+  "purpose": "Resolve only held events using exact venue-specific publisher coordinates; preserve full narratives, occurrence IDs and street addresses.",
+  "community": {
+    "reviewed_on": "2026-11-14",
+    "fixed_points": [
+      {
+        "source_key": "atlantic_city_public_library_nj",
+        "venue": "Atlantic City Free Public Library — Main Library",
+        "address": "1 North Tennessee Avenue, Atlantic City, NJ 08401",
+        "lat": 39.3625922,
+        "lng": -74.4281244,
+        "evidence": [
+          "https://atlanticcityartsfoundation.org/calendar/community-meeting-may-mkbs2",
+          "https://acfpl.org/about-us-new/hours-locations-menu.html"
+        ],
+        "note": "Official co-host event Open Graph destination point paired with explicit same street; current library directory confirms unchanged building. The historical event itself is not ingested."
+      },
+      {
+        "source_key": "atlantic_county_library_nj",
+        "venue": "Somers Point Senior Center",
+        "address": "22 North Ambler Road, Somers Point, NJ 08244",
+        "lat": 39.3252475,
+        "lng": -74.6081318,
+        "evidence": [
+          "https://atlanticcounty.librarycalendar.com/event/copy-bored-games-40570",
+          "https://visitsomerspoint.com/venue/somers-point-senior-center/",
+          "https://noyesmuseum.org/all-noyes-events/2025/10/8/access-to-art-senior-art-class-with-the-somers-point-arts-commission-rkg6k"
+        ],
+        "corroborating_point": [
+          39.3252323,
+          -74.6080591
+        ],
+        "note": "Current native county event GPS; independently within approximately 6.5 metres of the Noyes/Somers Point Arts Commission point for the same named center. Fill only exact-venue missing GPS, never replace original GPS."
+      },
+      {
+        "source_key": "atlantic_city_municipal_nj",
+        "venue": "St. Augustine’s Episcopal Church",
+        "address": "1709 Arctic Ave., Atlantic City, NJ 08401",
+        "lat": 39.361884,
+        "lng": -74.433525,
+        "evidence": [
+          "https://www.episcopalassetmap.org/dioceses/diocese-new-jersey/list/st-augustines-church"
+        ],
+        "note": "Church directory GeoCoordinates and directions destination agree."
+      }
+    ],
+    "dynamic_event_points": {
+      "sources": [
+        "noyes_arts_atlantic_city_nj",
+        "atlantic_city_arts_foundation_nj"
+      ],
+      "guards": [
+        "Exact Open Graph event URL",
+        "Exactly one numeric latitude/longitude pair",
+        "Numbered New Jersey street in Google event export",
+        "Matching Google map address and visible event address",
+        "Reviewed southern New Jersey bounds 39.0 to 39.85 latitude and -75.2 to -74.2 longitude",
+        "Reject nonfinite points and generic Squarespace Manhattan fallback"
+      ],
+      "corroboration": [
+        {
+          "venue": "Atlantic Center for Independent Living",
+          "lat": 39.4722933,
+          "lng": -74.4921719,
+          "urls": [
+            "https://noyesmuseum.org/all-noyes-events/2026/art-is-in-the-making-lckny",
+            "https://www.atlanticcil.org/contact"
+          ]
+        },
+        {
+          "venue": "Oceanside II Family Success Center",
+          "event_point": [
+            39.3535113,
+            -74.4502798
+          ],
+          "owner_point": [
+            39.353485,
+            -74.450258
+          ],
+          "urls": [
+            "https://noyesmuseum.org/all-noyes-events/2026/access-oceanside2-gy78b",
+            "https://oceanside2fsc.org/"
+          ]
+        },
+        {
+          "venue": "CROPS Food Hub",
+          "lat": 39.3593597,
+          "lng": -74.4260272,
+          "urls": [
+            "https://atlanticcityartsfoundation.org/calendar/tabitha-brown"
+          ]
+        }
+      ]
+    },
+    "excluded_estimate": {
+      "venue": "1800 Block of Marmora Avenue",
+      "note": "GIS-derived approximate point is recorded separately by Visit agent; not inserted into publisher GPS fields.",
+      "evidence_file": "research-ac/venue-coordinates/marmora-block-estimate.json"
+    }
+  },
+  "community_replay": [
+    {
+      "source_key": "atlantic_county_library_nj",
+      "rows": 365,
+      "matching_previous_rows": 365,
+      "prose_address_time_changes": [],
+      "newly_pinned": 3,
+      "unique_new_points": [
+        {
+          "id": "43579",
+          "venue": "Somers Point Senior Center",
+          "address": "22 North Ambler Road, Somers Point, NJ 08244",
+          "lat": 39.3252475,
+          "lng": -74.6081318
+        }
+      ],
+      "description_max": 736
+    },
+    {
+      "source_key": "atlantic_city_public_library_nj",
+      "rows": 120,
+      "matching_previous_rows": 120,
+      "prose_address_time_changes": [],
+      "newly_pinned": 107,
+      "unique_new_points": [
+        {
+          "id": "ce5e3b3cd298325a5e2bbc7ebe9c4bf976d8bd8242e848ae85f466ef4735ce8d__20270112",
+          "venue": "Atlantic City Free Public Library — Main Library",
+          "address": "1 North Tennessee Avenue, Atlantic City, NJ 08401",
+          "lat": 39.3625922,
+          "lng": -74.4281244
+        }
+      ],
+      "description_max": 750
+    },
+    {
+      "source_key": "atlantic_city_arts_foundation_nj",
+      "rows": 1,
+      "matching_previous_rows": 1,
+      "prose_address_time_changes": [],
+      "newly_pinned": 1,
+      "unique_new_points": [
+        {
+          "id": "bf5dfcde1707e48271027a619c9e4e88acc0e2becb932bb6143584da451a77b8",
+          "venue": "CROPS Food Hub",
+          "address": "167 South Tennessee Avenue, Atlantic City, NJ 08401",
+          "lat": 39.3593597,
+          "lng": -74.4260272
+        }
+      ],
+      "description_max": 283
+    },
+    {
+      "source_key": "noyes_arts_atlantic_city_nj",
+      "rows": 27,
+      "matching_previous_rows": 27,
+      "prose_address_time_changes": [],
+      "newly_pinned": 27,
+      "unique_new_points": [
+        {
+          "id": "222e1cd381b405f72a0041e97b8bfdaad2aeb1adc45aa8666266ae134b728d44",
+          "venue": "Stockton University in Hammonton - Kramer Hall Hammonton, NJ",
+          "address": "30 Front St, Hammonton, NJ 08037",
+          "lat": 39.633927474683524,
+          "lng": -74.80391262883606
+        },
+        {
+          "id": "7cc876dfd0c6be23b6b4874f073eb6d9dd44b69abc01ab5a8c1c626524b13367",
+          "venue": "Noyes Arts Garage of Stockton University",
+          "address": "2200 Fairmount Avenue, Atlantic City, NJ 08401",
+          "lat": 39.3604205,
+          "lng": -74.44079300000001
+        },
+        {
+          "id": "ee82ff6c660a5c12bd2c7517028ada15d8d4faf38cd29047c5bb3d3b60d665a9",
+          "venue": "Campus Center Theater - Stockton University",
+          "address": "101 Vera King Farris Dr, Galloway, NJ 08205",
+          "lat": 39.493000722098316,
+          "lng": -74.53342186931151
+        },
+        {
+          "id": "9a247f6f348c55d4034d70aaf967f7e88795a0bd00d15cb94ed2ca87aac12ee7",
+          "venue": "Kramer Hall Stockton University",
+          "address": "30 Front Street, Hammonton, NJ 08037",
+          "lat": 39.6339564,
+          "lng": -74.803907
+        },
+        {
+          "id": "33d52cf81a2148c4fd9e9e601ce52b053ced08be51bcf55f5f7224e42e2817a3",
+          "venue": "Noyes Arts Garage of Stockton University",
+          "address": "2200 Fairmount Ave, Atlantic City, NJ 08401",
+          "lat": 39.36029048331482,
+          "lng": -74.44089773558197
+        },
+        {
+          "id": "2650faf4a5ea15e64436a60b7387b2c69aca1c2ffab4834fefeac664bbbfe8bf",
+          "venue": "Noyes Arts Garage",
+          "address": "2200 Fairmount Ave, Atlantic City, NJ 08401",
+          "lat": 39.36029255712716,
+          "lng": -74.44088164232788
+        },
+        {
+          "id": "c7d90e3275f5d6cbe93668a0a3c6fd05ead1771aff0753f2622b55a1bf333c05",
+          "venue": "Oceanside",
+          "address": "201 Melrose Ave, Atlantic City, NJ 08401",
+          "lat": 39.372382359281055,
+          "lng": -74.41623991779097
+        },
+        {
+          "id": "0a9fe3518d32f0e5a5373d4b0c0b8d026a11bf80bdd7650b30bac1b4958ad50d",
+          "venue": "Noyes Arts Garage of Stockton University",
+          "address": "2200 Fairmount Ave, Atlantic City, NJ 08401",
+          "lat": 39.36030499999998,
+          "lng": -74.4409031
+        },
+        {
+          "id": "59677caf716a0f2733568982cc825acce83f1c05ec78553bfd0a600d81c5bebc",
+          "venue": "Noyes Arts Garage",
+          "address": "2200 Fairmount Ave, Atlantic City, NJ 08401",
+          "lat": 39.36028840950241,
+          "lng": -74.4409031
+        },
+        {
+          "id": "de1d4f6fe74d884f0e9fde3ac9129a2ce4360f10e0c68e3f6a77ab1c65a11566",
+          "venue": "Stockton University - Campus Center Theater",
+          "address": "101 Vera King Farris Dr., Galloway, NJ 08205",
+          "lat": 39.4903218,
+          "lng": -74.5315408
+        },
+        {
+          "id": "0d08e9a1679e21df6fc51011c883f0343f5537ce66fe3b10ef9cf8b96db992b5",
+          "venue": "Noyes Arts Garage of Stockton University",
+          "address": "2200 Fairmount Ave, Atlantic City, NJ 08401",
+          "lat": 39.3603047407735,
+          "lng": -74.44090343527613
+        },
+        {
+          "id": "a38269b9f19cc22ccdaa64dd45d5c025f970482754526a34995f0bea81b25396",
+          "venue": "Ducktown Park",
+          "address": "2253 Arctic Avenue, Atlantic City, NJ 08401",
+          "lat": 39.3593366,
+          "lng": -74.4403665
+        },
+        {
+          "id": "afab6c16fb48c750e9f580aa92dc36425660d6ea4727c6002c1c4f270ca608ab",
+          "venue": "The Atlantic Center for Independent Living",
+          "address": "160 S. Pitney Road Suite 3-4, Galloway, NJ 08205",
+          "lat": 39.4722933,
+          "lng": -74.4921719
+        },
+        {
+          "id": "091d7e49c476110f77c427dce57fc062daaca401d4fa0a78a47b2aee6df6e7be",
+          "venue": "Oceanside II Family Success Center",
+          "address": "3201 Atlantic Avenue, Atlantic City, NJ 08401",
+          "lat": 39.3535113,
+          "lng": -74.45027979999999
+        },
+        {
+          "id": "fe0bdfc1f2907921b085707105f4491d394bed292eb22d499f2d1e89884c1b06",
+          "venue": "Noyes Arts Garage of Stockton University",
+          "address": "2200 Fairmount Ave, Atlantic City, NJ 08401",
+          "lat": 39.36028840950241,
+          "lng": -74.44087091349182
+        }
+      ],
+      "description_max": 3014
+    },
+    {
+      "source_key": "atlantic_city_municipal_nj",
+      "rows": 4,
+      "matching_previous_rows": 4,
+      "prose_address_time_changes": [],
+      "newly_pinned": 1,
+      "unique_new_points": [
+        {
+          "id": "214aa79f994792a6826fa21b22cf1d2b401b0c9e161417c25e13fb7c95b83a07",
+          "venue": "St. Augustine’s Episcopal Church",
+          "address": "1709 Arctic Ave., Atlantic City, NJ 08401",
+          "lat": 39.361884,
+          "lng": -74.433525
+        }
+      ],
+      "description_max": 896
+    }
+  ],
+  "venues": [
+    {
+      "source_key": "anchor_rock_club_nj",
+      "venue": "Anchor Rock Club",
+      "address": "247 S New York Ave, Atlantic City, NJ 08401",
+      "latitude": 39.3572301,
+      "longitude": -74.4262279,
+      "evidence_url": "https://www.anchorrockclub.com/contact",
+      "evidence_type": "official_venue_embedded_webflow_map",
+      "selector": ".w-widget-map[data-widget-latlng]",
+      "captured_html": "anchor-contact-coordinate-evidence.html",
+      "corroboration_url": "https://www.visitatlanticcity.com/event/goose-after-shows-at-anchor-rock-club/7642/"
+    },
+    {
+      "source_key": "seaside_wellness_atlantic_city_nj",
+      "venue": "The Pool at Harrah's Resort",
+      "address": "777 Harrah's Blvd, Atlantic City, NJ 08401",
+      "latitude": 39.3845487,
+      "longitude": -74.4296631,
+      "evidence_url": "https://www.harrahspoolac.com/contact-us",
+      "evidence_type": "official_venue_embedded_google_place",
+      "google_place_id": "ChIJj_6zsMnvwIkRUZPUJp7jRfY",
+      "map_place_name": "The Pool at Harrah's Atlantic City",
+      "map_place_type": "public_swimming_pool",
+      "map_place_website": "https://www.caesars.com/harrahs-ac/things-to-do/pool",
+      "captured_contact_html": "pool-contact-coordinate-evidence.html",
+      "captured_embed_html": "pool-official-embed-coordinate-evidence.html",
+      "note": "Uses the exact named place pin, not viewport. Preferred over conflicting regional tourism pool pin, which is roughly175m east."
+    },
+    {
+      "source_key": "historic_smithville_events_nj",
+      "venue": "Historic Smithville",
+      "address": "615 E Moss Mill Road, Smithville, NJ 08205",
+      "latitude": 39.495354,
+      "longitude": -74.460754,
+      "evidence_url": "https://visitsouthjersey.com/event/dickens-festival/",
+      "evidence_type": "official_regional_tourism_venue_jsonld_and_map_link",
+      "publisher_location_name": "Historic Smithville and Village Greene",
+      "publisher_street": "615 East Moss Mill Road, Galloway, NJ 08205",
+      "note": "The venue own directions identifies Smithville as within Galloway. Same entire village venue, not the Smithville Inn marker."
+    }
+  ],
+  "validation": {
+    "focused_tests": 75,
+    "result": "passed"
+  },
+  "remaining_holds": [
+    "Marmora Avenue publisher supplies block only; the approximate point remains outside publisher GPS.",
+    "Visit Atlantic City first production fetch returned HTTP403; no alternate network or bypass used."
+  ]
+}

@@ -7,6 +7,7 @@ from urllib.parse import urlencode
 
 from icalendar import Calendar
 from lzstring import LZString
+from bs4 import BeautifulSoup
 
 from roomquest import atlantic_city_community as ac
 
@@ -54,7 +55,7 @@ def detail(title='Community Art Workshop', *, body='<p>Paint, learn, and meet lo
 def preview_record(title, start, end, venue, address, city, url, identity, **kwargs):
     return {'id': identity, 'title': title, 'starts_at': start, 'ends_at': end,
             'venue_name': venue, 'venue_address': address, 'venue_city': city,
-            'event_url': url, 'lat': None, 'lng': None}
+            'event_url': url, 'lat': kwargs.get('lat'), 'lng': kwargs.get('lng')}
 
 
 class AtlanticCityCommunityTest(unittest.TestCase):
@@ -289,6 +290,72 @@ class AtlanticCityCommunityTest(unittest.TestCase):
         self.assertFalse(ac.event_url(ac.CITY, 'https://www.acnj.gov/api/data/GetEvent?id=700'))
         with self.assertRaisesRegex(ValueError, 'publisher_checkpoint_required'):
             ac.collect(source, fetch)
+
+    def test_reviewed_points_require_exact_source_venue_and_street(self):
+        original = {'venue_name': ac.MAIN_LIBRARY[0], 'venue_address': ac.MAIN_LIBRARY[1],
+                    'lat': None, 'lng': None, 'reason': 'missing_verified_venue_geo'}
+        row = deepcopy(original)
+        ac._apply_reviewed_venue_point(row, ac.CITY_LIBRARY)
+        self.assertEqual((row['lat'], row['lng']), (39.3625922, -74.4281244))
+        self.assertIsNone(row['reason'])
+        for change in ({'venue_name': ac.RICHMOND_LIBRARY[0]},
+                       {'venue_address': ac.RICHMOND_LIBRARY[1]},
+                       {'venue_address': '99 Other Street, Atlantic City, NJ 08401'}):
+            row = {**original, **change}
+            ac._apply_reviewed_venue_point(row, ac.CITY_LIBRARY)
+            self.assertIsNone(row['lat'])
+        row = deepcopy(original)
+        ac._apply_reviewed_venue_point(row, ac.COUNTY)
+        self.assertIsNone(row['lat'])
+        row = {**original, 'lat': 39.36, 'lng': -74.42}
+        ac._apply_reviewed_venue_point(row, ac.CITY_LIBRARY)
+        self.assertEqual((row['lat'], row['lng']), (39.36, -74.42))
+
+    def test_reviewed_offsite_and_church_points_do_not_supply_block_estimate(self):
+        for key, location, expected in [
+                (ac.COUNTY, ('Somers Point Senior Center', '22 North Ambler Road, Somers Point, NJ 08244'),
+                 (39.3252475, -74.6081318)),
+                (ac.CITY, ('St. Augustine’s Episcopal Church', '1709 Arctic Ave., Atlantic City, NJ 08401'),
+                 (39.361884, -74.433525))]:
+            row = {'venue_name': location[0], 'venue_address': location[1]}
+            ac._apply_reviewed_venue_point(row, key)
+            self.assertEqual((row['lat'], row['lng']), expected)
+        block = {'venue_name': '1800 Block of Marmora Avenue',
+                 'venue_address': '1800 Marmora Avenue, Atlantic City, NJ 08401'}
+        ac._apply_reviewed_venue_point(block, ac.CITY)
+        self.assertNotIn('lat', block)
+
+    def test_event_metadata_points_require_matching_address_and_local_bounds(self):
+        url = ac.SOURCES[ac.NOYES][0] + '/2026/independent-living-art'
+        street = '160 S. Pitney Road, Suite 3-4, Galloway, NJ 08205'
+        meta = f'<meta property="og:url" content="{url}"><meta property="og:latitude" content="39.4722933"><meta property="og:longitude" content="-74.4921719">'
+        address = ('<li class="eventitem-meta-address"><span class="eventitem-meta-address-line eventitem-meta-address-line--title">Atlantic Center for Independent Living</span>'
+                   '<span class="eventitem-meta-address-line">' + street + '</span>'
+                   '<a class="eventitem-meta-address-maplink" href="https://maps.google.com?' + urlencode({'q': street}) + '">map</a></li>')
+        body = meta + '<article class="eventitem">' + address + '</article>'
+        def point(html):
+            soup = BeautifulSoup(html, 'html.parser')
+            return ac._squarespace_venue_point(soup, soup.select_one('.eventitem'), url, street)
+        self.assertEqual(point(body), (39.4722933, -74.4921719))
+        self.assertIsNone(point(body.replace('39.4722933', '40.7207559').replace('-74.4921719', '-74.0007613')))
+        self.assertIsNone(point(body.replace('39.4722933', 'NaN')))
+        self.assertIsNone(point(body.replace('content="' + url + '"', 'content="https://other.example/event"')))
+        self.assertIsNone(point(body.replace('q=160+', 'q=999+')))
+        self.assertIsNone(point(body.replace('>160 S. Pitney Road', '>999 Other Road')))
+
+    def test_event_point_keeps_complete_long_narrative(self):
+        url = ac.SOURCES[ac.NOYES][0] + '/2026/full-workshop'
+        street = '2200 Fairmount Ave, Atlantic City, NJ, 08401, United States'
+        narrative = 'A complete explanation of the workshop and its accessibility. ' * 50 + 'Final registration instruction.'
+        page = detail(body='<p>' + narrative + '</p>', location=street)
+        address = '<li class="eventitem-meta-address"><span class="eventitem-meta-address-line eventitem-meta-address-line--title">Noyes Arts Garage</span><span class="eventitem-meta-address-line">' + street + '</span><a class="eventitem-meta-address-maplink" href="https://maps.google.com?' + urlencode({'q': street}) + '">map</a></li>'
+        page = page.replace('<li class="eventitem-meta-address">Noyes Arts Garage 2200 Fairmount Ave Atlantic City, NJ, 08401</li>', address)
+        page = f'<meta property="og:url" content="{url}"><meta property="og:latitude" content="39.3604205"><meta property="og:longitude" content="-74.440793">' + page
+        with patch.object(ac, 'record', side_effect=preview_record):
+            row, _, _ = ac._squarespace_detail(ac.NOYES, url, page, NOW)
+        self.assertEqual((row['lat'], row['lng']), (39.3604205, -74.440793))
+        self.assertEqual(row['description'], narrative)
+        self.assertTrue(row['description'].endswith('Final registration instruction.'))
 
 
 if __name__ == '__main__':

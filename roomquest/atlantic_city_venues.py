@@ -47,6 +47,25 @@ VENUES = {
     CAROLINES: ("Caroline's By The Bay", "450 Bay Avenue, Somers Point, NJ 08244", "Somers Point"),
     SMITHVILLE: ("Historic Smithville", "615 E Moss Mill Road, Smithville, NJ 08205", "Smithville"),
 }
+# Reviewed November 14, 2026.  Each point belongs to the named venue, never a
+# city center or a postal-code centroid.  Keep the identity literals separate
+# from VENUES: a future venue/address change must not silently reuse this pin.
+REVIEWED_VENUE_LOCATIONS = {
+    # The club's Webflow map exposes data-widget-latlng.  The same point is in
+    # Visit Atlantic City's Anchor event location JSON-LD (event 7642).
+    ANCHOR: ("Anchor Rock Club", "247 S New York Ave, Atlantic City, NJ 08401",
+             39.3572301, -74.4262279, "https://www.anchorrockclub.com/contact"),
+    # The official Pool contact page embeds this exact named Google Place,
+    # ChIJj_6zsMnvwIkRUZPUJp7jRfY, with the 777 Harrah's Blvd address and its
+    # Caesars Pool URL.  This is the place pin, not the map's viewport center.
+    SEASIDE: ("The Pool at Harrah's Resort", "777 Harrah's Blvd, Atlantic City, NJ 08401",
+              39.3845487, -74.4296631, "https://www.harrahspoolac.com/contact-us"),
+    # Regional tourism publishes this exact venue, street and point in both
+    # Event.location.geo and its visible Google Map link.  Smithville is the
+    # village within Galloway; the venue's own directions confirm the address.
+    SMITHVILLE: ("Historic Smithville", "615 E Moss Mill Road, Smithville, NJ 08205",
+                 39.495354, -74.460754, "https://visitsouthjersey.com/event/dickens-festival/"),
+}
 JOSIE_API = "https://josiekellys.com/wp-json/tribe/events/v1/events"
 EXCLUDED = re.compile(r"\b(?:cancell?ed|postponed|closed|private\s+(?:event|party)|members?[- ]only)\b", re.I)
 
@@ -125,6 +144,14 @@ def _clock(day, value):
     return timestamp(datetime.combine(day, datetime.strptime(value, fmt).time()), ZONE)
 
 
+def reviewed_venue_location(key, venue, address):
+    """Resolve only the reviewed source, venue name and complete street tuple."""
+    reviewed = REVIEWED_VENUE_LOCATIONS.get(key)
+    if reviewed and (venue, address) == reviewed[:2]:
+        return reviewed[2:4]
+    return None
+
+
 def _row(key, title, start, end, url, identity, body, *, image=None, category=""):
     if EXCLUDED.search(title):
         return None
@@ -134,12 +161,15 @@ def _row(key, title, start, end, url, identity, body, *, image=None, category=""
     if end is not None and end <= start:
         raise ValueError("atlantic_city_schedule_conflict")
     venue, address, city = VENUES[key]
+    reviewed = reviewed_venue_location(key, venue, address)
+    lat, lng = reviewed or (None, None)
     row = record(title, start.isoformat(), end.isoformat() if end else None,
-                 venue, address, city, url, identity, category, tz=ZONE,
+                 venue, address, city, url, identity, category, lat=lat, lng=lng, tz=ZONE,
                  retain_until_end=True)
     if row is not None:
         row.update(description=body, attendance_mode="in_person", timezone=ZONE,
-                   location_provenance="reviewed_venue_street_address_pending_geocode")
+                   location_provenance=("reviewed_venue_location" if reviewed else
+                                        "reviewed_venue_street_address_pending_geocode"))
         if candidate := photo_url(key, image):
             row["image_url"] = candidate
     return row
