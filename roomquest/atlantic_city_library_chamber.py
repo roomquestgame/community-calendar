@@ -41,7 +41,7 @@ SOURCES = {
 }
 ALLOWED_HOSTS = {key: (urlsplit(profile[0]).hostname,) for key, profile in SOURCES.items()}
 CHECKPOINT_KEYS = {FED, JFS}
-CONTRACT = 1
+CONTRACT = 2
 MAX_CHECKPOINT_BYTES = 900_000
 MAX_PAGES = 12
 MAX_RECORDS = 600
@@ -70,6 +70,63 @@ JFS_VENUES = {
     ("beth el synagogue", "500 n jerome ave", "margate"): (
         "Beth El Synagogue", "500 N Jerome Avenue, Margate City, NJ 08402", "Margate City"),
 }
+
+# Reviewed November 14, 2026 against the publisher's exact venue and street.
+# NJ Office of GIS returned score-100 address matches in EPSG:4326:
+# https://geo.nj.gov/arcgis/rest/services/Tasks/NJ_Geocode/GeocodeServer/findAddressCandidates
+# PointAddress is a government address point, not a surveyed rooftop/entrance.
+# StreetAddress is interpolation along the named street and is visibly marked
+# approximate. Neither kind is a source-wide or municipality-center fallback.
+# Publisher evidence: the Margate URLs above; Chamber event-local LocationDesc;
+# https://jewishbytheshore.org/venue/temple-beth-shalom/
+# https://jewishbytheshore.org/venue/rodef-shalom/
+# https://jewishbytheshore.org/venue/beth-el-synagogue/
+APPROXIMATE_MAP_SUFFIX = " (approximate map location)"
+REVIEWED_VENUE_POINTS = {
+    (MARGATE, *LIBRARY[:2]): (39.327768000003, -74.499138000001, "pointaddress"),
+    (MARGATE, *BLOOM[:2]): (39.327282000003, -74.498985000001, "pointaddress"),
+    (CHAMBER, "Dave & Buster's Atlantic City",
+     "2120 Atlantic Avenue Suite 912, Atlantic City, NJ 08401"):
+        (39.358238527267, -74.437854385480, "streetaddress"),
+    (CHAMBER, "The Carriage House", "25 S. Pitney Road, Galloway, NJ 08205"):
+        (39.493746000003, -74.489638500001, "pointaddress"),
+    (CHAMBER, "LandShark Bar & Grill Deck & Beach", "1133 Boardwalk, Atlantic City, NJ 08401"):
+        (39.358363872341, -74.421080862633, "streetaddress"),
+    (FED, "Temple Beth Shalom", "4419 W. Brigantine Avenue, Brigantine, NJ 08203"):
+        (39.387870000003, -74.394045000001, "pointaddress"),
+    (FED, "Rodef Shalom", "4609 Atlantic Avenue, Atlantic City, NJ 08401"):
+        (39.345154546474, -74.463864287350, "streetaddress"),
+    (FED, "Beth El Synagogue", "500 N Jerome Avenue, Margate City, NJ 08402"):
+        (39.333593495217, -74.509038200323, "streetaddress"),
+}
+
+
+def _apply_reviewed_venue_point(row, key):
+    if row.get("lat") is not None or row.get("lng") is not None:
+        return
+    point = REVIEWED_VENUE_POINTS.get((key, row.get("venue_name"), row.get("venue_address")))
+    if point is None:
+        return
+    row["lat"], row["lng"], precision = point
+    row["location_provenance"] = "reviewed_official_nj_ogis_" + precision
+    if precision == "streetaddress":
+        row["venue_name"] += APPROXIMATE_MAP_SUFFIX
+    if row.get("reason") == "missing_verified_venue_geo":
+        row["reason"] = None
+
+
+def _valid_checkpoint_location(row, key):
+    # Rebuild the only permitted coordinate/label combination from the exact
+    # source, unqualified venue name and full address. A changed name, street or
+    # source cannot retain a previously reviewed map point in persisted state.
+    expected = {
+        "venue_name": str(row.get("venue_name", "")).removesuffix(APPROXIMATE_MAP_SUFFIX),
+        "venue_address": row.get("venue_address"), "lat": None, "lng": None,
+        "location_provenance": "publisher_venue_street_address_pending_geocode",
+    }
+    _apply_reviewed_venue_point(expected, key)
+    return all(row.get(field) == expected[field]
+               for field in ("venue_name", "lat", "lng", "location_provenance"))
 
 
 def event_url(key, value):
@@ -126,6 +183,7 @@ def _row(key, identity, title, url, start, end, venue, body, now, categories=())
         row.update(description=body, timezone=ZONE, attendance_mode="in_person",
                    publisher_categories=list(categories),
                    location_provenance="publisher_venue_street_address_pending_geocode")
+        _apply_reviewed_venue_point(row, key)
     return row
 
 
@@ -359,6 +417,13 @@ def _jfs_detail(url, card, raw, now):
 def _validate_checkpoint(value, key, now):
     if value is None:
         return None
+    if (isinstance(value, dict) and type(value.get("version")) is int and value["version"] == 1
+            and value.get("source_key") == key and type(value.get("contract")) is int
+            and value["contract"] == 1):
+        # Contract 1 predates the reviewed points. Discard even a completed old
+        # snapshot and collect/revalidate all publisher pages under contract 2;
+        # the current staged/public snapshot remains until the new one completes.
+        return None
     if (not isinstance(value, dict) or type(value.get("version")) is not int or value.get("version") != 1
             or type(value.get("contract")) is not int or value.get("contract") != CONTRACT
             or value.get("source_key") != key or len(json.dumps(value).encode()) > MAX_CHECKPOINT_BYTES
@@ -382,7 +447,7 @@ def _validate_checkpoint(value, key, now):
         if (not isinstance(row, dict) or not event_url(key, row.get("event_url"))
                 or not row.get("description") or len(row["description"]) > 12000
                 or not row.get("venue_name") or not _address(row.get("venue_address"))
-                or row.get("lat") is not None or row.get("lng") is not None
+                or not _valid_checkpoint_location(row, key)
                 or not timestamp(row.get("starts_at"))
                 or (key == FED and not re.fullmatch(r"[1-9][0-9]*", str(row.get("id"))))
                 or (key == JFS and row.get("id") != sha256(urlsplit(row["event_url"]).path.encode()).hexdigest())):

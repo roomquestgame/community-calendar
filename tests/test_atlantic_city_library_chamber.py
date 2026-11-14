@@ -81,7 +81,10 @@ class AtlanticLibraryChamberTests(unittest.TestCase):
     def test_library_and_explicit_pavilion_venues_stay_distinct(self):
         rows = ac._margate(rss(rss_item(), rss_item(slug="tai-chi-17", body="Starting Wednesday Oct.7 2026, Tai Chi will be moved to inside the Bloom Pavilion.")), NOW)
         self.assertEqual({r["venue_address"] for r in rows}, {ac.LIBRARY[1], ac.BLOOM[1]})
-        self.assertTrue(all(r["lat"] is None and r["lng"] is None for r in rows))
+        self.assertEqual([(r["lat"], r["lng"]) for r in rows],
+                         [(39.327768000003, -74.499138000001), (39.327282000003, -74.498985000001)])
+        self.assertTrue(all(r["location_provenance"] == "reviewed_official_nj_ogis_pointaddress" for r in rows))
+        self.assertTrue(all("approximate" not in r["venue_name"] for r in rows))
 
     def test_closure_later_midnight_does_not_suppress_reopening_date(self):
         raw = rss(rss_item(), rss_item(slug="closed", title="Library Closed- Holiday", body="",
@@ -117,6 +120,66 @@ class AtlanticLibraryChamberTests(unittest.TestCase):
     def test_chamber_stale_weekday_copy_is_held(self):
         raw = "<ArrayOfEventDisplay>" + chamber_item(body="Wednesday, November 19 at 5:30 PM. Public program.") + "</ArrayOfEventDisplay>"
         self.assertEqual(ac._chamber(raw, NOW), [])  # November 19, 2026 is Thursday.
+
+    def test_chamber_reviewed_points_preserve_suite_and_label_street_precision(self):
+        examples = [
+            ("Dave & Buster's Atlantic City", "2120 Atlantic Avenue, Suite 912", "Atlantic City, NJ 08401",
+             (39.358238527267, -74.437854385480), True),
+            ("The Carriage House", "25 S. Pitney Road", "Galloway, NJ 08205",
+             (39.493746000003, -74.489638500001), False),
+            ("LandShark Bar & Grill Deck & Beach", "1133 Boardwalk", "Atlantic City, NJ 08401",
+             (39.358363872341, -74.421080862633), True),
+        ]
+        for name, street, city, expected, approximate in examples:
+            with self.subTest(name=name):
+                raw = "<ArrayOfEventDisplay>" + chamber_item(location="<br>".join((name, street, city))) + "</ArrayOfEventDisplay>"
+                row = ac._chamber(raw, NOW)[0]
+                self.assertEqual((row["lat"], row["lng"]), expected)
+                self.assertEqual(row["venue_name"], name + (" (approximate map location)" if approximate else ""))
+                self.assertEqual(row["venue_address"], street.replace(", Suite", " Suite") + ", " + city)
+                self.assertEqual(row["location_provenance"],
+                                 "reviewed_official_nj_ogis_" + ("streetaddress" if approximate else "pointaddress"))
+
+    def test_federation_reviewed_points_and_wrong_tuple_fall_back_to_geocoding(self):
+        examples = [
+            ("Temple Beth Shalom", "4419 W. Brigantine Avenue", "Brigantine", "08203",
+             (39.387870000003, -74.394045000001), False),
+            ("Rodef Shalom", "4609 Atlantic Avenue", "Atlantic City", "08401",
+             (39.345154546474, -74.463864287350), True),
+            ("Beth El Synagogue", "500 N Jerome Avenue", "Margate City", "08402",
+             (39.333593495217, -74.509038200323), True),
+        ]
+        for name, street, city, postal, expected, approximate in examples:
+            with self.subTest(name=name):
+                venue = dict(venue=name, address=street, city=city, state="NJ", zip=postal)
+                row, reason = ac._fed_item(fed_item(venue=venue), NOW)
+                self.assertIsNone(reason)
+                self.assertEqual((row["lat"], row["lng"]), expected)
+                self.assertEqual(row["venue_name"], name + (" (approximate map location)" if approximate else ""))
+                self.assertTrue(ac._valid_checkpoint_location(row, ac.FED))
+                for changes in ({"venue": name + " Annex"}, {"address": "999 Different Road"}):
+                    changed, _ = ac._fed_item(fed_item(venue={**venue, **changes}), NOW)
+                    self.assertIsNone(changed["lat"])
+                    self.assertIsNone(changed["lng"])
+                    self.assertNotIn("approximate map location", changed["venue_name"])
+                wrong_source = dict(venue_name=name, venue_address=f"{street}, {city}, NJ {postal}",
+                                    lat=None, lng=None, reason="missing_verified_venue_geo")
+                ac._apply_reviewed_venue_point(wrong_source, ac.JFS)
+                self.assertIsNone(wrong_source["lat"])
+                self.assertEqual(wrong_source["reason"], "missing_verified_venue_geo")
+
+    def test_each_reviewed_point_requires_the_exact_source_name_and_full_address(self):
+        for key, name, address in ac.REVIEWED_VENUE_POINTS:
+            for changed_key, changes in ((ac.JFS, {}), (key, {"venue_name": name + " Annex"}),
+                                         (key, {"venue_address": address + " Suite 2"})):
+                with self.subTest(source=key, venue=name, changed_key=changed_key, changes=changes):
+                    row = dict(venue_name=name, venue_address=address, lat=None, lng=None,
+                               reason="missing_verified_venue_geo")
+                    row.update(changes)
+                    ac._apply_reviewed_venue_point(row, changed_key)
+                    self.assertIsNone(row["lat"])
+                    self.assertIsNone(row["lng"])
+                    self.assertEqual(row["reason"], "missing_verified_venue_geo")
 
     def test_public_religious_program_retained_private_and_virtual_excluded(self):
         row, reason = ac._fed_item(fed_item(title="Public Shabbat program"), NOW)
@@ -161,6 +224,40 @@ class AtlanticLibraryChamberTests(unittest.TestCase):
             self.fail("Completed, validated checkpoint should be reused for a staging retry")
         retry = ac.collect_chunk(source(ac.FED), no_network, checkpoint=complete["checkpoint"], now=NOW)
         self.assertEqual(retry["events"], complete["events"])
+
+    def test_old_complete_contract_recollects_and_revalidates_before_staging(self):
+        venue = dict(venue="Beth El Synagogue", address="500 N Jerome Avenue", city="Margate City", state="NJ", zip="08402")
+        fetch = lambda *args: fed_page([fed_item(venue=venue)])
+        first = ac.collect_chunk(source(ac.FED), fetch, now=NOW)
+        complete = ac.collect_chunk(source(ac.FED), fetch, checkpoint=first["checkpoint"], now=NOW)
+        old = deepcopy(complete["checkpoint"])
+        old["contract"] = 1
+        old["events"][0].update(venue_name="Beth El Synagogue", lat=None, lng=None,
+                                 location_provenance="publisher_venue_street_address_pending_geocode")
+        restarted = ac.collect_chunk(source(ac.FED), fetch, checkpoint=old, now=NOW)
+        self.assertFalse(restarted["complete"])
+        self.assertEqual(restarted["events"], [])
+        self.assertEqual(restarted["checkpoint"]["contract"], 2)
+        self.assertEqual(restarted["checkpoint"]["cursor"], 1)
+        refreshed = ac.collect_chunk(source(ac.FED), fetch, checkpoint=restarted["checkpoint"], now=NOW)
+        self.assertTrue(refreshed["complete"])
+        self.assertEqual(refreshed["events"][0]["venue_name"], "Beth El Synagogue (approximate map location)")
+        self.assertEqual(refreshed["events"][0]["lat"], 39.333593495217)
+        self.assertEqual(old["contract"], 1)
+
+    def test_reviewed_checkpoint_rejects_changed_point_label_or_address(self):
+        venue = dict(venue="Beth El Synagogue", address="500 N Jerome Avenue", city="Margate City", state="NJ", zip="08402")
+        first = ac.collect_chunk(source(ac.FED), lambda *a: fed_page([fed_item(venue=venue)]), now=NOW)
+        mutations = [dict(lat=39.4), dict(lng=-74.4), dict(venue_name="Beth El Synagogue"),
+                     dict(venue_name="Another synagogue (approximate map location)"),
+                     dict(venue_address="501 N Jerome Avenue, Margate City, NJ 08402"),
+                     dict(location_provenance="reviewed_official_nj_ogis_pointaddress")]
+        for changes in mutations:
+            with self.subTest(changes=changes):
+                checkpoint = deepcopy(first["checkpoint"])
+                checkpoint["events"][0].update(changes)
+                with self.assertRaisesRegex(ValueError, "checkpoint_invalid"):
+                    ac.collect_chunk(source(ac.FED), lambda *a: "{}", checkpoint=checkpoint, now=NOW)
 
     def test_repeated_api_page_is_rejected(self):
         items = [fed_item(str(i)) for i in range(1, 51)]

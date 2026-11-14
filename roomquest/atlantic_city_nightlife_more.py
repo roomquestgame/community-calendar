@@ -129,6 +129,17 @@ def _row(key, title, start, end, url, identity, body, category="", image=None):
     if row is not None:
         row.update(description=_text(body), attendance_mode="in_person", timezone=ZONE,
                    location_provenance="reviewed_venue_street_address_pending_geocode")
+        # NJ Office of GIS, reviewed 2026-11-14: score-100 PointAddress for
+        # the publisher's exact East White Horse Pike street, town and ZIP.
+        # https://gardenstatebeerco.com/contact
+        # https://geo.nj.gov/arcgis/rest/services/Tasks/NJ_Geocode/GeocodeServer/findAddressCandidates
+        # SingleLine=247 E White Horse Pike, Galloway, NJ 08205; outSR=4326.
+        if (key, row.get("venue_name"), row.get("venue_address")) == (
+                GARDEN, "Garden State Beer Company", "247 E White Horse Pike, Galloway, NJ 08205"):
+            row.update(lat=39.446046000003, lng=-74.527533000001,
+                       location_provenance="reviewed_nj_ogis_point_address")
+            if row.get("reason") == "missing_verified_venue_geo":
+                row["reason"] = None
         if candidate := photo_url(key, image):
             row["image_url"] = candidate
     return row

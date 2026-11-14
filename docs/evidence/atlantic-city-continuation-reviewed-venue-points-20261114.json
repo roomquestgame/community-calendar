@@ -1,0 +1,345 @@
+{
+  "reviewed_at": "2026-11-14T21:09:46.758495+00:00",
+  "purpose": "Nine narrowly reviewed public venue locations for the Atlantic City continuation sources. Metadata only; no scraped event bodies.",
+  "coordinate_provider": "New Jersey Office of Information Technology, Office of GIS (NJOGIS)",
+  "provider_documentation": "https://nj.gov/njgin/edata/geocoding/",
+  "lookup_scope": "Exact source_key + original venue_name + full publisher venue_address. Unmatched tuples retain normal address geocoding; no source-wide or city-center points.",
+  "coordinate_order": "lat = candidate.location.y; lng = candidate.location.x; response outSR = 4326. Internal projected attributes.X/Y are not used.",
+  "precision_policy": "StreetAddress matches receive a visible approximate map location suffix. PointAddress matches are government address points, not verified rooftop or event entrance GPS.",
+  "library_chamber_checkpoint_contract": 2,
+  "checkpoint_upgrade": "Contract-1 snapshots, including complete ones, are discarded and recollected. Federation data pages are all revalidated before a complete contract-2 snapshot may stage.",
+  "reviewed_points": 9,
+  "captured_affected_occurrences": {
+    "margate_city_public_library_nj": 27,
+    "greater_atlantic_city_chamber_nj": 3,
+    "jewish_federation_shore_nj": 27,
+    "garden_state_beer_company_nj": 8
+  },
+  "points": [
+    {
+      "source_key": "margate_city_public_library_nj",
+      "venue_name": "Martin Bloom Pavilion",
+      "venue_address": "101 S Huntington Avenue, Margate, NJ 08402",
+      "lat": 39.327282000003,
+      "lng": -74.498985000001,
+      "location_provenance": "reviewed_official_nj_ogis_pointaddress",
+      "visible_qualifier": null,
+      "publisher_evidence": {
+        "url": "https://www.margate-nj.com/1352/Martin-Bloom-Pavilion",
+        "summary": "Municipal venue page identifies Martin Bloom Community Pavilion at 101 S. Huntington, behind the library."
+      },
+      "official_locator": {
+        "url": "https://geo.nj.gov/arcgis/rest/services/Tasks/NJ_Geocode/GeocodeServer/findAddressCandidates?SingleLine=101+South+Huntington+Avenue%2C+Margate+City%2C+NJ+08402&outFields=%2A&outSR=4326&f=pjson",
+        "observed_at": "2026-11-14T21:05:47.123659+00:00",
+        "http_status": 200,
+        "score": 100,
+        "matched_address": "101 South Huntington Avenue, Margate City, New Jersey, 08402",
+        "match_type": "PointAddress",
+        "address_range": "",
+        "spatial_reference": {
+          "wkid": 4326,
+          "latestWkid": 4326
+        },
+        "raw_receipt_file": "nj-geocoder-martin-bloom-pavilion-canonical-city.json",
+        "raw_receipt_sha256": "f80050547752520380034ae582adcf8eae7a8bd537edbc291a7d4c4f3a06a862"
+      },
+      "selection_reason": "The official address explicitly specifies South. The lower-scoring North Huntington candidate is rejected; Margate and Margate City are the same municipality here.",
+      "limitations": "Government address point, not a claim of surveyed rooftop or event entrance accuracy."
+    },
+    {
+      "source_key": "margate_city_public_library_nj",
+      "venue_name": "Margate City Public Library",
+      "venue_address": "8100 Atlantic Avenue, Margate, NJ 08402",
+      "lat": 39.327768000003,
+      "lng": -74.499138000001,
+      "location_provenance": "reviewed_official_nj_ogis_pointaddress",
+      "visible_qualifier": null,
+      "publisher_evidence": {
+        "url": "https://www.margatelibrary.org/margate-city-public-library",
+        "summary": "Official library location page gives 8100 Atlantic Ave, Margate, New Jersey 08402."
+      },
+      "official_locator": {
+        "url": "https://geo.nj.gov/arcgis/rest/services/Tasks/NJ_Geocode/GeocodeServer/findAddressCandidates?SingleLine=8100+Atlantic+Avenue%2C+Margate+City%2C+NJ+08402&outFields=%2A&outSR=4326&f=pjson",
+        "observed_at": "2026-11-14T21:05:52.270717+00:00",
+        "http_status": 200,
+        "score": 100,
+        "matched_address": "8100 Atlantic Avenue, Margate City, New Jersey, 08402",
+        "match_type": "PointAddress",
+        "address_range": "",
+        "spatial_reference": {
+          "wkid": 4326,
+          "latestWkid": 4326
+        },
+        "raw_receipt_file": "nj-geocoder-margate-city-library-canonical-city.json",
+        "raw_receipt_sha256": "19e0585b63a2b8ee7dacabd5a155637c0e9e35206d8d91154d82247f5892c118"
+      },
+      "selection_reason": "The single candidate matches the house number, street, municipality and ZIP. Margate City is the locator municipal name for the publisher\u2019s Margate address.",
+      "limitations": "Government address point, not a claim of surveyed rooftop or event entrance accuracy."
+    },
+    {
+      "source_key": "greater_atlantic_city_chamber_nj",
+      "venue_name": "Dave & Buster's Atlantic City",
+      "venue_address": "2120 Atlantic Avenue Suite 912, Atlantic City, NJ 08401",
+      "lat": 39.358238527267,
+      "lng": -74.43785438548,
+      "location_provenance": "reviewed_official_nj_ogis_streetaddress",
+      "visible_qualifier": "approximate map location",
+      "publisher_evidence": {
+        "url": "https://www.acnj.gov/_Content/pdf/minutes/2023-12-20-Council-Minutes.pdf",
+        "summary": "City Council Resolution 904 identifies Dave & Buster\u2019s license premises at 2120 Atlantic Ave, Suite 912, Atlantic City NJ 08401.",
+        "native_feed_url": "https://business.acchamber.com/api/events",
+        "native_feed_capture_sha256": "6a56d8992719e52ec750316d608b3ef9fdee8b3f21709035755ac27f4deb810d"
+      },
+      "official_locator": {
+        "url": "https://geo.nj.gov/arcgis/rest/services/Tasks/NJ_Geocode/GeocodeServer/findAddressCandidates?SingleLine=2120+Atlantic+Avenue+Suite+912%2C+Atlantic+City%2C+NJ+08401&outFields=%2A&outSR=4326&f=pjson",
+        "observed_at": "2026-11-14T21:05:18.453201+00:00",
+        "http_status": 200,
+        "score": 100,
+        "matched_address": "2120 Atlantic Avenue, Atlantic City, New Jersey, 08401",
+        "match_type": "StreetAddress",
+        "address_range": "2100-2198",
+        "spatial_reference": {
+          "wkid": 4326,
+          "latestWkid": 4326
+        },
+        "raw_receipt_file": "nj-geocoder-dave-and-busters.json",
+        "raw_receipt_sha256": "49dda66a5ad9a4cfd851bbeaf23de02b59b9aea89b1dc12e391ce2a36cc9fdfa"
+      },
+      "selection_reason": "The locator matches the full base street address but does not resolve Suite 912. Preserve the publisher\u2019s suite in the address; label the map point approximate and do not claim a suite/entrance/rooftop point.",
+      "limitations": "Street-address interpolation; unit/entrance position unverified."
+    },
+    {
+      "source_key": "greater_atlantic_city_chamber_nj",
+      "venue_name": "The Carriage House",
+      "venue_address": "25 S. Pitney Road, Galloway, NJ 08205",
+      "lat": 39.493746000003,
+      "lng": -74.489638500001,
+      "location_provenance": "reviewed_official_nj_ogis_pointaddress",
+      "visible_qualifier": null,
+      "publisher_evidence": {
+        "url": "https://the-carriagehouse.com/",
+        "summary": "The venue\u2019s official homepage lists 25 South Pitney Road, Galloway NJ 08205.",
+        "native_feed_url": "https://business.acchamber.com/api/events",
+        "native_feed_capture_sha256": "6a56d8992719e52ec750316d608b3ef9fdee8b3f21709035755ac27f4deb810d"
+      },
+      "official_locator": {
+        "url": "https://geo.nj.gov/arcgis/rest/services/Tasks/NJ_Geocode/GeocodeServer/findAddressCandidates?SingleLine=25+S+Pitney+Road%2C+Galloway%2C+NJ+08205&outFields=%2A&outSR=4326&f=pjson",
+        "observed_at": "2026-11-14T21:05:18.386686+00:00",
+        "http_status": 200,
+        "score": 100,
+        "matched_address": "25 South Pitney Road, Galloway, New Jersey, 08205",
+        "match_type": "PointAddress",
+        "address_range": "",
+        "spatial_reference": {
+          "wkid": 4326,
+          "latestWkid": 4326
+        },
+        "raw_receipt_file": "nj-geocoder-carriage-house.json",
+        "raw_receipt_sha256": "fe01f01709a5299a16c25707d8c0ef8ad25e689167aa1d83fb77b18bfef4bfab"
+      },
+      "selection_reason": "Select the score-100 South Pitney Road PointAddress. Reject the lower-scoring 25 Pitney Road StreetAddress that omits the required South directional.",
+      "limitations": "Government address point, not a claim of surveyed rooftop or event entrance accuracy."
+    },
+    {
+      "source_key": "greater_atlantic_city_chamber_nj",
+      "venue_name": "LandShark Bar & Grill Deck & Beach",
+      "venue_address": "1133 Boardwalk, Atlantic City, NJ 08401",
+      "lat": 39.358363872341,
+      "lng": -74.421080862633,
+      "location_provenance": "reviewed_official_nj_ogis_streetaddress",
+      "visible_qualifier": "approximate map location",
+      "publisher_evidence": {
+        "url": "https://atlanticcity.landsharkbarandgrill.com/hours-and-directions",
+        "summary": "Official venue page identifies LandShark on the beach at Resorts Hotel & Casino, 1133 Boardwalk, Atlantic City NJ 08401.",
+        "native_feed_url": "https://business.acchamber.com/api/events",
+        "native_feed_capture_sha256": "6a56d8992719e52ec750316d608b3ef9fdee8b3f21709035755ac27f4deb810d"
+      },
+      "official_locator": {
+        "url": "https://geo.nj.gov/arcgis/rest/services/Tasks/NJ_Geocode/GeocodeServer/findAddressCandidates?SingleLine=1133+Boardwalk%2C+Atlantic+City%2C+NJ+08401&outFields=%2A&outSR=4326&f=pjson",
+        "observed_at": "2026-11-14T21:05:18.389583+00:00",
+        "http_status": 200,
+        "score": 100,
+        "matched_address": "1133 Boardwalk, Atlantic City, New Jersey, 08401",
+        "match_type": "StreetAddress",
+        "address_range": "801-1435",
+        "spatial_reference": {
+          "wkid": 4326,
+          "latestWkid": 4326
+        },
+        "raw_receipt_file": "nj-geocoder-landshark.json",
+        "raw_receipt_sha256": "d1731a21f82765d32520a4d59cd8708d0136f5c2e980e063069e24988b664fdf"
+      },
+      "selection_reason": "Use as the reviewed street-level map point, visibly approximate. It is not a rooftop, entrance or exact event footprint. An official USACE venue-center coordinate provides an independent nearby check.",
+      "limitations": "Street-address interpolation; unit/entrance position unverified.",
+      "independent_official_venue_check": {
+        "agency": "U.S. Army Corps of Engineers, Philadelphia District",
+        "notice_id": "NAP-2024-408-01",
+        "document_date": "2024-01-29",
+        "source_url": "https://www.nap.usace.army.mil/Portals/39/docs/regulatory/408/NAP-2024-408-01%20Section%20408%20PN.pdf?ver=5J04uDkRnY51eGhdJrpqbA%3D%3D",
+        "page": 1,
+        "named_venue": "Landshark Bar & Grille",
+        "address": "1133 Boardwalk, Atlantic City, New Jersey",
+        "lat": 39.358035,
+        "lng": -74.420949,
+        "accuracy": "officially stated approximate project center",
+        "coordinate_reference": "Notice paragraph 2, LOCATION",
+        "retrieved_at": "2026-11-14T21:05:56.231790+00:00",
+        "direct_download_error": "HTTP Error 403: Forbidden",
+        "web_extraction_reference": "turn73view0",
+        "web_extraction_verified": true,
+        "distance_from_nj_street_point_meters": 38.3
+      }
+    },
+    {
+      "source_key": "jewish_federation_shore_nj",
+      "venue_name": "Temple Beth Shalom",
+      "venue_address": "4419 W. Brigantine Avenue, Brigantine, NJ 08203",
+      "lat": 39.387870000003,
+      "lng": -74.394045000001,
+      "location_provenance": "reviewed_official_nj_ogis_pointaddress",
+      "visible_qualifier": null,
+      "publisher_evidence": {
+        "url": "https://jewishbytheshore.org/venue/temple-beth-shalom/",
+        "native_feed_url": "https://jewishbytheshore.org/wp-json/tribe/events/v1/events/",
+        "native_capture_file": "fed1.txt",
+        "native_capture_sha256": "ac02b277d1365a2ee709c9c6af56ab51f9e421647682813154fe86538a9ecf68",
+        "summary": "The publisher native calendar venue object gives this exact named venue, street, city, state and ZIP."
+      },
+      "official_locator": {
+        "url": "https://geo.nj.gov/arcgis/rest/services/Tasks/NJ_Geocode/GeocodeServer/findAddressCandidates?SingleLine=4419+W.+Brigantine+Avenue%2C+Brigantine%2C+NJ+08203&outFields=%2A&outSR=4326&f=pjson",
+        "observed_at": "2026-11-14T21:09:23.974377+00:00",
+        "http_status": 200,
+        "score": 100,
+        "matched_address": "4419 West Brigantine Avenue, Brigantine, New Jersey, 08203",
+        "match_type": "PointAddress",
+        "address_range": "",
+        "spatial_reference": {
+          "wkid": 4326,
+          "latestWkid": 4326
+        },
+        "raw_receipt_file": "coord-temple_beth_shalom-response.json",
+        "raw_receipt_sha256": "fb34c3c1fc245e4998ef69e4925ebc7ed9599cc8464491111bf719f6ac6df779",
+        "rejected_alternates": [
+          {
+            "address": "4419 Brigantine Boulevard, Brigantine, New Jersey, 08203",
+            "score": 96.83,
+            "match_type": "StreetAddress"
+          }
+        ]
+      },
+      "selection_reason": "Score-100 house number, directional, street, city and postal match; any lower-scored street-name alternate is excluded.",
+      "limitations": "Government address point; no surveyed rooftop or entrance accuracy claim."
+    },
+    {
+      "source_key": "jewish_federation_shore_nj",
+      "venue_name": "Rodef Shalom",
+      "venue_address": "4609 Atlantic Avenue, Atlantic City, NJ 08401",
+      "lat": 39.345154546474,
+      "lng": -74.46386428735,
+      "location_provenance": "reviewed_official_nj_ogis_streetaddress",
+      "visible_qualifier": "approximate map location",
+      "publisher_evidence": {
+        "url": "https://jewishbytheshore.org/venue/rodef-shalom/",
+        "native_feed_url": "https://jewishbytheshore.org/wp-json/tribe/events/v1/events/",
+        "native_capture_file": "fedpage3.txt",
+        "native_capture_sha256": "b927ac1a5383b183ce7b720197f5d4229c5ee19bcbf683fb352ddc255e27be39",
+        "summary": "The publisher native calendar venue object gives this exact named venue, street, city, state and ZIP."
+      },
+      "official_locator": {
+        "url": "https://geo.nj.gov/arcgis/rest/services/Tasks/NJ_Geocode/GeocodeServer/findAddressCandidates?SingleLine=4609+Atlantic+Avenue%2C+Atlantic+City%2C+NJ+08401&outFields=%2A&outSR=4326&f=pjson",
+        "observed_at": "2026-11-14T21:09:24.094116+00:00",
+        "http_status": 200,
+        "score": 100,
+        "matched_address": "4609 Atlantic Avenue, Atlantic City, New Jersey, 08401",
+        "match_type": "StreetAddress",
+        "address_range": "4609-4611",
+        "spatial_reference": {
+          "wkid": 4326,
+          "latestWkid": 4326
+        },
+        "raw_receipt_file": "coord-rodef_shalom-response.json",
+        "raw_receipt_sha256": "b6468de2a47124030142019f487ba827329643d457a2ae8fa3cba379cded0506",
+        "rejected_alternates": []
+      },
+      "selection_reason": "Score-100 house number, directional, street, city and postal match; any lower-scored street-name alternate is excluded.",
+      "limitations": "Official street-address interpolation; visibly approximate, not rooftop, entrance or event GPS."
+    },
+    {
+      "source_key": "jewish_federation_shore_nj",
+      "venue_name": "Beth El Synagogue",
+      "venue_address": "500 N Jerome Avenue, Margate City, NJ 08402",
+      "lat": 39.333593495217,
+      "lng": -74.509038200323,
+      "location_provenance": "reviewed_official_nj_ogis_streetaddress",
+      "visible_qualifier": "approximate map location",
+      "publisher_evidence": {
+        "url": "https://jewishbytheshore.org/venue/beth-el-synagogue/",
+        "native_feed_url": "https://jewishbytheshore.org/wp-json/tribe/events/v1/events/",
+        "native_capture_file": "fed1.txt",
+        "native_capture_sha256": "ac02b277d1365a2ee709c9c6af56ab51f9e421647682813154fe86538a9ecf68",
+        "summary": "The publisher native calendar venue object gives this exact named venue, street, city, state and ZIP."
+      },
+      "official_locator": {
+        "url": "https://geo.nj.gov/arcgis/rest/services/Tasks/NJ_Geocode/GeocodeServer/findAddressCandidates?SingleLine=500+N+Jerome+Avenue%2C+Margate+City%2C+NJ+08402&outFields=%2A&outSR=4326&f=pjson",
+        "observed_at": "2026-11-14T21:09:23.942693+00:00",
+        "http_status": 200,
+        "score": 100,
+        "matched_address": "500 North Jerome Avenue, Margate City, New Jersey, 08402",
+        "match_type": "StreetAddress",
+        "address_range": "500-598",
+        "spatial_reference": {
+          "wkid": 4326,
+          "latestWkid": 4326
+        },
+        "raw_receipt_file": "coord-beth_el-response.json",
+        "raw_receipt_sha256": "ec4ff3e21044a1e3e180a2f8113601fc0d39fc02cecd2adf93ed1d1efb44d550",
+        "rejected_alternates": []
+      },
+      "selection_reason": "Score-100 house number, directional, street, city and postal match; any lower-scored street-name alternate is excluded.",
+      "limitations": "Official street-address interpolation; visibly approximate, not rooftop, entrance or event GPS."
+    },
+    {
+      "source_key": "garden_state_beer_company_nj",
+      "venue_name": "Garden State Beer Company",
+      "venue_address": "247 E White Horse Pike, Galloway, NJ 08205",
+      "lat": 39.446046000003,
+      "lng": -74.527533000001,
+      "location_provenance": "reviewed_nj_ogis_point_address",
+      "visible_qualifier": null,
+      "publisher_evidence": {
+        "url": "https://gardenstatebeerco.com/contact",
+        "status": 200,
+        "sha256": "e7329adf5bb2bb2829f7211e8e51a7e73a7769b22243f26a535d82963f800c2c",
+        "address_lines": [
+          "247 E White Horse Pike, Galloway, New Jersey 08205, United States"
+        ],
+        "native_coordinate_found": false
+      },
+      "official_locator": {
+        "url": "https://geo.nj.gov/arcgis/rest/services/Tasks/NJ_Geocode/GeocodeServer/findAddressCandidates?SingleLine=247+E+White+Horse+Pike%2C+Galloway%2C+NJ+08205&outFields=%2A&outSR=4326&f=json",
+        "observed_at": "2026-11-14T21:07:34.949997+00:00",
+        "http_status": 200,
+        "score": 100,
+        "matched_address": "247 East White Horse Pike, Galloway, New Jersey, 08205",
+        "match_type": "PointAddress",
+        "address_range": "",
+        "spatial_reference": {
+          "wkid": 4326,
+          "latestWkid": 4326
+        },
+        "raw_receipt_file": "nj-geocoder-garden-state-beer.json",
+        "raw_receipt_sha256": "aeb1d4d04583b5dc02003bbacbcc1b463546809a4cd2c65d1053bc86aee420ed",
+        "rejected_alternates": [
+          {
+            "address": "247 Whitehorse Pike, Galloway, New Jersey, 08205",
+            "score": 97.83,
+            "type": "StreetAddress",
+            "reason": "Missing publisher-specified East street direction; lower match score and a different point."
+          }
+        ]
+      },
+      "selection_reason": "The exact East White Horse Pike address matches; lower-scored alternate lacking East is rejected.",
+      "limitations": "Government address point; no surveyed rooftop or entrance accuracy claim."
+    }
+  ]
+}

@@ -202,6 +202,8 @@ class AtlanticNightlifeTests(unittest.TestCase):
         self.assertIn("Last vendor in the list.", rows[0]["description"])
         self.assertNotEqual(rows[0]["id"], rows[1]["id"])
         self.assertTrue(all(r["venue_address"] == "247 E White Horse Pike, Galloway, NJ 08205" for r in rows))
+        self.assertTrue(all((r["lat"], r["lng"]) == (39.446046000003, -74.527533000001) for r in rows))
+        self.assertTrue(all(r["location_provenance"] == "reviewed_nj_ogis_point_address" for r in rows))
 
     def test_garden_refuses_missing_widget_or_foreign_site_data(self):
         for bundle in ("", garden_bundle([garden_item()], websiteId="different-site")):
