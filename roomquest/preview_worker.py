@@ -1987,6 +1987,14 @@ def _preview_fetch_chunk(source, pacing, *, adapter, allowed_hosts, collection_c
                                else "invalid_html_event_payload") from exc
         if pacing["wait_unbounded"]:
             raise PreviewError("publisher_wait_requires_review")
+        from roomquest import new_york_sources
+        if new_york_sources.adapter_for(source.get('source_key')) is not None:
+            try:
+                new_york_sources.validate_checkpoint(source, chunk.get('checkpoint'))
+                if chunk.get('complete') and chunk['checkpoint']['cursor'] != chunk['checkpoint']['manifest_count']:
+                    raise ValueError('new_york_checkpoint_invalid')
+            except ValueError as exc:
+                raise PreviewError(str(exc)) from exc
         operation = "community_collector_write_fetch_checkpoint"
         _observe_collection_phase(observe_phase, "fetch", operation=operation)
         acknowledged = supabase_rpc(operation, {

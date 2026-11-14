@@ -168,7 +168,62 @@ def test_checkpoint_never_emits_partial_snapshot(monkeypatch):
     assert len(calls) == 2
     assert first['checkpoint']['cursor'] == 1
     final = ny.collect_chunk(source(ny.DYCKMAN), fetch, checkpoint=first['checkpoint'], now=NOW)
-    assert final['complete'] and len(final['events']) == 2 and final['checkpoint'] is None
+    assert final['complete'] and len(final['events']) == 2
+    assert final['checkpoint']['cursor'] == final['checkpoint']['manifest_count'] == 2
+    assert final['checkpoint']['events'] == final['events']
+
+
+def test_checkpoint_wire_date_and_complete_state_are_persistable():
+    fetch, _ = sq_fetch([sq_card(0)])
+    final = ny.collect_chunk(source(ny.DYCKMAN), fetch, now=NOW)
+    cp = final['checkpoint']
+    assert final['complete'] and isinstance(cp, dict)
+    assert cp['window_start'] == NOW.astimezone(ZoneInfo(ny.ZONE)).date().isoformat()
+    assert len(cp['window_start']) == 10
+    assert cp['started_at'] == NOW.isoformat()
+    assert cp['cursor'] == cp['manifest_count'] == 1
+    assert len(cp['manifest_hash']) == 64
+    assert len(json.dumps(cp).encode()) <= ny.CHECKPOINT_MAX_BYTES
+
+
+def test_completed_checkpoint_retry_replays_without_refetching_details():
+    fetch, calls = sq_fetch([sq_card(0)])
+    first = ny.collect_chunk(source(ny.DYCKMAN), fetch, now=NOW)
+    calls.clear()
+    retry = ny.collect_chunk(source(ny.DYCKMAN), fetch,
+                             checkpoint=first['checkpoint'], now=NOW + timedelta(minutes=5))
+    assert retry['complete'] and retry['events'] == first['events']
+    assert retry['checkpoint'] == first['checkpoint']
+    assert calls == [ny.SOURCES[ny.DYCKMAN][0]]
+
+
+def test_checkpoint_window_anchor_is_immutable_across_local_midnight(monkeypatch):
+    monkeypatch.setattr(ny, 'DETAILS_PER_CHUNK', 1)
+    anchor = NOW.astimezone(ZoneInfo(ny.ZONE)).replace(hour=23, minute=59)
+    fetch, _ = sq_fetch([sq_card(0), sq_card(1)])
+    seen = []
+    original = ny._manifest
+
+    def manifest(key, payload, now):
+        seen.append(now)
+        return original(key, payload, now)
+
+    monkeypatch.setattr(ny, '_manifest', manifest)
+    first = ny.collect_chunk(source(ny.DYCKMAN), fetch, now=anchor)
+    resumed = ny.collect_chunk(source(ny.DYCKMAN), fetch,
+                               checkpoint=first['checkpoint'], now=anchor + timedelta(minutes=2))
+    assert resumed['complete']
+    assert resumed['checkpoint']['started_at'] == anchor.isoformat()
+    assert resumed['checkpoint']['window_start'] == anchor.date().isoformat()
+    assert all(value == anchor for value in seen)
+
+
+def test_timestamp_instead_of_checkpoint_calendar_date_is_rejected():
+    fetch, _ = sq_fetch([sq_card(0)])
+    cp = ny.collect_chunk(source(ny.DYCKMAN), fetch, now=NOW)['checkpoint']
+    cp['window_start'] = NOW.isoformat()
+    with pytest.raises(ValueError, match='ny_outdoors_checkpoint_invalid'):
+        ny.collect_chunk(source(ny.DYCKMAN), fetch, checkpoint=cp, now=NOW)
 
 
 def test_checkpoint_cannot_inject_another_event(monkeypatch):
