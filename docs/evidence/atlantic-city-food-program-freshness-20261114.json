@@ -1,0 +1,18 @@
+{
+  "checked_date": "2026-11-14",
+  "previous_indexed_time": "13:00–14:00",
+  "current_publisher_pdf_time": "12:00–13:00",
+  "detail_url": "https://www.jfsatlantic.org/events/distribution-oceanside-ii-success-center/2026-11-18/",
+  "fresh_detail_http_status": 404,
+  "fresh_detail_independent_web_open_status": 404,
+  "month_url": "https://www.jfsatlantic.org/events/month/2026-11/?shortcode=f0b1cb7d",
+  "fresh_month_http_status": 200,
+  "fresh_month_capture": "jfs-nov2026-current.html",
+  "fresh_month_bytes": 336215,
+  "fresh_month_sha256": "cbb0e4ee7f15cf217fdf121d9eba294b4406af8dbcf5bb88a31f6fdfc125f886",
+  "fresh_month_raw_oceanside_occurrences": 0,
+  "fresh_month_raw_distribution_occurrences": 0,
+  "fresh_month_nov18_rendered_event_count": 0,
+  "production_status": "Root verified no Atlantic JFS source enrolled in production.",
+  "decision": "Current exact-hash OceansideII November PDF is surviving current event evidence; stale indexed JFS13–14 does not justify continuing clock hold."
+}

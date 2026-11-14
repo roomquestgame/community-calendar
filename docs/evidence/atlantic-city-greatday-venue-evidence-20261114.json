@@ -1,0 +1,50 @@
+{
+  "reviewed_at": "2026-11-14",
+  "points": [
+    {
+      "venue_name": "Atlantic City PAL Building",
+      "venue_address": "250 N New York Avenue, Atlantic City, NJ 08401",
+      "lat": 39.3653551,
+      "lng": -74.4321693,
+      "source_url": "https://acpal.org/contact/",
+      "map_url": "https://maps.google.com/maps?iwloc=near&output=embed&q=250+N.+New+York+Avenue%2C+Atlantic+City%2C+NJ+08401&t=m&z=16",
+      "evidence_file": "research-ac/venue-coordinates/pal-map.html",
+      "basis": "Own contact page directs to map; exact building address and numeric point in map payload."
+    },
+    {
+      "venue_name": "Sister Jean's Kitchen",
+      "venue_address": "108 N Pennsylvania Avenue, Atlantic City, NJ 08401",
+      "lat": 39.361843,
+      "lng": -74.423196,
+      "source_url": "https://search.nj211.org/search/861ce7b3-ec45-5fe4-8e80-bc091265161b",
+      "address_source": "https://www.sisterjeanskitchen.org/",
+      "evidence_file": "research-ac/venue-coordinates/sister-211.html",
+      "basis": "NJ211 current physical service record names Friends of Jean Webster/Sister Jeans Kitchen with exact108 street, point and lastAssuredOn2026-10-13; own homepage confirms North Pennsylvania."
+    },
+    {
+      "venue_name": "Spanish Community Center",
+      "venue_address": "3900 Ventnor Avenue, Atlantic City, NJ 08401",
+      "lat": 39.350256,
+      "lng": -74.457095,
+      "source_url": "https://search.nj211.org/search/41c48b1e-4f9e-5c08-ad88-9b7bfd5deeb9",
+      "evidence_file": "research-ac/venue-coordinates/spanish-211-detail.html",
+      "basis": "NJ211 exact Atlantic City service-location physical street and GeoJSON point; distinct from Landisville branch."
+    }
+  ],
+  "held_school_conflict": {
+    "event_url": "https://www.greatdayatlanticcity.com/events/south-jersey-gas-energy-assistance-event",
+    "date": "2026-11-19",
+    "reason": "Text and attached flyer say New York Avenue School at201 North Pennsylvania, while school district identifies this as Pennsylvania Ave School and New York Avenue School at411NNewYork. No relocation evidence. Exact occurrence held; full narrative preserved in original captured HTML.",
+    "flyer_file": "research-ac/venue-coordinates/greatday-energy-flyer.jpg",
+    "official_addresses": [
+      "https://nyas.acboe.org/",
+      "https://pas.acboe.org/"
+    ]
+  },
+  "unresolved_points": [
+    "Carnegie Center",
+    "Uptown Skatepark",
+    "Pop Lloyd Stadium",
+    "All Wars Memorial Building"
+  ]
+}

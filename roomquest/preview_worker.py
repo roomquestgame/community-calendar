@@ -63,6 +63,16 @@ class PreviewError(ValueError):
     """Expected, safely reportable source failure."""
 
 
+def _publisher_body_limit(url, accept, allowed_hosts, respect_robots):
+    # Two reviewed current calendar PDFs are 12.8/15.9MB. Keep the ordinary limit
+    # everywhere else, including redirects to a different object on this CDN.
+    from roomquest import atlantic_city_pdf_programs
+    if atlantic_city_pdf_programs.reviewed_large_document(
+            url, accept, allowed_hosts, respect_robots):
+        return atlantic_city_pdf_programs.MAX_PDF
+    return MAX_BODY
+
+
 class RejectRedirects(HTTPRedirectHandler):
     def redirect_request(self, request, fp, code, msg, headers, newurl):
         raise PreviewError("redirect_blocked")
@@ -517,7 +527,8 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
                     response.close()
                     raise PreviewError('invalid_calendar_render_content_type')
                 length = int(response.headers.get("Content-Length") or 0)
-                if length > MAX_BODY:
+                body_limit = _publisher_body_limit(current, accept, allowed_hosts, respect_robots)
+                if length > body_limit:
                     response.close()
                     raise PreviewError("source_unavailable_or_oversized")
                 chunks, size = [], 0
@@ -526,7 +537,7 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
                         response.close()
                         raise PreviewError("source_fetch_deadline")
                     size += len(chunk)
-                    if size > MAX_BODY:
+                    if size > body_limit:
                         response.close()
                         raise PreviewError("source_too_large")
                     chunks.append(chunk)
@@ -832,8 +843,12 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
     from roomquest import civic_local_calendars, civic_schedule, legistar, municipal_notices, virginia_civic
     source_key = source.get('source_key')
     from roomquest import atlantic_city_community, atlantic_city_venues, visit_atlantic_city
+    from roomquest import atlantic_city_stockton, atlantic_city_pdf_programs, greatday_atlantic_city
     if (source_key in atlantic_city_community.SOURCES
             or source_key in atlantic_city_venues.SOURCES
+            or source_key in atlantic_city_stockton.SOURCES
+            or source_key in atlantic_city_pdf_programs.SOURCES
+            or source_key == greatday_atlantic_city.KEY
             or source_key == visit_atlantic_city.SOURCE_KEY):
         if source_key in atlantic_city_community.SOURCES:
             adapter = atlantic_city_community
@@ -841,6 +856,15 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         elif source_key in atlantic_city_venues.SOURCES:
             adapter = atlantic_city_venues
             hosts = adapter.SOURCES[source_key][1]
+        elif source_key in atlantic_city_stockton.SOURCES:
+            adapter = atlantic_city_stockton
+            hosts = adapter.ALLOWED_HOSTS[source_key]
+        elif source_key in atlantic_city_pdf_programs.SOURCES:
+            adapter = atlantic_city_pdf_programs
+            hosts = adapter.ALLOWED_HOSTS[source_key]
+        elif source_key == greatday_atlantic_city.KEY:
+            # Never run the multi-page calendar without a durable snapshot.
+            raise PreviewError('publisher_checkpoint_required')
         else:
             # Legacy/manual calls cannot publish a partial tourism manifest.
             # Normal HTML claims use the fenced continuation path below.
@@ -1679,6 +1703,16 @@ def _preview_atlantic_community_chunk(source, pacing, *, collection_context, dea
         publisher_handoff=publisher_handoff, observe_phase=observe_phase)
 
 
+def _preview_greatday_chunk(source, pacing, *, collection_context, deadline_at,
+                            publisher_handoff=None, observe_phase=None):
+    from roomquest import greatday_atlantic_city
+
+    return _preview_fetch_chunk(source, pacing, adapter=greatday_atlantic_city,
+        allowed_hosts=greatday_atlantic_city.ALLOWED_HOSTS[source['source_key']],
+        collection_context=collection_context, deadline_at=deadline_at,
+        publisher_handoff=publisher_handoff, observe_phase=observe_phase)
+
+
 def _preview_fetch_chunk(source, pacing, *, adapter, allowed_hosts, collection_context,
                          deadline_at, publisher_handoff=None, observe_phase=None):
     """Persist one lease-fenced complete-manifest chunk before any staging."""
@@ -1741,7 +1775,14 @@ def _preview_fetch_chunk(source, pacing, *, adapter, allowed_hosts, collection_c
                      "municipal_calendar_limit", "municipal_calendar_identity_changed",
                      "municipal_event_identity_changed", "municipal_event_schedule_changed",
                      "municipal_checkpoint_invalid", "municipal_checkpoint_size_limit",
-                     "publisher_checkpoint_required"}
+                     "publisher_checkpoint_required", "unregistered_greatday_source",
+                     "greatday_pagination_invalid", "greatday_upcoming_collection_changed",
+                     "greatday_card_identity_changed", "greatday_event_identity",
+                     "greatday_card_date_invalid", "greatday_duplicate_identity",
+                     "greatday_record_limit", "greatday_detail_date_invalid",
+                     "greatday_detail_identity_changed", "greatday_detail_schedule_changed",
+                     "greatday_detail_location_changed", "greatday_checkpoint_invalid",
+                     "greatday_checkpoint_size_limit", "atlantic_city_description_limit"}
             reason = exc.args[0] if len(exc.args) == 1 else None
             raise PreviewError(reason if type(reason) is str and reason in codes
                                else "invalid_html_event_payload") from exc
@@ -1787,12 +1828,13 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
         _observe_collection_phase(observe_phase, "fetch")
         deadline = min(monotonic() + 43, deadline_at or float("inf"))
         checkpoint_key = source.get("source_key")
-        if ((checkpoint_key in ("discover_halifax_va", "visit_atlantic_city_nj", "noyes_arts_atlantic_city_nj", "atlantic_city_municipal_nj")
+        if ((checkpoint_key in ("discover_halifax_va", "visit_atlantic_city_nj", "noyes_arts_atlantic_city_nj", "atlantic_city_municipal_nj", "greatday_atlantic_city_nj")
                 or checkpoint_key in linked_description_profiles)
                 and collection_context is not None
                 and type(source.get("fetch_checkpoint_version")) is int
                 and source["fetch_checkpoint_version"] == 1):
             preview_chunk = (_preview_halifax_chunk if checkpoint_key == "discover_halifax_va"
+                             else _preview_greatday_chunk if checkpoint_key == "greatday_atlantic_city_nj"
                              else _preview_visit_atlantic_chunk if checkpoint_key == "visit_atlantic_city_nj"
                              else _preview_atlantic_community_chunk if checkpoint_key in (
                                  "noyes_arts_atlantic_city_nj", "atlantic_city_municipal_nj")

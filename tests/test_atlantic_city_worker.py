@@ -315,6 +315,66 @@ class AtlanticCityWorkerTests(unittest.TestCase):
         self.assertTrue(all(state.fetched.count(f"https://www.acnj.gov/api/data/GetEvent?id={n}") == 1
                             for n in range(1, 8)))
 
+    def test_greatday_all_details_finish_before_full_prose_reaches_v2_staging(self):
+        from roomquest import greatday_atlantic_city as gd
+        from tests.test_greatday_atlantic_city import card, detail, listing, SOURCE
+        prose = 'November 21, 2026 from 11 a.m. to 1 p.m. ' + 'Complete participation details. ' * 100 + 'Final admission condition.'
+        pages = {gd.URL: listing(''.join(card(f'program-{n}', f'Program {n}') for n in range(7)))}
+        pages.update({gd.URL + f'/program-{n}': detail(f'Program {n}', prose) for n in range(7)})
+        state = Harness(self, {**SOURCE, 'fetch_checkpoint_version': 1}, pages=pages)
+        original = gd.collect_chunk
+        with patch.object(gd, 'monotonic', lambda: state.clock), patch.object(gd, 'collect_chunk',
+                side_effect=lambda *args, **kwargs: original(*args, **kwargs, now=NOW)):
+            first = state.run()
+            self.assertTrue(first['fetch_pending'])
+            self.assertFalse(state.staged)
+            result = state.run()
+        self.assertEqual((result['complete'], result['failed'], result['staged']), (1, 0, 7))
+        self.assertTrue(all(row['description'] == prose for row in state.staged))
+        self.assertTrue(all(row['venue_address'] == '108 N Pennsylvania Avenue, Atlantic City, NJ 08401'
+                            for row in state.staged))
+        self.assertEqual([op for op, _ in state.calls].count(RECORD), 1)
+        self.assertEqual([op for op, _ in state.calls].count(PUBLISH), 1)
+
+    def test_greatday_legacy_path_cannot_publish_a_partial_manifest(self):
+        from tests.test_greatday_atlantic_city import SOURCE
+        state = Harness(self, SOURCE)
+        result = state.run()
+        self.assertEqual(result['failed'], 1)
+        self.assertFalse(state.fetched)
+        self.assertNotIn(STAGE, [op for op, _ in state.calls])
+        recorded = next(payload for operation, payload in state.calls if operation == RECORD)
+        self.assertEqual(recorded['p_error'], 'publisher_checkpoint_required')
+
+    def test_stockton_department_full_html_body_survives_shared_worker(self):
+        from roomquest import atlantic_city_stockton as stockton
+        from tests.test_atlantic_city_stockton import department_card
+        feed, kind, adapter = stockton.SOURCES[stockton.HRC]
+        prose = 'Free and open to the public. ' + 'Complete lecture and participation information. ' * 100 + 'Final condition.'
+        source = dict(source_key=stockton.HRC, feed_url=feed, kind=kind,
+                      platform_adapter=adapter, timezone=stockton.ZONE)
+        state = Harness(self, source, pages={feed: department_card(body='<p>' + prose + '</p>')})
+        with patch.object(stockton, 'monotonic', lambda: state.clock):
+            result = state.run()
+        self.assertEqual((result['complete'], result['failed'], result['staged']), (1, 0, 1))
+        self.assertEqual(state.staged[0]['description'], prose)
+        self.assertEqual(state.staged[0]['venue_address'], stockton.MAIN_STREET)
+
+    def test_pdf_binary_fetch_and_full_description_survive_shared_worker(self):
+        from roomquest import atlantic_city_pdf_programs as pdf
+        from tests.test_atlantic_city_pdf_programs import pdf_bytes
+        prose = 'Full Moon Climb, ' + 'Complete public program and admission details. ' * 100 + 'Final condition.'
+        payload = pdf_bytes('2026 Calendar of Events PROCEEDS BENEFIT ABSECON LIGHTHOUSE\n'
+                            'Friday, December 4 Luminary Light Festival, 5pm to 7pm\n' + prose)
+        source = dict(source_key=pdf.LIGHTHOUSE, feed_url=pdf.LIGHTHOUSE_DOCUMENT,
+                      kind='html', platform_adapter='html', timezone=pdf.ZONE)
+        state = Harness(self, source, pages={pdf.LIGHTHOUSE_DOCUMENT: payload})
+        with patch.object(pdf, 'monotonic', lambda: state.clock):
+            result = state.run()
+        self.assertEqual((result['complete'], result['failed'], result['staged']), (1, 0, 1))
+        self.assertEqual(state.staged[0]['description'], prose)
+        self.assertEqual(state.staged[0]['venue_address'], '31 South Rhode Island Avenue, Atlantic City, NJ 08401')
+
 
 if __name__ == "__main__":
     unittest.main()

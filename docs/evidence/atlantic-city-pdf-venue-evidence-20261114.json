@@ -1,0 +1,47 @@
+{
+  "Absecon Lighthouse": {
+    "venue_address": "31 South Rhode Island Avenue, Atlantic City, NJ 08401",
+    "lat": 39.36666,
+    "lng": -74.41391,
+    "point_kind": "Publisher-specified arrival/parking map point",
+    "point_url": "https://njaudubon.org/wp-content/wildlife/PineBarrensTrails/Sites/tabid/1698/Scope/site/Guide/PINEBARREN/Site/361/Default.html",
+    "point_map_url": "http://maps.google.com/maps?q=(Absecon+Lighthouse)@39.36666,-74.41391&iwloc=A&hl=en&t=m&z=11",
+    "address_url": "https://abseconlighthouse.org/contacts/",
+    "captures": [
+      "absecon-audubon.html",
+      "absecon-contacts.html"
+    ]
+  },
+  "Oceanside I Family Success Center": {
+    "venue_address": "201 Melrose Avenue Unit 3, Atlantic City, NJ 08401",
+    "lat": 39.372382359281055,
+    "lng": -74.41623991779097,
+    "point_kind": "Event publisher OG latitude/longitude and matching street/city/ZIP",
+    "point_url": "https://noyesmuseum.org/all-noyes-events/2026/oceanside-1-fall-k6lsf-aagcf",
+    "point_capture": "../noyes_arts_atlantic_city_nj-fetch-1bfe62077e06ff07.txt",
+    "unit_address_proof": "Oceanside I November2026 English PDF pages1 and2, 201 Melrose Ave - Unit3"
+  },
+  "Friendsgiving November19": {
+    "status": "current_campus_unconfirmed; historical_address_inference_available",
+    "publication_recommendation": "Root may include under user-authorized educated address inference, visibly labeled address estimated; never label publisher-confirmed for2026",
+    "known_clock": "2026-11-19 16:00–17:30 America/New_York from Oceanside I page1",
+    "known_location": "Atlantic Cape Community College, no named campus in either current calendar",
+    "excluded_inference": "2025 president report refers to prior annual dinner at Atlantic City campus; insufficient to establish2026 campus",
+    "registration_link_inspected": "https://forms.cloud.microsoft/r/QqZ6bpzZ4H",
+    "registration_read_result": "Public application shell returned; no campus in server HTML, no submission performed",
+    "suggested_venue_name": "Atlantic Cape Community College — Atlantic City campus (address estimated)",
+    "inferred_street_address": "1535 Bacharach Boulevard, Atlantic City, NJ 08401",
+    "official_current_address_url": "https://atlanticcape.edu/about/campus-locations/atlantic-city.php",
+    "official_catalog_address_url": "https://catalog.atlantic.edu/20262027-catalog/directions-to-atlantic-cape-campuses",
+    "historical_campus_evidence_url": "https://atlanticcape.edu/about/leadership/board/presidents-report-11-18-2025.pdf",
+    "historical_campus_evidence_page": 3,
+    "historical_evidence_caveat": "Report datedNov18,2025 describesNov21 as completed; source internal chronology inconsistency. Used as location precedent only.",
+    "description_first_anchor": "Join us for a special Thanksgiving Dinner!",
+    "description_last_anchor": "We appreciate YOU!",
+    "full_description": "Join us for a special Thanksgiving Dinner! Join Oceanside I & II Family Success Centers for Thanksgiving Dinner! Come together with family, friends, and neighbors to enjoy a delicious meal, celebrate gratitude, and share the joy of the holiday season. Let's give thanks and create wonderful memories together! We appreciate YOU!",
+    "full_description_utf8_bytes": 328,
+    "lat": null,
+    "lng": null
+  },
+  "release_decision": "Friendsgiving is included with an explicitly estimated Atlantic City campus venue label and full current PDF narrative; no exact publisher campus confirmation or GPS point is claimed."
+}
