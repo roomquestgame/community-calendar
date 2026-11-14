@@ -51,6 +51,11 @@ MAX_RECORDS = 500
 MAX_MANIFEST = 200
 MAX_CHECKPOINT_BYTES = 900000
 MAX_DETAILS = 3
+# These two complete-manifest calendars have long detail queues. The ordinary
+# transport still controls pacing, and the loop retains its 18-second reserve
+# before every request. Only the per-claim ceiling changes; other sources keep
+# the original limit and saved checkpoint identities remain compatible.
+MAX_DETAILS_BY_SOURCE = {BKUP: 12, WAVE: 12}
 NONPUBLIC = re.compile(r'\b(?:cancelled|canceled|postponed|private event|invitation.only|members.only|sold out|fully booked)\b', re.I)
 REMOTE = re.compile(r'^(?:virtual|online|zoom)(?:\b|/)', re.I)
 HOLD_REASONS = {
@@ -4198,7 +4203,8 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
     # The four-hour manifest snapshot is immutable, including across midnight;
     # every detail is hydrated at its processing time. No stale listing excerpt
     # is ever staged, and a completed retry replays the identical completed wire.
-    limit = MAX_DETAILS if max_details is None else min(MAX_DETAILS, max(1, int(max_details)))
+    source_limit = MAX_DETAILS_BY_SOURCE.get(key, MAX_DETAILS)
+    limit = source_limit if max_details is None else min(source_limit, max(1, int(max_details)))
     for item in queue[prior:prior + limit]:
         if deadline_at is not None and monotonic() + 18 >= deadline_at:
             break

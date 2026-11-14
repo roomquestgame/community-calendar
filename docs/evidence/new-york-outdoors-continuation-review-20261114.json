@@ -1,0 +1,131 @@
+{
+  "reviewed_at": "2026-11-14T18:47:41.863208-05:00",
+  "change": "Only BKUP and Wave Hill receive a per-claim maximum of12 detail pages. Other source limits, the18-second request reserve, ordinary transport pacing, actual deadlines,4-hour checkpoint anchor and all schema/cap limits remain unchanged.",
+  "reason": "Production BKUP advanced3 details per short claim with roughly104seconds between observed claims. The three-detail ceiling left useful time unused and multiplied continuation overhead. Wave Hill has the same long-detail-queue pattern after its complete manifest is persisted.",
+  "files": [
+    "roomquest/new_york_outdoors_final.py",
+    "tests/test_new_york_outdoors_final.py"
+  ],
+  "module_sha256": "ec2016ee41ba5345a8553ff2ff7ec99d1a5cbee67d0e538498f8310bccaba332",
+  "tests_sha256": "9045b7f6717f6f355f2687ee47bac8d42a03f81f8158f59ac9e90f7217d2a872",
+  "focused_tests_passed": 34,
+  "policy": {
+    "maximum_details_by_source": {
+      "bkup_brooklyn_ny": 12,
+      "wave_hill_ny": 12
+    },
+    "other_sources_maximum_details": 3,
+    "before_each_detail_remaining_seconds": 18,
+    "transport_pacing": "Unchanged: at least one second and any stronger publisher crawl delay or Retry-After. No parallel requests.",
+    "worker_fetch_deadline": "Unchanged min(now+36s, claimed job deadline minus9s); the ordinary39-second job budget remains.",
+    "maximum_manifest": 200,
+    "maximum_events": 201,
+    "maximum_checkpoint_bytes": 900000,
+    "checkpoint_anchor_ttl_hours": 4
+  },
+  "verification": {
+    "frozen_capture_sha256": "af76824fc40dd52bd321246383bea2ade57f7d886ffa1b3f5248e5be106916ba",
+    "frozen_normalizer_clock": "2026-11-14T23:34:39.912658+00:00",
+    "records_identical": 723,
+    "source_comparisons": [
+      {
+        "source_key": "fordham_university_ny",
+        "records": 15,
+        "held": 224,
+        "frozen_chunks": 1,
+        "new_chunks": 1,
+        "complete_records_identical": true,
+        "held_diagnostics_identical": true,
+        "complete_checkpoint_bytes": 0
+      },
+      {
+        "source_key": "bronx_river_alliance_ny",
+        "records": 6,
+        "held": 6,
+        "frozen_chunks": 4,
+        "new_chunks": 4,
+        "complete_records_identical": true,
+        "held_diagnostics_identical": true,
+        "complete_checkpoint_bytes": 12452
+      },
+      {
+        "source_key": "wave_hill_ny",
+        "records": 78,
+        "held": 7,
+        "frozen_chunks": 19,
+        "new_chunks": 5,
+        "complete_records_identical": true,
+        "held_diagnostics_identical": true,
+        "complete_checkpoint_bytes": 161582
+      },
+      {
+        "source_key": "brooklyn_bridge_park_ny",
+        "records": 44,
+        "held": 2,
+        "frozen_chunks": 1,
+        "new_chunks": 1,
+        "complete_records_identical": true,
+        "held_diagnostics_identical": true,
+        "complete_checkpoint_bytes": 0
+      },
+      {
+        "source_key": "bkup_brooklyn_ny",
+        "records": 66,
+        "held": 70,
+        "frozen_chunks": 46,
+        "new_chunks": 12,
+        "complete_records_identical": true,
+        "held_diagnostics_identical": true,
+        "complete_checkpoint_bytes": 163214
+      },
+      {
+        "source_key": "nyrr_open_run_ny",
+        "records": 95,
+        "held": 1,
+        "frozen_chunks": 6,
+        "new_chunks": 6,
+        "complete_records_identical": true,
+        "held_diagnostics_identical": true,
+        "complete_checkpoint_bytes": 385373
+      },
+      {
+        "source_key": "brooklyn_community_board_6_ny",
+        "records": 62,
+        "held": 36,
+        "frozen_chunks": 1,
+        "new_chunks": 1,
+        "complete_records_identical": true,
+        "held_diagnostics_identical": true,
+        "complete_checkpoint_bytes": 0
+      },
+      {
+        "source_key": "transportation_alternatives_ny",
+        "records": 11,
+        "held": 5,
+        "frozen_chunks": 1,
+        "new_chunks": 1,
+        "complete_records_identical": true,
+        "held_diagnostics_identical": true,
+        "complete_checkpoint_bytes": 0
+      },
+      {
+        "source_key": "municipal_mapsee_0e46855a44eb788f36a2c0ab",
+        "records": 346,
+        "held": 96,
+        "frozen_chunks": 1,
+        "new_chunks": 1,
+        "complete_records_identical": true,
+        "held_diagnostics_identical": true,
+        "complete_checkpoint_bytes": 0
+      }
+    ],
+    "tests": [
+      "Only the two selected source ceilings increase; explicit smaller limits still work.",
+      "The18-second request reserve prevents another request despite the higher ceiling.",
+      "Unrelated checkpoint sources retain the original3-detail ceiling.",
+      "A transport rate-limit error leaves the saved prefix unchanged; retry replays without skipping or duplicating records.",
+      "All existing full-body, actual-venue, recurrence and completed-checkpoint tests still pass."
+    ]
+  },
+  "deployment": "Collector-only consolidated correction for two still-pending sources; no database workflow, source reenrollment, checkpoint reset or permission change is required."
+}
