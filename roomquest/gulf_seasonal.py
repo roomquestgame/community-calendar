@@ -32,6 +32,10 @@ MAX_CITY_EVENTS_PER_PAGE = 50
 _CITY_EVENT = re.compile(
     r'https://neworleanscitypark[.]org/event/[a-z0-9-]+/(?:20\d{2}-\d{2}-\d{2}/)?'
 )
+# Arts New Orleans' existing iCal source (municipal_mapsee_123326fd5be1b9af7ecaaf9b)
+# owns this reviewed series, with the precise Popp Bandstand address. City Park
+# republishes it with a generic park venue; retain the organizer's occurrences.
+_CITY_ORGANIZER_SERIES = {'arts-market-new-orleans-holiday-market'}
 _CLOCK = r'(?:1[0-2]|0?[1-9])(?::[0-5]\d)?\s*[ap]m'
 _HOURS = re.compile(rf'({_CLOCK})\s*[-–—]\s*({_CLOCK})', re.I)
 _MONTHS = {'Dec': 12, 'Jan': 1}
@@ -234,6 +238,8 @@ def _city_page(soup):
 
 def _city_row(event, card, start, end):
     title, url = plain(event.get('name')), event['url']
+    if urlsplit(url).path.split('/')[2] in _CITY_ORGANIZER_SERIES:
+        return None
     raw_prose = html.unescape(event.get('description') or '')
     # TEC sometimes double-escapes a final newline after an HTML paragraph.
     prose = description(re.sub(r'(?:\\+n)+\s*$', '', raw_prose))
