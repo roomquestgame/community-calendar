@@ -831,6 +831,48 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
     from roomquest.rockhouse import SOURCES as ROCKHOUSE_SOURCES
     from roomquest import civic_local_calendars, civic_schedule, legistar, municipal_notices, virginia_civic
     source_key = source.get('source_key')
+    from roomquest import atlantic_city_community, atlantic_city_venues, visit_atlantic_city
+    if (source_key in atlantic_city_community.SOURCES
+            or source_key in atlantic_city_venues.SOURCES
+            or source_key == visit_atlantic_city.SOURCE_KEY):
+        if source_key in atlantic_city_community.SOURCES:
+            adapter = atlantic_city_community
+            hosts = adapter.ALLOWED_HOSTS[source_key]
+        elif source_key in atlantic_city_venues.SOURCES:
+            adapter = atlantic_city_venues
+            hosts = adapter.SOURCES[source_key][1]
+        else:
+            # Legacy/manual calls cannot publish a partial tourism manifest.
+            # Normal HTML claims use the fenced continuation path below.
+            adapter = visit_atlantic_city
+            hosts = (adapter.HOST,)
+        deadline = min(monotonic() + 36,
+                       deadline_at - 8 if deadline_at is not None else float('inf'))
+        try:
+            records = adapter.collect(
+                source, lambda url, accept: fetch_publisher(
+                    url, accept, respect_robots=True, deadline_at=deadline,
+                    allowed_hosts=hosts), deadline_at=deadline)
+            if len(records) > 500:
+                raise ValueError('atlantic_city_record_limit')
+            if any(not isinstance(row.get('description'), str)
+                   or not row['description'].strip() or len(row['description']) > 12000
+                   or not isinstance(row.get('venue_address'), str)
+                   or not row['venue_address'].strip() for row in records):
+                raise ValueError('atlantic_city_incomplete_event')
+        except PreviewError:
+            raise
+        except (ValueError, TypeError, KeyError, OverflowError) as exc:
+            reason = str(exc)
+            raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}', reason)
+                               else 'invalid_atlantic_city_payload') from exc
+        samples = records[:MAX_PREVIEWS]
+        while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
+            samples.pop()
+        return {'p_source_key': source_key, 'p_samples': samples,
+                'p_future_count': len(records),
+                'p_venue_count': sum(row.get('lat') is not None for row in records),
+                'p_error': None, 'p_events': records}
     from roomquest import chesapeake_library, visit_norfolk
     if source_key in (chesapeake_library.KEY, visit_norfolk.KEY):
         adapter = chesapeake_library if source_key == chesapeake_library.KEY else visit_norfolk
@@ -1618,6 +1660,25 @@ def _preview_linked_description_chunk(source, pacing, *, collection_context, dea
         publisher_handoff=publisher_handoff, observe_phase=observe_phase)
 
 
+def _preview_visit_atlantic_chunk(source, pacing, *, collection_context, deadline_at,
+                                publisher_handoff=None, observe_phase=None):
+    from roomquest import visit_atlantic_city
+
+    return _preview_fetch_chunk(source, pacing, adapter=visit_atlantic_city,
+        allowed_hosts=(visit_atlantic_city.HOST,), collection_context=collection_context,
+        deadline_at=deadline_at, publisher_handoff=publisher_handoff, observe_phase=observe_phase)
+
+
+def _preview_atlantic_community_chunk(source, pacing, *, collection_context, deadline_at,
+                                     publisher_handoff=None, observe_phase=None):
+    from roomquest import atlantic_city_community
+
+    return _preview_fetch_chunk(source, pacing, adapter=atlantic_city_community,
+        allowed_hosts=atlantic_city_community.ALLOWED_HOSTS[source['source_key']],
+        collection_context=collection_context, deadline_at=deadline_at,
+        publisher_handoff=publisher_handoff, observe_phase=observe_phase)
+
+
 def _preview_fetch_chunk(source, pacing, *, adapter, allowed_hosts, collection_context,
                          deadline_at, publisher_handoff=None, observe_phase=None):
     """Persist one lease-fenced complete-manifest chunk before any staging."""
@@ -1663,7 +1724,24 @@ def _preview_fetch_chunk(source, pacing, *, adapter, allowed_hosts, collection_c
                      "linked_description_manifest_invalid", "linked_description_checkpoint_size_limit",
                      "rockhouse_detail_identity_mismatch", "rockhouse_detail_structure_missing",
                      "invalid_downtown_norfolk_detail_identity", "invalid_downtown_norfolk_detail_content",
-                     "invalid_sandler_detail_identity", "invalid_sandler_detail_content"}
+                     "invalid_sandler_detail_identity", "invalid_sandler_detail_content",
+                     "unregistered_visit_atlantic_city", "visit_atlantic_checkpoint_invalid",
+                     "visit_atlantic_checkpoint_required", "visit_atlantic_checkpoint_size_limit",
+                     "visit_atlantic_description_limit", "visit_atlantic_detail_dates",
+                     "visit_atlantic_detail_identity", "visit_atlantic_detail_structure",
+                     "visit_atlantic_duplicate_occurrence", "visit_atlantic_event_limit",
+                     "visit_atlantic_manifest_limit", "visit_atlantic_sitemap_invalid",
+                     "noyes_checkpoint_invalid", "noyes_checkpoint_size_limit",
+                     "publisher_detail_limit", "publisher_next_event_cycle",
+                     "publisher_calendar_identity_changed", "publisher_calendar_date_missing",
+                     "publisher_event_detail_changed", "publisher_calendar_link_changed",
+                     "publisher_event_time_changed", "invalid_event_end",
+                     "publisher_next_event_changed", "publisher_event_identity_changed",
+                     "publisher_description_limit", "unregistered_atlantic_city_community_source",
+                     "municipal_calendar_limit", "municipal_calendar_identity_changed",
+                     "municipal_event_identity_changed", "municipal_event_schedule_changed",
+                     "municipal_checkpoint_invalid", "municipal_checkpoint_size_limit",
+                     "publisher_checkpoint_required"}
             reason = exc.args[0] if len(exc.args) == 1 else None
             raise PreviewError(reason if type(reason) is str and reason in codes
                                else "invalid_html_event_payload") from exc
@@ -1709,11 +1787,15 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
         _observe_collection_phase(observe_phase, "fetch")
         deadline = min(monotonic() + 43, deadline_at or float("inf"))
         checkpoint_key = source.get("source_key")
-        if ((checkpoint_key == "discover_halifax_va" or checkpoint_key in linked_description_profiles)
+        if ((checkpoint_key in ("discover_halifax_va", "visit_atlantic_city_nj", "noyes_arts_atlantic_city_nj", "atlantic_city_municipal_nj")
+                or checkpoint_key in linked_description_profiles)
                 and collection_context is not None
                 and type(source.get("fetch_checkpoint_version")) is int
                 and source["fetch_checkpoint_version"] == 1):
             preview_chunk = (_preview_halifax_chunk if checkpoint_key == "discover_halifax_va"
+                             else _preview_visit_atlantic_chunk if checkpoint_key == "visit_atlantic_city_nj"
+                             else _preview_atlantic_community_chunk if checkpoint_key in (
+                                 "noyes_arts_atlantic_city_nj", "atlantic_city_municipal_nj")
                              else _preview_linked_description_chunk)
             output = preview_chunk(
                 source, pacing, collection_context=collection_context, deadline_at=deadline,
@@ -1873,3 +1955,4 @@ def collect_bulk_previews(max_sources=15, concurrency=3, deadline_seconds=48) ->
                 for key in ("complete", "failed", "staged"):
                     result[key] += item[key]
     return result
+

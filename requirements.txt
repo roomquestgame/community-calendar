@@ -2,6 +2,7 @@
 # Keep the original Udell Python pipeline and adapters; no TS scraping rewrite.
 beautifulsoup4==4.15.0
 lxml==6.1.3
+lzstring==1.0.4
 html5lib==1.1
 pytz==2026.5
 requests==2.34.2

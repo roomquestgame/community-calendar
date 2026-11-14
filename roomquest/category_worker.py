@@ -56,6 +56,23 @@ _ERROR_CODES = frozenset(('database_unavailable', 'staging_deadline',
     'rockhouse_detail_identity_mismatch', 'rockhouse_detail_structure_missing',
     'invalid_downtown_norfolk_detail_identity', 'invalid_downtown_norfolk_detail_content',
     'invalid_sandler_detail_identity', 'invalid_sandler_detail_content',
+    'unregistered_visit_atlantic_city', 'visit_atlantic_checkpoint_invalid',
+    'visit_atlantic_checkpoint_required', 'visit_atlantic_checkpoint_size_limit',
+    'visit_atlantic_description_limit', 'visit_atlantic_detail_dates',
+    'visit_atlantic_detail_identity', 'visit_atlantic_detail_structure',
+    'visit_atlantic_duplicate_occurrence', 'visit_atlantic_event_limit',
+    'visit_atlantic_manifest_limit', 'visit_atlantic_sitemap_invalid',
+    'noyes_checkpoint_invalid', 'noyes_checkpoint_size_limit',
+    'publisher_detail_limit', 'publisher_next_event_cycle',
+    'publisher_calendar_identity_changed', 'publisher_calendar_date_missing',
+    'publisher_event_detail_changed', 'publisher_calendar_link_changed',
+    'publisher_event_time_changed', 'invalid_event_end',
+    'publisher_next_event_changed', 'publisher_event_identity_changed',
+    'publisher_description_limit', 'unregistered_atlantic_city_community_source',
+    'municipal_calendar_limit', 'municipal_calendar_identity_changed',
+    'municipal_event_identity_changed', 'municipal_event_schedule_changed',
+    'municipal_checkpoint_invalid', 'municipal_checkpoint_size_limit',
+    'publisher_checkpoint_required',
     'unregistered_discover_halifax', 'invalid_html_event_payload',
     'collector_not_configured', 'unsupported_collector_rpc', 'unsupported_category',
     'source_parse_error', 'invalid_calendar_payload', 'event_schedule_missing',
@@ -177,7 +194,7 @@ def collect_category(category, ticket):
                                 'observe_phase': diagnostics.observe}
                 if category == 'html':
                     process_args['publisher_handoff'] = publisher_handoff
-                    if ((source.get('source_key') == 'discover_halifax_va'
+                    if ((source.get('source_key') in ('discover_halifax_va', 'visit_atlantic_city_nj', 'noyes_arts_atlantic_city_nj', 'atlantic_city_municipal_nj')
                             or source.get('source_key') in LINKED_DESCRIPTION_PROFILES)
                             and type(source.get('fetch_checkpoint_version')) is int
                             and source['fetch_checkpoint_version'] == 1):
