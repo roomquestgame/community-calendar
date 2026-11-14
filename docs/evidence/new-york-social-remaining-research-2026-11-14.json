@@ -1,0 +1,175 @@
+{
+  "observed_date": "2026-11-14",
+  "window_anchor": "2026-11-14T22:58:44.836866+00:00",
+  "scope": "Four existing zero-public New York source repairs only; previously working production sources excluded.",
+  "status": "Complete cached replay of actual public publisher responses through the shared normalizer; production verification is performed separately by the batch deployment.",
+  "implementation": "roomquest/new_york_social_remaining.py",
+  "tests": {
+    "path": "tests/test_new_york_social_remaining.py",
+    "focused_tests_passed": 19
+  },
+  "evidence_files": [
+    "new-york-social-remaining-capture-2026-11-14.json",
+    "new-york-social-venue-points-20261114.json"
+  ],
+  "source_count": 4,
+  "accepted_future_occurrences": 104,
+  "sources": [
+    {
+      "name": "New York Irish Center",
+      "source": {
+        "source_key": "municipal_mapsee_531e3bb7ca6b8a000c88ee80",
+        "feed_url": "https://www.newyorkirishcenter.org/events",
+        "kind": "html",
+        "platform_adapter": "html",
+        "timezone": "America/New_York"
+      },
+      "manifest_count": 10,
+      "reviewed_candidates": 10,
+      "chunk_count": 2,
+      "accepted_future_occurrences": 8,
+      "description_min": 78,
+      "description_max": 899,
+      "rows_with_coordinates": 8,
+      "held_reason_counts": {
+        "new_york_social_location_unresolved": 1,
+        "publisher_schedule_conflict": 1
+      }
+    },
+    {
+      "name": "Brooklyn Repair Café",
+      "source": {
+        "source_key": "municipal_mapsee_de7d26035617ddd2af35f829",
+        "feed_url": "https://www.repaircafe.nyc/upcoming-events",
+        "kind": "html",
+        "platform_adapter": "html",
+        "timezone": "America/New_York"
+      },
+      "manifest_count": 1,
+      "reviewed_candidates": 1,
+      "chunk_count": 1,
+      "accepted_future_occurrences": 1,
+      "description_min": 54,
+      "description_max": 54,
+      "rows_with_coordinates": 1,
+      "held_reason_counts": {}
+    },
+    {
+      "name": "Industry City",
+      "source": {
+        "source_key": "municipal_mapsee_f8b8293b927ebc8172bbc1a9",
+        "feed_url": "https://industrycity.com/events/",
+        "kind": "html",
+        "platform_adapter": "html",
+        "timezone": "America/New_York"
+      },
+      "manifest_count": 37,
+      "reviewed_candidates": 37,
+      "chunk_count": 5,
+      "accepted_future_occurrences": 30,
+      "description_min": 123,
+      "description_max": 3355,
+      "rows_with_coordinates": 30,
+      "held_reason_counts": {
+        "existing_direct_sake_source": 5,
+        "publisher_schedule_conflict": 2
+      }
+    },
+    {
+      "name": "Brooklyn Community Pride Center",
+      "source": {
+        "source_key": "municipal_mapsee_8944f57397b034b9df390cd7",
+        "feed_url": "https://www.lgbtbrooklyn.org/calendar",
+        "kind": "html",
+        "platform_adapter": "html",
+        "timezone": "America/New_York"
+      },
+      "manifest_count": 329,
+      "reviewed_candidates": 329,
+      "chunk_count": 28,
+      "accepted_future_occurrences": 65,
+      "description_min": 52,
+      "description_max": 2285,
+      "rows_with_coordinates": 65,
+      "held_reason_counts": {
+        "publisher_event_not_active": 254,
+        "no_available_appointments": 1,
+        "not_in_person_or_unpublished": 8,
+        "no_available_future_occurrence": 1
+      }
+    }
+  ],
+  "source_notes": {
+    "municipal_mapsee_531e3bb7ca6b8a000c88ee80": "Ordinary Squarespace HTML detail hydration. Center street verified by publisher-owned Humanitix and exact NYC PAD. Offsite outing lacks a departure address; Christmas native clock conflicts with linked Humanitix, so both held.",
+    "municipal_mapsee_de7d26035617ddd2af35f829": "Complete normal Squarespace listing body; Another World and 629 Nostrand Avenue are explicit in the event. Full Brooklyn/NY/ZIP and exact point corroborated by the venue and NYC PAD.",
+    "municipal_mapsee_f8b8293b927ebc8172bbc1a9": "Real advertised TEC REST feed has full descriptions but empty structured venues and an incorrect UTC+0 site timezone. Every accepted detail is checked for its visible local clock and actual tenant-specific street. Explicit native weekdays or next-year dates are preserved. Five direct Sake source duplicates and two future recurrences still advertising November 10 are held.",
+    "municipal_mapsee_8944f57397b034b9df390cd7": "Advertised public sitemap contains1,749 event URLs. Reviewed bounded candidate manifest of 329 includes future recurring-date slugs, all undated slugs and recent updates; all 329 normal event HTML pages hydrated. Rich text longDescription is read in full from native public HTML. Full structured street/city/state/ZIP and two matching publisher coordinate fields verified per event. Canceled/non-active, online, fully booked, expired or blank records are explicit holds."
+  },
+  "primary_corroboration": [
+    {
+      "url": "https://events.humanitix.com/mid-fall-introduction-to-irish-language-beginners-class?c=nyicweb",
+      "purpose": "Publisher-owned full 10-40 Jackson Avenue address",
+      "web_ref": "turn75view0"
+    },
+    {
+      "url": "https://www.repaircafe.nyc/upcoming-events/repair-cafe-brooklyn-2",
+      "purpose": "Complete native Repair Café narrative and actual 629 Nostrand Avenue event street",
+      "web_ref": "turn75view1"
+    },
+    {
+      "url": "https://anotherworld.nyc/",
+      "purpose": "Official venue corroboration 629 Nostrand Avenue, Brooklyn",
+      "web_ref": "turn63view0"
+    },
+    {
+      "url": "https://www.forthamilton.com/upcomingevents",
+      "purpose": "Official tenant corroboration of Industry City local Sunday Sessions 17:30–19:30 and Plain Slice Comedy 19:30–21:30",
+      "web_ref": "turn75view2"
+    },
+    {
+      "url": "https://www.lgbtbrooklyn.org/event-details/heats-brooklyn-transgender-day-of-remembrance-vigil-2026",
+      "purpose": "Public complete BCPC program detail and 1561 Bedford Avenue address",
+      "web_ref": "turn75view3"
+    }
+  ],
+  "robots": [
+    {
+      "source_key": "municipal_mapsee_531e3bb7ca6b8a000c88ee80",
+      "url": "https://www.newyorkirishcenter.org/robots.txt",
+      "sha256": "979d57cd73a9b5d7e92b9baae40f972166dced645262876e0dac9318c5e51dc6",
+      "text": "# Squarespace Robots Txt\n\nUser-agent: AI2Bot\nUser-agent: Ai2Bot-Dolma\nUser-agent: aiHitBot\nUser-agent: Amazonbot\nUser-agent: anthropic-ai\nUser-agent: Applebot-Extended\nUser-agent: Bytespider\nUser-agent: CCBot\nUser-agent: ClaudeBot\nUser-agent: cohere-ai\nUser-agent: cohere-training-data-crawler\nUser-agent: DuckAssistBot\nUser-agent: FacebookBot\nUser-agent: Google-Extended\nUser-agent: GoogleOther\nUser-agent: GoogleOther-Image\nUser-agent: GoogleOther-Video\nUser-agent: GPTBot\nUser-agent: img2dataset\nUser-agent: Meta-ExternalAgent\nUser-agent: MyCentralAIScraperBot\nUser-agent: omgili\nUser-agent: omgilibot\nUser-agent: Quora-Bot\nUser-agent: TikTokSpider\nUser-agent: YouBot\nUser-agent: AdsBot-Google\nUser-agent: AdsBot-Google-Mobile\nUser-agent: AdsBot-Google-Mobile-Apps\nUser-agent: *\nDisallow: /config\nDisallow: /search\nDisallow: /account$\nDisallow: /account/\nDisallow: /commerce/digital-download/\nDisallow: /api/\nAllow: /api/ui-extensions/\nDisallow: /static/\nDisallow:/*?author=*\nDisallow:/*&author=*\nDisallow:/*?tag=*\nDisallow:/*&tag=*\nDisallow:/*?month=*\nDisallow:/*&month=*\nDisallow:/*?view=*\nDisallow:/*&view=*\nDisallow:/*?format=json\nDisallow:/*&format=json\nDisallow:/*?format=page-context\nDisallow:/*&format=page-context\nDisallow:/*?format=main-content\nDisallow:/*&format=main-content\nDisallow:/*?format=json-pretty\nDisallow:/*&format=json-pretty\nDisallow:/*?format=ical\nDisallow:/*&format=ical\nDisallow:/*?reversePaginate=*\nDisallow:/*&reversePaginate=*\n\nSitemap: https://www.newyorkirishcenter.org/sitemap.xml\n"
+    },
+    {
+      "source_key": "municipal_mapsee_de7d26035617ddd2af35f829",
+      "url": "https://www.repaircafe.nyc/robots.txt",
+      "sha256": "5a00862d385f7cb1ed6fd64232e636bab312ac7840e4876d3b84a79368bf9211",
+      "text": "# Squarespace Robots Txt\n\nUser-agent: AI2Bot\nUser-agent: Ai2Bot-Dolma\nUser-agent: aiHitBot\nUser-agent: Amazonbot\nUser-agent: anthropic-ai\nUser-agent: Applebot-Extended\nUser-agent: Bytespider\nUser-agent: CCBot\nUser-agent: ClaudeBot\nUser-agent: cohere-ai\nUser-agent: cohere-training-data-crawler\nUser-agent: DuckAssistBot\nUser-agent: FacebookBot\nUser-agent: Google-Extended\nUser-agent: GoogleOther\nUser-agent: GoogleOther-Image\nUser-agent: GoogleOther-Video\nUser-agent: GPTBot\nUser-agent: img2dataset\nUser-agent: Meta-ExternalAgent\nUser-agent: MyCentralAIScraperBot\nUser-agent: omgili\nUser-agent: omgilibot\nUser-agent: Quora-Bot\nUser-agent: TikTokSpider\nUser-agent: YouBot\nUser-agent: AdsBot-Google\nUser-agent: AdsBot-Google-Mobile\nUser-agent: AdsBot-Google-Mobile-Apps\nUser-agent: *\nDisallow: /config\nDisallow: /search\nDisallow: /account$\nDisallow: /account/\nDisallow: /commerce/digital-download/\nDisallow: /api/\nAllow: /api/ui-extensions/\nDisallow: /static/\nDisallow:/*?author=*\nDisallow:/*&author=*\nDisallow:/*?tag=*\nDisallow:/*&tag=*\nDisallow:/*?month=*\nDisallow:/*&month=*\nDisallow:/*?view=*\nDisallow:/*&view=*\nDisallow:/*?format=json\nDisallow:/*&format=json\nDisallow:/*?format=page-context\nDisallow:/*&format=page-context\nDisallow:/*?format=main-content\nDisallow:/*&format=main-content\nDisallow:/*?format=json-pretty\nDisallow:/*&format=json-pretty\nDisallow:/*?format=ical\nDisallow:/*&format=ical\nDisallow:/*?reversePaginate=*\nDisallow:/*&reversePaginate=*\n\nSitemap: https://www.repaircafe.nyc/sitemap.xml\n"
+    },
+    {
+      "source_key": "municipal_mapsee_f8b8293b927ebc8172bbc1a9",
+      "url": "https://industrycity.com/robots.txt",
+      "sha256": "16ceb5ee3e0dc13aa9adf31a3ebbe45a1d965b8c2b9f72eaf84e5911e140ed95",
+      "text": "User-agent: *\nAllow: /\n"
+    },
+    {
+      "source_key": "municipal_mapsee_8944f57397b034b9df390cd7",
+      "url": "https://www.lgbtbrooklyn.org/robots.txt",
+      "sha256": "77b750e1c34921441914872ad121cb453278e58cf6afcc3e3f59d83d9c87bf93",
+      "text": "User-agent: *\nAllow: /\nDisallow: *?lightbox=\n\n# Optimization for Google Ads Bot\nUser-agent: AdsBot-Google-Mobile\nUser-agent: AdsBot-Google\nDisallow: /_partials*\nDisallow: /pro-gallery-webapp/v1/galleries/*\n\n# Block PetalBot\nUser-agent: PetalBot\nDisallow: /\n\n# Crawl delay for overly enthusiastic bots\nUser-agent: dotbot\nCrawl-delay: 10\nUser-agent: AhrefsBot\nCrawl-delay: 10\n\nSitemap: https://www.lgbtbrooklyn.org/sitemap.xml\n\n# Auto generated, go to SEO Tools > Robots.txt Editor to change this"
+    }
+  ],
+  "additional_discovery_holds": [
+    {
+      "name": "Brooklyn Pride Inc",
+      "url": "https://brooklynpride.org/events",
+      "status": "Not implemented: 0 upcoming and 30 past June 2026 entries. Separate organization from Brooklyn Community Pride Center.",
+      "web_ref": "turn58view2"
+    }
+  ],
+  "transport_validation": {
+    "research": "Ordinary unauthenticated public HTTPS GET captures, publisher robots checked before selecting routes; bounded response sizes and paced requests.",
+    "production": "Every collector call uses the injected guarded fetch with respect_robots=True, exact allowed hosts and deadline; local guarded fetch DNS is unavailable in this workspace, so cached replay is not presented as a production transport test."
+  },
+  "all_accepted_rows_have_full_description_street_and_coordinates": true,
+  "production_verification": "Pending separate consolidated release verification; this research record does not claim production publication."
+}

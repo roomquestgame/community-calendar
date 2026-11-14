@@ -1,0 +1,934 @@
+{
+  "captured_at": "2026-11-14T22:47:00+00:00",
+  "window_start": "2026-11-14",
+  "window_end": "2027-01-13",
+  "scope": "Remaining zero-public repairs and new sources only; no classifier or taxonomy changes.",
+  "verification": "Publisher HTTP capture with production User-Agent and robots checks, then actual collector replay. Local production DNS gate is unavailable, so these are not production transport/end-to-end assertions. Shared DNS/robots/allowed-host checks are unchanged.",
+  "data_user_agent": "RoomQuestCommunityCalendar/0.2 (+https://roomquestapp.vercel.app/)",
+  "robots_user_agent": "RoomQuestCommunityCalendar/0.1 (community-event research)",
+  "accepted_total": 66,
+  "profiles": [
+    {
+      "source": {
+        "source_key": "municipal_mapsee_8ada9fb25b90788ab8a89a73",
+        "publisher_name": "Commonpoint public community events",
+        "feed_url": "https://www.commonpoint.org",
+        "kind": "html",
+        "platform_adapter": "html",
+        "timezone": "America/New_York"
+      },
+      "accepted_count": 10,
+      "description_min": 495,
+      "description_max": 816,
+      "unique_streets": [
+        "1665 Hoe Ave, The Bronx, NY 10460",
+        "58-20 Little Neck Parkway, Little Neck, NY 11362",
+        "58-25 Little Neck Parkway, Little Neck, NY 11362"
+      ],
+      "method": "Existing TEC/parse_tribe reused; categories=4 public Event filter, explicit 50/page and complete bounded pagination, full native description restored.",
+      "primary_evidence": [
+        {
+          "url": "https://www.commonpoint.org/calendar?hide_subsequent_recurrences=1",
+          "ref_id": "turn61search0"
+        },
+        {
+          "url": "https://www.commonpoint.org/wp-json/tribe/events/v1/events?per_page=50&start_date=2026-11-14&end_date=2027-01-13&categories=4&page=1",
+          "evidence": "Direct publisher API body commonpoint-events.body: full descriptions and structured venue street fields."
+        },
+        {
+          "url": "https://www.commonpoint.org/wp-json/tribe/events/v1/categories?per_page=100",
+          "evidence": "Native Event category id 4 is separate from Class id 6."
+        }
+      ],
+      "holds": [
+        {
+          "id": "145501",
+          "reason": "publisher schedule conflict",
+          "detail": "Hanukkah Festival API starts 01:00, while full prose explicitly says 1–3pm; not published as a fourteen-hour family event."
+        },
+        {
+          "reason": "enrolled class sessions outside selected public Event category",
+          "detail": "Unfiltered two-month feed has 1,863 records / 38 pages. Public Event filter has 11 records / one page; no arbitrary page truncation."
+        }
+      ],
+      "checkpoint_required": false,
+      "previous_registration": {
+        "id": 4370,
+        "source_key": "municipal_mapsee_8ada9fb25b90788ab8a89a73",
+        "publisher_name": "Commonpoint Queens Central Queens",
+        "kind": "json",
+        "platform_adapter": "wordpress",
+        "feed_url": "https://www.commonpoint.org",
+        "approval": "paused",
+        "health": "disabled",
+        "intake_reason": "pagination_limit",
+        "stage_future_count": 0,
+        "coverage_enabled": true,
+        "coverage_scope": "custom",
+        "active_public": 0
+      }
+    },
+    {
+      "source": {
+        "source_key": "municipal_mapsee_59cd82df6a4f146d4b15acec",
+        "publisher_name": "NYU Events — Open to the Public",
+        "feed_url": "https://events.nyu.edu/",
+        "kind": "html",
+        "platform_adapter": "html",
+        "timezone": "America/New_York"
+      },
+      "accepted_count": 36,
+      "description_min": 254,
+      "description_max": 3828,
+      "unique_streets": [
+        "1 Washington Square North, New York, NY 10003",
+        "105 East 17th Street, New York, NY 10003",
+        "15 East 84th Street, New York, NY 10028",
+        "20 Cooper Square, New York, NY 10003",
+        "238 Thompson Street, New York, NY 10012",
+        "24 West 12th Street, New York, NY 10011",
+        "36 East 8th Street, New York, NY 10003",
+        "566 LaGuardia Place, New York, NY 10012"
+      ],
+      "method": "Official documented LiveWhale JSON v2 with explicit response_fields=description,summary,location,event_types,status,custom_room_number; full native description required, distinct intro/cost preserved; two-page bounded metadata check.",
+      "primary_evidence": [
+        {
+          "url": "https://events.nyu.edu/",
+          "evidence": "Official LiveWhale calendar and full JSON event/location metadata."
+        },
+        {
+          "url": "https://support.livewhale.com/live/blurbs/json-api",
+          "ref_id": "turn65search0"
+        },
+        {
+          "url": "https://nyuskirball.org/about/visit/",
+          "ref_id": "turn67search4"
+        },
+        {
+          "url": "https://apa.nyu.edu/venue/20-cooper-square/",
+          "ref_id": "turn67search0"
+        },
+        {
+          "url": "https://www.casaitaliananyu.org/",
+          "ref_id": "turn67search8"
+        },
+        {
+          "url": "https://isaw.nyu.edu/about/contact-us",
+          "ref_id": "turn68search3"
+        },
+        {
+          "url": "https://apply.socialwork.nyu.edu/portal/landing",
+          "ref_id": "turn68search6"
+        },
+        {
+          "url": "https://www.nyu.edu/content/dam/nyu/univTransportation/images/Saferidestoptable.pdf",
+          "ref_id": "turn68view0"
+        },
+        {
+          "url": "https://sites.google.com/nyu.edu/nyusilverhub/student-spaces",
+          "ref_id": "turn67search5"
+        },
+        {
+          "url": "https://www.bers.nyc.gov/assets/buildings/pdf/ll88.pdf",
+          "ref_id": "turn68search9"
+        }
+      ],
+      "holds": [
+        {
+          "reason": "missing full native description",
+          "detail": "61 of 138 returned API items lack the requested description field. A promotional summary is never substituted."
+        },
+        {
+          "reason": "public in-person NYC scope and reviewed exact venue required",
+          "detail": "Online/foreign/all-day/canceled/internal drop-in sessions, unreviewed locations, and external destination URLs are excluded or held individually."
+        },
+        {
+          "reason": "source identity repair",
+          "detail": "Original ICS splits a UTF-8 em dash across CRLF+space folding. Shared strict transport decodes before ICS unfolding. Official JSON avoids the defect without lossy decoding."
+        }
+      ],
+      "checkpoint_required": false,
+      "previous_registration": {
+        "id": 3550,
+        "source_key": "municipal_mapsee_59cd82df6a4f146d4b15acec",
+        "publisher_name": "NYU Events - Open to the Public (New York)",
+        "kind": "ical",
+        "platform_adapter": "ical",
+        "feed_url": "https://events.nyu.edu/live/ical/events/category/Open%20to%20the%20Public/exclude_category/Athletics",
+        "approval": "paused",
+        "health": "disabled",
+        "intake_reason": "invalid_source_encoding",
+        "stage_future_count": 0,
+        "coverage_enabled": true,
+        "coverage_scope": "custom",
+        "active_public": 0
+      }
+    },
+    {
+      "source": {
+        "source_key": "bronx_museum_ny",
+        "publisher_name": "The Bronx Museum",
+        "feed_url": "https://bronxmuseum.org/events/",
+        "kind": "html",
+        "platform_adapter": "html",
+        "timezone": "America/New_York"
+      },
+      "accepted_count": 3,
+      "description_min": 864,
+      "description_max": 1775,
+      "unique_streets": [
+        "1040 Grand Concourse, Bronx, NY 10456"
+      ],
+      "method": "Native public HTML event cards + maximum eight full detail pages. Exact calendar epoch times and data-address; full .show-content narrative.",
+      "primary_evidence": [
+        {
+          "url": "https://bronxmuseum.org/events/",
+          "ref_id": "turn47search0"
+        },
+        {
+          "url": "https://bronxmuseum.org/visit/",
+          "evidence": "Museum visitor location corroborates native add-to-calendar data-address on each accepted detail."
+        },
+        {
+          "url": "https://bronxmuseum.org/event/winter-wonderland26/",
+          "ref_id": "turn47search1"
+        }
+      ],
+      "holds": [
+        {
+          "reason": "closed/remote or outside rolling 60-day window",
+          "detail": "Listing includes closure cards and February dates; only the three current public timed programs are accepted."
+        }
+      ],
+      "checkpoint_required": false
+    },
+    {
+      "source": {
+        "source_key": "greenlight_bookstore_ny",
+        "publisher_name": "Greenlight Bookstore",
+        "feed_url": "https://greenlightbookstore.com/events",
+        "kind": "html",
+        "platform_adapter": "html",
+        "timezone": "America/New_York"
+      },
+      "accepted_count": 17,
+      "description_min": 492,
+      "description_max": 1738,
+      "unique_streets": [
+        "1027 Flatbush Avenue, Brooklyn, NY 11226",
+        "270 Clermont Avenue, Brooklyn, NY 11205",
+        "30 Lafayette Ave, Brooklyn, NY 11217",
+        "533 Atlantic Ave, Brooklyn, NY 11217",
+        "556 Vanderbilt Ave, Brooklyn, NY 11238",
+        "686 Fulton Street, Brooklyn, NY 11217-1609",
+        "710 Fulton Street, Brooklyn, NY 11217",
+        "733 Fulton St, Brooklyn, NY 11217",
+        "80 Wooster Street, New York, NY 10012",
+        "886 Fulton St, Brooklyn, NY 11238"
+      ],
+      "method": "Official Drupal monthly HTML + native JSON-LD schedule on full details, structured HTML venue components and .event-details__info--body narrative. Three-month manifest, maximum three details per resumable chunk; no partial publication.",
+      "primary_evidence": [
+        {
+          "url": "https://greenlightbookstore.com/events",
+          "ref_id": "turn61search4"
+        },
+        {
+          "url": "https://greenlightbookstore.com/events/2026/12",
+          "evidence": "Official month listing; each listed venue has structured HTML address components."
+        },
+        {
+          "url": "https://greenlightbookstore.com/event/2026-11-17/radical-nonfiction-book-group",
+          "evidence": "Detail HTML confirms Hops Hill at Fulton, 886 Fulton St, Brooklyn, NY 11238. JSON-LD incorrectly concatenates venue and street; HTML is authoritative."
+        }
+      ],
+      "holds": [
+        {
+          "event_url": "https://greenlightbookstore.com/event/2026-12-01/fantasy-book-group",
+          "reason": "explicit Location TBD",
+          "detail": "Held at manifest stage; no bookstore address invented for an undecided off-site meeting."
+        },
+        {
+          "event_url": "https://greenlightbookstore.com/event/2026-11-28/small-business-saturday",
+          "disposition": "held",
+          "reason": "nyc_remaining_schedule_unresolved"
+        },
+        {
+          "event_url": "https://greenlightbookstore.com/event/2026-12-12/fab-fulton-holiday-stroll-festivities-greenlight",
+          "disposition": "held",
+          "reason": "nyc_remaining_schedule_unresolved"
+        }
+      ],
+      "checkpoint_required": true
+    }
+  ],
+  "unique_venues": [
+    {
+      "source_key": "municipal_mapsee_8ada9fb25b90788ab8a89a73",
+      "venue_name": "Tanenbaum Family Pool",
+      "venue_address": "58-25 Little Neck Parkway, Little Neck, NY 11362",
+      "venue_city": "Little Neck",
+      "lat": null,
+      "lng": null,
+      "evidence_url": "https://www.commonpoint.org/event/free-produce-distribution-with-nyc-aging/2026-12-09"
+    },
+    {
+      "source_key": "municipal_mapsee_8ada9fb25b90788ab8a89a73",
+      "venue_name": "Sam Field Center",
+      "venue_address": "58-20 Little Neck Parkway, Little Neck, NY 11362",
+      "venue_city": "Little Neck",
+      "lat": null,
+      "lng": null,
+      "evidence_url": "https://www.commonpoint.org/event/stronger-connections-safer-aging-community-resource-fair"
+    },
+    {
+      "source_key": "municipal_mapsee_8ada9fb25b90788ab8a89a73",
+      "venue_name": "Commonpoint Bronx",
+      "venue_address": "1665 Hoe Ave, The Bronx, NY 10460",
+      "venue_city": "The Bronx",
+      "lat": null,
+      "lng": null,
+      "evidence_url": "https://www.commonpoint.org/event/emergency-preparedness-training-program"
+    },
+    {
+      "source_key": "municipal_mapsee_59cd82df6a4f146d4b15acec",
+      "venue_name": "Skirball Center for the Performing Arts",
+      "venue_address": "566 LaGuardia Place, New York, NY 10012",
+      "venue_city": "New York",
+      "lat": 40.729795,
+      "lng": -73.997749,
+      "evidence_url": "https://events.nyu.edu/event/410408-the-nutcracker-suite-dorrance-dance"
+    },
+    {
+      "source_key": "municipal_mapsee_59cd82df6a4f146d4b15acec",
+      "venue_name": "20 Cooper Square",
+      "venue_address": "20 Cooper Square, New York, NY 10003",
+      "venue_city": "New York",
+      "lat": 40.728,
+      "lng": -73.9914,
+      "evidence_url": "https://events.nyu.edu/event/411732-on-the-road-in-the-city-and-nation"
+    },
+    {
+      "source_key": "municipal_mapsee_59cd82df6a4f146d4b15acec",
+      "venue_name": "Cantor Film Center",
+      "venue_address": "36 East 8th Street, New York, NY 10003",
+      "venue_city": "New York",
+      "lat": 40.7312,
+      "lng": -73.9944,
+      "evidence_url": "https://events.nyu.edu/event/412529-screening-anna-magnani-the-untold-story"
+    },
+    {
+      "source_key": "municipal_mapsee_59cd82df6a4f146d4b15acec",
+      "venue_name": "Global Center for Academic and Spiritual Life",
+      "venue_address": "238 Thompson Street, New York, NY 10012",
+      "venue_city": "New York",
+      "lat": 40.7299,
+      "lng": -73.9982,
+      "evidence_url": "https://events.nyu.edu/event/408427-nyu-silver-alumni-honors"
+    },
+    {
+      "source_key": "municipal_mapsee_59cd82df6a4f146d4b15acec",
+      "venue_name": "Institute for the Study of the Ancient World (ISAW)",
+      "venue_address": "15 East 84th Street, New York, NY 10028",
+      "venue_city": "New York",
+      "lat": 40.78,
+      "lng": -73.9603,
+      "evidence_url": "https://events.nyu.edu/event/409485-isaw-lecture-iron-age-kingdom-in-anatolia"
+    },
+    {
+      "source_key": "municipal_mapsee_59cd82df6a4f146d4b15acec",
+      "venue_name": "Casa Italiana",
+      "venue_address": "24 West 12th Street, New York, NY 10011",
+      "venue_city": "New York",
+      "lat": 40.735,
+      "lng": -73.9958,
+      "evidence_url": "https://events.nyu.edu/event/412534-roundtable-italian-feminisms"
+    },
+    {
+      "source_key": "municipal_mapsee_59cd82df6a4f146d4b15acec",
+      "venue_name": "NYU Silver School of Social Work",
+      "venue_address": "1 Washington Square North, New York, NY 10003",
+      "venue_city": "New York",
+      "lat": 40.731043,
+      "lng": -73.995704,
+      "evidence_url": "https://events.nyu.edu/event/409133-fall-commissioner-speaker-series-nyc-doc"
+    },
+    {
+      "source_key": "municipal_mapsee_59cd82df6a4f146d4b15acec",
+      "venue_name": "Main Event Space, Rm. 101, 105 East 17th Street",
+      "venue_address": "105 East 17th Street, New York, NY 10003",
+      "venue_city": "New York",
+      "lat": 40.736399,
+      "lng": -73.988013,
+      "evidence_url": "https://events.nyu.edu/event/412470-policy-forum-governing-for-safe-and-abundant"
+    },
+    {
+      "source_key": "bronx_museum_ny",
+      "venue_name": "The Bronx Museum",
+      "venue_address": "1040 Grand Concourse, Bronx, NY 10456",
+      "venue_city": "Bronx",
+      "lat": null,
+      "lng": null,
+      "evidence_url": "https://bronxmuseum.org/event/winter-wonderland26/"
+    },
+    {
+      "source_key": "greenlight_bookstore_ny",
+      "venue_name": "Brooklyn Academy of Music",
+      "venue_address": "30 Lafayette Ave, Brooklyn, NY 11217",
+      "venue_city": "Brooklyn",
+      "lat": null,
+      "lng": null,
+      "evidence_url": "https://greenlightbookstore.com/event/2026-11-14/keith-mcdermott-bam"
+    },
+    {
+      "source_key": "greenlight_bookstore_ny",
+      "venue_name": "Greenlight Bookstore",
+      "venue_address": "686 Fulton Street, Brooklyn, NY 11217-1609",
+      "venue_city": "Brooklyn",
+      "lat": null,
+      "lng": null,
+      "evidence_url": "https://greenlightbookstore.com/event/2026-12-12/holidays-after-hours"
+    },
+    {
+      "source_key": "greenlight_bookstore_ny",
+      "venue_name": "Hops Hill at Fulton",
+      "venue_address": "886 Fulton St, Brooklyn, NY 11238",
+      "venue_city": "Brooklyn",
+      "lat": null,
+      "lng": null,
+      "evidence_url": "https://greenlightbookstore.com/event/2026-11-17/radical-nonfiction-book-group"
+    },
+    {
+      "source_key": "greenlight_bookstore_ny",
+      "venue_name": "Hops Hill at Atlantic",
+      "venue_address": "533 Atlantic Ave, Brooklyn, NY 11217",
+      "venue_city": "Brooklyn",
+      "lat": null,
+      "lng": null,
+      "evidence_url": "https://greenlightbookstore.com/event/2026-12-15/fiction-book-group"
+    },
+    {
+      "source_key": "greenlight_bookstore_ny",
+      "venue_name": "Bar Heretic",
+      "venue_address": "270 Clermont Avenue, Brooklyn, NY 11205",
+      "venue_city": "Brooklyn",
+      "lat": null,
+      "lng": null,
+      "evidence_url": "https://greenlightbookstore.com/event/2026-11-18/fork-greene-friendsgiving-potluck-yours-truly-brooklyn"
+    },
+    {
+      "source_key": "greenlight_bookstore_ny",
+      "venue_name": "Black Forest Brooklyn",
+      "venue_address": "733 Fulton St, Brooklyn, NY 11217",
+      "venue_city": "Brooklyn",
+      "lat": null,
+      "lng": null,
+      "evidence_url": "https://greenlightbookstore.com/event/2026-12-16/literature-translation-book-group"
+    },
+    {
+      "source_key": "greenlight_bookstore_ny",
+      "venue_name": "BierWax",
+      "venue_address": "556 Vanderbilt Ave, Brooklyn, NY 11238",
+      "venue_city": "Brooklyn",
+      "lat": null,
+      "lng": null,
+      "evidence_url": "https://greenlightbookstore.com/event/2026-12-16/black-lit-book-group"
+    },
+    {
+      "source_key": "greenlight_bookstore_ny",
+      "venue_name": "Kings Theatre",
+      "venue_address": "1027 Flatbush Avenue, Brooklyn, NY 11226",
+      "venue_city": "Brooklyn",
+      "lat": null,
+      "lng": null,
+      "evidence_url": "https://greenlightbookstore.com/event/2026-11-20/evening-david-sedaris-kings-theatre"
+    },
+    {
+      "source_key": "greenlight_bookstore_ny",
+      "venue_name": "The RealReal Store",
+      "venue_address": "80 Wooster Street, New York, NY 10012",
+      "venue_city": "New York",
+      "lat": null,
+      "lng": null,
+      "evidence_url": "https://greenlightbookstore.com/event/2026-12-01/book-launch-kristen-naiman-emilia-petrarca-realreal-store"
+    },
+    {
+      "source_key": "greenlight_bookstore_ny",
+      "venue_name": "DSK Brooklyn",
+      "venue_address": "710 Fulton Street, Brooklyn, NY 11217",
+      "venue_city": "Brooklyn",
+      "lat": null,
+      "lng": null,
+      "evidence_url": "https://greenlightbookstore.com/event/2026-12-08/squawkin-sports-mike-sielski-and-lauren-theisen"
+    }
+  ],
+  "unique_streets": [
+    "1 Washington Square North, New York, NY 10003",
+    "1027 Flatbush Avenue, Brooklyn, NY 11226",
+    "1040 Grand Concourse, Bronx, NY 10456",
+    "105 East 17th Street, New York, NY 10003",
+    "15 East 84th Street, New York, NY 10028",
+    "1665 Hoe Ave, The Bronx, NY 10460",
+    "20 Cooper Square, New York, NY 10003",
+    "238 Thompson Street, New York, NY 10012",
+    "24 West 12th Street, New York, NY 10011",
+    "270 Clermont Avenue, Brooklyn, NY 11205",
+    "30 Lafayette Ave, Brooklyn, NY 11217",
+    "36 East 8th Street, New York, NY 10003",
+    "533 Atlantic Ave, Brooklyn, NY 11217",
+    "556 Vanderbilt Ave, Brooklyn, NY 11238",
+    "566 LaGuardia Place, New York, NY 10012",
+    "58-20 Little Neck Parkway, Little Neck, NY 11362",
+    "58-25 Little Neck Parkway, Little Neck, NY 11362",
+    "686 Fulton Street, Brooklyn, NY 11217-1609",
+    "710 Fulton Street, Brooklyn, NY 11217",
+    "733 Fulton St, Brooklyn, NY 11217",
+    "80 Wooster Street, New York, NY 10012",
+    "886 Fulton St, Brooklyn, NY 11238"
+  ],
+  "long_description_baselines": [
+    {
+      "source_key": "municipal_mapsee_59cd82df6a4f146d4b15acec",
+      "id": "403629",
+      "title": "ISAW Exhibition Lecture: Portable Prayers: Objects, Adornment, and Devotion in Jewish Antiquity",
+      "event_url": "https://events.nyu.edu/event/403629-isaw-exhibition-lecture-portable-prayers-objects-ador",
+      "starts_at": "2026-12-02T22:30:00+00:00",
+      "description_length": 3828,
+      "description_sha256": "bcfb38dca81e2cd645ff447dc83e6bd25cd0c52291e70fa88cb0a8f9ef318b88"
+    },
+    {
+      "source_key": "municipal_mapsee_59cd82df6a4f146d4b15acec",
+      "id": "409485",
+      "title": "ISAW Lecture: “Reconsidering the Rise of a Newly Discovered Iron Age Kingdom in Anatolia: Great King Hartapu and the Türkmen-Karahöyük Archaeological Project”",
+      "event_url": "https://events.nyu.edu/event/409485-isaw-lecture-iron-age-kingdom-in-anatolia",
+      "starts_at": "2026-12-14T22:30:00+00:00",
+      "description_length": 3597,
+      "description_sha256": "9891a0d9c3d6e6a324227f5bdd3883c8a1140814ea4f936e3dbb03e9d1fbced8"
+    },
+    {
+      "source_key": "municipal_mapsee_59cd82df6a4f146d4b15acec",
+      "id": "404061",
+      "title": "ISAW Expanding the Ancient World Workshop: “Picturing Ancient People: Gender in Ancient Greek Vase-Painting”",
+      "event_url": "https://events.nyu.edu/event/404061-isaw-etaw-gender-in-ancient-greek-vase-painting",
+      "starts_at": "2026-11-17T22:30:00+00:00",
+      "description_length": 3345,
+      "description_sha256": "8ef4f3a0685ac7ce68e9fdcee3a6f8fe7cbc97af3d00cba2127ab7814aef0746"
+    },
+    {
+      "source_key": "municipal_mapsee_59cd82df6a4f146d4b15acec",
+      "id": "404062",
+      "title": "ISAW Expanding the Ancient World Workshop: “The Bones We Leave Behind: Bioarchaeology and How to Teach It”",
+      "event_url": "https://events.nyu.edu/event/404062-isaw-etaw-bioarchaeology-and-how-to-teach-it",
+      "starts_at": "2026-12-03T22:30:00+00:00",
+      "description_length": 3109,
+      "description_sha256": "51f062e75c18f6d17ea348d82883194a7c40eab4779e40161a79be7a341dc00d"
+    }
+  ],
+  "held_sources": [
+    {
+      "publisher_name": "Queens Museum",
+      "calendar_url": "https://queensmuseum.org/calendar/?filter=event&sort=date",
+      "reason": "robots endpoint HTTP 202 under production identity; collector cannot establish permission. No bypass attempted. Official park/building address also lacks a numbered street."
+    },
+    {
+      "publisher_name": "New York Transit Museum",
+      "calendar_url": "https://www.nytransitmuseum.org/programs/",
+      "reason": "All 27 current TEC records have blank descriptions. Full detail hydration and mixed museum/remote/off-site meeting resolution still required; no incomplete row submitted."
+    }
+  ],
+  "robots_and_http_evidence": [
+    {
+      "key": "commonpoint",
+      "url": "https://www.commonpoint.org/wp-json/tribe/events/v1/events?per_page=100&start_date=2026-11-14&end_date=2027-01-13&page=1",
+      "captured_at": "2026-11-14T22:35:03.726708+00:00",
+      "robots_status": 200,
+      "robots_allowed": true,
+      "local_transport_note": "Direct proxy capture with production identity; production DNS validation unavailable locally",
+      "http_status": 200,
+      "bytes": 191206,
+      "content_type": "application/json; charset=UTF-8",
+      "encoding": "UTF-8",
+      "sha256": "71a9dd6f7b18dfbced3e8b99f2ace97876000ecfba4656f8d4bbda7b1b385bbc",
+      "redirect": null,
+      "declared_decode": "ok",
+      "total": 1863,
+      "total_pages": 38,
+      "returned": 50,
+      "descriptions_blank": 2,
+      "audit_file": "capture-audit.json"
+    },
+    {
+      "key": "nyu",
+      "url": "https://events.nyu.edu/live/ical/events/category/Open%20to%20the%20Public/exclude_category/Athletics",
+      "captured_at": "2026-11-14T22:35:03.454871+00:00",
+      "robots_status": 200,
+      "robots_allowed": true,
+      "local_transport_note": "Direct proxy capture with production identity; production DNS validation unavailable locally",
+      "http_status": 200,
+      "bytes": 411752,
+      "content_type": "text/calendar;charset=UTF-8",
+      "encoding": "UTF-8",
+      "sha256": "186f2e17a093dad24059b24dbb546b450c3701e3063dc3191e835d295723ca2a",
+      "redirect": null,
+      "declared_decode": "invalid",
+      "invalid_offset": 32254,
+      "invalid_bytes": "3c6c693e3c7374726f6e673e4365727461696e74793c2f7374726f6e673ee20d0a20809474686520627261696e27732063726176696e6720666f7220",
+      "audit_file": "capture-audit.json"
+    },
+    {
+      "key": "bronx",
+      "url": "https://bronxmuseum.org/events/",
+      "captured_at": "2026-11-14T22:35:03.254492+00:00",
+      "robots_status": 200,
+      "robots_allowed": true,
+      "local_transport_note": "Direct proxy capture with production identity; production DNS validation unavailable locally",
+      "http_status": 200,
+      "bytes": 89200,
+      "content_type": "text/html; charset=UTF-8",
+      "encoding": "UTF-8",
+      "sha256": "8f69de2ad975fb5d708149f64a5a990a52d9f5bd98ec4385d93edd4f559c1a47",
+      "redirect": null,
+      "declared_decode": "ok",
+      "audit_file": "capture-audit.json"
+    },
+    {
+      "key": "queens",
+      "url": "https://queensmuseum.org/calendar/?filter=event&sort=date",
+      "captured_at": "2026-11-14T22:35:04.270208+00:00",
+      "robots_status": 202,
+      "robots_allowed": false,
+      "local_transport_note": "Direct proxy capture with production identity; production DNS validation unavailable locally",
+      "audit_file": "capture-audit.json"
+    },
+    {
+      "key": "greenlight",
+      "url": "https://greenlightbookstore.com/events",
+      "captured_at": "2026-11-14T22:35:07.748046+00:00",
+      "robots_status": 200,
+      "robots_allowed": true,
+      "local_transport_note": "Direct proxy capture with production identity; production DNS validation unavailable locally",
+      "http_status": 200,
+      "bytes": 140568,
+      "content_type": "text/html; charset=UTF-8",
+      "encoding": "UTF-8",
+      "sha256": "00bece4682e33759647bba0360d780c637e90ad03b488d912c6c93a335186323",
+      "redirect": null,
+      "declared_decode": "ok",
+      "audit_file": "capture-audit.json"
+    },
+    {
+      "key": "transit",
+      "url": "https://www.nytransitmuseum.org/wp-json/tribe/events/v1/events?per_page=100&start_date=2026-11-14&end_date=2027-01-13&page=1",
+      "captured_at": "2026-11-14T22:35:11.941233+00:00",
+      "robots_status": 200,
+      "robots_allowed": true,
+      "local_transport_note": "Direct proxy capture with production identity; production DNS validation unavailable locally",
+      "http_status": 200,
+      "bytes": 156138,
+      "content_type": "application/json; charset=UTF-8",
+      "encoding": "UTF-8",
+      "sha256": "b7a6df4398715e7acd0a115f81ae07c09768efbca0ca8a14ee6a1ff485696af6",
+      "redirect": null,
+      "declared_decode": "ok",
+      "total": 27,
+      "total_pages": 1,
+      "returned": 27,
+      "descriptions_blank": 27,
+      "audit_file": "capture-audit.json"
+    },
+    {
+      "key": "commonpoint-categories",
+      "url": "https://www.commonpoint.org/wp-json/tribe/events/v1/categories?per_page=100",
+      "status": 200,
+      "bytes": 12626,
+      "content_type": "application/json; charset=UTF-8",
+      "redirect": null,
+      "audit_file": "followup-audit.json"
+    },
+    {
+      "key": "commonpoint-calendar",
+      "url": "https://www.commonpoint.org/calendar?hide_subsequent_recurrences=1",
+      "status": 200,
+      "bytes": 218817,
+      "content_type": "text/html; charset=UTF-8",
+      "redirect": null,
+      "audit_file": "followup-audit.json"
+    },
+    {
+      "key": "nyu-json",
+      "url": "https://events.nyu.edu/live/json/events/category/Open%20to%20the%20Public/exclude_category/Athletics",
+      "status": 200,
+      "bytes": 83594,
+      "content_type": "application/json; charset=UTF-8",
+      "redirect": null,
+      "audit_file": "followup-audit.json"
+    },
+    {
+      "key": "nyu-calendar",
+      "url": "https://events.nyu.edu/",
+      "status": 200,
+      "bytes": 259929,
+      "content_type": "text/html; charset=utf-8",
+      "redirect": null,
+      "audit_file": "followup-audit.json"
+    },
+    {
+      "key": "bronx-detail",
+      "url": "https://bronxmuseum.org/event/first-friday-december26/",
+      "status": 200,
+      "bytes": 70086,
+      "content_type": "text/html; charset=UTF-8",
+      "redirect": null,
+      "audit_file": "followup-audit.json"
+    },
+    {
+      "key": "bronx-visit",
+      "url": "https://bronxmuseum.org/visit/",
+      "status": 200,
+      "bytes": 86654,
+      "content_type": "text/html; charset=UTF-8",
+      "redirect": null,
+      "audit_file": "followup-audit.json"
+    },
+    {
+      "key": "greenlight-detail",
+      "url": "https://greenlightbookstore.com/event/2026-11-03/fantasy-book-group",
+      "status": 200,
+      "bytes": 54286,
+      "content_type": "text/html; charset=UTF-8",
+      "redirect": null,
+      "audit_file": "followup-audit.json"
+    },
+    {
+      "key": "greenlight-bookgroup",
+      "url": "https://greenlightbookstore.com/event/2026-11-17/radical-nonfiction-book-group",
+      "status": 200,
+      "bytes": 54651,
+      "content_type": "text/html; charset=UTF-8",
+      "redirect": null,
+      "audit_file": "followup-audit.json"
+    },
+    {
+      "key": "commonpoint-events",
+      "url": "https://www.commonpoint.org/wp-json/tribe/events/v1/events?per_page=50&start_date=2026-11-14&end_date=2027-01-13&categories=4&page=1",
+      "status": 200,
+      "bytes": 165377,
+      "keys": [
+        "events",
+        "rest_url",
+        "total",
+        "total_pages"
+      ],
+      "audit_file": "targeted-audit.json"
+    },
+    {
+      "key": "nyu-full",
+      "url": "https://events.nyu.edu/live/json/events/category/Open%20to%20the%20Public/exclude_category/Athletics/start_date/2026-11-14/end_date/2027-01-13/response_fields/description,summary,location,event_types,status,custom_room_number/image_width/1200",
+      "status": 200,
+      "bytes": 250971,
+      "keys": [
+        "meta",
+        "links",
+        "data"
+      ],
+      "audit_file": "targeted-audit.json"
+    },
+    {
+      "key": "nyu-full-p2",
+      "url": "https://events.nyu.edu/live/json/events/category/Open%20to%20the%20Public/exclude_category/Athletics/start_date/2026-11-14/end_date/2027-01-13/response_fields/description,summary,location,event_types,status,custom_room_number/image_width/1200?page=2",
+      "status": 200,
+      "bytes": 57906,
+      "content_type": "application/json; charset=UTF-8",
+      "audit_file": "detail-audit.json"
+    },
+    {
+      "key": "nyu-places",
+      "url": "https://events.nyu.edu/live/json/places",
+      "status": 200,
+      "bytes": 19793,
+      "content_type": "application/json; charset=UTF-8",
+      "audit_file": "detail-audit.json"
+    },
+    {
+      "key": "greenlight-dec",
+      "url": "https://greenlightbookstore.com/events/2026/12",
+      "status": 200,
+      "bytes": 84549,
+      "content_type": "text/html; charset=UTF-8",
+      "audit_file": "detail-audit.json"
+    },
+    {
+      "key": "greenlight-jan",
+      "url": "https://greenlightbookstore.com/events/2027/01",
+      "status": 200,
+      "bytes": 49694,
+      "content_type": "text/html; charset=UTF-8",
+      "audit_file": "detail-audit.json"
+    },
+    {
+      "key": "bronx-teen",
+      "url": "https://bronxmuseum.org/event/teen-night-december26/",
+      "status": 200,
+      "bytes": 67755,
+      "content_type": "text/html; charset=UTF-8",
+      "audit_file": "detail-audit.json"
+    },
+    {
+      "key": "bronx-family",
+      "url": "https://bronxmuseum.org/event/winter-wonderland26/",
+      "status": 200,
+      "bytes": 68635,
+      "content_type": "text/html; charset=UTF-8",
+      "audit_file": "detail-audit.json"
+    },
+    {
+      "url": "https://greenlightbookstore.com/event/2026-11-14/keith-mcdermott-bam",
+      "capture": "greenlight-event-3cf84dbb7d8a0db3.body",
+      "status": 200,
+      "bytes": 54374,
+      "audit_file": "greenlight-detail-capture.json"
+    },
+    {
+      "url": "https://greenlightbookstore.com/event/2026-11-16/camila-kerwin-mia-warren",
+      "capture": "greenlight-event-6e0c7434d51d12e5.body",
+      "status": 200,
+      "bytes": 54271,
+      "audit_file": "greenlight-detail-capture.json"
+    },
+    {
+      "url": "https://greenlightbookstore.com/event/2026-11-17/brooklyn-chats-jonathan-mahler",
+      "capture": "greenlight-event-4cbddce66ba48e63.body",
+      "status": 200,
+      "bytes": 55097,
+      "audit_file": "greenlight-detail-capture.json"
+    },
+    {
+      "url": "https://greenlightbookstore.com/event/2026-11-17/fiction-book-group",
+      "capture": "greenlight-event-e67fce0cb99533a1.body",
+      "status": 200,
+      "bytes": 54270,
+      "audit_file": "greenlight-detail-capture.json"
+    },
+    {
+      "url": "https://greenlightbookstore.com/event/2026-11-17/radical-nonfiction-book-group",
+      "capture": "greenlight-event-8fd230fb50851189.body",
+      "status": 200,
+      "bytes": 54651,
+      "audit_file": "greenlight-detail-capture.json"
+    },
+    {
+      "url": "https://greenlightbookstore.com/event/2026-11-18/black-lit-book-group",
+      "capture": "greenlight-event-0654bb2ffdfc042a.body",
+      "status": 200,
+      "bytes": 54405,
+      "audit_file": "greenlight-detail-capture.json"
+    },
+    {
+      "url": "https://greenlightbookstore.com/event/2026-11-18/fork-greene-friendsgiving-potluck-yours-truly-brooklyn",
+      "capture": "greenlight-event-3b0045a267da2a68.body",
+      "status": 200,
+      "bytes": 56636,
+      "audit_file": "greenlight-detail-capture.json"
+    },
+    {
+      "url": "https://greenlightbookstore.com/event/2026-11-18/literature-translation-book-group",
+      "capture": "greenlight-event-163d781aa6133b55.body",
+      "status": 200,
+      "bytes": 54711,
+      "audit_file": "greenlight-detail-capture.json"
+    },
+    {
+      "url": "https://greenlightbookstore.com/event/2026-11-20/evening-david-sedaris-kings-theatre",
+      "capture": "greenlight-event-daf0b60d6909baed.body",
+      "status": 200,
+      "bytes": 57428,
+      "audit_file": "greenlight-detail-capture.json"
+    },
+    {
+      "url": "https://greenlightbookstore.com/event/2026-11-28/small-business-saturday",
+      "capture": "greenlight-event-f4bafa361db2e98f.body",
+      "status": 200,
+      "bytes": 50140,
+      "audit_file": "greenlight-detail-capture.json"
+    },
+    {
+      "url": "https://greenlightbookstore.com/event/2026-12-01/book-launch-kristen-naiman-emilia-petrarca-realreal-store",
+      "capture": "greenlight-event-1955d9eb6f49823e.body",
+      "status": 200,
+      "bytes": 51774,
+      "audit_file": "greenlight-detail-capture.json"
+    },
+    {
+      "url": "https://greenlightbookstore.com/event/2026-12-01/fantasy-book-group",
+      "capture": "greenlight-event-da9aec89cd6f4fdc.body",
+      "status": 200,
+      "bytes": 53945,
+      "audit_file": "greenlight-detail-capture.json"
+    },
+    {
+      "url": "https://greenlightbookstore.com/event/2026-12-02/young-adult-book-group",
+      "capture": "greenlight-event-6c51edb38d720382.body",
+      "status": 200,
+      "bytes": 54215,
+      "audit_file": "greenlight-detail-capture.json"
+    },
+    {
+      "url": "https://greenlightbookstore.com/event/2026-12-08/queer-book-group",
+      "capture": "greenlight-event-a3a8936540b73124.body",
+      "status": 200,
+      "bytes": 54121,
+      "audit_file": "greenlight-detail-capture.json"
+    },
+    {
+      "url": "https://greenlightbookstore.com/event/2026-12-08/squawkin-sports-mike-sielski-and-lauren-theisen",
+      "capture": "greenlight-event-eb82a56c6a0bc7f3.body",
+      "status": 200,
+      "bytes": 59645,
+      "audit_file": "greenlight-detail-capture.json"
+    },
+    {
+      "url": "https://greenlightbookstore.com/event/2026-12-12/fab-fulton-holiday-stroll-festivities-greenlight",
+      "capture": "greenlight-event-c496a795ce659341.body",
+      "status": 200,
+      "bytes": 51940,
+      "audit_file": "greenlight-detail-capture.json"
+    },
+    {
+      "url": "https://greenlightbookstore.com/event/2026-12-12/holidays-after-hours",
+      "capture": "greenlight-event-c098820291173baa.body",
+      "status": 200,
+      "bytes": 50296,
+      "audit_file": "greenlight-detail-capture.json"
+    },
+    {
+      "url": "https://greenlightbookstore.com/event/2026-12-15/fiction-book-group",
+      "capture": "greenlight-event-495e12e824f1296e.body",
+      "status": 200,
+      "bytes": 54004,
+      "audit_file": "greenlight-detail-capture.json"
+    },
+    {
+      "url": "https://greenlightbookstore.com/event/2026-12-16/black-lit-book-group",
+      "capture": "greenlight-event-362d1ff33cd13402.body",
+      "status": 200,
+      "bytes": 54381,
+      "audit_file": "greenlight-detail-capture.json"
+    },
+    {
+      "url": "https://greenlightbookstore.com/event/2026-12-16/literature-translation-book-group",
+      "capture": "greenlight-event-e132f771dd7c2c16.body",
+      "status": 200,
+      "bytes": 54902,
+      "audit_file": "greenlight-detail-capture.json"
+    }
+  ],
+  "tests": {
+    "command": "python -m unittest tests.test_new_york_arts_remaining -q",
+    "passed": 14
+  },
+  "production_followup": [
+    "Guardedly migrate the exact existing Commonpoint/NYU registrations; no new duplicate identity.",
+    "Integrate module into existing NYC helper and checkpoint routing; Greenlight requires CHECKPOINT_KEYS and collect_chunk.",
+    "Normalize real Square/Concourse addresses without fabricated street suffixes.",
+    "Verify complete description SHA baselines and structured street/venue points after staging and publication."
+  ]
+}

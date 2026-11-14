@@ -82,12 +82,30 @@ SI_PARKS = {
     # NPS / NASA Night Sky Network identify this park entrance. The event's
     # complete description retains its more precise parking-lot meeting point.
     4741: ("Great Kills Park (park entrance; see meeting directions)", "3270 Hylan Boulevard", "Staten Island", "10306"),
+    # The publisher supplies 420 Cornelia and parking-lot directions. NYC PAD
+    # has only a named-park point, so disclose the meeting-point approximation.
+    5184: ("Wolfe’s Pond Park (approximate meeting point)", "420 Cornelia Ave.", "Staten Island", "10312"),
 }
 POWERHOUSE_VENUES = {
     "/locations/powerhouse/": ("POWERHOUSE Arena", "28 Adams Street", "Brooklyn", "11201"),
     "/locations/powerhouse-at-columbus-circle/": ("Powerhouse at Columbus Circle", "10 Columbus Circle #304", "New York", "10019"),
 }
 SQUARESPACE_SITE = {LATIMER: "611e9f67902c95124eaa0d6e", RICHMOND: "5b24209fda02bc5bf5953ca1"}
+# Exact NYC Planning PAD address points, reviewed against the museums' own
+# visitor addresses. The geocoder returned nearby alternatives; only matching
+# house numbers, streets, Queens neighborhoods and ZIPs were selected.
+REVIEWED_PAD_POINTS = {
+    (MOVING_IMAGE, "Museum of the Moving Image", "36-01 35th Avenue, Astoria, NY 11106"):
+        (40.756305, -73.923916),
+    (QUEENS_FARM, "Queens County Farm Museum", "73-50 Little Neck Parkway, Queens, NY 11004"):
+        (40.748426, -73.720186),
+    (POWERHOUSE, "Powerhouse at Columbus Circle", "10 Columbus Circle #304, New York, NY 10019"):
+        (40.768554, -73.983181),
+}
+REVIEWED_APPROXIMATE_POINTS = {
+    (SI_MUSEUM, "Wolfe’s Pond Park (approximate meeting point)", "420 Cornelia Ave., Staten Island, NY 10312"):
+        (40.51806, -74.19006),
+}
 
 
 def event_url(key, value):
@@ -132,8 +150,13 @@ def reviewed_venue_location(key, venue, address):
             (40.644743798098, -74.102321811388),
         (MATERIALS, "Materials for the Arts", "33-00 Northern Blvd 3rd Floor, Long Island City, NY 11101"):
             (40.751751, -73.931411),
+        # Museum's own directions-page Map link, Google place CID
+        # 12990998295020515734; use marker coordinates, not map viewport center.
+        (SI_MUSEUM, "Staten Island Museum at Snug Harbor", "1000 Richmond Terrace Building A, Staten Island, NY 10301"):
+            (40.6444768, -74.1027563),
     }
-    return points.get((key, venue, address))
+    identity = (key, venue, address)
+    return points.get(identity) or REVIEWED_PAD_POINTS.get(identity) or REVIEWED_APPROXIMATE_POINTS.get(identity)
 
 
 def _held(key, identity, reason):
@@ -184,7 +207,12 @@ def _enrich(key, row, body, image=None):
     if row.get("lat") is not None and row.get("lng") is not None:
         row["location_provenance"] = "publisher_event_venue_coordinates"
     if point := reviewed_venue_location(key, row["venue_name"], row["venue_address"]):
-        row.update(lat=point[0], lng=point[1], location_provenance="reviewed_publisher_venue_coordinates")
+        provenance = ("reviewed_named_park_approximate_meeting_point"
+                      if (key, row["venue_name"], row["venue_address"]) in REVIEWED_APPROXIMATE_POINTS
+                      else "reviewed_nyc_pad_address_point"
+                      if (key, row["venue_name"], row["venue_address"]) in REVIEWED_PAD_POINTS
+                      else "reviewed_publisher_venue_coordinates")
+        row.update(lat=point[0], lng=point[1], location_provenance=provenance)
         if row.get("reason") == "missing_verified_venue_geo":
             row["reason"] = None
     if candidate := photo_url(key, image):

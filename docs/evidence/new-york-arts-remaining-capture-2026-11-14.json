@@ -1,0 +1,1885 @@
+{
+  "captured_at": "2026-11-14T22:47:00+00:00",
+  "window_start": "2026-11-14",
+  "window_end": "2027-01-13",
+  "scope": "Remaining zero-public repairs and new sources only; no classifier or taxonomy changes.",
+  "verification": "Publisher HTTP capture with production User-Agent and robots checks, then actual collector replay. Local production DNS gate is unavailable, so these are not production transport/end-to-end assertions. Shared DNS/robots/allowed-host checks are unchanged.",
+  "data_user_agent": "RoomQuestCommunityCalendar/0.2 (+https://roomquestapp.vercel.app/)",
+  "robots_user_agent": "RoomQuestCommunityCalendar/0.1 (community-event research)",
+  "total_accepted": 66,
+  "sources": [
+    {
+      "source": {
+        "source_key": "municipal_mapsee_8ada9fb25b90788ab8a89a73",
+        "publisher_name": "Commonpoint public community events",
+        "feed_url": "https://www.commonpoint.org",
+        "kind": "html",
+        "platform_adapter": "html",
+        "timezone": "America/New_York"
+      },
+      "accepted_count": 10,
+      "records": [
+        {
+          "id": "10069472",
+          "title": "Free Produce Distribution with NYC Aging",
+          "starts_at": "2026-11-16T18:00:00+00:00",
+          "ends_at": "2026-11-16T22:00:00+00:00",
+          "venue_name": "Tanenbaum Family Pool",
+          "lat": null,
+          "lng": null,
+          "event_url": "https://www.commonpoint.org/event/free-produce-distribution-with-nyc-aging/2026-11-16",
+          "category": "Event",
+          "venue_address": "58-25 Little Neck Parkway, Little Neck, NY 11362",
+          "venue_city": "Little Neck",
+          "reason": "missing_verified_venue_geo",
+          "timezone": "America/New_York",
+          "description": "In collaboration with NYC Aging, the Sam Field Older Adult Center will be organizing free produce distribution events in preparation for the upcoming Fall holidays across the street at our food pantry.\nDistribution will happen from 1-5pm on the following dates:\nMonday, November 16th\nWednesday, November 18th\nMonday, November 23rd\nTuesday, November 24th\nMonday, November 30th\nWednesday, December 2nd\nMonday, December 7th\nWednesday, December 9th\nEligibility:\nAges 60+\nResident of New York City\nID will be required for registration\nLimit one produce bag per week\nPRE-REGISTRATION STONGLY ENCOURAGED – Stop by or call the Sam Field Older Adult Center\nat 718-225-6750 exts. 61233, 61236, 61222, 61231, 61256\nOr call the Tanenbaum Pool Food Pantry 718-428-2077",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_street_pending_geocode",
+          "publisher_categories": [
+            "Event"
+          ],
+          "image_url": "https://www.commonpoint.org/wp-content/uploads/2026/11/Produce-Distribution-V2.png",
+          "description_sha256": "ac41c389c72a4683aa943682d8eed32a40b3473256da33a0fd112904e846e071",
+          "address_evidence": {
+            "source": "publisher event detail or structured native venue fields",
+            "url": "https://www.commonpoint.org/event/free-produce-distribution-with-nyc-aging/2026-11-16"
+          }
+        },
+        {
+          "id": "10069473",
+          "title": "Free Produce Distribution with NYC Aging",
+          "starts_at": "2026-11-18T18:00:00+00:00",
+          "ends_at": "2026-11-18T22:00:00+00:00",
+          "venue_name": "Tanenbaum Family Pool",
+          "lat": null,
+          "lng": null,
+          "event_url": "https://www.commonpoint.org/event/free-produce-distribution-with-nyc-aging/2026-11-18",
+          "category": "Event",
+          "venue_address": "58-25 Little Neck Parkway, Little Neck, NY 11362",
+          "venue_city": "Little Neck",
+          "reason": "missing_verified_venue_geo",
+          "timezone": "America/New_York",
+          "description": "In collaboration with NYC Aging, the Sam Field Older Adult Center will be organizing free produce distribution events in preparation for the upcoming Fall holidays across the street at our food pantry.\nDistribution will happen from 1-5pm on the following dates:\nMonday, November 16th\nWednesday, November 18th\nMonday, November 23rd\nTuesday, November 24th\nMonday, November 30th\nWednesday, December 2nd\nMonday, December 7th\nWednesday, December 9th\nEligibility:\nAges 60+\nResident of New York City\nID will be required for registration\nLimit one produce bag per week\nPRE-REGISTRATION STONGLY ENCOURAGED – Stop by or call the Sam Field Older Adult Center\nat 718-225-6750 exts. 61233, 61236, 61222, 61231, 61256\nOr call the Tanenbaum Pool Food Pantry 718-428-2077",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_street_pending_geocode",
+          "publisher_categories": [
+            "Event"
+          ],
+          "image_url": "https://www.commonpoint.org/wp-content/uploads/2026/11/Produce-Distribution-V2.png",
+          "description_sha256": "ac41c389c72a4683aa943682d8eed32a40b3473256da33a0fd112904e846e071",
+          "address_evidence": {
+            "source": "publisher event detail or structured native venue fields",
+            "url": "https://www.commonpoint.org/event/free-produce-distribution-with-nyc-aging/2026-11-18"
+          }
+        },
+        {
+          "id": "10069474",
+          "title": "Free Produce Distribution with NYC Aging",
+          "starts_at": "2026-11-23T18:00:00+00:00",
+          "ends_at": "2026-11-23T22:00:00+00:00",
+          "venue_name": "Tanenbaum Family Pool",
+          "lat": null,
+          "lng": null,
+          "event_url": "https://www.commonpoint.org/event/free-produce-distribution-with-nyc-aging/2026-11-23",
+          "category": "Event",
+          "venue_address": "58-25 Little Neck Parkway, Little Neck, NY 11362",
+          "venue_city": "Little Neck",
+          "reason": "missing_verified_venue_geo",
+          "timezone": "America/New_York",
+          "description": "In collaboration with NYC Aging, the Sam Field Older Adult Center will be organizing free produce distribution events in preparation for the upcoming Fall holidays across the street at our food pantry.\nDistribution will happen from 1-5pm on the following dates:\nMonday, November 16th\nWednesday, November 18th\nMonday, November 23rd\nTuesday, November 24th\nMonday, November 30th\nWednesday, December 2nd\nMonday, December 7th\nWednesday, December 9th\nEligibility:\nAges 60+\nResident of New York City\nID will be required for registration\nLimit one produce bag per week\nPRE-REGISTRATION STONGLY ENCOURAGED – Stop by or call the Sam Field Older Adult Center\nat 718-225-6750 exts. 61233, 61236, 61222, 61231, 61256\nOr call the Tanenbaum Pool Food Pantry 718-428-2077",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_street_pending_geocode",
+          "publisher_categories": [
+            "Event"
+          ],
+          "image_url": "https://www.commonpoint.org/wp-content/uploads/2026/11/Produce-Distribution-V2.png",
+          "description_sha256": "ac41c389c72a4683aa943682d8eed32a40b3473256da33a0fd112904e846e071",
+          "address_evidence": {
+            "source": "publisher event detail or structured native venue fields",
+            "url": "https://www.commonpoint.org/event/free-produce-distribution-with-nyc-aging/2026-11-23"
+          }
+        },
+        {
+          "id": "10069475",
+          "title": "Free Produce Distribution with NYC Aging",
+          "starts_at": "2026-11-24T18:00:00+00:00",
+          "ends_at": "2026-11-24T22:00:00+00:00",
+          "venue_name": "Tanenbaum Family Pool",
+          "lat": null,
+          "lng": null,
+          "event_url": "https://www.commonpoint.org/event/free-produce-distribution-with-nyc-aging/2026-11-24",
+          "category": "Event",
+          "venue_address": "58-25 Little Neck Parkway, Little Neck, NY 11362",
+          "venue_city": "Little Neck",
+          "reason": "missing_verified_venue_geo",
+          "timezone": "America/New_York",
+          "description": "In collaboration with NYC Aging, the Sam Field Older Adult Center will be organizing free produce distribution events in preparation for the upcoming Fall holidays across the street at our food pantry.\nDistribution will happen from 1-5pm on the following dates:\nMonday, November 16th\nWednesday, November 18th\nMonday, November 23rd\nTuesday, November 24th\nMonday, November 30th\nWednesday, December 2nd\nMonday, December 7th\nWednesday, December 9th\nEligibility:\nAges 60+\nResident of New York City\nID will be required for registration\nLimit one produce bag per week\nPRE-REGISTRATION STONGLY ENCOURAGED – Stop by or call the Sam Field Older Adult Center\nat 718-225-6750 exts. 61233, 61236, 61222, 61231, 61256\nOr call the Tanenbaum Pool Food Pantry 718-428-2077",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_street_pending_geocode",
+          "publisher_categories": [
+            "Event"
+          ],
+          "image_url": "https://www.commonpoint.org/wp-content/uploads/2026/11/Produce-Distribution-V2.png",
+          "description_sha256": "ac41c389c72a4683aa943682d8eed32a40b3473256da33a0fd112904e846e071",
+          "address_evidence": {
+            "source": "publisher event detail or structured native venue fields",
+            "url": "https://www.commonpoint.org/event/free-produce-distribution-with-nyc-aging/2026-11-24"
+          }
+        },
+        {
+          "id": "10069476",
+          "title": "Free Produce Distribution with NYC Aging",
+          "starts_at": "2026-11-30T18:00:00+00:00",
+          "ends_at": "2026-11-30T22:00:00+00:00",
+          "venue_name": "Tanenbaum Family Pool",
+          "lat": null,
+          "lng": null,
+          "event_url": "https://www.commonpoint.org/event/free-produce-distribution-with-nyc-aging/2026-11-30",
+          "category": "Event",
+          "venue_address": "58-25 Little Neck Parkway, Little Neck, NY 11362",
+          "venue_city": "Little Neck",
+          "reason": "missing_verified_venue_geo",
+          "timezone": "America/New_York",
+          "description": "In collaboration with NYC Aging, the Sam Field Older Adult Center will be organizing free produce distribution events in preparation for the upcoming Fall holidays across the street at our food pantry.\nDistribution will happen from 1-5pm on the following dates:\nMonday, November 16th\nWednesday, November 18th\nMonday, November 23rd\nTuesday, November 24th\nMonday, November 30th\nWednesday, December 2nd\nMonday, December 7th\nWednesday, December 9th\nEligibility:\nAges 60+\nResident of New York City\nID will be required for registration\nLimit one produce bag per week\nPRE-REGISTRATION STONGLY ENCOURAGED – Stop by or call the Sam Field Older Adult Center\nat 718-225-6750 exts. 61233, 61236, 61222, 61231, 61256\nOr call the Tanenbaum Pool Food Pantry 718-428-2077",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_street_pending_geocode",
+          "publisher_categories": [
+            "Event"
+          ],
+          "image_url": "https://www.commonpoint.org/wp-content/uploads/2026/11/Produce-Distribution-V2.png",
+          "description_sha256": "ac41c389c72a4683aa943682d8eed32a40b3473256da33a0fd112904e846e071",
+          "address_evidence": {
+            "source": "publisher event detail or structured native venue fields",
+            "url": "https://www.commonpoint.org/event/free-produce-distribution-with-nyc-aging/2026-11-30"
+          }
+        },
+        {
+          "id": "10069477",
+          "title": "Free Produce Distribution with NYC Aging",
+          "starts_at": "2026-12-02T18:00:00+00:00",
+          "ends_at": "2026-12-02T22:00:00+00:00",
+          "venue_name": "Tanenbaum Family Pool",
+          "lat": null,
+          "lng": null,
+          "event_url": "https://www.commonpoint.org/event/free-produce-distribution-with-nyc-aging/2026-12-02",
+          "category": "Event",
+          "venue_address": "58-25 Little Neck Parkway, Little Neck, NY 11362",
+          "venue_city": "Little Neck",
+          "reason": "missing_verified_venue_geo",
+          "timezone": "America/New_York",
+          "description": "In collaboration with NYC Aging, the Sam Field Older Adult Center will be organizing free produce distribution events in preparation for the upcoming Fall holidays across the street at our food pantry.\nDistribution will happen from 1-5pm on the following dates:\nMonday, November 16th\nWednesday, November 18th\nMonday, November 23rd\nTuesday, November 24th\nMonday, November 30th\nWednesday, December 2nd\nMonday, December 7th\nWednesday, December 9th\nEligibility:\nAges 60+\nResident of New York City\nID will be required for registration\nLimit one produce bag per week\nPRE-REGISTRATION STONGLY ENCOURAGED – Stop by or call the Sam Field Older Adult Center\nat 718-225-6750 exts. 61233, 61236, 61222, 61231, 61256\nOr call the Tanenbaum Pool Food Pantry 718-428-2077",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_street_pending_geocode",
+          "publisher_categories": [
+            "Event"
+          ],
+          "image_url": "https://www.commonpoint.org/wp-content/uploads/2026/11/Produce-Distribution-V2.png",
+          "description_sha256": "ac41c389c72a4683aa943682d8eed32a40b3473256da33a0fd112904e846e071",
+          "address_evidence": {
+            "source": "publisher event detail or structured native venue fields",
+            "url": "https://www.commonpoint.org/event/free-produce-distribution-with-nyc-aging/2026-12-02"
+          }
+        },
+        {
+          "id": "146431",
+          "title": "Stronger Connections, Safer Aging Community Resource Fair",
+          "starts_at": "2026-12-04T16:00:00+00:00",
+          "ends_at": "2026-12-04T19:00:00+00:00",
+          "venue_name": "Sam Field Center",
+          "lat": null,
+          "lng": null,
+          "event_url": "https://www.commonpoint.org/event/stronger-connections-safer-aging-community-resource-fair",
+          "category": "Event",
+          "venue_address": "58-20 Little Neck Parkway, Little Neck, NY 11362",
+          "venue_city": "Little Neck",
+          "reason": "missing_verified_venue_geo",
+          "timezone": "America/New_York",
+          "description": "Stop by to meet local organizations, discover helpful services, and find resources that support healthy, connected, independent living.\nThis is a community event presented by Commonpoint’s\nMIST Program\n– MAINTAINING INDEPENDENCE & SAFETY THROUGH TECHNOLOGY.\nResources include health & wellness, food and basic needs, home safety, technology support, social services, and community programs.\nFor more information, contact\nlellison@commonpoint.org\nor\neeisele@commonpoint.org\nor call\n718-224-0566\n.",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_street_pending_geocode",
+          "publisher_categories": [
+            "Event"
+          ],
+          "description_sha256": "71edeed166759a69b2184a19f5c2a10a0350d7e63eb7776ab673ce80ef24116b",
+          "address_evidence": {
+            "source": "publisher event detail or structured native venue fields",
+            "url": "https://www.commonpoint.org/event/stronger-connections-safer-aging-community-resource-fair"
+          }
+        },
+        {
+          "id": "10069478",
+          "title": "Free Produce Distribution with NYC Aging",
+          "starts_at": "2026-12-07T18:00:00+00:00",
+          "ends_at": "2026-12-07T22:00:00+00:00",
+          "venue_name": "Tanenbaum Family Pool",
+          "lat": null,
+          "lng": null,
+          "event_url": "https://www.commonpoint.org/event/free-produce-distribution-with-nyc-aging/2026-12-07",
+          "category": "Event",
+          "venue_address": "58-25 Little Neck Parkway, Little Neck, NY 11362",
+          "venue_city": "Little Neck",
+          "reason": "missing_verified_venue_geo",
+          "timezone": "America/New_York",
+          "description": "In collaboration with NYC Aging, the Sam Field Older Adult Center will be organizing free produce distribution events in preparation for the upcoming Fall holidays across the street at our food pantry.\nDistribution will happen from 1-5pm on the following dates:\nMonday, November 16th\nWednesday, November 18th\nMonday, November 23rd\nTuesday, November 24th\nMonday, November 30th\nWednesday, December 2nd\nMonday, December 7th\nWednesday, December 9th\nEligibility:\nAges 60+\nResident of New York City\nID will be required for registration\nLimit one produce bag per week\nPRE-REGISTRATION STONGLY ENCOURAGED – Stop by or call the Sam Field Older Adult Center\nat 718-225-6750 exts. 61233, 61236, 61222, 61231, 61256\nOr call the Tanenbaum Pool Food Pantry 718-428-2077",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_street_pending_geocode",
+          "publisher_categories": [
+            "Event"
+          ],
+          "image_url": "https://www.commonpoint.org/wp-content/uploads/2026/11/Produce-Distribution-V2.png",
+          "description_sha256": "ac41c389c72a4683aa943682d8eed32a40b3473256da33a0fd112904e846e071",
+          "address_evidence": {
+            "source": "publisher event detail or structured native venue fields",
+            "url": "https://www.commonpoint.org/event/free-produce-distribution-with-nyc-aging/2026-12-07"
+          }
+        },
+        {
+          "id": "145256",
+          "title": "Emergency Preparedness Training Program",
+          "starts_at": "2026-12-09T16:30:00+00:00",
+          "ends_at": "2026-12-09T18:00:00+00:00",
+          "venue_name": "Commonpoint Bronx",
+          "lat": null,
+          "lng": null,
+          "event_url": "https://www.commonpoint.org/event/emergency-preparedness-training-program",
+          "category": "Event",
+          "venue_address": "1665 Hoe Ave, The Bronx, NY 10460",
+          "venue_city": "The Bronx",
+          "reason": "missing_verified_venue_geo",
+          "timezone": "America/New_York",
+          "description": "With severe weather events becoming more frequent and more extreme, it is more important than ever that New Yorkers are prepared for disasters. The NY Citizen Preparedness Training Program teaches residents to have the tools and resources to prepare for any type of disaster, respond accordingly and recover as quickly as possible to normal conditions. This training course will provide an introduction to responding to a natural or manmade disaster. Participants will be advised on how to properly prepare for any disaster, including developing a family emergency plan and stocking up on emergency supplies. Each family that attends will receive one preparedness kit.\nRegistration is required to attend the event. To register,\nclick here\n.\nFor more information, contact\nsblount@commonpoint.org\nor call 718-619-8838.",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_street_pending_geocode",
+          "publisher_categories": [
+            "Event"
+          ],
+          "description_sha256": "3a33caf999243e1eee5ee9c3e725c2f53d12139ead43f707f84d0789fb968673",
+          "address_evidence": {
+            "source": "publisher event detail or structured native venue fields",
+            "url": "https://www.commonpoint.org/event/emergency-preparedness-training-program"
+          }
+        },
+        {
+          "id": "10069479",
+          "title": "Free Produce Distribution with NYC Aging",
+          "starts_at": "2026-12-09T18:00:00+00:00",
+          "ends_at": "2026-12-09T22:00:00+00:00",
+          "venue_name": "Tanenbaum Family Pool",
+          "lat": null,
+          "lng": null,
+          "event_url": "https://www.commonpoint.org/event/free-produce-distribution-with-nyc-aging/2026-12-09",
+          "category": "Event",
+          "venue_address": "58-25 Little Neck Parkway, Little Neck, NY 11362",
+          "venue_city": "Little Neck",
+          "reason": "missing_verified_venue_geo",
+          "timezone": "America/New_York",
+          "description": "In collaboration with NYC Aging, the Sam Field Older Adult Center will be organizing free produce distribution events in preparation for the upcoming Fall holidays across the street at our food pantry.\nDistribution will happen from 1-5pm on the following dates:\nMonday, November 16th\nWednesday, November 18th\nMonday, November 23rd\nTuesday, November 24th\nMonday, November 30th\nWednesday, December 2nd\nMonday, December 7th\nWednesday, December 9th\nEligibility:\nAges 60+\nResident of New York City\nID will be required for registration\nLimit one produce bag per week\nPRE-REGISTRATION STONGLY ENCOURAGED – Stop by or call the Sam Field Older Adult Center\nat 718-225-6750 exts. 61233, 61236, 61222, 61231, 61256\nOr call the Tanenbaum Pool Food Pantry 718-428-2077",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_street_pending_geocode",
+          "publisher_categories": [
+            "Event"
+          ],
+          "image_url": "https://www.commonpoint.org/wp-content/uploads/2026/11/Produce-Distribution-V2.png",
+          "description_sha256": "ac41c389c72a4683aa943682d8eed32a40b3473256da33a0fd112904e846e071",
+          "address_evidence": {
+            "source": "publisher event detail or structured native venue fields",
+            "url": "https://www.commonpoint.org/event/free-produce-distribution-with-nyc-aging/2026-12-09"
+          }
+        }
+      ]
+    },
+    {
+      "source": {
+        "source_key": "municipal_mapsee_59cd82df6a4f146d4b15acec",
+        "publisher_name": "NYU Events — Open to the Public",
+        "feed_url": "https://events.nyu.edu/",
+        "kind": "html",
+        "platform_adapter": "html",
+        "timezone": "America/New_York"
+      },
+      "accepted_count": 36,
+      "records": [
+        {
+          "id": "402713",
+          "title": "Dead Centre: Deaf Republic",
+          "starts_at": "2026-11-15T00:30:00+00:00",
+          "ends_at": null,
+          "venue_name": "Skirball Center for the Performing Arts",
+          "lat": 40.729795,
+          "lng": -73.997749,
+          "event_url": "https://events.nyu.edu/event/402713-dead-centre-deaf-republic",
+          "category": "",
+          "venue_address": "566 LaGuardia Place, New York, NY 10012",
+          "venue_city": "New York",
+          "reason": null,
+          "description": "$23*- NYU Students\n$44*-$89*-NYU Faculty/Staff/Alumni\n$58*-$98* Full Price\n*Save $3 by buying in person at the NYU Box Office\nSilence has never been this loud.\nABOUT\nA gunshot in occupied territory. A soldier shoots a deaf boy in a public square. The next day, the whole town wakes up deaf, refusing to hear the soldiers, teaching one another a sign language of resistance. From that premise, drawn from Ilya Kaminsky‘s acclaimed poetic narrative, Dublin’s Dead Centre and Sign Language poet Zoë McWhinney build one of the most striking imports of the season: a fable of occupation in which silence becomes both a hiding place and an act of defiance.\nA deaf and hearing ensemble lead a production that folds sign language, puppetry, live cinema, and music into a single charged form, turning quiet itself into something political. Fresh from its acclaimed premiere at London’s Royal Court, where it was named as one of\nThe Stage\n‘s top shows of 2025, Deaf Republic is theater of rare invention and rare feeling, holding a whole town’s refusal to listen up against a world that will not stop shouting.",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_venue_point_reviewed_street",
+          "publisher_categories": [
+            "Arts",
+            "Open to the Public"
+          ],
+          "description_sha256": "229c69b862387417ea328f038ac651db3c3c220cbe7f4185b0fe4dc1320809fb",
+          "address_evidence": {
+            "source": "publisher structured event/venue data with exact reviewed NYU address mapping",
+            "url": "https://events.nyu.edu/event/402713-dead-centre-deaf-republic"
+          }
+        },
+        {
+          "id": "402714",
+          "title": "Dead Centre: Deaf Republic",
+          "starts_at": "2026-11-15T20:00:00+00:00",
+          "ends_at": null,
+          "venue_name": "Skirball Center for the Performing Arts",
+          "lat": 40.729795,
+          "lng": -73.997749,
+          "event_url": "https://events.nyu.edu/event/402714-dead-centre-deaf-republic",
+          "category": "",
+          "venue_address": "566 LaGuardia Place, New York, NY 10012",
+          "venue_city": "New York",
+          "reason": null,
+          "description": "$23*- NYU Students\n$44*-$89*-NYU Faculty/Staff/Alumni\n$58*-$98* Full Price\n*Save $3 by buying in person at the NYU Box Office\nSilence has never been this loud.\nABOUT\nA gunshot in occupied territory. A soldier shoots a deaf boy in a public square. The next day, the whole town wakes up deaf, refusing to hear the soldiers, teaching one another a sign language of resistance. From that premise, drawn from Ilya Kaminsky‘s acclaimed poetic narrative, Dublin’s Dead Centre and Sign Language poet Zoë McWhinney build one of the most striking imports of the season: a fable of occupation in which silence becomes both a hiding place and an act of defiance.\nA deaf and hearing ensemble lead a production that folds sign language, puppetry, live cinema, and music into a single charged form, turning quiet itself into something political. Fresh from its acclaimed premiere at London’s Royal Court, where it was named as one of\nThe Stage\n‘s top shows of 2025, Deaf Republic is theater of rare invention and rare feeling, holding a whole town’s refusal to listen up against a world that will not stop shouting.",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_venue_point_reviewed_street",
+          "publisher_categories": [
+            "Arts",
+            "Open to the Public"
+          ],
+          "description_sha256": "229c69b862387417ea328f038ac651db3c3c220cbe7f4185b0fe4dc1320809fb",
+          "address_evidence": {
+            "source": "publisher structured event/venue data with exact reviewed NYU address mapping",
+            "url": "https://events.nyu.edu/event/402714-dead-centre-deaf-republic"
+          }
+        },
+        {
+          "id": "407281",
+          "title": "Discussion with Director of Hungarian documentary on press freedom, “80 Angry Journalists”",
+          "starts_at": "2026-11-17T00:00:00+00:00",
+          "ends_at": "2026-11-17T01:30:00+00:00",
+          "venue_name": "20 Cooper Square",
+          "lat": 40.728,
+          "lng": -73.9914,
+          "event_url": "https://events.nyu.edu/event/407281-discussion-with-director-of-hungarian-documentary",
+          "category": "",
+          "venue_address": "20 Cooper Square, New York, NY 10003",
+          "venue_city": "New York",
+          "reason": null,
+          "description": "Short clip then discussion\n“80 Angry Journalists” (80 dühös újságíró), about press freedom in Hungary, premieres at DOC NYC on November 12 after a strong run at European festivals. Its director, András Földes, is a journalist and filmmaker, and its lead subject, Vera Munk, is editor-in-chief of 444 and former editor-in-chief of Telex. The film is arguably more timely now, even after April’s elections ended Orbán’s 16 years in power. The media system built over that period, from a captured public broadcaster to consolidated pro-government outlets, does not disappear with a change of government, and the journalists in the film are now navigating that transition. Their experience offers lessons for newsrooms elsewhere facing political pressure, both in resisting it and in rebuilding afterward.",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_venue_point_reviewed_street",
+          "publisher_categories": [
+            "Open to the Public"
+          ],
+          "description_sha256": "923a84f034e8f7caf064e83411913dfb93250dc9b036348afe9e1f78e4cf19f3",
+          "address_evidence": {
+            "source": "publisher structured event/venue data with exact reviewed NYU address mapping",
+            "url": "https://events.nyu.edu/event/407281-discussion-with-director-of-hungarian-documentary"
+          }
+        },
+        {
+          "id": "412529",
+          "title": "Screening: Anna Magnani – The Untold Story",
+          "starts_at": "2026-11-17T01:00:00+00:00",
+          "ends_at": "2026-11-17T03:30:00+00:00",
+          "venue_name": "Cantor Film Center",
+          "lat": 40.7312,
+          "lng": -73.9944,
+          "event_url": "https://events.nyu.edu/event/412529-screening-anna-magnani-the-untold-story",
+          "category": "",
+          "venue_address": "36 East 8th Street, New York, NY 10003",
+          "venue_city": "New York",
+          "reason": null,
+          "description": "Click here to RSVP\nPlease note:\nThis event will take place at NYU’s\nCantor Film Center (Room 101)\n36 East 8th St.\nPart of the\nNew Italian Cinema Events (N.I.C.E.) Film Festival\n,\ncelebrating its 36th edition in the United States,\nViviana del Bianco, Artistic Director\nCurated by USA Executive Director Mila Tenaglia\nScreening (NY Premiere)\nAnna Magnani – The Untold Story\n(2025, Italy, 128 min.)\nIn ITALIAN with ENGLISH subtitles\nWritten and directed by\nMonica Guerritore\n(directorial debut)\nStarring:\nMonica Guerritore, Tommaso Ragno, Lucia Mascino, Beatrice Grannò, Roberto De Francesco, Alvia Reale, Francesca Cellini, Edoardo Purgatori, Gianpiero Iudica, Luca Lazzareschi, Antonio Zavatteri, Diego Migeni, Matteo Cirillo, Stefano Rossi Giordani, Marco Simeoli, Elena Funari, Alessandro di Somma, Massimiliano Vado, Anna Testa, Chiara Bassermann, Gianmaria Sainato, Claudio Vanni.\nFollowed by a Q&A with actress\nBeatrice Grannò\n(internationally known for her role as Mia in the second season of\nHBO’s\nThe White Lotus\n)\nModerated by\nStefano Albertini\n, NYU\nThe screening will also feature a recorded video message from director\nMonica Guerritore\nIntroduction by N.I.C.E. Executive Director Mila Tenaglia\nIn ENGLISH\nAbout the Film\nOn March 21, 1956, Anna Magnani won the Academy Award for Best Actress for\nThe Rose Tattoo\n. She spent the previous night waiting and wandering through the streets and squares of Rome, surrounded by the people who loved her and the memories she carried in her heart. By her side was a young woman, Carol Levi, who would later become her agent. Dawn brought news of her victory, but the triumph was short-lived. At the height of her fame, an unpredictable turn of fate pushed her toward the margins. Looming over everything, and never far from her thoughts, was Roberto Rossellini.\nFor more information visit the Casa Italiana website\nFree",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_venue_point_reviewed_street",
+          "publisher_categories": [
+            "Arts",
+            "Free",
+            "Open to the Public"
+          ],
+          "description_sha256": "a623ec1fb3b3efeae5bffcb351ff5515c4f5ea1f859b5be97c3f15048e950746",
+          "address_evidence": {
+            "source": "publisher structured event/venue data with exact reviewed NYU address mapping",
+            "url": "https://events.nyu.edu/event/412529-screening-anna-magnani-the-untold-story"
+          }
+        },
+        {
+          "id": "404090",
+          "title": "Qur’an Circle with Brother Tamim Islam",
+          "starts_at": "2026-11-17T21:00:00+00:00",
+          "ends_at": "2026-11-17T23:00:00+00:00",
+          "venue_name": "Global Center for Academic and Spiritual Life",
+          "lat": 40.7299,
+          "lng": -73.9982,
+          "event_url": "https://events.nyu.edu/event/404090-quran-circle-with-brother-tamim-islam",
+          "category": "",
+          "venue_address": "238 Thompson Street, New York, NY 10012",
+          "venue_city": "New York",
+          "reason": null,
+          "description": "Global Center for Academic and Spiritual Life, 4th Floor, Room 472\nJoin Brother Tamim Islam for a weekly Quran recitation session focused on proper Tajweed (rules of recitation) and Makharij (pronunciation).\n*Note on Inclusion and Accessibility:\nAs a part of NYU’s commitment to global inclusion, our events and initiatives are open to all backgrounds and identities. It is a priority to make our events inclusive and accessible. For any questions or to make a request, please email islamic.center@nyu.edu at least 72 hours before the event.*",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_venue_point_reviewed_street",
+          "publisher_categories": [
+            "Open to the Public",
+            "Students"
+          ],
+          "description_sha256": "1ef3b50153c6682b2d78f4d4dc1d3d1746380858588365f2062a80dfc77867fb",
+          "address_evidence": {
+            "source": "publisher structured event/venue data with exact reviewed NYU address mapping",
+            "url": "https://events.nyu.edu/event/404090-quran-circle-with-brother-tamim-islam"
+          }
+        },
+        {
+          "id": "404061",
+          "title": "ISAW Expanding the Ancient World Workshop: “Picturing Ancient People: Gender in Ancient Greek Vase-Painting”",
+          "starts_at": "2026-11-17T22:30:00+00:00",
+          "ends_at": "2026-11-18T00:00:00+00:00",
+          "venue_name": "Institute for the Study of the Ancient World (ISAW)",
+          "lat": 40.78,
+          "lng": -73.9603,
+          "event_url": "https://events.nyu.edu/event/404061-isaw-etaw-gender-in-ancient-greek-vase-painting",
+          "category": "",
+          "venue_address": "15 East 84th Street, New York, NY 10028",
+          "venue_city": "New York",
+          "reason": null,
+          "description": "Anna Selden\nISAW PhD Student\nExpanding the Ancient World\nis a series of professional development workshops and online resources for teachers. Keyed to the NYC Department of Education Social Studies Scope and Sequence, this program is designed to offer K-12 educators opportunities to develop their knowledge of the ancient world and to provide classroom-ready strategies for teaching the past with reliable sources. In this workshop, we will examine gender through ancient Greek painted vases, with a focus on vases produced in Attica, first by discussing how and why decorated terracotta vases were produced and how they were used.\nThis workshop will take place online; a Zoom link will be provided via email to registered participants.\nRegistration is required. Please fill out the form at the bottom of this page.\nExpanding the Ancient World\nis a series of professional development workshops and online resources for teachers. Keyed to the NYC Department of Education Social Studies Scope and Sequence, this program is designed to offer K-12 educators opportunities to develop their knowledge of the ancient world and to provide classroom-ready strategies for teaching the past with reliable sources. Featuring inquiry-based workshops, flexible lesson plans, and up-to-date research, Expanding the Ancient World aims to equip teachers with information and skills that they can share with their students. CTLE credits will be offered to New York State teachers.\nVisual art is an invaluable resource for the study of the ancient world. Through visual representations we can assess many aspects of past cultures, from daily life to belief systems, politics, economy, and more. One of the most informative types of art for understanding ancient Greek culture of the Archaic and Classical periods (c. 800–323 BCE) is vase painting. In this workshop, we will examine gender through ancient Greek painted vases, with a focus on vases produced in Attica, first by discussing how and why decorated terracotta vases were produced and how they were used. We will analyze pictorial scenes on ancient Greek painted vases to assess how gender operated in Greek society in the Archaic and Classical periods, touching on traditional and ideal roles, activity, and physical appearance for men and women, as well as mythic and human figures that challenged gendered ideals. Furthermore, we will interrogate how and why we use art as a type of evidence and consider how cultural values and beliefs inform artistic visual representation. The lesson plan from this workshop aims to equip students with skills to critically describe, evaluate, and assess visual primary sources as a tool for understanding the past; to inform them about values, beliefs, and daily life in Greek culture; and to reflect on the importance of individual and group identity within cultures both ancient and modern.\nWorkshop led by\nAnna Selden\n(ISAW PhD Student).\nParticipants will receive 1.5 CTLE hours.\nIf you have any questions regarding the Expanding the Ancient World program please email\nETAW@nyu.edu\n.\nPlease check\nisaw.nyu.edu\nfor event updates.\nISAW is committed to providing a positive and educational experience for all guests and participants who attend our public programming. We ask that all attendees follow the guidelines listed in our\ncommunity standards policy\n.\nFree",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_venue_point_reviewed_street",
+          "publisher_categories": [
+            "Faculty",
+            "Free",
+            "Open to the Public",
+            "Students",
+            "Training and Workshops"
+          ],
+          "description_sha256": "8ef4f3a0685ac7ce68e9fdcee3a6f8fe7cbc97af3d00cba2127ab7814aef0746",
+          "address_evidence": {
+            "source": "publisher structured event/venue data with exact reviewed NYU address mapping",
+            "url": "https://events.nyu.edu/event/404061-isaw-etaw-gender-in-ancient-greek-vase-painting"
+          }
+        },
+        {
+          "id": "412531",
+          "title": "Book Presentation: An Intellectual against Fascism",
+          "starts_at": "2026-11-18T23:30:00+00:00",
+          "ends_at": "2026-11-19T01:00:00+00:00",
+          "venue_name": "Casa Italiana",
+          "lat": 40.735,
+          "lng": -73.9958,
+          "event_url": "https://events.nyu.edu/event/412531-book-presentation-an-intellectual-against-fascism",
+          "category": "",
+          "venue_address": "24 West 12th Street, New York, NY 10011",
+          "venue_city": "New York",
+          "reason": null,
+          "description": "Click here to RSVP\nBook Presentation\nAn Intellectual against Fascism\n(2026, University of Toronto Press\nLorenzo Da Ponte Italian Library)\nSelected writings of\nPiero Gobetti\n(1901-1926)\nTranslated into English by\nSandro-Angelo de Thomasis\nEdited by\nMimmo Cangiano, Davide Dalmas,\nSandro-Angelo de Thomasis and Marta Vicari\nFeaturing:\nRemarks by\nSandro-Angelo de Thomasis\n, The Juilliard School\nLuigi Ballerini\n, General Editor, Lorenzo Da Ponte Italian Library\nA panel with the translator in conversation with:\nDavid Forgacs\n, NYU\nDavid Ward\n, Wellesley College\nModerated by\nFinn Davis\n, Undergraduate student, Middlebury College\nIn ENGLISH\n2026 marks the centenary of the death of Italian journalist, radical liberal, and anti-fascist intellectual Piero Gobetti (1901–26). Today, his insights into liberalism and anti-fascism resonate more than ever, particularly in light of the resurgence of reactionary politics reminiscent of fascism and ongoing debates surrounding (neo-)liberalism.\nAn Intellectual against Fascism\noffers anglophone readers a new translation of over thirty articles that span Gobetti’s entire journalistic career, half of which have previously been unavailable in English. The volume is thoughtfully organized to allow readers to trace the progressive development of his ideas. To enhance understanding of Gobetti’s thought, this expertly curated collection includes his writings on literature, theatre, and literary criticism. It also features the complete text of\nLa Rivoluzione Liberale\n(1924), his magnum opus, which has not been available in its entirety before. An extensive critical apparatus accompanies the collection, including a preface, an introduction, and concise introductions and notes for each article.\nFor more information visit the Casa Italiana website\nFree",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_venue_point_reviewed_street",
+          "publisher_categories": [
+            "Conferences and Speakers",
+            "Free",
+            "Open to the Public"
+          ],
+          "description_sha256": "50b925dfc727b6a30b24a0b7419bc7d582ba8b9793a969521c3afb9bc0cca006",
+          "address_evidence": {
+            "source": "publisher structured event/venue data with exact reviewed NYU address mapping",
+            "url": "https://events.nyu.edu/event/412531-book-presentation-an-intellectual-against-fascism"
+          }
+        },
+        {
+          "id": "409132",
+          "title": "Fall Commissioner Speaker Series: NYC ACS",
+          "starts_at": "2026-11-19T22:30:00+00:00",
+          "ends_at": "2026-11-20T00:00:00+00:00",
+          "venue_name": "NYU Silver School of Social Work",
+          "lat": 40.731043,
+          "lng": -73.995704,
+          "event_url": "https://events.nyu.edu/event/409132-fall-commissioner-speaker-series-nyc-acs",
+          "category": "",
+          "venue_address": "1 Washington Square North, New York, NY 10003",
+          "venue_city": "New York",
+          "reason": null,
+          "description": "Leadership, Policy, and Social Work in Action\nHow do public-sector leaders turn policy into meaningful change for individuals, families, and communities?\nJoin NYU Silver for candid conversations with three commissioners whose work spans criminal justice, child welfare, and correction. Explore the experiences that shape their leadership, the challenges facing public systems, and the role of social work in advancing effective, equitable responses.\nThis event is designed to address the social work ethical principles of helping people in need and addressing social problems, which align with the value of Service contained in the\nCode of Ethics for the National Association of Social Workers\n.\nIt will be held in a hybrid format, with opportunities to participate both in person and virtually. In-person space is limited, and early registration is strongly encouraged for those wishing to attend on campus.\nLight refreshments will be served for in-person attendees. All are welcome to join the conversation, whether on campus or online.\nReserve Your Seat Today!\nFree",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_venue_point_reviewed_street",
+          "publisher_categories": [
+            "Alumni",
+            "Faculty",
+            "Free",
+            "Open to the Public",
+            "Students"
+          ],
+          "description_sha256": "a626281ec7884fb256698aa2151b83a076d20c363af1f7024151131be77e2751",
+          "address_evidence": {
+            "source": "publisher structured event/venue data with exact reviewed NYU address mapping",
+            "url": "https://events.nyu.edu/event/409132-fall-commissioner-speaker-series-nyc-acs"
+          }
+        },
+        {
+          "id": "406293",
+          "title": "UNPOLISHED” UNRULY SUBJECTS",
+          "starts_at": "2026-11-19T23:00:00+00:00",
+          "ends_at": "2026-11-20T01:00:00+00:00",
+          "venue_name": "20 Cooper Square",
+          "lat": 40.728,
+          "lng": -73.9914,
+          "event_url": "https://events.nyu.edu/event/406293-unpolished-unruly-subjects",
+          "category": "",
+          "venue_address": "20 Cooper Square, New York, NY 10003",
+          "venue_city": "New York",
+          "reason": null,
+          "description": "LIVE WITH JAMAAL BOWMAN BOOK RELEASE\nThis will be a conversation with Jamaal Bowman about his new book Unpolished. His memoir and journey that pulls back the curtain on tensions between within the democratic coalition in context of his lifelong journey of service.",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_venue_point_reviewed_street",
+          "publisher_categories": [
+            "Open to the Public"
+          ],
+          "description_sha256": "cab0a1987e98eba147b4d5efc888dd65e5584489322cc11838738fa181931e63",
+          "address_evidence": {
+            "source": "publisher structured event/venue data with exact reviewed NYU address mapping",
+            "url": "https://events.nyu.edu/event/406293-unpolished-unruly-subjects"
+          }
+        },
+        {
+          "id": "410645",
+          "title": "NYU Wagner Alumni in Transportation Reception",
+          "starts_at": "2026-11-19T23:00:00+00:00",
+          "ends_at": "2026-11-20T01:00:00+00:00",
+          "venue_name": "Main Event Space, Rm. 101, 105 East 17th Street",
+          "lat": 40.736399,
+          "lng": -73.988013,
+          "event_url": "https://events.nyu.edu/event/410645-nyu-wagner-alumni-in-transportation-reception",
+          "category": "",
+          "venue_address": "105 East 17th Street, New York, NY 10003",
+          "venue_city": "New York",
+          "reason": null,
+          "description": "Mark your calendars for Thursday, November 19th, when we will host the first ever NYU Wagner Alumni in Transportation event. We will spend the evening celebrating our alumni and the impact of NYU Wagner and the Rudin Center on transportation in the New York region. The event will feature a fireside chat between Polly Trottenberg (NYU Wagner Dean, former U.S. Deputy Secretary of Transportation and NYCDOT Commissioner) and Lee Sander (NYU Rudin Center Founder and former MTA CEO, NYCDOT Commissioner and Bombardier Transportation Americas President). We hope you will join us.\nNote that this is a ticketed event and registration is required.\nRegister below.\nRSVP:\nhttps://events.alumni.nyu.edu/W4QMkn",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_venue_point_reviewed_street",
+          "publisher_categories": [
+            "Open to the Public"
+          ],
+          "description_sha256": "9e6c8041424335e9a1d26c50d34f6a870919129d78a80079191b9592c80ade42",
+          "address_evidence": {
+            "source": "publisher structured event/venue data with exact reviewed NYU address mapping",
+            "url": "https://events.nyu.edu/event/410645-nyu-wagner-alumni-in-transportation-reception"
+          }
+        },
+        {
+          "id": "412533",
+          "title": "Le Conversazioni: Forgotten Gems with Peter Becker",
+          "starts_at": "2026-11-20T00:00:00+00:00",
+          "ends_at": "2026-11-20T01:30:00+00:00",
+          "venue_name": "Casa Italiana",
+          "lat": 40.735,
+          "lng": -73.9958,
+          "event_url": "https://events.nyu.edu/event/412533-le-conversazioni-forgotten-gems-with-peter-becker",
+          "category": "",
+          "venue_address": "24 West 12th Street, New York, NY 10011",
+          "venue_city": "New York",
+          "reason": null,
+          "description": "Click here to RSVP\nThis event is part of\nLe Conversazioni\nForgotten Gems\nwith Peter Becker\nPeter Becker\nPresident,\nThe Criterion Collection\nin conversation with\nAntonio Monda\n, NYU\nIn\nENGLISH\nForgotten Gems\nis a series that takes place at Casa Italiana as part of the literary festival\nLe Conversazioni\nthat focuses on films that the speakers believe worthy of being [re]discovered. Antonio Monda and his guest each choose three films to present and discuss (accompanied by clips). This season’s first guest is the President of\nThe Criterion Collection\nPeter Becker.\nFor more information visit the Casa Italiana website\nFree",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_venue_point_reviewed_street",
+          "publisher_categories": [
+            "Arts",
+            "Conferences and Speakers",
+            "Free",
+            "Open to the Public"
+          ],
+          "description_sha256": "3d3fdcd1f94c67635475143544d55425d4a95097240bb51a59951b479ecf9167",
+          "address_evidence": {
+            "source": "publisher structured event/venue data with exact reviewed NYU address mapping",
+            "url": "https://events.nyu.edu/event/412533-le-conversazioni-forgotten-gems-with-peter-becker"
+          }
+        },
+        {
+          "id": "412534",
+          "title": "Roundtable: Italian Feminism(s)",
+          "starts_at": "2026-11-20T23:00:00+00:00",
+          "ends_at": "2026-11-21T00:30:00+00:00",
+          "venue_name": "Casa Italiana",
+          "lat": 40.735,
+          "lng": -73.9958,
+          "event_url": "https://events.nyu.edu/event/412534-roundtable-italian-feminisms",
+          "category": "",
+          "venue_address": "24 West 12th Street, New York, NY 10011",
+          "venue_city": "New York",
+          "reason": null,
+          "description": "Click here to RSVP\nRoundtable\nItalian Feminism(s)\nWords and Voices from a Kaleidoscopic Movement\nFeaturing:\nAlessandra Abate\n(Ph.D. Candidate, NYU)\non Lea Melandri\nSerena Bassi\n(Yale University)\non Silvia Federici\nAlessandro Giammei\n(Yale University)\non Carla Lonzi\nDiletta Pasetti\n(Rutgers University)\non Gabriella Parca\nVanessa Roghi\n(NYU)\non Michela Murgia\nModerated by\nTeresa Bertilotti\n(Ljubljana University)\nIn ENGLISH\nHow many feminisms have crossed Italy?\nOne distinctive feature of Italian feminism is how personal experience, collective practice, and theoretical reflection have deeply shaped one another, expressing a plurality of perspectives. From the mid-1960s, the movement took shape through various initiatives and often divergent standpoints, from autonomous collectives such as\nRivolta Femminile\n, which practiced consciousness-raising, to Marxist feminist groups that demanded wages for housework, as well as campaigns for abortion and divorce rights and early forms of lesbian feminist organizing. These debates over sexuality, unpaid labor, and civil rights raised questions that still inform contemporary feminist politics.\nBy bringing five figures from different generations and traditions into dialogue–emblems of the many nuances this movement produced–, this roundtable navigates their viewpoints through a conversation rooted in their own words. Starting from their texts, the discussion explores how theorists, activists, writers, and journalists who reflected on body, family, and sexuality drew on their experiences to develop ideas and intervene in public life, raising questions that still resonate today.\nBecause the personal is always political.\nFor more information visit the Casa Italiana website\nFree",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_venue_point_reviewed_street",
+          "publisher_categories": [
+            "Conferences and Speakers",
+            "Free",
+            "Open to the Public"
+          ],
+          "description_sha256": "048d0a104eea759a8c9e7fafda7c7ea09c261815336be2393f0cab4971b18b08",
+          "address_evidence": {
+            "source": "publisher structured event/venue data with exact reviewed NYU address mapping",
+            "url": "https://events.nyu.edu/event/412534-roundtable-italian-feminisms"
+          }
+        },
+        {
+          "id": "402715",
+          "title": "Joris Lacoste: Nexus de l’adoration",
+          "starts_at": "2026-11-21T00:30:00+00:00",
+          "ends_at": null,
+          "venue_name": "Skirball Center for the Performing Arts",
+          "lat": 40.729795,
+          "lng": -73.997749,
+          "event_url": "https://events.nyu.edu/event/402715-joris-lacoste-nexus-de-ladoration",
+          "category": "",
+          "venue_address": "566 LaGuardia Place, New York, NY 10012",
+          "venue_city": "New York",
+          "reason": null,
+          "description": "$23*- NYU Students\n$44*-$89*-NYU Faculty/Staff/Alumni\n$58*-$98* Full Price\n*Save $3 by buying in person at the NYU Box Office\nA liturgy for no religion.\nABOUT\nNine officiants take the stage and begin to praise. They sing, chant, testify, and dance their way through the world’s vast repertoire of devotion, gestures, and phrases gathered across faiths, cultures, and contexts and set loose in a single rite. Part concert, part ceremony, part something with no name yet,\nJoris Lacoste\n‘s\nNexus de l’adoration\nasks a live question: with the old certainties gone, what does a fractured age still gather to worship?\nFresh from its premiere at the Festival d’Avignon, the piece is by turns hypnotic, funny, and genuinely strange, a service for no religion in particular that turns collective attention into its true subject. Avignon called it a world where nine officiants sing, dance, and speak; the Festival d’Automne, a ceremony that looks a little like a musical. It closes NYU Skirball’s fall with communal attention itself as the medium.\nCo-presented with L’Alliance New York’s\nCrossing The\nLine\nFestival.",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_venue_point_reviewed_street",
+          "publisher_categories": [
+            "Arts",
+            "Open to the Public"
+          ],
+          "description_sha256": "aa1399c2105656cc8b8fa297cb7e2bd1f1b1ddc94ed856cfbf74f205b05ad1e1",
+          "address_evidence": {
+            "source": "publisher structured event/venue data with exact reviewed NYU address mapping",
+            "url": "https://events.nyu.edu/event/402715-joris-lacoste-nexus-de-ladoration"
+          }
+        },
+        {
+          "id": "402716",
+          "title": "Joris Lacoste: Nexus de l’adoration",
+          "starts_at": "2026-11-22T00:30:00+00:00",
+          "ends_at": null,
+          "venue_name": "Skirball Center for the Performing Arts",
+          "lat": 40.729795,
+          "lng": -73.997749,
+          "event_url": "https://events.nyu.edu/event/402716-joris-lacoste-nexus-de-ladoration",
+          "category": "",
+          "venue_address": "566 LaGuardia Place, New York, NY 10012",
+          "venue_city": "New York",
+          "reason": null,
+          "description": "$23*- NYU Students\n$44*-$89*-NYU Faculty/Staff/Alumni\n$58*-$98* Full Price\n*Save $3 by buying in person at the NYU Box Office\nA liturgy for no religion.\nABOUT\nNine officiants take the stage and begin to praise. They sing, chant, testify, and dance their way through the world’s vast repertoire of devotion, gestures, and phrases gathered across faiths, cultures, and contexts and set loose in a single rite. Part concert, part ceremony, part something with no name yet,\nJoris Lacoste\n‘s\nNexus de l’adoration\nasks a live question: with the old certainties gone, what does a fractured age still gather to worship?\nFresh from its premiere at the Festival d’Avignon, the piece is by turns hypnotic, funny, and genuinely strange, a service for no religion in particular that turns collective attention into its true subject. Avignon called it a world where nine officiants sing, dance, and speak; the Festival d’Automne, a ceremony that looks a little like a musical. It closes NYU Skirball’s fall with communal attention itself as the medium.\nCo-presented with L’Alliance New York’s\nCrossing The\nLine\nFestival.",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_venue_point_reviewed_street",
+          "publisher_categories": [
+            "Arts",
+            "Open to the Public"
+          ],
+          "description_sha256": "aa1399c2105656cc8b8fa297cb7e2bd1f1b1ddc94ed856cfbf74f205b05ad1e1",
+          "address_evidence": {
+            "source": "publisher structured event/venue data with exact reviewed NYU address mapping",
+            "url": "https://events.nyu.edu/event/402716-joris-lacoste-nexus-de-ladoration"
+          }
+        },
+        {
+          "id": "404450",
+          "title": "National Theatre Live Screening: Golden Boy",
+          "starts_at": "2026-11-22T20:00:00+00:00",
+          "ends_at": null,
+          "venue_name": "Skirball Center for the Performing Arts",
+          "lat": 40.729795,
+          "lng": -73.997749,
+          "event_url": "https://events.nyu.edu/event/404450-national-theatre-live-screening-golden-boy",
+          "category": "",
+          "venue_address": "566 LaGuardia Place, New York, NY 10012",
+          "venue_city": "New York",
+          "reason": null,
+          "description": "$18*- NYU Students\n$28*-NYU Faculty/Staff/Alumni\n$33* Full Price\n*Save $3 by buying in person at the NYU Box Office\nA screening of the London Production. Josh O’Connor (The Crown; Challengers) leads the cast in this searing revival of Clifford Odets’ knockout American classic.\nGolden Boy\nby\nClifford Odets\ndirected by\nSam Yates\nJosh O’Connor\n(\nThe Crown; Challengers\n) leads the cast in this searing revival of\nClifford Odets\n’ knockout American classic.\n1930s New York, at the height of the Depression. Joe Bonaparte is a gifted young violinist with a future in music, until a chance at fame and fortune lures him into the brutal world of professional boxing. He must confront what he’s willing to sacrifice, who he’s willing to become and how to find his place in a world that demands he choose a side.\nBrought to life with a live string quartet and filmed live from the Almeida Theatre, Olivier Award-winner\nSam Yates\n(\nVanya\n) directs this propulsive drama exploring ambition, identity, and the high price of success.\nABOUT NT LIVE\nThe best of British theatre.\nOn a cinema screen near you.\nNational Theatre Live brings the best of British theatre to cinema screens all over the UK and beyond, from Tokyo to San Francisco.\nWith state-of-the-art filming techniques, tailored to every play, National Theatre Live brings you each performance as it happens, in all its glory. From close-ups that capture every flicker of emotion, to sweeping wide shots of the stage.",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_venue_point_reviewed_street",
+          "publisher_categories": [
+            "Arts",
+            "Open to the Public"
+          ],
+          "description_sha256": "d3b6099f8e260b1fc37b76240ae88cbcf77c97774c291c7c9bd3e73bc8270ebe",
+          "address_evidence": {
+            "source": "publisher structured event/venue data with exact reviewed NYU address mapping",
+            "url": "https://events.nyu.edu/event/404450-national-theatre-live-screening-golden-boy"
+          }
+        },
+        {
+          "id": "404091",
+          "title": "Qur’an Circle with Brother Tamim Islam",
+          "starts_at": "2026-11-24T21:00:00+00:00",
+          "ends_at": "2026-11-24T23:00:00+00:00",
+          "venue_name": "Global Center for Academic and Spiritual Life",
+          "lat": 40.7299,
+          "lng": -73.9982,
+          "event_url": "https://events.nyu.edu/event/404091-quran-circle-with-brother-tamim-islam",
+          "category": "",
+          "venue_address": "238 Thompson Street, New York, NY 10012",
+          "venue_city": "New York",
+          "reason": null,
+          "description": "Global Center for Academic and Spiritual Life, 4th Floor, Room 472\nJoin Brother Tamim Islam for a weekly Quran recitation session focused on proper Tajweed (rules of recitation) and Makharij (pronunciation).\n*Note on Inclusion and Accessibility:\nAs a part of NYU’s commitment to global inclusion, our events and initiatives are open to all backgrounds and identities. It is a priority to make our events inclusive and accessible. For any questions or to make a request, please email islamic.center@nyu.edu at least 72 hours before the event.*",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_venue_point_reviewed_street",
+          "publisher_categories": [
+            "Open to the Public",
+            "Students"
+          ],
+          "description_sha256": "1ef3b50153c6682b2d78f4d4dc1d3d1746380858588365f2062a80dfc77867fb",
+          "address_evidence": {
+            "source": "publisher structured event/venue data with exact reviewed NYU address mapping",
+            "url": "https://events.nyu.edu/event/404091-quran-circle-with-brother-tamim-islam"
+          }
+        },
+        {
+          "id": "404092",
+          "title": "Qur’an Circle with Brother Tamim Islam",
+          "starts_at": "2026-12-01T21:00:00+00:00",
+          "ends_at": "2026-12-01T23:00:00+00:00",
+          "venue_name": "Global Center for Academic and Spiritual Life",
+          "lat": 40.7299,
+          "lng": -73.9982,
+          "event_url": "https://events.nyu.edu/event/404092-quran-circle-with-brother-tamim-islam",
+          "category": "",
+          "venue_address": "238 Thompson Street, New York, NY 10012",
+          "venue_city": "New York",
+          "reason": null,
+          "description": "Global Center for Academic and Spiritual Life, 4th Floor, Room 472\nJoin Brother Tamim Islam for a weekly Quran recitation session focused on proper Tajweed (rules of recitation) and Makharij (pronunciation).\n*Note on Inclusion and Accessibility:\nAs a part of NYU’s commitment to global inclusion, our events and initiatives are open to all backgrounds and identities. It is a priority to make our events inclusive and accessible. For any questions or to make a request, please email islamic.center@nyu.edu at least 72 hours before the event.*",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_venue_point_reviewed_street",
+          "publisher_categories": [
+            "Open to the Public",
+            "Students"
+          ],
+          "description_sha256": "1ef3b50153c6682b2d78f4d4dc1d3d1746380858588365f2062a80dfc77867fb",
+          "address_evidence": {
+            "source": "publisher structured event/venue data with exact reviewed NYU address mapping",
+            "url": "https://events.nyu.edu/event/404092-quran-circle-with-brother-tamim-islam"
+          }
+        },
+        {
+          "id": "408821",
+          "title": "A Dark Fable of Campus Desire: Julia May Jonas’s Vladimir",
+          "starts_at": "2026-12-01T22:00:00+00:00",
+          "ends_at": null,
+          "venue_name": "20 Cooper Square",
+          "lat": 40.728,
+          "lng": -73.9914,
+          "event_url": "https://events.nyu.edu/event/408821-a-dark-fable-of-campus-desire-julia-may-jonass-vladim",
+          "category": "",
+          "venue_address": "20 Cooper Square, New York, NY 10003",
+          "venue_city": "New York",
+          "reason": null,
+          "description": "Conversation featuring author of Vladimir, Julia May Jonas, and English Professor Catherine Robson\nVladimir\n, a bold and disturbingly funny tale of campus life and illicit desire, burst onto the literary scene in 2023. Tackling generational shifts in complex sexual politics, the book is playwright Julia May Jonas’s first novel; she also wrote its screen adaptation which appeared to great acclaim on Netflix earlier in the year and starred Rachel Weisz.\nJulia May Jonas\nwill discuss the ins and outs of her provocative fiction with NYU Department of English Professor\nCatherine Robson\n, author of\nHeart Beats: Everyday Life and the Memorized Poem\nand co-editor of\nThe Victorian Age\nfor\nThe\nNorton Anthology of English Literature.\nBrought to you in partnership with the\nDepartment of English\n, the\nCreative Writing Program\n, and the\nRita and Burton Goldberg Department of Dramatic Writing\n.\nPlease register for the event here:\nhttps://www.eventbrite.com/e/a-dark-fable-of-campus-desire-julia-may-jonas-vladimir-tickets-2003169434703\nThis venue has an elevator and is accessible for wheelchair users. There are single-stall, all gender restrooms available. If you have any access needs, please email humanities.center@nyu.edu\nFree",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_venue_point_reviewed_street",
+          "publisher_categories": [
+            "Arts",
+            "Faculty",
+            "Free",
+            "Free Food",
+            "Open to the Public",
+            "Students"
+          ],
+          "description_sha256": "c83f32e397eb57f18daf5cd208b399526872dfa04ff0d50a7f42a9b2c72ac3ff",
+          "address_evidence": {
+            "source": "publisher structured event/venue data with exact reviewed NYU address mapping",
+            "url": "https://events.nyu.edu/event/408821-a-dark-fable-of-campus-desire-julia-may-jonass-vladim"
+          }
+        },
+        {
+          "id": "403629",
+          "title": "ISAW Exhibition Lecture: Portable Prayers: Objects, Adornment, and Devotion in Jewish Antiquity",
+          "starts_at": "2026-12-02T22:30:00+00:00",
+          "ends_at": "2026-12-02T23:30:00+00:00",
+          "venue_name": "Institute for the Study of the Ancient World (ISAW)",
+          "lat": 40.78,
+          "lng": -73.9603,
+          "event_url": "https://events.nyu.edu/event/403629-isaw-exhibition-lecture-portable-prayers-objects-ador",
+          "category": "",
+          "venue_address": "15 East 84th Street, New York, NY 10028",
+          "venue_city": "New York",
+          "reason": null,
+          "description": "Karen Stern\nBrooklyn College and the Graduate Center of the City University of New York\nConventional studies of ancient Jewish prayer and its evolution focus primarily on recitations or performances of precatory texts, liturgy, or poetry once conducted inside Jewish homes, synagogues, and study halls. This talk adopts a different focus: it considers inextricable connections between the minds, hearts, and bodies of Jewish supplicants and the portable things that they once attached to their bodies with strings and cords, including inscribed amulets and phylacteries of various sorts.\nThis lecture will take place in person at\nISAW\n(15 East 84th Street).\nRegistration is required. Please fill out the form at the bottom of this page.\nConventional studies of ancient Jewish prayer and its evolution focus primarily on recitations or performances of precatory texts, liturgy, or poetry once conducted inside Jewish homes, synagogues, and study halls. This talk adopts a different focus: it considers inextricable connections between the minds, hearts, and bodies of Jewish supplicants and the portable things that they once attached to their bodies with strings and cords, including inscribed amulets and phylacteries of various sorts. Through explorations of objects from ISAW’s exhibition\nCursed! The Power of Magic in the Ancient World\n, as well as those found in other museum exhibitions and collections, this lecture examines haptic and material dimensions of Jewish prayer, as facilitated through attention to wearable objects that originally encased hidden texts. Drawing additional insights from recent studies of ancient magic and ritual power throughout Egyptian, Greek, Roman, and Mesopotamian cultural orbits, as well as neglected archaeological discoveries from synagogue contexts, the lecture offers novel insights into relationships between amulets and phylacteries, Jewish prayer, and the complex “marketplace” of religions throughout the ancient world.\nKaren B. Stern (PhD Brown University, 2006) is an award-winning author and professor at Brooklyn College and the Graduate Center of the City University of New York. Her research synthesizes studies of archaeology, art, and graffiti to reimagine the cultural histories, material cultures, and sensory experiences of Jews and their neighbors throughout the ancient Mediterranean world. She is author of\nWriting on the Wall: Graffiti and the Forgotten Jews of Antiquity\n(Princeton University Press 2018; paperback ed. 2020), winner of a 2020 Jordan Schnitzer Book Award;\nInscribing Devotion and Death: Archaeological Evidence for Jewish Populations of North Africa\n(Brill 2008); and co-editor of\nWith the Loyal You Show Yourself Loyal: Essays on Relationships in the Hebrew Bible in Honor of Saul M. Olyan\n(SBL Press 2021). Research grants, fellowships, and residencies from the Guggenheim Foundation, the National Endowment for the Humanities, the Council of American Overseas Research Centers, the Getty Villa, the Center for Jewish History, and others have supported her academic and field research. Her current book project, ‘Sacred: Archaeology of the Senses in the Ancient Synagogue,’ investigates experiential and multi-sensory dimensions of Jewish devotional life in antiquity.\nThis talk is given in conjunction with ISAW’s exhibition\nCursed! The Power of Magic in the Ancient World\n. The exhibition is organized by the Toledo Museum of Art; its presentation at ISAW is made possible by generous support from the Gladys Krieble Delmas Foundation and the Leon Levy Foundation.\nPlease check\nisaw.nyu.edu\nfor event updates.\nISAW is committed to providing a positive and educational experience for all guests and participants who attend our public programming. We ask that all attendees follow the guidelines listed in our\ncommunity standards policy\n.\nFree",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_venue_point_reviewed_street",
+          "publisher_categories": [
+            "Conferences and Speakers",
+            "Faculty",
+            "Free",
+            "Open to the Public",
+            "Students"
+          ],
+          "description_sha256": "bcfb38dca81e2cd645ff447dc83e6bd25cd0c52291e70fa88cb0a8f9ef318b88",
+          "address_evidence": {
+            "source": "publisher structured event/venue data with exact reviewed NYU address mapping",
+            "url": "https://events.nyu.edu/event/403629-isaw-exhibition-lecture-portable-prayers-objects-ador"
+          }
+        },
+        {
+          "id": "404062",
+          "title": "ISAW Expanding the Ancient World Workshop: “The Bones We Leave Behind: Bioarchaeology and How to Teach It”",
+          "starts_at": "2026-12-03T22:30:00+00:00",
+          "ends_at": "2026-12-04T00:00:00+00:00",
+          "venue_name": "Institute for the Study of the Ancient World (ISAW)",
+          "lat": 40.78,
+          "lng": -73.9603,
+          "event_url": "https://events.nyu.edu/event/404062-isaw-etaw-bioarchaeology-and-how-to-teach-it",
+          "category": "",
+          "venue_address": "15 East 84th Street, New York, NY 10028",
+          "venue_city": "New York",
+          "reason": null,
+          "description": "Talia Sankari\nISAW PhD Student\nExpanding the Ancient World\nis a series of professional development workshops and online resources for teachers. Keyed to the NYC Department of Education Social Studies Scope and Sequence, this program is designed to offer K-12 educators opportunities to develop their knowledge of the ancient world and to provide classroom-ready strategies for teaching the past with reliable sources. This workshop will provide educators with an understanding of what bones can tell us about the past. Participants will learn how parts of who we are get left behind on our skeletons – and how to read them!\nThis workshop will take place online; a Zoom link will be provided via email to registered participants.\nRegistration is required. Please fill out the form at the bottom of this page.\nExpanding the Ancient World\nis a series of professional development workshops and online resources for teachers. Keyed to the NYC Department of Education Social Studies Scope and Sequence, this program is designed to offer K-12 educators opportunities to develop their knowledge of the ancient world and to provide classroom-ready strategies for teaching the past with reliable sources. Featuring inquiry-based workshops, flexible lesson plans, and up-to-date research, Expanding the Ancient World aims to equip teachers with information and skills that they can share with their students. CTLE credits will be offered to New York State teachers.\nThis workshop will provide educators with an understanding of what bones can tell us about the past. Participants will learn how parts of who we are get left behind on our skeletons – and how to read them! With actionable examples, you will learn how bioarchaeologists estimate sex, look for evidence of malnutrition, and identify medical interventions like surgery.\nWorkshop content will cover an introduction to bioarchaeology followed by a discussion of methods used to study skeletons, including archaeological science approaches like ancient DNA extraction and isotope analysis. We will discuss how bioarchaeologists build biological profiles by estimating sex, age, height, and other key pieces of information. We will then go over the study of disease and traumatic injury in bone with fascinating examples from across the ancient world. An overview of funerary archaeology will also be covered, emphasizing the importance of viewing a burial through the lens of the funeral. Educators will come away with an understanding of how bones are studied, what to look for when viewing human remains, and how to incorporate bioarchaeology into the classroom – and make it exciting!\nWorkshop led by\nTalia Sankari\n(ISAW PhD Student).\nParticipants will receive 1.5 CTLE hours.\nIf you have any questions regarding the Expanding the Ancient World program please email\nETAW@nyu.edu\n.\nPlease check\nisaw.nyu.edu\nfor event updates.\nISAW is committed to providing a positive and educational experience for all guests and participants who attend our public programming. We ask that all attendees follow the guidelines listed in our\ncommunity standards policy\n.\nFree",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_venue_point_reviewed_street",
+          "publisher_categories": [
+            "Faculty",
+            "Free",
+            "Open to the Public",
+            "Students",
+            "Training and Workshops"
+          ],
+          "description_sha256": "51f062e75c18f6d17ea348d82883194a7c40eab4779e40161a79be7a341dc00d",
+          "address_evidence": {
+            "source": "publisher structured event/venue data with exact reviewed NYU address mapping",
+            "url": "https://events.nyu.edu/event/404062-isaw-etaw-bioarchaeology-and-how-to-teach-it"
+          }
+        },
+        {
+          "id": "409133",
+          "title": "Fall Commissioner Speaker Series: NYC DOC",
+          "starts_at": "2026-12-03T22:30:00+00:00",
+          "ends_at": "2026-12-04T00:00:00+00:00",
+          "venue_name": "NYU Silver School of Social Work",
+          "lat": 40.731043,
+          "lng": -73.995704,
+          "event_url": "https://events.nyu.edu/event/409133-fall-commissioner-speaker-series-nyc-doc",
+          "category": "",
+          "venue_address": "1 Washington Square North, New York, NY 10003",
+          "venue_city": "New York",
+          "reason": null,
+          "description": "Leadership, Policy, and Social Work in Action\nHow do public-sector leaders turn policy into meaningful change for individuals, families, and communities?\nJoin NYU Silver for candid conversations with three commissioners whose work spans criminal justice, child welfare, and correction. Explore the experiences that shape their leadership, the challenges facing public systems, and the role of social work in advancing effective, equitable responses.\nThis event is designed to address the social work ethical principles of helping people in need and addressing social problems, which align with the value of Service contained in the\nCode of Ethics for the National Association of Social Workers\n.\nIt will be held in a hybrid format, with opportunities to participate both in person and virtually. In-person space is limited, and early registration is strongly encouraged for those wishing to attend on campus.\nLight refreshments will be served for in-person attendees. All are welcome to join the conversation, whether on campus or online.\nReserve Your Seat Today!\nFree",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_venue_point_reviewed_street",
+          "publisher_categories": [
+            "Alumni",
+            "Faculty",
+            "Free",
+            "Open to the Public",
+            "Students"
+          ],
+          "description_sha256": "a626281ec7884fb256698aa2151b83a076d20c363af1f7024151131be77e2751",
+          "address_evidence": {
+            "source": "publisher structured event/venue data with exact reviewed NYU address mapping",
+            "url": "https://events.nyu.edu/event/409133-fall-commissioner-speaker-series-nyc-doc"
+          }
+        },
+        {
+          "id": "409937",
+          "title": "Joy Resounding: A Gospel Holiday Concert",
+          "starts_at": "2026-12-08T00:00:00+00:00",
+          "ends_at": null,
+          "venue_name": "Skirball Center for the Performing Arts",
+          "lat": 40.729795,
+          "lng": -73.997749,
+          "event_url": "https://events.nyu.edu/event/409937-joy-resounding-a-gospel-holiday-concert",
+          "category": "",
+          "venue_address": "566 LaGuardia Place, New York, NY 10012",
+          "venue_city": "New York",
+          "reason": null,
+          "description": "$23*- NYU Students\n$32*-$138*-NYU Faculty/Staff/Alumni\n$38*-$138Full Price\n*Save $3 by buying in person at the NYU Box Office\nThe gift is JOY, come get yours.\nThe gift is JOY, come get yours.\nThis holiday season, Broadway Inspirational Voices fills the room with the one thing the world needs most: joy that shines like light in the darkest times.\nExpect soul-stirring gospel and holiday classics, powerful true stories, and the kind of music that turns sadness to joy and mends broken hearts. You’ll discover how we found this joy, why we share it, and how to keep it long\nafter the final note. But joy isn’t meant to be kept. It’s meant to be passed on. Bring your family, your friends, and your whole holiday crew, and leave ready to spread it. Let the joy RESOUND. Get your tickets today.\nDoors open at 6:00 PM\nRuntime: 90mins w/no intermission\n***ASL & Accessible Seating Available please contact boxoffice@nyu.edu",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_venue_point_reviewed_street",
+          "publisher_categories": [
+            "Arts",
+            "Open to the Public"
+          ],
+          "description_sha256": "55376606259692e6d80a9f906a1aee4224c47de6e76a2795db5fec61aa9c2443",
+          "address_evidence": {
+            "source": "publisher structured event/venue data with exact reviewed NYU address mapping",
+            "url": "https://events.nyu.edu/event/409937-joy-resounding-a-gospel-holiday-concert"
+          }
+        },
+        {
+          "id": "404093",
+          "title": "Qur’an Circle with Brother Tamim Islam",
+          "starts_at": "2026-12-08T21:00:00+00:00",
+          "ends_at": "2026-12-08T23:00:00+00:00",
+          "venue_name": "Global Center for Academic and Spiritual Life",
+          "lat": 40.7299,
+          "lng": -73.9982,
+          "event_url": "https://events.nyu.edu/event/404093-quran-circle-with-brother-tamim-islam",
+          "category": "",
+          "venue_address": "238 Thompson Street, New York, NY 10012",
+          "venue_city": "New York",
+          "reason": null,
+          "description": "Global Center for Academic and Spiritual Life, 4th Floor, Room 472\nJoin Brother Tamim Islam for a weekly Quran recitation session focused on proper Tajweed (rules of recitation) and Makharij (pronunciation).\n*Note on Inclusion and Accessibility:\nAs a part of NYU’s commitment to global inclusion, our events and initiatives are open to all backgrounds and identities. It is a priority to make our events inclusive and accessible. For any questions or to make a request, please email islamic.center@nyu.edu at least 72 hours before the event.*",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_venue_point_reviewed_street",
+          "publisher_categories": [
+            "Open to the Public",
+            "Students"
+          ],
+          "description_sha256": "1ef3b50153c6682b2d78f4d4dc1d3d1746380858588365f2062a80dfc77867fb",
+          "address_evidence": {
+            "source": "publisher structured event/venue data with exact reviewed NYU address mapping",
+            "url": "https://events.nyu.edu/event/404093-quran-circle-with-brother-tamim-islam"
+          }
+        },
+        {
+          "id": "412470",
+          "title": "Policy Forum: Governing for Safe and Abundant Housing",
+          "starts_at": "2026-12-09T13:30:00+00:00",
+          "ends_at": "2026-12-09T15:00:00+00:00",
+          "venue_name": "Main Event Space, Rm. 101, 105 East 17th Street",
+          "lat": 40.736399,
+          "lng": -73.988013,
+          "event_url": "https://events.nyu.edu/event/412470-policy-forum-governing-for-safe-and-abundant",
+          "category": "",
+          "venue_address": "105 East 17th Street, New York, NY 10003",
+          "venue_city": "New York",
+          "reason": null,
+          "description": "Join former FDNY Commissioner and NYU Wagner Researcher-in-Residence Laura Kavanagh and Melanie E. La Rocca (Chief Operating Officer, RiseBoro Community Partnership & former Commissioner, NYCDOB) for a fireside chat to discuss how fire departments and housing agencies can work together to keep New Yorkers safe while building the homes the city needs.\nOur building and fire codes exist to protect residents. But as New York works to expand housing through building and renovation, a key question is whether those codes weigh risk in the right way. Too often, rules judge a material, design, or building type in isolation rather than against the real alternative: residents remaining in older, riskier housing when safer options are too costly or slow to build. Recent conversations about PVC piping, single-stair buildings, and sprinklering requirements offer an opportunity to ask whether rules that make new or upgraded housing harder to deliver actually make people safer, and how agencies with different missions can reach shared answers.\nLaura and Melanie will draw on their experience leading two of the city’s key agencies to discuss how these decisions play out in practice, what delivers the best safety and housing outcomes for all residents, and what that reveals about broader challenges in urban governance. The fireside chat will be introduced and moderated by Bennett Midland.\nDoors will open at 8:30am. The event will begin at 9:00am, with time at the end for audience Q&A. Breakfast will be provided. This event is for all NYU students, staff, faculty, and members of the broader community. Advance registration is required and external guests must present an ID in order to access the building.\nRSVP:\nhttps://wagner.nyu.edu/community/events/policy-forum-governing-for-safe-and-abundant-housing-2026-12-09",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_venue_point_reviewed_street",
+          "publisher_categories": [
+            "Open to the Public"
+          ],
+          "description_sha256": "13d5f5d8deae62b0f0f6aff424607c0c7fb9d7ac6f79405aa35079c4d8f20324",
+          "address_evidence": {
+            "source": "publisher structured event/venue data with exact reviewed NYU address mapping",
+            "url": "https://events.nyu.edu/event/412470-policy-forum-governing-for-safe-and-abundant"
+          }
+        },
+        {
+          "id": "408427",
+          "title": "NYU Silver Alumni Honors",
+          "starts_at": "2026-12-09T23:30:00+00:00",
+          "ends_at": "2026-12-10T01:30:00+00:00",
+          "venue_name": "Global Center for Academic and Spiritual Life",
+          "lat": 40.7299,
+          "lng": -73.9982,
+          "event_url": "https://events.nyu.edu/event/408427-nyu-silver-alumni-honors",
+          "category": "",
+          "venue_address": "238 Thompson Street, New York, NY 10012",
+          "venue_city": "New York",
+          "reason": null,
+          "description": "Save the date!\nThe\n2026 NYU Silver Alumni Honors\nwill take place on\nWednesday, December 9, 2026\n.\nThe Alumni Honors are an opportunity to come together as a community and celebrate Silver graduates whose leadership, service, professional achievements, and contributions reflect the values and impact of social work.\nFree",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_venue_point_reviewed_street",
+          "publisher_categories": [
+            "Alumni",
+            "Faculty",
+            "Free",
+            "Open to the Public"
+          ],
+          "description_sha256": "d5d5d5fe8a1c5febed09bcd2c53d1a17b57a75127a498cb4a06887a3ae8d5c1c",
+          "address_evidence": {
+            "source": "publisher structured event/venue data with exact reviewed NYU address mapping",
+            "url": "https://events.nyu.edu/event/408427-nyu-silver-alumni-honors"
+          }
+        },
+        {
+          "id": "411732",
+          "title": "On the Road in the City and Nation",
+          "starts_at": "2026-12-10T23:00:00+00:00",
+          "ends_at": "2026-12-11T01:00:00+00:00",
+          "venue_name": "20 Cooper Square",
+          "lat": 40.728,
+          "lng": -73.9914,
+          "event_url": "https://events.nyu.edu/event/411732-on-the-road-in-the-city-and-nation",
+          "category": "",
+          "venue_address": "20 Cooper Square, New York, NY 10003",
+          "venue_city": "New York",
+          "reason": null,
+          "description": "Presentations of Final Proiects of RTN-RNY Graduating Students\nThe graduating students of the Reporting the Nation-Reporting New York graduates will present their Thesis/Final Projects to an audience of family, editors, alumni and adjuncts of the cohort.",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_venue_point_reviewed_street",
+          "publisher_categories": [
+            "Open to the Public"
+          ],
+          "description_sha256": "c8ba1a7c8386940dac1e6de7153b1adb19649858bf8d8237bc298a6ef6d505bf",
+          "address_evidence": {
+            "source": "publisher structured event/venue data with exact reviewed NYU address mapping",
+            "url": "https://events.nyu.edu/event/411732-on-the-road-in-the-city-and-nation"
+          }
+        },
+        {
+          "id": "409933",
+          "title": "NYCGMC Presents: Yuletide Gay(er)",
+          "starts_at": "2026-12-12T01:00:00+00:00",
+          "ends_at": null,
+          "venue_name": "Skirball Center for the Performing Arts",
+          "lat": 40.729795,
+          "lng": -73.997749,
+          "event_url": "https://events.nyu.edu/event/409933-nycgmc-presents-yuletide-gayer",
+          "category": "",
+          "venue_address": "566 LaGuardia Place, New York, NY 10012",
+          "venue_city": "New York",
+          "reason": null,
+          "description": "$23*- NYU Students\n$48*-$133*-NYU Faculty/Staff/Alumni\n$55*-$133Full Price\n*Save $3 by buying in person at the NYU Box Office\nNYCGMC returns to NYU Skirball\nDeck the halls, queerly. NYCGMC returns to NYU Skirball with Yuletide Gay(er), a sparkling celebration of Hanukkah traditions, Christmas shenanigans, and gayer twists on holiday favorites. Featuring music made famous by Cher, Bonnie Tyler, Mariah Carey, Natalie Cole, and more, the concert blends spectacular vocals, knowing humor, and the warmth of gathering with family, chosen family, and community. Festive, funny, and full of heart, Yuletide Gay(er) reclaims the season as a place for queer joy, resilience, and the freedom to celebrate exactly who we are.",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_venue_point_reviewed_street",
+          "publisher_categories": [
+            "Arts",
+            "Open to the Public"
+          ],
+          "description_sha256": "c40527839485ad57a2672a56c12d5ea66414dd66602dd753b62aed200f993173",
+          "address_evidence": {
+            "source": "publisher structured event/venue data with exact reviewed NYU address mapping",
+            "url": "https://events.nyu.edu/event/409933-nycgmc-presents-yuletide-gayer"
+          }
+        },
+        {
+          "id": "409935",
+          "title": "NYCGMC Presents: Yuletide Gay(er)",
+          "starts_at": "2026-12-12T20:00:00+00:00",
+          "ends_at": null,
+          "venue_name": "Skirball Center for the Performing Arts",
+          "lat": 40.729795,
+          "lng": -73.997749,
+          "event_url": "https://events.nyu.edu/event/409935-nycgmc-presents-yuletide-gayer",
+          "category": "",
+          "venue_address": "566 LaGuardia Place, New York, NY 10012",
+          "venue_city": "New York",
+          "reason": null,
+          "description": "$23*- NYU Students\n$48*-$133*-NYU Faculty/Staff/Alumni\n$55*-$133Full Price\n*Save $3 by buying in person at the NYU Box Office\nNYCGMC returns to NYU Skirball\nDeck the halls, queerly. NYCGMC returns to NYU Skirball with Yuletide Gay(er), a sparkling celebration of Hanukkah traditions, Christmas shenanigans, and gayer twists on holiday favorites. Featuring music made famous by Cher, Bonnie Tyler, Mariah Carey, Natalie Cole, and more, the concert blends spectacular vocals, knowing humor, and the warmth of gathering with family, chosen family, and community. Festive, funny, and full of heart, Yuletide Gay(er) reclaims the season as a place for queer joy, resilience, and the freedom to celebrate exactly who we are.",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_venue_point_reviewed_street",
+          "publisher_categories": [
+            "Arts",
+            "Open to the Public"
+          ],
+          "description_sha256": "c40527839485ad57a2672a56c12d5ea66414dd66602dd753b62aed200f993173",
+          "address_evidence": {
+            "source": "publisher structured event/venue data with exact reviewed NYU address mapping",
+            "url": "https://events.nyu.edu/event/409935-nycgmc-presents-yuletide-gayer"
+          }
+        },
+        {
+          "id": "409936",
+          "title": "NYCGMC Presents: Yuletide Gay(er)",
+          "starts_at": "2026-12-13T01:00:00+00:00",
+          "ends_at": null,
+          "venue_name": "Skirball Center for the Performing Arts",
+          "lat": 40.729795,
+          "lng": -73.997749,
+          "event_url": "https://events.nyu.edu/event/409936-nycgmc-presents-yuletide-gayer",
+          "category": "",
+          "venue_address": "566 LaGuardia Place, New York, NY 10012",
+          "venue_city": "New York",
+          "reason": null,
+          "description": "$23*- NYU Students\n$48*-$133*-NYU Faculty/Staff/Alumni\n$55*-$133Full Price\n*Save $3 by buying in person at the NYU Box Office\nNYCGMC returns to NYU Skirball\nDeck the halls, queerly. NYCGMC returns to NYU Skirball with Yuletide Gay(er), a sparkling celebration of Hanukkah traditions, Christmas shenanigans, and gayer twists on holiday favorites. Featuring music made famous by Cher, Bonnie Tyler, Mariah Carey, Natalie Cole, and more, the concert blends spectacular vocals, knowing humor, and the warmth of gathering with family, chosen family, and community. Festive, funny, and full of heart, Yuletide Gay(er) reclaims the season as a place for queer joy, resilience, and the freedom to celebrate exactly who we are.",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_venue_point_reviewed_street",
+          "publisher_categories": [
+            "Arts",
+            "Open to the Public"
+          ],
+          "description_sha256": "c40527839485ad57a2672a56c12d5ea66414dd66602dd753b62aed200f993173",
+          "address_evidence": {
+            "source": "publisher structured event/venue data with exact reviewed NYU address mapping",
+            "url": "https://events.nyu.edu/event/409936-nycgmc-presents-yuletide-gayer"
+          }
+        },
+        {
+          "id": "409485",
+          "title": "ISAW Lecture: “Reconsidering the Rise of a Newly Discovered Iron Age Kingdom in Anatolia: Great King Hartapu and the Türkmen-Karahöyük Archaeological Project”",
+          "starts_at": "2026-12-14T22:30:00+00:00",
+          "ends_at": "2026-12-15T00:30:00+00:00",
+          "venue_name": "Institute for the Study of the Ancient World (ISAW)",
+          "lat": 40.78,
+          "lng": -73.9603,
+          "event_url": "https://events.nyu.edu/event/409485-isaw-lecture-iron-age-kingdom-in-anatolia",
+          "category": "",
+          "venue_address": "15 East 84th Street, New York, NY 10028",
+          "venue_city": "New York",
+          "reason": null,
+          "description": "James Osborne\nUniversity of Chicago\nSince the 2019 discovery of a royal inscription authored by “Great King Hartapu,” Iron Age Anatolian scholarship has been energised by the appearance of a hitherto unknown kingdom in the Konya Plain. While the historical context of Hartapu’s inscriptions have undergone dramatic reassessment in light of this new text, little attention has been paid to the conditions that would have contributed to the rise of this kingdom in the first place. This lecture proposes several factors that likely played a role in the emergence of the kingdom: cultural and economic interaction with the Neo-Assyrian Empire, similar relations with Phrygia, emulative competition with its local peer polities and a propitious ecological setting at a time of significant environmental transformations.\nThis lecture will take place in person at\nISAW\n(15 East 84th Street).\nRegistration is required. Please fill out the form at the bottom of this page.\nThis talk is cosponsored by ISAW and the Archaeological Institute of America-New York Society.\nAbstract\nSince the 2019 discovery of a royal inscription authored by “Great King Hartapu,” Iron Age Anatolian scholarship has been energised by the appearance of a hitherto unknown kingdom in the Konya Plain. While the historical context of Hartapu’s inscriptions have undergone dramatic reassessment in light of this new text, little attention has been paid to the conditions that would have contributed to the rise of this kingdom in the first place. This lecture proposes several factors that likely played a role in the emergence of the kingdom: cultural and economic interaction with the Neo-Assyrian Empire, similar relations with Phrygia, emulative competition with its local peer polities and a propitious ecological setting at a time of significant environmental transformations. Results from newly launched excavations at Türkmen-Karahöyük, almost certainly Hartapu’s capital city, help illustrate these points. Interspersed with these arguments are reflections and anecdotes about Hartapu, and especially the way we represent Hartapu visually, that evoke how the effort we have spent on understanding political dynamics in Hartapu’s kingdom has been imbalanced toward the man himself, with insufficient consideration having been given to longer term, structural forces. Such reflections lead us to reconsider the disproportionately impactful effect of Hartapu’s monuments in the past and the present alike, and the extent to which Hartapu’s kingdom in fact consisted of his own self-imaging.\nAbout the speaker\nJames Osborne is Associate Professor at the University of Chicago’s Institute for the Study of Ancient Cultures. He is a Bronze and Iron Age archaeologist concentrating especially on Anatolia and the Levant during the late second and early first millennium BCE. His monograph\nThe Syro-Anatolian City-States: An Iron Age Culture\n, published by Oxford University Press, was the 2023 winner of the American Schools of Overseas Research’s G. Ernest Wright Award for most substantial book in the archaeology of the Near East and eastern Mediterranean. With Michele Rüzgar Massa (Bilkent University), he is Co-Director of the Türkmen-Karahöyük Archaeological Project.\nThe doors to the lecture hall will close 10 minutes after the lecture starts.\nPlease check\nisaw.nyu.edu\nfor event updates.\nISAW is committed to providing a positive and educational experience for all guests and participants who attend our public programming. We ask that all attendees follow the guidelines listed in our\ncommunity standards policy\n.\nFree",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_venue_point_reviewed_street",
+          "publisher_categories": [
+            "Conferences and Speakers",
+            "Faculty",
+            "Free",
+            "Open to the Public",
+            "Students"
+          ],
+          "description_sha256": "9891a0d9c3d6e6a324227f5bdd3883c8a1140814ea4f936e3dbb03e9d1fbced8",
+          "address_evidence": {
+            "source": "publisher structured event/venue data with exact reviewed NYU address mapping",
+            "url": "https://events.nyu.edu/event/409485-isaw-lecture-iron-age-kingdom-in-anatolia"
+          }
+        },
+        {
+          "id": "410403",
+          "title": "The Nutcracker Suite: Dorrance Dance",
+          "starts_at": "2026-12-23T19:00:00+00:00",
+          "ends_at": null,
+          "venue_name": "Skirball Center for the Performing Arts",
+          "lat": 40.729795,
+          "lng": -73.997749,
+          "event_url": "https://events.nyu.edu/event/410403-the-nutcracker-suite-dorrance-dance",
+          "category": "",
+          "venue_address": "566 LaGuardia Place, New York, NY 10012",
+          "venue_city": "New York",
+          "reason": null,
+          "description": "$24*- NYU Students\n$47*-$72*-NYU Faculty/Staff/Alumni\n$57*-$109 Full Price\n*Save $3 by buying in person at the NYU Box Office\n“The Nutcracker Suite” created by Michelle Dorrance, Hannah Heller, and Josette Wiggan set to Duke Ellington and Billy Strayhorn’s extraordinary interpretation of the Tchaikovsky score is a transformation of the classic tale trading pointe shoes for tap shoes in this high-energy, large ensemble reimagining of a seasonal favorite. The production transforms the Sugar Plum Fairy into a slinky Sugar Rum Cherry, turns the “March of the Toy Soldiers” into a swinging brass “Peanut Brittle Brigade,” and gives the original ballet’s pageant of national dances a fresh 21st-century twist. The program opens with “An Ella’quent Holiday Swing”—a full dose of swingin’ holiday cheer, featuring Ella Fitzgerald’s timeless holiday songbook sung by “breathtaking vocalist” Aaron Marcellus (New York Times). Join Dorrance Dance for an unforgettable trip to the land of sweets filled with surprises, humor, and the rhythmic symphony of world-class tap dancers.\n60mins, no intermission.",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_venue_point_reviewed_street",
+          "publisher_categories": [
+            "Arts",
+            "Open to the Public"
+          ],
+          "description_sha256": "38144d4aee63cdba7b0002b21f75fa4268d93e7994784ffc9e75b08d7023fb32",
+          "address_evidence": {
+            "source": "publisher structured event/venue data with exact reviewed NYU address mapping",
+            "url": "https://events.nyu.edu/event/410403-the-nutcracker-suite-dorrance-dance"
+          }
+        },
+        {
+          "id": "410404",
+          "title": "The Nutcracker Suite: Dorrance Dance",
+          "starts_at": "2026-12-24T00:00:00+00:00",
+          "ends_at": null,
+          "venue_name": "Skirball Center for the Performing Arts",
+          "lat": 40.729795,
+          "lng": -73.997749,
+          "event_url": "https://events.nyu.edu/event/410404-the-nutcracker-suite-dorrance-dance",
+          "category": "",
+          "venue_address": "566 LaGuardia Place, New York, NY 10012",
+          "venue_city": "New York",
+          "reason": null,
+          "description": "$24*- NYU Students\n$47*-$72*-NYU Faculty/Staff/Alumni\n$57*-$109 Full Price\n*Save $3 by buying in person at the NYU Box Office\n“The Nutcracker Suite” created by Michelle Dorrance, Hannah Heller, and Josette Wiggan set to Duke Ellington and Billy Strayhorn’s extraordinary interpretation of the Tchaikovsky score is a transformation of the classic tale trading pointe shoes for tap shoes in this high-energy, large ensemble reimagining of a seasonal favorite. The production transforms the Sugar Plum Fairy into a slinky Sugar Rum Cherry, turns the “March of the Toy Soldiers” into a swinging brass “Peanut Brittle Brigade,” and gives the original ballet’s pageant of national dances a fresh 21st-century twist. The program opens with “An Ella’quent Holiday Swing”—a full dose of swingin’ holiday cheer, featuring Ella Fitzgerald’s timeless holiday songbook sung by “breathtaking vocalist” Aaron Marcellus (New York Times). Join Dorrance Dance for an unforgettable trip to the land of sweets filled with surprises, humor, and the rhythmic symphony of world-class tap dancers.\n60mins, no intermission.",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_venue_point_reviewed_street",
+          "publisher_categories": [
+            "Arts",
+            "Open to the Public"
+          ],
+          "description_sha256": "38144d4aee63cdba7b0002b21f75fa4268d93e7994784ffc9e75b08d7023fb32",
+          "address_evidence": {
+            "source": "publisher structured event/venue data with exact reviewed NYU address mapping",
+            "url": "https://events.nyu.edu/event/410404-the-nutcracker-suite-dorrance-dance"
+          }
+        },
+        {
+          "id": "410405",
+          "title": "The Nutcracker Suite: Dorrance Dance",
+          "starts_at": "2026-12-24T19:00:00+00:00",
+          "ends_at": null,
+          "venue_name": "Skirball Center for the Performing Arts",
+          "lat": 40.729795,
+          "lng": -73.997749,
+          "event_url": "https://events.nyu.edu/event/410405-the-nutcracker-suite-dorrance-dance",
+          "category": "",
+          "venue_address": "566 LaGuardia Place, New York, NY 10012",
+          "venue_city": "New York",
+          "reason": null,
+          "description": "$24*- NYU Students\n$47*-$72*-NYU Faculty/Staff/Alumni\n$57*-$109 Full Price\n*Save $3 by buying in person at the NYU Box Office\n“The Nutcracker Suite” created by Michelle Dorrance, Hannah Heller, and Josette Wiggan set to Duke Ellington and Billy Strayhorn’s extraordinary interpretation of the Tchaikovsky score is a transformation of the classic tale trading pointe shoes for tap shoes in this high-energy, large ensemble reimagining of a seasonal favorite. The production transforms the Sugar Plum Fairy into a slinky Sugar Rum Cherry, turns the “March of the Toy Soldiers” into a swinging brass “Peanut Brittle Brigade,” and gives the original ballet’s pageant of national dances a fresh 21st-century twist. The program opens with “An Ella’quent Holiday Swing”—a full dose of swingin’ holiday cheer, featuring Ella Fitzgerald’s timeless holiday songbook sung by “breathtaking vocalist” Aaron Marcellus (New York Times). Join Dorrance Dance for an unforgettable trip to the land of sweets filled with surprises, humor, and the rhythmic symphony of world-class tap dancers.\n60mins, no intermission.",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_venue_point_reviewed_street",
+          "publisher_categories": [
+            "Arts",
+            "Open to the Public"
+          ],
+          "description_sha256": "38144d4aee63cdba7b0002b21f75fa4268d93e7994784ffc9e75b08d7023fb32",
+          "address_evidence": {
+            "source": "publisher structured event/venue data with exact reviewed NYU address mapping",
+            "url": "https://events.nyu.edu/event/410405-the-nutcracker-suite-dorrance-dance"
+          }
+        },
+        {
+          "id": "410406",
+          "title": "The Nutcracker Suite: Dorrance Dance",
+          "starts_at": "2026-12-26T19:00:00+00:00",
+          "ends_at": null,
+          "venue_name": "Skirball Center for the Performing Arts",
+          "lat": 40.729795,
+          "lng": -73.997749,
+          "event_url": "https://events.nyu.edu/event/410406-the-nutcracker-suite-dorrance-dance",
+          "category": "",
+          "venue_address": "566 LaGuardia Place, New York, NY 10012",
+          "venue_city": "New York",
+          "reason": null,
+          "description": "$24*- NYU Students\n$47*-$72*-NYU Faculty/Staff/Alumni\n$57*-$109 Full Price\n*Save $3 by buying in person at the NYU Box Office\n“The Nutcracker Suite” created by Michelle Dorrance, Hannah Heller, and Josette Wiggan set to Duke Ellington and Billy Strayhorn’s extraordinary interpretation of the Tchaikovsky score is a transformation of the classic tale trading pointe shoes for tap shoes in this high-energy, large ensemble reimagining of a seasonal favorite. The production transforms the Sugar Plum Fairy into a slinky Sugar Rum Cherry, turns the “March of the Toy Soldiers” into a swinging brass “Peanut Brittle Brigade,” and gives the original ballet’s pageant of national dances a fresh 21st-century twist. The program opens with “An Ella’quent Holiday Swing”—a full dose of swingin’ holiday cheer, featuring Ella Fitzgerald’s timeless holiday songbook sung by “breathtaking vocalist” Aaron Marcellus (New York Times). Join Dorrance Dance for an unforgettable trip to the land of sweets filled with surprises, humor, and the rhythmic symphony of world-class tap dancers.\n60mins, no intermission.",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_venue_point_reviewed_street",
+          "publisher_categories": [
+            "Arts",
+            "Open to the Public"
+          ],
+          "description_sha256": "38144d4aee63cdba7b0002b21f75fa4268d93e7994784ffc9e75b08d7023fb32",
+          "address_evidence": {
+            "source": "publisher structured event/venue data with exact reviewed NYU address mapping",
+            "url": "https://events.nyu.edu/event/410406-the-nutcracker-suite-dorrance-dance"
+          }
+        },
+        {
+          "id": "410407",
+          "title": "The Nutcracker Suite: Dorrance Dance",
+          "starts_at": "2026-12-27T00:30:00+00:00",
+          "ends_at": null,
+          "venue_name": "Skirball Center for the Performing Arts",
+          "lat": 40.729795,
+          "lng": -73.997749,
+          "event_url": "https://events.nyu.edu/event/410407-the-nutcracker-suite-dorrance-dance",
+          "category": "",
+          "venue_address": "566 LaGuardia Place, New York, NY 10012",
+          "venue_city": "New York",
+          "reason": null,
+          "description": "$24*- NYU Students\n$47*-$72*-NYU Faculty/Staff/Alumni\n$57*-$109 Full Price\n*Save $3 by buying in person at the NYU Box Office\n“The Nutcracker Suite” created by Michelle Dorrance, Hannah Heller, and Josette Wiggan set to Duke Ellington and Billy Strayhorn’s extraordinary interpretation of the Tchaikovsky score is a transformation of the classic tale trading pointe shoes for tap shoes in this high-energy, large ensemble reimagining of a seasonal favorite. The production transforms the Sugar Plum Fairy into a slinky Sugar Rum Cherry, turns the “March of the Toy Soldiers” into a swinging brass “Peanut Brittle Brigade,” and gives the original ballet’s pageant of national dances a fresh 21st-century twist. The program opens with “An Ella’quent Holiday Swing”—a full dose of swingin’ holiday cheer, featuring Ella Fitzgerald’s timeless holiday songbook sung by “breathtaking vocalist” Aaron Marcellus (New York Times). Join Dorrance Dance for an unforgettable trip to the land of sweets filled with surprises, humor, and the rhythmic symphony of world-class tap dancers.\n60mins, no intermission.",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_venue_point_reviewed_street",
+          "publisher_categories": [
+            "Arts",
+            "Open to the Public"
+          ],
+          "description_sha256": "38144d4aee63cdba7b0002b21f75fa4268d93e7994784ffc9e75b08d7023fb32",
+          "address_evidence": {
+            "source": "publisher structured event/venue data with exact reviewed NYU address mapping",
+            "url": "https://events.nyu.edu/event/410407-the-nutcracker-suite-dorrance-dance"
+          }
+        },
+        {
+          "id": "410408",
+          "title": "The Nutcracker Suite: Dorrance Dance",
+          "starts_at": "2026-12-27T19:00:00+00:00",
+          "ends_at": null,
+          "venue_name": "Skirball Center for the Performing Arts",
+          "lat": 40.729795,
+          "lng": -73.997749,
+          "event_url": "https://events.nyu.edu/event/410408-the-nutcracker-suite-dorrance-dance",
+          "category": "",
+          "venue_address": "566 LaGuardia Place, New York, NY 10012",
+          "venue_city": "New York",
+          "reason": null,
+          "description": "$24*- NYU Students\n$47*-$72*-NYU Faculty/Staff/Alumni\n$57*-$109 Full Price\n*Save $3 by buying in person at the NYU Box Office\n“The Nutcracker Suite” created by Michelle Dorrance, Hannah Heller, and Josette Wiggan set to Duke Ellington and Billy Strayhorn’s extraordinary interpretation of the Tchaikovsky score is a transformation of the classic tale trading pointe shoes for tap shoes in this high-energy, large ensemble reimagining of a seasonal favorite. The production transforms the Sugar Plum Fairy into a slinky Sugar Rum Cherry, turns the “March of the Toy Soldiers” into a swinging brass “Peanut Brittle Brigade,” and gives the original ballet’s pageant of national dances a fresh 21st-century twist. The program opens with “An Ella’quent Holiday Swing”—a full dose of swingin’ holiday cheer, featuring Ella Fitzgerald’s timeless holiday songbook sung by “breathtaking vocalist” Aaron Marcellus (New York Times). Join Dorrance Dance for an unforgettable trip to the land of sweets filled with surprises, humor, and the rhythmic symphony of world-class tap dancers.\n60mins, no intermission.",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_venue_point_reviewed_street",
+          "publisher_categories": [
+            "Arts",
+            "Open to the Public"
+          ],
+          "description_sha256": "38144d4aee63cdba7b0002b21f75fa4268d93e7994784ffc9e75b08d7023fb32",
+          "address_evidence": {
+            "source": "publisher structured event/venue data with exact reviewed NYU address mapping",
+            "url": "https://events.nyu.edu/event/410408-the-nutcracker-suite-dorrance-dance"
+          }
+        }
+      ]
+    },
+    {
+      "source": {
+        "source_key": "bronx_museum_ny",
+        "publisher_name": "The Bronx Museum",
+        "feed_url": "https://bronxmuseum.org/events/",
+        "kind": "html",
+        "platform_adapter": "html",
+        "timezone": "America/New_York"
+      },
+      "accepted_count": 3,
+      "records": [
+        {
+          "id": "/event/first-friday-december26/",
+          "title": "First Friday December 2026: Winter Holiday Market",
+          "starts_at": "2026-12-04T23:00:00+00:00",
+          "ends_at": "2026-12-05T02:00:00+00:00",
+          "venue_name": "The Bronx Museum",
+          "lat": null,
+          "lng": null,
+          "event_url": "https://bronxmuseum.org/event/first-friday-december26/",
+          "category": "",
+          "venue_address": "1040 Grand Concourse, Bronx, NY 10456",
+          "venue_city": "Bronx",
+          "reason": "missing_verified_venue_geo",
+          "description": "FIRST FRIDAY DECEMBER 2026\nWINTER HOLIDAY MARKET\nFriday, December 4 • 6:00 – 9:00 PM\nFor All Ages • Free Admission\nOptional RSVP\n• Drop-Ins Welcome\nAt The Bronx Museum\n(\n1040 Grand Concourse\n)\nYou’re invited to The Bronx Museum’s First Friday: Winter Holiday Market—a festive community celebration highlighting the vibrant talent, creativity, and entrepreneurship of Bronx denizens!\nWe hope you’ll join us in shopping local this holiday season and discover unique, handcrafted goods, artwork, seasonal items, and gifts created by talented New York City vendors, artisans, and small businesses. It’s the perfect occasion to find one-of-a-kind holiday gifts while directly supporting the creative economy.\nParticipants in the Museum’s\nTeen Council\n—our paid internship program for NYC high school students—will also be on-site during the Winter Holiday Market, leading free and fun art-making activities for all ages!\nLearn More>>\nEnjoy live music and complimentary beverages while you browse, while supplies last. As usual for First Friday at The Bronx Museum when exhibitions are on view, the Museum’s galleries will be open late with four exciting installations to explore:\nSaya Woolfalk: The WoodWoman Method\n;\nBeyond the Margins\n: Bronx Museum Teens Activate the Permanent Collection; Alex Strada’s\nPublic Address\n; and Lifelong Studio:\nTranscending the Form\n—Abstract Figurative Painting\n.\nSo join us for First Friday: Winter Holiday Market and gather with friends, family, and neighbors to celebrate the season, uplift local artisans, and experience the warm spirit of The Bronx community! If you plan to attend, please consider letting us know with a free RSVP; drop-ins are also welcome.\nTop Image: Photo of First Friday vendors at The Bronx Museum by Latricia Morgan.",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_street_pending_geocode",
+          "publisher_categories": [
+            "First Friday"
+          ],
+          "image_url": "https://bronxmuseum.org/wp-content/uploads/2026/10/Vendors-at-Bronx-Museum-1-scaled.jpg",
+          "description_sha256": "8b3513bf53c00520b903a06c8e186ada9bd89120a080eeef9de047eda215f0c1",
+          "address_evidence": {
+            "source": "publisher event detail or structured native venue fields",
+            "url": "https://bronxmuseum.org/event/first-friday-december26/"
+          }
+        },
+        {
+          "id": "/event/teen-night-december26/",
+          "title": "Teen Night: Free Art-Making Led by Teen Council",
+          "starts_at": "2026-12-04T23:00:00+00:00",
+          "ends_at": "2026-12-05T01:00:00+00:00",
+          "venue_name": "The Bronx Museum",
+          "lat": null,
+          "lng": null,
+          "event_url": "https://bronxmuseum.org/event/teen-night-december26/",
+          "category": "",
+          "venue_address": "1040 Grand Concourse, Bronx, NY 10456",
+          "venue_city": "Bronx",
+          "reason": "missing_verified_venue_geo",
+          "description": "TEEN NIGHT: FREE ART-MAKING\nLED BY TEEN COUNCIL\nFriday, December 4, 2026 • 6:00 – 8:00 PM\nAt The Bronx Museum\n(\n1040 Grand Concourse\n)\nFor All Ages • Free •\nOptional RSVP\n• Drop-Ins Welcome\nParticipants in The Bronx Museum’s\nTeen Council\n—our paid arts internship program for NYC high school students—invite you to join them for free and fun art-making activities at the Museum. Activities are designed to be accessible for all ages and experience levels. We especially encourage other NYC teens to come out to enjoy the activities and meet creative, like-minded peers!\nIn addition to art-making, you are also welcome to enjoy The Bronx Museum’s\nFirst Friday: Winter Holiday Market\n, taking place the same evening. You can also see the exhibitions currently on view in our galleries, including\nBeyond the Margins\n, which was curated by our Teen Summer 2026 cohort!",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_street_pending_geocode",
+          "publisher_categories": [
+            "Teen Council"
+          ],
+          "image_url": "https://bronxmuseum.org/wp-content/uploads/2026/11/beyond-the-margins-teen-summer-participants.jpg",
+          "description_sha256": "cfbffdde3828b81604ae4a3ad7a7dbc053fd7308050fd52ec816c19011a2110e",
+          "address_evidence": {
+            "source": "publisher event detail or structured native venue fields",
+            "url": "https://bronxmuseum.org/event/teen-night-december26/"
+          }
+        },
+        {
+          "id": "/event/winter-wonderland26/",
+          "title": "Family Day December 2026: Winter Wonderland",
+          "starts_at": "2026-12-12T18:00:00+00:00",
+          "ends_at": "2026-12-12T21:00:00+00:00",
+          "venue_name": "The Bronx Museum",
+          "lat": null,
+          "lng": null,
+          "event_url": "https://bronxmuseum.org/event/winter-wonderland26/",
+          "category": "",
+          "venue_address": "1040 Grand Concourse, Bronx, NY 10456",
+          "venue_city": "Bronx",
+          "reason": "missing_verified_venue_geo",
+          "description": "FAMILY DAY DECEMBER 2026:\nWINTER WONDERLAND\nSaturday, December 12, 2026 • 1:00 – 4:00 PM\nAt The Bronx Museum\n(\n1040 Grand Concourse\n)\nFor All Ages •\nFree •\nOptional RSVP\n; Drop-Ins Welcome\nCelebrate the magic of the winter season at our annual Winter Wonderland event! The festivities will include:\n• Art-making activities that are fun for all ages and accessible to young children and their caregivers!\n• A winter-themed photo booth where you can pose for pictures with family & friends!\n• Complimentary cozy treats like hot chocolate with marshmallows!\n• Winter-themed storybooks read by Bronx Museum Educators!\nThe Museum’s galleries will also be open with four exciting installations to explore:\nSaya Woolfalk: The WoodWoman Method\n;\nBeyond the Margins\n: Bronx Museum Teens Activate the Permanent Collection; Alex Strada’s\nPublic Address\n; and Lifelong Studio:\nTranscending the Form\n—Abstract Figurative Painting\n.\nDrop-ins are welcome, but you can let us know if you plan on stopping by with an\noptional RSVP\n.\nWinter Wonderland is part of The Bronx Museum’s\nFamily Programs\n—free monthly events designed to be fun for all ages and accessible to young children and their caretakers.\nQuestions? Please email\neducation@bronxmuseum.org\n*If you are planning to attend with a group of any size that is being organized through a school, community center, or similar entity, you must register at least ten business days before your visit through our\nGroup Tours\nform. Due to capacity limitations, we will not be able to accommodate your group if you do not notify us in advance. Thank you for understanding.\nImage Credit: Photo by Argenis Apolinario.",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_street_pending_geocode",
+          "publisher_categories": [
+            "Family Day"
+          ],
+          "image_url": "https://bronxmuseum.org/wp-content/uploads/2026/11/Winter-Wonderland-2026-1.jpg",
+          "description_sha256": "292ba32ca0decced9b2176274d76061906920447a5ec9d80b54d17a7972c34a1",
+          "address_evidence": {
+            "source": "publisher event detail or structured native venue fields",
+            "url": "https://bronxmuseum.org/event/winter-wonderland26/"
+          }
+        }
+      ]
+    },
+    {
+      "source": {
+        "source_key": "greenlight_bookstore_ny",
+        "publisher_name": "Greenlight Bookstore",
+        "feed_url": "https://greenlightbookstore.com/events",
+        "kind": "html",
+        "platform_adapter": "html",
+        "timezone": "America/New_York"
+      },
+      "accepted_count": 17,
+      "records": [
+        {
+          "id": "1225",
+          "title": "Keith McDermott at BAM",
+          "starts_at": "2026-11-15T00:30:00+00:00",
+          "ends_at": "2026-11-15T01:30:00+00:00",
+          "venue_name": "Brooklyn Academy of Music",
+          "lat": null,
+          "lng": null,
+          "event_url": "https://greenlightbookstore.com/event/2026-11-14/keith-mcdermott-bam",
+          "category": "",
+          "venue_address": "30 Lafayette Ave, Brooklyn, NY 11217",
+          "venue_city": "Brooklyn",
+          "reason": "missing_verified_venue_geo",
+          "description": "Keith McDermott presents\nThe Space Behind the Face: Life Stories\nby Robert Wilson\nTickets $35 (general admission), $67 (book included)\nCelebrating the arrival of\nThe Space Behind the Face: Life Stories\n, the long-awaited memoir by the late, much-lauded theater and visual artist Robert Wilson, BAM welcomes actor and writer Keith McDermott, who helped Wilson complete the manuscript before he died in July 2025, for an evening of illuminating conversation with a group of Wilson’s associates and creative collaborators. Part intimate remembrance, part cultural history, part road map for living an artistic life,\nThe Space Behind the Face\nis a vital text for anyone who believes in the boundless value of creativity—and a stunningly beautiful memorial to an inimitable artist.",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_street_pending_geocode",
+          "publisher_categories": [
+            "Offsite",
+            "Ticketed"
+          ],
+          "image_url": "https://greenlightbookstore.com/sites/default/files/styles/event_image_large/public/image/2026/09/21/r-wilson.png?itok=0-wFog6h",
+          "description_sha256": "751d9e46ad72555ea322a20bdf14e076275269fb6356df38c14c6ddad90d4f1f",
+          "address_evidence": {
+            "source": "publisher event detail or structured native venue fields",
+            "url": "https://greenlightbookstore.com/event/2026-11-14/keith-mcdermott-bam"
+          }
+        },
+        {
+          "id": "1224",
+          "title": "Camila Kerwin with Mia Warren",
+          "starts_at": "2026-11-17T00:30:00+00:00",
+          "ends_at": "2026-11-17T01:30:00+00:00",
+          "venue_name": "Greenlight Bookstore",
+          "lat": null,
+          "lng": null,
+          "event_url": "https://greenlightbookstore.com/event/2026-11-16/camila-kerwin-mia-warren",
+          "category": "",
+          "venue_address": "686 Fulton Street, Brooklyn, NY 11217-1609",
+          "venue_city": "Brooklyn",
+          "reason": "missing_verified_venue_geo",
+          "description": "Camila Kerwin presents\nSoft Targets: Guns in America and the Kids Caught in the Crossfire\nIn conversation with Mia Warren\nLocal author Camila Kerwin presents\nSoft Targets\n, a graphic novel centered around the true stories of four kids who have died in the U.S. and the guns that ended their lives—the leading cause of death for minors since 2020. With compassionate, thoughtful journalism, these tragedies are presented alongside the history of gun culture and legislation, discussing the NRA, the legal system, and the racial imbalances in American gun violence. Kerwin presents the book, in conversation with award-winning audio producer and filmmaker Mia Warren, before an audience Q&A and signing.",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_street_pending_geocode",
+          "publisher_categories": [
+            "In-Store"
+          ],
+          "image_url": "https://greenlightbookstore.com/sites/default/files/styles/event_image_large/public/image/2026/09/21/c-kerwin_0.png?itok=nh9MkcTi",
+          "description_sha256": "9135aef6c75c431bd0fb1b6e759bb931c1a0953a662309c4fdc4bf5723e0d106",
+          "address_evidence": {
+            "source": "publisher event detail or structured native venue fields",
+            "url": "https://greenlightbookstore.com/event/2026-11-16/camila-kerwin-mia-warren"
+          }
+        },
+        {
+          "id": "1222",
+          "title": "Radical Nonfiction Book Group",
+          "starts_at": "2026-11-18T00:00:00+00:00",
+          "ends_at": "2026-11-18T01:00:00+00:00",
+          "venue_name": "Hops Hill at Fulton",
+          "lat": null,
+          "lng": null,
+          "event_url": "https://greenlightbookstore.com/event/2026-11-17/radical-nonfiction-book-group",
+          "category": "",
+          "venue_address": "886 Fulton St, Brooklyn, NY 11238",
+          "venue_city": "Brooklyn",
+          "reason": "missing_verified_venue_geo",
+          "description": "Radical Nonfiction Book Group with Carlo\nDiscusses\nTechnofeudalism: What Killed Capitalism\nby Yanis Varoufakis\nLed by former Greenlight bookseller Carlo, our Radical Nonfiction Book Group meets monthly to read and discuss nonfiction titles related to the issues of history, politics, and the promise of a better world, just around the corner!\nFor November, the group discusses\nTechnofeudalism\nby #1 international bestselling economist Yanis Varoufakis. Big tech has replaced capitalism’s twin pillars—markets and profit—with its platforms and rents. With every click and scroll, we labor like serfs to increase its power. Welcome to technofeudalism... the greatest current threat to the liberal individual, to our efforts to avert climate catastrophe, and to democracy itself. It also lies behind the new geopolitical tensions, especially the New Cold War between the United States and China. In this revelatory and pathbreaking work, Varoufakis opens our eyes to the new power that is reshaping our lives and the world.",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_street_pending_geocode",
+          "publisher_categories": [
+            "Book Group",
+            "Offsite"
+          ],
+          "image_url": "https://greenlightbookstore.com/sites/default/files/styles/event_image_large/public/image/2026/09/21/rnfbgweb.png?itok=o44Q80rb",
+          "description_sha256": "98fc58b9778078971eb1eaaaa35b7197d6c2be584dcc67e19832b69f1c47b9fa",
+          "address_evidence": {
+            "source": "publisher event detail or structured native venue fields",
+            "url": "https://greenlightbookstore.com/event/2026-11-17/radical-nonfiction-book-group"
+          }
+        },
+        {
+          "id": "1223",
+          "title": "Fiction Book Group",
+          "starts_at": "2026-11-18T00:00:00+00:00",
+          "ends_at": "2026-11-18T01:00:00+00:00",
+          "venue_name": "Hops Hill at Atlantic",
+          "lat": null,
+          "lng": null,
+          "event_url": "https://greenlightbookstore.com/event/2026-11-17/fiction-book-group",
+          "category": "",
+          "venue_address": "533 Atlantic Ave, Brooklyn, NY 11217",
+          "venue_city": "Brooklyn",
+          "reason": "missing_verified_venue_geo",
+          "description": "Fiction Book Group with Alexis\nDiscusses\nNo One is Talking About This\nby Patricia Lockwood\nLed by former Greenlight general manager Alexis, our Fiction Book Group meets monthly to discuss paperback fiction, reading broadly in contemporary fiction with the occasional diversion into classics.\nFor November, the group discusses Patricia Lockwood's highly acclaimed novel\nNo One is Talking About This\n. A Booker Prize finalist, Dylan Thomas Prize-winning novel, and named one of\nThe Atlantic’s\nGreat American Novels of the past 100 years—\nNo One is Talking About This\nis a book that asks: Is there life after the internet? Fragmentary and omniscient, incisive and sincere, this is at once a love letter to the endless scroll and a profound, modern meditation on love, language, and human connection.",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_street_pending_geocode",
+          "publisher_categories": [
+            "Book Group",
+            "Offsite"
+          ],
+          "image_url": "https://greenlightbookstore.com/sites/default/files/styles/event_image_large/public/image/2026/09/21/fiction-bg.png?itok=KTueTZ4i",
+          "description_sha256": "1c512125a8357adde8e2f4527719f09b3260bcb4c46c69d7f7bcbdd76921ffa9",
+          "address_evidence": {
+            "source": "publisher event detail or structured native venue fields",
+            "url": "https://greenlightbookstore.com/event/2026-11-17/fiction-book-group"
+          }
+        },
+        {
+          "id": "1241",
+          "title": "Brooklyn Chats: Jonathan Mahler",
+          "starts_at": "2026-11-18T00:00:00+00:00",
+          "ends_at": "2026-11-18T03:00:00+00:00",
+          "venue_name": "Bar Heretic",
+          "lat": null,
+          "lng": null,
+          "event_url": "https://greenlightbookstore.com/event/2026-11-17/brooklyn-chats-jonathan-mahler",
+          "category": "",
+          "venue_address": "270 Clermont Avenue, Brooklyn, NY 11205",
+          "venue_city": "Brooklyn",
+          "reason": "missing_verified_venue_geo",
+          "description": "Brooklyn Chats with Host Patrick Sauer\nFeaturing Jonathan Mahler, author of\nThe Gods of New York: Egotists, Idealists, Opportunists, and the Birth of the Modern City: 1986-1990\nTickets $10 (wine included)\nBrooklyn Chats is a new series of author talks hosted by Patrick Sauer (co-host of the Squawkin' Sports series), with a focus on books you may have missed the first time around, often with a connection to our beloved borough. At tonight's event, Sauer talks with Jonathan Mahler, staff writer for\nThe New York Times Magazine\nand award-winning author of the bestselling\nLadies and Gentlemen, the Bronx Is Burning,\nabout his newest book of New York history. Focusing on four year's at the end of the 1980s,\nThe Gods of New York\nis an exuberant, kaleidoscopic, and deeply immersive portrait of a city in transformation, populated by outsized characters and new movements for change. Ticketholders enjoy complementary drinks curated by Heritage Wines. Books available for preorder or onsite purchase. Book signing to follow.",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_street_pending_geocode",
+          "publisher_categories": [
+            "Offsite"
+          ],
+          "image_url": "https://greenlightbookstore.com/sites/default/files/styles/event_image_large/public/2025-07/aug-author-interviewer-photos-4.png?itok=sk5Egk_G",
+          "description_sha256": "16a45b60a5bf1ae54c9e1e1195026ffde226d1e4defd9addbcfd9b2736123ed9",
+          "address_evidence": {
+            "source": "publisher event detail or structured native venue fields",
+            "url": "https://greenlightbookstore.com/event/2026-11-17/brooklyn-chats-jonathan-mahler"
+          }
+        },
+        {
+          "id": "1220",
+          "title": "Literature in Translation Book Group",
+          "starts_at": "2026-11-19T00:00:00+00:00",
+          "ends_at": "2026-11-19T01:00:00+00:00",
+          "venue_name": "Black Forest Brooklyn",
+          "lat": null,
+          "lng": null,
+          "event_url": "https://greenlightbookstore.com/event/2026-11-18/literature-translation-book-group",
+          "category": "",
+          "venue_address": "733 Fulton St, Brooklyn, NY 11217",
+          "venue_city": "Brooklyn",
+          "reason": "missing_verified_venue_geo",
+          "description": "Literature in Translation Book Group with Maritza\nDiscusses\nThe Roof Beneath Their Feet\nby Geetanjali Shree, translated by Rahul Soni\nLed by Greenlight bookseller Maritza, our Literature in Translation Book Group meets monthly to discuss books from around the world, with a particular focus on marginalized voices and indie presses.\nFor November, the group discusses\nThe Roof Beneath Their Feet\nby the International Booker Prize-winning novelist Geentanjali Shree; translated from the Hindi by Rahul Soni. In this Indian modern classic, roofs are meant for wild things, for romance and for play. They are realms of freedom – freedom from the male gaze, sexual freedom and freedom from society. Chachcho and Lalna use their roofs to build a friendship that transcends time and memory.",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_street_pending_geocode",
+          "publisher_categories": [
+            "Book Group",
+            "Offsite"
+          ],
+          "image_url": "https://greenlightbookstore.com/sites/default/files/styles/event_image_large/public/image/2026/09/21/lit-bg.png?itok=BKWjU5UY",
+          "description_sha256": "0d4121b49728676a3059f0100a5614c6720883e4faa4cd4793ef1f37749629aa",
+          "address_evidence": {
+            "source": "publisher event detail or structured native venue fields",
+            "url": "https://greenlightbookstore.com/event/2026-11-18/literature-translation-book-group"
+          }
+        },
+        {
+          "id": "1221",
+          "title": "Black Lit Book Group",
+          "starts_at": "2026-11-19T00:00:00+00:00",
+          "ends_at": "2026-11-19T01:00:00+00:00",
+          "venue_name": "BierWax",
+          "lat": null,
+          "lng": null,
+          "event_url": "https://greenlightbookstore.com/event/2026-11-18/black-lit-book-group",
+          "category": "",
+          "venue_address": "556 Vanderbilt Ave, Brooklyn, NY 11238",
+          "venue_city": "Brooklyn",
+          "reason": "missing_verified_venue_geo",
+          "description": "Black Lit Book Group with Micah\nDiscusses\nThe Catacombs\nby William Demby\nLed by former Greenlight bookseller Carlo, our Radical Nonfiction Book Group meets monthly to read and discuss nonfiction titles related to the issues of history, politics, and the promise of a better world, just around the corner!\nFor November, the group discusses\nThe Catacombs,\na true classic by a rediscovered great of Black American literature, William Demby. First published in 1965, this masterpiece of metafiction follows Bill Demby, an expat in Rome as he narrates his attempts to write a novel about his friend, Doris. Both a participant in and observer of her life as she begins an affair with an Italian count, Demby’s growing emotional and artistic involvement in the tumultuous affair of his character-friend leads him on an existential quest for the meaning of truth and fiction, both lived and created, in a world torn by the social upheaval of the early sixties.",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_street_pending_geocode",
+          "publisher_categories": [
+            "Book Group",
+            "Offsite"
+          ],
+          "image_url": "https://greenlightbookstore.com/sites/default/files/styles/event_image_large/public/image/2026/09/21/blbg.png?itok=FGTnJQ8j",
+          "description_sha256": "f09c98b93eceee0488d68db47c879bcfbf235312942829d3a586ec16f20e3f4c",
+          "address_evidence": {
+            "source": "publisher event detail or structured native venue fields",
+            "url": "https://greenlightbookstore.com/event/2026-11-18/black-lit-book-group"
+          }
+        },
+        {
+          "id": "1219",
+          "title": "Fork Greene: A Friendsgiving Potluck with Yours Truly, Brooklyn",
+          "starts_at": "2026-11-19T00:30:00+00:00",
+          "ends_at": "2026-11-19T02:30:00+00:00",
+          "venue_name": "Bar Heretic",
+          "lat": null,
+          "lng": null,
+          "event_url": "https://greenlightbookstore.com/event/2026-11-18/fork-greene-friendsgiving-potluck-yours-truly-brooklyn",
+          "category": "",
+          "venue_address": "270 Clermont Avenue, Brooklyn, NY 11205",
+          "venue_city": "Brooklyn",
+          "reason": "missing_verified_venue_geo",
+          "description": "Fork Greene: A Friendsgiving Potluck with Yours Truly, Brooklyn\nFeaturing\nMeals You Can't Mess Up\nby Shay Spence\nTickets $20 (general admission), $55 (book included)\nYou're invited (to something fun and new)!\nThis November, Fort Greene sister stores Greenlight Bookstore and Yours Truly, Brooklyn are coming together for a delicious night of fun (and the soft-launch of our new cookbook club) with a special Friendsgiving dinner!\nWe're pulling recipes from Shay Spence's new cookbook\nMeals You Can't Mess Up: 100+ Actually Easy Recipes for Big Flavor with Little Effort\n! All of the recipes in this book have fewer than ten ingredients, and most can be cooked in just one pot! Each recipe falls into at least one of these categories:\n30-ish Minute Recipes\nChili-Lime Corn & Black Bean Tacos, Burst Tomato-Basil Tortellini with Burrata\n6-Ingredient (or Less) Recipes\nLamb Chops with Feta & Mint Orzo Salad, Cheesy Butternut Squash Pasta Bake\nOne-Dish Recipes\nRatatouille with Baked Brie, Beer Cheese Broccoli Orzo Soup\nNo-Chop Recipes\nCheater’s Chicken Parm, Cubano Dogs\nThe perfect way to break the ice in the kitchen for the holiday season! Come try out some recipes you know, or make something new you might love. Invite your friends, your situationship, or someone you've been meaning to hang out with lately. All are welcome—no prior knowledge or cooking skill required!\nWe'll see you soon!\nGreenlight Bookstore X YTB\nPlease note:\nRecipes will be assigned and sent in advance\n, based on your replies to our attendee order form, which can be found after checkout. Filling out the form is required to participate and a prepared dish (even if it's imperfect) is required for entry.\nAll tickets include a $5 donation to Food Bank For NYC!",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_street_pending_geocode",
+          "publisher_categories": [
+            "Special",
+            "YTB Social Club",
+            "Offsite",
+            "Ticketed",
+            "Book Group"
+          ],
+          "image_url": "https://greenlightbookstore.com/sites/default/files/styles/event_image_large/public/image/2026/09/21/cookbook-club-2.png?itok=s1kQXG4j",
+          "description_sha256": "c906dd963f797c4cae7251f960479ee88e476b5896cec90671dd2b6a0edce032",
+          "address_evidence": {
+            "source": "publisher event detail or structured native venue fields",
+            "url": "https://greenlightbookstore.com/event/2026-11-18/fork-greene-friendsgiving-potluck-yours-truly-brooklyn"
+          }
+        },
+        {
+          "id": "1218",
+          "title": "An Evening with David Sedaris at Kings Theatre",
+          "starts_at": "2026-11-21T01:00:00+00:00",
+          "ends_at": "2026-11-21T02:00:00+00:00",
+          "venue_name": "Kings Theatre",
+          "lat": null,
+          "lng": null,
+          "event_url": "https://greenlightbookstore.com/event/2026-11-20/evening-david-sedaris-kings-theatre",
+          "category": "",
+          "venue_address": "1027 Flatbush Avenue, Brooklyn, NY 11226",
+          "venue_city": "Brooklyn",
+          "reason": "missing_verified_venue_geo",
+          "description": "An Evening with David Sedaris\nTickets starting at $55\nDavid Sedaris, America's best-selling humorist and social satirist, returns following publication of his most recent book of short stories,\nHappy Go Lucky,\nand his first ever children's book,\nPretty Ugly\n. In his customary sartorial and humorous manner, David will make you laugh and think in equal measures, with all new, unpublished stories and commentary. As always, the reading will be accompanied by a pre and post-show book signing.",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_street_pending_geocode",
+          "publisher_categories": [
+            "Offsite",
+            "Ticketed"
+          ],
+          "image_url": "https://greenlightbookstore.com/sites/default/files/styles/event_image_large/public/image/2026/09/21/d-sedaris-1.png?itok=eAWNBn6M",
+          "description_sha256": "1d9b8b2eb7f9a245994e9783e67f96951b86890693ea6fb23a236f763c4e981c",
+          "address_evidence": {
+            "source": "publisher event detail or structured native venue fields",
+            "url": "https://greenlightbookstore.com/event/2026-11-20/evening-david-sedaris-kings-theatre"
+          }
+        },
+        {
+          "id": "1255",
+          "title": "Book Launch: Kristen Naiman with Emilia Petrarca at The RealReal Store",
+          "starts_at": "2026-12-02T00:00:00+00:00",
+          "ends_at": "2026-12-02T02:00:00+00:00",
+          "venue_name": "The RealReal Store",
+          "lat": null,
+          "lng": null,
+          "event_url": "https://greenlightbookstore.com/event/2026-12-01/book-launch-kristen-naiman-emilia-petrarca-realreal-store",
+          "category": "",
+          "venue_address": "80 Wooster Street, New York, NY 10012",
+          "venue_city": "New York",
+          "reason": "missing_verified_venue_geo",
+          "description": "Book Launch: Kristen Naiman presents\nReal Style: The RealReal Guide to Dressing with Intention & Expressing Yourself Through Style\nIn conversation with Emilia Petrarca\nTickets $35 (book included)\nKristen Naiman, Chief Creative Officer of The RealReal, the world's most trusted and beloved resource for authenticated luxury resale, presents\nReal Style\n, a modern guide to discover, define, express, and evolve your personal style. Meet Kristen at The RealReal store in SoHo for a conversation with Emilia Petrarca, writer and founder of Shop Rat, and a book signing!\nFilled with honest talk, big questions, tips, interactive exercises, spaces for reflection, and advice from our community (including some Real Style icons),\nReal Style\nis both a mirror and a bible for fashion diehards and the style-curious alike.\nWhether you want to explore new style identities without losing your sense of self, navigate a complicated relationship with shopping, or simply refine your style for a new phase—it all starts with asking questions.\n\"The book is the talk and The RealReal is the walk when it comes to thinking about style in an individualistic way that also takes seriously the compelling practical and ethical reasons to shop in a circular way.\" —Lena Dunham",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_street_pending_geocode",
+          "publisher_categories": [
+            "Offsite"
+          ],
+          "image_url": "https://greenlightbookstore.com/sites/default/files/styles/event_image_large/public/image/2026/11/12/k-naiman.png?itok=_4fPASc3",
+          "description_sha256": "e136c7fb55ce54358d2541e2836f781f492140a1155d5ea12f696dc7a9a172c7",
+          "address_evidence": {
+            "source": "publisher event detail or structured native venue fields",
+            "url": "https://greenlightbookstore.com/event/2026-12-01/book-launch-kristen-naiman-emilia-petrarca-realreal-store"
+          }
+        },
+        {
+          "id": "1247",
+          "title": "Young Adult Book Group",
+          "starts_at": "2026-12-02T23:00:00+00:00",
+          "ends_at": "2026-12-03T00:00:00+00:00",
+          "venue_name": "Greenlight Bookstore",
+          "lat": null,
+          "lng": null,
+          "event_url": "https://greenlightbookstore.com/event/2026-12-02/young-adult-book-group",
+          "category": "",
+          "venue_address": "686 Fulton Street, Brooklyn, NY 11217-1609",
+          "venue_city": "Brooklyn",
+          "reason": "missing_verified_venue_geo",
+          "description": "Young Adult Book Group with Micah\nDiscusses\nOnly for the Holidays\nby Abiola Bello\nPizza provided!\nLed by Greenlight bookseller Micah, the YA Book Group is a space for the curious young reader interested in a curated, intentionally diverse and broad selection of books. While literature is of course at the core of this book group, cultivating our very own community and connections are also at the root of YABG, so if this sounds like a good time to you, come join the fun!\nNote:\nYoung Adult Book Group is geared toward readers ages 13+\n.\nFor December, the group discusses\nOnly for the Holidays\nby award-winning author Abiola Bello.\nThe Love Hypothesis\nmeets\nThe Holiday\nin this fake dating YA romance about a city girl and country boy’s lives colliding at Christmas.",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_street_pending_geocode",
+          "publisher_categories": [
+            "Book Group",
+            "Kids & Family",
+            "In-Store"
+          ],
+          "image_url": "https://greenlightbookstore.com/sites/default/files/styles/event_image_large/public/image/2026/10/22/yabgweb.png?itok=u_8IF_wB",
+          "description_sha256": "fab19176b5451f485d0aba296d7f73ea7f07e5c3b7e2535d53f3ee13f9fadb82",
+          "address_evidence": {
+            "source": "publisher event detail or structured native venue fields",
+            "url": "https://greenlightbookstore.com/event/2026-12-02/young-adult-book-group"
+          }
+        },
+        {
+          "id": "1248",
+          "title": "Queer Book Group",
+          "starts_at": "2026-12-09T00:00:00+00:00",
+          "ends_at": "2026-12-09T01:00:00+00:00",
+          "venue_name": "Hops Hill at Atlantic",
+          "lat": null,
+          "lng": null,
+          "event_url": "https://greenlightbookstore.com/event/2026-12-08/queer-book-group",
+          "category": "",
+          "venue_address": "533 Atlantic Ave, Brooklyn, NY 11217",
+          "venue_city": "Brooklyn",
+          "reason": "missing_verified_venue_geo",
+          "description": "Queer Book Group with Alex\nDiscusses\nLavender House\nby Lev AC Rosen\nLed by former Greenlight bookseller Alex, our Queer Book Group meets monthly to discuss contemporary fiction and nonfiction titles that relate to queer experience, identity, and community.\nFor December, the group discusses Lev AC Rosen's\nLavender House\n, a Macavity Award-winning novel and \"Best Of\" Book from\nBuzzfeed\n,\nRainbow Reading\n,\nLibrary Journal, CrimeReads, BookPage, Book Riot\n, and more!\nKnives Out\nwith a queer historical twist,\nLavender House\nis a delicious story that \"movingly explores the strain of trying to pass as straight at a time when living an authentic life could be deadly,\" (\nNew York Times Book Review\n).",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_street_pending_geocode",
+          "publisher_categories": [
+            "Book Group",
+            "Offsite"
+          ],
+          "image_url": "https://greenlightbookstore.com/sites/default/files/styles/event_image_large/public/image/2026/10/22/qbgweb.png?itok=-awiQHXr",
+          "description_sha256": "fe9799a0f94454130fc84663c8ff21a034462e7bef783b71f7f2d9c1a2690d9e",
+          "address_evidence": {
+            "source": "publisher event detail or structured native venue fields",
+            "url": "https://greenlightbookstore.com/event/2026-12-08/queer-book-group"
+          }
+        },
+        {
+          "id": "1249",
+          "title": "Squawkin' Sports with Mike Sielski and Lauren Theisen",
+          "starts_at": "2026-12-09T00:00:00+00:00",
+          "ends_at": "2026-12-09T01:00:00+00:00",
+          "venue_name": "DSK Brooklyn",
+          "lat": null,
+          "lng": null,
+          "event_url": "https://greenlightbookstore.com/event/2026-12-08/squawkin-sports-mike-sielski-and-lauren-theisen",
+          "category": "",
+          "venue_address": "710 Fulton Street, Brooklyn, NY 11217",
+          "venue_city": "Brooklyn",
+          "reason": "missing_verified_venue_geo",
+          "description": "Squawkin' Sports: Mouths Bleedin' Holiday Edition\nHosted by Patrick Sauer & David J. Roth\nFeaturing authors Mike Sielski and Lauren Theisen\nTickets starting at $11\nCreated and hosted by writers David J. Roth and Patrick Sauer, Squawkin’ Sports is an ongoing series featuring book chats with authors who write about playing games. This month, Roth and Sauer chat with sports journalist Mike Sielski, author of\nGoing the Distance: Stallone, Philly, and the Story of Rocky\n, and journalist and editor with Defector Media Lauren Theisen, author of\nEvery Time a Bell Rings: The Legacy of It's a Wonderful Life, America's Most Beloved Holiday Film\n.\nGoing the Distance\nis the unfiltered origin story behind one of the most inspirational films of all time and beloved piece of American pop culture:\nRocky.\nThis is more than a book about a movie. It’s a love letter to a great American city—and a dramatic, fascinating ride all its own.\nPaired with the perfect holiday gift: a fond and nostalgic cultural history of\nIt's a Wonderful Life\n—\nEvery Time a Bell Rings\ncelebrates the beloved holiday film's actors and creators, its unexpected journey from public domain to holiday classic, and what its enduring legacy reveals about America.\n$11: 1 beer\n$42: 1 beer + 1\nGoing the Distance\n$42: 1 beer + 1\nEvery Time a Bell Rings\n$80: 2 beers + 1 copy of each book",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_street_pending_geocode",
+          "publisher_categories": [
+            "Offsite"
+          ],
+          "image_url": "https://greenlightbookstore.com/sites/default/files/styles/event_image_large/public/image/2026/10/22/squawkin_0.png?itok=aX9Qz93-",
+          "description_sha256": "a71db95d41c10052badc965051a3874b13a2af8f436b0cbe1a913e34fd54c930",
+          "address_evidence": {
+            "source": "publisher event detail or structured native venue fields",
+            "url": "https://greenlightbookstore.com/event/2026-12-08/squawkin-sports-mike-sielski-and-lauren-theisen"
+          }
+        },
+        {
+          "id": "1254",
+          "title": "Holidays After Hours!",
+          "starts_at": "2026-12-13T03:00:00+00:00",
+          "ends_at": "2026-12-13T05:00:00+00:00",
+          "venue_name": "Greenlight Bookstore",
+          "lat": null,
+          "lng": null,
+          "event_url": "https://greenlightbookstore.com/event/2026-12-12/holidays-after-hours",
+          "category": "",
+          "venue_address": "686 Fulton Street, Brooklyn, NY 11217-1609",
+          "venue_city": "Brooklyn",
+          "reason": "missing_verified_venue_geo",
+          "description": "Holidays After Hours!\nCocktails and mocktails, prizes and giveaways, giftwrapping, shopping assistance, and more!\nTickets $10\nTaking our celebration of FAB Fulton's Holiday Stroll from day to night, Greenlight invites customers to an intimate shopping experience, after the bookstore is closed! From 10 PM to midnight, delight in a seasonal cocktail or mocktail and treat while you shop. Chat with booksellers for personalized gift-giving guidance and holiday shopping tips; and enjoy expert giftwrapping on items purchased this evening. Get in the holiday spirit with music and good cheer in the bookstore, and shop till the clock strikes 12.\nEach ticket includes a complimentary tote bag, cocktail / mocktail, snacks, and ticket entry for a holiday gift raffle!\nMust be 21+ to attend.",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_street_pending_geocode",
+          "publisher_categories": [
+            "Special",
+            "In-Store"
+          ],
+          "image_url": "https://greenlightbookstore.com/sites/default/files/styles/event_image_large/public/image/2026/11/12/event-graphics-website-5.png?itok=p9rvrI31",
+          "description_sha256": "070649bcf0fd5df0bf7b782642599b3ec28424d0356ac098c9711db88ce86377",
+          "address_evidence": {
+            "source": "publisher event detail or structured native venue fields",
+            "url": "https://greenlightbookstore.com/event/2026-12-12/holidays-after-hours"
+          }
+        },
+        {
+          "id": "1250",
+          "title": "Fiction Book Group",
+          "starts_at": "2026-12-16T00:00:00+00:00",
+          "ends_at": "2026-12-16T01:00:00+00:00",
+          "venue_name": "Hops Hill at Atlantic",
+          "lat": null,
+          "lng": null,
+          "event_url": "https://greenlightbookstore.com/event/2026-12-15/fiction-book-group",
+          "category": "",
+          "venue_address": "533 Atlantic Ave, Brooklyn, NY 11217",
+          "venue_city": "Brooklyn",
+          "reason": "missing_verified_venue_geo",
+          "description": "Fiction Book Group with Alexis\nDiscusses\nThe Bee Sting\nby Paul Murray\nLed by former Greenlight general manager Alexis, our Fiction Book Group meets monthly to discuss paperback fiction, reading broadly in contemporary fiction with the occasional diversion into classics.\nFor December, the group discusses Paul Murray's multi-award-winning novel\nThe Bee Sting\n—named a Top 10 / Best Book of the Year by\nThe New York Times\n,\nThe Washington Post\n,\nTIME, NPR\n, and more! Set during post-crash Ireland,\nThe Bee Sting\nis an irresistibly funny and thought-provoking tour de force about family, fortune, and the struggle to be a good person when the world is falling apart.",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_street_pending_geocode",
+          "publisher_categories": [
+            "Book Group",
+            "Offsite"
+          ],
+          "image_url": "https://greenlightbookstore.com/sites/default/files/styles/event_image_large/public/image/2026/10/22/fiction-bg.png?itok=Z9xTS0Dc",
+          "description_sha256": "f07f7ad65de38a6acfa36cae5612edb4b3e827f463a9404d2967fd346f56809c",
+          "address_evidence": {
+            "source": "publisher event detail or structured native venue fields",
+            "url": "https://greenlightbookstore.com/event/2026-12-15/fiction-book-group"
+          }
+        },
+        {
+          "id": "1251",
+          "title": "Black Lit Book Group",
+          "starts_at": "2026-12-17T00:00:00+00:00",
+          "ends_at": "2026-12-17T01:00:00+00:00",
+          "venue_name": "BierWax",
+          "lat": null,
+          "lng": null,
+          "event_url": "https://greenlightbookstore.com/event/2026-12-16/black-lit-book-group",
+          "category": "",
+          "venue_address": "556 Vanderbilt Ave, Brooklyn, NY 11238",
+          "venue_city": "Brooklyn",
+          "reason": "missing_verified_venue_geo",
+          "description": "Black Lit Book Group with Micah\nDiscusses\nThe Coldest Winter Ever\nby Sister Souljah\nLed by Greenlight bookseller Micah, with special appearances from fellow Greenlight booksellers, our Black Lit Book Group meets monthly to amplify the works of past and present Black voices of all genres. All reading frequencies are welcome!\nFor December, the group discusses the instant classic by #1\nNew York Times\nbestselling author Sister Souljah:\nThe Coldest Winter Ever\n. Named a “50 Most Impactful Black Books of the Last 50 Years” by\nEssence\n,\nThe Coldest Winter Ever\nbrings the streets of New York to life in a powerful and utterly unforgettable novel. Whether you are reading it for the first time or have cherished it for years\n,\nyou\nwill never forget this Winter’s tale.",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_street_pending_geocode",
+          "publisher_categories": [
+            "Book Group",
+            "Offsite"
+          ],
+          "image_url": "https://greenlightbookstore.com/sites/default/files/styles/event_image_large/public/image/2026/10/22/blbg.png?itok=UFfYUqKO",
+          "description_sha256": "ecffec1ed3fdaa2e90f6dd191a230f8dc83402a3863181b530b070c8769b7335",
+          "address_evidence": {
+            "source": "publisher event detail or structured native venue fields",
+            "url": "https://greenlightbookstore.com/event/2026-12-16/black-lit-book-group"
+          }
+        },
+        {
+          "id": "1252",
+          "title": "Literature in Translation Book Group",
+          "starts_at": "2026-12-17T00:00:00+00:00",
+          "ends_at": "2026-12-17T01:00:00+00:00",
+          "venue_name": "Black Forest Brooklyn",
+          "lat": null,
+          "lng": null,
+          "event_url": "https://greenlightbookstore.com/event/2026-12-16/literature-translation-book-group",
+          "category": "",
+          "venue_address": "733 Fulton St, Brooklyn, NY 11217",
+          "venue_city": "Brooklyn",
+          "reason": "missing_verified_venue_geo",
+          "description": "Literature in Translation Book Group with Maritza\nDiscusses\nMy Dreadful Body\nby Egana Djabbarova, translated by Lisa C. Hayden\nLed by Greenlight bookseller Maritza, our Literature in Translation Book Group meets monthly to discuss books from around the world, with a particular focus on marginalized voices and indie presses.\nFor December, the group discusses National Book Award-winner,\nMy Dreadful Body\nby poet and scholar Egana Djabbarova, translated from the Russian by Lisa C. Hayden. A dazzling debut,\nMy Dreadful Body\nfollows a young woman’s vexed coming of age in a traditional Azerbaijani community in Russia, grappling under the weight of Muslim patriarchal norms and a debilitating neurological condition. With verbal elegance and poetic power, Djabbarova unveils a hidden world in which illness unexpectedly facilitates her liberation. Her book stands in the proud tradition of confessional feminist writers like Sandra Cisneros, Arundhati Roy, Audre Lorde, Toni Morrison, and Jamaica Kincaid.",
+          "timezone": "America/New_York",
+          "attendance_mode": "in_person",
+          "location_provenance": "publisher_street_pending_geocode",
+          "publisher_categories": [
+            "Book Group",
+            "Offsite"
+          ],
+          "image_url": "https://greenlightbookstore.com/sites/default/files/styles/event_image_large/public/image/2026/10/22/lit-bg.png?itok=AGtAxN0M",
+          "description_sha256": "8524a2614437521b3818b358c61366effe4f01fdaaa3bc1a3bae0fe82f6f7cfb",
+          "address_evidence": {
+            "source": "publisher event detail or structured native venue fields",
+            "url": "https://greenlightbookstore.com/event/2026-12-16/literature-translation-book-group"
+          }
+        }
+      ]
+    }
+  ]
+}
