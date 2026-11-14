@@ -1,0 +1,297 @@
+{
+  "observed_date": "2026-11-14",
+  "scope": "New nightlife/social, food/drink, gaming/hobbies candidates across allfiveboroughs; parent excluded already-working production sources. Nine implemented; remaining holds are explicit, not claimed deployed.",
+  "candidate_count": 23,
+  "implemented_count": 9,
+  "holds_count": 14,
+  "sources": [
+    {
+      "name": "Chilo’s",
+      "borough": "Brooklyn",
+      "categories": [
+        "Nightlife & Social",
+        "Food & Drink"
+      ],
+      "calendar_url": "https://www.chilosbk.com/eventscalendar",
+      "street_address": "323 Franklin Avenue, Brooklyn, NY 11238",
+      "status": "implemented_pending_parent_batch_deployment",
+      "source_key": "chilos_brooklyn_ny",
+      "format": "Squarespace normal calendar HTML and linked complete detail HTML",
+      "accepted_future_occurrences": 5
+    },
+    {
+      "name": "Forever Brewing",
+      "borough": "Brooklyn",
+      "categories": [
+        "Nightlife & Social",
+        "Food & Drink",
+        "Gaming & Hobbies"
+      ],
+      "calendar_url": "https://www.foreverbrewing.com/events-calendar",
+      "street_address": "574 President Street, Brooklyn, NY 11215",
+      "status": "implemented_pending_parent_batch_deployment",
+      "source_key": "forever_brewing_brooklyn_ny",
+      "format": "Squarespace complete native listing bodies plus linked details for excerpts",
+      "accepted_future_occurrences": 19
+    },
+    {
+      "name": "Fifth Hammer Brewing",
+      "borough": "Queens",
+      "categories": [
+        "Food & Drink",
+        "Nightlife & Social"
+      ],
+      "calendar_url": "https://www.fifthhammerbrewing.com/fifth-hammer-calendar",
+      "street_address": "10-28 46th Avenue, Long Island City, NY 11101",
+      "status": "implemented_pending_parent_batch_deployment",
+      "source_key": "fifth_hammer_queens_ny",
+      "format": "Squarespace accessible current-month HTML and linked complete detail HTML; no query pagination",
+      "accepted_future_occurrences": 18
+    },
+    {
+      "name": "Wonderville",
+      "borough": "Brooklyn",
+      "categories": [
+        "Gaming & Hobbies",
+        "Nightlife & Social"
+      ],
+      "calendar_url": "https://www.wonderville.nyc/events",
+      "street_address": "1186 Broadway, Brooklyn, NY 11221",
+      "status": "implemented_pending_parent_batch_deployment",
+      "source_key": "wonderville_brooklyn_ny",
+      "format": "Squarespace complete native listing bodies",
+      "accepted_future_occurrences": 52
+    },
+    {
+      "name": "Starr Bar",
+      "borough": "Brooklyn",
+      "categories": [
+        "Nightlife & Social",
+        "Arts, Culture & Education",
+        "Civic, Volunteering & Community"
+      ],
+      "calendar_url": "https://www.starrbar.com/events",
+      "street_address": "214 Starr Street, Brooklyn, NY 11237",
+      "status": "implemented_pending_parent_batch_deployment",
+      "source_key": "starr_bar_brooklyn_ny",
+      "format": "Squarespace complete native listing bodies",
+      "accepted_future_occurrences": 8
+    },
+    {
+      "name": "Skinny Dennis",
+      "borough": "Brooklyn",
+      "categories": [
+        "Nightlife & Social"
+      ],
+      "calendar_url": "https://skinnydennisbrooklyn.com/calendar",
+      "street_address": "152 Metropolitan Avenue, Brooklyn, NY 11249",
+      "status": "implemented_pending_parent_batch_deployment",
+      "source_key": "skinny_dennis_brooklyn_ny",
+      "format": "Squarespace complete native listing bodies",
+      "accepted_future_occurrences": 21
+    },
+    {
+      "name": "Kills Boro Brewing Co.",
+      "borough": "Staten Island",
+      "categories": [
+        "Food & Drink",
+        "Nightlife & Social"
+      ],
+      "calendar_url": "https://killsboro.com/events",
+      "street_address": "814 Richmond Terrace, Staten Island, NY 10301",
+      "status": "implemented_pending_parent_batch_deployment",
+      "source_key": "kills_boro_staten_island_ny",
+      "format": "Official event JSON-LD embedded in normal HTML, matched to complete visible event paragraphs",
+      "accepted_future_occurrences": 18
+    },
+    {
+      "name": "Sake Studies Center at Brooklyn Kura",
+      "borough": "Brooklyn",
+      "categories": [
+        "Food & Drink",
+        "Arts, Culture & Education"
+      ],
+      "calendar_url": "https://www.sakestudiescenter.com/calendar",
+      "street_address": "34 34th Street Industry City Building 6, Brooklyn, NY 11232",
+      "status": "implemented_pending_parent_batch_deployment",
+      "source_key": "sake_studies_brooklyn_ny",
+      "format": "Dated Event JSON-LD in normal calendar HTML plus complete linked class detail bodies",
+      "accepted_future_occurrences": 15
+    },
+    {
+      "name": "Twenty Sided Store",
+      "borough": "Brooklyn",
+      "categories": [
+        "Gaming & Hobbies",
+        "Arts, Culture & Education"
+      ],
+      "calendar_url": "https://twentysidedstore.com/collections/events",
+      "street_address": "280 Grand Street, Brooklyn, NY 11211",
+      "status": "implemented_pending_parent_batch_deployment",
+      "source_key": "twenty_sided_brooklyn_ny",
+      "format": "Official normal collection HTML plus inert native Shopify product JSON and matching visible full descriptions; only dated available individual variants",
+      "accepted_future_occurrences": 43
+    },
+    {
+      "name": "Bar LunÀtico",
+      "borough": "Brooklyn",
+      "categories": [
+        "Nightlife & Social"
+      ],
+      "calendar_url": "https://www.barlunatico.com/calendar",
+      "street_address": "486 Halsey Street, Brooklyn, NY 11233",
+      "status": "discovered_remaining_hold",
+      "remaining_work": "Native normal calendar HTML has JS-only rendering; queryJSON/list exports explicitly robots-disallowed. Find allowed server-rendered detail discovery."
+    },
+    {
+      "name": "The Brooklyn Strategist",
+      "borough": "Brooklyn",
+      "categories": [
+        "Gaming & Hobbies"
+      ],
+      "calendar_url": "https://thebrooklynstrategist.com/",
+      "street_address": "148 Pierrepont Street, Brooklyn, NY 11201",
+      "status": "discovered_remaining_hold",
+      "remaining_work": "Current primary site moved from333Court to148Pierrepont. Google embedded ICS robots-disallowed. Official Jumbula https://the-brooklyn-strategist.jumbula.com/tcg-events merits dedicated allowedHTML collector."
+    },
+    {
+      "name": "Hex & Company",
+      "borough": "Manhattan",
+      "categories": [
+        "Gaming & Hobbies"
+      ],
+      "calendar_url": "https://www.hexnyc.com/hexandcoweeklyevents/",
+      "street_address": null,
+      "status": "discovered_remaining_hold",
+      "remaining_work": "Official weeklyTCG multi-branch page; special-calendar construction/JS minimal response. Need precise per-branch future dated feed; do not mix2911Broadway/1462FirstAvenue/801Broadway."
+    },
+    {
+      "name": "The Uncommons",
+      "borough": "Manhattan",
+      "categories": [
+        "Gaming & Hobbies"
+      ],
+      "calendar_url": "https://uncommonsnyc.com/",
+      "street_address": null,
+      "status": "discovered_remaining_hold",
+      "remaining_work": "Ordinary primary response minimal/JS; official MTG program exists but no fresh finite dated export verified. Needs allowed calendar route and current address verification."
+    },
+    {
+      "name": "Sip & Play",
+      "borough": "Brooklyn",
+      "categories": [
+        "Gaming & Hobbies"
+      ],
+      "calendar_url": "https://www.sipnplaynyc.com/general-5",
+      "street_address": null,
+      "status": "discovered_remaining_hold",
+      "remaining_work": "Official Wix recurring events and Discord announcements; no finite dated machine feed verified. Do not use unaffiliated student replica sites."
+    },
+    {
+      "name": "BrookLAN",
+      "borough": "Brooklyn",
+      "categories": [
+        "Gaming & Hobbies",
+        "Nightlife & Social"
+      ],
+      "calendar_url": "https://www.brooklan.com/events",
+      "street_address": null,
+      "status": "discovered_remaining_hold",
+      "remaining_work": "Official events/ticket organizer found https://www.eventbrite.com/o/brooklan-new-york-31064796985; Squarespace assumption was wrong. Requires actual HTML/ticket adapter discovery."
+    },
+    {
+      "name": "Wild East Brewing",
+      "borough": "Brooklyn",
+      "categories": [
+        "Nightlife & Social",
+        "Food & Drink"
+      ],
+      "calendar_url": "https://www.wildeastbrewing.com/",
+      "street_address": null,
+      "status": "discovered_remaining_hold",
+      "remaining_work": "Current November2026 TAPROOM EVENTS text and firstWednesday trivia schedule; no stable finite structured feed/address extraction completed."
+    },
+    {
+      "name": "Radegast Hall",
+      "borough": "Brooklyn",
+      "categories": [
+        "Nightlife & Social"
+      ],
+      "calendar_url": "https://radegasthall.com/",
+      "street_address": null,
+      "status": "discovered_remaining_hold",
+      "remaining_work": "Current live events and Tuesday trivia on custom WordPress frontend; actual feed endpoint not verified."
+    },
+    {
+      "name": "Brooklyn Brewery",
+      "borough": "Brooklyn",
+      "categories": [
+        "Nightlife & Social",
+        "Food & Drink"
+      ],
+      "calendar_url": "https://brooklynbrewery.com/events/",
+      "street_address": null,
+      "status": "discovered_remaining_hold",
+      "remaining_work": "Active primary event hub; WP/TEC endpoint remains unverified, no guessed endpoint promoted."
+    },
+    {
+      "name": "SingleCut",
+      "borough": "Queens",
+      "categories": [
+        "Nightlife & Social",
+        "Food & Drink"
+      ],
+      "calendar_url": "https://www.singlecut.com/tap-room-events",
+      "street_address": null,
+      "status": "discovered_remaining_hold",
+      "remaining_work": "OfficialQueens recurringWednesdaymovie/Thursdaybingo/Fridaytrivia announcements lack explicit clocks. OtherBarn location is outsideNYC; do not mix or invent start times."
+    },
+    {
+      "name": "Bronx Alehouse",
+      "borough": "Bronx",
+      "categories": [
+        "Nightlife & Social"
+      ],
+      "calendar_url": "https://www.bronxalehouse.com/weekly-events",
+      "street_address": "216 West 238th Street, Bronx, NY 10463",
+      "status": "discovered_remaining_hold",
+      "remaining_work": "Official weekly imagery advertises Tuesday7pm trivia and beerclub; no finite future dated calendar or independently validated bounded recurrence collector yet."
+    },
+    {
+      "name": "The Bronx Brewery / The Backyard BX",
+      "borough": "Bronx",
+      "categories": [
+        "Nightlife & Social",
+        "Food & Drink"
+      ],
+      "calendar_url": "https://thebackyardbx.com/",
+      "street_address": "856 East 136th Street, Bronx, NY 10454",
+      "status": "discovered_remaining_hold",
+      "remaining_work": "Current brewery route https://thebronxbrewery.com/pages/bronx-location sends programming toBackyard/social; officiallineup sayscomingsoon. Future eventdates notpublished."
+    },
+    {
+      "name": "Grimm Ales",
+      "borough": "Brooklyn",
+      "categories": [
+        "Nightlife & Social",
+        "Food & Drink",
+        "Sports & Fitness"
+      ],
+      "calendar_url": "https://grimmales.com/upcoming-events/",
+      "street_address": "990 Metropolitan Avenue, Brooklyn, NY 11211",
+      "status": "discovered_remaining_hold",
+      "remaining_work": "Official recurrentBYOV/DJ/oldtimejam/runclub information; ordinary network403 and datedeventspage saysno upcomingevents. Need permitted transport and dated evidence."
+    },
+    {
+      "name": "Hudson Table Brooklyn",
+      "borough": "Brooklyn",
+      "categories": [
+        "Food & Drink"
+      ],
+      "calendar_url": "https://hudsontable.com/brooklyn/calendar/",
+      "street_address": null,
+      "status": "discovered_remaining_hold",
+      "remaining_work": "Current November2026 cookingclass pages have rich full menus/descriptions; direct network403. Need permitted live transport/officialAPI before implementation."
+    }
+  ]
+}

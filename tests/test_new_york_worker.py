@@ -1,0 +1,95 @@
+"""Full narratives and reviewed locations survive ordinary/checkpoint workers."""
+from copy import deepcopy
+import unittest
+from unittest.mock import patch
+
+from roomquest import category_worker, new_york_arts as arts
+from roomquest import new_york_nightlife as nightlife, new_york_outdoors as outdoors
+from roomquest import new_york_sources as profiles, preview_worker as worker
+
+
+def source(module, key):
+    url,kind,adapter=module.SOURCES[key]
+    return dict(source_key=key,feed_url=url,kind=kind,platform_adapter=adapter,
+                timezone='America/New_York')
+
+
+def event(**values):
+    result=dict(id='native-occurrence',title='Public workshop',
+      description='Complete publisher narrative. '*140,
+      starts_at='2026-12-01T18:00:00-05:00',ends_at='2026-12-01T19:00:00-05:00',
+      venue_name='Museum',venue_address='212 West 83rd Street, New York, NY 10024',
+      venue_city='New York',lat=None,lng=None,event_url='https://cmom.org/event/workshop/')
+    result.update(values)
+    return result
+
+
+class NewYorkWorkerTests(unittest.TestCase):
+    def test_ordinary_worker_retains_complete_narrative_and_postal_address(self):
+        row=event()
+        with patch.object(arts,'collect',return_value=[row]):
+            result=worker.preview_source(source(arts,arts.CMOM))
+        self.assertGreater(len(row['description']),2000)
+        self.assertEqual(result['p_events'],[row])
+        self.assertEqual(result['p_samples'][0]['venue_address'],row['venue_address'])
+
+    def test_exact_source_contract_rejects_changed_endpoint_before_fetch(self):
+        bad=source(arts,arts.CMOM);bad['feed_url']='https://cmom.org/other'
+        with patch.object(arts,'collect') as collect:
+            with self.assertRaisesRegex(worker.PreviewError,'unregistered_new_york_source'):
+                worker.preview_source(bad)
+            collect.assert_not_called()
+
+    def test_missing_oversized_and_locationless_records_cannot_complete(self):
+        for change in ({'description':''},{'description':'x'*12001},{'venue_address':'New York, NY 10024'}):
+            with self.subTest(change=list(change)),patch.object(arts,'collect',return_value=[event(**change)]):
+                with self.assertRaisesRegex(worker.PreviewError,'new_york_incomplete_event'):
+                    worker.preview_source(source(arts,arts.CMOM))
+
+    def test_only_exact_reviewed_intersection_point_is_accepted(self):
+        point=outdoors.REVIEWED_INTERSECTIONS[0]
+        src=source(outdoors,point['source_key'])
+        row=event(**{k:point[k] for k in ('venue_name','venue_address','lat','lng')})
+        profiles.validate_records([row],src)
+        for change in ({'lat':row['lat']+0.001},{'lng':None},{'venue_name':'Another park'}):
+            with self.subTest(change=change):
+                with self.assertRaisesRegex(ValueError,'new_york_incomplete_event'):
+                    profiles.validate_records([{**row,**change}],src)
+        with self.assertRaisesRegex(ValueError,'new_york_incomplete_event'):
+            profiles.validate_records([row],source(arts,arts.CMOM))
+
+    def test_checkpoint_persists_before_returning_full_rows(self):
+        row=event();calls=[]
+        def rpc(operation,payload):
+            calls.append(operation)
+            if operation.endswith('read_fetch_checkpoint'):return {'revision':0,'checkpoint':None}
+            if operation.endswith('write_fetch_checkpoint'):return {'checkpoint_saved':True,'revision':1}
+            self.fail(operation)
+        pacing=dict(wait_unbounded=False,crawl_delay_seconds=0,retry_after_seconds=0)
+        chunk={'checkpoint':{'cursor':1,'manifest_count':1},'complete':True,'events':[row]}
+        with patch.object(worker,'supabase_rpc',side_effect=rpc),patch.object(nightlife,'collect_chunk',return_value=chunk):
+            result=worker._preview_new_york_chunk(source(nightlife,nightlife.CHILOS),pacing,
+                collection_context={'p_category':'html','p_ticket':'test-ticket'},deadline_at=worker.monotonic()+50)
+        self.assertEqual(calls,['community_collector_read_fetch_checkpoint','community_collector_write_fetch_checkpoint'])
+        self.assertEqual(result['p_events'][0]['description'],row['description'])
+
+    def test_partial_chunk_does_not_return_events_for_staging(self):
+        chunk={'checkpoint':{'cursor':1,'manifest_count':2},'complete':False,'events':[event()]}
+        responses=[{'revision':0,'checkpoint':None},{'checkpoint_saved':True,'revision':1}]
+        with patch.object(worker,'supabase_rpc',side_effect=responses),patch.object(nightlife,'collect_chunk',return_value=chunk):
+            result=worker._preview_new_york_chunk(source(nightlife,nightlife.CHILOS),
+                dict(wait_unbounded=False,crawl_delay_seconds=0,retry_after_seconds=0),
+                collection_context={'p_category':'html','p_ticket':'test-ticket'},deadline_at=worker.monotonic()+50)
+        self.assertEqual(result,{'fetch_pending':True})
+
+    def test_unexpected_publisher_error_text_is_not_logged_as_diagnostic(self):
+        with patch.object(arts,'collect',side_effect=ValueError('private_publisher_value')):
+            with self.assertRaisesRegex(worker.PreviewError,'^invalid_new_york_payload$'):
+                worker.preview_source(source(arts,arts.CMOM))
+        self.assertEqual(category_worker._error_code(worker.PreviewError('new_york_incomplete_event')),
+                         'new_york_incomplete_event')
+        self.assertEqual(category_worker._error_code(worker.PreviewError('private_publisher_value')),
+                         'unclassified_preview_error')
+
+
+if __name__=='__main__':unittest.main()

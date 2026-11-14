@@ -1,0 +1,184 @@
+{
+  "observed_date": "2026-11-14",
+  "scope": "Nightlife & Social, Food & Drink, Gaming & Hobbies; discovery across all five boroughs. Current implementation is nine sources in Brooklyn, Queens and Staten Island, excluded from the already-working production registry by parent audit.",
+  "status": "Collector implementation and full captured HTML replay verified. Deployment and live guarded-fetch outcome are recorded by the parent batch report.",
+  "candidate_count": 23,
+  "implemented_source_count": 9,
+  "remaining_hold_count": 14,
+  "accepted_future_occurrences": 199,
+  "blank_descriptions": 0,
+  "blank_street_addresses": 0,
+  "reviewed_address_points": 199,
+  "tests": "16 focused unit tests passed. Actual shared-normalizer complete-checkpoint replay passed for all nine sources.",
+  "evidence_files": {
+    "full_accepted_rows_and_original_capture_hashes": "new-york-nightlife-20261114.json",
+    "official_streets_and_exact_points": "new-york-nightlife-venue-points-20261114.json",
+    "broad_discovery_and_holds": "new-york-nightlife-discovery-20261114.json"
+  },
+  "sources": [
+    {
+      "source_key": "chilos_brooklyn_ny",
+      "calendar_url": "https://www.chilosbk.com/eventscalendar",
+      "accepted_future_occurrences": 5,
+      "description_characters_min": 96,
+      "description_characters_max": 248,
+      "collector_method": "Squarespace normal calendar HTML and linked complete detail HTML"
+    },
+    {
+      "source_key": "forever_brewing_brooklyn_ny",
+      "calendar_url": "https://www.foreverbrewing.com/events-calendar",
+      "accepted_future_occurrences": 19,
+      "description_characters_min": 194,
+      "description_characters_max": 1002,
+      "collector_method": "Squarespace complete native listing bodies plus linked details for excerpts"
+    },
+    {
+      "source_key": "fifth_hammer_queens_ny",
+      "calendar_url": "https://www.fifthhammerbrewing.com/fifth-hammer-calendar",
+      "accepted_future_occurrences": 18,
+      "description_characters_min": 44,
+      "description_characters_max": 260,
+      "collector_method": "Squarespace accessible current-month HTML and linked complete detail HTML; no query pagination"
+    },
+    {
+      "source_key": "wonderville_brooklyn_ny",
+      "calendar_url": "https://www.wonderville.nyc/events",
+      "accepted_future_occurrences": 52,
+      "description_characters_min": 84,
+      "description_characters_max": 1371,
+      "collector_method": "Squarespace complete native listing bodies"
+    },
+    {
+      "source_key": "starr_bar_brooklyn_ny",
+      "calendar_url": "https://www.starrbar.com/events",
+      "accepted_future_occurrences": 8,
+      "description_characters_min": 211,
+      "description_characters_max": 794,
+      "collector_method": "Squarespace complete native listing bodies"
+    },
+    {
+      "source_key": "skinny_dennis_brooklyn_ny",
+      "calendar_url": "https://skinnydennisbrooklyn.com/calendar",
+      "accepted_future_occurrences": 21,
+      "description_characters_min": 49,
+      "description_characters_max": 1362,
+      "collector_method": "Squarespace complete native listing bodies"
+    },
+    {
+      "source_key": "kills_boro_staten_island_ny",
+      "calendar_url": "https://killsboro.com/events",
+      "accepted_future_occurrences": 18,
+      "description_characters_min": 38,
+      "description_characters_max": 110,
+      "collector_method": "Official event JSON-LD embedded in normal HTML, matched to complete visible event paragraphs"
+    },
+    {
+      "source_key": "sake_studies_brooklyn_ny",
+      "calendar_url": "https://www.sakestudiescenter.com/calendar",
+      "accepted_future_occurrences": 15,
+      "description_characters_min": 2139,
+      "description_characters_max": 2433,
+      "collector_method": "Dated Event JSON-LD in normal calendar HTML plus complete linked class detail bodies"
+    },
+    {
+      "source_key": "twenty_sided_brooklyn_ny",
+      "calendar_url": "https://twentysidedstore.com/collections/events",
+      "accepted_future_occurrences": 43,
+      "description_characters_min": 303,
+      "description_characters_max": 3628,
+      "collector_method": "Official normal collection HTML plus inert native Shopify product JSON and matching visible full descriptions; only dated available individual variants"
+    }
+  ],
+  "holds": [
+    {
+      "name": "Bar LunÀtico",
+      "borough": "Brooklyn",
+      "url": "https://www.barlunatico.com/calendar",
+      "remaining_work": "Native normal calendar HTML has JS-only rendering; queryJSON/list exports explicitly robots-disallowed. Find allowed server-rendered detail discovery."
+    },
+    {
+      "name": "The Brooklyn Strategist",
+      "borough": "Brooklyn",
+      "url": "https://thebrooklynstrategist.com/",
+      "remaining_work": "Current primary site moved from333Court to148Pierrepont. Google embedded ICS robots-disallowed. Official Jumbula https://the-brooklyn-strategist.jumbula.com/tcg-events merits dedicated allowedHTML collector."
+    },
+    {
+      "name": "Hex & Company",
+      "borough": "Manhattan",
+      "url": "https://www.hexnyc.com/hexandcoweeklyevents/",
+      "remaining_work": "Official weeklyTCG multi-branch page; special-calendar construction/JS minimal response. Need precise per-branch future dated feed; do not mix2911Broadway/1462FirstAvenue/801Broadway."
+    },
+    {
+      "name": "The Uncommons",
+      "borough": "Manhattan",
+      "url": "https://uncommonsnyc.com/",
+      "remaining_work": "Ordinary primary response minimal/JS; official MTG program exists but no fresh finite dated export verified. Needs allowed calendar route and current address verification."
+    },
+    {
+      "name": "Sip & Play",
+      "borough": "Brooklyn",
+      "url": "https://www.sipnplaynyc.com/general-5",
+      "remaining_work": "Official Wix recurring events and Discord announcements; no finite dated machine feed verified. Do not use unaffiliated student replica sites."
+    },
+    {
+      "name": "BrookLAN",
+      "borough": "Brooklyn",
+      "url": "https://www.brooklan.com/events",
+      "remaining_work": "Official events/ticket organizer found https://www.eventbrite.com/o/brooklan-new-york-31064796985; Squarespace assumption was wrong. Requires actual HTML/ticket adapter discovery."
+    },
+    {
+      "name": "Wild East Brewing",
+      "borough": "Brooklyn",
+      "url": "https://www.wildeastbrewing.com/",
+      "remaining_work": "Current November2026 TAPROOM EVENTS text and firstWednesday trivia schedule; no stable finite structured feed/address extraction completed."
+    },
+    {
+      "name": "Radegast Hall",
+      "borough": "Brooklyn",
+      "url": "https://radegasthall.com/",
+      "remaining_work": "Current live events and Tuesday trivia on custom WordPress frontend; actual feed endpoint not verified."
+    },
+    {
+      "name": "Brooklyn Brewery",
+      "borough": "Brooklyn",
+      "url": "https://brooklynbrewery.com/events/",
+      "remaining_work": "Active primary event hub; WP/TEC endpoint remains unverified, no guessed endpoint promoted."
+    },
+    {
+      "name": "SingleCut",
+      "borough": "Queens",
+      "url": "https://www.singlecut.com/tap-room-events",
+      "remaining_work": "OfficialQueens recurringWednesdaymovie/Thursdaybingo/Fridaytrivia announcements lack explicit clocks. OtherBarn location is outsideNYC; do not mix or invent start times."
+    },
+    {
+      "name": "Bronx Alehouse",
+      "borough": "Bronx",
+      "url": "https://www.bronxalehouse.com/weekly-events",
+      "remaining_work": "Official weekly imagery advertises Tuesday7pm trivia and beerclub; no finite future dated calendar or independently validated bounded recurrence collector yet."
+    },
+    {
+      "name": "The Bronx Brewery / The Backyard BX",
+      "borough": "Bronx",
+      "url": "https://thebackyardbx.com/",
+      "remaining_work": "Current brewery route https://thebronxbrewery.com/pages/bronx-location sends programming toBackyard/social; officiallineup sayscomingsoon. Future eventdates notpublished."
+    },
+    {
+      "name": "Grimm Ales",
+      "borough": "Brooklyn",
+      "url": "https://grimmales.com/upcoming-events/",
+      "remaining_work": "Official recurrentBYOV/DJ/oldtimejam/runclub information; ordinary network403 and datedeventspage saysno upcomingevents. Need permitted transport and dated evidence."
+    },
+    {
+      "name": "Hudson Table Brooklyn",
+      "borough": "Brooklyn",
+      "url": "https://hudsontable.com/brooklyn/calendar/",
+      "remaining_work": "Current November2026 cookingclass pages have rich full menus/descriptions; direct network403. Need permitted live transport/officialAPI before implementation."
+    }
+  ],
+  "limitations": [
+    "Local socket DNS blocks production guarded transport before HTTP. Research proxy captures plus offline replay do not claim live production transport success.",
+    "Fifth Hammer normal HTML covers the currently published month. Exports and query pagination are not used because robots prohibit them.",
+    "No speculative recurring dates, guessed clocks or placeholder descriptions are published.",
+    "Skinny Dennis current official footer and exact NYC PAD result both use ZIP11249."
+  ]
+}

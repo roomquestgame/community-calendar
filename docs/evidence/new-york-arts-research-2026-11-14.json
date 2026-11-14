@@ -1,0 +1,525 @@
+{
+  "schema_version": 1,
+  "captured_at": "2026-11-14T22:29:09.066145+00:00",
+  "scope": "New or zero-public New York sources only; working/published sources excluded",
+  "validation": "Local publisher-response capture and parser replay, using actual production User-Agent and robots policy. The local direct transport cannot validate public DNS; production guarded collection remains the deployment gate.",
+  "code_file": "roomquest/new_york_arts.py",
+  "accepted_count": 362,
+  "sources": [
+    {
+      "source_key": "municipal_mapsee_4d60394f1806d3366dd987d3",
+      "publisher_label": "Children’s Museum of Manhattan",
+      "borough": "Manhattan",
+      "registration": {
+        "feed_url": "https://cmom.org",
+        "kind": "html",
+        "platform_adapter": "html"
+      },
+      "timezone": "America/New_York",
+      "publisher_data_url": "https://cmom.org/wp-json/tribe/events/v1/events",
+      "address_evidence_url": "https://cmom.org/plan-your-visit/",
+      "accepted_count": 144,
+      "description_blank_count": 0,
+      "description_over_12000_count": 0,
+      "description_over_2000_count": 1,
+      "description_length_min": 53,
+      "description_length_max": 2259,
+      "unique_streets": [
+        "212 West 83rd Street, New York, NY 10024"
+      ],
+      "checkpoint": false,
+      "review_note": "Existing source4350: zero public; room-only venues lacked street addresses. Exact known internal room identities mapped to museum location; closures held.",
+      "raw_capture_sha256": "ad0ed862726910951b9f07fc09c860b61ceae17f7445f7927907a57f688dbfda"
+    },
+    {
+      "source_key": "municipal_mapsee_ff1f81293a6a6ae75a21a2d8",
+      "publisher_label": "Staten Island Children’s Museum",
+      "borough": "Staten Island",
+      "registration": {
+        "feed_url": "https://sichildrensmuseum.org",
+        "kind": "html",
+        "platform_adapter": "html"
+      },
+      "timezone": "America/New_York",
+      "publisher_data_url": "https://sichildrensmuseum.org/wp-json/tribe/events/v1/events",
+      "address_evidence_url": "https://sichildrensmuseum.org/visit/",
+      "accepted_count": 29,
+      "description_blank_count": 0,
+      "description_over_12000_count": 0,
+      "description_over_2000_count": 0,
+      "description_length_min": 181,
+      "description_length_max": 1634,
+      "unique_streets": [
+        "1000 Richmond Terrace Building M, Staten Island, NY 10301"
+      ],
+      "checkpoint": false,
+      "review_note": "Existing source4704: zero public; Building M separated by commas failed street normalization. Preserve exact source key and native coordinates."
+    },
+    {
+      "source_key": "staten_island_museum_ny",
+      "publisher_label": "Staten Island Museum",
+      "borough": "Staten Island",
+      "registration": {
+        "feed_url": "https://www.statenislandmuseum.org/events/",
+        "kind": "html",
+        "platform_adapter": "html"
+      },
+      "timezone": "America/New_York",
+      "publisher_data_url": "https://www.statenislandmuseum.org/wp-json/tribe/events/v1/events",
+      "address_evidence_url": "https://www.statenislandmuseum.org/events/",
+      "accepted_count": 6,
+      "description_blank_count": 0,
+      "description_over_12000_count": 0,
+      "description_over_2000_count": 0,
+      "description_length_min": 256,
+      "description_length_max": 885,
+      "unique_streets": [
+        "1000 Richmond Terrace Building A, Staten Island, NY 10301",
+        "222 Poillon Ave, Staten Island, NY 10312",
+        "3270 Hylan Boulevard, Staten Island, NY 10306",
+        "420 Cornelia Ave., Staten Island, NY 10312",
+        "700 Victory Boulevard, Staten Island, NY 10301"
+      ],
+      "checkpoint": false,
+      "review_note": "Mixed museum and park venues preserved; Great Kills uses documented park entrance and retains full meeting directions.",
+      "raw_capture_sha256": "7510b89d5f476038acf6ce7bb6f940b3a92af297f6a614a3c536ec359a51e8ef"
+    },
+    {
+      "source_key": "queens_county_farm_museum_ny",
+      "publisher_label": "Queens County Farm Museum",
+      "borough": "Queens",
+      "registration": {
+        "feed_url": "https://www.queensfarm.org/events-calendar/",
+        "kind": "html",
+        "platform_adapter": "html"
+      },
+      "timezone": "America/New_York",
+      "publisher_data_url": "https://www.queensfarm.org/wp-json/tribe/events/v1/events",
+      "address_evidence_url": "https://www.queensfarm.org/events-calendar/",
+      "accepted_count": 58,
+      "description_blank_count": 0,
+      "description_over_12000_count": 0,
+      "description_over_2000_count": 0,
+      "description_length_min": 442,
+      "description_length_max": 1486,
+      "unique_streets": [
+        "73-50 Little Neck Parkway, Queens, NY 11004"
+      ],
+      "checkpoint": false,
+      "review_note": "Exact feed address; hyphenated Queens street number preserved.",
+      "raw_capture_sha256": "2c5251fc6d3f866afe316cf18bcc2568df944f305f817223c10aad6f4824dca5"
+    },
+    {
+      "source_key": "museum_of_moving_image_ny",
+      "publisher_label": "Museum of the Moving Image",
+      "borough": "Queens",
+      "registration": {
+        "feed_url": "https://movingimage.org/events/",
+        "kind": "html",
+        "platform_adapter": "html"
+      },
+      "timezone": "America/New_York",
+      "publisher_data_url": "https://movingimage.org/wp-json/tribe/events/v1/events",
+      "address_evidence_url": "https://movingimage.org/visit/",
+      "accepted_count": 92,
+      "description_blank_count": 0,
+      "description_over_12000_count": 0,
+      "description_over_2000_count": 3,
+      "description_length_min": 101,
+      "description_length_max": 2479,
+      "unique_streets": [
+        "36-01 35th Avenue, Astoria, NY 11106"
+      ],
+      "checkpoint": false,
+      "review_note": "Calendar screening/event entries omit venue objects; reviewed source-specific museum address supplied for recognized onsite activity categories.",
+      "raw_capture_sha256": "8254a944c8a6057479e95eaef503a0cf4efaa55be411fa7435b627a06af031f8"
+    },
+    {
+      "source_key": "poster_house_ny",
+      "publisher_label": "Poster House",
+      "borough": "Manhattan",
+      "registration": {
+        "feed_url": "https://posterhouse.org/events/",
+        "kind": "html",
+        "platform_adapter": "html"
+      },
+      "timezone": "America/New_York",
+      "publisher_data_url": "https://posterhouse.org/wp-json/tribe/events/v1/events",
+      "address_evidence_url": "https://posterhouse.org/hours-admission-location/",
+      "accepted_count": 13,
+      "description_blank_count": 0,
+      "description_over_12000_count": 0,
+      "description_over_2000_count": 1,
+      "description_length_min": 670,
+      "description_length_max": 2522,
+      "unique_streets": [
+        "119 West 23rd Street, New York, NY 10011"
+      ],
+      "checkpoint": false,
+      "review_note": "Reviewed address supplied only for In-Person/Hybrid categories; explicit virtual, members-only and nonpublic events excluded.",
+      "raw_capture_sha256": "8857360f5b739ebd21811a4eb2844046f39ca647e487c3635f309ad7a9c2f35b"
+    },
+    {
+      "source_key": "materials_for_arts_ny",
+      "publisher_label": "Materials for the Arts",
+      "borough": "Queens",
+      "registration": {
+        "feed_url": "https://www.materialsforthearts.org/events/",
+        "kind": "html",
+        "platform_adapter": "html"
+      },
+      "timezone": "America/New_York",
+      "publisher_data_url": "https://www.materialsforthearts.org/wp-json/tribe/events/v1/events",
+      "address_evidence_url": "https://www.materialsforthearts.org/events/",
+      "accepted_count": 1,
+      "description_blank_count": 0,
+      "description_over_12000_count": 0,
+      "description_over_2000_count": 0,
+      "description_length_min": 844,
+      "description_length_max": 844,
+      "unique_streets": [
+        "33-00 Northern Blvd 3rd Floor, Long Island City, NY 11101"
+      ],
+      "checkpoint": false,
+      "review_note": "Native venue coordinates preserved; floor comma normalized; undivided all-day multiweek professional-development course held.",
+      "raw_capture_sha256": "51c39be3e0c7088f0dfc8a2bd2c07dd4c39704bfe3670cd6ef05fa97d05e9078"
+    },
+    {
+      "source_key": "lewis_latimer_house_ny",
+      "publisher_label": "Lewis Latimer House",
+      "borough": "Queens",
+      "registration": {
+        "feed_url": "https://www.lewislatimerhouse.org/events",
+        "kind": "html",
+        "platform_adapter": "html"
+      },
+      "timezone": "America/New_York",
+      "publisher_data_url": "https://www.lewislatimerhouse.org/events",
+      "address_evidence_url": "https://www.lewislatimerhouse.org/visit",
+      "accepted_count": 3,
+      "description_blank_count": 0,
+      "description_over_12000_count": 0,
+      "description_over_2000_count": 0,
+      "description_length_min": 448,
+      "description_length_max": 932,
+      "unique_streets": [
+        "34-41 137th Street, Flushing, NY 11354"
+      ],
+      "checkpoint": false,
+      "review_note": "Permitted Squarespace HTML detail content and embedded calendar dates; offsite Queens Museum Community Archiving Day held because exact street number is unresolved."
+    },
+    {
+      "source_key": "historic_richmond_town_ny",
+      "publisher_label": "Historic Richmond Town",
+      "borough": "Staten Island",
+      "registration": {
+        "feed_url": "https://www.historicrichmondtown.org/events",
+        "kind": "html",
+        "platform_adapter": "html"
+      },
+      "timezone": "America/New_York",
+      "publisher_data_url": "https://www.historicrichmondtown.org/events",
+      "address_evidence_url": "https://www.historicrichmondtown.org/events",
+      "accepted_count": 3,
+      "description_blank_count": 0,
+      "description_over_12000_count": 0,
+      "description_over_2000_count": 0,
+      "description_length_min": 710,
+      "description_length_max": 1043,
+      "unique_streets": [
+        "441 Clarke Avenue, Staten Island, NY 10306"
+      ],
+      "checkpoint": false,
+      "review_note": "Permitted Squarespace HTML detail content; undivided multi-day and tour-season listings held instead of fabricating occurrence dates/times."
+    },
+    {
+      "source_key": "powerhouse_arena_ny",
+      "publisher_label": "POWERHOUSE Arena and Columbus Circle",
+      "borough": "Brooklyn / Manhattan",
+      "registration": {
+        "feed_url": "https://powerhousearena.com/events/",
+        "kind": "html",
+        "platform_adapter": "html"
+      },
+      "timezone": "America/New_York",
+      "publisher_data_url": "https://powerhousearena.com/events/",
+      "address_evidence_url": "https://powerhousearena.com/events/",
+      "accepted_count": 4,
+      "description_blank_count": 0,
+      "description_over_12000_count": 0,
+      "description_over_2000_count": 1,
+      "description_length_min": 1244,
+      "description_length_max": 2498,
+      "unique_streets": [
+        "10 Columbus Circle #304, New York, NY 10019",
+        "28 Adams Street, Brooklyn, NY 11201"
+      ],
+      "checkpoint": false,
+      "review_note": "Full Events Manager detail narrative; venue location links and exact native addresses select Brooklyn or Columbus Circle without flattening locations."
+    },
+    {
+      "source_key": "grand_bazaar_nyc_ny",
+      "publisher_label": "Grand Bazaar NYC",
+      "borough": "Manhattan",
+      "registration": {
+        "feed_url": "https://grandbazaarnyc.org/events/",
+        "kind": "html",
+        "platform_adapter": "html"
+      },
+      "timezone": "America/New_York",
+      "publisher_data_url": "https://grandbazaarnyc.org/events/",
+      "address_evidence_url": "https://grandbazaarnyc.org/events/",
+      "accepted_count": 9,
+      "description_blank_count": 0,
+      "description_over_12000_count": 0,
+      "description_over_2000_count": 0,
+      "description_length_min": 411,
+      "description_length_max": 577,
+      "unique_streets": [
+        "100 West 77th Street, New York, NY 10024"
+      ],
+      "checkpoint": true,
+      "review_note": "Full editorial detail paragraphs; Add to Calendar description is truncated and never used. Three-detail durable checkpoint; no partial rows returned."
+    }
+  ],
+  "long_description_baselines": [
+    {
+      "source_key": "municipal_mapsee_4d60394f1806d3366dd987d3",
+      "event_id": "4020",
+      "title": "Author Storytime with Special Guests: Between the Balloons with Artist E.A. KAHANE and Tom Toro for Aperture Kids",
+      "event_url": "https://cmom.org/event/alphies-goodbye-storytime-with-special-guests-between-the-balloons-with-artist-e-a-kahane-and-tom-toro-for-aperture-kids/",
+      "starts_at": "2026-11-21T20:00:00+00:00",
+      "description_characters": 2259,
+      "description_sha256": "592bd3c7f86828e05272e47e59c94da33dfe354d7368bbd5e03184d75d001120"
+    },
+    {
+      "source_key": "museum_of_moving_image_ny",
+      "event_id": "64109",
+      "title": "AniTOMO NYE Anime Rewind 2026",
+      "event_url": "https://movingimage.org/event/anitomo-nye-anime-rewind-2026/",
+      "starts_at": "2026-12-05T20:30:00+00:00",
+      "description_characters": 2327,
+      "description_sha256": "d68d2d29c7aa39a77fe74397c11a9635b705591a0746a1dd94b5d6a48d50274a"
+    },
+    {
+      "source_key": "museum_of_moving_image_ny",
+      "event_id": "63578",
+      "title": "The Man Who Shot Liberty Valance",
+      "event_url": "https://movingimage.org/event/the-man-who-shot-liberty-valance/",
+      "starts_at": "2026-12-06T21:00:00+00:00",
+      "description_characters": 2479,
+      "description_sha256": "294d9fb0a58d7ceff01e976983fd99511797669236145b3d02141acf012ba6fe"
+    },
+    {
+      "source_key": "museum_of_moving_image_ny",
+      "event_id": "63418",
+      "title": "Liza Double Feature: Liza with a Z + The Sterile Cuckoo",
+      "event_url": "https://movingimage.org/event/liza-double-feature/",
+      "starts_at": "2026-12-20T20:00:00+00:00",
+      "description_characters": 2099,
+      "description_sha256": "5801cf7f7ff42221c7eece099becc2b78e93c1f758c75339f58b049b4854dcf2"
+    },
+    {
+      "source_key": "poster_house_ny",
+      "event_id": "124109",
+      "title": "Poster Kids: The Fabric of Our Futures with Ella Mahoney",
+      "event_url": "https://posterhouse.org/event/poster-kids-the-fabric-of-our-futures-with-ella-mahoney/",
+      "starts_at": "2026-11-15T15:30:00+00:00",
+      "description_characters": 2522,
+      "description_sha256": "969a5db872ae1844dffa0f2e7bd311d9d72c7c8fcdf14fc90d087fe1be09b48d"
+    },
+    {
+      "source_key": "powerhouse_arena_ny",
+      "event_id": "1974",
+      "title": "BAD POLY: Spill the Tea Edition – featuring Michelle Tea, Alex Alberto, Ashna Ali & Ro White",
+      "event_url": "https://powerhousearena.com/events/bad-poly-spill-the-tea-edition-a-conversation-with-michelle-tea-alex-alberto-and-ro-white/",
+      "starts_at": "2026-11-21T23:00:00+00:00",
+      "description_characters": 2498,
+      "description_sha256": "375fd86a82b78f8a162ceb42454c6508534a7401aa17c16aef5741b88ebb0881"
+    }
+  ],
+  "held_candidates": [
+    {
+      "publisher_label": "Bronx Museum",
+      "calendar_url": "https://bronxmuseum.org/events/",
+      "address": "1040 Grand Concourse, Bronx, NY 10456",
+      "adapter_family": "Custom WordPress event HTML / wp/v2/event",
+      "active_evidence": "December4 Winter Holiday Market and Teen Night; December12 Family Day Winter Wonderland",
+      "disposition": "Actionable next batch: custom structured date/detail adapter and closure filtering required",
+      "evidence_url": "https://bronxmuseum.org/event/winter-wonderland26/"
+    },
+    {
+      "publisher_label": "Queens Museum",
+      "calendar_url": "https://queensmuseum.org/calendar/",
+      "address": "New York City Building, Flushing Meadows Corona Park, Queens, NY 11368",
+      "adapter_family": "Custom WordPress calendar / ICS controls",
+      "active_evidence": "Community Archiving Day Nov15; printmaking Nov22/Dec6; Holiday Market Dec12–13",
+      "disposition": "Hold: official address lacks a numbered street; need reviewed entrance/address resolution and occurrence-specific multi-day schedule",
+      "evidence_url": "https://queensmuseum.org/whats-on/"
+    },
+    {
+      "publisher_label": "New York Transit Museum",
+      "calendar_url": "https://www.nytransitmuseum.org/programs/",
+      "adapter_family": "TEC with linked detail hydration",
+      "active_evidence": "27 dated feed events in audit window",
+      "disposition": "Hold: every audited TEC description blank. Needs bounded detail hydration checkpoint and location review; generic TEC feed alone is insufficient",
+      "evidence_url": "https://www.nytransitmuseum.org/wp-json/tribe/events/v1/events"
+    },
+    {
+      "publisher_label": "Greenlight Bookstore",
+      "calendar_url": "https://greenlightbookstore.com/events",
+      "address": "686 Fulton Street, Brooklyn, NY 11217",
+      "adapter_family": "Drupal / linked event HTML",
+      "active_evidence": "November author readings and book groups; offsite BAM listings also present",
+      "disposition": "Actionable next batch: full detail hydration, bounded pagination and venue-specific location preservation needed",
+      "evidence_url": "https://greenlightbookstore.com/events"
+    },
+    {
+      "publisher_label": "National Lighthouse Museum",
+      "calendar_url": "https://lighthousemuseum.org/events/",
+      "adapter_family": "TEC",
+      "disposition": "Hold: audited feed had no still-upcoming occurrence at capture time; no dates invented"
+    },
+    {
+      "publisher_label": "Alice Austen House",
+      "calendar_url": "https://aliceausten.org/events/",
+      "adapter_family": "TEC",
+      "disposition": "Hold: tested event feed empty; needs active future schedule confirmation"
+    },
+    {
+      "publisher_label": "MakerSpace NYC",
+      "calendar_url": "https://www.makerspacenyc.com/",
+      "adapter_family": "External ticketing links / classes",
+      "disposition": "Discovery only: direct complete feed and occurrence locations unverified; not registered"
+    },
+    {
+      "publisher_label": "Flushing Town Hall",
+      "calendar_url": "https://www.flushingtownhall.org/events",
+      "adapter_family": "Custom events calendar",
+      "disposition": "Discovery only: independent complete-content and schedule adapter verification required; not registered"
+    },
+    {
+      "publisher_label": "Brooklyn Children’s Museum",
+      "calendar_url": "https://www.brooklynkids.org/events/",
+      "adapter_family": "Custom WordPress events",
+      "disposition": "Discovery only: custom occurrence schedule adapter required; not registered"
+    }
+  ],
+  "robots_checks": [
+    {
+      "source_key": "municipal_mapsee_4d60394f1806d3366dd987d3",
+      "robots_url": "https://cmom.org/robots.txt",
+      "http_status": 200,
+      "checked_at": "2026-11-14T22:28:37.762088+00:00",
+      "transport": "local proxy; production DNS guard unavailable locally; same production robots User-Agent",
+      "target_url": "https://cmom.org/wp-json/tribe/events/v1/events",
+      "target_allowed": true,
+      "crawl_delay": null
+    },
+    {
+      "source_key": "municipal_mapsee_ff1f81293a6a6ae75a21a2d8",
+      "robots_url": "https://sichildrensmuseum.org/robots.txt",
+      "http_status": 200,
+      "checked_at": "2026-11-14T22:28:38.361536+00:00",
+      "transport": "local proxy; production DNS guard unavailable locally; same production robots User-Agent",
+      "target_url": "https://sichildrensmuseum.org/wp-json/tribe/events/v1/events",
+      "target_allowed": true,
+      "crawl_delay": null
+    },
+    {
+      "source_key": "staten_island_museum_ny",
+      "robots_url": "https://www.statenislandmuseum.org/robots.txt",
+      "http_status": 200,
+      "checked_at": "2026-11-14T22:28:37.069419+00:00",
+      "transport": "local proxy; production DNS guard unavailable locally; same production robots User-Agent",
+      "target_url": "https://www.statenislandmuseum.org/wp-json/tribe/events/v1/events",
+      "target_allowed": true,
+      "crawl_delay": null
+    },
+    {
+      "source_key": "queens_county_farm_museum_ny",
+      "robots_url": "https://www.queensfarm.org/robots.txt",
+      "http_status": 200,
+      "checked_at": "2026-11-14T22:28:37.545148+00:00",
+      "transport": "local proxy; production DNS guard unavailable locally; same production robots User-Agent",
+      "target_url": "https://www.queensfarm.org/wp-json/tribe/events/v1/events",
+      "target_allowed": true,
+      "crawl_delay": null
+    },
+    {
+      "source_key": "museum_of_moving_image_ny",
+      "robots_url": "https://movingimage.org/robots.txt",
+      "http_status": 200,
+      "checked_at": "2026-11-14T22:28:40.886563+00:00",
+      "transport": "local proxy; production DNS guard unavailable locally; same production robots User-Agent",
+      "target_url": "https://movingimage.org/wp-json/tribe/events/v1/events",
+      "target_allowed": true,
+      "crawl_delay": null
+    },
+    {
+      "source_key": "poster_house_ny",
+      "robots_url": "https://posterhouse.org/robots.txt",
+      "http_status": 200,
+      "checked_at": "2026-11-14T22:28:40.341284+00:00",
+      "transport": "local proxy; production DNS guard unavailable locally; same production robots User-Agent",
+      "target_url": "https://posterhouse.org/wp-json/tribe/events/v1/events",
+      "target_allowed": true,
+      "crawl_delay": null
+    },
+    {
+      "source_key": "materials_for_arts_ny",
+      "robots_url": "https://www.materialsforthearts.org/robots.txt",
+      "http_status": 200,
+      "checked_at": "2026-11-14T22:28:44.423199+00:00",
+      "transport": "local proxy; production DNS guard unavailable locally; same production robots User-Agent",
+      "target_url": "https://www.materialsforthearts.org/wp-json/tribe/events/v1/events",
+      "target_allowed": true,
+      "crawl_delay": null
+    },
+    {
+      "source_key": "lewis_latimer_house_ny",
+      "robots_url": "https://www.lewislatimerhouse.org/robots.txt",
+      "http_status": 200,
+      "checked_at": "2026-11-14T22:28:43.140546+00:00",
+      "transport": "local proxy; production DNS guard unavailable locally; same production robots User-Agent",
+      "target_url": "https://www.lewislatimerhouse.org/events",
+      "target_allowed": true,
+      "crawl_delay": null
+    },
+    {
+      "source_key": "historic_richmond_town_ny",
+      "robots_url": "https://www.historicrichmondtown.org/robots.txt",
+      "http_status": 200,
+      "checked_at": "2026-11-14T22:28:44.104706+00:00",
+      "transport": "local proxy; production DNS guard unavailable locally; same production robots User-Agent",
+      "target_url": "https://www.historicrichmondtown.org/events",
+      "target_allowed": true,
+      "crawl_delay": null
+    },
+    {
+      "source_key": "powerhouse_arena_ny",
+      "robots_url": "https://powerhousearena.com/robots.txt",
+      "http_status": 200,
+      "checked_at": "2026-11-14T22:28:45.274699+00:00",
+      "transport": "local proxy; production DNS guard unavailable locally; same production robots User-Agent",
+      "target_url": "https://powerhousearena.com/events/",
+      "target_allowed": true,
+      "crawl_delay": null
+    },
+    {
+      "source_key": "grand_bazaar_nyc_ny",
+      "robots_url": "https://grandbazaarnyc.org/robots.txt",
+      "http_status": 200,
+      "checked_at": "2026-11-14T22:28:47.412893+00:00",
+      "transport": "local proxy; production DNS guard unavailable locally; same production robots User-Agent",
+      "target_url": "https://grandbazaarnyc.org/events/",
+      "target_allowed": true,
+      "crawl_delay": null
+    }
+  ],
+  "verification": {
+    "unit_tests": "python -m unittest tests.test_new_york_arts tests.test_new_york_nightlife -q",
+    "result": "30 tests passed; arts alone16",
+    "production_deployment": "Root handles guarded multi-source batch; this capture is not a claim of live publication."
+  }
+}
