@@ -1,0 +1,48 @@
+{
+  "charlie_campus": {
+    "reviewed_at": "2026-11-14T20:23:18.471189+00:00",
+    "source_key": "stockton_performing_arts_nj",
+    "venue": "Stockton University — Galloway Campus",
+    "street": "101 Vera King Farris Drive, Galloway, NJ 08205",
+    "point": [
+      39.491192,
+      -74.534683
+    ],
+    "precision": "named Galloway campus destination; no room or building claim",
+    "publisher_page": "https://stockton.edu/maps/index.html",
+    "publisher_map_id": "1iZnWa0V3cETgS55Q6BmEHgXVHIU",
+    "public_export": "https://www.google.com/maps/d/kml?mid=1iZnWa0V3cETgS55Q6BmEHgXVHIU&forcekml=1",
+    "placemark_name": "Stockton University",
+    "placemark_description_identifies": "Galloway, Atlantic County",
+    "kml_sha256": "b203a0cf9bd51af4c5f0d53536aba23908483005f7bcf2d33fdc412b15a6583f",
+    "exact_tuple_guard": true,
+    "description_address_clock_changes": 0
+  },
+  "hrc_room": {
+    "venue": "Stockton University's Galloway Campus — L-112 Lecture Hall",
+    "street": "101 Vera King Farris Drive, Galloway, NJ 08205",
+    "point": null,
+    "publisher_event_page": "https://stockton.edu/holocaust-resource/events/index.html",
+    "publisher_map_page": "https://stockton.edu/maps/interactive-campus-map.html",
+    "map_url": "https://map.concept3d.com/?id=505#!ct/5014,4403,0,4976,4794,4776",
+    "data_api_robots_url": "https://api.concept3d.com/robots.txt",
+    "data_api_robots": "User-agent: *\nDisallow: /",
+    "action": "Stopped before requesting map data because the data API disallows crawling. No PAC or campus point substituted for the L-112 room. Retained verified physical room and complete street for ordinary address resolution."
+  },
+  "changed_rows": [
+    {
+      "id": "bba42446e8f69611d9bc0f07bdd8c24ae2a05ca0b9eb4351953472ed88a98458",
+      "title": "A CHARLIE BROWN CHRISTMAS — Ed Vezinho & The Jim Ward Big Band",
+      "venue": "Stockton University — Galloway Campus",
+      "street": "101 Vera King Farris Drive, Galloway, NJ 08205",
+      "before": [
+        null,
+        null
+      ],
+      "after": [
+        39.491192,
+        -74.534683
+      ]
+    }
+  ]
+}

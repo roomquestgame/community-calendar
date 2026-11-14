@@ -73,6 +73,23 @@ _ERROR_CODES = frozenset(('database_unavailable', 'staging_deadline',
     'municipal_event_identity_changed', 'municipal_event_schedule_changed',
     'municipal_checkpoint_invalid', 'municipal_checkpoint_size_limit',
     'publisher_checkpoint_required',
+    'unregistered_greatday_source', 'greatday_pagination_invalid',
+    'greatday_upcoming_collection_changed', 'greatday_card_identity_changed',
+    'greatday_event_identity', 'greatday_card_date_invalid',
+    'greatday_duplicate_identity', 'greatday_record_limit', 'greatday_detail_date_invalid',
+    'greatday_detail_identity_changed', 'greatday_detail_schedule_changed',
+    'greatday_detail_location_changed', 'greatday_checkpoint_invalid',
+    'greatday_checkpoint_size_limit', 'atlantic_city_description_limit',
+    'unregistered_atlantic_city_stockton_source', 'stockton_event_time_changed',
+    'stockton_event_year_unresolved', 'stockton_calendar_result_limit',
+    'stockton_calendar_duplicate_conflict', 'stockton_calendar_program_ambiguous',
+    'stockton_calendar_shape_changed', 'stockton_event_identity_changed',
+    'unregistered_atlantic_pdf_source', 'invalid_atlantic_pdf_document',
+    'atlantic_pdf_page_limit', 'atlantic_pdf_text_unavailable',
+    'atlantic_pdf_edition_unreviewed', 'atlantic_pdf_schedule_changed',
+    'invalid_atlantic_pdf_listing', 'atlantic_pdf_document_conflict',
+    'atlantic_pdf_venue_changed', 'atlantic_pdf_conditions_changed',
+    'atlantic_pdf_description_changed',
     'unregistered_discover_halifax', 'invalid_html_event_payload',
     'collector_not_configured', 'unsupported_collector_rpc', 'unsupported_category',
     'source_parse_error', 'invalid_calendar_payload', 'event_schedule_missing',
@@ -194,7 +211,7 @@ def collect_category(category, ticket):
                                 'observe_phase': diagnostics.observe}
                 if category == 'html':
                     process_args['publisher_handoff'] = publisher_handoff
-                    if ((source.get('source_key') in ('discover_halifax_va', 'visit_atlantic_city_nj', 'noyes_arts_atlantic_city_nj', 'atlantic_city_municipal_nj')
+                    if ((source.get('source_key') in ('discover_halifax_va', 'visit_atlantic_city_nj', 'noyes_arts_atlantic_city_nj', 'atlantic_city_municipal_nj', 'greatday_atlantic_city_nj')
                             or source.get('source_key') in LINKED_DESCRIPTION_PROFILES)
                             and type(source.get('fetch_checkpoint_version')) is int
                             and source['fetch_checkpoint_version'] == 1):
