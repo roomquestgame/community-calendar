@@ -1,0 +1,81 @@
+"""Exact reviewed New York source profiles and shared completeness boundary.
+
+The source modules reuse existing feed parsers. This module only selects the
+reviewed adapters and protects full narratives/addresses at the worker boundary.
+No publisher transport, classifier, scheduler or global default is replaced.
+"""
+from __future__ import annotations
+
+import math
+import re
+
+ZONE = 'America/New_York'
+MAX_DESCRIPTION = 12000
+MAX_RECORDS = 500
+
+
+def adapters():
+    from roomquest import new_york_arts, new_york_nightlife, new_york_outdoors
+    return (new_york_arts, new_york_nightlife, new_york_outdoors)
+
+
+def adapter_for(key):
+    return next((module for module in adapters() if key in module.SOURCES), None)
+
+
+def checkpoint_keys():
+    return set().union(*(getattr(module, 'CHECKPOINT_KEYS', set()) for module in adapters()))
+
+
+def validate_source(source):
+    key = source.get('source_key')
+    module = adapter_for(key)
+    if module is None or (source.get('feed_url'), source.get('kind'),
+            source.get('platform_adapter'), source.get('timezone')) != (*module.SOURCES[key], ZONE):
+        raise ValueError('unregistered_new_york_source')
+    return module
+
+
+def reviewed_intersection(source, row):
+    """Accept only the exact reviewed street intersection and its actual point."""
+    if not source or not isinstance(row, dict):
+        return False
+    module = adapter_for(source.get('source_key'))
+    reviewed = getattr(module, 'REVIEWED_INTERSECTIONS', ())
+    for venue in reviewed:
+        if (venue['source_key'], venue['venue_name'], venue['venue_address']) != (
+                source.get('source_key'), row.get('venue_name'), row.get('venue_address')):
+            continue
+        try:
+            return all(math.isfinite(float(row[field])) and
+                       abs(float(row[field]) - float(venue[field])) < 1e-7
+                       for field in ('lat', 'lng'))
+        except (KeyError, TypeError, ValueError, OverflowError):
+            return False
+    return False
+
+
+def validate_records(records, source=None):
+    if not isinstance(records, list) or len(records) > MAX_RECORDS:
+        raise ValueError('new_york_record_limit')
+    for row in records:
+        if (not isinstance(row, dict)
+                or not isinstance(row.get('description'), str)
+                or not row['description'].strip()
+                or len(row['description']) > MAX_DESCRIPTION
+                or not isinstance(row.get('venue_name'), str)
+                or not row['venue_name'].strip()
+                or not isinstance(row.get('venue_address'), str)
+                or (not re.match(r'^\d{1,6}(?:-\d{1,6})?\s+\S', row['venue_address'])
+                    and not reviewed_intersection(source, row))
+                or not re.search(r'\bNY\s+\d{5}(?:-\d{4})?\s*$', row['venue_address'])):
+            raise ValueError('new_york_incomplete_event')
+    return records
+
+
+def diagnostic_codes():
+    codes = {'unregistered_new_york_source', 'new_york_incomplete_event',
+             'new_york_record_limit', 'invalid_new_york_payload'}
+    for module in adapters():
+        codes.update(getattr(module, 'ERROR_CODES', set()))
+    return codes

@@ -1,0 +1,805 @@
+{
+  "reviewed_at": "2026-11-14",
+  "scope": "Remaining/unpublished outdoor, sports, volunteering, civic and university sources across NYC; all five boroughs included in discovery inventory. Only eight sources implemented here.",
+  "implementation_status": "Eight source modules and complete local replay; production transport, stage/publish equality, activation and deployment must be verified by parent batch.",
+  "implemented": [
+    {
+      "source_key": "queens_botanical_garden_ny",
+      "publisher": "Queens Botanical Garden",
+      "status": "implementation_and_local_replay_complete; production verification delegated to root batch",
+      "boroughs": [
+        "Queens"
+      ],
+      "categories": [
+        "Outdoor & Active",
+        "Food & Drink",
+        "Family & Kids",
+        "Civic, Volunteering & Community"
+      ],
+      "official_calendar": "https://queensbotanical.org/calendar/",
+      "verified_endpoint": "https://queensbotanical.org/wp-json/tribe/events/v1/events",
+      "collector": "complete TEC REST description + existing timestamp/record normalizers",
+      "robots": "public calendar and TEC REST allowed",
+      "accepted_count": 22,
+      "held_count": 3,
+      "held_reasons": {
+        "ny_outdoors_not_public_event": 3
+      },
+      "full_description_min_chars": 154,
+      "full_description_max_chars": 619,
+      "example_events": [
+        {
+          "title": "Math in Bloom: Community Art: Fibonacci Stepping Stone Creation",
+          "starts_at": "2026-11-15T14:00:00+00:00",
+          "venue_name": "Queens Botanical Garden",
+          "venue_address": "43-50 Main Street, Flushing, NY 11355",
+          "event_url": "https://queensbotanical.org/event/math-in-bloom-community-art-fibonacci-stepping-stone-creation/2026-11-15/",
+          "category": ""
+        },
+        {
+          "title": "Compost Beautification Community Volunteer Days",
+          "starts_at": "2026-11-15T14:30:00+00:00",
+          "venue_name": "Queens Botanical Garden",
+          "venue_address": "43-50 Main Street, Flushing, NY 11355",
+          "event_url": "https://queensbotanical.org/event/compost-beautification-community-volunteer-days-15/2026-11-15/",
+          "category": ""
+        },
+        {
+          "title": "Compost Site Tour",
+          "starts_at": "2026-11-15T17:00:00+00:00",
+          "venue_name": "Queens Botanical Garden",
+          "venue_address": "43-50 Main Street, Flushing, NY 11355",
+          "event_url": "https://queensbotanical.org/event/compost-site-tour-13/",
+          "category": ""
+        }
+      ]
+    },
+    {
+      "source_key": "van_cortlandt_park_alliance_ny",
+      "publisher": "Van Cortlandt Park Alliance",
+      "status": "implementation_and_local_replay_complete; production verification delegated to root batch",
+      "boroughs": [
+        "Bronx"
+      ],
+      "categories": [
+        "Outdoor & Active",
+        "Civic, Volunteering & Community"
+      ],
+      "official_calendar": "https://vancortlandt.org/calendar-of-events/",
+      "verified_endpoint": "https://vancortlandt.org/wp-json/tribe/events/v1/events",
+      "collector": "complete TEC REST description + existing timestamp/record normalizers",
+      "robots": "public calendar and TEC REST allowed; publisher Crawl-delay: 10 respected by guarded transport",
+      "accepted_count": 12,
+      "held_count": 3,
+      "held_reasons": {
+        "ny_outdoors_description_or_location_missing": 2,
+        "ny_outdoors_schedule_conflict": 1
+      },
+      "full_description_min_chars": 620,
+      "full_description_max_chars": 1312,
+      "example_events": [
+        {
+          "title": "Woodlawn Wednesdays: Forest Restoration",
+          "starts_at": "2026-11-18T14:00:00+00:00",
+          "venue_name": "Woodlawn Playground (approximate meeting point)",
+          "venue_address": "East 239th Street & Van Cortlandt Park East, Bronx, NY 10470",
+          "event_url": "https://vancortlandt.org/event/woodlawn-wednesdays-forest-restoration/2026-11-18/",
+          "category": "Volunteer"
+        },
+        {
+          "title": "Trail Work Thursdays",
+          "starts_at": "2026-11-19T14:00:00+00:00",
+          "venue_name": "VCPA Learning Garden (approximate meeting point)",
+          "venue_address": "Broadway & Mosholu Avenue, Bronx, NY 10471",
+          "event_url": "https://vancortlandt.org/event/trail-work-thursdays-8/2026-11-19/",
+          "category": "Volunteer"
+        },
+        {
+          "title": "Floodplain Forest Fridays",
+          "starts_at": "2026-11-20T14:00:00+00:00",
+          "venue_name": "Van Cortlandt Golf House (approximate meeting point)",
+          "venue_address": "Van Cortlandt Park South & Bailey Avenue, Bronx, NY 10471",
+          "event_url": "https://vancortlandt.org/event/floodplain-forest-fridays-2/2026-11-20/",
+          "category": "Volunteer"
+        }
+      ]
+    },
+    {
+      "source_key": "fort_tryon_park_conservancy_ny",
+      "publisher": "Fort Tryon Park Conservancy",
+      "status": "implementation_and_local_replay_complete; production verification delegated to root batch",
+      "boroughs": [
+        "Manhattan"
+      ],
+      "categories": [
+        "Sports & Fitness",
+        "Outdoor & Active",
+        "Civic, Volunteering & Community"
+      ],
+      "official_calendar": "https://forttryonpark.org/events/",
+      "verified_endpoint": "https://forttryonpark.org/wp-json/tribe/events/v1/events",
+      "collector": "complete TEC REST description + existing timestamp/record normalizers",
+      "robots": "public calendar and TEC REST allowed",
+      "accepted_count": 26,
+      "held_count": 10,
+      "held_reasons": {
+        "ny_outdoors_description_or_location_missing": 5,
+        "ny_outdoors_not_public_event": 3,
+        "ny_outdoors_schedule_conflict": 2
+      },
+      "full_description_min_chars": 830,
+      "full_description_max_chars": 1059,
+      "example_events": [
+        {
+          "title": "Sunday Stewardship",
+          "starts_at": "2026-11-15T15:00:00+00:00",
+          "venue_name": "Heather Garden entrance (approximate meeting point)",
+          "venue_address": "Margaret Corbin Circle & Fort Washington Avenue, New York, NY 10040",
+          "event_url": "https://forttryonpark.org/event/sunday-stewardship-4/2026-11-15/",
+          "category": ""
+        },
+        {
+          "title": "Forest Fitness",
+          "starts_at": "2026-11-17T12:30:00+00:00",
+          "venue_name": "Heather Garden entrance (approximate meeting point)",
+          "venue_address": "Margaret Corbin Circle & Fort Washington Avenue, New York, NY 10040",
+          "event_url": "https://forttryonpark.org/event/forest-fitness-7/2026-11-17/",
+          "category": "Fitness Class"
+        },
+        {
+          "title": "Forest Fitness",
+          "starts_at": "2026-11-19T12:30:00+00:00",
+          "venue_name": "Heather Garden entrance (approximate meeting point)",
+          "venue_address": "Margaret Corbin Circle & Fort Washington Avenue, New York, NY 10040",
+          "event_url": "https://forttryonpark.org/event/forest-fitness-7/2026-11-19/",
+          "category": "Fitness Class"
+        }
+      ]
+    },
+    {
+      "source_key": "municipal_mapsee_6a0963906d4579496fa3659c",
+      "publisher": "Lower East Side Ecology Center",
+      "status": "implementation_and_local_replay_complete; production verification delegated to root batch",
+      "boroughs": [
+        "Manhattan",
+        "Brooklyn",
+        "Queens"
+      ],
+      "categories": [
+        "Civic, Volunteering & Community",
+        "Outdoor & Active"
+      ],
+      "official_calendar": "https://www.lesecologycenter.org/calendar/",
+      "verified_endpoint": "https://www.lesecologycenter.org/wp-json/tribe/events/v1/events",
+      "collector": "complete TEC REST description + existing timestamp/record normalizers",
+      "robots": "public calendar and TEC REST allowed",
+      "accepted_count": 134,
+      "held_count": 2,
+      "held_reasons": {
+        "ny_outdoors_description_or_location_missing": 2
+      },
+      "full_description_min_chars": 171,
+      "full_description_max_chars": 1409,
+      "example_events": [
+        {
+          "title": "Mathews-Palmer Park",
+          "starts_at": "2026-11-14T12:00:00+00:00",
+          "venue_name": "Mathews–Palmer Park",
+          "venue_address": "445 W 45th St, New York, NY 10036",
+          "event_url": "https://www.lesecologycenter.org/calendar/mathews-palmer-park/2026-11-14/",
+          "category": "Compost Drop-Off"
+        },
+        {
+          "title": "Mathews-Palmer Park",
+          "starts_at": "2026-11-15T12:00:00+00:00",
+          "venue_name": "Mathews–Palmer Park",
+          "venue_address": "445 W 45th St, New York, NY 10036",
+          "event_url": "https://www.lesecologycenter.org/calendar/mathews-palmer-park/2026-11-15/",
+          "category": "Compost Drop-Off"
+        },
+        {
+          "title": "Tompkins Square Greenmarket",
+          "starts_at": "2026-11-15T13:00:00+00:00",
+          "venue_name": "Tompkins Square Greenmarket Compost Drop-off",
+          "venue_address": "East 7th Street between Avenue A & Avenue B, New York, NY 10009",
+          "event_url": "https://www.lesecologycenter.org/calendar/compost-drop-off-lower-east-side-ecology-center-community-garden-2020-v2/2026-11-15/",
+          "category": "Compost Drop-Off, Lower East Side Ecology Center Community Garden"
+        }
+      ]
+    },
+    {
+      "source_key": "municipal_mapsee_a60c8290b2e794fcd00a52da",
+      "publisher": "Riverside Park Conservancy",
+      "status": "implementation_and_local_replay_complete; production verification delegated to root batch",
+      "boroughs": [
+        "Manhattan"
+      ],
+      "categories": [
+        "Sports & Fitness",
+        "Outdoor & Active",
+        "Civic, Volunteering & Community"
+      ],
+      "official_calendar": "https://riversideparknyc.org/events/",
+      "verified_endpoint": "https://riversideparknyc.org/wp-json/tribe/events/v1/events",
+      "collector": "complete TEC REST description + existing timestamp/record normalizers",
+      "robots": "public calendar and TEC REST allowed; publisher Crawl-delay: 10 respected by guarded transport",
+      "accepted_count": 18,
+      "held_count": 3,
+      "held_reasons": {
+        "ny_outdoors_description_or_location_missing": 3
+      },
+      "full_description_min_chars": 428,
+      "full_description_max_chars": 1108,
+      "example_events": [
+        {
+          "title": "PlacePartner Opportunity: Compost Compound at W 95th St",
+          "starts_at": "2026-11-16T14:00:00+00:00",
+          "venue_name": "95th Street Compost Compound (approximate meeting point)",
+          "venue_address": "West 95th Street & Riverside Drive, New York, NY 10025",
+          "event_url": "https://riversideparknyc.org/event/volunteer-at-the-compost-compound-3-2/2026-11-16/",
+          "category": "Volunteer Events, PlacePartner"
+        },
+        {
+          "title": "Fall Bodyroll in the Field House",
+          "starts_at": "2026-11-16T15:30:00+00:00",
+          "venue_name": "102nd Street Field House",
+          "venue_address": "West 102nd Street & Riverside Drive, New York, NY 10025",
+          "event_url": "https://riversideparknyc.org/event/fall-bodyroll-in-the-field-house/2026-11-16/",
+          "category": "Health & Wellness, Summer on the Hudson"
+        },
+        {
+          "title": "PlacePartner Opportunity: Camel Gardens at W 143rd St",
+          "starts_at": "2026-11-18T13:30:00+00:00",
+          "venue_name": "Riverbank (Camel) Playground",
+          "venue_address": "675 Riverside Dr, New York, NY 10031",
+          "event_url": "https://riversideparknyc.org/event/placepartner-opportunity-camel-gardens-at-w-143rd-st/2026-11-18/",
+          "category": "Volunteer Events"
+        }
+      ]
+    },
+    {
+      "source_key": "municipal_mapsee_accd81805a1bc1a57d12e24b",
+      "publisher": "Randall’s Island Park Alliance",
+      "status": "implementation_and_local_replay_complete; production verification delegated to root batch",
+      "boroughs": [
+        "Manhattan"
+      ],
+      "categories": [
+        "Sports & Fitness",
+        "Food & Drink",
+        "Outdoor & Active",
+        "Civic, Volunteering & Community"
+      ],
+      "official_calendar": "https://randallsisland.org/events/",
+      "verified_endpoint": "https://randallsisland.org/wp-json/tribe/events/v1/events",
+      "collector": "complete TEC REST description + existing timestamp/record normalizers",
+      "robots": "public calendar and TEC REST allowed",
+      "accepted_count": 5,
+      "held_count": 4,
+      "held_reasons": {
+        "ny_outdoors_time_unverified": 1,
+        "ny_outdoors_description_or_location_missing": 3
+      },
+      "full_description_min_chars": 517,
+      "full_description_max_chars": 614,
+      "example_events": [
+        {
+          "title": "Winter Composting with Big Reuse",
+          "starts_at": "2026-11-15T15:00:00+00:00",
+          "venue_name": "Urban Farm",
+          "venue_address": "11 Wards Meadow Loop, New York, NY 10035",
+          "event_url": "https://randallsisland.org/events/winter-composting-with-big-reuse-3-2",
+          "category": "Urban Farm, Volunteer"
+        },
+        {
+          "title": "Gotham FC vs. Kansas City Current – NWSL Semifinals",
+          "starts_at": "2026-11-15T20:00:00+00:00",
+          "venue_name": "Icahn Stadium",
+          "venue_address": "10 Central Road, New York, NY 10035",
+          "event_url": "https://randallsisland.org/events/gotham-fc-vs-kansas-city-current-nwsl-semifinals",
+          "category": "Icahn Stadium, Soccer"
+        },
+        {
+          "title": "Winter Composting with Big Reuse",
+          "starts_at": "2026-11-22T15:00:00+00:00",
+          "venue_name": "Urban Farm",
+          "venue_address": "11 Wards Meadow Loop, New York, NY 10035",
+          "event_url": "https://randallsisland.org/events/winter-composting-with-big-reuse-3-3",
+          "category": "Urban Farm, Volunteer"
+        }
+      ]
+    },
+    {
+      "source_key": "dyckman_run_club_ny",
+      "publisher": "Dyckman Run Club",
+      "status": "implementation_and_local_replay_complete; production verification delegated to root batch",
+      "boroughs": [
+        "Bronx",
+        "Manhattan"
+      ],
+      "categories": [
+        "Sports & Fitness",
+        "Family & Kids",
+        "Nightlife & Social"
+      ],
+      "official_calendar": "https://dyckmanrunclub.org/events",
+      "verified_endpoint": "https://dyckmanrunclub.org/events",
+      "collector": "permitted Squarespace HTML listing + complete detail, durable chunks",
+      "robots": "public HTML allowed; JSON and iCalendar exports disallowed and not used",
+      "accepted_count": 11,
+      "held_count": 8,
+      "held_reasons": {
+        "ny_outdoors_description_or_location_missing": 6,
+        "ny_outdoors_not_public_event": 1,
+        "ny_outdoors_schedule_conflict": 1
+      },
+      "full_description_min_chars": 805,
+      "full_description_max_chars": 812,
+      "example_events": [
+        {
+          "title": "The YOUTH run lab drcxbronxlegends",
+          "starts_at": "2026-11-17T22:00:00+00:00",
+          "venue_name": "Bronx Legends Boxing Academy",
+          "venue_address": "1761 Walton Avenue, Bronx, NY 10453",
+          "event_url": "https://dyckmanrunclub.org/events/cardiothursday12523w-f4rsj-md5mw-tj2jk-fyk5t-y4fbx-tpc4x-67hr4-z386y-3cbyn-b4hjb-nef8l-5tt4x-5ltnl-allfg-8plj2-ds3ln-5h7x7-4h5xn-5hbnt-24rs8-nzgks-x9pdb-75azn-7bmyp-84s4r-jxaar-mz6sd-9m736-h2wde",
+          "category": "Runs, Cardio Thursdays"
+        },
+        {
+          "title": "CARDIO THURSDAYS",
+          "starts_at": "2026-11-20T00:00:00+00:00",
+          "venue_name": "Quisqueya Plaza",
+          "venue_address": "247 Dyckman Street, New York, NY 10034",
+          "event_url": "https://dyckmanrunclub.org/events/cardiothursday12523w-f4rsj-md5mw-tj2jk-fyk5t-y4fbx-tpc4x-67hr4-z386y-3cbyn-b4hjb-nef8l-5tt4x-5ltnl-allfg-8plj2-ds3ln-5h7x7-4h5xn-5hbnt-24rs8-nzgks-x9pdb-75azn-7bmyp-84s4r-jxaar-mz6sd-jhdzw",
+          "category": "Runs, Cardio Thursdays"
+        },
+        {
+          "title": "The YOUTH run lab drcxbronxlegends",
+          "starts_at": "2026-11-24T22:00:00+00:00",
+          "venue_name": "Bronx Legends Boxing Academy",
+          "venue_address": "1761 Walton Avenue, Bronx, NY 10453",
+          "event_url": "https://dyckmanrunclub.org/events/cardiothursday12523w-f4rsj-md5mw-tj2jk-fyk5t-y4fbx-tpc4x-67hr4-z386y-3cbyn-b4hjb-nef8l-5tt4x-5ltnl-allfg-8plj2-ds3ln-5h7x7-4h5xn-5hbnt-24rs8-nzgks-x9pdb-75azn-7bmyp-84s4r-jxaar-mz6sd-9m736-kcbe4",
+          "category": "Runs, Cardio Thursdays"
+        }
+      ]
+    },
+    {
+      "source_key": "astoria_park_alliance_ny",
+      "publisher": "Astoria Park Alliance",
+      "status": "implementation_and_local_replay_complete; production verification delegated to root batch",
+      "boroughs": [
+        "Queens"
+      ],
+      "categories": [
+        "Civic, Volunteering & Community",
+        "Outdoor & Active"
+      ],
+      "official_calendar": "https://www.astoriaparkalliance.org/events",
+      "verified_endpoint": "https://www.astoriaparkalliance.org/events",
+      "collector": "permitted Squarespace HTML listing + complete detail, durable chunks",
+      "robots": "public HTML allowed; JSON and iCalendar exports disallowed and not used",
+      "accepted_count": 1,
+      "held_count": 0,
+      "held_reasons": {},
+      "full_description_min_chars": 802,
+      "full_description_max_chars": 802,
+      "example_events": [
+        {
+          "title": "2026 Leaf Fest Day Two - Community Volunteer Day",
+          "starts_at": "2026-11-21T15:00:00+00:00",
+          "venue_name": "Astoria Park Field House (approximate meeting point)",
+          "venue_address": "Hoyt Avenue North & 19th Street, Astoria, NY 11102",
+          "event_url": "https://www.astoriaparkalliance.org/events/2026-11-21/astoria-park-leaffest-th2ff-ggyph-4ek75-s8mhc",
+          "category": "Volunteer, Event"
+        }
+      ]
+    }
+  ],
+  "remaining_inventory": [
+    {
+      "publisher": "City Parks Foundation",
+      "source_key": "municipal_mapsee_a5f8d3546bd7cb625105dccf",
+      "boroughs": [
+        "Manhattan",
+        "Bronx",
+        "Brooklyn",
+        "Queens",
+        "Staten Island"
+      ],
+      "official_calendar": "https://cityparksfoundation.org/calendar/",
+      "verified_endpoint": "https://cityparksfoundation.org/wp-json/tribe/events/v1/events",
+      "status": "feasible_next_batch_detail_location_follow_up",
+      "finding": "REST reports54 future records and complete descriptions. A deeper HTML inspection corrected the apparent cancellation warning: its ancestor container carries elementor-hidden-desktop, elementor-hidden-tablet and elementor-hidden-mobile, and links to an old Funk Flex event. Treat this as an unverified hidden template remnant, not an active cancellation notice. Native venue fields contain only boroughs; exact per-event park/street extraction and point resolution remain necessary. The old www ICS endpoint redirects; use the allowed current canonical calendar/TEC API in the next batch.",
+      "refs": [
+        "turn12view0",
+        "turn31view2"
+      ],
+      "cancellation_claim": "unverified; text hidden on all three responsive classes in captured HTML",
+      "follow_up": "Inspect current detail pages for exact meeting street/map; detect only currently visible cancellation notices."
+    },
+    {
+      "publisher": "New York University public events",
+      "source_key": "municipal_mapsee_59cd82df6a4f146d4b15acec",
+      "boroughs": [
+        "Manhattan",
+        "Brooklyn"
+      ],
+      "official_calendar": "https://events.nyu.edu/",
+      "existing_endpoint": "https://events.nyu.edu/live/ical/events/category/Open%20to%20the%20Public/exclude_category/Athletics",
+      "status": "held_existing_invalid_source_encoding",
+      "finding": "Production baseline paused/disabled and zero public records. No accepted replacement in this eight-source batch; requires source encoding investigation and event-level venue review."
+    },
+    {
+      "publisher": "Fordham University",
+      "boroughs": [
+        "Bronx",
+        "Manhattan"
+      ],
+      "official_calendar": "https://calendar.fordham.edu/",
+      "verified_endpoint": "https://calendar.fordham.edu/api/2/events?start=2026-11-14&end=2027-01-13&pp=100&page=1",
+      "status": "future_adapter_candidate",
+      "finding": "Current Localist API reports 239 records/3 pages; first 100 captured with full descriptions. Public-audience filter, virtual/away-game exclusions, all-page completeness, and building-specific street mapping needed. Do not also register older now.fordham.edu WordPress calendar and duplicate events.",
+      "refs": [
+        "turn16search6"
+      ]
+    },
+    {
+      "publisher": "Bronx River Alliance",
+      "boroughs": [
+        "Bronx"
+      ],
+      "official_calendar": "https://bronxriver.org/visit-the-river/calendar",
+      "example_event": "https://bronxriver.org/event/tuesday-stewardship-at-the-foodway-8",
+      "status": "future_adapter_candidate",
+      "finding": "Active custom WordPress HTML; future Nov17 10am–noon Foodway stewardship at Concrete Plant Park, 1370 Westchester Avenue, Bronx NY10472. Listing truncates narratives; individual HTML detail contains full body and structured Date/Location/Start/End table. Needs detail checkpoint adapter and per-venue mappings; some meetings are virtual.",
+      "refs": [
+        "turn12view2",
+        "turn14view2"
+      ]
+    },
+    {
+      "publisher": "Wave Hill",
+      "boroughs": [
+        "Bronx"
+      ],
+      "official_calendar": "https://www.wavehill.org/calendar",
+      "status": "future_adapter_candidate",
+      "finding": "Active November–December garden, family and culture calendar; custom HTML/detail parsing. Street 4900 Independence Avenue, Bronx NY10471 requires direct directions/venue-point verification before ingestion."
+    },
+    {
+      "publisher": "Freshkills Park Alliance",
+      "boroughs": [
+        "Staten Island"
+      ],
+      "official_calendar": "https://freshkillspark.org/calendar",
+      "alternate": "https://freshkillspark.org/upcoming-events",
+      "status": "held_no_current_future_record_verified",
+      "finding": "Custom WordPress event calendar discovered; current upcoming view did not expose verified future records in this inspection. Indexed April2026 entries are past, so no recurrence fabricated."
+    },
+    {
+      "publisher": "Greenbelt Conservancy",
+      "boroughs": [
+        "Staten Island"
+      ],
+      "official_calendar": "https://sigreenbelt.org/",
+      "status": "held_direct_calendar_unresolved",
+      "finding": "Direct previously known site returned404 during research. Current public program listings exist via NYC Parks/Eventbrite, but a stable direct permitted feed and complete future event details were not verified."
+    },
+    {
+      "publisher": "NYRR Open Run",
+      "boroughs": [
+        "Manhattan",
+        "Bronx",
+        "Brooklyn",
+        "Queens",
+        "Staten Island"
+      ],
+      "official_calendar": "https://prod.nyrr.org/open-run",
+      "example_event": "https://prod.nyrr.org/races-and-events/2026/astoria-park",
+      "status": "future_recurring_schedule_candidate",
+      "finding": "Official current Astoria page publishes Saturday9am, free all-ability run/walk and course/meeting map. Use native dated registration/calendar data before materializing recurring instances; avoid inventing cancellations or holiday schedules. Astoria track/comfort-station official direction point40.77757,-73.92287 used only as a visibly approximate nearby Field House proxy.",
+      "refs": [
+        "turn43search0",
+        "turn44view0",
+        "turn45view0"
+      ]
+    },
+    {
+      "publisher": "Brooklyn Bridge Park",
+      "boroughs": [
+        "Brooklyn"
+      ],
+      "official_calendar": "https://brooklynbridgepark.org/events/",
+      "status": "research_inventory_cross_team",
+      "finding": "Active park education/fitness/calendar discovery; needs source-registry duplicate audit and complete detail/venue review before inclusion."
+    },
+    {
+      "publisher": "Brooklyn Uprising / BKUP",
+      "boroughs": [
+        "Brooklyn"
+      ],
+      "official_calendar": "https://www.bkup.nyc/events",
+      "status": "future_adapter_candidate",
+      "finding": "Active November–December fitness/community calendar at20JohnStreet,BrooklynNY11201. SSR custom HTML; full detail extraction and address-point confirmation needed.",
+      "refs": [
+        "turn20view3"
+      ]
+    },
+    {
+      "publisher": "CUNY public events",
+      "boroughs": [
+        "Manhattan",
+        "Bronx",
+        "Brooklyn",
+        "Queens",
+        "Staten Island"
+      ],
+      "official_calendar": "https://events.cuny.edu/",
+      "status": "future_adapter_candidate",
+      "finding": "Active large multi-college calendar, ~24 pages in observed listing. Custom WordPress, mixed public and student-only events; requires audience/virtual filters, complete detail ingestion, campus-specific venue resolution and bounded checkpoints.",
+      "refs": [
+        "turn17view3"
+      ]
+    },
+    {
+      "publisher": "The New School",
+      "boroughs": [
+        "Manhattan"
+      ],
+      "official_calendar": "https://events.newschool.edu/",
+      "status": "future_adapter_candidate",
+      "finding": "Current public event pages route to event.newschool.edu/Splash; do not assume the prior Localist implementation still applies. Requires current public-feed verification and audience filter."
+    },
+    {
+      "publisher": "Transportation Alternatives",
+      "boroughs": [
+        "Manhattan",
+        "Bronx",
+        "Brooklyn",
+        "Queens",
+        "Staten Island"
+      ],
+      "official_calendar": "https://transalt.org/events",
+      "status": "held_stale_embedded_schedule",
+      "finding": "Squarespace events listing appeared stale2024 while current activities are on Mobilize. Investigate organizer’s current authorized Mobilize source instead of importing stale rows."
+    },
+    {
+      "publisher": "Socrates Sculpture Park",
+      "boroughs": [
+        "Queens"
+      ],
+      "official_calendar": "https://socratessculpturepark.org/",
+      "status": "held_no_next_dated_program_verified",
+      "finding": "Only near-ending exhibition/season information verified; no durable new future program series confirmed for activation."
+    },
+    {
+      "publisher": "Gowanus Canal Conservancy",
+      "boroughs": [
+        "Brooklyn"
+      ],
+      "official_calendar": "https://gowanuscanalconservancy.org/events/",
+      "status": "future_adapter_candidate",
+      "finding": "Custom WordPress plus Eventbrite/Salesforce program registration; full future event feed not yet verified. Volunteer shifts must keep actual park/meeting site, not organizer office."
+    },
+    {
+      "publisher": "Brooklyn Community Board6",
+      "boroughs": [
+        "Brooklyn"
+      ],
+      "official_calendar": "https://brooklyncb6.cityofnewyork.us/events/",
+      "status": "future_civic_adapter_candidate",
+      "finding": "Municipal events/calendar discovered; mixes committee meetings and neighborhood provider events. Needs duplicate filtering, civic/public-scope review and current timed meeting/address details."
+    },
+    {
+      "publisher": "NYC Bird Alliance",
+      "boroughs": [
+        "Manhattan",
+        "Bronx",
+        "Brooklyn",
+        "Queens",
+        "Staten Island"
+      ],
+      "official_calendar": "https://nycbirdalliance.org/events-birding",
+      "status": "future_adapter_candidate",
+      "finding": "Active public bird outings, NeonCRM individual registrations. Full descriptions/meeting points available per event; stable permitted list/detail flow needed. Distinct from already-working Brooklyn Bird Club."
+    },
+    {
+      "publisher": "NYC Parks Socrata municipal sources",
+      "boroughs": [
+        "Manhattan",
+        "Bronx",
+        "Brooklyn",
+        "Queens",
+        "Staten Island"
+      ],
+      "source_ids": [
+        4602,
+        4603,
+        4604,
+        4605
+      ],
+      "status": "existing_holds_unchanged",
+      "finding": "Baseline unresolved reasons: timezone_unresolved, event_link_missing, invalid_source_url. Normal HTML raw probes returned403; no access controls bypassed and no activation claimed."
+    },
+    {
+      "publisher": "Boys Club of New York",
+      "source_id": 4717,
+      "status": "existing_robots_hold_unchanged",
+      "finding": "Root baseline robots_denied. No disallowed endpoint requested or workaround attempted."
+    }
+  ],
+  "excluded_working": [
+    {
+      "publisher": "Food Bank for New York City",
+      "source_id": 2888,
+      "status": "excluded_already_working",
+      "public_count_baseline": 7
+    },
+    {
+      "publisher": "Brooklyn Bird Club",
+      "source_id": 4329,
+      "status": "excluded_already_working",
+      "public_count_baseline": 2
+    }
+  ],
+  "verification": {
+    "tests": "python -m pytest -q tests/test_new_york_outdoors.py:21 passed",
+    "live_capture": "docs/evidence/new-york-outdoors-live-capture-2026-11-14.json",
+    "description_contract": "No2000-character shared display cap; reject over12000, hold absent and conflicting, preserve complete full-detail narrative.",
+    "transport_limit": "Local guarded fetch cannot resolve public DNS in this execution environment; direct normal fixed-URL captures are parser evidence only. Native production guarded transport untouched.",
+    "venue_contract": "Exact source+venue+full street+point binds reviewed mappings; inferred park access visibly marked approximate; no source-wide organizer HQ/borough centroid fallback.",
+    "public_record_total_local_replay": 229,
+    "address_status": "All229 accepted local rows have full NY street-location/ZIP and finite venue-specific coordinates; parent SQL/address-parser audit remains separate."
+  },
+  "reviewed_intersections": [
+    {
+      "source_key": "van_cortlandt_park_alliance_ny",
+      "venue_name": "Woodlawn Playground (approximate meeting point)",
+      "venue_address": "East 239th Street & Van Cortlandt Park East, Bronx, NY 10470",
+      "lat": 40.90114,
+      "lng": -73.87502,
+      "evidence_url": "https://vancortlandt.org/visit/things-to-see-and-do/",
+      "provenance": "Organizer names Woodlawn Playground/239th Street at the east edge of the park. NYC Planning PAD exact named-playground match supplies point/ZIP; east-side street prefix corrected from the directory typo. Point is playground, not the exact handball-court meeting tree.",
+      "approximate": true
+    },
+    {
+      "source_key": "van_cortlandt_park_alliance_ny",
+      "venue_name": "VCPA Learning Garden (approximate meeting point)",
+      "venue_address": "Broadway & Mosholu Avenue, Bronx, NY 10471",
+      "lat": 40.901795,
+      "lng": -73.894148,
+      "evidence_url": "https://vancortlandt.org/event/tune-up-tuesdays-garden-volunteer-days/2026-11-24/",
+      "provenance": "Organizer states Broadway/Mosholu entrance and garden across from Riverdale Stables. NYC Planning PAD physical Van Cortlandt Park Stables point is a nearby garden proxy; the duplicate PAD stable point outside the park was rejected.",
+      "approximate": true
+    },
+    {
+      "source_key": "van_cortlandt_park_alliance_ny",
+      "venue_name": "Van Cortlandt Golf House (approximate meeting point)",
+      "venue_address": "Van Cortlandt Park South & Bailey Avenue, Bronx, NY 10471",
+      "lat": 40.889095,
+      "lng": -73.89235,
+      "evidence_url": "https://www.bronxartsensemble.org/event/juneteenth2023/",
+      "provenance": "Park-event organizer gives Golf House access via Park South/Bailey; current VCPA event meets outside Golf House. NYC Planning PAD exact named Golf House point and ZIP preserved.",
+      "approximate": true
+    },
+    {
+      "source_key": "van_cortlandt_park_alliance_ny",
+      "venue_name": "Van Cortlandt Nature Center (approximate meeting point)",
+      "venue_address": "Broadway & West 242nd Street, Bronx, NY 10471",
+      "lat": 40.891109,
+      "lng": -73.893936,
+      "evidence_url": "https://www.eventbrite.com/e/van-cortlandt-nature-group-walk-tickets-2003371280429",
+      "provenance": "Current organizer registration gives Broadway/242nd entrance; NYC Planning PAD exact Nature Center building point and ZIP identify the actual destination inside the park.",
+      "approximate": true
+    },
+    {
+      "source_key": "fort_tryon_park_conservancy_ny",
+      "venue_name": "Heather Garden entrance (approximate meeting point)",
+      "venue_address": "Margaret Corbin Circle & Fort Washington Avenue, New York, NY 10040",
+      "lat": 40.859646,
+      "lng": -73.934613,
+      "evidence_url": "https://forttryonpark.org/event/medieval-festival/",
+      "provenance": "Official Margaret Corbin Circle drop-off at 741 Fort Washington Avenue; NYC Planning PAD point for that cottage is a nearby entrance proxy for Heather Garden.",
+      "approximate": true
+    },
+    {
+      "source_key": "municipal_mapsee_a60c8290b2e794fcd00a52da",
+      "venue_name": "102nd Street Field House",
+      "venue_address": "West 102nd Street & Riverside Drive, New York, NY 10025",
+      "lat": 40.800764397978,
+      "lng": -73.973292973939,
+      "evidence_url": "https://riversideparknyc.org/event/field-house-mat-pilates-3/2026-11-19/",
+      "provenance": "Event describes this entrance and native TEC venue coordinates locate the Field House.",
+      "approximate": false
+    },
+    {
+      "source_key": "municipal_mapsee_a60c8290b2e794fcd00a52da",
+      "venue_name": "95th Street Compost Compound (approximate meeting point)",
+      "venue_address": "West 95th Street & Riverside Drive, New York, NY 10025",
+      "lat": 40.7958470131,
+      "lng": -73.9775633692,
+      "evidence_url": "https://riversideparknyc.org/event/volunteer-at-the-compost-compound-3-2/2026-11-16/",
+      "provenance": "Street access inferred from named 95th Street compound; native venue point preserved.",
+      "approximate": true
+    },
+    {
+      "source_key": "municipal_mapsee_a60c8290b2e794fcd00a52da",
+      "venue_name": "W 125th & Marginal Streets",
+      "venue_address": "West 125th Street & Marginal Street, New York, NY 10027",
+      "lat": 40.818861,
+      "lng": -73.961139,
+      "evidence_url": "https://riversideparknyc.org/event/holiday-on-the-hudson-4/",
+      "provenance": "Publisher supplies the intersection and native venue coordinates.",
+      "approximate": false
+    },
+    {
+      "source_key": "municipal_mapsee_a60c8290b2e794fcd00a52da",
+      "venue_name": "River Run Playground (approximate meeting point)",
+      "venue_address": "West 83rd Street & Riverside Drive, New York, NY 10024",
+      "lat": 40.78706,
+      "lng": -73.98215,
+      "evidence_url": "https://riversideparknyc.org/event/moon-lit-forest-bathing/",
+      "provenance": "Named playground native point; street entrance inferred from local park layout.",
+      "approximate": true
+    },
+    {
+      "source_key": "astoria_park_alliance_ny",
+      "venue_name": "Astoria Park Field House (approximate meeting point)",
+      "venue_address": "Hoyt Avenue North & 19th Street, Astoria, NY 11102",
+      "lat": 40.77757,
+      "lng": -73.92287,
+      "evidence_url": "https://www.astoriaparkalliance.org/explore-astoria-park",
+      "provenance": "Alliance confirms street entrance; NYRR official Astoria Park track/comfort-station meeting point (https://prod.nyrr.org/races-and-events/2026/astoria-park) is a nearby proxy for the Field House.",
+      "approximate": true
+    },
+    {
+      "source_key": "municipal_mapsee_6a0963906d4579496fa3659c",
+      "venue_name": "Grand & Clinton",
+      "venue_address": "Grand Street & Clinton Street, New York, NY 10002",
+      "lat": 40.715881,
+      "lng": -73.986773,
+      "evidence_url": "https://www.lesecologycenter.org/calendar/",
+      "provenance": "Feed names both streets and publishes venue-specific coordinates.",
+      "approximate": false
+    },
+    {
+      "source_key": "municipal_mapsee_6a0963906d4579496fa3659c",
+      "venue_name": "East Broadway",
+      "venue_address": "East Broadway & Rutgers Street, New York, NY 10002",
+      "lat": 40.7140636,
+      "lng": -73.9901951,
+      "evidence_url": "https://www.lesecologycenter.org/calendar/",
+      "provenance": "Native street intersection and venue coordinates; narrative locates drop-off inside Straus Square.",
+      "approximate": false
+    },
+    {
+      "source_key": "municipal_mapsee_6a0963906d4579496fa3659c",
+      "venue_name": "Tompkins Square Greenmarket Compost Drop-off",
+      "venue_address": "East 7th Street between Avenue A & Avenue B, New York, NY 10009",
+      "lat": 40.7275043,
+      "lng": -73.9800645,
+      "evidence_url": "https://www.lesecologycenter.org/calendar/",
+      "provenance": "Feed gives street segment, north-side directions and named venue coordinates.",
+      "approximate": false
+    },
+    {
+      "source_key": "municipal_mapsee_6a0963906d4579496fa3659c",
+      "venue_name": "Tompkins Square Park Avenue A b/w 9th & 10th Sts",
+      "venue_address": "Avenue A between East 9th Street & East 10th Street, New York, NY 10009",
+      "lat": 40.7264295,
+      "lng": -73.9817841,
+      "evidence_url": "https://www.lesecologycenter.org/calendar/",
+      "provenance": "Native street segment and park-specific coordinates; exact collection position is publisher-directed.",
+      "approximate": false
+    },
+    {
+      "source_key": "municipal_mapsee_6a0963906d4579496fa3659c",
+      "venue_name": "Union Square Greenmarket (approximate meeting point)",
+      "venue_address": "East 17th Street & Union Square East, New York, NY 10003",
+      "lat": 40.736394,
+      "lng": -73.989271,
+      "evidence_url": "https://www.lesecologycenter.org/calendar/",
+      "provenance": "Narrative locates grey barrels at eastern edge of Greenmarket; nearest street access inferred; native Greenmarket point retained.",
+      "approximate": true
+    }
+  ]
+}

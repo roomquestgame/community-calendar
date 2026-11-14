@@ -1,0 +1,517 @@
+{
+  "observed_date": "2026-11-14",
+  "official_point_documentation": [
+    "https://geosearch.planninglabs.nyc/",
+    "https://github.com/NYCPlanning/labs-geosearch"
+  ],
+  "venues": [
+    {
+      "source_key": "chilos_brooklyn_ny",
+      "venue_name": "Chilo’s",
+      "street_address": "323 Franklin Avenue, Brooklyn, NY 11238",
+      "venue_city": "Brooklyn",
+      "primary_address_url": "https://www.chilosbk.com/eventscalendar",
+      "lat": 40.688369,
+      "lng": -73.956904,
+      "point_source_url": "https://geosearch.planninglabs.nyc/v2/search?text=323+Franklin+Ave%2C+Brooklyn+NY+11238&size=3",
+      "accepted_feature": {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -73.956904,
+            40.688369
+          ]
+        },
+        "properties": {
+          "id": "984769",
+          "gid": "nycpad:venue:984769",
+          "layer": "venue",
+          "source": "nycpad",
+          "source_id": "984769",
+          "country_code": "US",
+          "name": "323 FRANKLIN AVENUE",
+          "housenumber": "323",
+          "street": "FRANKLIN AVENUE",
+          "postalcode": "11238",
+          "confidence": 0.8,
+          "match_type": "fallback",
+          "accuracy": "point",
+          "country": "United States",
+          "country_gid": "whosonfirst:country:85633793",
+          "country_a": "USA",
+          "region": "New York",
+          "region_gid": "whosonfirst:region:85688543",
+          "region_a": "NY",
+          "county": "Kings County",
+          "county_gid": "whosonfirst:county:102082361",
+          "county_a": "BK",
+          "locality": "New York",
+          "locality_gid": "whosonfirst:locality:85977539",
+          "locality_a": "NYC",
+          "borough": "Brooklyn",
+          "borough_gid": "whosonfirst:borough:421205765",
+          "neighbourhood": "Bedford-Stuyvesant",
+          "neighbourhood_gid": "whosonfirst:neighbourhood:85892907",
+          "label": "323 FRANKLIN AVENUE, Brooklyn, NY, USA",
+          "addendum": {
+            "pad": {
+              "bbl": "3019540006",
+              "bin": "3055809",
+              "version": "26c"
+            }
+          }
+        }
+      },
+      "match": "Exact house number, street, borough and ZIP; no score-only match"
+    },
+    {
+      "source_key": "forever_brewing_brooklyn_ny",
+      "venue_name": "Forever Brewing",
+      "street_address": "574 President Street, Brooklyn, NY 11215",
+      "venue_city": "Brooklyn",
+      "primary_address_url": "https://www.trivianyc.net/",
+      "lat": 40.676815,
+      "lng": -73.984152,
+      "point_source_url": "https://geosearch.planninglabs.nyc/v2/search?text=574+President+Street%2C+Brooklyn+NY+11215&size=3",
+      "accepted_feature": {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -73.984152,
+            40.676815
+          ]
+        },
+        "properties": {
+          "id": "742436",
+          "gid": "nycpad:venue:742436",
+          "layer": "venue",
+          "source": "nycpad",
+          "source_id": "742436",
+          "country_code": "US",
+          "name": "574 PRESIDENT STREET",
+          "housenumber": "574",
+          "street": "PRESIDENT STREET",
+          "postalcode": "11215",
+          "confidence": 0.8,
+          "match_type": "fallback",
+          "accuracy": "point",
+          "country": "United States",
+          "country_gid": "whosonfirst:country:85633793",
+          "country_a": "USA",
+          "region": "New York",
+          "region_gid": "whosonfirst:region:85688543",
+          "region_a": "NY",
+          "county": "Kings County",
+          "county_gid": "whosonfirst:county:102082361",
+          "county_a": "BK",
+          "locality": "New York",
+          "locality_gid": "whosonfirst:locality:85977539",
+          "locality_a": "NYC",
+          "borough": "Brooklyn",
+          "borough_gid": "whosonfirst:borough:421205765",
+          "neighbourhood": "Gowanus",
+          "neighbourhood_gid": "whosonfirst:neighbourhood:85865587",
+          "label": "574 PRESIDENT STREET, Brooklyn, NY, USA",
+          "addendum": {
+            "pad": {
+              "bbl": "3004480032",
+              "bin": "3007526",
+              "version": "26c"
+            }
+          }
+        }
+      },
+      "match": "Exact house number, street, borough and ZIP; no score-only match"
+    },
+    {
+      "source_key": "fifth_hammer_queens_ny",
+      "venue_name": "Fifth Hammer Brewing",
+      "street_address": "10-28 46th Avenue, Long Island City, NY 11101",
+      "venue_city": "Long Island City",
+      "primary_address_url": "https://www.fifthhammerbrewing.com/fifth-hammer-calendar",
+      "lat": 40.746434,
+      "lng": -73.951562,
+      "point_source_url": "https://geosearch.planninglabs.nyc/v2/search?text=10-28+46th+Avenue%2C+Queens+NY+11101&size=3",
+      "accepted_feature": {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -73.951562,
+            40.746434
+          ]
+        },
+        "properties": {
+          "id": "1769919",
+          "gid": "nycpad:venue:1769919",
+          "layer": "venue",
+          "source": "nycpad",
+          "source_id": "1769919",
+          "country_code": "US",
+          "name": "10-28 46 AVENUE",
+          "housenumber": "10-28",
+          "street": "46 AVENUE",
+          "postalcode": "11101",
+          "confidence": 0.8,
+          "match_type": "fallback",
+          "accuracy": "point",
+          "country": "United States",
+          "country_gid": "whosonfirst:country:85633793",
+          "country_a": "USA",
+          "region": "New York",
+          "region_gid": "whosonfirst:region:85688543",
+          "region_a": "NY",
+          "county": "Queens County",
+          "county_gid": "whosonfirst:county:102082377",
+          "locality": "New York",
+          "locality_gid": "whosonfirst:locality:85977539",
+          "locality_a": "NYC",
+          "borough": "Queens",
+          "borough_gid": "whosonfirst:borough:421205767",
+          "neighbourhood": "Long Island City",
+          "neighbourhood_gid": "whosonfirst:neighbourhood:85831303",
+          "label": "10-28 46 AVENUE, Long Island City, NY, USA",
+          "addendum": {
+            "pad": {
+              "bbl": "4000480035",
+              "bin": "4000389",
+              "version": "26c"
+            }
+          }
+        }
+      },
+      "match": "Exact house number, street, borough and ZIP; no score-only match"
+    },
+    {
+      "source_key": "wonderville_brooklyn_ny",
+      "venue_name": "Wonderville",
+      "street_address": "1186 Broadway, Brooklyn, NY 11221",
+      "venue_city": "Brooklyn",
+      "primary_address_url": "https://www.wonderville.nyc/events",
+      "lat": 40.692404,
+      "lng": -73.927613,
+      "point_source_url": "https://geosearch.planninglabs.nyc/v2/search?text=1186+Broadway%2C+Brooklyn+NY+11221&size=3",
+      "accepted_feature": {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -73.927613,
+            40.692404
+          ]
+        },
+        "properties": {
+          "id": "906777",
+          "gid": "nycpad:venue:906777",
+          "layer": "venue",
+          "source": "nycpad",
+          "source_id": "906777",
+          "country_code": "US",
+          "name": "1186 BROADWAY",
+          "housenumber": "1186",
+          "street": "BROADWAY",
+          "postalcode": "11221",
+          "confidence": 0.8,
+          "match_type": "fallback",
+          "accuracy": "point",
+          "country": "United States",
+          "country_gid": "whosonfirst:country:85633793",
+          "country_a": "USA",
+          "region": "New York",
+          "region_gid": "whosonfirst:region:85688543",
+          "region_a": "NY",
+          "county": "Kings County",
+          "county_gid": "whosonfirst:county:102082361",
+          "county_a": "BK",
+          "locality": "New York",
+          "locality_gid": "whosonfirst:locality:85977539",
+          "locality_a": "NYC",
+          "borough": "Brooklyn",
+          "borough_gid": "whosonfirst:borough:421205765",
+          "neighbourhood": "Bedford-Stuyvesant",
+          "neighbourhood_gid": "whosonfirst:neighbourhood:85892907",
+          "label": "1186 BROADWAY, Brooklyn, NY, USA",
+          "addendum": {
+            "pad": {
+              "bbl": "3016130009",
+              "bin": "3043688",
+              "version": "26c"
+            }
+          }
+        }
+      },
+      "match": "Exact house number, street, borough and ZIP; no score-only match"
+    },
+    {
+      "source_key": "starr_bar_brooklyn_ny",
+      "venue_name": "Starr Bar",
+      "street_address": "214 Starr Street, Brooklyn, NY 11237",
+      "venue_city": "Brooklyn",
+      "primary_address_url": "https://www.starrbar.com/",
+      "lat": 40.704982,
+      "lng": -73.922909,
+      "point_source_url": "https://geosearch.planninglabs.nyc/v2/search?text=214+Starr+Street%2C+Brooklyn+NY+11237&size=3",
+      "accepted_feature": {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -73.922909,
+            40.704982
+          ]
+        },
+        "properties": {
+          "id": "1072937",
+          "gid": "nycpad:venue:1072937",
+          "layer": "venue",
+          "source": "nycpad",
+          "source_id": "1072937",
+          "country_code": "US",
+          "name": "214 STARR STREET",
+          "housenumber": "214",
+          "street": "STARR STREET",
+          "postalcode": "11237",
+          "confidence": 0.8,
+          "match_type": "fallback",
+          "accuracy": "point",
+          "country": "United States",
+          "country_gid": "whosonfirst:country:85633793",
+          "country_a": "USA",
+          "region": "New York",
+          "region_gid": "whosonfirst:region:85688543",
+          "region_a": "NY",
+          "county": "Kings County",
+          "county_gid": "whosonfirst:county:102082361",
+          "county_a": "BK",
+          "locality": "New York",
+          "locality_gid": "whosonfirst:locality:85977539",
+          "locality_a": "NYC",
+          "borough": "Brooklyn",
+          "borough_gid": "whosonfirst:borough:421205765",
+          "neighbourhood": "Bushwick",
+          "neighbourhood_gid": "whosonfirst:neighbourhood:85808635",
+          "label": "214 STARR STREET, Brooklyn, NY, USA",
+          "addendum": {
+            "pad": {
+              "bbl": "3031990016",
+              "bin": "3421700",
+              "version": "26c"
+            }
+          }
+        }
+      },
+      "match": "Exact house number, street, borough and ZIP; no score-only match"
+    },
+    {
+      "source_key": "skinny_dennis_brooklyn_ny",
+      "venue_name": "Skinny Dennis",
+      "street_address": "152 Metropolitan Avenue, Brooklyn, NY 11249",
+      "venue_city": "Brooklyn",
+      "primary_address_url": "https://skinnydennisbrooklyn.com/calendar",
+      "lat": 40.715874,
+      "lng": -73.962182,
+      "point_source_url": "https://geosearch.planninglabs.nyc/v2/search?text=152+Metropolitan+Avenue+Brooklyn&size=10",
+      "accepted_feature": {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -73.962182,
+            40.715874
+          ]
+        },
+        "properties": {
+          "id": "1023507",
+          "gid": "nycpad:venue:1023507",
+          "layer": "venue",
+          "source": "nycpad",
+          "source_id": "1023507",
+          "country_code": "US",
+          "name": "152 METROPOLITAN AVENUE",
+          "housenumber": "152",
+          "street": "METROPOLITAN AVENUE",
+          "postalcode": "11249",
+          "confidence": 0.8,
+          "match_type": "fallback",
+          "accuracy": "point",
+          "country": "United States",
+          "country_gid": "whosonfirst:country:85633793",
+          "country_a": "USA",
+          "region": "New York",
+          "region_gid": "whosonfirst:region:85688543",
+          "region_a": "NY",
+          "county": "Kings County",
+          "county_gid": "whosonfirst:county:102082361",
+          "county_a": "BK",
+          "locality": "New York",
+          "locality_gid": "whosonfirst:locality:85977539",
+          "locality_a": "NYC",
+          "borough": "Brooklyn",
+          "borough_gid": "whosonfirst:borough:421205765",
+          "neighbourhood": "Williamsburg",
+          "neighbourhood_gid": "whosonfirst:neighbourhood:85857853",
+          "label": "152 METROPOLITAN AVENUE, Brooklyn, NY, USA",
+          "addendum": {
+            "pad": {
+              "bbl": "3023640022",
+              "bin": "3062440",
+              "version": "26c"
+            }
+          }
+        }
+      },
+      "match": "Exact152MetropolitanAvenue Brooklyn11249; matches current official calendar footer. Initial ZIP11211 search returned wrong519, rejected. Current native footer and exact PAD both11249."
+    },
+    {
+      "source_key": "kills_boro_staten_island_ny",
+      "venue_name": "Kills Boro Brewing Co.",
+      "street_address": "814 Richmond Terrace, Staten Island, NY 10301",
+      "venue_city": "Staten Island",
+      "primary_address_url": "https://killsboro.com/events",
+      "lat": 40.644642,
+      "lng": -74.0994638,
+      "point_source_url": "https://killsboro.com/events",
+      "publisher_jsonld": {
+        "@type": "Brewery",
+        "name": "Kills Boro Brewing Company",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "814 Richmond Terrace",
+          "addressLocality": "Staten Island",
+          "addressRegion": "NY",
+          "postalCode": "10301",
+          "addressCountry": "US"
+        },
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": 40.644642,
+          "longitude": -74.0994638
+        }
+      },
+      "match": "Publisher brewery JSON-LD address and coordinate match each accepted event venue."
+    },
+    {
+      "source_key": "sake_studies_brooklyn_ny",
+      "venue_name": "Sake Studies Center at Brooklyn Kura",
+      "street_address": "34 34th Street Industry City Building 6, Brooklyn, NY 11232",
+      "venue_city": "Brooklyn",
+      "primary_address_url": "https://www.sakestudiescenter.com/calendar",
+      "lat": 40.657125,
+      "lng": -74.006418,
+      "point_source_url": "https://geosearch.planninglabs.nyc/v2/search?text=34+34th+Street%2C+Brooklyn+NY+11232&size=3",
+      "accepted_feature": {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -74.006418,
+            40.657125
+          ]
+        },
+        "properties": {
+          "id": "757783",
+          "gid": "nycpad:venue:757783",
+          "layer": "venue",
+          "source": "nycpad",
+          "source_id": "757783",
+          "country_code": "US",
+          "name": "34 34 STREET",
+          "housenumber": "34",
+          "street": "34 STREET",
+          "postalcode": "11232",
+          "confidence": 0.8,
+          "match_type": "fallback",
+          "accuracy": "point",
+          "country": "United States",
+          "country_gid": "whosonfirst:country:85633793",
+          "country_a": "USA",
+          "region": "New York",
+          "region_gid": "whosonfirst:region:85688543",
+          "region_a": "NY",
+          "county": "Kings County",
+          "county_gid": "whosonfirst:county:102082361",
+          "county_a": "BK",
+          "locality": "New York",
+          "locality_gid": "whosonfirst:locality:85977539",
+          "locality_a": "NYC",
+          "borough": "Brooklyn",
+          "borough_gid": "whosonfirst:borough:421205765",
+          "neighbourhood": "Sunset Park",
+          "neighbourhood_gid": "whosonfirst:neighbourhood:85851575",
+          "label": "34 34 STREET, Brooklyn, NY, USA",
+          "addendum": {
+            "pad": {
+              "bbl": "3006870001",
+              "bin": "3336900",
+              "version": "26c"
+            }
+          }
+        }
+      },
+      "match": "Exact house number, street, borough and ZIP; no score-only match",
+      "format_note": "Publisher streetAddress has interior comma beforeIndustryCityBuilding6; stored street omits that extra comma so city/state/ZIP structured parser is unambiguous; building retained."
+    },
+    {
+      "source_key": "twenty_sided_brooklyn_ny",
+      "venue_name": "Twenty Sided Store",
+      "street_address": "280 Grand Street, Brooklyn, NY 11211",
+      "venue_city": "Brooklyn",
+      "primary_address_url": "https://twentysidedstore.com/collections/events",
+      "lat": 40.713011,
+      "lng": -73.957949,
+      "point_source_url": "https://geosearch.planninglabs.nyc/v2/search?text=280+Grand+Street%2C+Brooklyn+NY+11211&size=3",
+      "accepted_feature": {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -73.957949,
+            40.713011
+          ]
+        },
+        "properties": {
+          "id": "1025141",
+          "gid": "nycpad:venue:1025141",
+          "layer": "venue",
+          "source": "nycpad",
+          "source_id": "1025141",
+          "country_code": "US",
+          "name": "280 GRAND STREET",
+          "housenumber": "280",
+          "street": "GRAND STREET",
+          "postalcode": "11211",
+          "confidence": 0.8,
+          "match_type": "fallback",
+          "accuracy": "point",
+          "country": "United States",
+          "country_gid": "whosonfirst:country:85633793",
+          "country_a": "USA",
+          "region": "New York",
+          "region_gid": "whosonfirst:region:85688543",
+          "region_a": "NY",
+          "county": "Kings County",
+          "county_gid": "whosonfirst:county:102082361",
+          "county_a": "BK",
+          "locality": "New York",
+          "locality_gid": "whosonfirst:locality:85977539",
+          "locality_a": "NYC",
+          "borough": "Brooklyn",
+          "borough_gid": "whosonfirst:borough:421205765",
+          "neighbourhood": "Williamsburg",
+          "neighbourhood_gid": "whosonfirst:neighbourhood:85857853",
+          "label": "280 GRAND STREET, Brooklyn, NY, USA",
+          "addendum": {
+            "pad": {
+              "bbl": "3023950005",
+              "bin": "3335774",
+              "version": "26c"
+            }
+          }
+        }
+      },
+      "match": "Exact house number, street, borough and ZIP; no score-only match"
+    }
+  ]
+}
