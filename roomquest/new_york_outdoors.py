@@ -601,31 +601,46 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None)
     now = now or datetime.now(timezone.utc)
     if key not in CHECKPOINT_KEYS:
         raise ValueError('unregistered_new_york_outdoors_source')
-    _budget(deadline_at)
-    manifest = _manifest(key, fetch(SOURCES[key][0], 'text/html'), now)
-    digest = sha256(json.dumps(manifest, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
     state = deepcopy(checkpoint) if checkpoint else None
+    anchor = now
     if state is not None:
         try:
+            started = datetime.fromisoformat(state['started_at'])
             valid = (state['version'] == 1 and state['source_key'] == key
-                     and type(state['cursor']) is int and 0 <= state['cursor'] <= len(manifest)
+                     and type(state['cursor']) is int and type(state['manifest_count']) is int
+                     and 0 <= state['cursor'] <= state['manifest_count'] <= MAX_MANIFEST
+                     and re.fullmatch(r'[a-f0-9]{64}', state['manifest_hash'])
                      and isinstance(state['events'], list) and len(state['events']) <= state['cursor']
                      and isinstance(state['diagnostics'], list)
                      and len(state['diagnostics']) <= MAX_MANIFEST
-                     and now - datetime.fromisoformat(state['started_at']) <= timedelta(hours=4)
-                     and datetime.fromisoformat(state['started_at']) <= now
+                     and started.tzinfo is not None and now.tzinfo is not None
+                     and state['window_start'] == started.astimezone(ZoneInfo(ZONE)).date().isoformat()
+                     and timedelta(0) <= now - started <= timedelta(hours=4)
                      and all(isinstance(e, dict) and event_url(key, e.get('event_url')) for e in state['events']))
         except (KeyError, TypeError, ValueError):
             valid = False
         if not valid:
             raise ValueError('ny_outdoors_checkpoint_invalid')
+        anchor = started
+    if now.tzinfo is None:
+        raise ValueError('ny_outdoors_checkpoint_invalid')
+    _budget(deadline_at)
+    payload = fetch(SOURCES[key][0], 'text/html')
+    # A resume keeps its original time window, including across local midnight.
+    # Moving the lower bound with every claim would invalidate an otherwise
+    # unchanged manifest as an event ends or enters the 60-day horizon.
+    manifest = _manifest(key, payload, anchor)
+    digest = sha256(json.dumps(manifest, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
+    if state is not None:
         if state.get('manifest_hash') != digest or state.get('manifest_count') != len(manifest):
             state = None
         elif not _checkpoint_rows_valid(key, state, manifest):
             raise ValueError('ny_outdoors_checkpoint_invalid')
     if state is None:
+        manifest = _manifest(key, payload, now)
+        digest = sha256(json.dumps(manifest, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
         state = {'version': 1, 'source_key': key, 'started_at': now.isoformat(),
-                 'window_start': now.isoformat(), 'manifest_hash': digest,
+                 'window_start': now.astimezone(ZoneInfo(ZONE)).date().isoformat(), 'manifest_hash': digest,
                  'manifest_count': len(manifest), 'cursor': 0, 'events': [], 'diagnostics': []}
     stop = min(len(manifest), state['cursor'] + DETAILS_PER_CHUNK)
     for index in range(state['cursor'], stop):
@@ -639,8 +654,10 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None)
     if len(json.dumps(state).encode()) > CHECKPOINT_MAX_BYTES:
         raise ValueError('ny_outdoors_checkpoint_limit')
     complete = state['cursor'] == len(manifest)
-    return {'complete': complete, 'events': state['events'] if complete else [],
-            'checkpoint': None if complete else state, 'diagnostics': state['diagnostics']}
+    # The worker must persist the complete cursor before staging. Returning None
+    # here violates the RPC contract and makes a completed detail run unusable.
+    return {'complete': complete, 'events': deepcopy(state['events']) if complete else [],
+            'checkpoint': state, 'diagnostics': state['diagnostics']}
 
 
 def collect(source, fetch, *, deadline_at=None, now=None):

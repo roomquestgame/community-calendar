@@ -1,5 +1,7 @@
 """Full narratives and reviewed locations survive ordinary/checkpoint workers."""
 from copy import deepcopy
+from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 import unittest
 from unittest.mock import patch
 
@@ -22,6 +24,13 @@ def event(**values):
       venue_city='New York',lat=None,lng=None,event_url='https://cmom.org/event/workshop/')
     result.update(values)
     return result
+
+
+def checkpoint(key, *, cursor=1, manifest_count=1, events=None):
+    now = datetime.now(timezone.utc)
+    return dict(version=1, source_key=key, manifest_hash='a'*64,
+        started_at=now.isoformat(), window_start=now.astimezone(ZoneInfo(profiles.ZONE)).date().isoformat(),
+        cursor=cursor, manifest_count=manifest_count, events=events or [], diagnostics=[])
 
 
 class NewYorkWorkerTests(unittest.TestCase):
@@ -66,7 +75,7 @@ class NewYorkWorkerTests(unittest.TestCase):
             if operation.endswith('write_fetch_checkpoint'):return {'checkpoint_saved':True,'revision':1}
             self.fail(operation)
         pacing=dict(wait_unbounded=False,crawl_delay_seconds=0,retry_after_seconds=0)
-        chunk={'checkpoint':{'cursor':1,'manifest_count':1},'complete':True,'events':[row]}
+        chunk={'checkpoint':checkpoint(nightlife.CHILOS, events=[row]),'complete':True,'events':[row]}
         with patch.object(worker,'supabase_rpc',side_effect=rpc),patch.object(nightlife,'collect_chunk',return_value=chunk):
             result=worker._preview_new_york_chunk(source(nightlife,nightlife.CHILOS),pacing,
                 collection_context={'p_category':'html','p_ticket':'test-ticket'},deadline_at=worker.monotonic()+50)
@@ -74,13 +83,29 @@ class NewYorkWorkerTests(unittest.TestCase):
         self.assertEqual(result['p_events'][0]['description'],row['description'])
 
     def test_partial_chunk_does_not_return_events_for_staging(self):
-        chunk={'checkpoint':{'cursor':1,'manifest_count':2},'complete':False,'events':[event()]}
+        chunk={'checkpoint':checkpoint(nightlife.CHILOS, manifest_count=2),'complete':False,'events':[event()]}
         responses=[{'revision':0,'checkpoint':None},{'checkpoint_saved':True,'revision':1}]
         with patch.object(worker,'supabase_rpc',side_effect=responses),patch.object(nightlife,'collect_chunk',return_value=chunk):
             result=worker._preview_new_york_chunk(source(nightlife,nightlife.CHILOS),
                 dict(wait_unbounded=False,crawl_delay_seconds=0,retry_after_seconds=0),
                 collection_context={'p_category':'html','p_ticket':'test-ticket'},deadline_at=worker.monotonic()+50)
         self.assertEqual(result,{'fetch_pending':True})
+
+    def test_invalid_wire_checkpoint_is_rejected_before_database_write(self):
+        valid = checkpoint(outdoors.DYCKMAN)
+        for saved in (None, {**valid, 'window_start':valid['started_at']},
+                      {**valid, 'cursor':0}, {**valid, 'started_at':'2020-01-01T00:00:00Z'}):
+            with self.subTest(checkpoint=saved):
+                chunk={'checkpoint':saved,'complete':True,'events':[event()]}
+                with patch.object(worker,'supabase_rpc',return_value={'revision':0,'checkpoint':None}) as rpc, \
+                     patch.object(outdoors,'collect_chunk',return_value=chunk):
+                    with self.assertRaisesRegex(worker.PreviewError,'new_york_checkpoint_invalid'):
+                        worker._preview_new_york_chunk(source(outdoors,outdoors.DYCKMAN),
+                            dict(wait_unbounded=False,crawl_delay_seconds=0,retry_after_seconds=0),
+                            collection_context={'p_category':'html','p_ticket':'test-ticket'},
+                            deadline_at=worker.monotonic()+50)
+                self.assertEqual(rpc.call_count,1)
+                self.assertEqual(rpc.call_args.args[0],'community_collector_read_fetch_checkpoint')
 
     def test_unexpected_publisher_error_text_is_not_logged_as_diagnostic(self):
         with patch.object(arts,'collect',side_effect=ValueError('private_publisher_value')):

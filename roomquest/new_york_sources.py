@@ -8,6 +8,8 @@ from __future__ import annotations
 
 import math
 import re
+from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 
 ZONE = 'America/New_York'
 MAX_DESCRIPTION = 12000
@@ -73,9 +75,40 @@ def validate_records(records, source=None):
     return records
 
 
+def validate_checkpoint(source, checkpoint, *, now=None):
+    """Match the durable database wire contract before attempting an RPC write."""
+    module = validate_source(source)
+    key = source['source_key']
+    current = now or datetime.now(timezone.utc)
+    manifest_limit = getattr(module, 'CHECKPOINT_MANIFEST_LIMITS', {}).get(key, 200)
+    event_limit = getattr(module, 'CHECKPOINT_EVENT_LIMITS', {}).get(key, 201)
+    try:
+        started_text = checkpoint['started_at']
+        started = datetime.fromisoformat(started_text.replace('Z', '+00:00'))
+        valid = (isinstance(checkpoint, dict)
+            and type(checkpoint['version']) is int and checkpoint['version'] == 1
+            and checkpoint['source_key'] == key
+            and isinstance(checkpoint['manifest_hash'], str)
+            and re.fullmatch(r'[a-f0-9]{64}', checkpoint['manifest_hash'])
+            and type(checkpoint['manifest_count']) is int
+            and 0 <= checkpoint['manifest_count'] <= manifest_limit
+            and type(checkpoint['cursor']) is int
+            and 0 <= checkpoint['cursor'] <= checkpoint['manifest_count']
+            and isinstance(checkpoint['events'], list) and len(checkpoint['events']) <= event_limit
+            and isinstance(checkpoint['diagnostics'], list) and len(checkpoint['diagnostics']) <= 400
+            and re.fullmatch(r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z|\+00:00)', started_text)
+            and -60 <= (current - started).total_seconds() <= 4*60*60
+            and checkpoint['window_start'] == started.astimezone(ZoneInfo(ZONE)).date().isoformat())
+    except (KeyError, TypeError, ValueError, AttributeError, OverflowError):
+        valid = False
+    if not valid:
+        raise ValueError('new_york_checkpoint_invalid')
+    return checkpoint
+
+
 def diagnostic_codes():
     codes = {'unregistered_new_york_source', 'new_york_incomplete_event',
-             'new_york_record_limit', 'invalid_new_york_payload'}
+             'new_york_record_limit', 'invalid_new_york_payload', 'new_york_checkpoint_invalid'}
     for module in adapters():
         codes.update(getattr(module, 'ERROR_CODES', set()))
     return codes
