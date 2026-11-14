@@ -468,9 +468,15 @@ def _smithville(soup, fetch, now):
         # Greetings and all-day placeholders are not timed public events.
         # No midnight occurrence or guessed duration is manufactured for them.
         hospitality = title.casefold() == "hospitality night" and not visible_time
-        if not visible_time and not hospitality:
+        # The December 10 listing independently supplies 10am-9pm in its
+        # summary, while the full description confirms the 9pm closing time.
+        # This is an exact reviewed occurrence, not a midnight-time fallback.
+        girls_night = (title.casefold() == "girls night out" and not visible_time
+                       and urlsplit(url).path == "/23-girls-night-out"
+                       and encoded == "2026-12-10-00-00")
+        if not visible_time and not (hospitality or girls_night):
             continue
-        if hospitality:
+        if hospitality or girls_night:
             # Its listing carries a midnight placeholder. Resolve the explicit
             # evening clocks below before deciding whether today has ended.
             if not now.astimezone(ZoneInfo(ZONE)).date() <= start.date() <= (now + timedelta(days=60)).date():
@@ -493,7 +499,8 @@ def _smithville(soup, fetch, now):
             # Only events explicitly situated at the reviewed village address
             # inherit that address; an individual shop must supply its own.
             if not (re.search(r"615\s+E\.?\s+Moss Mill R(?:d|oad)", plain(body), re.I)
-                    or hospitality and "at Historic Smithville" in body):
+                    or hospitality and "at Historic Smithville" in body
+                    or girls_night and "Not all shoppes participate" in body):
                 continue
             times = {_text(item) for item in detail.select("#detail-date-list li.alldates")}
             img = detail.select_one(".ic-image img[src]")
@@ -504,6 +511,19 @@ def _smithville(soup, fetch, now):
         if expected not in published_times:
             raise ValueError("smithville_occurrence_missing_in_detail")
         end = None
+        if girls_night:
+            summary = narrative(card.select_one(".ic-descshort"))
+            clocks = re.fullmatch(r"(\d{1,2}(?::\d{2})?\s*[AP]M)\s*[-–]\s*(\d{1,2}(?::\d{2})?\s*[AP]M)"
+                                  r"\s+extended shop hours and specials for the ladies!", summary, re.I)
+            ending = re.search(r"hours will be extended until\s+(\d{1,2}(?::\d{2})?\s*[AP]M)", body, re.I)
+            if not clocks or not ending:
+                continue
+            start, end = _clock(start.date(), clocks[1]), _clock(start.date(), clocks[2])
+            if end != _clock(start.date(), ending[1]) or end <= start:
+                raise ValueError("smithville_schedule_conflict")
+            body = summary + "\n" + body
+            if len(body) > MAX_DESCRIPTION:
+                raise ValueError("atlantic_city_description_limit")
         if hospitality:
             clocks = re.search(r"\b(\d{1,2}(?::\d{2})?\s*[AP]M)\s*[-–]\s*(\d{1,2}(?::\d{2})?\s*[AP]M)\b", plain(body), re.I)
             if not clocks:

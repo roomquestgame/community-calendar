@@ -283,7 +283,8 @@ class AtlanticCityCommunityTest(unittest.TestCase):
         self.assertEqual(dinner[1], '1709 Arctic Ave., Atlantic City, NJ 08401')
         self.assertIsNone(ac._municipal_location('Atlantic Avenue, Atlantic City', 'Holiday Parade'))
         block = ac._municipal_location('1800 Block of Marmora Ave., Atlantic City', 'Shredding')
-        self.assertEqual(block[:2], ('1800 Block of Marmora Avenue', '1800 Marmora Avenue, Atlantic City, NJ 08401'))
+        self.assertEqual(block, ac.MARMORA_BLOCK)
+        self.assertIn('approximate map location', block[0])
 
     def test_municipal_retains_full_description_and_actual_time(self):
         url = 'https://www.acnj.gov/Calendar/ViewMeeting/607'
@@ -364,6 +365,22 @@ class AtlanticCityCommunityTest(unittest.TestCase):
                  'venue_address': '1800 Marmora Avenue, Atlantic City, NJ 08401'}
         ac._apply_reviewed_venue_point(block, ac.CITY)
         self.assertNotIn('lat', block)
+
+    def test_reviewed_marmora_street_point_keeps_approximation_visible(self):
+        block = {'venue_name': ac.MARMORA_BLOCK[0],
+                 'venue_address': ac.MARMORA_BLOCK[1],
+                 'reason': 'missing_verified_venue_geo'}
+        ac._apply_reviewed_venue_point(block, ac.CITY)
+        self.assertEqual((block['lat'], block['lng']),
+                         (39.369920418545, -74.440134563461))
+        self.assertIsNone(block['reason'])
+        for source, name, street in (
+                (ac.COUNTY, ac.MARMORA_BLOCK[0], ac.MARMORA_BLOCK[1]),
+                (ac.CITY, ac.MARMORA_BLOCK[0], '1900 Marmora Avenue, Atlantic City, NJ 08401'),
+                (ac.CITY, '1800 Block of Marmora Avenue', ac.MARMORA_BLOCK[1])):
+            row = {'venue_name': name, 'venue_address': street}
+            ac._apply_reviewed_venue_point(row, source)
+            self.assertNotIn('lat', row)
 
     def test_event_metadata_points_require_matching_address_and_local_bounds(self):
         url = ac.SOURCES[ac.NOYES][0] + '/2026/independent-living-art'

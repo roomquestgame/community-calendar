@@ -59,7 +59,7 @@ MAX_DETAILS_PER_CHUNK = 6
 MIN_DETAIL_SECONDS = 18
 MAX_CHECKPOINT_BYTES = 900_000
 MAX_CHECKPOINT_AGE = timedelta(hours=4)
-VENUE_POINT_CONTRACT_VERSION = 1
+VENUE_POINT_CONTRACT_VERSION = 2
 
 # Addresses reviewed against the publisher's own branch directory (2026-11-14).
 # Match the street supplied by the event, rather than inheriting a system HQ.
@@ -82,6 +82,8 @@ MAIN_LIBRARY = ('Atlantic City Free Public Library — Main Library',
                 '1 North Tennessee Avenue, Atlantic City, NJ 08401', 'Atlantic City')
 RICHMOND_LIBRARY = ('Atlantic City Free Public Library — Richmond Branch',
                     '4115 Ventnor Avenue, Atlantic City, NJ 08401', 'Atlantic City')
+MARMORA_BLOCK = ('1800 Block of Marmora Avenue (approximate map location)',
+                 '1800 Marmora Avenue, Atlantic City, NJ 08401', 'Atlantic City')
 
 # Exact venue associations, reviewed 2026-11-14. These are destination points
 # published for the named buildings, never source-coverage centers. Each tuple
@@ -106,6 +108,14 @@ REVIEWED_VENUE_POINTS = {
     # https://www.episcopalassetmap.org/dioceses/diocese-new-jersey/list/st-augustines-church
     (CITY, 'St. Augustine’s Episcopal Church',
      '1709 Arctic Ave., Atlantic City, NJ 08401'): (39.361884, -74.433525),
+    # The city supplies the numbered block, not a building. NJ Office of GIS
+    # returns a score-100 StreetAddress match on its 1800–1832 road segment.
+    # Keep the visible approximate-location qualifier; this is neither a roof
+    # point nor a claim about the exact shredding truck position.
+    # https://www.acnj.gov/Calendar/ViewEvent/2078
+    # https://geo.nj.gov/arcgis/rest/services/Tasks/NJ_Geocode/GeocodeServer/findAddressCandidates
+    # SingleLine=1800 Marmora Avenue, Atlantic City, NJ 08401; outSR=4326.
+    (CITY, MARMORA_BLOCK[0], MARMORA_BLOCK[1]): (39.369920418545, -74.440134563461),
 }
 
 
@@ -613,7 +623,7 @@ def _municipal_location(value, title):
     # as a street-level location estimate, retaining "Block" in the venue so
     # it is not represented as a named building. This is not a parade default.
     if raw == '1800 Block of Marmora Ave., Atlantic City':
-        return '1800 Block of Marmora Avenue', '1800 Marmora Avenue, Atlantic City, NJ 08401', 'Atlantic City'
+        return MARMORA_BLOCK
     number = re.search(r'\b[0-9]{1,6}\s', raw)
     if not number:
         return None

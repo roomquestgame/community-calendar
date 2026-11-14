@@ -38,6 +38,12 @@ The [recorded verification of the first batch](../../docs/evidence/atlantic-city
 
 Collector [PR #211](https://github.com/roomquestgame/community-calendar/pull/211) and backend [PR #912](https://github.com/roomquestgame/RoomQuestGame/pull/912) are merged. Collector deployment `dpl_FZsWpzt3B23NLf2QsPW5uWzVBKvo` is READY. [Database deploy 43637780151](https://github.com/roomquestgame/RoomQuestGame/actions/runs/43637780151) succeeded, applied the seven-source migration and verified all 476 repository migration versions on production. Actual production readback found no blank, over-limit or truncated descriptions and no incomplete postal streets in the collected/published cohort. See [the remaining-source batch](REMAINING_SOURCE_BATCH.md) and [its machine-readable captured audit](../../docs/evidence/atlantic-city-remaining-source-audit-20261114.json).
 
+## Eight-source continuation — captured and ready for deployment
+
+The [continuation batch](CONTINUATION_SOURCE_BATCH.md) adds Margate Library, the Greater Atlantic City Chamber, Jewish Federation, Jewish Family Service, Hard Rock Cafe, Garden State Beer Company, Atlantic Cape public events and the EHT Nature Reserve Turkey Trot. **224 captured eligible occurrences** passed parser and overlap review; production publication remains a separate verification step. This supersedes the earlier discovery-only hold notes for these publishers. Federation robots retrieval remains a production risk after HTTP 520.
+
+The same release recovers an explicit Smithville Girls Night Out clock and a visibly qualified approximate municipal shredding location using official New Jersey street data. The prior production baseline is **627**, including the two location resolutions completed before this continuation.
+
 ## Collection and publication requirements
 
 - Reuse the guarded public transport, WordPress TEC and iCalendar normalizers, existing category workers, v2 preview recording, publication queue, image verification and address geocoder.
@@ -58,10 +64,6 @@ A discovered venue is not automatically an active event feed. These leads remain
 
 | Lead | Evidence | Reason |
 | --- | --- | --- |
-| Margate City Public Library | [Official source](https://www.margatelibrary.org/events/rss/feeds?per_page=100) | Active EBSCO Stacks RSS returns 200, but many entries have blank descriptions; detail and robots requests returned 403. Requires permitted access to full descriptions. |
-| Greater Atlantic City Chamber | [Official source](https://business.acchamber.com/events/search?rendermode=rss) | Active calendar and public RSS return 200; API and robots requests returned 403. Requires publisher access verification and complete structured location mapping. |
-| Jewish Federation / Katz JCC | [Official source](https://jewishbytheshore.org/events/) | Active public calendar pages; Events Calendar API and robots requests returned 403. Full narrative hydration and exact event-specific venue mapping remain unverified. |
-| Jewish Family Service of Atlantic & Cape May Counties | [Fresh November month page](https://www.jfsatlantic.org/events/month/2026-11/?shortcode=f0b1cb7d) | Fresh November page returns HTTP 200 but contains no Oceanside distribution; the previously indexed November 18 detail now returns HTTP 404. No current independent JFS occurrence is verified. The current Oceanside II PDF supplies the November 18 distribution at noon–1 p.m.; stale indexed 1–2 p.m. text is not retained as a timing conflict. |
 | Other records in Stockton's university-wide calendar | [Official source](https://stockton.edu/calendars/index.html) | PAC, HRC and SCOSA public programs are implemented above. The wider calendar also contains private, invitation-only and student-only scheduling, and its default export caps at 200 rows. Unreviewed or nonpublic records are excluded; bounded PAC records are matched to the public performance manifest. |
 | Atlantic City Aquarium | [Official source](https://www.acnj.gov/pages/acaquarium) | Active admissions, exhibits and private party rentals. No separate future dated public event feed verified; ordinary opening hours are not event occurrences. |
 | Marine Mammal Stranding Center | [Official source](https://mmsc.org/) | Official website links fundraisers, but the October 10 Pup Strut has ended. No future dated event feed verified. |
@@ -69,21 +71,20 @@ A discovered venue is not automatically an active event feed. These leads remain
 | Resorts Bar One | [Official source](https://resortsac.com/nightlife/bar-one/) | Current November 2026 schedule visible in web search; direct page and robots return 403. |
 | Hard Rock Lobby Bar | [Official source](https://casino.hardrock.com/atlantic-city/event-calendar/live-music-at-lobby-bar) | Current dated music schedule but direct page and robots return 403. |
 | The Leadership Studio | [Official source](https://www.leadershipstudioac.com/yoga-classes) | Official page embeds Momence host 29984; Momence plugin and robots return 403. Search-rendered clocks appear UTC; require explicit timezone-aware feed before ingestion. |
-| Garden State Beer Company | [Official source](https://gardenstatebeerco.com/whats-happening%3F) | Official event page currently only October 2026 cards, no future dated November event schedule. Avoid projecting stale foodtruck/bookclub/trivia cards. |
 | Little Water Distillery | [Official source](https://www.lwdco.com/) | Official page offers general tasting hours but special events redirect readers to social pages; no verified future dated public calendar. |
 | The Seed: A Living Beer Project | [Official source](https://theseedbeer.com/) | Venue identified at 807 Baltic Avenue; no verified future dated official calendar found in this pass. |
 | Ventnor Farmers Market | [Official source](https://www.vcfm.org/) | Published 2026 season ended September 4; do not fabricate 2027 dates. |
 | Level Up Entertainment | [Official source](https://levelupentertainment.com/about) | Official store archive says retail store closed January 26, 2025; do not ingest archived gaming events. |
 | NJ Audubon at Forsythe NWR | [Official source](https://njaudubon.org/venue/edwin-b-forsythe-national-wildlife-refuge/) | Official upcoming November 28 bird walk and street 800 Great Creek Road; direct TEC API and robots return 403. |
 | South Jersey Run Club | [Official source](https://runsignup.com/Race/NJ/AtlanticCity/SouthJerseyRunClub) | Discovery returns expired June 2026 instances. Do not project wording every Saturday beyond confirmed dated schedule. |
-| Historic Smithville Girls Night Out / Breakfast with Santa | [Official source](https://historicsmithvillenj.com/?page=2) | Current calendar dates exist but no start clock supplied; breakfast venue Fred & Ethel’s has distinct address. Dickens and Hospitality successfully implemented. |
+| Historic Smithville Breakfast with Santa | [Official source](https://historicsmithvillenj.com/?page=2) | Breakfast still lacks a published start clock; Fred & Ethel’s has a distinct address. Girls Night Out is resolved in the continuation batch. |
 | Funny Farm Rescue winter hayride and market | [Official source](https://funnyfarmrescue.org/) | Official homepage advertises December 6, 2026, noon–3 PM at 6908 Railroad Blvd, Mays Landing, NJ 08330. Direct homepage and robots requests return HTTP 403; no bypass attempted. |
 
 ### Event-level holds within implemented calendars
 
 - Great Day's North Meets South Party lacks a reliable published clock. Its holiday parade lacks a resolved route-start street. The November 19 South Jersey Gas event pairs New York Avenue School with a street belonging to Pennsylvania Avenue School; no current relocation evidence resolves the conflict.
 - Stockton's *A More Perfect Union* native notes explicitly state that registration is sold out. The eligible homeschool Nutcracker retains its complete published audience restrictions. The public *Manifest: Thirteen Colonies* lecture remains owned by the Noyes source, avoiding a duplicate university registration.
-- The initial municipal source's Third Ward Document Shredding occurrence remains unpublished because the publisher supplies only a numbered block. Its documented block-level street estimate is not represented as a verified building or event GPS point.
+- The municipal Third Ward Document Shredding occurrence receives an official NJ OGIS street point and a visible approximate-map qualifier in the continuation release. It remains a block-level estimate, not verified event GPS; ordinary production refresh must publish the recovered record.
 
 ## Verification and release
 

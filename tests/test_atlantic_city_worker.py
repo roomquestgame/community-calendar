@@ -8,6 +8,9 @@ from urllib.parse import urlencode
 
 from roomquest import atlantic_city_community as community
 from roomquest import atlantic_city_venues as venues
+from roomquest import atlantic_city_library_chamber as library_chamber
+from roomquest import atlantic_city_nightlife_more as nightlife_more
+from roomquest import atlantic_city_outdoors_more as outdoors_more
 from roomquest import category_worker as category
 from roomquest import preview_worker as worker
 from roomquest import visit_atlantic_city as visit
@@ -374,6 +377,166 @@ class AtlanticCityWorkerTests(unittest.TestCase):
         self.assertEqual((result['complete'], result['failed'], result['staged']), (1, 0, 1))
         self.assertEqual(state.staged[0]['description'], prose)
         self.assertEqual(state.staged[0]['venue_address'], '31 South Rhode Island Avenue, Atlantic City, NJ 08401')
+
+
+class AtlanticCityContinuationWorkerTests(unittest.TestCase):
+    """Exercise routing and persistence boundaries, independently of parsers."""
+
+    def profile(self, adapter, key, *, checkpoint=False):
+        feed, kind, platform = adapter.SOURCES[key]
+        selected = dict(source_key=key, feed_url=feed, kind=kind,
+                        platform_adapter=platform, timezone=adapter.ZONE)
+        if checkpoint:
+            selected['fetch_checkpoint_version'] = 1
+        return selected
+
+    def event(self, key):
+        destinations = {
+            library_chamber.MARGATE: ('Margate City Public Library',
+                '8100 Atlantic Avenue, Margate, NJ 08402', 'Margate',
+                'https://www.margatelibrary.org/community-workshop'),
+            library_chamber.FED: ('Katz JCC',
+                '501 N Jerome Avenue, Margate City, NJ 08402', 'Margate City',
+                'https://jewishbytheshore.org/event/community-workshop/'),
+            library_chamber.JFS: ('Shirat Hayam',
+                '700 North Swarthmore Avenue, Ventnor City, NJ 08406', 'Ventnor City',
+                'https://www.jfsatlantic.org/events/community-workshop/'),
+            nightlife_more.GARDEN: (*nightlife_more.VENUES[nightlife_more.GARDEN], nightlife_more.GARDEN_URL),
+            nightlife_more.HARD_ROCK: (*nightlife_more.VENUES[nightlife_more.HARD_ROCK],
+                nightlife_more.HARD_ROCK_URL + '?date=11%2F25%2F2026&display=event&eventid=1'),
+            outdoors_more.ATLANTIC_CAPE: ('Mays Landing Campus',
+                outdoors_more.MAYS_STREET, 'Mays Landing',
+                'https://events.atlanticcape.edu/event/community-workshop'),
+        }
+        name, address, city, event_url = destinations[key]
+        return dict(id='stable-community-occurrence', title='Public community workshop',
+                    starts_at='2026-11-25T18:00:00+00:00', ends_at='2026-11-25T20:00:00+00:00',
+                    event_url=event_url, venue_name=name, venue_address=address, venue_city=city,
+                    lat=None, lng=None, category='', timezone='America/New_York',
+                    description='Complete publisher participation and admission instructions. ' * 70
+                                + 'Final published condition.')
+
+    def ordinary_route(self, adapter, key):
+        selected = self.profile(adapter, key)
+        row = self.event(key)
+        state = Harness(self, selected, pages={selected['feed_url']: 'official native calendar'})
+
+        def collect(actual, fetch, *, deadline_at):
+            self.assertEqual(actual['source_key'], key)
+            self.assertEqual(actual['feed_url'], selected['feed_url'])
+            # The real worker supplies robots-aware, host-bound transport and
+            # reserves time before staging; Harness checks those fetch options.
+            fetch(selected['feed_url'], 'application/xml')
+            return [deepcopy(row)]
+
+        with patch.object(adapter, 'collect', side_effect=collect) as routed:
+            result = state.run()
+        self.assertEqual((result['complete'], result['failed'], result['staged']), (1, 0, 1))
+        self.assertEqual(routed.call_count, 1)
+        self.assertEqual(state.staged, [row])
+        self.assertGreater(len(state.staged[0]['description']), 2000)
+        self.assertEqual(state.fetched, [selected['feed_url']])
+        self.assertEqual([op for op, _ in state.calls], [CLAIM, STAGE, RECORD, PUBLISH, FINISH])
+        receipt = next(payload for op, payload in state.calls if op == RECORD)
+        self.assertIsNone(receipt['p_error'])
+        self.assertEqual(receipt['p_future_count'], 1)
+
+    def test_library_chamber_complete_route_keeps_full_prose_and_address(self):
+        self.ordinary_route(library_chamber, library_chamber.MARGATE)
+
+    def test_nightlife_complete_route_keeps_full_prose_and_address(self):
+        self.ordinary_route(nightlife_more, nightlife_more.GARDEN)
+
+    def test_outdoors_complete_route_keeps_full_prose_and_address(self):
+        self.ordinary_route(outdoors_more, outdoors_more.ATLANTIC_CAPE)
+
+    def checkpoint_guard(self, adapter, key):
+        state = Harness(self, self.profile(adapter, key))
+        with patch.object(adapter, 'collect_chunk') as chunk, patch.object(adapter, 'collect') as ordinary:
+            result = state.run()
+        self.assertEqual((result['complete'], result['failed'], result['staged']), (0, 1, 0))
+        chunk.assert_not_called()
+        ordinary.assert_not_called()
+        self.assertFalse(state.fetched)
+        self.assertFalse(any(op in (READ, WRITE, STAGE, PUBLISH) for op, _ in state.calls))
+        receipt = next(payload for op, payload in state.calls if op == RECORD)
+        self.assertEqual(receipt['p_error'], 'publisher_checkpoint_required')
+
+    def test_hard_rock_requires_advertised_checkpoint_contract(self):
+        self.checkpoint_guard(nightlife_more, nightlife_more.HARD_ROCK)
+
+    def test_federation_requires_advertised_checkpoint_contract(self):
+        self.checkpoint_guard(library_chamber, library_chamber.FED)
+
+    def test_jfs_requires_advertised_checkpoint_contract(self):
+        self.checkpoint_guard(library_chamber, library_chamber.JFS)
+
+    def checkpoint_route(self, adapter, key):
+        selected = self.profile(adapter, key, checkpoint=True)
+        row = self.event(key)
+        state = Harness(self, selected, pages={selected['feed_url']: 'official calendar page'})
+
+        def collect_chunk(actual, fetch, *, checkpoint, deadline_at):
+            self.assertEqual(actual['source_key'], key)
+            fetch(selected['feed_url'], 'text/html')
+            if checkpoint is None:
+                saved = dict(version=1, source_key=key, cursor=1, manifest_count=2,
+                             events=[deepcopy(row)], diagnostics=[])
+                return dict(complete=False, events=[], checkpoint=saved)
+            self.assertEqual(checkpoint, state.checkpoint)
+            self.assertEqual(checkpoint['cursor'], 1)
+            saved = {**deepcopy(checkpoint), 'cursor': 2}
+            return dict(complete=True, events=[deepcopy(row)], checkpoint=saved)
+
+        with patch.object(adapter, 'collect_chunk', side_effect=collect_chunk) as routed, \
+                patch.object(adapter, 'collect') as ordinary:
+            first = state.run()
+            self.assertTrue(first['fetch_pending'])
+            self.assertEqual((first['complete'], first['failed'], first['staged']), (0, 0, 0))
+            self.assertFalse(state.staged)
+            self.assertEqual(state.checkpoint['cursor'], 1)
+            self.assertEqual([op for op, _ in state.calls], [CLAIM, READ, WRITE, FINISH])
+            self.assertEqual(state.calls[-1][1]['p_outcome'], 'fetch_pending')
+            second = state.run()
+        ordinary.assert_not_called()
+        self.assertEqual(routed.call_count, 2)
+        self.assertEqual((second['complete'], second['failed'], second['staged']), (1, 0, 1))
+        self.assertEqual(state.staged, [row])
+        self.assertGreater(len(state.staged[0]['description']), 2000)
+        self.assertEqual([op for op, _ in state.calls],
+                         [CLAIM, READ, WRITE, FINISH, CLAIM, READ, WRITE, STAGE, RECORD, PUBLISH, FINISH])
+        self.assertIsNone(state.checkpoint)
+        self.assertEqual(state.fetched, [selected['feed_url'], selected['feed_url']])
+
+    def test_hard_rock_checkpoint_stages_only_after_durable_completion(self):
+        self.checkpoint_route(nightlife_more, nightlife_more.HARD_ROCK)
+
+    def test_federation_checkpoint_stages_only_after_durable_completion(self):
+        self.checkpoint_route(library_chamber, library_chamber.FED)
+
+    def test_jfs_checkpoint_stages_only_after_durable_completion(self):
+        self.checkpoint_route(library_chamber, library_chamber.JFS)
+
+    def test_new_checkpoint_route_rejected_write_cannot_stage_or_publish(self):
+        selected = self.profile(library_chamber, library_chamber.FED, checkpoint=True)
+        row = self.event(library_chamber.FED)
+        state = Harness(self, selected, pages={selected['feed_url']: 'official calendar page'})
+        state.reject_write = True
+
+        def complete(actual, fetch, *, checkpoint, deadline_at):
+            fetch(selected['feed_url'], 'application/json')
+            return dict(complete=True, events=[deepcopy(row)], checkpoint={
+                'version': 1, 'source_key': selected['source_key'], 'cursor': 2,
+                'manifest_count': 2, 'events': [deepcopy(row)], 'diagnostics': []})
+
+        with patch.object(library_chamber, 'collect_chunk', side_effect=complete):
+            result = state.run()
+        self.assertEqual((result['complete'], result['failed'], result['staged']), (0, 1, 0))
+        self.assertFalse(state.staged)
+        self.assertNotIn(STAGE, [op for op, _ in state.calls])
+        self.assertNotIn(PUBLISH, [op for op, _ in state.calls])
+        receipt = next(payload for op, payload in state.calls if op == RECORD)
+        self.assertEqual(receipt['p_error'], 'fetch_checkpoint_invalid_response')
 
 
 if __name__ == "__main__":

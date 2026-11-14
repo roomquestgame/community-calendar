@@ -844,13 +844,24 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
     source_key = source.get('source_key')
     from roomquest import atlantic_city_community, atlantic_city_venues, visit_atlantic_city
     from roomquest import atlantic_city_stockton, atlantic_city_pdf_programs, greatday_atlantic_city
+    from roomquest import atlantic_city_library_chamber, atlantic_city_nightlife_more, atlantic_city_outdoors_more
+    continuation_adapters = (atlantic_city_library_chamber, atlantic_city_nightlife_more,
+                             atlantic_city_outdoors_more)
+    continuation_adapter = next((module for module in continuation_adapters
+                                 if source_key in module.SOURCES), None)
     if (source_key in atlantic_city_community.SOURCES
             or source_key in atlantic_city_venues.SOURCES
             or source_key in atlantic_city_stockton.SOURCES
             or source_key in atlantic_city_pdf_programs.SOURCES
             or source_key == greatday_atlantic_city.KEY
+            or continuation_adapter is not None
             or source_key == visit_atlantic_city.SOURCE_KEY):
-        if source_key in atlantic_city_community.SOURCES:
+        if continuation_adapter is not None:
+            if source_key in getattr(continuation_adapter, 'CHECKPOINT_KEYS', set()):
+                raise PreviewError('publisher_checkpoint_required')
+            adapter = continuation_adapter
+            hosts = adapter.ALLOWED_HOSTS[source_key]
+        elif source_key in atlantic_city_community.SOURCES:
             adapter = atlantic_city_community
             hosts = adapter.ALLOWED_HOSTS[source_key]
         elif source_key in atlantic_city_venues.SOURCES:
@@ -1713,6 +1724,20 @@ def _preview_greatday_chunk(source, pacing, *, collection_context, deadline_at,
         publisher_handoff=publisher_handoff, observe_phase=observe_phase)
 
 
+def _preview_atlantic_continuation_chunk(source, pacing, *, collection_context, deadline_at,
+                                         publisher_handoff=None, observe_phase=None):
+    from roomquest import atlantic_city_library_chamber, atlantic_city_nightlife_more
+
+    adapter = next((module for module in (atlantic_city_library_chamber, atlantic_city_nightlife_more)
+                    if source['source_key'] in module.CHECKPOINT_KEYS), None)
+    if adapter is None:
+        raise PreviewError('publisher_checkpoint_required')
+    return _preview_fetch_chunk(source, pacing, adapter=adapter,
+        allowed_hosts=adapter.ALLOWED_HOSTS[source['source_key']],
+        collection_context=collection_context, deadline_at=deadline_at,
+        publisher_handoff=publisher_handoff, observe_phase=observe_phase)
+
+
 def _preview_fetch_chunk(source, pacing, *, adapter, allowed_hosts, collection_context,
                          deadline_at, publisher_handoff=None, observe_phase=None):
     """Persist one lease-fenced complete-manifest chunk before any staging."""
@@ -1782,7 +1807,21 @@ def _preview_fetch_chunk(source, pacing, *, adapter, allowed_hosts, collection_c
                      "greatday_record_limit", "greatday_detail_date_invalid",
                      "greatday_detail_identity_changed", "greatday_detail_schedule_changed",
                      "greatday_detail_location_changed", "greatday_checkpoint_invalid",
-                     "greatday_checkpoint_size_limit", "atlantic_city_description_limit"}
+                     "greatday_checkpoint_size_limit", "atlantic_city_description_limit",
+                     "unregistered_atlantic_nightlife_source", "atlantic_nightlife_checkpoint_invalid",
+                     "atlantic_nightlife_checkpoint_size_limit", "atlantic_nightlife_description_missing",
+                     "atlantic_nightlife_event_identity", "atlantic_nightlife_event_limit",
+                     "atlantic_nightlife_duplicate_occurrence", "hard_rock_calendar_schedule_changed",
+                     "hard_rock_calendar_venue_changed", "hard_rock_detail_identity_changed",
+                     "hard_rock_detail_schedule_changed", "hard_rock_detail_status_changed",
+                     "unregistered_atlantic_library_chamber_source", "atlantic_library_checkpoint_invalid",
+                     "atlantic_library_checkpoint_source", "atlantic_library_checkpoint_size_limit",
+                     "federation_event_identity_changed", "federation_timezone_changed",
+                     "federation_pagination_invalid", "federation_pagination_changed",
+                     "federation_payload_invalid", "federation_pagination_identity_changed",
+                     "federation_pagination_duplicate", "jfs_detail_identity_changed",
+                     "jfs_detail_schedule_changed", "jfs_description_container_changed",
+                     "jfs_calendar_changed", "jfs_event_identity_changed", "source_record_limit"}
             reason = exc.args[0] if len(exc.args) == 1 else None
             raise PreviewError(reason if type(reason) is str and reason in codes
                                else "invalid_html_event_payload") from exc
@@ -1821,6 +1860,9 @@ def _preview_fetch_chunk(source, pacing, *, adapter, allowed_hosts, collection_c
 def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, publisher_handoff=None,
                                        observe_phase=None, collection_context=None):
     from roomquest.linked_event_descriptions import PROFILES as linked_description_profiles
+    from roomquest import atlantic_city_library_chamber, atlantic_city_nightlife_more
+    continuation_checkpoint_keys = (atlantic_city_library_chamber.CHECKPOINT_KEYS
+                                    | atlantic_city_nightlife_more.CHECKPOINT_KEYS)
 
     phase, failure = "collection", {}
     operation = None
@@ -1829,11 +1871,13 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
         deadline = min(monotonic() + 43, deadline_at or float("inf"))
         checkpoint_key = source.get("source_key")
         if ((checkpoint_key in ("discover_halifax_va", "visit_atlantic_city_nj", "noyes_arts_atlantic_city_nj", "atlantic_city_municipal_nj", "greatday_atlantic_city_nj")
+                or checkpoint_key in continuation_checkpoint_keys
                 or checkpoint_key in linked_description_profiles)
                 and collection_context is not None
                 and type(source.get("fetch_checkpoint_version")) is int
                 and source["fetch_checkpoint_version"] == 1):
             preview_chunk = (_preview_halifax_chunk if checkpoint_key == "discover_halifax_va"
+                             else _preview_atlantic_continuation_chunk if checkpoint_key in continuation_checkpoint_keys
                              else _preview_greatday_chunk if checkpoint_key == "greatday_atlantic_city_nj"
                              else _preview_visit_atlantic_chunk if checkpoint_key == "visit_atlantic_city_nj"
                              else _preview_atlantic_community_chunk if checkpoint_key in (
