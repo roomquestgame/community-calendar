@@ -1,0 +1,34 @@
+{
+  "observed_on": "2026-11-14",
+  "source_scope": "Only nine new identities; Visit Atlantic City remains disabled.",
+  "base_commit": "797ba6c80e68682f87ed06e1a39aedb37b7d441b",
+  "captured_replay": {
+    "source_count": 9,
+    "captured_occurrences": 346,
+    "counts": {
+      "ocean_city_public_library_nj": 61,
+      "new_day_family_success_nj": 4,
+      "ocean_city_chamber_nj": 44,
+      "downtown_hammonton_nj": 2,
+      "brigantine_community_recreation_nj": 191,
+      "nj_shore_run_nj": 2,
+      "slack_tide_brewing_nj": 8,
+      "tomasello_winery_hammonton_nj": 11,
+      "lizzie_rose_music_room_nj": 23
+    },
+    "blank_descriptions": 0,
+    "description_over_limit": 0,
+    "descriptions_above_2000": 1,
+    "max_description_chars": 3016,
+    "distinct_street_addresses": 13,
+    "missing_streets_or_points": 0,
+    "unknown_ends": 35
+  },
+  "tests": {
+    "passed": 89,
+    "command": "python -m unittest tests.test_atlantic_city_local_community tests.test_atlantic_city_local_markets tests.test_atlantic_city_local_recreation tests.test_atlantic_city_local_venues tests.test_atlantic_city_local_worker tests.test_atlantic_city_followup_worker tests.test_atlantic_city_followup_transport tests.test_boston_worker -q"
+  },
+  "integration": "Preserves complete p_events; display sample size limits do not truncate descriptions. Three venue checkpoints certify complete manifests and match current database wire fields/bounds. Six bounded sources certify complete snapshots. Shared workers rebased onto current Boston and New York implementations.",
+  "database_migration": "20261114231411_atlantic_city_local_sources.sql; normal workflow only, one HTML category wake. Five read-only production queries preflight against actual live schema.",
+  "publisher_body_fix": "Two Slack Tide rendered About sections were truncated by Read More; exact native Ricos longDescription provides complete omitted suffixes."
+}

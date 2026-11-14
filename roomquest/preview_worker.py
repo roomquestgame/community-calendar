@@ -956,11 +956,15 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
     from roomquest import atlantic_city_social, atlantic_city_independent_venues
     from roomquest import atlantic_city_recreation, atlantic_city_markets_gaming
     from roomquest import atlantic_city_reviewed_posters, atlantic_city_studio, atlantic_city_cardboard_arena
+    from roomquest import atlantic_city_local_community, atlantic_city_local_markets
+    from roomquest import atlantic_city_local_recreation, atlantic_city_local_venues
     continuation_adapters = (atlantic_city_library_chamber, atlantic_city_nightlife_more,
                              atlantic_city_outdoors_more, atlantic_city_social,
                              atlantic_city_independent_venues, atlantic_city_recreation,
                              atlantic_city_markets_gaming, atlantic_city_reviewed_posters,
-                             atlantic_city_studio, atlantic_city_cardboard_arena)
+                             atlantic_city_studio, atlantic_city_cardboard_arena,
+                             atlantic_city_local_community, atlantic_city_local_markets,
+                             atlantic_city_local_recreation, atlantic_city_local_venues)
     continuation_adapter = next((module for module in continuation_adapters
                                  if source_key in module.SOURCES), None)
     if (source_key in atlantic_city_community.SOURCES
@@ -1842,9 +1846,11 @@ def _preview_atlantic_continuation_chunk(source, pacing, *, collection_context, 
                                          publisher_handoff=None, observe_phase=None):
     from roomquest import atlantic_city_library_chamber, atlantic_city_nightlife_more
     from roomquest import atlantic_city_studio, atlantic_city_cardboard_arena
+    from roomquest import atlantic_city_local_venues
 
     adapter = next((module for module in (atlantic_city_library_chamber, atlantic_city_nightlife_more,
-                                         atlantic_city_studio, atlantic_city_cardboard_arena)
+                                         atlantic_city_studio, atlantic_city_cardboard_arena,
+                                         atlantic_city_local_venues)
                     if source['source_key'] in module.CHECKPOINT_KEYS), None)
     if adapter is None:
         raise PreviewError('publisher_checkpoint_required')
@@ -1923,6 +1929,36 @@ def _preview_fetch_chunk(source, pacing, *, adapter, allowed_hosts, collection_c
             # Adapter messages are controlled diagnostics, never raw HTML or
             # parser values (for example an unparseable publisher clock).
             codes = {"unregistered_discover_halifax",
+                     'local_venue_description_incomplete',
+                     'collection_deadline',
+                     'local_venue_calendar_date_conflict',
+                     'local_venue_checkpoint_invalid',
+                     'local_venue_checkpoint_size_limit',
+                     'local_venue_clock_conflict',
+                     'local_venue_clock_invalid',
+                     'local_venue_clock_missing',
+                     'local_venue_date_invalid',
+                     'local_venue_date_missing_or_ambiguous',
+                     'local_venue_description_container_changed',
+                     'local_venue_description_date_conflict',
+                     'local_venue_description_limit',
+                     'local_venue_description_missing',
+                     'local_venue_detail_identity',
+                     'local_venue_duplicate_identity',
+                     'local_venue_event_identity',
+                     'local_venue_location_changed',
+                     'local_venue_manifest_incomplete',
+                     'local_venue_manifest_invalid',
+                     'local_venue_nonpublic_or_cancelled',
+                     'local_venue_nonpublic_or_sold_out',
+                     'local_venue_participation_changed',
+                     'local_venue_schedule_conflict',
+                     'local_venue_schedule_unverified',
+                     'local_venue_ticket_identity_unverified',
+                     'local_venue_undated_edition_requires_review',
+                     'local_venue_weekday_conflict',
+                     'publisher_checkpoint_required',
+                     'unregistered_atlantic_city_local_venue',
                      'atlantic_studio_checkpoint_invalid',
                      'atlantic_studio_checkpoint_size_limit',
                      'atlantic_studio_clock_conflict',
@@ -2094,10 +2130,12 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
     boston_checkpoint_keys = boston_sources.checkpoint_keys()
     from roomquest import atlantic_city_library_chamber, atlantic_city_nightlife_more
     from roomquest import atlantic_city_studio, atlantic_city_cardboard_arena
+    from roomquest import atlantic_city_local_venues
     continuation_checkpoint_keys = (atlantic_city_library_chamber.CHECKPOINT_KEYS
                                     | atlantic_city_nightlife_more.CHECKPOINT_KEYS
                                     | atlantic_city_studio.CHECKPOINT_KEYS
-                                    | atlantic_city_cardboard_arena.CHECKPOINT_KEYS)
+                                    | atlantic_city_cardboard_arena.CHECKPOINT_KEYS
+                                    | atlantic_city_local_venues.CHECKPOINT_KEYS)
 
     phase, failure = "collection", {}
     operation = None
@@ -2280,4 +2318,5 @@ def collect_bulk_previews(max_sources=15, concurrency=3, deadline_seconds=48) ->
                 for key in ("complete", "failed", "staged"):
                     result[key] += item[key]
     return result
+
 

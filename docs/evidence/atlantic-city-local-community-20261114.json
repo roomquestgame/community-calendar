@@ -1,0 +1,707 @@
+{
+  "observed_at": "2026-11-14T23:06:00Z",
+  "sources": {
+    "ocean_city_public_library_nj": {
+      "count": 61,
+      "min_description_chars": 81,
+      "max_description_chars": 1239,
+      "records": [
+        {
+          "id": "ocean-library:6ad7635e2b40e729fed305cb",
+          "starts_at": "2026-11-16T15:00:00+00:00",
+          "ends_at": "2026-11-16T16:00:00+00:00",
+          "description_chars": 126,
+          "description_sha256": "e3538307e24bde7845fa9e3fe96c65826933bfe7cf9de70ee5b86ba4275bf58d",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:6ab58ebf60748300382954d7",
+          "starts_at": "2026-11-16T21:00:00+00:00",
+          "ends_at": "2026-11-16T22:00:00+00:00",
+          "description_chars": 278,
+          "description_sha256": "70d006466ab3221f135fdfdc8d1823ed069638175885278e1c60711bd449103e",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:693d7b827ed7c62f00aa48bb",
+          "starts_at": "2026-11-16T23:00:00+00:00",
+          "ends_at": "2026-11-17T01:00:00+00:00",
+          "description_chars": 137,
+          "description_sha256": "3163b64bb2ae5d9a2cdda929426328c60c818b8626ce02be6da63fc58303439c",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:6ae9e8b9377296003a50a600",
+          "starts_at": "2026-11-17T20:30:00+00:00",
+          "ends_at": "2026-11-17T22:30:00+00:00",
+          "description_chars": 361,
+          "description_sha256": "da61ea90f8002d6caa243690b4dce463b4b4ba5427c18b898580367045079e07",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:6ad91135901b02002cc423af",
+          "starts_at": "2026-11-17T23:00:00+00:00",
+          "ends_at": "2026-11-18T00:00:00+00:00",
+          "description_chars": 143,
+          "description_sha256": "2c3e1088c1b7f82d1d9a130bc25a445057d8a73c9dfc206e13a4f1a4d7158f07",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:6ad92da0a85a2c0033812ead",
+          "starts_at": "2026-11-17T23:30:00+00:00",
+          "ends_at": "2026-11-18T01:00:00+00:00",
+          "description_chars": 755,
+          "description_sha256": "553766da09d9387cd8852133dead05d677e4e9d804dfad613acd7ef2ff3e75bd",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:6a7f7afb4cb69d003e20e099",
+          "starts_at": "2026-11-18T15:30:00+00:00",
+          "ends_at": "2026-11-18T16:00:00+00:00",
+          "description_chars": 373,
+          "description_sha256": "497798646cbd11087c893df7ae3a9acf504d6facabbc634df7296f2145c71f08",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:6acbb7c9901b02002cc1abac",
+          "starts_at": "2026-11-18T17:30:00+00:00",
+          "ends_at": "2026-11-18T19:00:00+00:00",
+          "description_chars": 196,
+          "description_sha256": "192dfacf46c2ac5e4d5556993336b0e8dff33161ee5ec0d85bc8f0876ec77096",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:6a7f7b7db20478002992eb96",
+          "starts_at": "2026-11-18T18:30:00+00:00",
+          "ends_at": "2026-11-18T19:00:00+00:00",
+          "description_chars": 373,
+          "description_sha256": "497798646cbd11087c893df7ae3a9acf504d6facabbc634df7296f2145c71f08",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:6ae9ea02de685359098d9128",
+          "starts_at": "2026-11-18T21:00:00+00:00",
+          "ends_at": "2026-11-18T22:30:00+00:00",
+          "description_chars": 415,
+          "description_sha256": "2d4f7ef8e8177d463f853700f2e2ae7809a0cd39ac5649d19b6a2157df870913",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:69d40afaad384e40edb9358d",
+          "starts_at": "2026-11-18T23:00:00+00:00",
+          "ends_at": "2026-11-19T01:00:00+00:00",
+          "description_chars": 211,
+          "description_sha256": "18a572e1ad3b4b4506ae33fc11e6025134b79aa4413d40a8c6971075d079b5dc",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:69d409ede2a2952aed0d0187",
+          "starts_at": "2026-11-19T21:00:00+00:00",
+          "ends_at": "2026-11-19T23:00:00+00:00",
+          "description_chars": 213,
+          "description_sha256": "2e96331164e877cb78b5e5a93bc18f0bae7e8fbdf45754a3aef570f470b6a8ab",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:6ae9ed7f901b02002cc71678",
+          "starts_at": "2026-11-19T23:00:00+00:00",
+          "ends_at": "2026-11-20T01:00:00+00:00",
+          "description_chars": 282,
+          "description_sha256": "91d06336b94181efb6f3fa3db44fca761a4f1fd80a1fafa4f1809b31260025a0",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:6a7f7db3b20478002992ec1e",
+          "starts_at": "2026-11-20T14:30:00+00:00",
+          "ends_at": "2026-11-20T15:00:00+00:00",
+          "description_chars": 373,
+          "description_sha256": "497798646cbd11087c893df7ae3a9acf504d6facabbc634df7296f2145c71f08",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:6af4d0ce04009d003387dc41",
+          "starts_at": "2026-11-20T14:00:00+00:00",
+          "ends_at": "2026-11-20T15:30:00+00:00",
+          "description_chars": 134,
+          "description_sha256": "eaf6f3f678830e2f101fd7e7d2268ff75ccd49be24b669db6259a4a8afb01a09",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:6a7f7e2e4cb69d003e20e19c",
+          "starts_at": "2026-11-20T16:00:00+00:00",
+          "ends_at": "2026-11-20T16:30:00+00:00",
+          "description_chars": 373,
+          "description_sha256": "497798646cbd11087c893df7ae3a9acf504d6facabbc634df7296f2145c71f08",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:6aef35d99d27a000455650dc",
+          "starts_at": "2026-11-20T18:00:00+00:00",
+          "ends_at": "2026-11-20T19:30:00+00:00",
+          "description_chars": 1239,
+          "description_sha256": "b86fe42f9119adf3557aee9834539a5cb9ca124e6a90fb38233f60ba780c6343",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:6ae9ebc6901b02002cc7165b",
+          "starts_at": "2026-11-20T21:00:00+00:00",
+          "ends_at": "2026-11-20T22:30:00+00:00",
+          "description_chars": 266,
+          "description_sha256": "367f586a113ade91171069b6a4d64286d047fc08d4b86c5bcb4b8663a3ca72f3",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:6ad90fdba85a2c0033812383",
+          "starts_at": "2026-11-21T16:00:00+00:00",
+          "ends_at": "2026-11-21T17:00:00+00:00",
+          "description_chars": 217,
+          "description_sha256": "85d0ee457ddcf9c2ce29dbf9a05586b71790fdea42a9b61f88bffb84581f1209",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:6af76bfd0ad4ed003a02fb7d",
+          "starts_at": "2026-11-22T17:30:00+00:00",
+          "ends_at": "2026-11-22T18:30:00+00:00",
+          "description_chars": 129,
+          "description_sha256": "4805aebd6e538522905e175bf8cc6822cd17a56f89d756be4fdcbe04a44d4331",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:6ae8cd95377296003a506d1c",
+          "starts_at": "2026-11-23T21:00:00+00:00",
+          "ends_at": "2026-11-23T22:00:00+00:00",
+          "description_chars": 110,
+          "description_sha256": "4714284feb2e060a7388c040e63b761baf3e5ad1394eaa9027e75d2bd0a79af3",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:6aa801994b3b06003083940e",
+          "starts_at": "2026-11-23T23:30:00+00:00",
+          "ends_at": "2026-11-24T00:30:00+00:00",
+          "description_chars": 510,
+          "description_sha256": "88901b05d2aea1396e1f13273e457cd1a66d8fbd25a66f8df1b974c32cdc6e60",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:69c2d7404dacf581ff841b60",
+          "starts_at": "2026-11-24T14:30:00+00:00",
+          "ends_at": "2026-11-24T16:00:00+00:00",
+          "description_chars": 379,
+          "description_sha256": "8a659211e0d820a66a1053e404ca7093d2f65c4f6a4664c392fbee66b7cbff4a",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:6941b1ae2c65973d0012f820",
+          "starts_at": "2026-11-24T16:00:00+00:00",
+          "ends_at": "2026-11-24T17:30:00+00:00",
+          "description_chars": 150,
+          "description_sha256": "8b5f20cf0c723bbfef934a1b2672b56a9a1766ddaa3ed608af8ba04d03a4e408",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:6ad911d3a85a2c0033812406",
+          "starts_at": "2026-11-24T23:00:00+00:00",
+          "ends_at": "2026-11-25T00:00:00+00:00",
+          "description_chars": 119,
+          "description_sha256": "8a98e30066bf2ab6c203a738fb78a6243e0c1388d04a8d8633f673bcf10f9226",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:6ae9eefbebad22004549f30f",
+          "starts_at": "2026-11-25T20:00:00+00:00",
+          "ends_at": "2026-11-25T22:00:00+00:00",
+          "description_chars": 145,
+          "description_sha256": "9bab1078bdcd95075266624016a3baa8d2f33629a8c11ca23a401fe572b54fac",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:69d40afaad384e40edb9358e",
+          "starts_at": "2026-11-25T23:00:00+00:00",
+          "ends_at": "2026-11-26T01:00:00+00:00",
+          "description_chars": 211,
+          "description_sha256": "18a572e1ad3b4b4506ae33fc11e6025134b79aa4413d40a8c6971075d079b5dc",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:691dd8a5fbf38a28002470e5",
+          "starts_at": "2026-11-28T19:00:00+00:00",
+          "ends_at": "2026-11-28T21:00:00+00:00",
+          "description_chars": 580,
+          "description_sha256": "9edd3f4c9dd167fdc3211e725d83a2bf0b43865220feb634b48c30c21a5d2120",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:6aee1628901b02002cc7fbdd",
+          "starts_at": "2026-11-30T23:00:00+00:00",
+          "ends_at": "2026-12-01T00:30:00+00:00",
+          "description_chars": 331,
+          "description_sha256": "5313311352279cff550ad156098086d2d864395e5bc907146907e254b1c44580",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:6ae8ea51377296003a5078c4",
+          "starts_at": "2026-12-01T18:00:00+00:00",
+          "ends_at": "2026-12-01T20:00:00+00:00",
+          "description_chars": 324,
+          "description_sha256": "2e37c977258e05fcb429f5492abb4bd608d37ca09a98f9ee48fa6b41c5459cb0",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:6a7f7afb4cb69d003e20e09a",
+          "starts_at": "2026-12-02T15:30:00+00:00",
+          "ends_at": "2026-12-02T16:00:00+00:00",
+          "description_chars": 373,
+          "description_sha256": "497798646cbd11087c893df7ae3a9acf504d6facabbc634df7296f2145c71f08",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:6a7f7b7db20478002992eb98",
+          "starts_at": "2026-12-02T18:30:00+00:00",
+          "ends_at": "2026-12-02T19:00:00+00:00",
+          "description_chars": 373,
+          "description_sha256": "497798646cbd11087c893df7ae3a9acf504d6facabbc634df7296f2145c71f08",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:69d40afaad384e40edb9358f",
+          "starts_at": "2026-12-02T23:00:00+00:00",
+          "ends_at": "2026-12-03T01:00:00+00:00",
+          "description_chars": 211,
+          "description_sha256": "18a572e1ad3b4b4506ae33fc11e6025134b79aa4413d40a8c6971075d079b5dc",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:69d409ede2a2952aed0d0188",
+          "starts_at": "2026-12-03T21:00:00+00:00",
+          "ends_at": "2026-12-03T23:00:00+00:00",
+          "description_chars": 213,
+          "description_sha256": "2e96331164e877cb78b5e5a93bc18f0bae7e8fbdf45754a3aef570f470b6a8ab",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:6a7f7db3b20478002992ec1f",
+          "starts_at": "2026-12-04T14:30:00+00:00",
+          "ends_at": "2026-12-04T15:00:00+00:00",
+          "description_chars": 373,
+          "description_sha256": "497798646cbd11087c893df7ae3a9acf504d6facabbc634df7296f2145c71f08",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:6a7f7e2e4cb69d003e20e19d",
+          "starts_at": "2026-12-04T16:00:00+00:00",
+          "ends_at": "2026-12-04T16:30:00+00:00",
+          "description_chars": 373,
+          "description_sha256": "497798646cbd11087c893df7ae3a9acf504d6facabbc634df7296f2145c71f08",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:6ad7635e2b40e729fed305cc",
+          "starts_at": "2026-12-07T15:00:00+00:00",
+          "ends_at": "2026-12-07T16:00:00+00:00",
+          "description_chars": 126,
+          "description_sha256": "e3538307e24bde7845fa9e3fe96c65826933bfe7cf9de70ee5b86ba4275bf58d",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:693d7b827ed7c62f00aa48bc",
+          "starts_at": "2026-12-07T23:00:00+00:00",
+          "ends_at": "2026-12-08T01:00:00+00:00",
+          "description_chars": 81,
+          "description_sha256": "ae3fbe25a199f1f2df3ec54a39c1447977db6ab06c0519f8aa051988d297134a",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:6af76d82e2267c00335c3913",
+          "starts_at": "2026-12-08T18:00:00+00:00",
+          "ends_at": "2026-12-08T20:00:00+00:00",
+          "description_chars": 455,
+          "description_sha256": "c4429c8785061326285055d38c0dda53e8fa39e9cc56d90839e970e8f4704df7",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:6a7f7afb4cb69d003e20e09b",
+          "starts_at": "2026-12-09T15:30:00+00:00",
+          "ends_at": "2026-12-09T16:00:00+00:00",
+          "description_chars": 373,
+          "description_sha256": "497798646cbd11087c893df7ae3a9acf504d6facabbc634df7296f2145c71f08",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:6a7f7b7db20478002992eb99",
+          "starts_at": "2026-12-09T18:30:00+00:00",
+          "ends_at": "2026-12-09T19:00:00+00:00",
+          "description_chars": 373,
+          "description_sha256": "497798646cbd11087c893df7ae3a9acf504d6facabbc634df7296f2145c71f08",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:69d40afaad384e40edb93590",
+          "starts_at": "2026-12-09T23:00:00+00:00",
+          "ends_at": "2026-12-10T01:00:00+00:00",
+          "description_chars": 211,
+          "description_sha256": "18a572e1ad3b4b4506ae33fc11e6025134b79aa4413d40a8c6971075d079b5dc",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:69d409ede2a2952aed0d0189",
+          "starts_at": "2026-12-10T21:00:00+00:00",
+          "ends_at": "2026-12-10T23:00:00+00:00",
+          "description_chars": 213,
+          "description_sha256": "2e96331164e877cb78b5e5a93bc18f0bae7e8fbdf45754a3aef570f470b6a8ab",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:6a7f7db3b20478002992ec20",
+          "starts_at": "2026-12-11T14:30:00+00:00",
+          "ends_at": "2026-12-11T15:00:00+00:00",
+          "description_chars": 373,
+          "description_sha256": "497798646cbd11087c893df7ae3a9acf504d6facabbc634df7296f2145c71f08",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:6a7f7e2e4cb69d003e20e19e",
+          "starts_at": "2026-12-11T16:00:00+00:00",
+          "ends_at": "2026-12-11T16:30:00+00:00",
+          "description_chars": 373,
+          "description_sha256": "497798646cbd11087c893df7ae3a9acf504d6facabbc634df7296f2145c71f08",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:6ad7635e2b40e729fed305cd",
+          "starts_at": "2026-12-14T15:00:00+00:00",
+          "ends_at": "2026-12-14T16:00:00+00:00",
+          "description_chars": 126,
+          "description_sha256": "e3538307e24bde7845fa9e3fe96c65826933bfe7cf9de70ee5b86ba4275bf58d",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:6ab58ebf60748300382954d8",
+          "starts_at": "2026-12-14T21:00:00+00:00",
+          "ends_at": "2026-12-14T22:00:00+00:00",
+          "description_chars": 278,
+          "description_sha256": "70d006466ab3221f135fdfdc8d1823ed069638175885278e1c60711bd449103e",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:6941b3abc967cb41207d2264",
+          "starts_at": "2026-12-15T16:00:00+00:00",
+          "ends_at": "2026-12-15T17:30:00+00:00",
+          "description_chars": 145,
+          "description_sha256": "13f838294958c7407fb500ca9fdca4e1defa9b319d2e051cffb389bfbdde42bd",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:6a7f7afb4cb69d003e20e09c",
+          "starts_at": "2026-12-16T15:30:00+00:00",
+          "ends_at": "2026-12-16T16:00:00+00:00",
+          "description_chars": 373,
+          "description_sha256": "497798646cbd11087c893df7ae3a9acf504d6facabbc634df7296f2145c71f08",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:6acbb7c9901b02002cc1abad",
+          "starts_at": "2026-12-16T17:30:00+00:00",
+          "ends_at": "2026-12-16T19:00:00+00:00",
+          "description_chars": 168,
+          "description_sha256": "9ab86f4bf70c4ca381b9b9681c876471ac8f92cca79ff9344d74ea5292b0ac31",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:6a7f7b7db20478002992eb9a",
+          "starts_at": "2026-12-16T18:30:00+00:00",
+          "ends_at": "2026-12-16T19:00:00+00:00",
+          "description_chars": 373,
+          "description_sha256": "497798646cbd11087c893df7ae3a9acf504d6facabbc634df7296f2145c71f08",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:69d40afaad384e40edb93591",
+          "starts_at": "2026-12-16T23:00:00+00:00",
+          "ends_at": "2026-12-17T01:00:00+00:00",
+          "description_chars": 211,
+          "description_sha256": "18a572e1ad3b4b4506ae33fc11e6025134b79aa4413d40a8c6971075d079b5dc",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:69d409ede2a2952aed0d018a",
+          "starts_at": "2026-12-17T21:00:00+00:00",
+          "ends_at": "2026-12-17T23:00:00+00:00",
+          "description_chars": 213,
+          "description_sha256": "2e96331164e877cb78b5e5a93bc18f0bae7e8fbdf45754a3aef570f470b6a8ab",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:6a7f7db3b20478002992ec21",
+          "starts_at": "2026-12-18T14:30:00+00:00",
+          "ends_at": "2026-12-18T15:00:00+00:00",
+          "description_chars": 373,
+          "description_sha256": "497798646cbd11087c893df7ae3a9acf504d6facabbc634df7296f2145c71f08",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:6a7f7e2e4cb69d003e20e19f",
+          "starts_at": "2026-12-18T16:00:00+00:00",
+          "ends_at": "2026-12-18T16:30:00+00:00",
+          "description_chars": 373,
+          "description_sha256": "497798646cbd11087c893df7ae3a9acf504d6facabbc634df7296f2145c71f08",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:691dd8a5fbf38a28002470e6",
+          "starts_at": "2026-12-19T19:00:00+00:00",
+          "ends_at": "2026-12-19T21:00:00+00:00",
+          "description_chars": 538,
+          "description_sha256": "4fcc59c15ade1999089c612bac9a397a476123211d969c50d47472b49c72fa90",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:693d7b827ed7c62f00aa48bd",
+          "starts_at": "2026-12-21T23:00:00+00:00",
+          "ends_at": "2026-12-22T01:00:00+00:00",
+          "description_chars": 236,
+          "description_sha256": "1f2493f0618b1ae2b310c015c6e7ee3cc130c25f6997d4684a903bb731572e4e",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:69d40afaad384e40edb93592",
+          "starts_at": "2026-12-23T23:00:00+00:00",
+          "ends_at": "2026-12-24T01:00:00+00:00",
+          "description_chars": 211,
+          "description_sha256": "18a572e1ad3b4b4506ae33fc11e6025134b79aa4413d40a8c6971075d079b5dc",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:6aa801994b3b06003083940f",
+          "starts_at": "2026-12-28T23:30:00+00:00",
+          "ends_at": "2026-12-29T00:30:00+00:00",
+          "description_chars": 510,
+          "description_sha256": "88901b05d2aea1396e1f13273e457cd1a66d8fbd25a66f8df1b974c32cdc6e60",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:69c2d7404dacf581ff841b61",
+          "starts_at": "2026-12-29T14:30:00+00:00",
+          "ends_at": "2026-12-29T16:00:00+00:00",
+          "description_chars": 379,
+          "description_sha256": "8a659211e0d820a66a1053e404ca7093d2f65c4f6a4664c392fbee66b7cbff4a",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        },
+        {
+          "id": "ocean-library:69d40afaad384e40edb93593",
+          "starts_at": "2026-12-30T23:00:00+00:00",
+          "ends_at": "2026-12-31T01:00:00+00:00",
+          "description_chars": 211,
+          "description_sha256": "18a572e1ad3b4b4506ae33fc11e6025134b79aa4413d40a8c6971075d079b5dc",
+          "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226",
+          "lat": 39.2714578,
+          "lng": -74.59008039999999
+        }
+      ]
+    },
+    "new_day_family_success_nj": {
+      "count": 4,
+      "min_description_chars": 312,
+      "max_description_chars": 473,
+      "records": [
+        {
+          "id": "new-day:toddler-thanksgiving:2026-11-16",
+          "starts_at": "2026-11-16T18:00:00+00:00",
+          "ends_at": "2026-11-16T19:00:00+00:00",
+          "description_chars": 312,
+          "description_sha256": "4e6cf92f7798db60414f69d36cd9e11b81e6a5627f38d4d0d8a0d5d1ec7b000d",
+          "venue_address": "18 Martin Luther King Jr Avenue, Pleasantville, NJ 08232",
+          "lat": 39.393297000003,
+          "lng": -74.522038500001
+        },
+        {
+          "id": "new-day:real-talk-with-men:2026-11-19",
+          "starts_at": "2026-11-19T22:00:00+00:00",
+          "ends_at": null,
+          "description_chars": 408,
+          "description_sha256": "7fa84ff3083392036f818c3932957d60c13ad33d6f7bf9eb48b36f674ce519f4",
+          "venue_address": "18 Martin Luther King Jr Avenue, Pleasantville, NJ 08232",
+          "lat": 39.393297000003,
+          "lng": -74.522038500001
+        },
+        {
+          "id": "new-day:kintsugi-day-of-thanks:2026-11-23",
+          "starts_at": "2026-11-23T21:00:00+00:00",
+          "ends_at": "2026-11-23T23:30:00+00:00",
+          "description_chars": 473,
+          "description_sha256": "32392efbb73700697bbe94827eff48e056a29ed96b82cad6c7831f1cde0d921c",
+          "venue_address": "18 Martin Luther King Jr Avenue, Pleasantville, NJ 08232",
+          "lat": 39.393297000003,
+          "lng": -74.522038500001
+        },
+        {
+          "id": "new-day:employment-one-stop:2026-11-30",
+          "starts_at": "2026-11-30T18:00:00+00:00",
+          "ends_at": "2026-11-30T19:00:00+00:00",
+          "description_chars": 385,
+          "description_sha256": "4f4fa11e835688187bda693423f73808dc23f7552141d5a694896f9cfb0c48e8",
+          "venue_address": "18 Martin Luther King Jr Avenue, Pleasantville, NJ 08232",
+          "lat": 39.393297000003,
+          "lng": -74.522038500001
+        }
+      ]
+    }
+  },
+  "description_policy": "Exact complete publisher HTML narrative and additional registration instructions; no summary or slicing. Current New Day visual dates and complete paragraphs bound to SHA256 of the linked English November 2026 PDF.",
+  "addresses": {
+    "library": {
+      "street": "1735 Simpson Ave, Ocean City, NJ 08226",
+      "method": "Exact native public MAIN branch address and branch point"
+    },
+    "newday": {
+      "street": "18 Martin Luther King Jr Avenue, Pleasantville, NJ 08232",
+      "method": "Exact publisher address; NJ Office of GIS score100 PointAddress",
+      "lookup": "https://geo.nj.gov/arcgis/rest/services/Tasks/NJ_Geocode/GeocodeServer/findAddressCandidates"
+    }
+  },
+  "holds": [
+    "Library5 closed registrations and14 in-window virtual events",
+    "Two library Movie Monday records have only generic series headings/next-film schedules plus unreviewed inline posters",
+    "NewDay HeadStart grid says10:30PM; noAM substituted",
+    "NewDay CaregiverAppreciation paragraph has no visual datecell"
+  ],
+  "unknown_end": [
+    "NewDayRealTalkWithMen PDF6pm conflicts indexed organizer6:30pm; known5pmstart retained, endunverified"
+  ],
+  "native_access": {
+    "library_api": "https://gateway.bibliocommons.com/v2/libraries/oceancity/events?limit=100&page=1",
+    "public_api_status": 200,
+    "api_robots_status": 404,
+    "native_advertisement": "oceancity.bibliocommons.com public app.apiGatewayURL and eventsRSSLink",
+    "native_count": 96,
+    "pagination_complete": true,
+    "api_capture_sha256": "59348482b8e8061c2933d57b63c0b67a57b8ec2622e83c412269954c8e1819e3",
+    "pdf_url": "https://www.centerffs.org/sites/default/files/2026-10/New%20Day%20November%202026%20Caendar%20English%20UPDATED%20%281%29.pdf",
+    "pdf_sha256": "55455b365d4e13a8c9fcbc594d769d9bdce4e8873a5046af2a39754e747c17e2",
+    "pdf_bytes": 541529,
+    "pdf_pages_visually_reviewed": 2
+  },
+  "tests": {
+    "command": "python -m unittest tests.test_atlantic_city_local_community -q",
+    "passed": 12
+  }
+}
