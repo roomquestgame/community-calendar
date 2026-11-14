@@ -1,0 +1,283 @@
+{
+  "replayed_at": "2026-11-14T22:03:51.631226+00:00",
+  "status": "ready_for_batched_production_verification",
+  "total_expected_captured_rows": 24,
+  "tests": {
+    "command": "PYTHONPATH=collector:research-ac/deps python -m unittest tests.test_atlantic_city_markets_gaming -v",
+    "result": "OK",
+    "tests": 25,
+    "test_runtime_seconds": 0.464,
+    "scope": "full-prose regression, 2-argument worker transport, exact guest calendar identity, recurrence, closure, full-address and venue-point guards; held Google source cannot fetch"
+  },
+  "sources": [
+    {
+      "source_key": "atlantic_city_tcg_show_nj",
+      "replayed_at": "2026-11-14T22:03:51.631226+00:00",
+      "verification_state": "captured_response_replay_not_production",
+      "request_count": 1,
+      "request_urls": [
+        "https://atlanticcitytcgshow.com/"
+      ],
+      "events": 1,
+      "parse_seconds": 0.145,
+      "description_min": 652,
+      "description_max": 652,
+      "blank_descriptions": 0,
+      "missing_full_addresses": 0,
+      "missing_points": 0,
+      "publisher_description_mismatches": [],
+      "first_start": "2026-12-20T15:00:00+00:00",
+      "last_start": "2026-12-20T15:00:00+00:00",
+      "complete_replay_sha256": "9c316db3d4342789c8446fbcd65ae60e6be89ef7a7e790a99b65099547a52a53",
+      "capture_fields_unchanged_after_final_guards": true
+    },
+    {
+      "source_key": "reeds_farm_nj",
+      "replayed_at": "2026-11-14T22:03:51.631226+00:00",
+      "verification_state": "captured_response_replay_not_production",
+      "request_count": 3,
+      "request_urls": [
+        "https://www.reedsorganicfarm.org/events",
+        "https://www.reedsorganicfarm.org/_api/v1/access-tokens",
+        "https://calendar.apiboomtech.com/api/published_calendar?comp_id=comp-licdd8bx&instance=<public-guest-instance>&time_zone=America%2FNew_York"
+      ],
+      "events": 23,
+      "parse_seconds": 0.067,
+      "description_min": 98,
+      "description_max": 1885,
+      "blank_descriptions": 0,
+      "missing_full_addresses": 0,
+      "missing_points": 0,
+      "publisher_description_mismatches": [],
+      "first_start": "2026-11-18T21:00:00+00:00",
+      "last_start": "2027-01-09T16:00:00+00:00",
+      "complete_replay_sha256": "1c01b0309c29af86242b0c7037bd4b6d2f732f88bb78d3aec7555c51f7bcbb4c",
+      "capture_fields_unchanged_after_final_guards": true
+    }
+  ],
+  "held_research_source": {
+    "source_key": "top_deck_games_eht_nj",
+    "publisher_name": "Top Deck Games — Egg Harbor Township",
+    "url": "https://www.topdeckgamesonline.com/",
+    "address": "3003 English Creek Ave, Egg Harbor Township, NJ 08234",
+    "status": "robots_held_not_registered",
+    "research_replay_count": 231,
+    "production_eligible_count": 0,
+    "reason": "Google Calendar robots disallows /calendar/ical/. A successful raw research response does not authorize production collection. Source absent from active SOURCES/ALLOWED_HOSTS; collect rejects before I/O.",
+    "robots_url": "https://calendar.google.com/robots.txt",
+    "robots_policy": "User-agent: *\nAllow: /$\nDisallow: /\n",
+    "robots_capture": "research-ac/second-pass-food/clancy-ics-robots.txt"
+  },
+  "url_and_robots_checks": [
+    {
+      "url": "https://atlanticcitytcgshow.com/",
+      "public_source_url": true,
+      "observed_url_length": 32,
+      "configured_url_length_limit": 1000,
+      "robots_url": "https://atlanticcitytcgshow.com/robots.txt",
+      "robots_capture_file": "tcg-robots.txt",
+      "robots_sha256": "5bc0b09e29b191a5e702b9c7d235e59a33c59be3667a513f2afacbae162e6cb2",
+      "robots_allowed_for_production_agent": true,
+      "captured_http_status": 200,
+      "accept": "text/html",
+      "body_bytes": 159483,
+      "configured_body_limit": 3000000
+    },
+    {
+      "url": "https://www.reedsorganicfarm.org/events",
+      "public_source_url": true,
+      "observed_url_length": 39,
+      "configured_url_length_limit": 1000,
+      "robots_url": "https://www.reedsorganicfarm.org/robots.txt",
+      "robots_capture_file": "reeds-robots.txt",
+      "robots_sha256": "93406545c550c95a85192f1ff1c6b781fb67f49003e6a7840ce4bf522613dc11",
+      "robots_allowed_for_production_agent": true,
+      "captured_http_status": 200,
+      "accept": "text/html",
+      "body_bytes": 815259,
+      "configured_body_limit": 3000000
+    },
+    {
+      "url": "https://www.reedsorganicfarm.org/_api/v1/access-tokens",
+      "public_source_url": true,
+      "observed_url_length": 54,
+      "configured_url_length_limit": 1000,
+      "robots_url": "https://www.reedsorganicfarm.org/robots.txt",
+      "robots_capture_file": "reeds-robots.txt",
+      "robots_sha256": "93406545c550c95a85192f1ff1c6b781fb67f49003e6a7840ce4bf522613dc11",
+      "robots_allowed_for_production_agent": true,
+      "captured_http_status": 200,
+      "accept": "application/json",
+      "body_bytes": 100214,
+      "configured_body_limit": 3000000
+    },
+    {
+      "url": "https://calendar.apiboomtech.com/api/published_calendar?comp_id=comp-licdd8bx&instance=<public-guest-instance>&time_zone=America%2FNew_York",
+      "public_source_url": true,
+      "observed_url_length": 578,
+      "configured_url_length_limit": 1000,
+      "robots_url": "https://calendar.apiboomtech.com/robots.txt",
+      "robots_capture_file": "boom-api-robots.txt",
+      "robots_sha256": "e5c4b84484ee4216e9373be99380320c25dd94805f99f0a805846f087636553f",
+      "robots_allowed_for_production_agent": true,
+      "captured_http_status": 200,
+      "accept": "application/json",
+      "body_bytes": 954954,
+      "configured_body_limit": 3000000
+    }
+  ],
+  "transport_note": "Normal two-argument callback contract replayed against public HTTP200 captures. Native API also returned the identical calendar with only ordinary User-Agent and Accept headers. Existing local public-DNS guard cannot resolve publisher hosts in this environment; production guarded-fetch and stage/public proof are still required. No policy bypass or guard change.",
+  "public_guest_flow": {
+    "steps": [
+      "publisher events HTML",
+      "advertised public visitor configuration",
+      "bound published_calendar GET"
+    ],
+    "calendar_id": 130306,
+    "component": "comp-licdd8bx",
+    "calendar_instance_id": "e3ad6bf3-fb7f-4dcf-a152-ee85fbea3882",
+    "application_id": "13b4a028-00fa-7133-242f-4628106b8c91",
+    "meta_site_id": "35120278-9c3b-4e9a-b957-8f5de1fe8b05",
+    "native_raw_event_count": 577,
+    "request_credentials": "anonymous publisher-issued widget instance; no account authentication; never attached to event records or evidence URLs",
+    "unsupported_shapes": [
+      "nonempty additionalDates on recurring events",
+      "event kind other than reviewed string 1",
+      "all-day closure without reviewed timed boundary"
+    ],
+    "public_widget_implementation": [
+      "https://calendar.boomte.ch/widget/calendar_widget.js?v=24065",
+      "https://calendar.boomte.ch/widget/3567.df61abe8d60a96fe4fe7.js"
+    ],
+    "recurrence_evidence": "Widget module30754 treats advanced 6 as ISO Saturday; numeric end104 as non-excluded occurrences per weekday; exclusion does not consume count; interval1 is weekly. Native Pizza Day starts Sunday2025-11-02 but selects Saturday6, yielding eight current future Saturdays.",
+    "program_counts": {
+      "explicitly_dated_programs": 15,
+      "pizza_day_occurrences": 8
+    },
+    "excluded_or_held": [
+      {
+        "id": 4119982,
+        "title": "Heritage Surf Pop Up Event",
+        "start": "2026-11-15T09:00",
+        "reason": "native desc blank; adjacent Nov14 description not substituted"
+      },
+      {
+        "id": 4205337,
+        "title": "Thanksgiving Pie Preorder",
+        "reason": "multi-day midnight preorder window, not gathering"
+      },
+      {
+        "ids": [
+          4205338,
+          4205340,
+          4205341
+        ],
+        "reason": "published Thanksgiving, Christmas and New Year closures retained as schedule exclusions"
+      }
+    ],
+    "publisher_points": [
+      {
+        "lat": 39.3842615,
+        "lng": -74.5865073
+      },
+      {
+        "lat": 39.3842421,
+        "lng": -74.5868121
+      }
+    ],
+    "venue_street": "5075 Spruce Ave, Egg Harbor Township, NJ 08234"
+  },
+  "showboat_address_evidence": {
+    "publisher_contact_url": "https://www.showboathotelac.com/contact",
+    "reviewed_nj_ogis": {
+      "key": "atlantic_city_tcg_show_nj",
+      "requested_address": "801 Boardwalk, Atlantic City, NJ 08401",
+      "url": "https://geo.nj.gov/arcgis/rest/services/Tasks/NJ_Geocode/GeocodeServer/findAddressCandidates?SingleLine=801+Boardwalk%2C+Atlantic+City%2C+NJ+08401&outSR=4326&outFields=Match_addr%2CAddr_type%2CCity%2CPostal%2CRegion&f=pjson",
+      "http_status": 200,
+      "result": {
+        "spatialReference": {
+          "wkid": 4326,
+          "latestWkid": 4326
+        },
+        "candidates": [
+          {
+            "address": "801 Boardwalk, Atlantic City, New Jersey, 08401",
+            "location": {
+              "x": -74.418345000001,
+              "y": 39.361572000003
+            },
+            "score": 100,
+            "attributes": {
+              "Match_addr": "801 Boardwalk, Atlantic City, New Jersey, 08401",
+              "Addr_type": "PointAddress",
+              "City": "Atlantic City",
+              "Postal": "08401",
+              "Region": "New Jersey"
+            },
+            "extent": {
+              "xmin": -74.419345000001,
+              "ymin": 39.360570598465,
+              "xmax": -74.417345000001,
+              "ymax": 39.36257340164
+            }
+          }
+        ]
+      }
+    }
+  },
+  "other_discovery_holds": [
+    {
+      "publisher_name": "Wax, Packs, & Throwbacks",
+      "url": "https://waxpacksandthrowbacks.com/",
+      "address": "199 New Road Unit 16-17, Linwood, NJ 08221",
+      "status": "no_verified_future_primary_schedule",
+      "reason": "Public official event payload has four September 19/25/26/27 cards and no current November future dates. Third-party recurring listings were not promoted.",
+      "evidence": [
+        "research-ac/second-pass/wax-events.json"
+      ]
+    },
+    {
+      "publisher_name": "Cardboard Arena",
+      "url": "https://cardboardarena.com/",
+      "address": "15 8th Street, Hammonton, NJ 08037",
+      "status": "further_primary_schedule_qualification_required",
+      "reason": "Own site links Facebook events and supplies location/hours, but no dated event bodies. Native organizer platform Carde has search-index leads; complete public event payload not yet captured.",
+      "candidate_provider": "https://play.carde.io/",
+      "evidence": [
+        "research-ac/second-pass/cardboard-page.html",
+        "research-ac/second-pass/carde-home.html"
+      ]
+    },
+    {
+      "publisher_name": "Charity League of Atlantic County",
+      "url": "https://charityleague-ac.com/",
+      "status": "current_primary_flyer_requires_qualification",
+      "reason": "Own homepage confirms 2026 Christmas Mart on November 20, 2026, but the gallery flyer carries the schedule. Linked Christmas Mart page is 2025 photos. Full current official clock/narrative not yet transcribed; not a hard access failure.",
+      "evidence": [
+        "research-ac/second-pass/charity-current-page.html",
+        "research-ac/second-pass/charity-mart.html"
+      ]
+    },
+    {
+      "publisher_name": "Jessie’s of Linwood / Groovy Beach",
+      "urls": [
+        "https://www.jessiesoflinwood.com/",
+        "https://groovybeach.co/pages/upcoming-events"
+      ],
+      "address": "136 West Poplar Avenue, Linwood, NJ 08221",
+      "status": "full_future_primary_event_description_unavailable",
+      "reason": "Vendor table lists Holiday Market November 28, 9am–3pm without year or full narrative. Host page offers performer/vendor inquiries and older gallery material; these are not a confirmed recurring schedule.",
+      "evidence": [
+        "research-ac/second-pass/jessies-page.html",
+        "research-ac/second-pass/groovy-page.html"
+      ]
+    },
+    {
+      "publisher_name": "The Bookery / Carousel Collectibles",
+      "url": "https://www.carouselcollectibles.shop/",
+      "address": "6024 Main Street Main Floor #1, Mays Landing, NJ 08330",
+      "status": "no_verified_future_primary_schedule",
+      "reason": "Current independent bookstore discovery; located official shop, but dated future author/club/workshop schedule not verified. Historical third-party listings were not projected."
+    }
+  ]
+}

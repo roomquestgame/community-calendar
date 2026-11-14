@@ -845,8 +845,12 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
     from roomquest import atlantic_city_community, atlantic_city_venues, visit_atlantic_city
     from roomquest import atlantic_city_stockton, atlantic_city_pdf_programs, greatday_atlantic_city
     from roomquest import atlantic_city_library_chamber, atlantic_city_nightlife_more, atlantic_city_outdoors_more
+    from roomquest import atlantic_city_social, atlantic_city_independent_venues
+    from roomquest import atlantic_city_recreation, atlantic_city_markets_gaming
     continuation_adapters = (atlantic_city_library_chamber, atlantic_city_nightlife_more,
-                             atlantic_city_outdoors_more)
+                             atlantic_city_outdoors_more, atlantic_city_social,
+                             atlantic_city_independent_venues, atlantic_city_recreation,
+                             atlantic_city_markets_gaming)
     continuation_adapter = next((module for module in continuation_adapters
                                  if source_key in module.SOURCES), None)
     if (source_key in atlantic_city_community.SOURCES

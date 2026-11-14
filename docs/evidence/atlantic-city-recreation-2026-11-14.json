@@ -1,0 +1,275 @@
+{
+  "reviewed_at": "2026-11-14T21:58:29.401573+00:00",
+  "scope": "Two new public recreation sources; captured-parser verification, not production transport or publication proof.",
+  "collector": "roomquest/atlantic_city_recreation.py",
+  "tests": {
+    "path": "tests/test_atlantic_city_recreation.py",
+    "result": "16 passed"
+  },
+  "sources": {
+    "egg_harbor_township_recreation_nj": {
+      "feed_url": "https://eggharbornj.myrec.com/info/calendar/list.aspx?FacilityID=14784&AreaID=0",
+      "allowed_hosts": [
+        "eggharbornj.myrec.com"
+      ],
+      "requests": 3,
+      "future_rows": 30,
+      "counts_by_title": {
+        "Mindful Chair and Standing Yoga": 4,
+        "Open Gym Basketball": 5,
+        "Pickleball Level 1 (Thursday)": 3,
+        "Pickleball Level 1 (Tuesdays)": 4,
+        "Pickleball Level 2 (Thursday)": 3,
+        "Pickleball Level 2 (Tuesdays)": 4,
+        "Pickleball Level 3 (Thursday)": 3,
+        "Pickleball Level 3 (Tuesdays)": 4
+      },
+      "blank_descriptions": 0,
+      "description_length_min": 934,
+      "description_length_max": 1529,
+      "address": "5045 English Creek Avenue, Egg Harbor Township, NJ 08234",
+      "venue_point_evidence": {
+        "key": "egg_harbor_township_recreation_nj",
+        "requested_address": "5045 English Creek Ave, Egg Harbor Township, NJ 08234",
+        "url": "https://geo.nj.gov/arcgis/rest/services/Tasks/NJ_Geocode/GeocodeServer/findAddressCandidates?SingleLine=5045+English+Creek+Ave%2C+Egg+Harbor+Township%2C+NJ+08234&outSR=4326&outFields=Match_addr%2CAddr_type%2CCity%2CPostal%2CRegion&f=pjson",
+        "http_status": 200,
+        "result": {
+          "spatialReference": {
+            "wkid": 4326,
+            "latestWkid": 4326
+          },
+          "candidates": [
+            {
+              "address": "5045 English Creek Avenue, Egg Harbor Township, New Jersey, 08234",
+              "location": {
+                "x": -74.633616000001,
+                "y": 39.399948000003
+              },
+              "score": 100,
+              "attributes": {
+                "Match_addr": "5045 English Creek Avenue, Egg Harbor Township, New Jersey, 08234",
+                "Addr_type": "PointAddress",
+                "City": "Egg Harbor Township",
+                "Postal": "08234",
+                "Region": "New Jersey"
+              },
+              "extent": {
+                "xmin": -74.634619840021,
+                "ymin": 39.398948000003,
+                "xmax": -74.632612217139,
+                "ymax": 39.400948000003
+              }
+            }
+          ]
+        }
+      },
+      "first_start": "2026-11-16T17:00:00+00:00",
+      "last_start": "2026-12-14T17:00:00+00:00",
+      "description_fingerprints": [
+        {
+          "id": "egg_harbor_township_recreation_nj:30031:148217:2026-11-16:12:00:00",
+          "chars": 1146,
+          "sha256": "af44e3c10b93279d9083c7c48b86ccb458a09a788de22e38a180136561c9122a"
+        },
+        {
+          "id": "egg_harbor_township_recreation_nj:30031:148210:2026-11-17:09:00:00",
+          "chars": 1529,
+          "sha256": "747e13b483cc0874e6b6e7ecde0e447458b97062dddc8e6a8230495adf6bc676"
+        },
+        {
+          "id": "egg_harbor_township_recreation_nj:30076:148255:2026-11-17:10:00:00",
+          "chars": 934,
+          "sha256": "a3bcf8f81115fe28bb999737195b0c2f304d0f8972f8772a4bdca14a73cf5b31"
+        }
+      ],
+      "snapshot_limit": 500,
+      "calendar_horizon": "Individual publisher sessions November 14–December 14, 2026; no seasonal range expansion.",
+      "description_contract": "Entire live Content_lblDescription plus complete relevant sport note or all yoga notes and publisher age condition; never shortened.",
+      "public_eligibility": "Both reviewed programs explicitly offer public drop-ins. Registration Unavailable applies to seasonal signup; preserved native space, waiver, equipment and punch-card conditions govern drop-ins.",
+      "native_recurrence": "None; calendar rows independently supply dates and clocks, cross-checked against program weekday, range and clock. Duplicate facility allocations are deduplicated.",
+      "programs": [
+        "Adult Open Gym Programs",
+        "Mindful Chair and Standing Yoga"
+      ]
+    },
+    "ocean_city_aquatic_fitness_nj": {
+      "feed_url": "https://www.ocnj.us/departments/CommunityServices/Aquatic-and-Fitness-Center",
+      "allowed_hosts": [
+        "www.ocnj.us"
+      ],
+      "requests": 4,
+      "future_rows": 292,
+      "counts_by_title": {
+        "Barre": 11,
+        "Barre/Pilates": 6,
+        "Cardio-Sculpt": 12,
+        "Chair Yoga": 7,
+        "Functional Fitness": 7,
+        "Functional Stretch": 7,
+        "Gentle Yoga": 7,
+        "Pilates": 7,
+        "Smooth Moves": 5,
+        "Smooth Weights": 6,
+        "Step & Sculpt": 6,
+        "Strength": 32,
+        "TBW": 35,
+        "Water Exercise": 72,
+        "Wheels & Steel": 4,
+        "Yoga": 36,
+        "Zumba": 18,
+        "Zumba Gold": 7,
+        "Zumba Toning": 7
+      },
+      "blank_descriptions": 0,
+      "description_length_min": 390,
+      "description_length_max": 647,
+      "address": "1735 Simpson Avenue, Ocean City, NJ 08226",
+      "venue_point_evidence": {
+        "key": "ocean_city_aquatic_fitness_nj",
+        "requested_address": "1735 Simpson Avenue, Ocean City, NJ 08226",
+        "url": "https://geo.nj.gov/arcgis/rest/services/Tasks/NJ_Geocode/GeocodeServer/findAddressCandidates?SingleLine=1735+Simpson+Avenue%2C+Ocean+City%2C+NJ+08226&outSR=4326&outFields=Match_addr%2CAddr_type%2CCity%2CPostal%2CRegion&f=pjson",
+        "http_status": 200,
+        "result": {
+          "spatialReference": {
+            "wkid": 4326,
+            "latestWkid": 4326
+          },
+          "candidates": [
+            {
+              "address": "1735 Simpson Avenue, Ocean City, New Jersey, 08226",
+              "location": {
+                "x": -74.59048756658,
+                "y": 39.271761871741
+              },
+              "score": 100,
+              "attributes": {
+                "Match_addr": "1735 Simpson Avenue, Ocean City, New Jersey, 08226",
+                "Addr_type": "StreetAddress",
+                "City": "Ocean City",
+                "Postal": "08226",
+                "Region": "New Jersey"
+              },
+              "extent": {
+                "xmin": -74.591490165398,
+                "ymin": 39.270761871741,
+                "xmax": -74.589485024644,
+                "ymax": 39.272761871741
+              }
+            }
+          ]
+        }
+      },
+      "first_start": "2026-11-15T14:30:00+00:00",
+      "last_start": "2026-12-31T17:00:00+00:00",
+      "description_fingerprints": [
+        {
+          "id": "ocean_city_aquatic_fitness_nj:6:09:30:Yoga:2026-11-15",
+          "chars": 429,
+          "sha256": "431ca16ab09ffcfa071a4ae2748aacd2e413c6b0013cdb234c6a311592c3a781"
+        },
+        {
+          "id": "ocean_city_aquatic_fitness_nj:6:11:05:Water Exercise:2026-11-15",
+          "chars": 647,
+          "sha256": "a6e19224a721e14a0be95d7bcc20053f9f9a0c3356a95051510183f25184f5b3"
+        },
+        {
+          "id": "ocean_city_aquatic_fitness_nj:0:06:00:Strength:2026-11-16",
+          "chars": 393,
+          "sha256": "ecb0ffda19795a62fed825f1572d29ea4a8ac3f581e11842588979a8a637cd39"
+        }
+      ],
+      "snapshot_limit": 500,
+      "season": "November 9, 2026–March 7, 2027, explicit publisher weekly grid.",
+      "reviewed_occurrences_through": "2026-12-31",
+      "description_contract": "Complete native PDF class definitions; complete current publisher Water Exercise FAQ for water classes; intact public HTML reservation paragraph and native instructor/room metadata. PDF registration UI box is visually clipped at its end, so the intact HTML reservation policy supplies those instructions. No class narrative is clipped or replaced with a generated summary.",
+      "weekly_grid": {
+        "reviewed_pdf_cells": 70,
+        "accepted_cells": 46,
+        "held_cells": 24,
+        "undefined_variant_titles": [
+          "Cycle",
+          "Pilates Sculpt",
+          "Body Sculpt Yoga",
+          "Drum & Tone",
+          "Stretch & Tone",
+          "Special Needs Drum Fit",
+          "Barrelates",
+          "Interval Step",
+          "Yin Yoga",
+          "Chair Pilates/Barre",
+          "Tabata",
+          "Special Needs Dance/Fitness",
+          "Strength & Sculpt"
+        ],
+        "reason": "No exact current native class definition for these variants; linked cycling flyer is internally Spring 2026 despite misleading 2027 link label."
+      },
+      "closures": [
+        "2026-11-26",
+        "2026-12-25"
+      ],
+      "early_close_13_local": [
+        "2026-12-24",
+        "2026-12-31"
+      ],
+      "held_2027_reason": "Current linked holiday document is for 2026. January holidays are not inferred from the 2026 edition. Changed PDFs or links require review; expired reviewed closure scope fails explicitly.",
+      "unknown_ends": "Remain null; only Water Exercise 45-minute times and four explicit 1HR land-class cells produce ends.",
+      "map_qualifier": "approximate map location; NJ OGIS returned StreetAddress, not PointAddress."
+    }
+  },
+  "transport": {
+    "research": "Ordinary unauthenticated public HTTP after robots review. All seven publisher objects returned HTTP 200.",
+    "production": "Caller-supplied guarded fetch only. Local guarded preview returns dns_unavailable; no DNS or transport bypass. Production guarded replay is still required.",
+    "robots": {
+      "https://eggharbornj.myrec.com/robots.txt": {
+        "status": 200,
+        "disallow": [
+          "/ScriptResource.axd",
+          "/WebResource.axd"
+        ],
+        "collected_paths_allowed": true
+      },
+      "https://www.ocnj.us/robots.txt": {
+        "status": 200,
+        "collected_paths_allowed": true
+      }
+    }
+  },
+  "captured_objects": [
+    {
+      "url": "https://eggharbornj.myrec.com/info/calendar/list.aspx?FacilityID=14784&AreaID=0",
+      "bytes": 470356,
+      "sha256": "e80364722a39e82932f4e920e34fc0b2c7251dee8321cd302fae2551cc97c383"
+    },
+    {
+      "url": "https://eggharbornj.myrec.com/info/activities/program_details.aspx?ProgramID=30031",
+      "bytes": 54883,
+      "sha256": "7ee795fb82bfab9aeeadf2ee58d01fc36db76862fb8836df2c7f0c59002483a3"
+    },
+    {
+      "url": "https://eggharbornj.myrec.com/info/activities/program_details.aspx?ProgramID=30076",
+      "bytes": 43799,
+      "sha256": "b738b054c3d99fd6b651f2db859ff8e128aa2c8a8eebcff7d6208929d72f3280"
+    },
+    {
+      "url": "https://www.ocnj.us/departments/CommunityServices/Aquatic-and-Fitness-Center",
+      "bytes": 114307,
+      "sha256": "04d9100cadb9b02babb0ac7b21b8319567d9fe079d81d305987d2f0d2b4525f6"
+    },
+    {
+      "url": "https://www.ocnj.us/AnF-Programs",
+      "bytes": 152982,
+      "sha256": "128a0b99d8d4548087a4e5d7b5d4a92b8ef9b5bbea81a65c05fb07d933402105"
+    },
+    {
+      "url": "https://www.ocnj.us/media/Aquatic%20Fitness/2026-27%20Winter%20Group-Ex%20Schedule.pdf",
+      "bytes": 170757,
+      "sha256": "dae55ff30cd3b9704490eec574fc2bce68961ce9b9c2d705d6d4ab72c8c834cc"
+    },
+    {
+      "url": "https://www.ocnj.us/media/Aquatic%20Fitness/2026%20AFC%20Holidays%20Early%20Closings.pdf",
+      "bytes": 137380,
+      "sha256": "188d9396ca99c7f245c287688363002977fe40200ac3ad8929984dca2f2862fa"
+    }
+  ],
+  "description_limits": "Normalized narratives must be nonblank and at most 12,000 characters. Oversized bodies or source snapshots over 500 rows raise errors; neither is sliced."
+}

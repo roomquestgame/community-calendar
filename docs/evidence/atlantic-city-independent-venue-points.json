@@ -1,0 +1,149 @@
+{
+  "reviewed_at": "2026-11-14",
+  "points": [
+    {
+      "key": "cardinal_atlantic_city_nj",
+      "requested_address": "201 S New York Avenue, Atlantic City, NJ 08401",
+      "url": "https://geo.nj.gov/arcgis/rest/services/Tasks/NJ_Geocode/GeocodeServer/findAddressCandidates?SingleLine=201+S+New+York+Avenue%2C+Atlantic+City%2C+NJ+08401&outSR=4326&outFields=Match_addr%2CAddr_type%2CCity%2CPostal%2CRegion&f=pjson",
+      "http_status": 200,
+      "result": {
+        "spatialReference": {
+          "wkid": 4326,
+          "latestWkid": 4326
+        },
+        "candidates": [
+          {
+            "address": "201 South New York Avenue, Atlantic City, New Jersey, 08401",
+            "location": {
+              "x": -74.426868000001,
+              "y": 39.358251000003
+            },
+            "score": 100,
+            "attributes": {
+              "Match_addr": "201 South New York Avenue, Atlantic City, New Jersey, 08401",
+              "Addr_type": "PointAddress",
+              "City": "Atlantic City",
+              "Postal": "08401",
+              "Region": "New Jersey"
+            },
+            "extent": {
+              "xmin": -74.427868000001,
+              "ymin": 39.357249744635,
+              "xmax": -74.425868000001,
+              "ymax": 39.35925225546
+            }
+          },
+          {
+            "address": "201 New York Avenue, Atlantic City, New Jersey, 08401",
+            "location": {
+              "x": -74.43121028181,
+              "y": 39.364529228657
+            },
+            "score": 98.83,
+            "attributes": {
+              "Match_addr": "201 New York Avenue, Atlantic City, New Jersey, 08401",
+              "Addr_type": "StreetAddress",
+              "City": "Atlantic City",
+              "Postal": "08401",
+              "Region": "New Jersey"
+            },
+            "extent": {
+              "xmin": -74.43221028181,
+              "ymin": 39.363528047707,
+              "xmax": -74.43021028181,
+              "ymax": 39.365530409691
+            }
+          }
+        ]
+      }
+    },
+    {
+      "key": "ventnor_social_nj",
+      "requested_address": "6417 Ventnor Avenue, Ventnor City, NJ 08406",
+      "url": "https://geo.nj.gov/arcgis/rest/services/Tasks/NJ_Geocode/GeocodeServer/findAddressCandidates?SingleLine=6417+Ventnor+Avenue%2C+Ventnor+City%2C+NJ+08406&outSR=4326&outFields=Match_addr%2CAddr_type%2CCity%2CPostal%2CRegion&f=pjson",
+      "http_status": 200,
+      "result": {
+        "spatialReference": {
+          "wkid": 4326,
+          "latestWkid": 4326
+        },
+        "candidates": [
+          {
+            "address": "6417 Ventnor Avenue, Ventnor City, New Jersey, 08406",
+            "location": {
+              "x": -74.483122500001,
+              "y": 39.338136000003
+            },
+            "score": 100,
+            "attributes": {
+              "Match_addr": "6417 Ventnor Avenue, Ventnor City, New Jersey, 08406",
+              "Addr_type": "PointAddress",
+              "City": "Ventnor City",
+              "Postal": "08406",
+              "Region": "New Jersey"
+            },
+            "extent": {
+              "xmin": -74.484122500001,
+              "ymin": 39.337135710128,
+              "xmax": -74.482122500001,
+              "ymax": 39.339136289899
+            }
+          }
+        ]
+      }
+    },
+    {
+      "key": "renault_winery_nj",
+      "publisher_address_source": "https://renaultwinery.com/contact/",
+      "requested_address": "72 Bremen Ave, Egg Harbor City, NJ 08215",
+      "url": "https://geo.nj.gov/arcgis/rest/services/Tasks/NJ_Geocode/GeocodeServer/findAddressCandidates?SingleLine=72+Bremen+Ave%2C+Egg+Harbor+City%2C+NJ+08215&outSR=4326&outFields=Match_addr%2CAddr_type%2CCity%2CPostal%2CRegion&f=pjson",
+      "http_status": 200,
+      "result": {
+        "spatialReference": {
+          "wkid": 4326,
+          "latestWkid": 4326
+        },
+        "candidates": [
+          {
+            "address": "72 Bremen Avenue, Egg Harbor City, New Jersey, 08215",
+            "location": {
+              "x": -74.604096000001,
+              "y": 39.546288000003
+            },
+            "score": 100,
+            "attributes": {
+              "Match_addr": "72 Bremen Avenue, Egg Harbor City, New Jersey, 08215",
+              "Addr_type": "PointAddress",
+              "City": "Egg Harbor City",
+              "Postal": "08215",
+              "Region": "New Jersey"
+            },
+            "extent": {
+              "xmin": -74.605099014416,
+              "ymin": 39.545288000003,
+              "xmax": -74.603093043035,
+              "ymax": 39.547288000003
+            }
+          }
+        ]
+      }
+    },
+    {
+      "source_key": "atlantic_city_country_club_nj",
+      "venue_name": "Atlantic City Country Club (approximate map location)",
+      "venue_address": "1 Leo Fraser Drive, Northfield, NJ 08225",
+      "lat": 39.37029755,
+      "lng": -74.54236135,
+      "provenance": "reviewed_osm_clubhouse_polygon_centroid",
+      "coordinate_scope": "Mapped clubhouse building centroid, not a surveyed entrance or exact dining room. Visible approximate-map qualifier required.",
+      "publisher_address_url": "https://accountryclub.com/atlantic-city-country-club-contact/",
+      "coordinate_source_url": "https://www.openstreetmap.org/api/0.6/way/630332016/full",
+      "osm_way": "630332016",
+      "inside_building_polygon": true,
+      "attribution": "OpenStreetMap contributors; https://www.openstreetmap.org/copyright"
+    }
+  ],
+  "attribution": "Country club building geometry: © OpenStreetMap contributors, ODbL; https://www.openstreetmap.org/copyright. The computed clubhouse polygon centroid is approximate and visibly qualified in the venue name.",
+  "renault_address_note": "The official event API uses 72 North Bremen Avenue. The current official contact page https://renaultwinery.com/contact/ uses 72 Bremen Ave for the same resort. The latter exact street produces a score-100 NJ OGIS PointAddress. Event records preserve the publisher’s North variant.",
+  "event_pins_are_coverage_centers": false
+}
