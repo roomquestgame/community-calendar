@@ -1,0 +1,122 @@
+{
+  "captured_at": "2026-11-14T23:09:15.800965+00:00",
+  "validation": "Local replay of public publisher snapshots. Ordinary guarded fetch blocked by local DNS; deployment must validate normal production transport before approval.",
+  "sources": [
+    {
+      "source_key": "boston_food_forest_coalition_ma",
+      "name": "Boston Food Forest Coalition",
+      "feed_url": "https://www.bostonfoodforest.org/workshops",
+      "events": 5,
+      "description_lengths": [
+        424,
+        150,
+        321,
+        252,
+        1002
+      ],
+      "native_points": 3,
+      "addresses": [
+        "11 A Everett Avenue, Boston, MA 02125",
+        "131 Cambridge Street, Boston, MA 02114",
+        "4 Leland Street, Boston, MA 02130",
+        "424 Geneva Avenue, Boston, MA 02122",
+        "44 Maple Street, Boston, MA 02121"
+      ]
+    },
+    {
+      "source_key": "backyard_boston_ma",
+      "name": "Backyard Boston",
+      "feed_url": "https://www.backyardbos.com/upcoming-events",
+      "events": 3,
+      "description_lengths": [
+        1228,
+        473,
+        1537
+      ],
+      "native_points": 3,
+      "addresses": [
+        "5 Necco Street, Boston, MA 02210"
+      ]
+    },
+    {
+      "source_key": "titus_sparrow_park_ma",
+      "name": "Friends of Titus Sparrow Park",
+      "feed_url": "https://www.titussparrowpark.org/events",
+      "events": 4,
+      "description_lengths": [
+        1160,
+        431,
+        1969,
+        431
+      ],
+      "native_points": 0,
+      "addresses": [
+        "465 Huntington Avenue, Boston, MA 02115",
+        "485 Columbus Avenue, Boston, MA 02118",
+        "75 West Rutland Square, Boston, MA 02118"
+      ]
+    },
+    {
+      "source_key": "charles_river_watershed_ma",
+      "name": "Charles River Watershed Association",
+      "feed_url": "https://www.crwa.org/events",
+      "events": 1,
+      "description_lengths": [
+        530
+      ],
+      "native_points": 1,
+      "addresses": [
+        "40 Leon Street, Boston, MA 02115"
+      ]
+    },
+    {
+      "source_key": "new_england_gator_club_ma",
+      "name": "New England Gator Club",
+      "feed_url": "https://newenglandgatorclub.org/events",
+      "events": 4,
+      "description_lengths": [
+        1709,
+        933,
+        1445,
+        1445
+      ],
+      "native_points": 4,
+      "addresses": [
+        "160 Milk Street, Boston, MA 02109",
+        "70 South Border Road, Medford, MA 02155"
+      ]
+    },
+    {
+      "source_key": "city_of_boston_events_ma",
+      "name": "City of Boston Events",
+      "feed_url": "https://www.boston.gov/rss/events",
+      "events": 4,
+      "description_lengths": [
+        741,
+        756,
+        402,
+        741
+      ],
+      "native_points": 0,
+      "addresses": [
+        "1350 Blue Hill Ave, Mattapan, MA 02126",
+        "23 Drydock Ave, Boston, MA 02210",
+        "284 Amory Street, Jamaica Plain, MA 02130",
+        "485 Columbus Avenue, South End, MA 02118"
+      ]
+    },
+    {
+      "source_key": "municipal_mapsee_a14b1d13603f6a7a9b6eadba",
+      "name": "Boston Cyclists Union",
+      "feed_url": "https://bostoncyclistsunion.org",
+      "events": 1,
+      "description_lengths": [
+        328
+      ],
+      "native_points": 0,
+      "addresses": [
+        "700 Boylston Street, Boston, MA 02116"
+      ]
+    }
+  ]
+}

@@ -900,6 +900,31 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
     from roomquest.rockhouse import SOURCES as ROCKHOUSE_SOURCES
     from roomquest import civic_local_calendars, civic_schedule, legistar, municipal_notices, virginia_civic
     source_key = source.get('source_key')
+    from roomquest import boston_sources
+    if boston_sources.adapter_for(source_key) is not None:
+        try:
+            adapter = boston_sources.validate_source(source)
+            if source_key in boston_sources.checkpoint_keys():
+                raise PreviewError('publisher_checkpoint_required')
+            deadline = min(monotonic() + 36,
+                           deadline_at - 8 if deadline_at is not None else float('inf'))
+            records = adapter.collect(source, lambda url, accept: fetch_publisher(
+                url, accept, respect_robots=True, deadline_at=deadline,
+                allowed_hosts=adapter.ALLOWED_HOSTS[source_key]), deadline_at=deadline)
+            boston_sources.validate_records(records, source)
+        except PreviewError:
+            raise
+        except (ValueError, TypeError, KeyError, OverflowError) as exc:
+            code = str(exc)
+            raise PreviewError(code if code in boston_sources.diagnostic_codes()
+                               else 'invalid_boston_payload') from exc
+        samples = records[:MAX_PREVIEWS]
+        while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
+            samples.pop()
+        return {'p_source_key': source_key, 'p_samples': samples,
+                'p_future_count': len(records),
+                'p_venue_count': sum(row.get('lat') is not None for row in records),
+                'p_error': None, 'p_events': records}
     from roomquest import new_york_sources
     if new_york_sources.adapter_for(source_key) is not None:
         try:
@@ -1842,6 +1867,19 @@ def _preview_new_york_chunk(source, pacing, *, collection_context, deadline_at,
         publisher_handoff=publisher_handoff, observe_phase=observe_phase)
 
 
+def _preview_boston_chunk(source, pacing, *, collection_context, deadline_at,
+                            publisher_handoff=None, observe_phase=None):
+    from roomquest import boston_sources
+    try:
+        adapter = boston_sources.validate_source(source)
+    except ValueError as exc:
+        raise PreviewError('unregistered_boston_source') from exc
+    return _preview_fetch_chunk(source, pacing, adapter=adapter,
+        allowed_hosts=adapter.ALLOWED_HOSTS[source['source_key']],
+        collection_context=collection_context, deadline_at=deadline_at,
+        publisher_handoff=publisher_handoff, observe_phase=observe_phase)
+
+
 def _preview_fetch_chunk(source, pacing, *, adapter, allowed_hosts, collection_context,
                          deadline_at, publisher_handoff=None, observe_phase=None):
     """Persist one lease-fenced complete-manifest chunk before any staging."""
@@ -1983,6 +2021,8 @@ def _preview_fetch_chunk(source, pacing, *, adapter, allowed_hosts, collection_c
             reason = exc.args[0] if len(exc.args) == 1 else None
             from roomquest import new_york_sources
             codes.update(new_york_sources.diagnostic_codes())
+            from roomquest import boston_sources
+            codes.update(boston_sources.diagnostic_codes())
             raise PreviewError(reason if type(reason) is str and reason in codes
                                else "invalid_html_event_payload") from exc
         if pacing["wait_unbounded"]:
@@ -1993,6 +2033,14 @@ def _preview_fetch_chunk(source, pacing, *, adapter, allowed_hosts, collection_c
                 new_york_sources.validate_checkpoint(source, chunk.get('checkpoint'))
                 if chunk.get('complete') and chunk['checkpoint']['cursor'] != chunk['checkpoint']['manifest_count']:
                     raise ValueError('new_york_checkpoint_invalid')
+            except ValueError as exc:
+                raise PreviewError(str(exc)) from exc
+        from roomquest import boston_sources
+        if boston_sources.adapter_for(source.get('source_key')) is not None:
+            try:
+                boston_sources.validate_checkpoint(source, chunk.get('checkpoint'))
+                if chunk.get('complete') and chunk['checkpoint']['cursor'] != chunk['checkpoint']['manifest_count']:
+                    raise ValueError('boston_checkpoint_invalid')
             except ValueError as exc:
                 raise PreviewError(str(exc)) from exc
         operation = "community_collector_write_fetch_checkpoint"
@@ -2018,6 +2066,12 @@ def _preview_fetch_chunk(source, pacing, *, adapter, allowed_hosts, collection_c
                 new_york_sources.validate_records(records, source)
             except ValueError as exc:
                 raise PreviewError(str(exc)) from exc
+        from roomquest import boston_sources
+        if boston_sources.adapter_for(source.get('source_key')) is not None:
+            try:
+                boston_sources.validate_records(records, source)
+            except ValueError as exc:
+                raise PreviewError(str(exc)) from exc
         samples = records[:MAX_PREVIEWS]
         while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
             samples.pop()
@@ -2036,6 +2090,8 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
     from roomquest.linked_event_descriptions import PROFILES as linked_description_profiles
     from roomquest import new_york_sources
     new_york_checkpoint_keys = new_york_sources.checkpoint_keys()
+    from roomquest import boston_sources
+    boston_checkpoint_keys = boston_sources.checkpoint_keys()
     from roomquest import atlantic_city_library_chamber, atlantic_city_nightlife_more
     from roomquest import atlantic_city_studio, atlantic_city_cardboard_arena
     continuation_checkpoint_keys = (atlantic_city_library_chamber.CHECKPOINT_KEYS
@@ -2052,12 +2108,14 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
         if ((checkpoint_key in ("discover_halifax_va", "visit_atlantic_city_nj", "noyes_arts_atlantic_city_nj", "atlantic_city_municipal_nj", "greatday_atlantic_city_nj")
                 or checkpoint_key in continuation_checkpoint_keys
                 or checkpoint_key in new_york_checkpoint_keys
+                or checkpoint_key in boston_checkpoint_keys
                 or checkpoint_key in linked_description_profiles)
                 and collection_context is not None
                 and type(source.get("fetch_checkpoint_version")) is int
                 and source["fetch_checkpoint_version"] == 1):
             preview_chunk = (_preview_halifax_chunk if checkpoint_key == "discover_halifax_va"
                              else _preview_new_york_chunk if checkpoint_key in new_york_checkpoint_keys
+                             else _preview_boston_chunk if checkpoint_key in boston_checkpoint_keys
                              else _preview_atlantic_continuation_chunk if checkpoint_key in continuation_checkpoint_keys
                              else _preview_greatday_chunk if checkpoint_key == "greatday_atlantic_city_nj"
                              else _preview_visit_atlantic_chunk if checkpoint_key == "visit_atlantic_city_nj"

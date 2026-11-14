@@ -1,0 +1,825 @@
+{
+  "captured_on": "2026-11-14",
+  "written_at": "2026-11-14T23:19:29.528111+00:00",
+  "scope": "New Boston arts, family/library, makers and independent bookshop sources only; existing production sources excluded. Production deployment is tracked separately by the root batch.",
+  "module": "roomquest/boston_arts.py",
+  "tests": "python -m unittest tests.test_boston_arts -q (9 passing tests)",
+  "capture_directory": "/workspace/scratch/3aa56d09ac0a/research/arts-live",
+  "total_captured_rows": 475,
+  "transport_note": "Scratch publisher replay uses saved public HTTP responses because the sandbox direct DNS transport returned dns_unavailable; production uses unchanged safe fetch_publisher with robots and allowed-host checks. Worker replay replaces only HTTP and database RPC effects and validates real parser/worker/checkpoint/staging control flow.",
+  "sources": [
+    {
+      "source_key": "pao_arts_center_ma",
+      "label": "Pao Arts Center",
+      "feed_url": "https://www.paoartscenter.org/events",
+      "adapter": "html",
+      "timezone": "America/New_York",
+      "window_days": 60,
+      "includes_ongoing_multiday_events": true,
+      "strategy": "Permitted Squarespace public HTML listing and complete event detail content; embedded UTC calendar values, no export requests.",
+      "source_notes": "Permitted public HTML and full detail bodies; no robots-disallowed Squarespace JSON or ICS export.",
+      "address_evidence_urls": [
+        "https://www.paoartscenter.org/events"
+      ],
+      "robots": {
+        "checked": true,
+        "routing": "ordinary fetch_publisher(respect_robots=True) with exact allowed_hosts",
+        "crawl_delay_seconds": null
+      },
+      "full_capture_file": "/workspace/scratch/3aa56d09ac0a/research/arts-live/pao_arts_center_ma-rows.json",
+      "status": "verified_captured_worker_replay",
+      "count": 4,
+      "description_characters": {
+        "min": 2182,
+        "max": 11899
+      },
+      "missing_description_count": 0,
+      "missing_street_address_count": 0,
+      "actual_coordinate_count": 4,
+      "holds": [],
+      "raw_rows_sha256": "3a7720a3ded974d5a797a219fef4d1178c8fbea867c08cecc1358ec27f896b96",
+      "worker_replay": {
+        "source_key": "pao_arts_center_ma",
+        "worker_result": {
+          "complete": 1,
+          "failed": 0,
+          "staged": 4
+        },
+        "captured_rows": 4,
+        "staged_rows": 4,
+        "publisher_fetches": 5,
+        "checkpoint_writes": 3,
+        "max_checkpoint_utf8_bytes": 23467,
+        "full_descriptions_and_streets_identical": true,
+        "partial_checkpoints_staged_zero": true
+      },
+      "street_addresses": [
+        "99 Albany Street, Boston, MA 02111"
+      ],
+      "full_description_samples": [
+        {
+          "id": "/events/2026/rupture",
+          "event_url": "https://www.paoartscenter.org/events/2026/rupture",
+          "starts_at": "2026-11-12T18:00:00+00:00",
+          "ends_at": "2027-01-29T22:00:00+00:00",
+          "venue_name": "Pao Arts Center",
+          "venue_address": "99 Albany Street, Boston, MA 02111",
+          "characters": 11899,
+          "sha256": "098dc5fcd2324dc00a3dba61824730647912c87e6ba0ee708798dbfa8bd7f895"
+        },
+        {
+          "id": "/events/2026/air-workshop",
+          "event_url": "https://www.paoartscenter.org/events/2026/air-workshop",
+          "starts_at": "2026-11-15T21:00:00+00:00",
+          "ends_at": "2026-11-15T23:00:00+00:00",
+          "venue_name": "Pao Arts Center",
+          "venue_address": "99 Albany Street, Boston, MA 02111",
+          "characters": 2474,
+          "sha256": "5508d5494545cc4141597bd762cc53772642bb1ba69cbbbd227760370a18da2f"
+        }
+      ],
+      "checkpoint": {
+        "started_at": "2026-11-14T23:08:38.142995+00:00",
+        "window_start": "2026-11-14",
+        "manifest_count": 4,
+        "cursor": 4,
+        "events": 4,
+        "utf8_json_bytes": 23467,
+        "ascii_escaped_json_bytes": 23806,
+        "database_byte_limit": 900000,
+        "database_event_limit": 201
+      }
+    },
+    {
+      "source_key": "sowa_boston_ma",
+      "label": "SoWa Boston",
+      "feed_url": "https://www.sowaboston.com/events/",
+      "adapter": "html",
+      "timezone": "America/New_York",
+      "window_days": 60,
+      "includes_ongoing_multiday_events": true,
+      "strategy": "Native TEC JSON, existing parse_tribe mapper with full original description restored.",
+      "source_notes": "TEC First Friday calendar; Christmas Market lives on a separate seasonal page and is not inferred into this feed.",
+      "address_evidence_urls": [
+        "https://www.sowaboston.com/sowa-artist-studios/"
+      ],
+      "robots": {
+        "checked": true,
+        "routing": "ordinary fetch_publisher(respect_robots=True) with exact allowed_hosts",
+        "crawl_delay_seconds": null
+      },
+      "full_capture_file": "/workspace/scratch/3aa56d09ac0a/research/arts-live/sowa_boston_ma-rows.json",
+      "status": "verified_captured_worker_replay",
+      "count": 1,
+      "description_characters": {
+        "min": 427,
+        "max": 427
+      },
+      "missing_description_count": 0,
+      "missing_street_address_count": 0,
+      "actual_coordinate_count": 0,
+      "holds": [],
+      "raw_rows_sha256": "3b19c31dbd1c94c8ab88da799df60727c31c8d2e3116fafe7264343b0c091f00",
+      "worker_replay": {
+        "source_key": "sowa_boston_ma",
+        "worker_result": {
+          "complete": 1,
+          "failed": 0,
+          "staged": 1
+        },
+        "captured_rows": 1,
+        "staged_rows": 1,
+        "publisher_fetches": 1,
+        "checkpoint_writes": 0,
+        "max_checkpoint_utf8_bytes": 0,
+        "full_descriptions_and_streets_identical": true,
+        "partial_checkpoints_staged_zero": true
+      },
+      "street_addresses": [
+        "450 Harrison Avenue, Boston, MA 02118"
+      ],
+      "full_description_samples": [
+        {
+          "id": "44883",
+          "event_url": "https://www.sowaboston.com/event/first-friday-40/",
+          "starts_at": "2026-12-04T22:00:00+00:00",
+          "ends_at": "2026-12-05T02:00:00+00:00",
+          "venue_name": "SoWa Art + Design District (artist studios entrance)",
+          "venue_address": "450 Harrison Avenue, Boston, MA 02118",
+          "characters": 427,
+          "sha256": "1e9f55f939b4c29571f26103b9647211fea140c28cb84e30a68fb68fa604563e"
+        }
+      ]
+    },
+    {
+      "source_key": "mill_forge_makerspace_ma",
+      "label": "Mill Forge Makerspace",
+      "feed_url": "https://millforge.org/events/",
+      "adapter": "html",
+      "timezone": "America/New_York",
+      "window_days": 60,
+      "includes_ongoing_multiday_events": true,
+      "strategy": "Native TEC JSON, existing parse_tribe mapper with full original description restored.",
+      "source_notes": null,
+      "address_evidence_urls": [
+        "https://millforge.org/events/"
+      ],
+      "robots": {
+        "checked": true,
+        "routing": "ordinary fetch_publisher(respect_robots=True) with exact allowed_hosts",
+        "crawl_delay_seconds": null
+      },
+      "full_capture_file": "/workspace/scratch/3aa56d09ac0a/research/arts-live/mill_forge_makerspace_ma-rows.json",
+      "status": "verified_captured_worker_replay",
+      "count": 9,
+      "description_characters": {
+        "min": 450,
+        "max": 1813
+      },
+      "missing_description_count": 0,
+      "missing_street_address_count": 0,
+      "actual_coordinate_count": 9,
+      "holds": [],
+      "raw_rows_sha256": "863dd8802bd948b30335d8e8170ce7478ea3daca46ef57bc4e0bd543929d7781",
+      "worker_replay": {
+        "source_key": "mill_forge_makerspace_ma",
+        "worker_result": {
+          "complete": 1,
+          "failed": 0,
+          "staged": 9
+        },
+        "captured_rows": 9,
+        "staged_rows": 9,
+        "publisher_fetches": 1,
+        "checkpoint_writes": 0,
+        "max_checkpoint_utf8_bytes": 0,
+        "full_descriptions_and_streets_identical": true,
+        "partial_checkpoints_staged_zero": true
+      },
+      "street_addresses": [
+        "61 Endicott St. Building 46, Norwood, MA 02062"
+      ],
+      "full_description_samples": [
+        {
+          "id": "4967",
+          "event_url": "https://millforge.org/event/make-a-charcuterie-board-great-for-date-night-december-2026/",
+          "starts_at": "2026-12-01T23:00:00+00:00",
+          "ends_at": "2026-12-02T02:00:00+00:00",
+          "venue_name": "Mill Forge Makerspace",
+          "venue_address": "61 Endicott St. Building 46, Norwood, MA 02062",
+          "characters": 1813,
+          "sha256": "6704d0a14e42aae62f8610a2d7e796dab2f7b84b7e83d9b4bad491b3bb3100da"
+        },
+        {
+          "id": "5002",
+          "event_url": "https://millforge.org/event/personalize-laser-engraved-wood-cutting-boards-craft-gifts-from-the-heart-december-2026/",
+          "starts_at": "2026-12-13T15:00:00+00:00",
+          "ends_at": "2026-12-13T18:00:00+00:00",
+          "venue_name": "Mill Forge Makerspace",
+          "venue_address": "61 Endicott St. Building 46, Norwood, MA 02062",
+          "characters": 1034,
+          "sha256": "596f10510f508eec55d5ed2e677951bd823ef96b17403d12381edf59938a3eeb"
+        }
+      ]
+    },
+    {
+      "source_key": "arts_at_the_armory_ma",
+      "label": "Arts at the Armory",
+      "feed_url": "https://artsatthearmory.org/events.ics",
+      "adapter": "html",
+      "timezone": "America/New_York",
+      "window_days": 60,
+      "includes_ongoing_multiday_events": true,
+      "strategy": "Native ICS DTSTART/DTEND/DESCRIPTION; exact known purchase tracker removed; Cafe/Performance Hall room categories identify onsite venue.",
+      "source_notes": "Native ICS descriptions; reviewed Cafe/Performance Hall categories identify onsite rooms at 191 Highland Avenue.",
+      "address_evidence_urls": [
+        "https://artsatthearmory.org/contact-us/",
+        "https://artsatthearmory.org/frequently-asked-questions/"
+      ],
+      "robots": {
+        "checked": true,
+        "routing": "ordinary fetch_publisher(respect_robots=True) with exact allowed_hosts",
+        "crawl_delay_seconds": null
+      },
+      "full_capture_file": "/workspace/scratch/3aa56d09ac0a/research/arts-live/arts_at_the_armory_ma-rows.json",
+      "status": "verified_captured_worker_replay",
+      "count": 55,
+      "description_characters": {
+        "min": 62,
+        "max": 3576
+      },
+      "missing_description_count": 0,
+      "missing_street_address_count": 0,
+      "actual_coordinate_count": 0,
+      "holds": [
+        {
+          "native_id": "20322@artsatthearmory.org",
+          "reason": "native description is only Details TBA.; no full narrative available",
+          "disposition": "held"
+        }
+      ],
+      "raw_rows_sha256": "615c7ac6574c43b550767495d0d03f2797e56842325a8665c325965883cafc7d",
+      "worker_replay": {
+        "source_key": "arts_at_the_armory_ma",
+        "worker_result": {
+          "complete": 1,
+          "failed": 0,
+          "staged": 55
+        },
+        "captured_rows": 55,
+        "staged_rows": 55,
+        "publisher_fetches": 1,
+        "checkpoint_writes": 0,
+        "max_checkpoint_utf8_bytes": 0,
+        "full_descriptions_and_streets_identical": true,
+        "partial_checkpoints_staged_zero": true
+      },
+      "street_addresses": [
+        "191 Highland Avenue, Somerville, MA 02143"
+      ],
+      "full_description_samples": [
+        {
+          "id": "20120@artsatthearmory.org",
+          "event_url": "https://artsatthearmory.org/events/liana-flores/",
+          "starts_at": "2026-11-17T00:00:00+00:00",
+          "ends_at": "2026-11-17T03:30:00+00:00",
+          "venue_name": "Arts at the Armory Performance Hall",
+          "venue_address": "191 Highland Avenue, Somerville, MA 02143",
+          "characters": 3576,
+          "sha256": "2ee225654c4860b3727444a5cbc67fe6176f3cf93f80c53399e75312f57c234e"
+        },
+        {
+          "id": "19986@artsatthearmory.org",
+          "event_url": "https://artsatthearmory.org/events/arts-at-the-armory-spotlight-series-presents-tito-puente-jr/",
+          "starts_at": "2026-12-12T00:00:00+00:00",
+          "ends_at": "2026-12-12T03:30:00+00:00",
+          "venue_name": "Arts at the Armory Performance Hall",
+          "venue_address": "191 Highland Avenue, Somerville, MA 02143",
+          "characters": 2812,
+          "sha256": "f5542b4763b6584c514723e1df155e8af2ed8c77163c06a7db6a3ec6e5c2a1c8"
+        }
+      ]
+    },
+    {
+      "source_key": "trident_booksellers_ma",
+      "label": "Trident Booksellers & Cafe",
+      "feed_url": "https://tridentbookscafe.com/events",
+      "adapter": "html",
+      "timezone": "America/New_York",
+      "window_days": 60,
+      "includes_ongoing_multiday_events": true,
+      "strategy": "IndieCommerce full public event detail body and visible structured postal address; summaries and malformed JSON-LD locations are not used.",
+      "source_notes": null,
+      "address_evidence_urls": [
+        "Publisher event URLs in samples below contain visible full event addresses."
+      ],
+      "robots": {
+        "checked": true,
+        "routing": "ordinary fetch_publisher(respect_robots=True) with exact allowed_hosts",
+        "crawl_delay_seconds": 10
+      },
+      "full_capture_file": "/workspace/scratch/3aa56d09ac0a/research/arts-live/trident_booksellers_ma-rows.json",
+      "status": "verified_captured_worker_replay",
+      "count": 40,
+      "description_characters": {
+        "min": 267,
+        "max": 3661
+      },
+      "missing_description_count": 0,
+      "missing_street_address_count": 0,
+      "actual_coordinate_count": 0,
+      "holds": [],
+      "raw_rows_sha256": "b93f92a5e40e21e5fdf835b5a9370ad4723cf8ba843e94cf045b940a688ea185",
+      "worker_replay": {
+        "source_key": "trident_booksellers_ma",
+        "worker_result": {
+          "complete": 1,
+          "failed": 0,
+          "staged": 40
+        },
+        "captured_rows": 40,
+        "staged_rows": 40,
+        "publisher_fetches": 43,
+        "checkpoint_writes": 23,
+        "max_checkpoint_utf8_bytes": 70162,
+        "full_descriptions_and_streets_identical": true,
+        "partial_checkpoints_staged_zero": true
+      },
+      "street_addresses": [
+        "264 Huntington Ave, Boston, MA 02115",
+        "338 Newbury Street, Boston, MA 02115"
+      ],
+      "full_description_samples": [
+        {
+          "id": "3056",
+          "event_url": "https://tridentbookscafe.com/event/2026-11-21/meet-greet-dorinda-medley",
+          "starts_at": "2026-11-22T00:00:00+00:00",
+          "ends_at": "2026-11-22T02:00:00+00:00",
+          "venue_name": "Trident Booksellers & Cafe",
+          "venue_address": "338 Newbury Street, Boston, MA 02115",
+          "characters": 3661,
+          "sha256": "757f49c6650dbb672d9d6a0a2cc5d744a1cbbfc7a32348a4a8fc3c6e1dcd24b2"
+        },
+        {
+          "id": "3043",
+          "event_url": "https://tridentbookscafe.com/event/2026-11-15/kit-keenan-author-event",
+          "starts_at": "2026-11-15T19:00:00+00:00",
+          "ends_at": "2026-11-15T21:00:00+00:00",
+          "venue_name": "Trident Booksellers & Cafe",
+          "venue_address": "338 Newbury Street, Boston, MA 02115",
+          "characters": 2804,
+          "sha256": "433f173865496070a7127dae2bd4a164cb9274c883f0162c8e290a8f9f6e71f2"
+        }
+      ],
+      "checkpoint": {
+        "started_at": "2026-11-14T23:08:38.145017+00:00",
+        "window_start": "2026-11-14",
+        "manifest_count": 40,
+        "cursor": 40,
+        "events": 40,
+        "utf8_json_bytes": 70162,
+        "ascii_escaped_json_bytes": 70450,
+        "database_byte_limit": 900000,
+        "database_event_limit": 201
+      }
+    },
+    {
+      "source_key": "brookline_booksmith_ma",
+      "label": "Brookline Booksmith",
+      "feed_url": "https://brooklinebooksmith.com/upcoming-events",
+      "adapter": "html",
+      "timezone": "America/New_York",
+      "window_days": 60,
+      "includes_ongoing_multiday_events": true,
+      "strategy": "IndieCommerce full public event detail body and visible structured postal address; summaries and malformed JSON-LD locations are not used.",
+      "source_notes": null,
+      "address_evidence_urls": [
+        "Publisher event URLs in samples below contain visible full event addresses."
+      ],
+      "robots": {
+        "checked": true,
+        "routing": "ordinary fetch_publisher(respect_robots=True) with exact allowed_hosts",
+        "crawl_delay_seconds": 10
+      },
+      "full_capture_file": "/workspace/scratch/3aa56d09ac0a/research/arts-live/brookline_booksmith_ma-rows.json",
+      "status": "verified_captured_worker_replay",
+      "count": 20,
+      "description_characters": {
+        "min": 229,
+        "max": 4274
+      },
+      "missing_description_count": 0,
+      "missing_street_address_count": 0,
+      "actual_coordinate_count": 0,
+      "holds": [
+        {
+          "event_url": "https://brooklinebooksmith.com/event/2026-11-16/small-press-book-club-perfection",
+          "disposition": "held",
+          "reason": "boston_arts_street_unresolved"
+        },
+        {
+          "event_url": "https://brooklinebooksmith.com/event/2026-11-22/evening-emmaia-gelman",
+          "disposition": "held",
+          "reason": "boston_arts_street_unresolved"
+        }
+      ],
+      "raw_rows_sha256": "080c699a70e2456471cc32dd87ba71c6dccfcf32701e4c2af38c43df8433f915",
+      "worker_replay": {
+        "source_key": "brookline_booksmith_ma",
+        "worker_result": {
+          "complete": 1,
+          "failed": 0,
+          "staged": 20
+        },
+        "captured_rows": 20,
+        "staged_rows": 20,
+        "publisher_fetches": 23,
+        "checkpoint_writes": 12,
+        "max_checkpoint_utf8_bytes": 54062,
+        "full_descriptions_and_streets_identical": true,
+        "partial_checkpoints_staged_zero": true
+      },
+      "street_addresses": [
+        "15 Marion St, Brookline, MA 02446",
+        "279 Harvard Street, Brookline, MA 02446-2908",
+        "290 Harvard St, Brookline, MA 02446",
+        "361 Washington St, Brookline, MA 02445",
+        "890 Commonwealth Ave, Boston, MA 02215"
+      ],
+      "full_description_samples": [
+        {
+          "id": "3784",
+          "event_url": "https://brooklinebooksmith.com/event/2026-11-17/askold-melnyczuk-and-mary-cappello-p-carl",
+          "starts_at": "2026-11-18T00:00:00+00:00",
+          "ends_at": "2026-11-18T01:00:00+00:00",
+          "venue_name": "Brookline Booksmith",
+          "venue_address": "279 Harvard Street, Brookline, MA 02446-2908",
+          "characters": 4274,
+          "sha256": "805a9d5f695c87b3064dae4f4856a6afed339c7d4777667b43056c2a572f83eb"
+        },
+        {
+          "id": "3749",
+          "event_url": "https://brooklinebooksmith.com/event/2026-12-01/wbur-cityspace-joanne-chang",
+          "starts_at": "2026-12-01T23:30:00+00:00",
+          "ends_at": "2026-12-02T00:30:00+00:00",
+          "venue_name": "WBUR CitySpace",
+          "venue_address": "890 Commonwealth Ave, Boston, MA 02215",
+          "characters": 3491,
+          "sha256": "ac5759c629706a38807fe779f770fcbe80f14334c13d80cdc1e0a56346abfb7d"
+        }
+      ],
+      "checkpoint": {
+        "started_at": "2026-11-14T23:08:40.993250+00:00",
+        "window_start": "2026-11-14",
+        "manifest_count": 22,
+        "cursor": 22,
+        "events": 20,
+        "utf8_json_bytes": 54062,
+        "ascii_escaped_json_bytes": 54334,
+        "database_byte_limit": 900000,
+        "database_event_limit": 201
+      }
+    },
+    {
+      "source_key": "harvard_book_store_ma",
+      "label": "Harvard Book Store",
+      "feed_url": "https://www.harvard.com/upcoming-events",
+      "adapter": "html",
+      "timezone": "America/New_York",
+      "window_days": 60,
+      "includes_ongoing_multiday_events": true,
+      "strategy": "IndieCommerce full public event detail body and visible structured postal address; summaries and malformed JSON-LD locations are not used.",
+      "source_notes": null,
+      "address_evidence_urls": [
+        "Publisher event URLs in samples below contain visible full event addresses."
+      ],
+      "robots": {
+        "checked": true,
+        "routing": "ordinary fetch_publisher(respect_robots=True) with exact allowed_hosts",
+        "crawl_delay_seconds": 10
+      },
+      "full_capture_file": "/workspace/scratch/3aa56d09ac0a/research/arts-live/harvard_book_store_ma-rows.json",
+      "status": "verified_captured_worker_replay",
+      "count": 22,
+      "description_characters": {
+        "min": 2323,
+        "max": 7185
+      },
+      "missing_description_count": 0,
+      "missing_street_address_count": 0,
+      "actual_coordinate_count": 0,
+      "holds": [],
+      "raw_rows_sha256": "4b46099e7807bdbacdd8cf54407ef715287d45577a4a74b5e923661af1622d39",
+      "worker_replay": {
+        "source_key": "harvard_book_store_ma",
+        "worker_result": {
+          "complete": 1,
+          "failed": 0,
+          "staged": 22
+        },
+        "captured_rows": 22,
+        "staged_rows": 22,
+        "publisher_fetches": 24,
+        "checkpoint_writes": 13,
+        "max_checkpoint_utf8_bytes": 125734,
+        "full_descriptions_and_streets_identical": true,
+        "partial_checkpoints_staged_zero": true
+      },
+      "street_addresses": [
+        "1 Oxford Street, Cambridge, MA 02138",
+        "1256 Massachusetts Ave, Cambridge, MA 02138-3820",
+        "1446 Massachusetts Ave., Cambridge, MA 02138",
+        "40 Brattle Street, Cambridge, MA 02138"
+      ],
+      "full_description_samples": [
+        {
+          "id": "759",
+          "event_url": "https://www.harvard.com/event/tao26",
+          "starts_at": "2026-11-16T23:00:00+00:00",
+          "ends_at": "2026-11-17T00:00:00+00:00",
+          "venue_name": "Harvard Science Center, Hall B",
+          "venue_address": "1 Oxford Street, Cambridge, MA 02138",
+          "characters": 7185,
+          "sha256": "ade176c77e92a26c0f3fd0b4da1df822c2684a1db0b9d5ed83c87dd36b6e12b9"
+        },
+        {
+          "id": "762",
+          "event_url": "https://www.harvard.com/event/edwards26",
+          "starts_at": "2026-11-18T00:00:00+00:00",
+          "ends_at": "2026-11-18T01:00:00+00:00",
+          "venue_name": "Harvard Book Store",
+          "venue_address": "1256 Massachusetts Ave, Cambridge, MA 02138-3820",
+          "characters": 5859,
+          "sha256": "37f5e29b4c77a967d8277721bb83001657be50589413e6cd1da634f681f97044"
+        }
+      ],
+      "checkpoint": {
+        "started_at": "2026-11-14T23:08:42.153740+00:00",
+        "window_start": "2026-11-14",
+        "manifest_count": 22,
+        "cursor": 22,
+        "events": 22,
+        "utf8_json_bytes": 125734,
+        "ascii_escaped_json_bytes": 127670,
+        "database_byte_limit": 900000,
+        "database_event_limit": 201
+      }
+    },
+    {
+      "source_key": "porter_square_books_ma",
+      "label": "Porter Square Books",
+      "feed_url": "https://portersquarebooks.com/events",
+      "adapter": "html",
+      "timezone": "America/New_York",
+      "window_days": 60,
+      "includes_ongoing_multiday_events": true,
+      "strategy": "IndieCommerce full public event detail body and visible structured postal address; summaries and malformed JSON-LD locations are not used.",
+      "source_notes": null,
+      "address_evidence_urls": [
+        "Publisher event URLs in samples below contain visible full event addresses."
+      ],
+      "robots": {
+        "checked": true,
+        "routing": "ordinary fetch_publisher(respect_robots=True) with exact allowed_hosts",
+        "crawl_delay_seconds": 10
+      },
+      "full_capture_file": "/workspace/scratch/3aa56d09ac0a/research/arts-live/porter_square_books_ma-rows.json",
+      "status": "verified_captured_worker_replay",
+      "count": 18,
+      "description_characters": {
+        "min": 209,
+        "max": 4145
+      },
+      "missing_description_count": 0,
+      "missing_street_address_count": 0,
+      "actual_coordinate_count": 0,
+      "holds": [
+        {
+          "event_url": "https://portersquarebooks.com/event/2026-11-19/psb-story-hour",
+          "disposition": "held",
+          "reason": "boston_arts_description_missing"
+        }
+      ],
+      "raw_rows_sha256": "af5652d106e34add36ce2df78146f3afbbeb036190d16a35d4b4db58b67f73cd",
+      "worker_replay": {
+        "source_key": "porter_square_books_ma",
+        "worker_result": {
+          "complete": 1,
+          "failed": 0,
+          "staged": 18
+        },
+        "captured_rows": 18,
+        "staged_rows": 18,
+        "publisher_fetches": 22,
+        "checkpoint_writes": 13,
+        "max_checkpoint_utf8_bytes": 45554,
+        "full_descriptions_and_streets_identical": true,
+        "partial_checkpoints_staged_zero": true
+      },
+      "street_addresses": [
+        "14 Tyler Street, Somerville, MA 02143",
+        "1815 Massachusetts Avenue, Cambridge, MA 02140-1413",
+        "285 Washington St., Somerville, MA 02143",
+        "50 Liberty Drive: Suite 500, Boston, MA 02210"
+      ],
+      "full_description_samples": [
+        {
+          "id": "4236",
+          "event_url": "https://portersquarebooks.com/event/2026-11-17/capacity-joanne-chang-author-joy-cookies",
+          "starts_at": "2026-11-18T00:00:00+00:00",
+          "ends_at": "2026-11-18T01:00:00+00:00",
+          "venue_name": "Cambridge Edition",
+          "venue_address": "1815 Massachusetts Avenue, Cambridge, MA 02140-1413",
+          "characters": 4145,
+          "sha256": "8476c5952f6805d0a4f9047c129fea24af730f4f87b6ed2c7c5b38df797a7d92"
+        },
+        {
+          "id": "4299",
+          "event_url": "https://portersquarebooks.com/event/2026-11-20/grubbie-debut-margaret-woo-author-city-jade-trees-conversation-alysia-abbott",
+          "starts_at": "2026-11-21T00:00:00+00:00",
+          "ends_at": "2026-11-21T01:00:00+00:00",
+          "venue_name": "Boston Edition GrubStreet Center for Creative Writing",
+          "venue_address": "50 Liberty Drive: Suite 500, Boston, MA 02210",
+          "characters": 3573,
+          "sha256": "7a3ebc1b9ace9cb543c40fb3d3e355c42556acc1fdb7501cca9650ad10fdfb94"
+        }
+      ],
+      "checkpoint": {
+        "started_at": "2026-11-14T23:08:38.147159+00:00",
+        "window_start": "2026-11-14",
+        "manifest_count": 19,
+        "cursor": 19,
+        "events": 18,
+        "utf8_json_bytes": 45554,
+        "ascii_escaped_json_bytes": 45779,
+        "database_byte_limit": 900000,
+        "database_event_limit": 201
+      }
+    },
+    {
+      "source_key": "boston_public_library_biblioevents_ma",
+      "label": "Boston Public Library",
+      "feed_url": "https://bpl.bibliocommons.com/v2/events",
+      "adapter": "html",
+      "timezone": "America/New_York",
+      "window_days": 7,
+      "includes_ongoing_multiday_events": true,
+      "strategy": "Existing BiblioEvents page_rows parser, complete native gateway pagination, 7-day physical event window plus ongoing multi-day events.",
+      "source_notes": "Complete rolling 7-day window of physical branch/offsite events; native gateway date filters are ignored upstream.",
+      "address_evidence_urls": [
+        "https://bpl.bibliocommons.com/v2/locations",
+        "https://www.bpl.org/locations/chinatown/"
+      ],
+      "robots": {
+        "checked": true,
+        "routing": "ordinary fetch_publisher(respect_robots=True) with exact allowed_hosts",
+        "crawl_delay_seconds": null
+      },
+      "full_capture_file": "/workspace/scratch/3aa56d09ac0a/research/arts-live/boston_public_library_biblioevents_ma-rows.json",
+      "status": "verified_captured_worker_replay",
+      "count": 306,
+      "description_characters": {
+        "min": 113,
+        "max": 2430
+      },
+      "missing_description_count": 0,
+      "missing_street_address_count": 0,
+      "actual_coordinate_count": 306,
+      "holds": [],
+      "raw_rows_sha256": "209d28436d6f76339bb077eebcede675e1e64c6b1bf5bcccf2a7ebdca5889d1e",
+      "worker_replay": {
+        "source_key": "boston_public_library_biblioevents_ma",
+        "worker_result": {
+          "complete": 1,
+          "failed": 0,
+          "staged": 306
+        },
+        "captured_rows": 306,
+        "staged_rows": 306,
+        "publisher_fetches": 33,
+        "checkpoint_writes": 17,
+        "max_checkpoint_utf8_bytes": 446704,
+        "full_descriptions_and_streets_identical": true,
+        "partial_checkpoints_staged_zero": true
+      },
+      "street_addresses": [
+        "1350 Blue Hill Ave, Mattapan, MA 02126",
+        "149 Dudley Street, Roxbury, MA 02119",
+        "1497 Tremont St, Roxbury, MA 02120",
+        "151 Cambridge St, Boston, MA 02114",
+        "179 Main St, Charlestown, MA 02129",
+        "1961 Centre St, West Roxbury, MA 02132",
+        "2 Boylston Street, Boston, MA 02116",
+        "2044 Columbus Ave, Roxbury, MA 02119",
+        "25 Parmenter St, Boston, MA 02113",
+        "27 Richmond St, Dorchester, MA 02124",
+        "30 South Street, Jamaica Plain, MA 02130",
+        "300 North Harvard St, Allston, MA 02134",
+        "35 Harvard Ave, Hyde Park, MA 02136",
+        "365 Bremen St, East Boston, MA 02128",
+        "40 Academy Hill Rd, Brighton, MA 02135",
+        "41 Geneva Ave, Dorchester, MA 02121",
+        "419 Faneuil St, Brighton, MA 02135",
+        "4246 Washington St, Roslindale, MA 02131",
+        "433 Centre St, Jamaica Plain, MA 02130",
+        "500 Columbia Rd, Dorchester, MA 02125",
+        "646 East Broadway, South Boston, MA 02127",
+        "690 Adams Street, Dorchester, MA 02122",
+        "690 Washington St, Dorchester, MA 02124",
+        "700 Boylston Street, Boston, MA 02116"
+      ],
+      "full_description_samples": [
+        {
+          "id": "6ad26a13de300e00451ae0d1",
+          "event_url": "https://bpl.bibliocommons.com/v2/events/6ad26a13de300e00451ae0d1",
+          "starts_at": "2026-11-12T05:00:00+00:00",
+          "ends_at": "2027-01-07T04:59:59+00:00",
+          "venue_name": "Jamaica Plain",
+          "venue_address": "30 South Street, Jamaica Plain, MA 02130",
+          "characters": 2430,
+          "sha256": "27b7c259d3e8b1353cea140fa9b353f89e92040e2df5a313f52c4b3042d2ca9e"
+        },
+        {
+          "id": "6ac3a14d9d27a000454ea582",
+          "event_url": "https://bpl.bibliocommons.com/v2/events/6ac3a14d9d27a000454ea582",
+          "starts_at": "2026-11-19T23:30:00+00:00",
+          "ends_at": "2026-11-20T00:30:00+00:00",
+          "venue_name": "Brighton",
+          "venue_address": "40 Academy Hill Rd, Brighton, MA 02135",
+          "characters": 2212,
+          "sha256": "f7317afaa7bd03289f5f51f64677fa36886c1975bb3392499fb79b1e44173f27"
+        }
+      ],
+      "checkpoint": {
+        "started_at": "2026-11-14T23:10:56.341271+00:00",
+        "window_start": "2026-11-14",
+        "manifest_count": 33,
+        "cursor": 33,
+        "events": 306,
+        "utf8_json_bytes": 446704,
+        "ascii_escaped_json_bytes": 448394,
+        "database_byte_limit": 900000,
+        "database_event_limit": 500
+      }
+    }
+  ],
+  "held_or_excluded_items": [
+    {
+      "source_key": "brookline_booksmith_ma",
+      "event_url": "https://brooklinebooksmith.com/event/2026-11-16/small-press-book-club-perfection",
+      "reason": "Publisher explicitly says meeting is on Zoom; no physical venue assigned."
+    },
+    {
+      "source_key": "brookline_booksmith_ma",
+      "event_url": "https://brooklinebooksmith.com/event/2026-11-22/evening-emmaia-gelman",
+      "reason": "Publisher intentionally shares exact physical location only with registrants by email; no guess substituted."
+    },
+    {
+      "source_key": "porter_square_books_ma",
+      "event_url": "https://portersquarebooks.com/event/2026-11-19/psb-story-hour",
+      "reason": "Native full detail body is empty; title does not substitute for description."
+    },
+    {
+      "source_key": "arts_at_the_armory_ma",
+      "native_id": "20322@artsatthearmory.org",
+      "reason": "Native description is only Details TBA."
+    }
+  ],
+  "discovered_remaining": [
+    {
+      "name": "SoWa Christmas Market",
+      "url": "https://www.sowaboston.com/sowa-christmas-market/",
+      "reason": "Separate seasonal program page outside TEC First Friday source; next batch candidate."
+    },
+    {
+      "name": "Museum of Fine Arts Boston",
+      "url": "https://www.mfa.org/programs",
+      "reason": "Accessible Drupal calendar; needs source-specific detail/date integration in subsequent batch."
+    },
+    {
+      "name": "ICA Boston",
+      "url": "https://www.icaboston.org/calendar/",
+      "reason": "Accessible custom WordPress calendar; needs native detail/date integration in subsequent batch."
+    },
+    {
+      "name": "Boston Center for the Arts",
+      "url": "https://bostonarts.org/experiences/",
+      "reason": "Accessible custom WordPress event calendar; subsequent batch candidate."
+    },
+    {
+      "name": "USS Constitution Museum",
+      "url": "https://ussconstitutionmuseum.org/events/",
+      "reason": "Official family calendar; subsequent batch candidate."
+    },
+    {
+      "name": "Boston Children's Museum",
+      "url": "https://bostonchildrensmuseum.org/calendar/steam-events-calendar/",
+      "reason": "Calendar access returned403; do not bypass publisher restriction."
+    },
+    {
+      "name": "Brattle Theatre",
+      "url": "https://brattlefilm.org/coming-soon/",
+      "reason": "Calendar access returned403; do not bypass publisher restriction."
+    }
+  ]
+}
