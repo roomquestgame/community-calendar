@@ -19,7 +19,7 @@ The backend enrollment is committed in RoomQuestGame migration
 | `gulf_gallery_night_fl` | https://gallerynightpensacola.org/2025-dates/ | 2 | Visible edition year and verified local hours; corridor location awaits resolution |
 | `gulf_maple_leaf_la` | https://www.mapleleafbar.com/calendar | 16 | Complete Wix event list; preserve separate shows |
 | `gulf_nola_christmasfest_la` | https://nolachristmasfest.com/plan-your-visit/ | 18 | Explicit admission sessions, including December-to-January rollover |
-| `municipal_mapsee_d871199cc551aa175f82de2b` | https://neworleanscitypark.org/calendar/ | 18 | Repair existing source 4585 with venue-bearing listing JSON-LD |
+| `municipal_mapsee_d871199cc551aa175f82de2b` | https://neworleanscitypark.org/calendar/ | 16 | Repair existing source 4585 with venue-bearing listing JSON-LD |
 | `gulf_national_wwii_museum_la` | https://www.nationalww2museum.org/events/events-calendar | 41 | Explicit museum-campus filter; timed physical events only |
 | `gulf_tipitinas_la` | https://tipitinas.com/calendar/ | 27 | Validated backup; all captured occurrences already covered by Ticketmaster/TicketWeb |
 
@@ -33,6 +33,10 @@ to avoid duplicating its existing provider coverage.
 - The Crescent overview and City Park calendar both list the City Park farmers
   market. City Park's explicitly dated weekly series is authoritative. The
   Crescent parser validates all three cards but emits only Uptown and Mid-City.
+- City Park's exact `arts-market-new-orleans-holiday-market` series is already
+  covered by the primary Arts New Orleans iCal source
+  `municipal_mapsee_123326fd5be1b9af7ecaaf9b`. It is omitted from this secondary
+  calendar; the November 14 audit matched both December 12/13 occurrences.
 - Wix parsers require a complete public widget (`hasMore: false`), published
   scheduled events, explicit timestamps, the reviewed timezone and matching
   event address/coordinate fields. Featured widgets are not complete calendars.

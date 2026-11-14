@@ -102,7 +102,7 @@ def test_nola_rejects_conflicting_or_unverified_schedules(alteration, error):
 
 def test_city_park_completes_horizon_in_two_pages_with_actual_venues():
     rows, fetch = run_city()
-    assert len(rows) == len({row['id'] for row in rows}) == 18
+    assert len(rows) == len({row['id'] for row in rows}) == 16
     assert fetch.call_count == 2
     titles = {row['title'] for row in rows}
     assert {'CPC-CPIA Board Meeting', 'Jingle Bells and Beer', 'Holiday Open House'} <= titles
@@ -117,6 +117,24 @@ def test_city_park_completes_horizon_in_two_pages_with_actual_venues():
     assert all(row['lat'] is row['lng'] is None for row in rows)
     assert all('2027-01-17' not in row['starts_at'] for row in rows)
     assert all(row['details_evidence_url'] == row['event_url'] for row in rows)
+
+
+def test_city_park_defers_only_reviewed_holiday_art_series_to_organizer():
+    rows, _ = run_city()
+    overlaps = {
+        'https://neworleanscitypark.org/event/arts-market-new-orleans-holiday-market/2026-12-12/',
+        'https://neworleanscitypark.org/event/arts-market-new-orleans-holiday-market/2026-12-13/',
+    }
+    assert not overlaps & {row['event_url'] for row in rows}
+    # Matching titles alone do not identify organizer-owned duplicates. An
+    # unrelated series with the same title must remain eligible for collection.
+    pages = city_pages()
+    page_two = seasonal.SOURCES[seasonal.CITY_PARK] + 'list/page/2/'
+    pages[page_two] = pages[page_two].replace('/arts-market-new-orleans-holiday-market/',
+                                             '/community-holiday-art-show/')
+    other_rows, _ = run_city(pages)
+    assert len(other_rows) == 18
+    assert sum('/community-holiday-art-show/' in row['event_url'] for row in other_rows) == 2
 
 
 def _alter_events(page, change):
@@ -147,7 +165,7 @@ def test_city_park_unknown_venue_does_not_inherit_source_location():
     root = seasonal.SOURCES[seasonal.CITY_PARK]
     pages[root] = _alter_events(pages[root], lambda events: events[1].update(location={}))
     rows, _ = run_city(pages)
-    assert len(rows) == 17
+    assert len(rows) == 15
     assert not any('2026-11-15' in row['starts_at'] for row in rows)
 
 
@@ -215,7 +233,7 @@ def test_preview_dispatch_uses_paced_fetcher_and_publisher_evidence(monkeypatch,
     fetch = Mock(side_effect=lambda url, accept, **kwargs: pages[url])
     monkeypatch.setattr('roomquest.preview_worker.fetch_publisher', fetch)
     preview = preview_source(source(key))
-    assert preview['p_future_count'] == 18
+    assert preview['p_future_count'] == (16 if key == seasonal.CITY_PARK else 18)
     assert preview['p_parser_capability'] == 'publisher_event_candidates_v1'
     assert preview['p_venue_count'] == 0
     for call in fetch.call_args_list:
