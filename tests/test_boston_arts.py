@@ -164,6 +164,19 @@ class BostonArtsTests(unittest.TestCase):
         self.assertEqual(final['events'][0]['venue_address'], '2 Boylston Street, Boston, MA 02116')
         self.assertTrue(all(row['lat'] == 42.352 for row in final['events']))
         self.assertEqual([parse_qs(urlsplit(c.args[0]).query)['page'][0] for c in fetch.call_args_list], ['1', '2', '3'])
+        self.assertTrue(all(parse_qs(urlsplit(c.args[0]).query)['sort'] == ['definition.start asc'] for c in fetch.call_args_list))
+        self.assertEqual(len(final['checkpoint']['seen_ids']),final['checkpoint']['native_count'])
+
+    def test_bpl_duplicate_or_missing_native_ids_never_complete_even_outside_window(self):
+        duplicate=Mock(side_effect=[bpl_payload(1),bpl_payload(2,day=28,identity=f'{1:024x}')])
+        with self.assertRaisesRegex(ValueError,'pagination_invalid'):
+            b.collect_chunk(source(b.BPL),duplicate,now=NOW)
+        payloads=[json.loads(bpl_payload(n)) for n in (1,2,3)]
+        for item in payloads:item['events']['pagination']['count']=4
+        first=b.collect_chunk(source(b.BPL),Mock(side_effect=[json.dumps(x)for x in payloads[:2]]),now=NOW)
+        self.assertFalse(first['complete']);self.assertEqual(first['events'],[])
+        with self.assertRaisesRegex(ValueError,'pagination_invalid'):
+            b.collect_chunk(source(b.BPL),Mock(return_value=json.dumps(payloads[2])),checkpoint=first['checkpoint'],now=NOW)
 
     def test_bpl_changed_page_manifest_and_cross_source_checkpoint_fail(self):
         first = b.collect_chunk(source(b.BPL), Mock(side_effect=[bpl_payload(1), bpl_payload(2)]), now=NOW)
@@ -171,6 +184,15 @@ class BostonArtsTests(unittest.TestCase):
             b.collect_chunk(source(b.BPL), Mock(return_value=bpl_payload(3, pages=4)), checkpoint=first['checkpoint'], now=NOW)
         state = deepcopy(first['checkpoint'])
         state['source_key'] = b.PAO
+        with self.assertRaisesRegex(ValueError, 'checkpoint_invalid'):
+            b.collect_chunk(source(b.BPL), Mock(), checkpoint=state, now=NOW)
+        state = deepcopy(first['checkpoint'])
+        state['queue'][0]['url'] = 'https://gateway.bibliocommons.com/v2/libraries/bpl/events?limit=100&page=1'
+        state['manifest_hash'] = b._hash(state['queue'])
+        with self.assertRaisesRegex(ValueError, 'checkpoint_invalid'):
+            b.collect_chunk(source(b.BPL), Mock(), checkpoint=state, now=NOW)
+        state = deepcopy(first['checkpoint'])
+        state['seen_ids'].append(state['seen_ids'][0])
         with self.assertRaisesRegex(ValueError, 'checkpoint_invalid'):
             b.collect_chunk(source(b.BPL), Mock(), checkpoint=state, now=NOW)
 

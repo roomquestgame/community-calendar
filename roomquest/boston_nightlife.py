@@ -87,7 +87,13 @@ VENUE_KEYS = {
 POINTS = {"satellite": (42.3727419, -71.0914447),
           "castle_southie": (42.337764, -71.0565789),
           "castle_norwood": (42.1688601, -71.1922675),
-          "bebop": (42.3467319, -71.0887255)}
+          "bebop": (42.3467319, -71.0887255),
+          # Exact !3d/!4d target markers in the publisher's Get Directions
+          # links, not the different @latitude,longitude map viewport centers.
+          # https://lamplighterbrewing.com/pages/110-n-first-street-cx-taproom
+          "lamp_cx": (42.372213, -71.0753146),
+          # https://www.dorchesterbrewing.com/contact-us/
+          "dorchester": (42.322132, -71.0623169)}
 MAX_DESCRIPTION = 12000
 MAX_EVENTS = 200
 MAX_CHECKPOINT_BYTES = 900000

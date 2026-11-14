@@ -1,0 +1,170 @@
+{
+  "source_key": "boston_public_library_biblioevents_ma",
+  "production_source_id": 5581,
+  "production_observation": {
+    "checked_at": "2026-11-14T23:33:48.189911+00:00",
+    "preview_future_count": 298,
+    "stage_future_count": 298,
+    "missing_capture_ids": [
+      "6989f7708d5e2d09335e06d2",
+      "6a95bf4d3b6c71003e5ca74e",
+      "6a96cfa969166f088b966788",
+      "6a96d4a569166f088b9668fa",
+      "6ab12ec68cf597003f955559",
+      "6aba9b71a85a2c00337b9738",
+      "6acfc8f2fee2d21deb233df6",
+      "6af8996e4896360041d1710c"
+    ],
+    "followup_read_only_query": "All eight external_event_id values absent from staging at any start time; no saved fetch checkpoint."
+  },
+  "diagnosis": "Production completed with 298 parsed/staged rows while the unchanged full native ID set has 306 eligible events. The unqualified events collection has no requested stable order; observed pages differ radically in ordering. Exact raw production pages are not retained, so server-side overlap is inferred. Explicit publisher-supported sort plus native-ID cardinality checks prevent silent incomplete walks.",
+  "publisher_sort": "definition.start asc",
+  "official_client_asset": "https://cdn-nerf.bibliocommons.com/app.main_fa15a6122f23d68a2374.js",
+  "official_client_call": "getCalloutFeaturedEvent -> getEvents({featured:true,cancelled:false,full:false,limit:1,sort:\"definition.start asc\"})",
+  "source_page": "https://bpl.bibliocommons.com/v2/events",
+  "summary": {
+    "captured_at": "2026-11-14T23:40:31.364692+00:00",
+    "native_count": 3259,
+    "native_unique_ids": 3259,
+    "native_pages": 33,
+    "eligible_events": 306,
+    "previous_eligible_events": 306,
+    "missing_previous_ids": [],
+    "recovered_missing_ids": [
+      "6989f7708d5e2d09335e06d2",
+      "6a95bf4d3b6c71003e5ca74e",
+      "6a96cfa969166f088b966788",
+      "6a96d4a569166f088b9668fa",
+      "6ab12ec68cf597003f955559",
+      "6aba9b71a85a2c00337b9738",
+      "6acfc8f2fee2d21deb233df6",
+      "6af8996e4896360041d1710c"
+    ],
+    "shared_native_descriptions_and_streets_identical": true,
+    "checkpoint_utf8_bytes": 538850,
+    "checkpoint_ascii_escaped_bytes": 540540,
+    "native_id_set_matches_original_capture": true
+  },
+  "worker_replay": {
+    "source_key": "boston_public_library_biblioevents_ma",
+    "worker_result": {
+      "complete": 1,
+      "failed": 0,
+      "staged": 306
+    },
+    "staged_rows": 306,
+    "publisher_fetches": 33,
+    "checkpoint_writes": 17,
+    "max_checkpoint_utf8_bytes": 538850,
+    "native_ids_seen": 3259,
+    "native_total": 3259,
+    "full_descriptions_streets_and_points_identical": true,
+    "partial_checkpoints_staged_zero": true,
+    "actual_integrated_registry": true
+  },
+  "recovered_records": [
+    {
+      "id": "6989f7708d5e2d09335e06d2",
+      "title": "ESOL Conversation Group (Advanced Beginner and Higher) — No Sign-Up Needed",
+      "starts_at": "2026-11-20T16:00:00+00:00",
+      "ends_at": "2026-11-20T17:30:00+00:00",
+      "venue_name": "Central Library in Copley Square",
+      "venue_address": "700 Boylston Street, Boston, MA 02116",
+      "event_url": "https://bpl.bibliocommons.com/v2/events/6989f7708d5e2d09335e06d2",
+      "description_characters": 745,
+      "description_sha256": "7f4c0ce3a03b2f54518a655c3092c7a771d16f135dbf0291c984d56f6cb6a713"
+    },
+    {
+      "id": "6a95bf4d3b6c71003e5ca74e",
+      "title": "Boston Teachers Union: Homework Help",
+      "starts_at": "2026-11-19T21:00:00+00:00",
+      "ends_at": "2026-11-19T23:00:00+00:00",
+      "venue_name": "East Boston",
+      "venue_address": "365 Bremen St, East Boston, MA 02128",
+      "event_url": "https://bpl.bibliocommons.com/v2/events/6a95bf4d3b6c71003e5ca74e",
+      "description_characters": 487,
+      "description_sha256": "97ebfc1bdd8e48c1583f50af6d35d04489fe7768e5bc7e0d18ced0eb659b3cb3"
+    },
+    {
+      "id": "6a96cfa969166f088b966788",
+      "title": "Boston Teachers Union: Homework Help",
+      "starts_at": "2026-11-19T20:00:00+00:00",
+      "ends_at": "2026-11-19T22:00:00+00:00",
+      "venue_name": "South Boston",
+      "venue_address": "646 East Broadway, South Boston, MA 02127",
+      "event_url": "https://bpl.bibliocommons.com/v2/events/6a96cfa969166f088b966788",
+      "description_characters": 488,
+      "description_sha256": "c75e1c7f6fb8adf0460f98dc78681b03063f895f460f69e659da55a20bbd40f7"
+    },
+    {
+      "id": "6a96d4a569166f088b9668fa",
+      "title": "Boston Teachers Union: Homework Help",
+      "starts_at": "2026-11-19T21:00:00+00:00",
+      "ends_at": "2026-11-19T23:00:00+00:00",
+      "venue_name": "Roslindale",
+      "venue_address": "4246 Washington St, Roslindale, MA 02131",
+      "event_url": "https://bpl.bibliocommons.com/v2/events/6a96d4a569166f088b9668fa",
+      "description_characters": 487,
+      "description_sha256": "5e5ba18f12905ac5f98cc11d1362816372da97f1930efed0d239331c97f93600"
+    },
+    {
+      "id": "6ab12ec68cf597003f955559",
+      "title": "Boston Teachers Union: Homework Help",
+      "starts_at": "2026-11-19T20:00:00+00:00",
+      "ends_at": "2026-11-19T22:00:00+00:00",
+      "venue_name": "Mattapan",
+      "venue_address": "1350 Blue Hill Ave, Mattapan, MA 02126",
+      "event_url": "https://bpl.bibliocommons.com/v2/events/6ab12ec68cf597003f955559",
+      "description_characters": 489,
+      "description_sha256": "749814d7955427a25332aba69f0739c1114c6e6ea01b3232f57215b5a3330b0e"
+    },
+    {
+      "id": "6aba9b71a85a2c00337b9738",
+      "title": "Poetry Workshop for Teens with Boston Youth Poet Laureate Ailin Sha",
+      "starts_at": "2026-11-20T20:00:00+00:00",
+      "ends_at": "2026-11-20T21:00:00+00:00",
+      "venue_name": "Shaw-Roxbury",
+      "venue_address": "149 Dudley Street, Roxbury, MA 02119",
+      "event_url": "https://bpl.bibliocommons.com/v2/events/6aba9b71a85a2c00337b9738",
+      "description_characters": 383,
+      "description_sha256": "7bb0f76c667b36626dd2596ee18e3668794a1e599e57a8b1acfe7db1f152c6b0"
+    },
+    {
+      "id": "6acfc8f2fee2d21deb233df6",
+      "title": "Davey the Clown Show",
+      "starts_at": "2026-11-21T15:30:00+00:00",
+      "ends_at": "2026-11-21T16:30:00+00:00",
+      "venue_name": "Roslindale",
+      "venue_address": "4246 Washington St, Roslindale, MA 02131",
+      "event_url": "https://bpl.bibliocommons.com/v2/events/6acfc8f2fee2d21deb233df6",
+      "description_characters": 651,
+      "description_sha256": "9e883805e71ad3512702c6c4f9a8e655f030e3f26e163e4f8753775d80dcad0e"
+    },
+    {
+      "id": "6af8996e4896360041d1710c",
+      "title": "RISZE Health & Wellness: Understanding Consumer Labels",
+      "starts_at": "2026-11-21T20:00:00+00:00",
+      "ends_at": "2026-11-21T21:30:00+00:00",
+      "venue_name": "Shaw-Roxbury",
+      "venue_address": "149 Dudley Street, Roxbury, MA 02119",
+      "event_url": "https://bpl.bibliocommons.com/v2/events/6af8996e4896360041d1710c",
+      "description_characters": 436,
+      "description_sha256": "6305acb6de56464d08c3e653ecf47a28448175812df79f13c69de5c884fe4e77"
+    }
+  ],
+  "tests": {
+    "suite": "tests.test_boston_arts",
+    "count": 10,
+    "new_checks": [
+      "exact native sort URL",
+      "duplicate upstream ID even outside eligible horizon",
+      "final native total shortfall",
+      "changed native total/page count",
+      "old unsorted or duplicated-ID checkpoint rejected",
+      "no partial staging"
+    ]
+  },
+  "capture_path": "/workspace/scratch/3aa56d09ac0a/research/bpl-diagnosis",
+  "raw_rows_sha256": "209d28436d6f76339bb077eebcede675e1e64c6b1bf5bcccf2a7ebdca5889d1e",
+  "production_refresh_issued_by_agent": false
+}

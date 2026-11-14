@@ -4,7 +4,7 @@
 
 This ledger contains only newly discovered feeds and one registered source with no active public occurrences. It is a prepared release inventory; source captures are not production results. Existing working production coverage is excluded.
 
-All sources enter the existing HTML category worker with exact feed identity, America/New_York clocks, ordinary guarded publisher requests, full narrative validation, and complete street addresses. The matching application migration is `20261114230726_boston_source_expansion.sql`. Twenty-one calendars reuse the durable complete-only checkpoint path. No partial detail snapshot is staged.
+All sources enter the existing HTML category worker with exact feed identity, America/New_York clocks, ordinary guarded publisher requests, full narrative validation, and complete street addresses. The matching application migration is `20261114232117_boston_source_expansion.sql`. Twenty-one calendars reuse the durable complete-only checkpoint path. No partial detail snapshot is staged.
 
 | Publisher | Official calendar | Change | Captured occurrences | Window / method |
 | --- | --- | --- | ---: | --- |
@@ -35,13 +35,19 @@ All sources enter the existing HTML category worker with exact feed identity, Am
 | Friends of Titus Sparrow Park | [https://www.titussparrowpark.org/events](https://www.titussparrowpark.org/events) | New source | 4 | Official park, garden club and food-pantry programs; preserve each event's actual venue. |
 | Trident Booksellers & Cafe | [https://tridentbookscafe.com/events](https://tridentbookscafe.com/events) | New source | 40 | Explicit timed native occurrences in the next 60 days; ongoing programs retained when their verified end is future. |
 
-## Remaining review and implementation
+## Remaining implementation moved to the second batch
 
-The next consolidated batch will review the accessible calendars below. None is represented as already deployed by this inventory.
+The accessible museum, Brookline Library, Boston College, nature, volunteer,
+food/venue and seasonal market sources are implemented in the
+[second consolidated ledger](REMAINING_SOURCES_20261114.md). It also completes the
+six actual production geocoder holds without re-enrolling working registrations.
+ShowUp remains paused because its latest published occurrence is in the past.
 
-- Registered zero-public repairs: Public Library of Brookline and ShowUp; Boston College is paused after a prior network failure and requires a complete identity/content review.
-- Arts and family candidates: Museum of Fine Arts, ICA Boston, USS Constitution Museum, Boston Center for the Arts, and the separate SoWa Christmas Market program.
-- Outdoors and community candidates: Rose Kennedy Greenway, Boston Nature Center, Boston Cares, and event-level meeting-point review for the Esplanade Association.
+The first collector/backend release is deployed through collector PR #220,
+backend PR #927 and successful Database run 43653097823. Production returned
+HTTP 403 for Booksmith, Harvard, Porter Square and Trident; those profiles are
+paused and must not be counted as working or retried through alternate routes.
+Captured counts above remain a historical research snapshot.
 
 ## Genuine access or publisher-content holds
 

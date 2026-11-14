@@ -77,6 +77,19 @@ def test_multivenue_calendar_never_assigns_missing_address_to_headquarters():
     assert b._square_location(b.REMNANT, node) == "satellite"
 
 
+@pytest.mark.parametrize("key,venue_key,point", [
+    (b.DORCHESTER, "dorchester", (42.322132, -71.0623169)),
+    (b.LAMPLIGHTER, "lamp_cx", (42.372213, -71.0753146)),
+])
+def test_publisher_direction_target_point_requires_exact_source_venue_and_street(key, venue_key, point):
+    venue, address, _ = b.VENUES[venue_key]
+    assert b.reviewed_venue_location(key, venue, address) == point
+    assert b.reviewed_venue_location(b.NOTCH, venue, address) is None
+    assert b.reviewed_venue_location(key, venue, address.replace("021", "022")) is None
+    if key == b.LAMPLIGHTER:
+        assert b.reviewed_venue_location(key, *b.VENUES["lamp_broadway"][:2]) is None
+
+
 def test_mec_listing_preserves_overnight_clocks_instead_of_midnight_jsonld():
     day = future_day()
     tomorrow = day + timedelta(days=1)

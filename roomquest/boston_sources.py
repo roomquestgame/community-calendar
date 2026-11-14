@@ -17,8 +17,12 @@ MAX_RECORDS = 500
 
 
 def adapters():
-    from roomquest import boston_arts, boston_nightlife, boston_community
-    return (boston_arts, boston_nightlife, boston_community)
+    from roomquest import (
+        boston_arts, boston_nightlife, boston_community,
+        boston_arts_remaining, boston_nightlife_remaining, boston_community_remaining,
+    )
+    return (boston_arts, boston_nightlife, boston_community,
+            boston_arts_remaining, boston_nightlife_remaining, boston_community_remaining)
 
 
 def adapter_for(key):

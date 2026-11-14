@@ -1,0 +1,777 @@
+{
+  "verified_at": "2026-11-14T23:36:15.885432+00:00",
+  "native_capture_date": "2026-11-14",
+  "purpose": "Remaining Boston arts/family sources, four new exact profiles and one empty existing-source repair.",
+  "production_status": "Captured worker replay is not proof of publisher access or publication from production; batch owner records production rollout separately.",
+  "total_captured_rows": 589,
+  "profiles": [
+    {
+      "source_key": "museum_fine_arts_boston_ma",
+      "label": "Museum of Fine Arts, Boston",
+      "source_url": "https://www.mfa.org/programs",
+      "kind": "html",
+      "platform_adapter": "html",
+      "timezone": "America/New_York",
+      "existing_source_id": null,
+      "notes": "Complete native program-calendar pagination and selected-occurrence full detail bodies; rolling 60-day window.",
+      "capture_summary": {
+        "key": "museum_fine_arts_boston_ma",
+        "count": 317,
+        "description_min": 90,
+        "description_max": 8351,
+        "addresses": [
+          "465 Huntington Avenue, Boston, MA 02115"
+        ],
+        "missing_description": 0,
+        "missing_address": 0,
+        "fetches": 348,
+        "checkpoint_bytes": 403965,
+        "diagnostics": [
+          {
+            "event_url": "https://www.mfa.org/event/film/on-the-dry-rock-kuru-tasin-basi?event=181706",
+            "disposition": "held",
+            "reason": "event_not_current"
+          },
+          {
+            "event_url": "https://www.mfa.org/event/gallery-activities-and-tours/discovery-cart?event=141156",
+            "disposition": "held",
+            "reason": "event_not_current"
+          },
+          {
+            "event_url": "https://www.mfa.org/event/gallery-activities-and-tours/drop-in-art-making?event=179231",
+            "disposition": "held",
+            "reason": "event_not_current"
+          },
+          {
+            "event_url": "https://www.mfa.org/event/gallery-activities-and-tours/in-person-museum-moments-tour-for-visitors-with-memory-loss-and?event=142051",
+            "disposition": "held",
+            "reason": "event_not_current"
+          },
+          {
+            "event_url": "https://www.mfa.org/event/guided-tour/america-at-250?event=180841",
+            "disposition": "held",
+            "reason": "event_not_current"
+          },
+          {
+            "event_url": "https://www.mfa.org/event/guided-tour/boston-stories?event=180461",
+            "disposition": "held",
+            "reason": "event_not_current"
+          },
+          {
+            "event_url": "https://www.mfa.org/event/guided-tour/gallery-highlights?event=179686",
+            "disposition": "held",
+            "reason": "event_not_current"
+          },
+          {
+            "event_url": "https://www.mfa.org/event/guided-tour/gallery-highlights?event=180071",
+            "disposition": "held",
+            "reason": "event_not_current"
+          },
+          {
+            "event_url": "https://www.mfa.org/event/guided-tour/modern-and-contemporary-art?event=181131",
+            "disposition": "held",
+            "reason": "event_not_current"
+          },
+          {
+            "event_url": "https://www.mfa.org/event/special-event/artisan-market?event=154301",
+            "disposition": "held",
+            "reason": "event_not_current"
+          },
+          {
+            "event_url": "https://www.mfa.org/event/studio-art-classes/relief-printmaking-two-day-workshop-13?event=170646",
+            "disposition": "held",
+            "reason": "event_not_current"
+          }
+        ]
+      },
+      "raw_rows_path": "/workspace/scratch/3aa56d09ac0a/research/arts-remaining/museum_fine_arts_boston_ma-rows.json",
+      "raw_rows_sha256": "c12c6d79e141dc80ff18ab2305b8e2b6bcabda1dea7dfc3435bf624863f54b87",
+      "full_description_samples": [
+        {
+          "id": "6043",
+          "title": "Hanukkah",
+          "event_url": "https://www.mfa.org/event/special-event/hanukkah?event=6043",
+          "characters": 8351,
+          "sha256": "506d024871af0e3ea498a1ba637b11d60a1661ff42ef07250d874b246254644c"
+        },
+        {
+          "id": "182336",
+          "title": "$5 Third Thursday",
+          "event_url": "https://www.mfa.org/event/special-event/5-third-thursday-november-2026?event=182336",
+          "characters": 3930,
+          "sha256": "7ba406228f66ef1eb2f9cb43fa8938b899e01fc82d71938d7f8931b75c3f39c3"
+        }
+      ],
+      "verified_points": [
+        [
+          "465 Huntington Avenue, Boston, MA 02115",
+          42.339381,
+          -71.094048,
+          "publisher_partner_museum_geo"
+        ]
+      ],
+      "checkpoint": {
+        "manifest_limit": 500,
+        "event_limit": 500,
+        "detail_cap": 10,
+        "manifest_count": 328,
+        "cursor": 328,
+        "listed_pages": 20,
+        "utf8_bytes": 403965,
+        "ascii_escaped_bytes": 405573,
+        "max_bytes": 900000,
+        "lifetime_hours": 4
+      }
+    },
+    {
+      "source_key": "institute_contemporary_art_boston_ma",
+      "label": "Institute of Contemporary Art/Boston",
+      "source_url": "https://www.icaboston.org/calendar/",
+      "kind": "html",
+      "platform_adapter": "html",
+      "timezone": "America/New_York",
+      "existing_source_id": null,
+      "notes": "Native permitted per-event ICS supplies all occurrences; full HTML body replaces the truncated JSON-LD summary.",
+      "capture_summary": {
+        "key": "institute_contemporary_art_boston_ma",
+        "count": 48,
+        "description_min": 499,
+        "description_max": 3326,
+        "addresses": [
+          "25 Harbor Shore Drive, Boston, MA 02210"
+        ],
+        "missing_description": 0,
+        "missing_address": 0,
+        "fetches": 43,
+        "checkpoint_bytes": 113086,
+        "diagnostics": [
+          {
+            "event_url": "https://www.icaboston.org/events/andrew-schneider-nowiswhenweare-the-stars/",
+            "disposition": "held",
+            "reason": "event_not_current"
+          },
+          {
+            "event_url": "https://www.icaboston.org/events/motherhood-an-artist-lecture-by-suzanne-bocanegra-starring-judah-lang/",
+            "disposition": "held",
+            "reason": "event_not_current"
+          },
+          {
+            "event_url": "https://www.icaboston.org/events/ogemdi-ude-major/",
+            "disposition": "held",
+            "reason": "event_not_current"
+          },
+          {
+            "event_url": "https://www.icaboston.org/events/sweat-variant-okwui-okpokwasili-and-peter-born-adaku-part-2/",
+            "disposition": "held",
+            "reason": "event_not_current"
+          }
+        ]
+      },
+      "raw_rows_path": "/workspace/scratch/3aa56d09ac0a/research/arts-remaining/institute_contemporary_art_boston_ma-rows.json",
+      "raw_rows_sha256": "25c30df4e7749158da01f43a00877e295c72acf1819a7021071f28cd9ea2cd3a",
+      "full_description_samples": [
+        {
+          "id": "ica:23168:20261218T000000Z",
+          "title": "Sundance Film Festival Shorts",
+          "event_url": "https://www.icaboston.org/events/sundance-film-festival-shorts-2026/",
+          "characters": 3326,
+          "sha256": "1d4fea6d5b289200c1eafcae127a8793692e676d93e866e4166083ccc9902226"
+        },
+        {
+          "id": "ica:23168:20261219T000000Z",
+          "title": "Sundance Film Festival Shorts",
+          "event_url": "https://www.icaboston.org/events/sundance-film-festival-shorts-2026/",
+          "characters": 3326,
+          "sha256": "1d4fea6d5b289200c1eafcae127a8793692e676d93e866e4166083ccc9902226"
+        }
+      ],
+      "verified_points": [],
+      "checkpoint": {
+        "manifest_limit": 200,
+        "event_limit": 201,
+        "detail_cap": 4,
+        "manifest_count": 21,
+        "cursor": 21,
+        "listed_pages": 1,
+        "utf8_bytes": 113086,
+        "ascii_escaped_bytes": 115407,
+        "max_bytes": 900000,
+        "lifetime_hours": 4
+      }
+    },
+    {
+      "source_key": "boston_center_arts_ma",
+      "label": "Boston Center for the Arts",
+      "source_url": "https://bostonarts.org/experiences/",
+      "kind": "html",
+      "platform_adapter": "html",
+      "timezone": "America/New_York",
+      "existing_source_id": null,
+      "notes": "Native public experiences calendar and complete event-detail narrative with explicit venue address.",
+      "capture_summary": {
+        "key": "boston_center_arts_ma",
+        "count": 4,
+        "description_min": 1425,
+        "description_max": 2850,
+        "addresses": [
+          "539 Tremont St., Boston, MA 02116",
+          "551 Tremont St., Boston, MA 02116"
+        ],
+        "missing_description": 0,
+        "missing_address": 0,
+        "fetches": 9,
+        "checkpoint_bytes": 12574,
+        "diagnostics": [
+          {
+            "event_url": "https://bostonarts.org/event/alice-miceli-impenetrable-landscapes-chronicles-of-annihilation/",
+            "disposition": "held",
+            "reason": "boston_arts_schedule_unresolved"
+          },
+          {
+            "event_url": "https://bostonarts.org/event/boston-art-book-fair-2026/",
+            "disposition": "held",
+            "reason": "boston_arts_schedule_unresolved"
+          },
+          {
+            "event_url": "https://bostonarts.org/event/shima-taj-bakhsh-soft-collapse/",
+            "disposition": "held",
+            "reason": "boston_arts_schedule_unresolved"
+          },
+          {
+            "event_url": "https://bostonarts.org/event/the-head-is-not-the-star-of-the-body-2/",
+            "disposition": "held",
+            "reason": "boston_arts_schedule_unresolved"
+          }
+        ]
+      },
+      "raw_rows_path": "/workspace/scratch/3aa56d09ac0a/research/arts-remaining/boston_center_arts_ma-rows.json",
+      "raw_rows_sha256": "ecfc13387f2a814aa4e522a513c130253419b06bedda91dae4b851e25189ff61",
+      "full_description_samples": [
+        {
+          "id": "a-creative-space-summit-what-we-build-must-stay:2026-12-08",
+          "title": "A Creative Space Summit: what we build must stay",
+          "event_url": "https://bostonarts.org/event/a-creative-space-summit-what-we-build-must-stay/",
+          "characters": 2850,
+          "sha256": "310bd4dea8465f59417b0256557b4a97cd4e196a943bb14840f1f5bd3d720c66"
+        },
+        {
+          "id": "the-curious-soul-book-launch:2026-12-03",
+          "title": "The Curious Soul: Book Launch",
+          "event_url": "https://bostonarts.org/event/the-curious-soul-book-launch/",
+          "characters": 1693,
+          "sha256": "7a8f9126f72e3830f451374566bfd20bd51c562913ca9c2768fc76696f77ee0d"
+        }
+      ],
+      "verified_points": [],
+      "checkpoint": {
+        "manifest_limit": 200,
+        "event_limit": 201,
+        "detail_cap": 2,
+        "manifest_count": 8,
+        "cursor": 8,
+        "listed_pages": 1,
+        "utf8_bytes": 12574,
+        "ascii_escaped_bytes": 12664,
+        "max_bytes": 900000,
+        "lifetime_hours": 4
+      }
+    },
+    {
+      "source_key": "sowa_christmas_market_ma",
+      "label": "SoWa Christmas Market",
+      "source_url": "https://www.sowaboston.com/sowa-christmas-market/",
+      "kind": "html",
+      "platform_adapter": "html",
+      "timezone": "America/New_York",
+      "existing_source_id": null,
+      "notes": "Exact November20–December27,2026 native seasonal program; November/December hours and stated holiday exceptions, no future-year projection.",
+      "capture_summary": {
+        "key": "sowa_christmas_market_ma",
+        "count": 31,
+        "description_min": 3007,
+        "description_max": 3007,
+        "addresses": [
+          "550 Harrison Avenue, Boston, MA 02118"
+        ],
+        "missing_description": 0,
+        "missing_address": 0,
+        "fetches": 1,
+        "checkpoint_bytes": null,
+        "diagnostics": []
+      },
+      "raw_rows_path": "/workspace/scratch/3aa56d09ac0a/research/arts-remaining/sowa_christmas_market_ma-rows.json",
+      "raw_rows_sha256": "5508446e933a096946c4353b19a0ce41fc487fba3404eebc768f3d7609dd9f52",
+      "full_description_samples": [
+        {
+          "id": "sowa-christmas-2026:2026-11-20",
+          "title": "SoWa Christmas Market",
+          "event_url": "https://www.sowaboston.com/sowa-christmas-market/",
+          "characters": 3007,
+          "sha256": "298dbb302e68547295cbbcd3a1b5cf8f20387f43147dcb44a1c68b00b36d4cb8"
+        },
+        {
+          "id": "sowa-christmas-2026:2026-11-21",
+          "title": "SoWa Christmas Market",
+          "event_url": "https://www.sowaboston.com/sowa-christmas-market/",
+          "characters": 3007,
+          "sha256": "298dbb302e68547295cbbcd3a1b5cf8f20387f43147dcb44a1c68b00b36d4cb8"
+        }
+      ],
+      "verified_points": [],
+      "checkpoint": null
+    },
+    {
+      "source_key": "municipal_mapsee_28acdd50f36a6c7a3a9d8a47",
+      "label": "Public Library of Brookline",
+      "source_url": "https://brooklinelibrary.libcal.com/ical_subscribe.php?cid=20102",
+      "kind": "html",
+      "platform_adapter": "html",
+      "timezone": "America/New_York",
+      "existing_source_id": 3718,
+      "notes": "Repair existing source id3718; native ICS descriptions and exact official branch street resolution.",
+      "capture_summary": {
+        "key": "municipal_mapsee_28acdd50f36a6c7a3a9d8a47",
+        "count": 189,
+        "description_min": 27,
+        "description_max": 1697,
+        "addresses": [
+          "210 Harvard Street, Brookline, MA 02446",
+          "31 Pleasant Street, Brookline, MA 02446",
+          "361 Washington Street, Brookline, MA 02445",
+          "959 West Roxbury Parkway, Chestnut Hill, MA 02467"
+        ],
+        "missing_description": 0,
+        "missing_address": 0,
+        "fetches": 1,
+        "checkpoint_bytes": null,
+        "diagnostics": []
+      },
+      "raw_rows_path": "/workspace/scratch/3aa56d09ac0a/research/arts-remaining/municipal_mapsee_28acdd50f36a6c7a3a9d8a47-rows.json",
+      "raw_rows_sha256": "2c9603dbd5ec616839228b11d4d3ff76a996a41a236721bdda9ca30a0f448c19",
+      "full_description_samples": [
+        {
+          "id": "LibCal-20102-17683576",
+          "title": "Craft Swap, Part 1",
+          "event_url": "https://brooklinelibrary.libcal.com/event/17683576",
+          "characters": 1697,
+          "sha256": "1bb07acd79fa78b1ed1c095d73aec5009c270abedef9fedf016acdb71a7fdea5"
+        },
+        {
+          "id": "LibCal-20102-17683581",
+          "title": "Craft Swap, Part 2",
+          "event_url": "https://brooklinelibrary.libcal.com/event/17683581",
+          "characters": 1697,
+          "sha256": "1bb07acd79fa78b1ed1c095d73aec5009c270abedef9fedf016acdb71a7fdea5"
+        }
+      ],
+      "verified_points": [],
+      "checkpoint": null
+    }
+  ],
+  "worker_replay": [
+    {
+      "source_key": "museum_fine_arts_boston_ma",
+      "worker_result": {
+        "complete": 1,
+        "failed": 0,
+        "staged": 317
+      },
+      "captured_rows": 317,
+      "staged_rows": 317,
+      "publisher_fetches": 348,
+      "checkpoint_writes": 53,
+      "max_checkpoint_utf8_bytes": 403965,
+      "full_descriptions_and_streets_identical": true,
+      "partial_checkpoints_staged_zero": true,
+      "registry_integration_simulated": false
+    },
+    {
+      "source_key": "institute_contemporary_art_boston_ma",
+      "worker_result": {
+        "complete": 1,
+        "failed": 0,
+        "staged": 48
+      },
+      "captured_rows": 48,
+      "staged_rows": 48,
+      "publisher_fetches": 43,
+      "checkpoint_writes": 7,
+      "max_checkpoint_utf8_bytes": 113086,
+      "full_descriptions_and_streets_identical": true,
+      "partial_checkpoints_staged_zero": true,
+      "registry_integration_simulated": false
+    },
+    {
+      "source_key": "boston_center_arts_ma",
+      "worker_result": {
+        "complete": 1,
+        "failed": 0,
+        "staged": 4
+      },
+      "captured_rows": 4,
+      "staged_rows": 4,
+      "publisher_fetches": 9,
+      "checkpoint_writes": 5,
+      "max_checkpoint_utf8_bytes": 12574,
+      "full_descriptions_and_streets_identical": true,
+      "partial_checkpoints_staged_zero": true,
+      "registry_integration_simulated": false
+    },
+    {
+      "source_key": "sowa_christmas_market_ma",
+      "worker_result": {
+        "complete": 1,
+        "failed": 0,
+        "staged": 31
+      },
+      "captured_rows": 31,
+      "staged_rows": 31,
+      "publisher_fetches": 1,
+      "checkpoint_writes": 0,
+      "max_checkpoint_utf8_bytes": 0,
+      "full_descriptions_and_streets_identical": true,
+      "partial_checkpoints_staged_zero": true,
+      "registry_integration_simulated": false
+    },
+    {
+      "source_key": "municipal_mapsee_28acdd50f36a6c7a3a9d8a47",
+      "worker_result": {
+        "complete": 1,
+        "failed": 0,
+        "staged": 189
+      },
+      "captured_rows": 189,
+      "staged_rows": 189,
+      "publisher_fetches": 1,
+      "checkpoint_writes": 0,
+      "max_checkpoint_utf8_bytes": 0,
+      "full_descriptions_and_streets_identical": true,
+      "partial_checkpoints_staged_zero": true,
+      "registry_integration_simulated": false
+    }
+  ],
+  "focused_tests": 12,
+  "sowa_day_by_day_checks": [
+    {
+      "day": "2026-11-20",
+      "opening": "16:00",
+      "closing": "21:00",
+      "street": "550 Harrison Avenue, Boston, MA 02118",
+      "full_description_sha256": "298dbb302e68547295cbbcd3a1b5cf8f20387f43147dcb44a1c68b00b36d4cb8"
+    },
+    {
+      "day": "2026-11-21",
+      "opening": "10:00",
+      "closing": "21:00",
+      "street": "550 Harrison Avenue, Boston, MA 02118",
+      "full_description_sha256": "298dbb302e68547295cbbcd3a1b5cf8f20387f43147dcb44a1c68b00b36d4cb8"
+    },
+    {
+      "day": "2026-11-22",
+      "opening": "10:00",
+      "closing": "19:00",
+      "street": "550 Harrison Avenue, Boston, MA 02118",
+      "full_description_sha256": "298dbb302e68547295cbbcd3a1b5cf8f20387f43147dcb44a1c68b00b36d4cb8"
+    },
+    {
+      "day": "2026-11-24",
+      "opening": "16:00",
+      "closing": "20:00",
+      "street": "550 Harrison Avenue, Boston, MA 02118",
+      "full_description_sha256": "298dbb302e68547295cbbcd3a1b5cf8f20387f43147dcb44a1c68b00b36d4cb8"
+    },
+    {
+      "day": "2026-11-25",
+      "opening": "16:00",
+      "closing": "20:00",
+      "street": "550 Harrison Avenue, Boston, MA 02118",
+      "full_description_sha256": "298dbb302e68547295cbbcd3a1b5cf8f20387f43147dcb44a1c68b00b36d4cb8"
+    },
+    {
+      "day": "2026-11-27",
+      "opening": "10:00",
+      "closing": "19:00",
+      "street": "550 Harrison Avenue, Boston, MA 02118",
+      "full_description_sha256": "298dbb302e68547295cbbcd3a1b5cf8f20387f43147dcb44a1c68b00b36d4cb8"
+    },
+    {
+      "day": "2026-11-28",
+      "opening": "10:00",
+      "closing": "21:00",
+      "street": "550 Harrison Avenue, Boston, MA 02118",
+      "full_description_sha256": "298dbb302e68547295cbbcd3a1b5cf8f20387f43147dcb44a1c68b00b36d4cb8"
+    },
+    {
+      "day": "2026-11-29",
+      "opening": "10:00",
+      "closing": "19:00",
+      "street": "550 Harrison Avenue, Boston, MA 02118",
+      "full_description_sha256": "298dbb302e68547295cbbcd3a1b5cf8f20387f43147dcb44a1c68b00b36d4cb8"
+    },
+    {
+      "day": "2026-12-01",
+      "opening": "16:00",
+      "closing": "21:00",
+      "street": "550 Harrison Avenue, Boston, MA 02118",
+      "full_description_sha256": "298dbb302e68547295cbbcd3a1b5cf8f20387f43147dcb44a1c68b00b36d4cb8"
+    },
+    {
+      "day": "2026-12-02",
+      "opening": "16:00",
+      "closing": "21:00",
+      "street": "550 Harrison Avenue, Boston, MA 02118",
+      "full_description_sha256": "298dbb302e68547295cbbcd3a1b5cf8f20387f43147dcb44a1c68b00b36d4cb8"
+    },
+    {
+      "day": "2026-12-03",
+      "opening": "16:00",
+      "closing": "21:00",
+      "street": "550 Harrison Avenue, Boston, MA 02118",
+      "full_description_sha256": "298dbb302e68547295cbbcd3a1b5cf8f20387f43147dcb44a1c68b00b36d4cb8"
+    },
+    {
+      "day": "2026-12-04",
+      "opening": "16:00",
+      "closing": "22:00",
+      "street": "550 Harrison Avenue, Boston, MA 02118",
+      "full_description_sha256": "298dbb302e68547295cbbcd3a1b5cf8f20387f43147dcb44a1c68b00b36d4cb8"
+    },
+    {
+      "day": "2026-12-05",
+      "opening": "10:00",
+      "closing": "22:00",
+      "street": "550 Harrison Avenue, Boston, MA 02118",
+      "full_description_sha256": "298dbb302e68547295cbbcd3a1b5cf8f20387f43147dcb44a1c68b00b36d4cb8"
+    },
+    {
+      "day": "2026-12-06",
+      "opening": "10:00",
+      "closing": "19:00",
+      "street": "550 Harrison Avenue, Boston, MA 02118",
+      "full_description_sha256": "298dbb302e68547295cbbcd3a1b5cf8f20387f43147dcb44a1c68b00b36d4cb8"
+    },
+    {
+      "day": "2026-12-08",
+      "opening": "16:00",
+      "closing": "21:00",
+      "street": "550 Harrison Avenue, Boston, MA 02118",
+      "full_description_sha256": "298dbb302e68547295cbbcd3a1b5cf8f20387f43147dcb44a1c68b00b36d4cb8"
+    },
+    {
+      "day": "2026-12-09",
+      "opening": "16:00",
+      "closing": "21:00",
+      "street": "550 Harrison Avenue, Boston, MA 02118",
+      "full_description_sha256": "298dbb302e68547295cbbcd3a1b5cf8f20387f43147dcb44a1c68b00b36d4cb8"
+    },
+    {
+      "day": "2026-12-10",
+      "opening": "16:00",
+      "closing": "21:00",
+      "street": "550 Harrison Avenue, Boston, MA 02118",
+      "full_description_sha256": "298dbb302e68547295cbbcd3a1b5cf8f20387f43147dcb44a1c68b00b36d4cb8"
+    },
+    {
+      "day": "2026-12-11",
+      "opening": "16:00",
+      "closing": "22:00",
+      "street": "550 Harrison Avenue, Boston, MA 02118",
+      "full_description_sha256": "298dbb302e68547295cbbcd3a1b5cf8f20387f43147dcb44a1c68b00b36d4cb8"
+    },
+    {
+      "day": "2026-12-12",
+      "opening": "10:00",
+      "closing": "22:00",
+      "street": "550 Harrison Avenue, Boston, MA 02118",
+      "full_description_sha256": "298dbb302e68547295cbbcd3a1b5cf8f20387f43147dcb44a1c68b00b36d4cb8"
+    },
+    {
+      "day": "2026-12-13",
+      "opening": "10:00",
+      "closing": "19:00",
+      "street": "550 Harrison Avenue, Boston, MA 02118",
+      "full_description_sha256": "298dbb302e68547295cbbcd3a1b5cf8f20387f43147dcb44a1c68b00b36d4cb8"
+    },
+    {
+      "day": "2026-12-15",
+      "opening": "16:00",
+      "closing": "21:00",
+      "street": "550 Harrison Avenue, Boston, MA 02118",
+      "full_description_sha256": "298dbb302e68547295cbbcd3a1b5cf8f20387f43147dcb44a1c68b00b36d4cb8"
+    },
+    {
+      "day": "2026-12-16",
+      "opening": "16:00",
+      "closing": "21:00",
+      "street": "550 Harrison Avenue, Boston, MA 02118",
+      "full_description_sha256": "298dbb302e68547295cbbcd3a1b5cf8f20387f43147dcb44a1c68b00b36d4cb8"
+    },
+    {
+      "day": "2026-12-17",
+      "opening": "16:00",
+      "closing": "21:00",
+      "street": "550 Harrison Avenue, Boston, MA 02118",
+      "full_description_sha256": "298dbb302e68547295cbbcd3a1b5cf8f20387f43147dcb44a1c68b00b36d4cb8"
+    },
+    {
+      "day": "2026-12-18",
+      "opening": "16:00",
+      "closing": "22:00",
+      "street": "550 Harrison Avenue, Boston, MA 02118",
+      "full_description_sha256": "298dbb302e68547295cbbcd3a1b5cf8f20387f43147dcb44a1c68b00b36d4cb8"
+    },
+    {
+      "day": "2026-12-19",
+      "opening": "10:00",
+      "closing": "22:00",
+      "street": "550 Harrison Avenue, Boston, MA 02118",
+      "full_description_sha256": "298dbb302e68547295cbbcd3a1b5cf8f20387f43147dcb44a1c68b00b36d4cb8"
+    },
+    {
+      "day": "2026-12-20",
+      "opening": "10:00",
+      "closing": "19:00",
+      "street": "550 Harrison Avenue, Boston, MA 02118",
+      "full_description_sha256": "298dbb302e68547295cbbcd3a1b5cf8f20387f43147dcb44a1c68b00b36d4cb8"
+    },
+    {
+      "day": "2026-12-22",
+      "opening": "16:00",
+      "closing": "21:00",
+      "street": "550 Harrison Avenue, Boston, MA 02118",
+      "full_description_sha256": "298dbb302e68547295cbbcd3a1b5cf8f20387f43147dcb44a1c68b00b36d4cb8"
+    },
+    {
+      "day": "2026-12-23",
+      "opening": "16:00",
+      "closing": "21:00",
+      "street": "550 Harrison Avenue, Boston, MA 02118",
+      "full_description_sha256": "298dbb302e68547295cbbcd3a1b5cf8f20387f43147dcb44a1c68b00b36d4cb8"
+    },
+    {
+      "day": "2026-12-24",
+      "opening": "10:00",
+      "closing": "16:00",
+      "street": "550 Harrison Avenue, Boston, MA 02118",
+      "full_description_sha256": "298dbb302e68547295cbbcd3a1b5cf8f20387f43147dcb44a1c68b00b36d4cb8"
+    },
+    {
+      "day": "2026-12-26",
+      "opening": "10:00",
+      "closing": "22:00",
+      "street": "550 Harrison Avenue, Boston, MA 02118",
+      "full_description_sha256": "298dbb302e68547295cbbcd3a1b5cf8f20387f43147dcb44a1c68b00b36d4cb8"
+    },
+    {
+      "day": "2026-12-27",
+      "opening": "10:00",
+      "closing": "19:00",
+      "street": "550 Harrison Avenue, Boston, MA 02118",
+      "full_description_sha256": "298dbb302e68547295cbbcd3a1b5cf8f20387f43147dcb44a1c68b00b36d4cb8"
+    }
+  ],
+  "source_holds": [
+    {
+      "source": "ShowUp",
+      "source_key": "municipal_mapsee_4850b0ea2ea3e621ccccf878",
+      "existing_source_id": 4677,
+      "url": "https://www.showupinc.org/master-calendar",
+      "reason": "No future native events; newest visible event November 6, 2026. Existing paused identity retained. Squarespace JSON export disallowed by robots; no export bypass."
+    },
+    {
+      "source": "USS Constitution Museum",
+      "url": "https://ussconstitutionmuseum.org/events/",
+      "reason": "Ordinary calendar HTTP 403 after allowed robots check; no alternate access route attempted."
+    },
+    {
+      "source": "Boston Children’s Museum",
+      "url": "https://bostonchildrensmuseum.org/calendar/steam-events-calendar/",
+      "reason": "Ordinary calendar HTTP 403; access hold."
+    },
+    {
+      "source": "Brattle Theatre",
+      "url": "https://brattlefilm.org/coming-soon/",
+      "reason": "Ordinary calendar HTTP 403; access hold."
+    },
+    {
+      "source": "Boston Art Book Fair",
+      "url": "https://bostonartbookfair.com/robots.txt",
+      "reason": "Robots request returned HTTP 429; no publisher content fetched. BCA gives date range without confirmed hours; no inferred clock."
+    },
+    {
+      "source": "Brookline Library",
+      "event_ids": [
+        "16795713",
+        "17872154",
+        "17944177",
+        "17902207"
+      ],
+      "reason": "Native ICS descriptions blank. Each permitted event detail returned HTTP 200 but its #s-lc-event-desc was also empty; these four records remain held."
+    },
+    {
+      "source": "Boston Center for the Arts",
+      "reason": "Four date-range-only or ambiguous-clock cards held; exact URLs in source checkpoint diagnostics. Two exhibitions lack timed occurrence schedules; Art Book Fair has no native hours; The Head Is Not the Star of the Body body refers to a past November 10 performance despite a November 10–15 header."
+    }
+  ],
+  "observed_first_batch_production_holds": [
+    {
+      "source_key": "brookline_booksmith_ma",
+      "status": "paused_for_review",
+      "error": "publisher_http_403",
+      "evidence": "Batch owner observed ordinary production guarded transport after release #306 / migration 20261114232117.",
+      "retry_or_bypass": false
+    },
+    {
+      "source_key": "harvard_book_store_ma",
+      "status": "paused_for_review",
+      "error": "publisher_http_403",
+      "evidence": "Batch owner observed ordinary production guarded transport after release #306 / migration 20261114232117.",
+      "retry_or_bypass": false
+    },
+    {
+      "source_key": "porter_square_books_ma",
+      "status": "paused_for_review",
+      "error": "publisher_http_403",
+      "evidence": "Batch owner observed ordinary production guarded transport after release #306 / migration 20261114232117.",
+      "retry_or_bypass": false
+    },
+    {
+      "source_key": "trident_booksellers_ma",
+      "status": "paused_for_review",
+      "error": "publisher_http_403",
+      "evidence": "Batch owner observed ordinary production guarded transport after release #306 / migration 20261114232117.",
+      "retry_or_bypass": false
+    }
+  ],
+  "official_address_evidence": [
+    "https://www.mfa.org/visit/getting-here",
+    "https://artsandculture.google.com/partner/museum-of-fine-arts-boston",
+    "https://services1.arcgis.com/hGdibHYSPO59RG1h/ArcGIS/rest/services/MHC_Inventory_GDB/FeatureServer/0",
+    "https://www.icaboston.org/visit/",
+    "https://bostonarts.org/venue/the-cyclorama/",
+    "https://bostonarts.org/venue/mills-gallery/",
+    "https://www.brooklinelibrary.org/about/hours-locations/",
+    "https://www.unitedparishbrookline.org/about-us/contact-us/",
+    "https://www.unitedparishbrookline.org/newcomers/directions-parking/",
+    "https://www.sowaboston.com/sowa-christmas-market/"
+  ],
+  "capture_root": "/workspace/scratch/3aa56d09ac0a/research/arts-remaining",
+  "code_sha256": "2cd99f04966f2c5bd8ff58ceed7d7a723e72ea8b9e118c1f554103c2607382d4",
+  "test_sha256": "63f74611c65ca99b644aff8c341694256a9121b9dc17123556eec884553d948f",
+  "mfa_venue_point_evidence": {
+    "lat": 42.339381,
+    "lng": -71.094048,
+    "primary_url": "https://artsandculture.google.com/partner/museum-of-fine-arts-boston",
+    "selector": "script[type=\"application/ld+json\"]: Museum.geo.GeoCoordinates",
+    "native_address": "465 Huntington Ave, Boston, MA 02115, USA",
+    "primary_capture_path": "/workspace/scratch/3aa56d09ac0a/boston-second/address-evidence/3e63fa9ef928d0ac2a38234b82cb5c47b01e9858feed4e6ef4f01a4a6bb0b123.html",
+    "corroborating_record": "MassGIS/Massachusetts Historical Commission BOS.7493; OBJECTID47251; TYPE Building; Boston Museum of Fine Arts; 465 Huntington Ave, Boston",
+    "corroborating_point": [
+      42.33945299930036,
+      -71.09395199941561
+    ],
+    "corroborating_capture_path": "/workspace/scratch/3aa56d09ac0a/research/arts-remaining/mfa-massgis-exact-point.json",
+    "map_viewport_used": false
+  },
+  "mfa_narrative_hashes_unchanged_after_venue_point": true
+}
