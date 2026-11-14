@@ -1,0 +1,21 @@
+{
+  "test_result": "154 passed, 117 subtests passed in 1.45s",
+  "test_files": [
+    "test_atlantic_city_followup_transport.py",
+    "test_atlantic_city_followup_worker.py",
+    "test_atlantic_city_reviewed_posters.py",
+    "test_atlantic_city_studio.py",
+    "test_atlantic_city_cardboard_arena.py",
+    "test_atlantic_city_independent_worker.py",
+    "test_atlantic_city_worker.py",
+    "test_recdesk_transport.py",
+    "test_preview_transport_errors.py"
+  ],
+  "migration_parsed_statements": 18,
+  "safe_diagnostic_vocabulary_complete": true,
+  "independent_reviews": {
+    "shared_transport": "No material issue found; fixed public routing/header, redirect denial, DNS/robots/pacing/deadlines/bounds retained.",
+    "migration": "Exact four sources and two checkpoint profiles; only new source IDs mutated; full-description contracts inherited; owner-disabled Visit state asserted."
+  },
+  "validation_scope": "Focused local parser, shared transport and real category worker boundaries. Actual guarded production verification remains required; no automated GitHub test/audit workflow was run."
+}
