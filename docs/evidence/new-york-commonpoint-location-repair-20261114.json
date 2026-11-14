@@ -1,0 +1,92 @@
+{
+  "checked_at": "2026-11-14T23:25:11.067579+00:00",
+  "source_key": "municipal_mapsee_8ada9fb25b90788ab8a89a73",
+  "native_venue_id": 69030,
+  "native_venue_url": "https://www.commonpoint.org/location/commonpoint-bronx",
+  "publisher_capture_sha256": "fe9cdef16a3c194d886cd510beec7ae421d81ee0e40b1f9bee63a0051ab61c6d",
+  "old_point": [
+    null,
+    null
+  ],
+  "corrected_record": {
+    "id": "145256",
+    "title": "Emergency Preparedness Training Program",
+    "starts_at": "2026-12-09T16:30:00+00:00",
+    "ends_at": "2026-12-09T18:00:00+00:00",
+    "venue_name": "Commonpoint Bronx",
+    "lat": 40.835703,
+    "lng": -73.887896,
+    "event_url": "https://www.commonpoint.org/event/emergency-preparedness-training-program",
+    "category": "Event",
+    "venue_address": "1665 Hoe Ave, The Bronx, NY 10460",
+    "venue_city": "The Bronx",
+    "reason": null,
+    "timezone": "America/New_York",
+    "description": "With severe weather events becoming more frequent and more extreme, it is more important than ever that New Yorkers are prepared for disasters. The NY Citizen Preparedness Training Program teaches residents to have the tools and resources to prepare for any type of disaster, respond accordingly and recover as quickly as possible to normal conditions. This training course will provide an introduction to responding to a natural or manmade disaster. Participants will be advised on how to properly prepare for any disaster, including developing a family emergency plan and stocking up on emergency supplies. Each family that attends will receive one preparedness kit.\nRegistration is required to attend the event. To register,\nclick here\n.\nFor more information, contact\nsblount@commonpoint.org\nor call 718-619-8838.",
+    "attendance_mode": "in_person",
+    "location_provenance": "reviewed_nyc_pad_exact_address",
+    "publisher_categories": [
+      "Event"
+    ]
+  },
+  "pad_evidence_url": "https://geosearch.planninglabs.nyc/v2/search?text=1665+Hoe+Avenue+Bronx+NY+10460&size=5",
+  "pad_feature": {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -73.887896,
+        40.835703
+      ]
+    },
+    "properties": {
+      "id": "452831",
+      "gid": "nycpad:venue:452831",
+      "layer": "venue",
+      "source": "nycpad",
+      "source_id": "452831",
+      "country_code": "US",
+      "name": "1665 HOE AVENUE",
+      "housenumber": "1665",
+      "street": "HOE AVENUE",
+      "postalcode": "10460",
+      "confidence": 0.8,
+      "match_type": "fallback",
+      "accuracy": "point",
+      "country": "United States",
+      "country_gid": "whosonfirst:country:85633793",
+      "country_a": "USA",
+      "region": "New York",
+      "region_gid": "whosonfirst:region:85688543",
+      "region_a": "NY",
+      "county": "Bronx County",
+      "county_gid": "whosonfirst:county:102083063",
+      "county_a": "BX",
+      "locality": "New York",
+      "locality_gid": "whosonfirst:locality:85977539",
+      "locality_a": "NYC",
+      "borough": "Bronx",
+      "borough_gid": "whosonfirst:borough:421205773",
+      "neighbourhood": "East Morrisania",
+      "neighbourhood_gid": "whosonfirst:neighbourhood:85869201",
+      "label": "1665 HOE AVENUE, Bronx, NY, USA",
+      "addendum": {
+        "pad": {
+          "bbl": "2029830042",
+          "bin": "2010612",
+          "version": "26c"
+        }
+      }
+    }
+  },
+  "unchanged_fields_verified": [
+    "title",
+    "description",
+    "venue_name",
+    "venue_address",
+    "starts_at",
+    "ends_at",
+    "event_url"
+  ],
+  "scope": "Exact native venue ID, name and full street; only supply point when publisher omitted both coordinates. No changes to the other nine accepted records."
+}

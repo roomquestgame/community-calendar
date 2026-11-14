@@ -1,0 +1,556 @@
+{
+  "observed_date": "2026-11-14",
+  "window_anchor": "2026-11-14T23:21:36.012117+00:00",
+  "timezone": "America/New_York",
+  "status": "Complete cached replay of actual public publisher responses. Production guarded transport and publication are verified by the parent batch deployment.",
+  "source_count": 7,
+  "accepted_future_occurrences": 72,
+  "blank_descriptions": 0,
+  "blank_addresses": 0,
+  "rows_with_coordinates": 72,
+  "transport_validation": "Public anonymous HTTPS captures use the RoomQuest user agent, bounded response sizes and no credentials, forms, bookings, subscriptions or private APIs. Successful Radegast widget/API capture requests were paced at least 60 seconds apart. Local guarded transport cannot resolve DNS in this environment, so this evidence is a cached real-response parser replay, not a claim of production HTTP success.",
+  "description_policy": "Keep all normalized publisher narrative text up to 12000 characters; never truncate. Blank, placeholder, room-label-only or oversized narratives are held. Reuse the TEC parser and Squarespace clock parser.",
+  "recurrence_policy": "Fetch and revalidate the official explicit weekly schedule each run, then materialize a rolling 28-day window. Pauper also obeys the reviewed native season through 2027-02-21 and both holiday breaks. Native biweekly anchors or conflicting clocks are never guessed. Stable IDs include source, program, venue and start.",
+  "checkpoint_policy": "Radegast uses one guarded GET per native page, preserving its 60-second pacing. Greenbelt uses a complete public organizer HTML manifest, at most two normal detail HTML GETs per chunk, and a separate final organizer manifest recheck. Neither source releases partial rows; completed checkpoints remain dictionaries. Every checkpoint retains immutable UTC started_at and NY date-only window_start; default200 manifest/201event/400diagnostic/900KB bounds apply.",
+  "implementation": "roomquest/new_york_social_final.py",
+  "tests": {
+    "path": "tests/test_new_york_social_final.py",
+    "focused_tests_passed": 38
+  },
+  "evidence_files": [
+    "new-york-social-final-capture-2026-11-14.json",
+    "new-york-social-final-venue-points-20261114.json"
+  ],
+  "sources": [
+    {
+      "name": "Wild East Brewing Co.",
+      "source": {
+        "source_key": "wild_east_brooklyn_ny",
+        "feed_url": "https://www.wildeastbrewing.com/",
+        "kind": "html",
+        "platform_adapter": "html",
+        "timezone": "America/New_York"
+      },
+      "manifest_count": 6,
+      "reviewed_candidates": 6,
+      "chunk_count": 1,
+      "accepted_future_occurrences": 4,
+      "description_min": 48,
+      "description_max": 66,
+      "rows_with_coordinates": 4,
+      "held_reason_counts": {
+        "publisher_nonpublic": 1,
+        "publisher_clock_missing": 1
+      }
+    },
+    {
+      "name": "Sip & Play",
+      "source": {
+        "source_key": "sip_and_play_brooklyn_ny",
+        "feed_url": "https://www.sipnplaynyc.com/general-5",
+        "kind": "html",
+        "platform_adapter": "html",
+        "timezone": "America/New_York"
+      },
+      "manifest_count": 12,
+      "reviewed_candidates": 12,
+      "chunk_count": 1,
+      "accepted_future_occurrences": 28,
+      "description_min": 60,
+      "description_max": 150,
+      "rows_with_coordinates": 28,
+      "held_reason_counts": {
+        "publisher_biweekly_anchor_missing": 3,
+        "publisher_schedule_conflict": 1,
+        "retail_promotion_without_program": 1
+      }
+    },
+    {
+      "name": "NYC Pauper League / Decks and the City",
+      "source": {
+        "source_key": "nyc_pauper_league_ny",
+        "feed_url": "https://www.decksandthecity.org/schedule",
+        "kind": "html",
+        "platform_adapter": "html",
+        "timezone": "America/New_York"
+      },
+      "manifest_count": 4,
+      "reviewed_candidates": 4,
+      "chunk_count": 1,
+      "accepted_future_occurrences": 6,
+      "description_min": 982,
+      "description_max": 1191,
+      "rows_with_coordinates": 6,
+      "held_reason_counts": {
+        "outside_new_york_city": 1
+      }
+    },
+    {
+      "name": "Bronx Alehouse / Let’s Go Trivia",
+      "source": {
+        "source_key": "bronx_alehouse_bronx_ny",
+        "feed_url": "https://letsgotrivia.com/venue/bronx-alehouse/",
+        "kind": "html",
+        "platform_adapter": "html",
+        "timezone": "America/New_York"
+      },
+      "manifest_count": 9,
+      "reviewed_candidates": 9,
+      "chunk_count": 1,
+      "accepted_future_occurrences": 9,
+      "description_min": 89,
+      "description_max": 89,
+      "rows_with_coordinates": 9,
+      "held_reason_counts": {}
+    },
+    {
+      "name": "OS NYC",
+      "source": {
+        "source_key": "os_nyc_new_york_ny",
+        "feed_url": "https://www.os-nyc.com/events",
+        "kind": "html",
+        "platform_adapter": "html",
+        "timezone": "America/New_York"
+      },
+      "manifest_count": 10,
+      "reviewed_candidates": 10,
+      "chunk_count": 1,
+      "accepted_future_occurrences": 8,
+      "description_min": 233,
+      "description_max": 1169,
+      "rows_with_coordinates": 8,
+      "held_reason_counts": {
+        "publisher_nonpublic": 2
+      }
+    },
+    {
+      "name": "Radegast Hall and The Bier Haus",
+      "source": {
+        "source_key": "radegast_hall_brooklyn_ny",
+        "feed_url": "https://radegasthall.com/",
+        "kind": "html",
+        "platform_adapter": "html",
+        "timezone": "America/New_York"
+      },
+      "manifest_count": 16,
+      "reviewed_candidates": 16,
+      "chunk_count": 2,
+      "accepted_future_occurrences": 12,
+      "description_min": 170,
+      "description_max": 1749,
+      "rows_with_coordinates": 12,
+      "held_reason_counts": {
+        "no_available_future_occurrence": 1,
+        "publisher_schedule_conflict": 1,
+        "publisher_nonpublic": 1,
+        "new_york_social_final_description_missing": 1
+      }
+    },
+    {
+      "name": "Greenbelt Conservancy",
+      "source": {
+        "source_key": "greenbelt_conservancy_staten_island_ny",
+        "feed_url": "https://www.eventbrite.com/o/greenbelt-conservancy-10628899098",
+        "kind": "html",
+        "platform_adapter": "html",
+        "timezone": "America/New_York"
+      },
+      "manifest_count": 5,
+      "reviewed_candidates": 5,
+      "chunk_count": 5,
+      "accepted_future_occurrences": 5,
+      "description_min": 96,
+      "description_max": 867,
+      "rows_with_coordinates": 5,
+      "held_reason_counts": {}
+    }
+  ],
+  "source_notes": {
+    "wild_east_brooklyn_ny": "Current November 2026 normal HTML supplies four complete future dated program lines. Closed Lectures on Tap and a music festival with no clock are held.",
+    "sip_and_play_brooklyn_ny": "Seven explicit weekly programs. Full paragraph boundaries retain named Instagram link text. Monday MTG 6:30 omits a meridian, resolved as 18:30 from official Monday opening hours 11am-11pm; this is a reviewed inference, not invented source text. Wednesday Commander header/body disagree; three biweekly groups lack an anchor; Family Fridays is only a promotion.",
+    "nyc_pauper_league_ny": "The independent official organizer is linked from the Hex publisher ecosystem. Current Season 7 and two holiday breaks are explicit. Three NYC venues accepted, Jersey City excluded. Both Hex venues and Brooklyn Strategist use their exact current addresses, including 148 Pierrepont Street.",
+    "bronx_alehouse_bronx_ny": "The organizer calendar explicitly advertises its TEC venue API. Nine full descriptions include the correct 10463 ZIP, repairing its malformed structured venue ZIP NY. Native UTC and America/New_York times agree. Current venue weekly page independently confirms Tuesday 7pm trivia.",
+    "os_nyc_new_york_ny": "The actual /events page is an active normal Squarespace calendar; /event-calendar is an empty legacy page. Eight complete public Post Body entries accepted; sold-out watch party and closure held. Representative long listing and detail bodies match exactly. 50 Bowery comes from the publisher and exact NYC PAD.",
+    "radegast_hall_brooklyn_ny": "The ordinary homepage advertises a public Amelia widget. Its shipped JS documents the anonymous GET /events, bookings=false, range=future and page. Both native pages were captured at the site’s 60-second crawl delay. Full descriptions and periods are native; show=false/nonapproved, expired, empty/location-only descriptions and inverted periods are held. Global UTC is a misconfigured site default: client timezone conversion is disabled and publicly rendered clocks corroborate NYC wall time. The native location coordinates are discarded. Bier Haus street is the official licensed alternate premises address 186 Berry.",
+    "greenbelt_conservancy_staten_island_ny": "The official sigreenbelt.org homepage returns404, but its verified Eventbrite organizer is accessible as normal public HTML. Its NEXT_DATA manifest reports exactly5 upcoming entries, no more pages and no load failure. Detail basicInfo validates organizer10628899098 and organization170711247025; local/UTC dates agree and detail end times replace the organizer cards' misleading end=start values. Preserve the complete publisher overview plus all native text modules. Orienteering has a complete96-character overview and an explicitly empty text-module array, so its available native description is complete. All5 details and the final manifest are reviewed before any rows release. Only the3 exact reviewed duplicate Parks guid/registration-ID pairs are assigned away from Parks; other Greenbelt programs remain with Parks."
+  },
+  "primary_corroboration": [
+    {
+      "url": "https://www.wildeastbrewing.com/",
+      "web_ref": "turn86search6",
+      "purpose": "Current dated November events, complete program lines and 623 Sackett Street"
+    },
+    {
+      "url": "https://www.sipnplaynyc.com/",
+      "purpose": "Current 471 5th Avenue street and 11am-11pm Monday hours",
+      "capture": {
+        "url": "https://www.sipnplaynyc.com/",
+        "final_url": "https://www.sipnplaynyc.com/",
+        "bytes": 639485,
+        "sha256": "b6d2bb4fedc06787b32f85333fbaffe3f3bafdb3476582d899d1b1507670dae4",
+        "captured_at": "2026-11-14T23:07:21.715187+00:00"
+      }
+    },
+    {
+      "url": "https://www.sipnplaynyc.com/general-5",
+      "purpose": "Explicit weekly programs with native full paragraphs"
+    },
+    {
+      "url": "https://www.decksandthecity.org/schedule",
+      "web_ref": "turn94view1",
+      "purpose": "Current season, holiday breaks, exact clocks and actual three NYC venues"
+    },
+    {
+      "url": "https://www.bronxalehouse.com/weekly-events",
+      "web_ref": "turn86search2",
+      "purpose": "Independent official Tuesday 7pm trivia confirmation and venue street"
+    },
+    {
+      "url": "https://letsgotrivia.com/venue/bronx-alehouse/",
+      "web_ref": "turn94view0",
+      "purpose": "Official trivia organizer’s future dated calendar and advertised TEC API"
+    },
+    {
+      "url": "https://www.os-nyc.com/events",
+      "web_ref": "turn97search0",
+      "purpose": "Current dated gaming calendar with complete normal HTML bodies"
+    },
+    {
+      "url": "https://radegasthall.com/",
+      "web_ref": "turn97search2",
+      "purpose": "Current native public music/trivia widget and independently rendered local clocks"
+    },
+    {
+      "url": "https://radegasthall.com/hours-location/",
+      "web_ref": "turn106search0",
+      "purpose": "Official 113 North 3rd Street, Brooklyn NY11249"
+    },
+    {
+      "url": "https://radegasthall.com/events-2/private-events-2/",
+      "web_ref": "turn106search1",
+      "purpose": "Publisher identifies Bier Haus as part of its premises with a separate entrance"
+    },
+    {
+      "url": "https://www.nyc.gov/assets/brooklyncb1/downloads/pdf/2025/Combined-Public-Hearing-and-Board-Meeting-Notice-09-09-25.pdf",
+      "web_ref": "turn106search9",
+      "purpose": "Official Radegast 113-115 North 3rd / 186 Berry alternate-address relationship"
+    }
+  ],
+  "radegast_public_widget_evidence": [
+    {
+      "url": "https://radegasthall.com/wp-content/plugins/ameliabooking/v3/public/assets/public.js?ver=9.10",
+      "final_url": "https://radegasthall.com/wp-content/plugins/ameliabooking/v3/public/assets/public.js?ver=9.10",
+      "bytes": 52988,
+      "sha256": "ab9d753a9df17b4d788c5bf9f12eb2b7b17b5bda3639f3cc164b0a274667ce7e",
+      "captured_at": "2026-11-14T23:07:18.076358+00:00"
+    },
+    {
+      "url": "https://radegasthall.com/wp-content/plugins/ameliabooking/v3/public/assets/eventListForm-cf17e302.js",
+      "final_url": "https://radegasthall.com/wp-content/plugins/ameliabooking/v3/public/assets/eventListForm-cf17e302.js",
+      "bytes": 421176,
+      "sha256": "51790749193de4ac85df3b08b1237a5a611404531a64d6db878c46917598361a",
+      "captured_at": "2026-11-14T23:08:28.950220+00:00"
+    },
+    {
+      "url": "https://radegasthall.com/wp-content/plugins/ameliabooking/v3/public/assets/stepForm-00e55db9.js",
+      "final_url": "https://radegasthall.com/wp-content/plugins/ameliabooking/v3/public/assets/stepForm-00e55db9.js",
+      "bytes": 1775371,
+      "sha256": "13322e4c86cb0560875dce8ac6d2791cea12162ed927e96b50efc8f0f7579b73",
+      "captured_at": "2026-11-14T23:09:36.046735+00:00"
+    },
+    {
+      "url": "https://radegasthall.com/wp-content/plugins/ameliabooking/v3/public/assets/eventBooking-e6811659.js",
+      "final_url": "https://radegasthall.com/wp-content/plugins/ameliabooking/v3/public/assets/eventBooking-e6811659.js",
+      "bytes": 37437,
+      "sha256": "cf5259424dc610e8fb11f76ff2d2c52a3956d9ca06d29c3ce7250c3fc672a8a7",
+      "captured_at": "2026-11-14T23:10:46.297434+00:00"
+    },
+    {
+      "url": "https://radegasthall.com/wp-admin/admin-ajax.php?action=wpamelia_api&call=/entities&types%5B%5D=locations&lite=true",
+      "final_url": "https://radegasthall.com/wp-admin/admin-ajax.php?action=wpamelia_api&call=/entities&types%5B%5D=locations&lite=true",
+      "bytes": 2946,
+      "sha256": "4c914982fca4dc79a76a998e307c7dd56f7f03e0fe28a956c9b34a9fcf58868d",
+      "captured_at": "2026-11-14T23:14:21.337145+00:00"
+    }
+  ],
+  "robots": [
+    {
+      "source_key": "wild_east_brooklyn_ny",
+      "url": "https://www.wildeastbrewing.com/robots.txt",
+      "text": "# Squarespace Robots Txt\n\nUser-agent: AI2Bot\nUser-agent: Ai2Bot-Dolma\nUser-agent: aiHitBot\nUser-agent: Amazonbot\nUser-agent: anthropic-ai\nUser-agent: Applebot-Extended\nUser-agent: Bytespider\nUser-agent: CCBot\nUser-agent: ClaudeBot\nUser-agent: cohere-ai\nUser-agent: cohere-training-data-crawler\nUser-agent: DuckAssistBot\nUser-agent: FacebookBot\nUser-agent: Google-Extended\nUser-agent: GoogleOther\nUser-agent: GoogleOther-Image\nUser-agent: GoogleOther-Video\nUser-agent: GPTBot\nUser-agent: img2dataset\nUser-agent: Meta-ExternalAgent\nUser-agent: MyCentralAIScraperBot\nUser-agent: omgili\nUser-agent: omgilibot\nUser-agent: Quora-Bot\nUser-agent: TikTokSpider\nUser-agent: YouBot\nUser-agent: AdsBot-Google\nUser-agent: AdsBot-Google-Mobile\nUser-agent: AdsBot-Google-Mobile-Apps\nUser-agent: *\nDisallow: /config\nDisallow: /search\nDisallow: /account$\nDisallow: /account/\nDisallow: /commerce/digital-download/\nDisallow: /api/\nAllow: /api/ui-extensions/\nDisallow: /static/\nDisallow:/*?author=*\nDisallow:/*&author=*\nDisallow:/*?tag=*\nDisallow:/*&tag=*\nDisallow:/*?month=*\nDisallow:/*&month=*\nDisallow:/*?view=*\nDisallow:/*&view=*\nDisallow:/*?format=json\nDisallow:/*&format=json\nDisallow:/*?format=page-context\nDisallow:/*&format=page-context\nDisallow:/*?format=main-content\nDisallow:/*&format=main-content\nDisallow:/*?format=json-pretty\nDisallow:/*&format=json-pretty\nDisallow:/*?format=ical\nDisallow:/*&format=ical\nDisallow:/*?reversePaginate=*\nDisallow:/*&reversePaginate=*\n\nSitemap: https://www.wildeastbrewing.com/sitemap.xml\n",
+      "sha256": "c1120c6bb7e255acb6ee1ab58110d8fba24e68afa83164bd6ce4fd9def126863"
+    },
+    {
+      "source_key": "sip_and_play_brooklyn_ny",
+      "url": "https://www.sipnplaynyc.com/robots.txt",
+      "text": "User-agent: *\nAllow: /\nDisallow: *?lightbox=\n\n# Optimization for Google Ads Bot\nUser-agent: AdsBot-Google-Mobile\nUser-agent: AdsBot-Google\nDisallow: /_partials*\nDisallow: /pro-gallery-webapp/v1/galleries/*\n\n# Block PetalBot\nUser-agent: PetalBot\nDisallow: /\n\n# Crawl delay for overly enthusiastic bots\nUser-agent: dotbot\nCrawl-delay: 10\nUser-agent: AhrefsBot\nCrawl-delay: 10\n\nSitemap: https://www.sipnplaynyc.com/sitemap.xml\n\n# Auto generated, go to SEO Tools > Robots.txt Editor to change this",
+      "sha256": "77663786c075f0cf2e8664b6bf952ec1c2328f07e150b032b11a3ce0dcef30c1"
+    },
+    {
+      "source_key": "nyc_pauper_league_ny",
+      "url": "https://www.decksandthecity.org/robots.txt",
+      "text": "# As a condition of accessing this website, you agree to abide by the following\n# content signals:\n\n# (a)  If a Content-Signal = yes, you may collect content for the corresponding\n#      use.\n# (b)  If a Content-Signal = no, you may not collect content for the\n#      corresponding use.\n# (c)  If the website operator does not include a Content-Signal for a\n#      corresponding use, the website operator neither grants nor restricts\n#      permission via Content-Signal with respect to the corresponding use.\n\n# The content signals and their meanings are:\n\n# search:   building a search index and providing search results (e.g., returning\n#           hyperlinks and short excerpts from your website's contents). Search does not\n#           include providing AI-generated search summaries.\n# ai-input: inputting content into one or more AI models (e.g., retrieval\n#           augmented generation, grounding, or other real-time taking of content for\n#           generative AI search answers).\n# ai-train: training or fine-tuning AI models.\n# use:      how AI systems may consume the content (immediate, reference, or full).\n\n# ANY RESTRICTIONS EXPRESSED VIA CONTENT SIGNALS ARE EXPRESS RESERVATIONS OF\n# RIGHTS UNDER ARTICLE 4 OF THE EUROPEAN UNION DIRECTIVE 2019/790 ON COPYRIGHT\n# AND RELATED RIGHTS IN THE DIGITAL SINGLE MARKET.\n\n# BEGIN Cloudflare Managed content\n\n\nUser-agent: *\nContent-Signal: search=yes,ai-train=no,use=reference\nAllow: /\n\n# Training crawlers\nUser-agent: Amazonbot\nDisallow: /\n\nUser-agent: Applebot-Extended\nDisallow: /\n\nUser-agent: Bytespider\nDisallow: /\n\nUser-agent: CCBot\nDisallow: /\n\nUser-agent: ClaudeBot\nDisallow: /\n\nUser-agent: Diffbot\nDisallow: /\n\nUser-agent: Google-Extended\nDisallow: /\n\nUser-agent: GPTBot\nDisallow: /\n\nUser-agent: omgili\nDisallow: /\n\nUser-agent: anthropic-ai\nDisallow: /\n\nUser-agent: Claude-Web\nDisallow: /\n\nUser-agent: cohere-ai\nDisallow: /\n\nUser-agent: MistralAI-Training\nDisallow: /\n\nUser-agent: meta-externalagent\nDisallow: /\n\nUser-agent: GoogleOther\nDisallow: /\n\nUser-agent: Baiduspider\nDisallow: /\n\nUser-agent: PetalBot\nDisallow: /\n\nUser-agent: AwarioSmartBot\nUser-agent: AwarioRssBot\nDisallow: /\n\nUser-agent: Google-CloudVertexBot\nDisallow: /\n\nUser-agent: QualifiedBot\nDisallow: /\n\nUser-agent: Cotoyogi\nDisallow: /\n\nUser-agent: ICC-Crawler\nDisallow: /\n\nUser-agent: atlassian-bot\nDisallow: /\n\nUser-agent: FishBot\nDisallow: /\n\nUser-agent: BorderxBot\nDisallow: /\n\nUser-agent: NavuBot\nDisallow: /\n\nUser-agent: SemrushBot-SWA\nDisallow: /\n\nUser-agent: WARDBot\nDisallow: /\n\nUser-agent: magpie-crawler\nDisallow: /\n\nUser-agent: KimiBot\nDisallow: /\n\nUser-agent: CitibotSiteCrawler\nDisallow: /\n\n# END Cloudflare Managed Content\n\n# See https://www.robotstxt.org/robotstxt.html for documentation on how to use the robots.txt file\nSitemap: https://www.decksandthecity.org/sitemap.xml\n",
+      "sha256": "79776061047b6d8e2c10efe10c9a096d65aedcd3a16ec727987037626b6081ea"
+    },
+    {
+      "source_key": "bronx_alehouse_bronx_ny",
+      "url": "https://letsgotrivia.com/robots.txt",
+      "text": "# START YOAST BLOCK\n# ---------------------------\nUser-agent: *\nDisallow: /?s=\nDisallow: /page/*/?s=\nDisallow: /search/\n\nSitemap: https://letsgotrivia.com/sitemap_index.xml\n# ---------------------------\n# END YOAST BLOCK",
+      "sha256": "ee5d84f1021fee47f89187a7d3b92d0e8d19f951565ed8aa0ed5fe0e96edd701"
+    },
+    {
+      "source_key": "os_nyc_new_york_ny",
+      "url": "https://www.os-nyc.com/robots.txt",
+      "text": "# Squarespace Robots Txt\n\nUser-agent: AI2Bot\nUser-agent: Ai2Bot-Dolma\nUser-agent: aiHitBot\nUser-agent: Amazonbot\nUser-agent: anthropic-ai\nUser-agent: Applebot-Extended\nUser-agent: Bytespider\nUser-agent: CCBot\nUser-agent: ClaudeBot\nUser-agent: cohere-ai\nUser-agent: cohere-training-data-crawler\nUser-agent: DuckAssistBot\nUser-agent: FacebookBot\nUser-agent: Google-Extended\nUser-agent: GoogleOther\nUser-agent: GoogleOther-Image\nUser-agent: GoogleOther-Video\nUser-agent: GPTBot\nUser-agent: img2dataset\nUser-agent: Meta-ExternalAgent\nUser-agent: MyCentralAIScraperBot\nUser-agent: omgili\nUser-agent: omgilibot\nUser-agent: Quora-Bot\nUser-agent: TikTokSpider\nUser-agent: YouBot\nUser-agent: AdsBot-Google\nUser-agent: AdsBot-Google-Mobile\nUser-agent: AdsBot-Google-Mobile-Apps\nUser-agent: *\nDisallow: /config\nDisallow: /search\nDisallow: /account$\nDisallow: /account/\nDisallow: /commerce/digital-download/\nDisallow: /api/\nAllow: /api/ui-extensions/\nDisallow: /static/\nDisallow:/*?author=*\nDisallow:/*&author=*\nDisallow:/*?tag=*\nDisallow:/*&tag=*\nDisallow:/*?month=*\nDisallow:/*&month=*\nDisallow:/*?view=*\nDisallow:/*&view=*\nDisallow:/*?format=json\nDisallow:/*&format=json\nDisallow:/*?format=page-context\nDisallow:/*&format=page-context\nDisallow:/*?format=main-content\nDisallow:/*&format=main-content\nDisallow:/*?format=json-pretty\nDisallow:/*&format=json-pretty\nDisallow:/*?format=ical\nDisallow:/*&format=ical\nDisallow:/*?reversePaginate=*\nDisallow:/*&reversePaginate=*\n\nSitemap: https://www.os-nyc.com/sitemap.xml\n",
+      "sha256": "996e90bc0637b9de998fa951a3a99f60ebb55619aab17afed5896ed6f59847d1"
+    },
+    {
+      "source_key": "radegast_hall_brooklyn_ny",
+      "url": "https://radegasthall.com/robots.txt",
+      "text": "user-agent: * \ndisallow: \ncrawl-delay: 60\n",
+      "sha256": "6288dde2996947fa48d1dd7de610bc66852ec0e288a275a3f8b44c6883d5b7f2"
+    }
+  ],
+  "remaining_holds": [
+    {
+      "name": "Brooklyn Brewery",
+      "url": "https://brooklynbrewery.com/events/",
+      "status": "No active future event dates during move",
+      "evidence_urls": [
+        "https://brooklynbrewery.com/",
+        "https://brooklynbrewery.com/visit-us/"
+      ],
+      "web_refs": [
+        "turn85search2",
+        "turn85search3"
+      ],
+      "details": "Current primary homepage says temporarily closed while moving to 1 Wythe Avenue; legacy FAQ still gives the former 79 North 11th address. Empty current events hub cannot produce publishable events."
+    },
+    {
+      "name": "BrookLAN",
+      "url": "https://www.brooklan.com/events",
+      "status": "Official venue route unavailable and remaining organizer listings postponed",
+      "evidence_urls": [
+        "https://www.eventbrite.com/o/brooklan-new-york-31064796985"
+      ],
+      "web_refs": [
+        "turn86search0"
+      ],
+      "details": "Normal venue GET is 404. Official Eventbrite upcoming Commander entries are marked postponed. Current OS NYC calendar is separately implemented; no former BrookLAN street is assigned to those events."
+    },
+    {
+      "name": "Hex & Co. own calendar",
+      "url": "https://www.hexnyc.com/hexandcoweeklyevents/",
+      "status": "Normal publisher access presents a SiteGround CAPTCHA",
+      "details": "No challenge workaround attempted. Independent official Pauper League covers the current West and Union Square programs; other Hex programs remain held pending a permitted current source."
+    },
+    {
+      "name": "The Uncommons",
+      "url": "https://uncommonsnyc.com/",
+      "status": "Normal publisher and robots routes present a SiteGround CAPTCHA",
+      "evidence_urls": [
+        "https://uncommonsnyc.com/magic-the-gathering/"
+      ],
+      "web_refs": [
+        "turn97search4"
+      ],
+      "details": "Search-index primary content advertises weekly Commander and draft clocks, but a production-accessible permitted publisher response has not been verified. No CAPTCHA bypass attempted."
+    },
+    {
+      "name": "Brooklyn Strategist Jumbula TCG calendar",
+      "url": "https://the-brooklyn-strategist.jumbula.com/tcg-events",
+      "status": "Permitted public catalog currently contains only expired TCG dates",
+      "details": "Published qualifier series ends November 1 and Star Trek prerelease November 8. The current 148 Pierrepont Street address is explicit. Saturday Pauper at14:00 is implemented via the independent official league; remaining official adults-page schedules give days without clocks."
+    },
+    {
+      "name": "SingleCut Queens",
+      "url": "https://www.singlecut.com/tap-room-events",
+      "status": "Native weekly page has no clocks; exact official newsletter RSS is robots-disallowed",
+      "details": "Queens Wednesday movies, Thursday bingo and Friday trivia have weekday names but no clocks in the current normal HTML. The official newsletters page embeds a public Elfsight RSS widget. Its published public boot route is robots-permitted and reveals the exact publisher Mailchimp RSS URL; that actual feed host disallows all crawling for the EventQuest user agent. The prohibited feed was not fetched and no renderer proxy was used. General taproom opening hours do not establish event times; non-NYC Barn programs remain excluded.",
+      "web_refs": [
+        "turn115search0",
+        "turn115search1",
+        "turn115search5"
+      ],
+      "newsletter_evidence": {
+        "official_page": "https://www.singlecut.com/newsletters",
+        "official_page_sha256": "fc609df416cd82cf6a2cfcc3afab3496e5ee24193a66118f2c5d75290bcbc55c",
+        "published_widget_id": "cdedd161-cff9-4867-a17d-7c897e8bf87e",
+        "published_script": "https://elfsightcdn.com/platform.js",
+        "published_script_sha256": "d3ab5d9bc338fba6c0a13a5afe4af107771f520ca78f5a30b728e31bee6092e4",
+        "public_boot_url": "https://core.service.elfsight.com/p/boot/?page=https%3A%2F%2Fwww.singlecut.com%2Fnewsletters&w=cdedd161-cff9-4867-a17d-7c897e8bf87e",
+        "public_boot_status": 200,
+        "public_boot_sha256": "fc4c3db3226144b3ed67eb8691a8fb5ecc62030a3c6faccb63898233c6b88afc",
+        "public_boot_robots": "User-agent: *\nAllow: /p/*\nDisallow: /",
+        "configured_rss_url": "https://us20.campaign-archive.com/feed?u=8a0abb4074264cad6714b3200&id=3ed783ee61",
+        "feed_robots_url": "https://us20.campaign-archive.com/robots.txt",
+        "feed_robots_status": 200,
+        "feed_robots_sha256": "5ab623d21052b3e98340b667fd8f9ec2be65fc26674585f20a9a3257ff5e51f5",
+        "applicable_feed_robots": "User-agent: *\nDisallow: /",
+        "rss_body_fetched": false,
+        "rss_event_contents_verified": false,
+        "raw_evidence_directory": "nyc-social-final-research"
+      }
+    },
+    {
+      "name": "Bar Lunatico",
+      "url": "https://www.barlunatico.com/calendar",
+      "status": "Previously reviewed export route disallowed by robots",
+      "details": "No new permitted full event route has been verified in this follow-up; original discovery evidence remains the access record."
+    },
+    {
+      "name": "Grimm Artisanal Ales",
+      "url": "https://grimmales.com/upcoming-events/",
+      "status": "Previously reviewed normal publisher route returns403",
+      "details": "No access-control workaround attempted; no new permitted full event route verified in this follow-up."
+    },
+    {
+      "name": "Hudson Table Brooklyn",
+      "url": "https://hudsontable.com/brooklyn/calendar/",
+      "status": "Previously reviewed normal publisher route returns403",
+      "details": "No access-control workaround attempted; no new permitted full event route verified in this follow-up."
+    },
+    {
+      "name": "The Bronx Brewery / The Backyard BX",
+      "url": "https://thebackyardbx.com/",
+      "status": "Current official programming route has no future dated lineup",
+      "evidence_urls": [
+        "https://thebronxbrewery.com/pages/bronx-location",
+        "https://thebackyardbx.com/"
+      ],
+      "details": "Current primary homepage was rechecked on November 14, 2026: public hours are TBD and the lineup says schedule dropping soon. No future event dates or explicit weekly clocks are published. The homepage supplies 856 E 136th Street, Bronx, NY10454.",
+      "web_refs": [
+        "turn115search2"
+      ]
+    }
+  ],
+  "greenbelt_public_html_evidence": {
+    "organizer_url": "https://www.eventbrite.com/o/greenbelt-conservancy-10628899098",
+    "organizer_id": "10628899098",
+    "organization_id": "170711247025",
+    "organizer_manifest_count": 5,
+    "has_more_upcoming": false,
+    "upcoming_events_failed": false,
+    "native_profile_website": "https://sigreenbelt.org/",
+    "native_profile_website_current_status": 404,
+    "robots_url": "https://www.eventbrite.com/robots.txt",
+    "robots_status": 200,
+    "robots_sha256": "b7fa62d995e2b649df4b7a9ec9fea2bc0c7461276cb58e892562d4193c498222",
+    "robots_permitted_paths": [
+      "/o/greenbelt-conservancy-10628899098",
+      "/e/"
+    ],
+    "no_api_or_export_requests": true,
+    "full_detail_html_statuses": [
+      200,
+      200,
+      200,
+      200,
+      200
+    ],
+    "details": [
+      {
+        "id": "2003425962986",
+        "url": "https://www.eventbrite.com/e/autumn-leaves-story-time-and-craft-tickets-2003425962986",
+        "final_url": "https://www.eventbrite.com/e/autumn-leaves-story-time-and-craft-tickets-2003425962986",
+        "status": 200,
+        "bytes": 198408,
+        "sha256": "757f7eeebd8d9f6342ad1851c0c8aef3aea0a01637252f0bf9694fbac6b5425f",
+        "captured_at": "2026-11-14T23:27:39.363111+00:00"
+      },
+      {
+        "id": "2003428843602",
+        "url": "https://www.eventbrite.com/e/greenbelt-adult-hike-st-francis-woodlands-tickets-2003428843602",
+        "final_url": "https://www.eventbrite.com/e/greenbelt-adult-hike-st-francis-woodlands-tickets-2003428843602",
+        "status": 200,
+        "bytes": 198577,
+        "sha256": "8b13d80beb30ee5895a41b322baac02bf72b41626a469132bfc94e64e3b87165",
+        "captured_at": "2026-11-14T23:27:45.765158+00:00"
+      },
+      {
+        "id": "2004822817014",
+        "url": "https://www.eventbrite.com/e/storytime-lenape-and-corn-tickets-2004822817014",
+        "final_url": "https://www.eventbrite.com/e/storytime-lenape-and-corn-tickets-2004822817014",
+        "status": 200,
+        "bytes": 197153,
+        "sha256": "a78d6a11a9594b4a7051c2bbedf7d992b7d653fe75f83fee38a219b09263fc17",
+        "captured_at": "2026-11-14T23:27:51.697172+00:00"
+      },
+      {
+        "id": "2003430102367",
+        "url": "https://www.eventbrite.com/e/greenbelt-natural-history-hike-with-dr-eric-w-sanderson-tickets-2003430102367",
+        "final_url": "https://www.eventbrite.com/e/greenbelt-natural-history-hike-with-dr-eric-w-sanderson-tickets-2003430102367",
+        "status": 200,
+        "bytes": 199738,
+        "sha256": "699596d2af7e2891bd6d06193f74c4243f7e59d9f0061a18d94898a7a1b61d44",
+        "captured_at": "2026-11-14T23:27:57.198297+00:00"
+      },
+      {
+        "id": "2003516234992",
+        "url": "https://www.eventbrite.com/e/orienteering-fundamentals-tickets-2003516234992",
+        "final_url": "https://www.eventbrite.com/e/orienteering-fundamentals-tickets-2003516234992",
+        "status": 200,
+        "bytes": 195991,
+        "sha256": "57ee7e902ee6318880ee09921ba34f8913967bf341e80bcc2ab4821a6975f5eb",
+        "captured_at": "2026-11-14T23:28:02.714689+00:00"
+      }
+    ],
+    "initial_manifest": {
+      "name": "greenbelt-organizer",
+      "url": "https://www.eventbrite.com/o/greenbelt-conservancy-10628899098",
+      "final_url": "https://www.eventbrite.com/o/greenbelt-conservancy-10628899098",
+      "status": 200,
+      "bytes": 210407,
+      "sha256": "7b767ae9f5e5e4bb0eec842eebacc1173ef5b5e084865a0f6244e6da8bfde252",
+      "captured_at": "2026-11-14T23:26:30.936000+00:00"
+    },
+    "final_manifest": {
+      "url": "https://www.eventbrite.com/o/greenbelt-conservancy-10628899098",
+      "status": 200,
+      "bytes": 210407,
+      "sha256": "7b767ae9f5e5e4bb0eec842eebacc1173ef5b5e084865a0f6244e6da8bfde252",
+      "captured_at": "2026-11-14T23:30:31.151001+00:00"
+    },
+    "provenance": "Fresh ordinary anonymous EventQuest HTTPS captures, then replay through the real collector using cached bytes; production guarded transport remains unchanged and awaits production validation.",
+    "ownership": [
+      {
+        "parks_guid": "2282507",
+        "eventbrite_event_id": "2003425962986",
+        "parks_title": "Autumn Leaves Story Time and Craft",
+        "parks_start": "2026-11-15T10:30:00.000",
+        "registration_url": "https://www.eventbrite.com/e/2003425962986?aff=oddtdtcreator"
+      },
+      {
+        "parks_guid": "2282245",
+        "eventbrite_event_id": "2003428843602",
+        "parks_title": "Greenbelt Adult Hike - St. Francis Woodlands",
+        "parks_start": "2026-11-19T11:00:00.000",
+        "registration_url": "https://www.eventbrite.com/e/greenbelt-adult-hike-st-francis-woodlands-tickets-2003428843602?aff=oddtdtcreator&keep_tld=true"
+      },
+      {
+        "parks_guid": "2282504",
+        "eventbrite_event_id": "2003430102367",
+        "parks_title": "Greenbelt Natural History Hike with Dr. Eric W. Sanderson",
+        "parks_start": "2026-11-21T13:30:00.000",
+        "registration_url": "https://www.eventbrite.com/e/greenbelt-natural-history-hike-with-dr-eric-w-sanderson-tickets-2003430102367?aff=oddtdtcreator&keep_tld=true"
+      }
+    ],
+    "two_additional_programs": [
+      {
+        "publisher_native_id": "2004822817014",
+        "title": "Storytime: Lenape and Corn",
+        "starts_at": "2026-11-20T16:00:00+00:00",
+        "ends_at": "2026-11-20T18:00:00+00:00",
+        "event_url": "https://www.eventbrite.com/e/storytime-lenape-and-corn-tickets-2004822817014"
+      },
+      {
+        "publisher_native_id": "2003516234992",
+        "title": "Orienteering Fundamentals",
+        "starts_at": "2026-11-28T16:00:00+00:00",
+        "ends_at": "2026-11-28T18:00:00+00:00",
+        "event_url": "https://www.eventbrite.com/e/orienteering-fundamentals-tickets-2003516234992"
+      }
+    ],
+    "prior_six_source_results_sha256": "892ef128d2ee895c2e160be61548110cea1a30178eec966baec59d65686aa408"
+  }
+}

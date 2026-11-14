@@ -1,0 +1,25 @@
+{
+  "reviewed_at": "2026-11-14T23:34:17.567904+00:00",
+  "scope": "Independent read-only review of the new Greenbelt functions and their ten tests. No collector edits or additional publisher requests.",
+  "module": "roomquest/new_york_social_final.py",
+  "module_sha256": "dc2418b6a1b4aa48dcdf953c9941e9bdb0e4bf46e77a0383d00e482b9cef05bd",
+  "capture_sha256": "fcf35548eca3f707abc51b55bc2d2c48252c3e5af34b4a1c47827ca0d8d71728",
+  "source_key": "greenbelt_conservancy_staten_island_ny",
+  "accepted_occurrences": 5,
+  "result": "No concrete blocker found",
+  "validation": {
+    "command": "python -m unittest tests.test_new_york_social_final.GreenbeltFinalTests -v",
+    "tests": 10,
+    "passed": 10
+  },
+  "findings": [
+    "Manifest completeness checks count, hasMoreUpcoming, failure flag, native organizer identity and unique canonical event URLs.",
+    "Detail checks native event ID, canonical URL, title, organizer and organization; public live status, local/UTC agreement and real end time are required.",
+    "Complete overview and every native structured text module are retained. Unknown widgets/module shapes, blank bodies and oversize prose are held rather than clipped. A genuinely complete overview with an empty module list is accepted.",
+    "Full publisher venue street and city/ZIP must match one of two separately reviewed named NYC Parks facilities; High Rock Nevada parking lot is not confused with the park gate.",
+    "Partial checkpoints emit no events. Hydration resumes at persisted cursor; final ordinary organizer manifest must match before complete output is released.",
+    "Checkpoint validation binds queue, native event IDs, body validity, venue tuple, points, organizer, diagnostic coverage, UTC start and local date window; failed detail fetches cannot mutate the input checkpoint.",
+    "Expired rows become explicit held diagnostics on completion; no private, cancelled or missing meeting location record is manufactured."
+  ],
+  "limit": "Review covers code, focused regressions and frozen ordinary-HTTP parser capture. Production publication and live transport behavior remain release-owner verification."
+}

@@ -1,0 +1,197 @@
+{
+  "schema_version": 1,
+  "checked_at": "2026-11-14T23:30:58.944824+00:00",
+  "source_key": "brooklyn_community_board_6_ny",
+  "publisher_event_url": "https://brooklyncb6.cityofnewyork.us/event/5th-avenue-tree-lighting-small-business-saturday/",
+  "native_held_record": [
+    {
+      "source_key": "brooklyn_community_board_6_ny",
+      "id": "9086",
+      "title": "5th Avenue Tree Lighting — Small Business Saturday",
+      "event_url": null,
+      "disposition": "held",
+      "reason": "venue_not_reviewed"
+    }
+  ],
+  "reviewed_location": {
+    "venue_name": "4th Street Plaza at 5th Avenue (approximate meeting point)",
+    "venue_address": "4th Street & 5th Avenue, Brooklyn, NY 11215",
+    "venue_city": "Brooklyn",
+    "lat": 40.672191,
+    "lng": -73.984456,
+    "approximate": true,
+    "provenance": "Publisher explicitly identifies intersection; existing reviewed plaza point uses the official PAD 364 Fifth Avenue park-edge location and official park/4th Street gate corroboration. This is not an exact tree pin."
+  },
+  "publisher_confirmation": {
+    "url": "https://parkslopefifthavenuebid.com/what-we-do",
+    "web_ref": "turn133view0",
+    "claim": "The current organizer annual-events section explicitly places its November Small Business Saturday tree lighting at 4th Street and 5th Avenue.",
+    "http": {
+      "name": "bid",
+      "url": "https://parkslopefifthavenuebid.com/what-we-do",
+      "robots_status": 200,
+      "allowed": true,
+      "status": 200,
+      "final_url": "https://parkslopefifthavenuebid.com/what-we-do",
+      "bytes": 35239,
+      "sha256": "17e495d9840d83a580a06e633048287d9258b665aeecc419c10ce91661c67e36"
+    }
+  },
+  "dated_confirmation": {
+    "url": "https://parkslopefifthavenuebid.com/",
+    "web_ref": "turn131view0",
+    "claim": "The current official homepage advertises November 28, 2026 at 4:30pm for the same named tree-lighting event."
+  },
+  "adjacency_confirmation": {
+    "url": "https://home4.nyc.gov/assets/nypd/downloads/pdf/community_affairs/citywide-national-night-out-2026.pdf",
+    "web_ref": "turn136search10",
+    "claim": "The current-year official NYPD event notice identifies 4th Street and 5th Avenue as adjacent to JJ Byrne Playground. It corroborates the intersection/park relationship, not this tree-lighting schedule."
+  },
+  "limits": [
+    "Original BID event URL redirects to unrelated small-business help. Do not use its office address 157 13th Street.",
+    "Publisher-linked Eventbrite/Vibemap location is blank; no exact tree position was asserted.",
+    "Existing complete CB6 body and native date/time remain unchanged; append only the reviewed source/event-specific location binding."
+  ],
+  "alternate_unselected_point": {
+    "location": {
+      "venue_name": "5th Avenue at 4th Street (approximate meeting point)",
+      "venue_address": "5th Avenue & 4th Street, Brooklyn, NY 11215",
+      "venue_city": "Brooklyn",
+      "lat": 40.67306,
+      "lng": -73.98471,
+      "approximate": true,
+      "provenance": "Publisher explicitly identifies intersection; ZIP and visibly approximate adjacent JJ Byrne Playground point from official NYC PAD. This is not an exact tree pin."
+    },
+    "pad_query_url": "https://geosearch.planninglabs.nyc/v2/search?text=JJ+Byrne+Playground%2C+Brooklyn%2C+NY&size=3",
+    "pad_response_sha256": "ff3380372cc5408cbea0427addb1fc790a8502f09e02832cd666e29c774a3013",
+    "pad_feature": {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -73.98471,
+          40.67306
+        ]
+      },
+      "properties": {
+        "id": "790809",
+        "gid": "nycpad:venue:790809",
+        "layer": "venue",
+        "source": "nycpad",
+        "source_id": "790809",
+        "country_code": "US",
+        "name": "JJ BYRNE PLAYGROUND",
+        "street": "JJ BYRNE PLAYGROUND",
+        "postalcode": "11215",
+        "confidence": 1,
+        "match_type": "exact",
+        "accuracy": "point",
+        "country": "United States",
+        "country_gid": "whosonfirst:country:85633793",
+        "country_a": "USA",
+        "region": "New York",
+        "region_gid": "whosonfirst:region:85688543",
+        "region_a": "NY",
+        "county": "Kings County",
+        "county_gid": "whosonfirst:county:102082361",
+        "county_a": "BK",
+        "locality": "New York",
+        "locality_gid": "whosonfirst:locality:85977539",
+        "locality_a": "NYC",
+        "borough": "Brooklyn",
+        "borough_gid": "whosonfirst:borough:421205765",
+        "neighbourhood": "Park Slope",
+        "neighbourhood_gid": "whosonfirst:neighbourhood:85840609",
+        "label": "JJ BYRNE PLAYGROUND, Brooklyn, NY, USA",
+        "addendum": {
+          "pad": {
+            "bbl": "3009810001",
+            "bin": "3000000",
+            "version": "26c"
+          }
+        }
+      }
+    },
+    "reason_not_selected": "Reuse the existing reviewed 4th Street Plaza park-edge tuple instead of introducing a second named-park-center approximation for the same CB6 venue."
+  },
+  "pad_query_receipt": {
+    "name": "cb6-plaza-corner",
+    "url": "https://geosearch.planninglabs.nyc/v2/search?text=364+5+Avenue+Brooklyn+NY+11215",
+    "robots_status": 404,
+    "robots_allowed": true,
+    "status": 200,
+    "redirect": null,
+    "bytes": 10287,
+    "sha256": "100a04f5f18511850f22e8e24c158b927396a03ad041c62c242afe1ad51ea69f",
+    "file": "cb6-plaza-corner.json"
+  },
+  "pad_response_sha256": "100a04f5f18511850f22e8e24c158b927396a03ad041c62c242afe1ad51ea69f",
+  "pad_feature": {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -73.984456,
+        40.672191
+      ]
+    },
+    "properties": {
+      "id": "791077",
+      "gid": "nycpad:venue:791077",
+      "layer": "venue",
+      "source": "nycpad",
+      "source_id": "791077",
+      "country_code": "US",
+      "name": "364 5 AVENUE",
+      "housenumber": "364",
+      "street": "5 AVENUE",
+      "postalcode": "11215",
+      "confidence": 0.8,
+      "match_type": "fallback",
+      "accuracy": "point",
+      "country": "United States",
+      "country_gid": "whosonfirst:country:85633793",
+      "country_a": "USA",
+      "region": "New York",
+      "region_gid": "whosonfirst:region:85688543",
+      "region_a": "NY",
+      "county": "Kings County",
+      "county_gid": "whosonfirst:county:102082361",
+      "county_a": "BK",
+      "locality": "New York",
+      "locality_gid": "whosonfirst:locality:85977539",
+      "locality_a": "NYC",
+      "borough": "Brooklyn",
+      "borough_gid": "whosonfirst:borough:421205765",
+      "neighbourhood": "Park Slope",
+      "neighbourhood_gid": "whosonfirst:neighbourhood:85840609",
+      "label": "364 5 AVENUE, Brooklyn, NY, USA",
+      "addendum": {
+        "pad": {
+          "bbl": "3009810111",
+          "bin": "3021057",
+          "version": "26c"
+        }
+      }
+    }
+  },
+  "park_edge_confirmation": [
+    {
+      "url": "https://www.nyc.gov/assets/planning/download/pdf/applicants/env-review/gowanus/05-feis.pdf",
+      "web_ref": "turn138view0",
+      "claim": "Official NYC Planning open-space table identifies Washington Park at 364 Fifth Avenue."
+    },
+    {
+      "url": "https://theoldstonehouse.org/space-rental/outdoor-rules/",
+      "web_ref": "turn137view0",
+      "claim": "The park operator identifies the park from 3rd to 4th Streets between 4th and 5th Avenues and its café tables at the south end by the 4th Street gate."
+    }
+  ],
+  "native_occurrence_guard": {
+    "id": "9086",
+    "date": "2026-11-28",
+    "time": "16:30",
+    "native_body_end": "17:30",
+    "linked_website": "https://parkslopefifthavenuebid.com/event/5th-avenue-tree-lighting-small-business-saturday/"
+  }
+}

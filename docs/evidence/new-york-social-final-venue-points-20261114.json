@@ -1,0 +1,737 @@
+{
+  "observed_date": "2026-11-14",
+  "source": "NYC Planning Geosearch v2 / NYC PAD, NYC Community Board1 alternate-premises corroboration for186BerryStreet, and exact named official NYC Parks facility points for Greenbelt",
+  "count": 13,
+  "points": [
+    {
+      "source_key": "wild_east_brooklyn_ny",
+      "venue_name": "Wild East Brewing Co.",
+      "venue_address": "623 Sackett Street, Brooklyn, NY 11217",
+      "lat": 40.678617,
+      "lng": -73.983416,
+      "point_precision": "NYC PAD building/address point; no entrance precision claimed",
+      "query_url": "https://geosearch.planninglabs.nyc/v2/search?text=623+Sackett+Street+Brooklyn+NY+11217&size=4",
+      "query_sha256": "3b6afc568b596878e3dd193e5d99117b8a32d68dcda805e437a1445ef96698f6",
+      "selected_feature": {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -73.983416,
+            40.678617
+          ]
+        },
+        "properties": {
+          "id": "739664",
+          "gid": "nycpad:venue:739664",
+          "layer": "venue",
+          "source": "nycpad",
+          "source_id": "739664",
+          "country_code": "US",
+          "name": "623 SACKETT STREET",
+          "housenumber": "623",
+          "street": "SACKETT STREET",
+          "postalcode": "11217",
+          "confidence": 0.8,
+          "match_type": "fallback",
+          "accuracy": "point",
+          "country": "United States",
+          "country_gid": "whosonfirst:country:85633793",
+          "country_a": "USA",
+          "region": "New York",
+          "region_gid": "whosonfirst:region:85688543",
+          "region_a": "NY",
+          "county": "Kings County",
+          "county_gid": "whosonfirst:county:102082361",
+          "county_a": "BK",
+          "locality": "New York",
+          "locality_gid": "whosonfirst:locality:85977539",
+          "locality_a": "NYC",
+          "borough": "Brooklyn",
+          "borough_gid": "whosonfirst:borough:421205765",
+          "neighbourhood": "Gowanus",
+          "neighbourhood_gid": "whosonfirst:neighbourhood:85865587",
+          "label": "623 SACKETT STREET, Brooklyn, NY, USA",
+          "addendum": {
+            "pad": {
+              "bbl": "3004270052",
+              "bin": "3007000",
+              "version": "26c"
+            }
+          }
+        }
+      }
+    },
+    {
+      "source_key": "sip_and_play_brooklyn_ny",
+      "venue_name": "Sip & Play",
+      "venue_address": "471 5th Avenue, Brooklyn, NY 11215",
+      "lat": 40.668103,
+      "lng": -73.986879,
+      "point_precision": "NYC PAD building/address point; no entrance precision claimed",
+      "query_url": "https://geosearch.planninglabs.nyc/v2/search?text=471+5th+Avenue+Brooklyn+NY+11215&size=4",
+      "query_sha256": "48c8d717870670dc11c13fd729fda42b39275ba1b5486fb76353238defd1df88",
+      "selected_feature": {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -73.986879,
+            40.668103
+          ]
+        },
+        "properties": {
+          "id": "797389",
+          "gid": "nycpad:venue:797389",
+          "layer": "venue",
+          "source": "nycpad",
+          "source_id": "797389",
+          "country_code": "US",
+          "name": "471 5 AVENUE",
+          "housenumber": "471",
+          "street": "5 AVENUE",
+          "postalcode": "11215",
+          "confidence": 0.8,
+          "match_type": "fallback",
+          "accuracy": "point",
+          "country": "United States",
+          "country_gid": "whosonfirst:country:85633793",
+          "country_a": "USA",
+          "region": "New York",
+          "region_gid": "whosonfirst:region:85688543",
+          "region_a": "NY",
+          "county": "Kings County",
+          "county_gid": "whosonfirst:county:102082361",
+          "county_a": "BK",
+          "locality": "New York",
+          "locality_gid": "whosonfirst:locality:85977539",
+          "locality_a": "NYC",
+          "borough": "Brooklyn",
+          "borough_gid": "whosonfirst:borough:421205765",
+          "neighbourhood": "South Slope",
+          "neighbourhood_gid": "whosonfirst:neighbourhood:85892961",
+          "label": "471 5 AVENUE, Brooklyn, NY, USA",
+          "addendum": {
+            "pad": {
+              "bbl": "3010170004",
+              "bin": "3022591",
+              "version": "26c"
+            }
+          }
+        }
+      }
+    },
+    {
+      "source_key": "nyc_pauper_league_ny",
+      "venue_name": "Brooklyn Strategist",
+      "venue_address": "148 Pierrepont Street, Brooklyn, NY 11201",
+      "lat": 40.694456,
+      "lng": -73.991584,
+      "point_precision": "NYC PAD building/address point; no entrance precision claimed",
+      "query_url": "https://geosearch.planninglabs.nyc/v2/search?text=148+Pierrepont+Street+Brooklyn+NY+11201&size=4",
+      "query_sha256": "a62652da5fa06451a84c5c49a8796363060dbad7cb03b46a282d8a313db8aba2",
+      "selected_feature": {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -73.991584,
+            40.694456
+          ]
+        },
+        "properties": {
+          "id": "724838",
+          "gid": "nycpad:venue:724838",
+          "layer": "venue",
+          "source": "nycpad",
+          "source_id": "724838",
+          "country_code": "US",
+          "name": "148 PIERREPONT STREET",
+          "housenumber": "148",
+          "street": "PIERREPONT STREET",
+          "postalcode": "11201",
+          "confidence": 0.8,
+          "match_type": "fallback",
+          "accuracy": "point",
+          "country": "United States",
+          "country_gid": "whosonfirst:country:85633793",
+          "country_a": "USA",
+          "region": "New York",
+          "region_gid": "whosonfirst:region:85688543",
+          "region_a": "NY",
+          "county": "Kings County",
+          "county_gid": "whosonfirst:county:102082361",
+          "county_a": "BK",
+          "locality": "New York",
+          "locality_gid": "whosonfirst:locality:85977539",
+          "locality_a": "NYC",
+          "borough": "Brooklyn",
+          "borough_gid": "whosonfirst:borough:421205765",
+          "neighbourhood": "Brooklyn Heights",
+          "neighbourhood_gid": "whosonfirst:neighbourhood:85807925",
+          "label": "148 PIERREPONT STREET, Brooklyn, NY, USA",
+          "addendum": {
+            "pad": {
+              "bbl": "3002440026",
+              "bin": "3424482",
+              "version": "26c"
+            }
+          }
+        }
+      }
+    },
+    {
+      "source_key": "nyc_pauper_league_ny",
+      "venue_name": "Hex & Co. Union Square",
+      "venue_address": "801 Broadway, New York, NY 10003",
+      "lat": 40.732847,
+      "lng": -73.991801,
+      "point_precision": "NYC PAD building/address point; no entrance precision claimed",
+      "query_url": "https://geosearch.planninglabs.nyc/v2/search?text=801+Broadway+New+York+NY+10003&size=4",
+      "query_sha256": "48b47037daff80bbfb1ab22b83ae45bf08a32c8f59ce29f4760147a9e01f8d7c",
+      "selected_feature": {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -73.991801,
+            40.732847
+          ]
+        },
+        "properties": {
+          "id": "54122",
+          "gid": "nycpad:venue:54122",
+          "layer": "venue",
+          "source": "nycpad",
+          "source_id": "54122",
+          "country_code": "US",
+          "name": "801 BROADWAY",
+          "housenumber": "801",
+          "street": "BROADWAY",
+          "postalcode": "10003",
+          "confidence": 0.8,
+          "match_type": "fallback",
+          "accuracy": "point",
+          "country": "United States",
+          "country_gid": "whosonfirst:country:85633793",
+          "country_a": "USA",
+          "region": "New York",
+          "region_gid": "whosonfirst:region:85688543",
+          "region_a": "NY",
+          "county": "New York County",
+          "county_gid": "whosonfirst:county:102081863",
+          "locality": "New York",
+          "locality_gid": "whosonfirst:locality:85977539",
+          "locality_a": "NYC",
+          "borough": "Manhattan",
+          "borough_gid": "whosonfirst:borough:421205771",
+          "neighbourhood": "Greenwich Village",
+          "neighbourhood_gid": "whosonfirst:neighbourhood:420529189",
+          "label": "801 BROADWAY, New York, NY, USA",
+          "addendum": {
+            "pad": {
+              "bbl": "1005630037",
+              "bin": "1009138",
+              "version": "26c"
+            }
+          }
+        }
+      }
+    },
+    {
+      "source_key": "nyc_pauper_league_ny",
+      "venue_name": "Hex & Co. Upper West Side",
+      "venue_address": "2911 Broadway, New York, NY 10025",
+      "lat": 40.806512,
+      "lng": -73.965505,
+      "point_precision": "NYC PAD building/address point; no entrance precision claimed",
+      "query_url": "https://geosearch.planninglabs.nyc/v2/search?text=2911+Broadway+New+York+NY+10025&size=4",
+      "query_sha256": "8db74b74c44571cbe6275a96ef127890fa4db6e9d770a876f216635a392becbe",
+      "selected_feature": {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -73.965505,
+            40.806512
+          ]
+        },
+        "properties": {
+          "id": "264022",
+          "gid": "nycpad:venue:264022",
+          "layer": "venue",
+          "source": "nycpad",
+          "source_id": "264022",
+          "country_code": "US",
+          "name": "2911 BROADWAY",
+          "housenumber": "2911",
+          "street": "BROADWAY",
+          "postalcode": "10025",
+          "confidence": 0.8,
+          "match_type": "fallback",
+          "accuracy": "point",
+          "country": "United States",
+          "country_gid": "whosonfirst:country:85633793",
+          "country_a": "USA",
+          "region": "New York",
+          "region_gid": "whosonfirst:region:85688543",
+          "region_a": "NY",
+          "county": "New York County",
+          "county_gid": "whosonfirst:county:102081863",
+          "locality": "New York",
+          "locality_gid": "whosonfirst:locality:85977539",
+          "locality_a": "NYC",
+          "borough": "Manhattan",
+          "borough_gid": "whosonfirst:borough:421205771",
+          "neighbourhood": "Morningside Heights",
+          "neighbourhood_gid": "whosonfirst:neighbourhood:85869509",
+          "label": "2911 BROADWAY, New York, NY, USA",
+          "addendum": {
+            "pad": {
+              "bbl": "1018950055",
+              "bin": "1057350",
+              "version": "26c"
+            }
+          }
+        }
+      }
+    },
+    {
+      "source_key": "bronx_alehouse_bronx_ny",
+      "venue_name": "Bronx Alehouse",
+      "venue_address": "216 West 238th Street, Bronx, NY 10463",
+      "lat": 40.8846,
+      "lng": -73.899646,
+      "point_precision": "NYC PAD building/address point; no entrance precision claimed",
+      "query_url": "https://geosearch.planninglabs.nyc/v2/search?text=216+West+238th+Street+Bronx+NY+10463&size=4",
+      "query_sha256": "5d3d8bb12b2d7ba0d825cc97c2b768c6e3f1b8c92e4931f8e9ee15883affd52a",
+      "selected_feature": {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -73.899646,
+            40.8846
+          ]
+        },
+        "properties": {
+          "id": "485770",
+          "gid": "nycpad:venue:485770",
+          "layer": "venue",
+          "source": "nycpad",
+          "source_id": "485770",
+          "country_code": "US",
+          "name": "216 WEST 238 STREET",
+          "housenumber": "216",
+          "street": "WEST 238 STREET",
+          "postalcode": "10463",
+          "confidence": 0.8,
+          "match_type": "fallback",
+          "accuracy": "point",
+          "country": "United States",
+          "country_gid": "whosonfirst:country:85633793",
+          "country_a": "USA",
+          "region": "New York",
+          "region_gid": "whosonfirst:region:85688543",
+          "region_a": "NY",
+          "county": "Bronx County",
+          "county_gid": "whosonfirst:county:102083063",
+          "county_a": "BX",
+          "locality": "New York",
+          "locality_gid": "whosonfirst:locality:85977539",
+          "locality_a": "NYC",
+          "borough": "Bronx",
+          "borough_gid": "whosonfirst:borough:421205773",
+          "neighbourhood": "Kingsbridge",
+          "neighbourhood_gid": "whosonfirst:neighbourhood:85869385",
+          "label": "216 WEST 238 STREET, Bronx, NY, USA",
+          "addendum": {
+            "pad": {
+              "bbl": "2032700054",
+              "bin": "2016180",
+              "version": "26c"
+            }
+          }
+        }
+      }
+    },
+    {
+      "source_key": "os_nyc_new_york_ny",
+      "venue_name": "OS NYC",
+      "venue_address": "50 Bowery, New York, NY 10013",
+      "lat": 40.715969,
+      "lng": -73.996746,
+      "point_precision": "NYC PAD building/address point; no entrance precision claimed",
+      "query_url": "https://geosearch.planninglabs.nyc/v2/search?text=50+Bowery+New+York+NY+10013&size=4",
+      "query_sha256": "7c9ea716b195e4a2b14abdd927c0eddd77bace623e155b4aa0959cc3a9ecb0cb",
+      "selected_feature": {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -73.996746,
+            40.715969
+          ]
+        },
+        "properties": {
+          "id": "16390",
+          "gid": "nycpad:venue:16390",
+          "layer": "venue",
+          "source": "nycpad",
+          "source_id": "16390",
+          "country_code": "US",
+          "name": "50 BOWERY",
+          "housenumber": "50",
+          "street": "BOWERY",
+          "postalcode": "10013",
+          "confidence": 1,
+          "match_type": "exact",
+          "accuracy": "point",
+          "country": "United States",
+          "country_gid": "whosonfirst:country:85633793",
+          "country_a": "USA",
+          "region": "New York",
+          "region_gid": "whosonfirst:region:85688543",
+          "region_a": "NY",
+          "county": "New York County",
+          "county_gid": "whosonfirst:county:102081863",
+          "locality": "New York",
+          "locality_gid": "whosonfirst:locality:85977539",
+          "locality_a": "NYC",
+          "borough": "Manhattan",
+          "borough_gid": "whosonfirst:borough:421205771",
+          "neighbourhood": "Chinatown",
+          "neighbourhood_gid": "whosonfirst:neighbourhood:85810885",
+          "label": "50 BOWERY, New York, NY, USA",
+          "addendum": {
+            "pad": {
+              "bbl": "1002020023",
+              "bin": "1090946",
+              "version": "26c"
+            }
+          }
+        }
+      }
+    },
+    {
+      "source_key": "radegast_hall_brooklyn_ny",
+      "venue_name": "Radegast Hall",
+      "venue_address": "113 North 3rd Street, Brooklyn, NY 11249",
+      "lat": 40.716671,
+      "lng": -73.961386,
+      "point_precision": "NYC PAD building/address point; no entrance precision claimed",
+      "query_url": "https://geosearch.planninglabs.nyc/v2/search?text=113+North+3rd+Street+Brooklyn+NY+11249&size=4",
+      "query_sha256": "815ec3bdfc06f845c8bc570d5d548d9dde6b7974b0bdab27d96ebad384a7fac8",
+      "selected_feature": {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -73.961386,
+            40.716671
+          ]
+        },
+        "properties": {
+          "id": "1022410",
+          "gid": "nycpad:venue:1022410",
+          "layer": "venue",
+          "source": "nycpad",
+          "source_id": "1022410",
+          "country_code": "US",
+          "name": "113 NORTH 3 STREET",
+          "housenumber": "113",
+          "street": "NORTH 3 STREET",
+          "postalcode": "11249",
+          "confidence": 0.8,
+          "match_type": "fallback",
+          "accuracy": "point",
+          "country": "United States",
+          "country_gid": "whosonfirst:country:85633793",
+          "country_a": "USA",
+          "region": "New York",
+          "region_gid": "whosonfirst:region:85688543",
+          "region_a": "NY",
+          "county": "Kings County",
+          "county_gid": "whosonfirst:county:102082361",
+          "county_a": "BK",
+          "locality": "New York",
+          "locality_gid": "whosonfirst:locality:85977539",
+          "locality_a": "NYC",
+          "borough": "Brooklyn",
+          "borough_gid": "whosonfirst:borough:421205765",
+          "neighbourhood": "Williamsburg",
+          "neighbourhood_gid": "whosonfirst:neighbourhood:85857853",
+          "label": "113 NORTH 3 STREET, Brooklyn, NY, USA",
+          "addendum": {
+            "pad": {
+              "bbl": "3023500026",
+              "bin": "3329975",
+              "version": "26c"
+            }
+          }
+        }
+      }
+    },
+    {
+      "source_key": "radegast_hall_brooklyn_ny",
+      "venue_name": "Radegast Hall — Bar Stage",
+      "venue_address": "113 North 3rd Street, Brooklyn, NY 11249",
+      "lat": 40.716671,
+      "lng": -73.961386,
+      "point_precision": "NYC PAD building/address point; no entrance precision claimed",
+      "query_url": "https://geosearch.planninglabs.nyc/v2/search?text=113+North+3rd+Street+Brooklyn+NY+11249&size=4",
+      "query_sha256": "815ec3bdfc06f845c8bc570d5d548d9dde6b7974b0bdab27d96ebad384a7fac8",
+      "selected_feature": {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -73.961386,
+            40.716671
+          ]
+        },
+        "properties": {
+          "id": "1022410",
+          "gid": "nycpad:venue:1022410",
+          "layer": "venue",
+          "source": "nycpad",
+          "source_id": "1022410",
+          "country_code": "US",
+          "name": "113 NORTH 3 STREET",
+          "housenumber": "113",
+          "street": "NORTH 3 STREET",
+          "postalcode": "11249",
+          "confidence": 0.8,
+          "match_type": "fallback",
+          "accuracy": "point",
+          "country": "United States",
+          "country_gid": "whosonfirst:country:85633793",
+          "country_a": "USA",
+          "region": "New York",
+          "region_gid": "whosonfirst:region:85688543",
+          "region_a": "NY",
+          "county": "Kings County",
+          "county_gid": "whosonfirst:county:102082361",
+          "county_a": "BK",
+          "locality": "New York",
+          "locality_gid": "whosonfirst:locality:85977539",
+          "locality_a": "NYC",
+          "borough": "Brooklyn",
+          "borough_gid": "whosonfirst:borough:421205765",
+          "neighbourhood": "Williamsburg",
+          "neighbourhood_gid": "whosonfirst:neighbourhood:85857853",
+          "label": "113 NORTH 3 STREET, Brooklyn, NY, USA",
+          "addendum": {
+            "pad": {
+              "bbl": "3023500026",
+              "bin": "3329975",
+              "version": "26c"
+            }
+          }
+        }
+      }
+    },
+    {
+      "source_key": "radegast_hall_brooklyn_ny",
+      "venue_name": "Radegast Hall — Garden",
+      "venue_address": "113 North 3rd Street, Brooklyn, NY 11249",
+      "lat": 40.716671,
+      "lng": -73.961386,
+      "point_precision": "NYC PAD building/address point; no entrance precision claimed",
+      "query_url": "https://geosearch.planninglabs.nyc/v2/search?text=113+North+3rd+Street+Brooklyn+NY+11249&size=4",
+      "query_sha256": "815ec3bdfc06f845c8bc570d5d548d9dde6b7974b0bdab27d96ebad384a7fac8",
+      "selected_feature": {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -73.961386,
+            40.716671
+          ]
+        },
+        "properties": {
+          "id": "1022410",
+          "gid": "nycpad:venue:1022410",
+          "layer": "venue",
+          "source": "nycpad",
+          "source_id": "1022410",
+          "country_code": "US",
+          "name": "113 NORTH 3 STREET",
+          "housenumber": "113",
+          "street": "NORTH 3 STREET",
+          "postalcode": "11249",
+          "confidence": 0.8,
+          "match_type": "fallback",
+          "accuracy": "point",
+          "country": "United States",
+          "country_gid": "whosonfirst:country:85633793",
+          "country_a": "USA",
+          "region": "New York",
+          "region_gid": "whosonfirst:region:85688543",
+          "region_a": "NY",
+          "county": "Kings County",
+          "county_gid": "whosonfirst:county:102082361",
+          "county_a": "BK",
+          "locality": "New York",
+          "locality_gid": "whosonfirst:locality:85977539",
+          "locality_a": "NYC",
+          "borough": "Brooklyn",
+          "borough_gid": "whosonfirst:borough:421205765",
+          "neighbourhood": "Williamsburg",
+          "neighbourhood_gid": "whosonfirst:neighbourhood:85857853",
+          "label": "113 NORTH 3 STREET, Brooklyn, NY, USA",
+          "addendum": {
+            "pad": {
+              "bbl": "3023500026",
+              "bin": "3329975",
+              "version": "26c"
+            }
+          }
+        }
+      }
+    },
+    {
+      "source_key": "radegast_hall_brooklyn_ny",
+      "venue_name": "Radegast Hall — The Bier Haus",
+      "venue_address": "186 Berry Street, Brooklyn, NY 11249",
+      "lat": 40.716671,
+      "lng": -73.961386,
+      "point_precision": "NYC PAD building/address point; no entrance precision claimed",
+      "query_url": "https://geosearch.planninglabs.nyc/v2/search?text=113+North+3rd+Street+Brooklyn+NY+11249&size=4",
+      "query_sha256": "815ec3bdfc06f845c8bc570d5d548d9dde6b7974b0bdab27d96ebad384a7fac8",
+      "selected_feature": {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -73.961386,
+            40.716671
+          ]
+        },
+        "properties": {
+          "id": "1022410",
+          "gid": "nycpad:venue:1022410",
+          "layer": "venue",
+          "source": "nycpad",
+          "source_id": "1022410",
+          "country_code": "US",
+          "name": "113 NORTH 3 STREET",
+          "housenumber": "113",
+          "street": "NORTH 3 STREET",
+          "postalcode": "11249",
+          "confidence": 0.8,
+          "match_type": "fallback",
+          "accuracy": "point",
+          "country": "United States",
+          "country_gid": "whosonfirst:country:85633793",
+          "country_a": "USA",
+          "region": "New York",
+          "region_gid": "whosonfirst:region:85688543",
+          "region_a": "NY",
+          "county": "Kings County",
+          "county_gid": "whosonfirst:county:102082361",
+          "county_a": "BK",
+          "locality": "New York",
+          "locality_gid": "whosonfirst:locality:85977539",
+          "locality_a": "NYC",
+          "borough": "Brooklyn",
+          "borough_gid": "whosonfirst:borough:421205765",
+          "neighbourhood": "Williamsburg",
+          "neighbourhood_gid": "whosonfirst:neighbourhood:85857853",
+          "label": "113 NORTH 3 STREET, Brooklyn, NY, USA",
+          "addendum": {
+            "pad": {
+              "bbl": "3023500026",
+              "bin": "3329975",
+              "version": "26c"
+            }
+          }
+        }
+      },
+      "official_alias_evidence": {
+        "url": "https://www.nyc.gov/assets/brooklyncb1/downloads/pdf/2025/Combined-Public-Hearing-and-Board-Meeting-Notice-09-09-25.pdf",
+        "web_ref": "turn106search9",
+        "finding": "NYC Community Board 1 licensing notice explicitly identifies Radegast Hall premises as 113-115 North 3rd Street A/K/A 186 Berry Street. The native current trivia description identifies The Bier Haus as @186berry. The exact 113 North 3rd NYC PAD premises point is retained for this officially documented alias; geosearch did not return 186 Berry directly."
+      }
+    },
+    {
+      "source_key": "greenbelt_conservancy_staten_island_ny",
+      "venue_name": "Greenbelt Nature Center (in Blood Root Valley)",
+      "venue_address": "700 Rockland Avenue, Staten Island, NY 10314",
+      "lat": 40.588401794434,
+      "lng": -74.139099121094,
+      "point_precision": "Exact named official NYC Parks event facility point; the distinct High Rock Gate point is not substituted for the Nevada Avenue Parking Lot",
+      "evidence_url": "https://data.cityofnewyork.us/City-Government/NYC-Parks-Events-Listing/w3wp-dpdi",
+      "evidence_file": "nyc-outdoors-probe/w3wp-dpdi-future.json",
+      "evidence_file_sha256": "ea329c8858c1698add406f7bffa7680122fb402fc5fbb00511d50506ef5611b1",
+      "native_point_evidence": {
+        "guid": "2282507",
+        "title": "Autumn Leaves Story Time and Craft",
+        "link": {
+          "url": "http://www.nycgovparks.org/events/2026/11/15/autumn-leaves-story-time-and-craft"
+        },
+        "location": "Greenbelt Nature Center (in Blood Root Valley)",
+        "coordinates": "40.58840179443400000, -74.13909912109400000",
+        "starttime": "2026-11-15T10:30:00.000"
+      },
+      "publisher_native_venue": "Greenbelt Nature Center",
+      "publisher_address_evidence": [
+        {
+          "event_url": "https://www.eventbrite.com/e/autumn-leaves-story-time-and-craft-tickets-2003425962986",
+          "publisher_native_id": "2003425962986",
+          "detail_sha256": "757f7eeebd8d9f6342ad1851c0c8aef3aea0a01637252f0bf9694fbac6b5425f",
+          "venue_address": "700 Rockland Avenue, Staten Island, NY 10314"
+        },
+        {
+          "event_url": "https://www.eventbrite.com/e/storytime-lenape-and-corn-tickets-2004822817014",
+          "publisher_native_id": "2004822817014",
+          "detail_sha256": "a78d6a11a9594b4a7051c2bbedf7d992b7d653fe75f83fee38a219b09263fc17",
+          "venue_address": "700 Rockland Avenue, Staten Island, NY 10314"
+        },
+        {
+          "event_url": "https://www.eventbrite.com/e/greenbelt-natural-history-hike-with-dr-eric-w-sanderson-tickets-2003430102367",
+          "publisher_native_id": "2003430102367",
+          "detail_sha256": "699596d2af7e2891bd6d06193f74c4243f7e59d9f0061a18d94898a7a1b61d44",
+          "venue_address": "700 Rockland Avenue, Staten Island, NY 10314"
+        },
+        {
+          "event_url": "https://www.eventbrite.com/e/orienteering-fundamentals-tickets-2003516234992",
+          "publisher_native_id": "2003516234992",
+          "detail_sha256": "57ee7e902ee6318880ee09921ba34f8913967bf341e80bcc2ab4821a6975f5eb",
+          "venue_address": "700 Rockland Avenue, Staten Island, NY 10314"
+        }
+      ]
+    },
+    {
+      "source_key": "greenbelt_conservancy_staten_island_ny",
+      "venue_name": "Nevada Avenue Parking Lot (in High Rock Park)",
+      "venue_address": "200 Nevada Avenue, Staten Island, NY 10306",
+      "lat": 40.584556817034,
+      "lng": -74.124981164932,
+      "point_precision": "Exact named official NYC Parks event facility point; the distinct High Rock Gate point is not substituted for the Nevada Avenue Parking Lot",
+      "evidence_url": "https://data.cityofnewyork.us/City-Government/NYC-Parks-Events-Listing/w3wp-dpdi",
+      "evidence_file": "nyc-outdoors-probe/w3wp-dpdi-future.json",
+      "evidence_file_sha256": "ea329c8858c1698add406f7bffa7680122fb402fc5fbb00511d50506ef5611b1",
+      "native_point_evidence": {
+        "guid": "2304250",
+        "title": "Post-Thanksgiving Day Hike",
+        "link": {
+          "url": "http://www.nycgovparks.org/events/2026/11/27/postthanksgiving-day-hike1"
+        },
+        "location": "Nevada Avenue Parking Lot (in High Rock Park)",
+        "coordinates": "40.58455681703400000, -74.12498116493200000",
+        "starttime": "2026-11-27T10:00:00.000"
+      },
+      "publisher_native_venue": "High Rock Park: Nevada Ave parking lot",
+      "publisher_address_evidence": [
+        {
+          "event_url": "https://www.eventbrite.com/e/greenbelt-adult-hike-st-francis-woodlands-tickets-2003428843602",
+          "publisher_native_id": "2003428843602",
+          "detail_sha256": "8b13d80beb30ee5895a41b322baac02bf72b41626a469132bfc94e64e3b87165",
+          "venue_address": "200 Nevada Avenue, Staten Island, NY 10306"
+        }
+      ]
+    }
+  ],
+  "rejected_native_coordinates": "All Amelia location entries incorrectly repeat the same Manhattan placeholder (40.748441,-73.987853); none is used."
+}

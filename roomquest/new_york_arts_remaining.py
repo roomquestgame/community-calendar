@@ -43,6 +43,12 @@ NONPUBLIC = re.compile(r"\b(?:cancell?ed|postponed|closed|closure|members?[- ]on
 REMOTE = re.compile(r"\b(?:virtual|webinar|online only)\b", re.I)
 NYU_INTERNAL = re.compile(r"\b(?:faculty champion|office hours|registration begins|application deadline)\b", re.I)
 CP_API = "https://www.commonpoint.org/wp-json/tribe/events/v1/events"
+# Native venue identity and street matched to NYC Planning PAD 452831. The
+# provider omits a point for this venue; other venues retain their native points
+# or ordinary geocoding. Never attach this point after a venue/address change.
+CP_REVIEWED_POINTS = {
+    (69030, "Commonpoint Bronx", "1665 Hoe Ave, The Bronx, NY 10460"): (40.835703, -73.887896),
+}
 NYU_API = ("https://events.nyu.edu/live/json/events/category/Open%20to%20the%20Public/"
            "exclude_category/Athletics")
 NYU_FIELDS = "description,summary,location,event_types,status,custom_room_number"
@@ -199,6 +205,10 @@ def _commonpoint(fetch, deadline, now):
             image = item.get("image") or {}
             row = _finish(COMMONPOINT, row, body, labels=[plain(c.get("name")) for c in categories],
                           image=image.get("url") if isinstance(image, dict) else None)
+            point = CP_REVIEWED_POINTS.get((venue.get("id"), row.get("venue_name"), complete))
+            if point and row.get("lat") is None and row.get("lng") is None:
+                row.update(lat=point[0], lng=point[1], reason=None,
+                           location_provenance="reviewed_nyc_pad_exact_address")
             rows.append(row)
         total = payload.get("total_pages")
         if type(total) is not int or not 0 <= total <= 4:
