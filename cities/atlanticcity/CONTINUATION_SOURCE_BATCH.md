@@ -55,3 +55,13 @@ Jewish Federation's API returned HTTP 200 in research, but its robots request re
 
 Final deployed source health, public IDs, prose equality, pending locations and counts are recorded in the application repository's Atlantic City continuation production evidence.
 
+
+## Production collection and reviewed venue follow-through
+
+Collector PR #213 and backend PR #915 deployed successfully. Database run [43640534946](https://github.com/roomquestgame/RoomQuestGame/actions/runs/43640534946) enrolled all eight profiles. Production exposed a missing `Pike` street type in the backend normalizer; the narrow correction in backend PR #916 deployed through [43640988823](https://github.com/roomquestgame/RoomQuestGame/actions/runs/43640988823), with positive/negative postconditions and all 480 migration versions verified.
+
+All **224 captured occurrences now match production staging exactly** in identity/start, complete description hash, full street, event URL and end time. At 21:07:47 UTC, 159 were public; the two recovered old-feed occurrences were also live, yielding **788** across the full cohort. The remaining 65 waited on nine specific venue locations. These timestamped intermediate counts are not the final production total.
+
+The [nine-point official location review](../../docs/evidence/atlantic-city-continuation-reviewed-venue-points-20261114.json) resolves those exact source/name/address tuples using score-100 NJ OGIS matches and publisher corroboration. Four street-interpolated matches receive a visible approximate-map qualifier; address-point matches do not claim rooftop or surveyed-entrance precision. No source-wide fallback is added. Library/community checkpoint contract 2 invalidates old location state and verifies the exact approved point/label on resume.
+
+The venue correction passed **61 focused tests and 36 subtests**, with no whitespace defects. Independent coordinate/order/scope review found no blocker. After collector deployment, only Margate, the Chamber, Federation and Garden State need ordinary source refreshes; no event or geocoder cache is injected. Final publication receipts are maintained in the [application continuation report](https://github.com/roomquestgame/RoomQuestGame/blob/main/docs/evidence/atlantic-city-continuation-production-report.md).
