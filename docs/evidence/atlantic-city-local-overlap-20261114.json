@@ -1,0 +1,504 @@
+{
+  "reviewed_at": "2026-11-14",
+  "checked_at_utc": "2026-11-14T23:20:08.296888+00:00",
+  "status": "predeployment_read_only_comparison_complete; captured_expected_rows_not_a_claim_of_production_publication",
+  "production_mutations": false,
+  "source_counts": {
+    "new_day_family_success_nj": 4,
+    "ocean_city_public_library_nj": 61,
+    "brigantine_community_recreation_nj": 191,
+    "nj_shore_run_nj": 2,
+    "downtown_hammonton_nj": 2,
+    "ocean_city_chamber_nj": 44,
+    "slack_tide_brewing_nj": 8,
+    "tomasello_winery_hammonton_nj": 11,
+    "lizzie_rose_music_room_nj": 23
+  },
+  "expected_total_rows": 346,
+  "capture_receipts": [
+    {
+      "path": "/workspace/scratch/1a66687e54ec/research-ac/local-next-root/new_day_family_success_nj-capture.json",
+      "source_key": "new_day_family_success_nj",
+      "count": 4,
+      "sha256": "fc6a5958395814edf082c9b842cd5dc5e62f971e5dcab703ec1e133020a23901",
+      "current_file_sha256": "fc6a5958395814edf082c9b842cd5dc5e62f971e5dcab703ec1e133020a23901",
+      "compared_fields_unchanged_after_query": true
+    },
+    {
+      "path": "/workspace/scratch/1a66687e54ec/research-ac/local-next-root/ocean_city_public_library_nj-capture.json",
+      "source_key": "ocean_city_public_library_nj",
+      "count": 61,
+      "sha256": "d7fc181364f918d06777fb0924123ed5b40f1ab3c0058bd96ae5c8102007ac10",
+      "current_file_sha256": "d7fc181364f918d06777fb0924123ed5b40f1ab3c0058bd96ae5c8102007ac10",
+      "compared_fields_unchanged_after_query": true
+    },
+    {
+      "path": "/workspace/scratch/1a66687e54ec/research-ac/local-next-recreation/brigantine_community_recreation_nj-capture.json",
+      "source_key": "brigantine_community_recreation_nj",
+      "count": 191,
+      "sha256": "f1952307fc87fc60f78633164def6c243a4c7be7a158b1038602b19cb6acb187",
+      "current_file_sha256": "f1952307fc87fc60f78633164def6c243a4c7be7a158b1038602b19cb6acb187",
+      "compared_fields_unchanged_after_query": true
+    },
+    {
+      "path": "/workspace/scratch/1a66687e54ec/research-ac/local-next-recreation/nj_shore_run_nj-capture.json",
+      "source_key": "nj_shore_run_nj",
+      "count": 2,
+      "sha256": "bf2ae28a8f31716b619e1b5d0facd1528f7aedc2c00971b2e467ef355f40af25",
+      "current_file_sha256": "bf2ae28a8f31716b619e1b5d0facd1528f7aedc2c00971b2e467ef355f40af25",
+      "compared_fields_unchanged_after_query": true
+    },
+    {
+      "path": "/workspace/scratch/1a66687e54ec/research-ac/local-next-markets/downtown_hammonton_nj-replay.json",
+      "source_key": "downtown_hammonton_nj",
+      "count": 2,
+      "sha256": "13b01a152cfbf3f9c9cd100c7b7eebea8f663bcc387a6305c8f48132a856034e",
+      "current_file_sha256": "c4b0b8f50a8a78368fcdd5300edd8d0e885d91e02daf2231d10c6f0fb4e4336f",
+      "compared_fields_unchanged_after_query": true
+    },
+    {
+      "path": "/workspace/scratch/1a66687e54ec/research-ac/local-next-markets/ocean_city_chamber_nj-replay.json",
+      "source_key": "ocean_city_chamber_nj",
+      "count": 44,
+      "sha256": "5cbd79f5ce15c2cf13d2bc07f1ad2385e2d4f04c64497937a8a611278c4ae428",
+      "current_file_sha256": "5cbd79f5ce15c2cf13d2bc07f1ad2385e2d4f04c64497937a8a611278c4ae428",
+      "compared_fields_unchanged_after_query": true
+    },
+    {
+      "path": "/workspace/scratch/1a66687e54ec/research-ac/local-next-venues/replay.json",
+      "source_key": "slack_tide_brewing_nj",
+      "count": 8,
+      "sha256": "270da792b3978bd9132ff48f2cb48f5e6c9db340ddbd9a7a556caa6f37ae9907",
+      "current_file_sha256": "efb7bd45f7da39240d5c9d28d7ed7a6ea8acb69ce0ee91446b34c54e8645abda",
+      "compared_fields_unchanged_after_query": true
+    },
+    {
+      "path": "/workspace/scratch/1a66687e54ec/research-ac/local-next-venues/replay.json",
+      "source_key": "tomasello_winery_hammonton_nj",
+      "count": 11,
+      "sha256": "270da792b3978bd9132ff48f2cb48f5e6c9db340ddbd9a7a556caa6f37ae9907",
+      "current_file_sha256": "efb7bd45f7da39240d5c9d28d7ed7a6ea8acb69ce0ee91446b34c54e8645abda",
+      "compared_fields_unchanged_after_query": true
+    },
+    {
+      "path": "/workspace/scratch/1a66687e54ec/research-ac/local-next-venues/replay.json",
+      "source_key": "lizzie_rose_music_room_nj",
+      "count": 23,
+      "sha256": "270da792b3978bd9132ff48f2cb48f5e6c9db340ddbd9a7a556caa6f37ae9907",
+      "current_file_sha256": "efb7bd45f7da39240d5c9d28d7ed7a6ea8acb69ce0ee91446b34c54e8645abda",
+      "compared_fields_unchanged_after_query": true
+    }
+  ],
+  "comparison_query": {
+    "sha256": "74638bc07c70104ee42729351f0845512e66758ca44b914cbe6835f2e0b14eb4",
+    "scratch_path": "research-ac/local-next-markets/nine-source-overlap-query.json",
+    "existing_population": "Visible, scheduled, unexpired New Jersey external_events from 2026-11-13 through 2027-01-15.",
+    "candidate_rules": [
+      "Equal canonical publisher event URL within 24 hours.",
+      "Equal structured street and same America/New_York calendar day.",
+      "Equal normalized title or substantial title containment within 24 hours."
+    ],
+    "existing_rows_checked": 2337,
+    "broad_candidate_pairs": 459,
+    "returned_pairs": 459,
+    "result_limit": 1000,
+    "results_truncated": false,
+    "raw_result_scratch_path": "research-ac/local-next-markets/nine-source-overlap-result.json",
+    "raw_result_sha256": "95d0cfa87fa9b38ac31610e7e8004bc852a76cb45ab409bb7ca0f3db1765ffb5"
+  },
+  "structured_streets": {
+    "checked_rows": 346,
+    "accepted_rows": 346,
+    "rejected_rows": 0,
+    "distinct_full_addresses": 13,
+    "production_function": "rq_curator_private.udell_address(text)",
+    "checks": [
+      {
+        "address_key": "10 s egg harbor rd,hammonton,nj",
+        "venue_address": "10 South Egg Harbor Road, Hammonton, NJ 08037-1410"
+      },
+      {
+        "address_key": "100 bay rd,ocean city,nj",
+        "venue_address": "100 Bay Rd, Ocean City, NJ 08226"
+      },
+      {
+        "address_key": "1210 wabash ave,linwood,nj",
+        "venue_address": "1210 Wabash Avenue, Linwood, NJ 08221"
+      },
+      {
+        "address_key": "1735 simpson ave,ocean city,nj",
+        "venue_address": "1735 Simpson Ave, Ocean City, NJ 08226"
+      },
+      {
+        "address_key": "18 martin luther king jr ave,pleasantville,nj",
+        "venue_address": "18 Martin Luther King Jr Avenue, Pleasantville, NJ 08232"
+      },
+      {
+        "address_key": "1879 us hwy 9,clermont,nj",
+        "venue_address": "1879 US Highway 9, Clermont, NJ 08210"
+      },
+      {
+        "address_key": "217 e main st,tuckerton,nj",
+        "venue_address": "217 East Main Street, Tuckerton, NJ 08087"
+      },
+      {
+        "address_key": "225 n white horse pike,hammonton,nj",
+        "venue_address": "225 North White Horse Pike, Hammonton, NJ 08037"
+      },
+      {
+        "address_key": "236 bellevue ave,hammonton,nj",
+        "venue_address": "236 Bellevue Avenue, Hammonton, NJ 08037"
+      },
+      {
+        "address_key": "265 42nd st,brigantine,nj",
+        "venue_address": "265 42nd Street, Brigantine, NJ 08203"
+      },
+      {
+        "address_key": "501 atlantic ave,ocean city,nj",
+        "venue_address": "501 Atlantic Avenue, Ocean City, NJ 08226"
+      },
+      {
+        "address_key": "825 boardwalk,ocean city,nj",
+        "venue_address": "825 Boardwalk, Ocean City, NJ 08226"
+      },
+      {
+        "address_key": "901 asbury ave,ocean city,nj",
+        "venue_address": "901 Asbury Avenue, Ocean City, NJ 08226"
+      }
+    ]
+  },
+  "description_bounds": {
+    "checked_rows": 346,
+    "nonblank_rows": 346,
+    "rows_at_or_below_12000_chars": 346,
+    "minimum_chars": 34,
+    "maximum_chars": 3016,
+    "full_native_narrative_equality": "Covered by each collector source evidence and captured row hashes; this overlap query does not independently refetch every publisher.",
+    "source_evidence": [
+      "atlantic-city-local-community-20261114.json",
+      "atlantic-city-local-recreation-20261114.json",
+      "atlantic-city-local-markets-20261114.json",
+      "atlantic-city-local-venues-20261114.json"
+    ]
+  },
+  "existing_duplicate_review": {
+    "confirmed_duplicates": 0,
+    "exact_url_candidates": 0,
+    "same_title_same_street_candidates": 0,
+    "reviewed_dispositions": [
+      {
+        "count": 455,
+        "proposed_source": "ocean_city_public_library_nj",
+        "existing_source": "ocean_city_aquatic_fitness_nj",
+        "disposition": "distinct_programs_sharing_community_complex_address",
+        "reasoning": "Both public institutions use 1735 Simpson Avenue. Proposed records identify library rooms and separate educational, family, literary, movie or community programs; existing records identify aquatic/fitness classes. No matching event URL or normalized event title. Same physical street alone is not an event identity.",
+        "proposed_program_titles": [
+          "2026 Fall Storytimes - Preschool Power (3–5 yrs)",
+          "2026 Fall Storytimes - Ready to Read (4–5 yrs)",
+          "2026 Fall Storytimes - Rhythm & Rhymes (birth–24 months)",
+          "2026 Fall Storytimes - Toddler Time (2–3 yrs)",
+          "AI and Your Health: The Good, the Bad, and How to Stay Safe",
+          "After School Movies: Moana (2026)(PG)",
+          "Anime Club",
+          "Be SMART About Your Diet",
+          "Book Surfers: A Monthly Book Club for 4th - 6th Graders",
+          "Chakra Balancing Sound Bowls with Chrissy Ennis",
+          "Classic Film Night Series: Everything, Everywhere, All at Once(2022)",
+          "Classic Film Night Series: The Holdovers(2023)",
+          "Classic Film Night Series: The Razor's Edge (1984)",
+          "Crafts with Kat",
+          "Dungeons & Dragons: High School",
+          "Dungeons & Dragons: Middle School",
+          "Fall Festival Fun",
+          "Free Computer Class: Excel Spreadsheet Basics",
+          "Let’s Have a Parade! Drop-In Storytime and Craft",
+          "Maker Monday for Tweens",
+          "Mindfulways Meditation Workshop",
+          "OC Genies: Monthly Genealogy Group",
+          "OCFPL Whodonit Book Club",
+          "OCNJ AARP: SUBJECT: “Is That A.I.?\"",
+          "OCPFL & Senior Center Book Club: ﻿The Book Woman of Troublesome Creek",
+          "OCPFL & Senior Center Book Club: ﻿The Thursday Murder Club",
+          "Sensory Friendly Movie Featured Movie: ELF",
+          "Story Time Yoga with Kelli Dougherty",
+          "TEEN TAKEOVER THURSDAY",
+          "To Mordor and Back: The Lord of the Rings Book Club",
+          "Tuesday Family Night: Game Night",
+          "Tuesday Family Night: Tinker Tuesday",
+          "Youth Resiliency Team"
+        ],
+        "existing_program_titles": [
+          "Barre",
+          "Barre/Pilates",
+          "Cardio-Sculpt",
+          "Chair Yoga",
+          "Functional Fitness",
+          "Functional Stretch",
+          "Gentle Yoga",
+          "Pilates",
+          "Smooth Moves",
+          "Smooth Weights",
+          "Step & Sculpt",
+          "Strength",
+          "TBW",
+          "Water Exercise",
+          "Wheels & Steel",
+          "Yoga",
+          "Zumba",
+          "Zumba Gold",
+          "Zumba Toning"
+        ],
+        "representative_same_time_pairs": [
+          {
+            "proposed": "Story Time Yoga with Kelli Dougherty",
+            "existing": "Zumba Toning",
+            "starts_at": "2026-11-16T15:00:00+00:00"
+          },
+          {
+            "proposed": "Tuesday Family Night: Tinker Tuesday",
+            "existing": "Gentle Yoga",
+            "starts_at": "2026-11-17T23:00:00+00:00"
+          },
+          {
+            "proposed": "Free Computer Class: Excel Spreadsheet Basics",
+            "existing": "Zumba",
+            "starts_at": "2026-11-20T14:00:00+00:00"
+          },
+          {
+            "proposed": "2026 Fall Storytimes - Preschool Power (3–5 yrs)",
+            "existing": "Yoga",
+            "starts_at": "2026-11-20T16:00:00+00:00"
+          },
+          {
+            "proposed": "Tuesday Family Night: Game Night",
+            "existing": "Gentle Yoga",
+            "starts_at": "2026-11-24T23:00:00+00:00"
+          },
+          {
+            "proposed": "2026 Fall Storytimes - Preschool Power (3–5 yrs)",
+            "existing": "Yoga",
+            "starts_at": "2026-12-04T16:00:00+00:00"
+          },
+          {
+            "proposed": "Story Time Yoga with Kelli Dougherty",
+            "existing": "Zumba Toning",
+            "starts_at": "2026-12-07T15:00:00+00:00"
+          },
+          {
+            "proposed": "2026 Fall Storytimes - Preschool Power (3–5 yrs)",
+            "existing": "Yoga",
+            "starts_at": "2026-12-11T16:00:00+00:00"
+          },
+          {
+            "proposed": "Story Time Yoga with Kelli Dougherty",
+            "existing": "Zumba Toning",
+            "starts_at": "2026-12-14T15:00:00+00:00"
+          },
+          {
+            "proposed": "2026 Fall Storytimes - Preschool Power (3–5 yrs)",
+            "existing": "Yoga",
+            "starts_at": "2026-12-18T16:00:00+00:00"
+          }
+        ]
+      },
+      {
+        "count": 4,
+        "proposed_source": "brigantine_community_recreation_nj",
+        "existing_source": "ocean_city_aquatic_fitness_nj",
+        "disposition": "same_generic_fitness_title_at_distinct_venues_and_dates",
+        "title": "Zumba Toning",
+        "proposed_street": "265 42nd Street, Brigantine, NJ 08203",
+        "existing_street": "1735 Simpson Avenue, Ocean City, NJ 08226",
+        "reasoning": "The four Brigantine occurrences are Tuesdays; matched existing Ocean City occurrences are Mondays 24 hours earlier. These are different physical venues and different dated sessions.",
+        "occurrences": [
+          {
+            "proposed_id": "brigantine_community_recreation_nj:zumba-toning:2026-11-17",
+            "proposed_starts_at": "2026-11-17T15:00:00+00:00",
+            "existing_id": "97dd2674-df5f-497e-a613-7efd266907aa",
+            "existing_starts_at": "2026-11-16T15:00:00+00:00"
+          },
+          {
+            "proposed_id": "brigantine_community_recreation_nj:zumba-toning:2026-11-24",
+            "proposed_starts_at": "2026-11-24T15:00:00+00:00",
+            "existing_id": "983b2931-6382-4ccf-b00a-f9e46d59d54d",
+            "existing_starts_at": "2026-11-23T15:00:00+00:00"
+          },
+          {
+            "proposed_id": "brigantine_community_recreation_nj:zumba-toning:2026-12-01",
+            "proposed_starts_at": "2026-12-01T15:00:00+00:00",
+            "existing_id": "c8f844b2-1857-4c4e-99a0-69d116a71c9e",
+            "existing_starts_at": "2026-11-30T15:00:00+00:00"
+          },
+          {
+            "proposed_id": "brigantine_community_recreation_nj:zumba-toning:2026-12-08",
+            "proposed_starts_at": "2026-12-08T15:00:00+00:00",
+            "existing_id": "9d6afcd6-2559-47d7-91ec-1a3af56cabab",
+            "existing_starts_at": "2026-12-07T15:00:00+00:00"
+          }
+        ]
+      }
+    ]
+  },
+  "within_proposed_review": {
+    "exact_title_start_street_duplicates": 0,
+    "cross_source_same_start_street_pairs": 0,
+    "shared_calendar_url_start_pairs": 71,
+    "disposition": "Distinct named Brigantine class programs share a single municipal calendar URL and simultaneous slots. Program-specific native IDs and full descriptions distinguish them; do not deduplicate only by calendar URL and start.",
+    "distinct_program_pair_counts": [
+      {
+        "titles": [
+          "ABS & GLUTES",
+          "STRETCH & FLEX"
+        ],
+        "count": 4
+      },
+      {
+        "titles": [
+          "BODY SCULPT I",
+          "SLOW/BEGINNER ZUMBA"
+        ],
+        "count": 3
+      },
+      {
+        "titles": [
+          "BODY SCULPT II",
+          "PILATES CORE & STRETCH PLUS"
+        ],
+        "count": 2
+      },
+      {
+        "titles": [
+          "CHAIR YOGA I – ALL LEVELS",
+          "PILATES W/ FAYE (NEW)"
+        ],
+        "count": 2
+      },
+      {
+        "titles": [
+          "CHAIR YOGA I – ALL LEVELS",
+          "SENIOR LITE"
+        ],
+        "count": 2
+      },
+      {
+        "titles": [
+          "CHAIR YOGA III – ALL LEVELS",
+          "TAI CHI/QIGONG I"
+        ],
+        "count": 1
+      },
+      {
+        "titles": [
+          "FLEX APPEAL WITH ROBIN",
+          "MORNING YOGA III – ALL LEVELS"
+        ],
+        "count": 1
+      },
+      {
+        "titles": [
+          "MORNING POUND",
+          "MORNING YOGA I – ALL LEVELS"
+        ],
+        "count": 3
+      },
+      {
+        "titles": [
+          "MORNING POUND",
+          "TOTAL BODY STRENGTH & CONDITIONING II"
+        ],
+        "count": 7
+      },
+      {
+        "titles": [
+          "MORNING YOGA I – ALL LEVELS",
+          "TOTAL BODY STRENGTH & CONDITIONING II"
+        ],
+        "count": 3
+      },
+      {
+        "titles": [
+          "MORNING YOGA II – ALL LEVELS",
+          "ZUMBA TONING"
+        ],
+        "count": 3
+      },
+      {
+        "titles": [
+          "MORNING YOGA III – ALL LEVELS",
+          "PILATES II"
+        ],
+        "count": 2
+      },
+      {
+        "titles": [
+          "MORNING ZUMBA",
+          "MOVE STRONG/BALANCE I"
+        ],
+        "count": 3
+      },
+      {
+        "titles": [
+          "MORNING ZUMBA",
+          "PILATES SCULPT I"
+        ],
+        "count": 11
+      },
+      {
+        "titles": [
+          "MOVE STRONG/BALANCE I",
+          "PILATES SCULPT I"
+        ],
+        "count": 3
+      },
+      {
+        "titles": [
+          "MOVE STRONG/BALANCE II",
+          "PILATES SCULPT III"
+        ],
+        "count": 2
+      },
+      {
+        "titles": [
+          "MOVE STRONG/BALANCE III",
+          "SLOW/BEGINNER ZUMBA"
+        ],
+        "count": 4
+      },
+      {
+        "titles": [
+          "PILATES SCULPT II",
+          "SWEAT & SCULPT"
+        ],
+        "count": 3
+      },
+      {
+        "titles": [
+          "PILATES SCULPT II",
+          "TOTAL BODY STRENGTH & CONDITIONING I"
+        ],
+        "count": 8
+      },
+      {
+        "titles": [
+          "PILATES W/ FAYE (NEW)",
+          "SENIOR LITE"
+        ],
+        "count": 4
+      }
+    ]
+  },
+  "collector_independent_review": {
+    "module": "roomquest/atlantic_city_local_venues.py",
+    "result": "No outstanding material issue after the narrow fixes.",
+    "verified": [
+      "All advertised Lizzie ticket pages must have fetched results before month parsing.",
+      "All three sources publish only a completed manifest; partial chunk events stay empty.",
+      "Saved rows validate title, timezone, attendance, category, native ID, street and point.",
+      "Ended rows are removed before final completion.",
+      "Slack Tide native rich descriptions retain the Winter Bazaar and Line Dancing suffixes missing from collapsed visible About sections."
+    ],
+    "focused_tests_owner_receipt": "26 tests passed; owner ran focused tests after fixes."
+  },
+  "material_concerns": [],
+  "limitations": "This is a bounded predeployment overlap audit of supplied native source snapshots, not a guarantee against every future renamed or moved event. New sources still require parent-owned normal batch ingestion and live full-description/address proof."
+}

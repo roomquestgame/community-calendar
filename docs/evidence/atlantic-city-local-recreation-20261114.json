@@ -1,0 +1,2199 @@
+{
+  "reviewed_at": "2026-11-14",
+  "window_started_at_utc": "2026-11-14T23:00:00+00:00",
+  "status": "implemented_and_captured_replay_verified; production_release_owned_by_parent",
+  "module": "roomquest/atlantic_city_local_recreation.py",
+  "test_file": "tests/test_atlantic_city_local_recreation.py",
+  "focused_test_count": 14,
+  "scope": "Two newly authorized local recreation sources; no existing working or owner-disabled sources changed.",
+  "sources": [
+    {
+      "source_key": "brigantine_community_recreation_nj",
+      "feed_url": "https://brigantinebeach.org/municipal/departments/community-education-recreation/",
+      "kind": "html",
+      "platform_adapter": "html",
+      "timezone": "America/New_York",
+      "allowed_hosts": [
+        "brigantinebeach.org"
+      ],
+      "checkpoint_required": false,
+      "captured_replay": {
+        "count": 191,
+        "elapsed_seconds": 3.788,
+        "requests": [
+          {
+            "url": "https://brigantinebeach.org/municipal/departments/community-education-recreation/",
+            "accept": "text/html"
+          },
+          {
+            "url": "https://brigantinebeach.org/wp-content/uploads/Fall-Brochure-2026-green.pdf",
+            "accept": "application/pdf"
+          }
+        ],
+        "capture_path": "/workspace/scratch/1a66687e54ec/research-ac/local-next-recreation/brigantine_community_recreation_nj-capture.json",
+        "capture_sha256": "f1952307fc87fc60f78633164def6c243a4c7be7a158b1038602b19cb6acb187",
+        "full_nonblank_description_rows": 191,
+        "complete_street_rows": 191,
+        "reviewed_coordinate_rows": 191,
+        "max_description_chars": 1718,
+        "unknown_end_rows": 0
+      },
+      "programs": [
+        {
+          "title": "ABS & GLUTES",
+          "occurrences": 8,
+          "description_chars": 1718,
+          "description_sha256": "e7c1d142668acacdef82b8cef9cb6194cd8aedf34cb1d6e696a144e08bb3fa09",
+          "first_start_utc": "2026-11-16T19:00:00+00:00",
+          "last_start_utc": "2026-12-09T19:00:00+00:00"
+        },
+        {
+          "title": "BELLY DANCING",
+          "occurrences": 4,
+          "description_chars": 1650,
+          "description_sha256": "71322eeab6e509fc75f86daadb29eb9b5aeeeb838dde796a8808a55cdf367eac",
+          "first_start_utc": "2026-11-17T18:00:00+00:00",
+          "last_start_utc": "2026-12-08T18:00:00+00:00"
+        },
+        {
+          "title": "BODY SCULPT I",
+          "occurrences": 7,
+          "description_chars": 1567,
+          "description_sha256": "25b3b6d74f98d2ce07b543c9395879d2c3b3fa1d3509c41e132cdba581427196",
+          "first_start_utc": "2026-11-16T13:00:00+00:00",
+          "last_start_utc": "2026-12-10T13:00:00+00:00"
+        },
+        {
+          "title": "BODY SCULPT II",
+          "occurrences": 4,
+          "description_chars": 1560,
+          "description_sha256": "1f402b3ae799138e06ea3bc6953b02a52d2b2d8d08a5356d13b2750f0574d4c7",
+          "first_start_utc": "2026-11-21T15:00:00+00:00",
+          "last_start_utc": "2026-12-12T15:00:00+00:00"
+        },
+        {
+          "title": "CHAIR YOGA I – ALL LEVELS",
+          "occurrences": 2,
+          "description_chars": 1476,
+          "description_sha256": "864aba46e01097b3533b21dcabddbde82a536a16649456385d9abea04d767bd3",
+          "first_start_utc": "2026-11-18T17:00:00+00:00",
+          "last_start_utc": "2026-11-25T17:00:00+00:00"
+        },
+        {
+          "title": "CHAIR YOGA III – ALL LEVELS",
+          "occurrences": 3,
+          "description_chars": 1486,
+          "description_sha256": "37fa1ba7d9f71cac3a9503a81a47bd12fd500e92267dd019ee2eefa4c9ad337c",
+          "first_start_utc": "2026-11-17T17:00:00+00:00",
+          "last_start_utc": "2026-11-24T17:00:00+00:00"
+        },
+        {
+          "title": "DANCE FITNESS",
+          "occurrences": 4,
+          "description_chars": 1519,
+          "description_sha256": "0330b51b384d01002e4d9ee51f54704c911aa13e57c64e898453c71c19bbbc32",
+          "first_start_utc": "2026-11-18T13:00:00+00:00",
+          "last_start_utc": "2026-12-09T13:00:00+00:00"
+        },
+        {
+          "title": "DRAWING FIGURES",
+          "occurrences": 3,
+          "description_chars": 1553,
+          "description_sha256": "9c359fa4b39115fb9ece2ee80fed60edce9616b9bd712ef0bab70ce0aa7c2884",
+          "first_start_utc": "2026-11-20T14:30:00+00:00",
+          "last_start_utc": "2026-12-11T14:30:00+00:00"
+        },
+        {
+          "title": "FLEX APPEAL WITH ROBIN",
+          "occurrences": 1,
+          "description_chars": 1546,
+          "description_sha256": "7fb5d878b6c443ec92cee37bff15432f182d2e973b082d2a1732ab71d02fdb66",
+          "first_start_utc": "2026-11-19T16:00:00+00:00",
+          "last_start_utc": "2026-11-19T16:00:00+00:00"
+        },
+        {
+          "title": "LOW IMPACT STEP CLASS",
+          "occurrences": 4,
+          "description_chars": 1466,
+          "description_sha256": "7d0c92c17bfc7a4554bb41c89c5bf6607edbd6ef4d17dcca007d12d0e7e5830a",
+          "first_start_utc": "2026-11-21T17:00:00+00:00",
+          "last_start_utc": "2026-12-12T17:00:00+00:00"
+        },
+        {
+          "title": "MIXED MEDIA",
+          "occurrences": 4,
+          "description_chars": 1599,
+          "description_sha256": "fc4a052253299217dcf741281431cd7ea54f775724bed9b0fef19a68a182d0c3",
+          "first_start_utc": "2026-11-17T19:15:00+00:00",
+          "last_start_utc": "2026-12-15T19:15:00+00:00"
+        },
+        {
+          "title": "MORNING POUND",
+          "occurrences": 7,
+          "description_chars": 1677,
+          "description_sha256": "d6a39f7c458f7ca407b2ae5188d89dd14a6446a5da5727b2e1f0d48357329681",
+          "first_start_utc": "2026-11-17T14:00:00+00:00",
+          "last_start_utc": "2026-12-10T14:00:00+00:00"
+        },
+        {
+          "title": "MORNING YOGA I – ALL LEVELS",
+          "occurrences": 3,
+          "description_chars": 1452,
+          "description_sha256": "c25d89374b5178d0b9ba2fbd19dc34d92ff6586af8bcd90968839e6ce87db4df",
+          "first_start_utc": "2026-11-17T14:00:00+00:00",
+          "last_start_utc": "2026-11-24T14:00:00+00:00"
+        },
+        {
+          "title": "MORNING YOGA II – ALL LEVELS",
+          "occurrences": 3,
+          "description_chars": 1453,
+          "description_sha256": "e6f13f7d7b16e1f94f190e0a42696cae6cd11f13e5850ebf9927c6806e80e504",
+          "first_start_utc": "2026-11-17T15:00:00+00:00",
+          "last_start_utc": "2026-11-24T15:00:00+00:00"
+        },
+        {
+          "title": "MORNING YOGA III – ALL LEVELS",
+          "occurrences": 3,
+          "description_chars": 1453,
+          "description_sha256": "48155eac61183f710e31a631efd73636ead25bc8de0adf33cb3c3f1c2343c825",
+          "first_start_utc": "2026-11-17T16:00:00+00:00",
+          "last_start_utc": "2026-11-24T16:00:00+00:00"
+        },
+        {
+          "title": "MORNING ZUMBA",
+          "occurrences": 11,
+          "description_chars": 1572,
+          "description_sha256": "e54da073350ddf0bfa0d319f658a147678bec9964d94c776dbe854a3c69dcde6",
+          "first_start_utc": "2026-11-16T15:00:00+00:00",
+          "last_start_utc": "2026-12-11T15:00:00+00:00"
+        },
+        {
+          "title": "MOVE STRONG/BALANCE I",
+          "occurrences": 3,
+          "description_chars": 1518,
+          "description_sha256": "99eaab0d47b223e3b5af557b327418be51be7e61d6f07b20aecb0787c80ae34f",
+          "first_start_utc": "2026-11-20T15:00:00+00:00",
+          "last_start_utc": "2026-12-11T15:00:00+00:00"
+        },
+        {
+          "title": "MOVE STRONG/BALANCE II",
+          "occurrences": 4,
+          "description_chars": 1520,
+          "description_sha256": "4f56abbb4b27400106620e5a031b092f8b364ea04bb4b3a6d249690ab36d271a",
+          "first_start_utc": "2026-11-21T14:00:00+00:00",
+          "last_start_utc": "2026-12-12T14:00:00+00:00"
+        },
+        {
+          "title": "MOVE STRONG/BALANCE III",
+          "occurrences": 4,
+          "description_chars": 1517,
+          "description_sha256": "e570ad9b7badeaf9571b46b226263667a983c102ec7eff6cb654f369eac824fd",
+          "first_start_utc": "2026-11-17T13:00:00+00:00",
+          "last_start_utc": "2026-12-08T13:00:00+00:00"
+        },
+        {
+          "title": "PILATES CORE & STRETCH",
+          "occurrences": 8,
+          "description_chars": 1369,
+          "description_sha256": "589921ee8d25b1a38c3fbd30ca3e61ff077fc754f33df4fa58d2eee9862fc586",
+          "first_start_utc": "2026-11-16T16:00:00+00:00",
+          "last_start_utc": "2026-12-09T16:00:00+00:00"
+        },
+        {
+          "title": "PILATES CORE & STRETCH PLUS",
+          "occurrences": 2,
+          "description_chars": 1402,
+          "description_sha256": "a222c8d91fb91fde051a410046a83357c3aa8642622b6752e34a572b283de46a",
+          "first_start_utc": "2026-11-21T15:00:00+00:00",
+          "last_start_utc": "2026-11-28T15:00:00+00:00"
+        },
+        {
+          "title": "PILATES II",
+          "occurrences": 7,
+          "description_chars": 1498,
+          "description_sha256": "5d15862ad31f6ae4dee51321617d49af831d0b145fd47bce714287085a64aa4b",
+          "first_start_utc": "2026-11-17T16:00:00+00:00",
+          "last_start_utc": "2026-12-11T16:00:00+00:00"
+        },
+        {
+          "title": "PILATES SCULPT I",
+          "occurrences": 11,
+          "description_chars": 1444,
+          "description_sha256": "ed8ea278386650bbcce410693c78a9e1ccc25de4fe332d37911189bdc1b77316",
+          "first_start_utc": "2026-11-16T15:00:00+00:00",
+          "last_start_utc": "2026-12-11T15:00:00+00:00"
+        },
+        {
+          "title": "PILATES SCULPT II",
+          "occurrences": 11,
+          "description_chars": 1443,
+          "description_sha256": "3e11a8ac26c0b601c8b0479f760aee5963729b30665efad1c8114d04327f14d9",
+          "first_start_utc": "2026-11-16T14:00:00+00:00",
+          "last_start_utc": "2026-12-11T14:00:00+00:00"
+        },
+        {
+          "title": "PILATES SCULPT III",
+          "occurrences": 2,
+          "description_chars": 1431,
+          "description_sha256": "11032c4cd11fc2b9da6ab180b64594d6d097e89088fcbb518bb8f61211918cea",
+          "first_start_utc": "2026-11-21T14:00:00+00:00",
+          "last_start_utc": "2026-11-28T14:00:00+00:00"
+        },
+        {
+          "title": "PILATES W/ FAYE (NEW)",
+          "occurrences": 4,
+          "description_chars": 1368,
+          "description_sha256": "0be46df0c9be04a52d2540678c77ea315024c8d85158e4ce867fa50121c61ca6",
+          "first_start_utc": "2026-11-16T17:00:00+00:00",
+          "last_start_utc": "2026-11-25T17:00:00+00:00"
+        },
+        {
+          "title": "SENIOR LITE",
+          "occurrences": 11,
+          "description_chars": 1433,
+          "description_sha256": "200bb989d8b95242da81b1fbe945953e93126cd8f6c5e5884692c77538c92151",
+          "first_start_utc": "2026-11-16T17:00:00+00:00",
+          "last_start_utc": "2026-12-11T17:00:00+00:00"
+        },
+        {
+          "title": "SLOW/BEGINNER ZUMBA",
+          "occurrences": 10,
+          "description_chars": 1375,
+          "description_sha256": "93fd9659c3036acf7d3850b324c02d313119238b45da9bed7d808159b5938cb2",
+          "first_start_utc": "2026-11-17T13:00:00+00:00",
+          "last_start_utc": "2026-12-11T13:00:00+00:00"
+        },
+        {
+          "title": "STEP CLASS",
+          "occurrences": 4,
+          "description_chars": 1673,
+          "description_sha256": "a0bc0cd2a2e41e722ca028df21b5f167252ac6402247cde87886a12410178355",
+          "first_start_utc": "2026-11-21T16:00:00+00:00",
+          "last_start_utc": "2026-12-12T16:00:00+00:00"
+        },
+        {
+          "title": "STRETCH & FLEX",
+          "occurrences": 4,
+          "description_chars": 1397,
+          "description_sha256": "6ee81e6ba32ffd2c5a5f51e388b9eb1a9cec8917edc3701c76f77c97c683ae10",
+          "first_start_utc": "2026-11-16T19:00:00+00:00",
+          "last_start_utc": "2026-11-25T19:00:00+00:00"
+        },
+        {
+          "title": "SWEAT & SCULPT",
+          "occurrences": 3,
+          "description_chars": 1505,
+          "description_sha256": "f10e0ea4cc1e236e8eeac40ca3e9c4cb03bdc0c504f8d75c14fadd178d92e14f",
+          "first_start_utc": "2026-11-20T14:00:00+00:00",
+          "last_start_utc": "2026-12-11T14:00:00+00:00"
+        },
+        {
+          "title": "TAI CHI/QIGONG I",
+          "occurrences": 3,
+          "description_chars": 1540,
+          "description_sha256": "19bc184657d272f3e66be844b9d5a86632a57bc2982946cfcec763c69fc9c58f",
+          "first_start_utc": "2026-11-19T17:00:00+00:00",
+          "last_start_utc": "2026-12-10T17:00:00+00:00"
+        },
+        {
+          "title": "TAI CHI/QIGONG II",
+          "occurrences": 3,
+          "description_chars": 1539,
+          "description_sha256": "168b40c84e25b5f165d77c3786df5d824da9e5e53a81b4118a1193a782f0209e",
+          "first_start_utc": "2026-11-19T18:15:00+00:00",
+          "last_start_utc": "2026-12-10T18:15:00+00:00"
+        },
+        {
+          "title": "TOTAL BODY STRENGTH & CONDITIONING I",
+          "occurrences": 8,
+          "description_chars": 1712,
+          "description_sha256": "74a2ec054583e51c17269d968bf95258ab922e78dc3a9b08e6953a41a0e929b0",
+          "first_start_utc": "2026-11-16T14:00:00+00:00",
+          "last_start_utc": "2026-12-09T14:00:00+00:00"
+        },
+        {
+          "title": "TOTAL BODY STRENGTH & CONDITIONING II",
+          "occurrences": 7,
+          "description_chars": 1711,
+          "description_sha256": "cedb90036b6f6fe921aa3c424b55ba7e0c428581fa8206cc6111ddaa3741b4f1",
+          "first_start_utc": "2026-11-17T14:00:00+00:00",
+          "last_start_utc": "2026-12-10T14:00:00+00:00"
+        },
+        {
+          "title": "YOGA FUSION",
+          "occurrences": 4,
+          "description_chars": 1424,
+          "description_sha256": "d37c01eae338ba96b4248257db95f64c655d2766326b9d85ec9ddb3fe72e0556",
+          "first_start_utc": "2026-11-16T18:00:00+00:00",
+          "last_start_utc": "2026-11-25T18:00:00+00:00"
+        },
+        {
+          "title": "ZUMBA TONING",
+          "occurrences": 7,
+          "description_chars": 1496,
+          "description_sha256": "857b360696ad1db7270e83d22759bb4f93080f0222d897ef564bed8aeda73cc3",
+          "first_start_utc": "2026-11-17T15:00:00+00:00",
+          "last_start_utc": "2026-12-10T15:00:00+00:00"
+        }
+      ],
+      "event_receipts": [
+        {
+          "id": "brigantine_community_recreation_nj:tai-chi-qigong-i:2026-11-19",
+          "starts_at": "2026-11-19T17:00:00+00:00",
+          "ends_at": "2026-11-19T18:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1540,
+          "description_sha256": "19bc184657d272f3e66be844b9d5a86632a57bc2982946cfcec763c69fc9c58f"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:tai-chi-qigong-i:2026-12-03",
+          "starts_at": "2026-12-03T17:00:00+00:00",
+          "ends_at": "2026-12-03T18:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1540,
+          "description_sha256": "19bc184657d272f3e66be844b9d5a86632a57bc2982946cfcec763c69fc9c58f"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:tai-chi-qigong-i:2026-12-10",
+          "starts_at": "2026-12-10T17:00:00+00:00",
+          "ends_at": "2026-12-10T18:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1540,
+          "description_sha256": "19bc184657d272f3e66be844b9d5a86632a57bc2982946cfcec763c69fc9c58f"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:tai-chi-qigong-ii:2026-11-19",
+          "starts_at": "2026-11-19T18:15:00+00:00",
+          "ends_at": "2026-11-19T19:15:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1539,
+          "description_sha256": "168b40c84e25b5f165d77c3786df5d824da9e5e53a81b4118a1193a782f0209e"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:tai-chi-qigong-ii:2026-12-03",
+          "starts_at": "2026-12-03T18:15:00+00:00",
+          "ends_at": "2026-12-03T19:15:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1539,
+          "description_sha256": "168b40c84e25b5f165d77c3786df5d824da9e5e53a81b4118a1193a782f0209e"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:tai-chi-qigong-ii:2026-12-10",
+          "starts_at": "2026-12-10T18:15:00+00:00",
+          "ends_at": "2026-12-10T19:15:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1539,
+          "description_sha256": "168b40c84e25b5f165d77c3786df5d824da9e5e53a81b4118a1193a782f0209e"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:senior-lite:2026-11-16",
+          "starts_at": "2026-11-16T17:00:00+00:00",
+          "ends_at": "2026-11-16T18:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1433,
+          "description_sha256": "200bb989d8b95242da81b1fbe945953e93126cd8f6c5e5884692c77538c92151"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:senior-lite:2026-11-18",
+          "starts_at": "2026-11-18T17:00:00+00:00",
+          "ends_at": "2026-11-18T18:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1433,
+          "description_sha256": "200bb989d8b95242da81b1fbe945953e93126cd8f6c5e5884692c77538c92151"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:senior-lite:2026-11-20",
+          "starts_at": "2026-11-20T17:00:00+00:00",
+          "ends_at": "2026-11-20T18:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1433,
+          "description_sha256": "200bb989d8b95242da81b1fbe945953e93126cd8f6c5e5884692c77538c92151"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:senior-lite:2026-11-23",
+          "starts_at": "2026-11-23T17:00:00+00:00",
+          "ends_at": "2026-11-23T18:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1433,
+          "description_sha256": "200bb989d8b95242da81b1fbe945953e93126cd8f6c5e5884692c77538c92151"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:senior-lite:2026-11-25",
+          "starts_at": "2026-11-25T17:00:00+00:00",
+          "ends_at": "2026-11-25T18:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1433,
+          "description_sha256": "200bb989d8b95242da81b1fbe945953e93126cd8f6c5e5884692c77538c92151"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:senior-lite:2026-11-30",
+          "starts_at": "2026-11-30T17:00:00+00:00",
+          "ends_at": "2026-11-30T18:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1433,
+          "description_sha256": "200bb989d8b95242da81b1fbe945953e93126cd8f6c5e5884692c77538c92151"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:senior-lite:2026-12-02",
+          "starts_at": "2026-12-02T17:00:00+00:00",
+          "ends_at": "2026-12-02T18:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1433,
+          "description_sha256": "200bb989d8b95242da81b1fbe945953e93126cd8f6c5e5884692c77538c92151"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:senior-lite:2026-12-04",
+          "starts_at": "2026-12-04T17:00:00+00:00",
+          "ends_at": "2026-12-04T18:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1433,
+          "description_sha256": "200bb989d8b95242da81b1fbe945953e93126cd8f6c5e5884692c77538c92151"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:senior-lite:2026-12-07",
+          "starts_at": "2026-12-07T17:00:00+00:00",
+          "ends_at": "2026-12-07T18:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1433,
+          "description_sha256": "200bb989d8b95242da81b1fbe945953e93126cd8f6c5e5884692c77538c92151"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:senior-lite:2026-12-09",
+          "starts_at": "2026-12-09T17:00:00+00:00",
+          "ends_at": "2026-12-09T18:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1433,
+          "description_sha256": "200bb989d8b95242da81b1fbe945953e93126cd8f6c5e5884692c77538c92151"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:senior-lite:2026-12-11",
+          "starts_at": "2026-12-11T17:00:00+00:00",
+          "ends_at": "2026-12-11T18:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1433,
+          "description_sha256": "200bb989d8b95242da81b1fbe945953e93126cd8f6c5e5884692c77538c92151"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:step-class:2026-11-21",
+          "starts_at": "2026-11-21T16:00:00+00:00",
+          "ends_at": "2026-11-21T17:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1673,
+          "description_sha256": "a0bc0cd2a2e41e722ca028df21b5f167252ac6402247cde87886a12410178355"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:step-class:2026-11-28",
+          "starts_at": "2026-11-28T16:00:00+00:00",
+          "ends_at": "2026-11-28T17:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1673,
+          "description_sha256": "a0bc0cd2a2e41e722ca028df21b5f167252ac6402247cde87886a12410178355"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:step-class:2026-12-05",
+          "starts_at": "2026-12-05T16:00:00+00:00",
+          "ends_at": "2026-12-05T17:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1673,
+          "description_sha256": "a0bc0cd2a2e41e722ca028df21b5f167252ac6402247cde87886a12410178355"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:step-class:2026-12-12",
+          "starts_at": "2026-12-12T16:00:00+00:00",
+          "ends_at": "2026-12-12T17:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1673,
+          "description_sha256": "a0bc0cd2a2e41e722ca028df21b5f167252ac6402247cde87886a12410178355"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:low-impact-step-class:2026-11-21",
+          "starts_at": "2026-11-21T17:00:00+00:00",
+          "ends_at": "2026-11-21T18:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1466,
+          "description_sha256": "7d0c92c17bfc7a4554bb41c89c5bf6607edbd6ef4d17dcca007d12d0e7e5830a"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:low-impact-step-class:2026-11-28",
+          "starts_at": "2026-11-28T17:00:00+00:00",
+          "ends_at": "2026-11-28T18:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1466,
+          "description_sha256": "7d0c92c17bfc7a4554bb41c89c5bf6607edbd6ef4d17dcca007d12d0e7e5830a"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:low-impact-step-class:2026-12-05",
+          "starts_at": "2026-12-05T17:00:00+00:00",
+          "ends_at": "2026-12-05T18:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1466,
+          "description_sha256": "7d0c92c17bfc7a4554bb41c89c5bf6607edbd6ef4d17dcca007d12d0e7e5830a"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:low-impact-step-class:2026-12-12",
+          "starts_at": "2026-12-12T17:00:00+00:00",
+          "ends_at": "2026-12-12T18:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1466,
+          "description_sha256": "7d0c92c17bfc7a4554bb41c89c5bf6607edbd6ef4d17dcca007d12d0e7e5830a"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:morning-yoga-i-all-levels:2026-11-17",
+          "starts_at": "2026-11-17T14:00:00+00:00",
+          "ends_at": "2026-11-17T15:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1452,
+          "description_sha256": "c25d89374b5178d0b9ba2fbd19dc34d92ff6586af8bcd90968839e6ce87db4df"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:morning-yoga-i-all-levels:2026-11-19",
+          "starts_at": "2026-11-19T14:00:00+00:00",
+          "ends_at": "2026-11-19T15:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1452,
+          "description_sha256": "c25d89374b5178d0b9ba2fbd19dc34d92ff6586af8bcd90968839e6ce87db4df"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:morning-yoga-i-all-levels:2026-11-24",
+          "starts_at": "2026-11-24T14:00:00+00:00",
+          "ends_at": "2026-11-24T15:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1452,
+          "description_sha256": "c25d89374b5178d0b9ba2fbd19dc34d92ff6586af8bcd90968839e6ce87db4df"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:morning-yoga-ii-all-levels:2026-11-17",
+          "starts_at": "2026-11-17T15:00:00+00:00",
+          "ends_at": "2026-11-17T16:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1453,
+          "description_sha256": "e6f13f7d7b16e1f94f190e0a42696cae6cd11f13e5850ebf9927c6806e80e504"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:morning-yoga-ii-all-levels:2026-11-19",
+          "starts_at": "2026-11-19T15:00:00+00:00",
+          "ends_at": "2026-11-19T16:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1453,
+          "description_sha256": "e6f13f7d7b16e1f94f190e0a42696cae6cd11f13e5850ebf9927c6806e80e504"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:morning-yoga-ii-all-levels:2026-11-24",
+          "starts_at": "2026-11-24T15:00:00+00:00",
+          "ends_at": "2026-11-24T16:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1453,
+          "description_sha256": "e6f13f7d7b16e1f94f190e0a42696cae6cd11f13e5850ebf9927c6806e80e504"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:morning-yoga-iii-all-levels:2026-11-17",
+          "starts_at": "2026-11-17T16:00:00+00:00",
+          "ends_at": "2026-11-17T17:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1453,
+          "description_sha256": "48155eac61183f710e31a631efd73636ead25bc8de0adf33cb3c3f1c2343c825"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:morning-yoga-iii-all-levels:2026-11-19",
+          "starts_at": "2026-11-19T16:00:00+00:00",
+          "ends_at": "2026-11-19T17:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1453,
+          "description_sha256": "48155eac61183f710e31a631efd73636ead25bc8de0adf33cb3c3f1c2343c825"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:morning-yoga-iii-all-levels:2026-11-24",
+          "starts_at": "2026-11-24T16:00:00+00:00",
+          "ends_at": "2026-11-24T17:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1453,
+          "description_sha256": "48155eac61183f710e31a631efd73636ead25bc8de0adf33cb3c3f1c2343c825"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:chair-yoga-i-all-levels:2026-11-18",
+          "starts_at": "2026-11-18T17:00:00+00:00",
+          "ends_at": "2026-11-18T18:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1476,
+          "description_sha256": "864aba46e01097b3533b21dcabddbde82a536a16649456385d9abea04d767bd3"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:chair-yoga-i-all-levels:2026-11-25",
+          "starts_at": "2026-11-25T17:00:00+00:00",
+          "ends_at": "2026-11-25T18:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1476,
+          "description_sha256": "864aba46e01097b3533b21dcabddbde82a536a16649456385d9abea04d767bd3"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:chair-yoga-iii-all-levels:2026-11-17",
+          "starts_at": "2026-11-17T17:00:00+00:00",
+          "ends_at": "2026-11-17T18:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1486,
+          "description_sha256": "37fa1ba7d9f71cac3a9503a81a47bd12fd500e92267dd019ee2eefa4c9ad337c"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:chair-yoga-iii-all-levels:2026-11-19",
+          "starts_at": "2026-11-19T17:00:00+00:00",
+          "ends_at": "2026-11-19T18:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1486,
+          "description_sha256": "37fa1ba7d9f71cac3a9503a81a47bd12fd500e92267dd019ee2eefa4c9ad337c"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:chair-yoga-iii-all-levels:2026-11-24",
+          "starts_at": "2026-11-24T17:00:00+00:00",
+          "ends_at": "2026-11-24T18:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1486,
+          "description_sha256": "37fa1ba7d9f71cac3a9503a81a47bd12fd500e92267dd019ee2eefa4c9ad337c"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:yoga-fusion:2026-11-16",
+          "starts_at": "2026-11-16T18:00:00+00:00",
+          "ends_at": "2026-11-16T19:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1424,
+          "description_sha256": "d37c01eae338ba96b4248257db95f64c655d2766326b9d85ec9ddb3fe72e0556"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:yoga-fusion:2026-11-18",
+          "starts_at": "2026-11-18T18:00:00+00:00",
+          "ends_at": "2026-11-18T19:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1424,
+          "description_sha256": "d37c01eae338ba96b4248257db95f64c655d2766326b9d85ec9ddb3fe72e0556"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:yoga-fusion:2026-11-23",
+          "starts_at": "2026-11-23T18:00:00+00:00",
+          "ends_at": "2026-11-23T19:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1424,
+          "description_sha256": "d37c01eae338ba96b4248257db95f64c655d2766326b9d85ec9ddb3fe72e0556"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:yoga-fusion:2026-11-25",
+          "starts_at": "2026-11-25T18:00:00+00:00",
+          "ends_at": "2026-11-25T19:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1424,
+          "description_sha256": "d37c01eae338ba96b4248257db95f64c655d2766326b9d85ec9ddb3fe72e0556"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:stretch-flex:2026-11-16",
+          "starts_at": "2026-11-16T19:00:00+00:00",
+          "ends_at": "2026-11-16T20:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1397,
+          "description_sha256": "6ee81e6ba32ffd2c5a5f51e388b9eb1a9cec8917edc3701c76f77c97c683ae10"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:stretch-flex:2026-11-18",
+          "starts_at": "2026-11-18T19:00:00+00:00",
+          "ends_at": "2026-11-18T20:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1397,
+          "description_sha256": "6ee81e6ba32ffd2c5a5f51e388b9eb1a9cec8917edc3701c76f77c97c683ae10"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:stretch-flex:2026-11-23",
+          "starts_at": "2026-11-23T19:00:00+00:00",
+          "ends_at": "2026-11-23T20:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1397,
+          "description_sha256": "6ee81e6ba32ffd2c5a5f51e388b9eb1a9cec8917edc3701c76f77c97c683ae10"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:stretch-flex:2026-11-25",
+          "starts_at": "2026-11-25T19:00:00+00:00",
+          "ends_at": "2026-11-25T20:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1397,
+          "description_sha256": "6ee81e6ba32ffd2c5a5f51e388b9eb1a9cec8917edc3701c76f77c97c683ae10"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:belly-dancing:2026-11-17",
+          "starts_at": "2026-11-17T18:00:00+00:00",
+          "ends_at": "2026-11-17T19:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1650,
+          "description_sha256": "71322eeab6e509fc75f86daadb29eb9b5aeeeb838dde796a8808a55cdf367eac"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:belly-dancing:2026-11-24",
+          "starts_at": "2026-11-24T18:00:00+00:00",
+          "ends_at": "2026-11-24T19:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1650,
+          "description_sha256": "71322eeab6e509fc75f86daadb29eb9b5aeeeb838dde796a8808a55cdf367eac"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:belly-dancing:2026-12-01",
+          "starts_at": "2026-12-01T18:00:00+00:00",
+          "ends_at": "2026-12-01T19:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1650,
+          "description_sha256": "71322eeab6e509fc75f86daadb29eb9b5aeeeb838dde796a8808a55cdf367eac"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:belly-dancing:2026-12-08",
+          "starts_at": "2026-12-08T18:00:00+00:00",
+          "ends_at": "2026-12-08T19:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1650,
+          "description_sha256": "71322eeab6e509fc75f86daadb29eb9b5aeeeb838dde796a8808a55cdf367eac"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:morning-zumba:2026-11-16",
+          "starts_at": "2026-11-16T15:00:00+00:00",
+          "ends_at": "2026-11-16T16:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1572,
+          "description_sha256": "e54da073350ddf0bfa0d319f658a147678bec9964d94c776dbe854a3c69dcde6"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:morning-zumba:2026-11-18",
+          "starts_at": "2026-11-18T15:00:00+00:00",
+          "ends_at": "2026-11-18T16:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1572,
+          "description_sha256": "e54da073350ddf0bfa0d319f658a147678bec9964d94c776dbe854a3c69dcde6"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:morning-zumba:2026-11-20",
+          "starts_at": "2026-11-20T15:00:00+00:00",
+          "ends_at": "2026-11-20T16:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1572,
+          "description_sha256": "e54da073350ddf0bfa0d319f658a147678bec9964d94c776dbe854a3c69dcde6"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:morning-zumba:2026-11-23",
+          "starts_at": "2026-11-23T15:00:00+00:00",
+          "ends_at": "2026-11-23T16:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1572,
+          "description_sha256": "e54da073350ddf0bfa0d319f658a147678bec9964d94c776dbe854a3c69dcde6"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:morning-zumba:2026-11-25",
+          "starts_at": "2026-11-25T15:00:00+00:00",
+          "ends_at": "2026-11-25T16:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1572,
+          "description_sha256": "e54da073350ddf0bfa0d319f658a147678bec9964d94c776dbe854a3c69dcde6"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:morning-zumba:2026-11-30",
+          "starts_at": "2026-11-30T15:00:00+00:00",
+          "ends_at": "2026-11-30T16:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1572,
+          "description_sha256": "e54da073350ddf0bfa0d319f658a147678bec9964d94c776dbe854a3c69dcde6"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:morning-zumba:2026-12-02",
+          "starts_at": "2026-12-02T15:00:00+00:00",
+          "ends_at": "2026-12-02T16:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1572,
+          "description_sha256": "e54da073350ddf0bfa0d319f658a147678bec9964d94c776dbe854a3c69dcde6"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:morning-zumba:2026-12-04",
+          "starts_at": "2026-12-04T15:00:00+00:00",
+          "ends_at": "2026-12-04T16:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1572,
+          "description_sha256": "e54da073350ddf0bfa0d319f658a147678bec9964d94c776dbe854a3c69dcde6"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:morning-zumba:2026-12-07",
+          "starts_at": "2026-12-07T15:00:00+00:00",
+          "ends_at": "2026-12-07T16:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1572,
+          "description_sha256": "e54da073350ddf0bfa0d319f658a147678bec9964d94c776dbe854a3c69dcde6"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:morning-zumba:2026-12-09",
+          "starts_at": "2026-12-09T15:00:00+00:00",
+          "ends_at": "2026-12-09T16:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1572,
+          "description_sha256": "e54da073350ddf0bfa0d319f658a147678bec9964d94c776dbe854a3c69dcde6"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:morning-zumba:2026-12-11",
+          "starts_at": "2026-12-11T15:00:00+00:00",
+          "ends_at": "2026-12-11T16:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1572,
+          "description_sha256": "e54da073350ddf0bfa0d319f658a147678bec9964d94c776dbe854a3c69dcde6"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:zumba-toning:2026-11-17",
+          "starts_at": "2026-11-17T15:00:00+00:00",
+          "ends_at": "2026-11-17T16:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1496,
+          "description_sha256": "857b360696ad1db7270e83d22759bb4f93080f0222d897ef564bed8aeda73cc3"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:zumba-toning:2026-11-19",
+          "starts_at": "2026-11-19T15:00:00+00:00",
+          "ends_at": "2026-11-19T16:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1496,
+          "description_sha256": "857b360696ad1db7270e83d22759bb4f93080f0222d897ef564bed8aeda73cc3"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:zumba-toning:2026-11-24",
+          "starts_at": "2026-11-24T15:00:00+00:00",
+          "ends_at": "2026-11-24T16:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1496,
+          "description_sha256": "857b360696ad1db7270e83d22759bb4f93080f0222d897ef564bed8aeda73cc3"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:zumba-toning:2026-12-01",
+          "starts_at": "2026-12-01T15:00:00+00:00",
+          "ends_at": "2026-12-01T16:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1496,
+          "description_sha256": "857b360696ad1db7270e83d22759bb4f93080f0222d897ef564bed8aeda73cc3"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:zumba-toning:2026-12-03",
+          "starts_at": "2026-12-03T15:00:00+00:00",
+          "ends_at": "2026-12-03T16:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1496,
+          "description_sha256": "857b360696ad1db7270e83d22759bb4f93080f0222d897ef564bed8aeda73cc3"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:zumba-toning:2026-12-08",
+          "starts_at": "2026-12-08T15:00:00+00:00",
+          "ends_at": "2026-12-08T16:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1496,
+          "description_sha256": "857b360696ad1db7270e83d22759bb4f93080f0222d897ef564bed8aeda73cc3"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:zumba-toning:2026-12-10",
+          "starts_at": "2026-12-10T15:00:00+00:00",
+          "ends_at": "2026-12-10T16:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1496,
+          "description_sha256": "857b360696ad1db7270e83d22759bb4f93080f0222d897ef564bed8aeda73cc3"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:morning-pound:2026-11-17",
+          "starts_at": "2026-11-17T14:00:00+00:00",
+          "ends_at": "2026-11-17T15:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1677,
+          "description_sha256": "d6a39f7c458f7ca407b2ae5188d89dd14a6446a5da5727b2e1f0d48357329681"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:morning-pound:2026-11-19",
+          "starts_at": "2026-11-19T14:00:00+00:00",
+          "ends_at": "2026-11-19T15:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1677,
+          "description_sha256": "d6a39f7c458f7ca407b2ae5188d89dd14a6446a5da5727b2e1f0d48357329681"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:morning-pound:2026-11-24",
+          "starts_at": "2026-11-24T14:00:00+00:00",
+          "ends_at": "2026-11-24T15:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1677,
+          "description_sha256": "d6a39f7c458f7ca407b2ae5188d89dd14a6446a5da5727b2e1f0d48357329681"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:morning-pound:2026-12-01",
+          "starts_at": "2026-12-01T14:00:00+00:00",
+          "ends_at": "2026-12-01T15:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1677,
+          "description_sha256": "d6a39f7c458f7ca407b2ae5188d89dd14a6446a5da5727b2e1f0d48357329681"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:morning-pound:2026-12-03",
+          "starts_at": "2026-12-03T14:00:00+00:00",
+          "ends_at": "2026-12-03T15:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1677,
+          "description_sha256": "d6a39f7c458f7ca407b2ae5188d89dd14a6446a5da5727b2e1f0d48357329681"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:morning-pound:2026-12-08",
+          "starts_at": "2026-12-08T14:00:00+00:00",
+          "ends_at": "2026-12-08T15:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1677,
+          "description_sha256": "d6a39f7c458f7ca407b2ae5188d89dd14a6446a5da5727b2e1f0d48357329681"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:morning-pound:2026-12-10",
+          "starts_at": "2026-12-10T14:00:00+00:00",
+          "ends_at": "2026-12-10T15:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1677,
+          "description_sha256": "d6a39f7c458f7ca407b2ae5188d89dd14a6446a5da5727b2e1f0d48357329681"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:slow-beginner-zumba:2026-11-17",
+          "starts_at": "2026-11-17T13:00:00+00:00",
+          "ends_at": "2026-11-17T14:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1375,
+          "description_sha256": "93fd9659c3036acf7d3850b324c02d313119238b45da9bed7d808159b5938cb2"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:slow-beginner-zumba:2026-11-19",
+          "starts_at": "2026-11-19T13:00:00+00:00",
+          "ends_at": "2026-11-19T14:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1375,
+          "description_sha256": "93fd9659c3036acf7d3850b324c02d313119238b45da9bed7d808159b5938cb2"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:slow-beginner-zumba:2026-11-20",
+          "starts_at": "2026-11-20T13:00:00+00:00",
+          "ends_at": "2026-11-20T14:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1375,
+          "description_sha256": "93fd9659c3036acf7d3850b324c02d313119238b45da9bed7d808159b5938cb2"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:slow-beginner-zumba:2026-11-24",
+          "starts_at": "2026-11-24T13:00:00+00:00",
+          "ends_at": "2026-11-24T14:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1375,
+          "description_sha256": "93fd9659c3036acf7d3850b324c02d313119238b45da9bed7d808159b5938cb2"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:slow-beginner-zumba:2026-12-01",
+          "starts_at": "2026-12-01T13:00:00+00:00",
+          "ends_at": "2026-12-01T14:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1375,
+          "description_sha256": "93fd9659c3036acf7d3850b324c02d313119238b45da9bed7d808159b5938cb2"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:slow-beginner-zumba:2026-12-03",
+          "starts_at": "2026-12-03T13:00:00+00:00",
+          "ends_at": "2026-12-03T14:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1375,
+          "description_sha256": "93fd9659c3036acf7d3850b324c02d313119238b45da9bed7d808159b5938cb2"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:slow-beginner-zumba:2026-12-04",
+          "starts_at": "2026-12-04T13:00:00+00:00",
+          "ends_at": "2026-12-04T14:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1375,
+          "description_sha256": "93fd9659c3036acf7d3850b324c02d313119238b45da9bed7d808159b5938cb2"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:slow-beginner-zumba:2026-12-08",
+          "starts_at": "2026-12-08T13:00:00+00:00",
+          "ends_at": "2026-12-08T14:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1375,
+          "description_sha256": "93fd9659c3036acf7d3850b324c02d313119238b45da9bed7d808159b5938cb2"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:slow-beginner-zumba:2026-12-10",
+          "starts_at": "2026-12-10T13:00:00+00:00",
+          "ends_at": "2026-12-10T14:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1375,
+          "description_sha256": "93fd9659c3036acf7d3850b324c02d313119238b45da9bed7d808159b5938cb2"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:slow-beginner-zumba:2026-12-11",
+          "starts_at": "2026-12-11T13:00:00+00:00",
+          "ends_at": "2026-12-11T14:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1375,
+          "description_sha256": "93fd9659c3036acf7d3850b324c02d313119238b45da9bed7d808159b5938cb2"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:pilates-ii:2026-11-17",
+          "starts_at": "2026-11-17T16:00:00+00:00",
+          "ends_at": "2026-11-17T17:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1498,
+          "description_sha256": "5d15862ad31f6ae4dee51321617d49af831d0b145fd47bce714287085a64aa4b"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:pilates-ii:2026-11-20",
+          "starts_at": "2026-11-20T16:00:00+00:00",
+          "ends_at": "2026-11-20T17:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1498,
+          "description_sha256": "5d15862ad31f6ae4dee51321617d49af831d0b145fd47bce714287085a64aa4b"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:pilates-ii:2026-11-24",
+          "starts_at": "2026-11-24T16:00:00+00:00",
+          "ends_at": "2026-11-24T17:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1498,
+          "description_sha256": "5d15862ad31f6ae4dee51321617d49af831d0b145fd47bce714287085a64aa4b"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:pilates-ii:2026-12-01",
+          "starts_at": "2026-12-01T16:00:00+00:00",
+          "ends_at": "2026-12-01T17:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1498,
+          "description_sha256": "5d15862ad31f6ae4dee51321617d49af831d0b145fd47bce714287085a64aa4b"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:pilates-ii:2026-12-04",
+          "starts_at": "2026-12-04T16:00:00+00:00",
+          "ends_at": "2026-12-04T17:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1498,
+          "description_sha256": "5d15862ad31f6ae4dee51321617d49af831d0b145fd47bce714287085a64aa4b"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:pilates-ii:2026-12-08",
+          "starts_at": "2026-12-08T16:00:00+00:00",
+          "ends_at": "2026-12-08T17:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1498,
+          "description_sha256": "5d15862ad31f6ae4dee51321617d49af831d0b145fd47bce714287085a64aa4b"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:pilates-ii:2026-12-11",
+          "starts_at": "2026-12-11T16:00:00+00:00",
+          "ends_at": "2026-12-11T17:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1498,
+          "description_sha256": "5d15862ad31f6ae4dee51321617d49af831d0b145fd47bce714287085a64aa4b"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:pilates-sculpt-i:2026-11-16",
+          "starts_at": "2026-11-16T15:00:00+00:00",
+          "ends_at": "2026-11-16T16:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1444,
+          "description_sha256": "ed8ea278386650bbcce410693c78a9e1ccc25de4fe332d37911189bdc1b77316"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:pilates-sculpt-i:2026-11-18",
+          "starts_at": "2026-11-18T15:00:00+00:00",
+          "ends_at": "2026-11-18T16:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1444,
+          "description_sha256": "ed8ea278386650bbcce410693c78a9e1ccc25de4fe332d37911189bdc1b77316"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:pilates-sculpt-i:2026-11-20",
+          "starts_at": "2026-11-20T15:00:00+00:00",
+          "ends_at": "2026-11-20T16:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1444,
+          "description_sha256": "ed8ea278386650bbcce410693c78a9e1ccc25de4fe332d37911189bdc1b77316"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:pilates-sculpt-i:2026-11-23",
+          "starts_at": "2026-11-23T15:00:00+00:00",
+          "ends_at": "2026-11-23T16:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1444,
+          "description_sha256": "ed8ea278386650bbcce410693c78a9e1ccc25de4fe332d37911189bdc1b77316"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:pilates-sculpt-i:2026-11-25",
+          "starts_at": "2026-11-25T15:00:00+00:00",
+          "ends_at": "2026-11-25T16:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1444,
+          "description_sha256": "ed8ea278386650bbcce410693c78a9e1ccc25de4fe332d37911189bdc1b77316"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:pilates-sculpt-i:2026-11-30",
+          "starts_at": "2026-11-30T15:00:00+00:00",
+          "ends_at": "2026-11-30T16:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1444,
+          "description_sha256": "ed8ea278386650bbcce410693c78a9e1ccc25de4fe332d37911189bdc1b77316"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:pilates-sculpt-i:2026-12-02",
+          "starts_at": "2026-12-02T15:00:00+00:00",
+          "ends_at": "2026-12-02T16:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1444,
+          "description_sha256": "ed8ea278386650bbcce410693c78a9e1ccc25de4fe332d37911189bdc1b77316"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:pilates-sculpt-i:2026-12-04",
+          "starts_at": "2026-12-04T15:00:00+00:00",
+          "ends_at": "2026-12-04T16:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1444,
+          "description_sha256": "ed8ea278386650bbcce410693c78a9e1ccc25de4fe332d37911189bdc1b77316"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:pilates-sculpt-i:2026-12-07",
+          "starts_at": "2026-12-07T15:00:00+00:00",
+          "ends_at": "2026-12-07T16:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1444,
+          "description_sha256": "ed8ea278386650bbcce410693c78a9e1ccc25de4fe332d37911189bdc1b77316"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:pilates-sculpt-i:2026-12-09",
+          "starts_at": "2026-12-09T15:00:00+00:00",
+          "ends_at": "2026-12-09T16:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1444,
+          "description_sha256": "ed8ea278386650bbcce410693c78a9e1ccc25de4fe332d37911189bdc1b77316"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:pilates-sculpt-i:2026-12-11",
+          "starts_at": "2026-12-11T15:00:00+00:00",
+          "ends_at": "2026-12-11T16:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1444,
+          "description_sha256": "ed8ea278386650bbcce410693c78a9e1ccc25de4fe332d37911189bdc1b77316"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:pilates-sculpt-ii:2026-11-16",
+          "starts_at": "2026-11-16T14:00:00+00:00",
+          "ends_at": "2026-11-16T15:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1443,
+          "description_sha256": "3e11a8ac26c0b601c8b0479f760aee5963729b30665efad1c8114d04327f14d9"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:pilates-sculpt-ii:2026-11-18",
+          "starts_at": "2026-11-18T14:00:00+00:00",
+          "ends_at": "2026-11-18T15:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1443,
+          "description_sha256": "3e11a8ac26c0b601c8b0479f760aee5963729b30665efad1c8114d04327f14d9"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:pilates-sculpt-ii:2026-11-20",
+          "starts_at": "2026-11-20T14:00:00+00:00",
+          "ends_at": "2026-11-20T15:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1443,
+          "description_sha256": "3e11a8ac26c0b601c8b0479f760aee5963729b30665efad1c8114d04327f14d9"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:pilates-sculpt-ii:2026-11-23",
+          "starts_at": "2026-11-23T14:00:00+00:00",
+          "ends_at": "2026-11-23T15:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1443,
+          "description_sha256": "3e11a8ac26c0b601c8b0479f760aee5963729b30665efad1c8114d04327f14d9"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:pilates-sculpt-ii:2026-11-25",
+          "starts_at": "2026-11-25T14:00:00+00:00",
+          "ends_at": "2026-11-25T15:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1443,
+          "description_sha256": "3e11a8ac26c0b601c8b0479f760aee5963729b30665efad1c8114d04327f14d9"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:pilates-sculpt-ii:2026-11-30",
+          "starts_at": "2026-11-30T14:00:00+00:00",
+          "ends_at": "2026-11-30T15:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1443,
+          "description_sha256": "3e11a8ac26c0b601c8b0479f760aee5963729b30665efad1c8114d04327f14d9"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:pilates-sculpt-ii:2026-12-02",
+          "starts_at": "2026-12-02T14:00:00+00:00",
+          "ends_at": "2026-12-02T15:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1443,
+          "description_sha256": "3e11a8ac26c0b601c8b0479f760aee5963729b30665efad1c8114d04327f14d9"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:pilates-sculpt-ii:2026-12-04",
+          "starts_at": "2026-12-04T14:00:00+00:00",
+          "ends_at": "2026-12-04T15:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1443,
+          "description_sha256": "3e11a8ac26c0b601c8b0479f760aee5963729b30665efad1c8114d04327f14d9"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:pilates-sculpt-ii:2026-12-07",
+          "starts_at": "2026-12-07T14:00:00+00:00",
+          "ends_at": "2026-12-07T15:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1443,
+          "description_sha256": "3e11a8ac26c0b601c8b0479f760aee5963729b30665efad1c8114d04327f14d9"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:pilates-sculpt-ii:2026-12-09",
+          "starts_at": "2026-12-09T14:00:00+00:00",
+          "ends_at": "2026-12-09T15:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1443,
+          "description_sha256": "3e11a8ac26c0b601c8b0479f760aee5963729b30665efad1c8114d04327f14d9"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:pilates-sculpt-ii:2026-12-11",
+          "starts_at": "2026-12-11T14:00:00+00:00",
+          "ends_at": "2026-12-11T15:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1443,
+          "description_sha256": "3e11a8ac26c0b601c8b0479f760aee5963729b30665efad1c8114d04327f14d9"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:pilates-sculpt-iii:2026-11-21",
+          "starts_at": "2026-11-21T14:00:00+00:00",
+          "ends_at": "2026-11-21T15:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1431,
+          "description_sha256": "11032c4cd11fc2b9da6ab180b64594d6d097e89088fcbb518bb8f61211918cea"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:pilates-sculpt-iii:2026-11-28",
+          "starts_at": "2026-11-28T14:00:00+00:00",
+          "ends_at": "2026-11-28T15:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1431,
+          "description_sha256": "11032c4cd11fc2b9da6ab180b64594d6d097e89088fcbb518bb8f61211918cea"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:pilates-core-stretch:2026-11-16",
+          "starts_at": "2026-11-16T16:00:00+00:00",
+          "ends_at": "2026-11-16T17:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1369,
+          "description_sha256": "589921ee8d25b1a38c3fbd30ca3e61ff077fc754f33df4fa58d2eee9862fc586"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:pilates-core-stretch:2026-11-18",
+          "starts_at": "2026-11-18T16:00:00+00:00",
+          "ends_at": "2026-11-18T17:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1369,
+          "description_sha256": "589921ee8d25b1a38c3fbd30ca3e61ff077fc754f33df4fa58d2eee9862fc586"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:pilates-core-stretch:2026-11-23",
+          "starts_at": "2026-11-23T16:00:00+00:00",
+          "ends_at": "2026-11-23T17:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1369,
+          "description_sha256": "589921ee8d25b1a38c3fbd30ca3e61ff077fc754f33df4fa58d2eee9862fc586"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:pilates-core-stretch:2026-11-25",
+          "starts_at": "2026-11-25T16:00:00+00:00",
+          "ends_at": "2026-11-25T17:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1369,
+          "description_sha256": "589921ee8d25b1a38c3fbd30ca3e61ff077fc754f33df4fa58d2eee9862fc586"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:pilates-core-stretch:2026-11-30",
+          "starts_at": "2026-11-30T16:00:00+00:00",
+          "ends_at": "2026-11-30T17:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1369,
+          "description_sha256": "589921ee8d25b1a38c3fbd30ca3e61ff077fc754f33df4fa58d2eee9862fc586"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:pilates-core-stretch:2026-12-02",
+          "starts_at": "2026-12-02T16:00:00+00:00",
+          "ends_at": "2026-12-02T17:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1369,
+          "description_sha256": "589921ee8d25b1a38c3fbd30ca3e61ff077fc754f33df4fa58d2eee9862fc586"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:pilates-core-stretch:2026-12-07",
+          "starts_at": "2026-12-07T16:00:00+00:00",
+          "ends_at": "2026-12-07T17:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1369,
+          "description_sha256": "589921ee8d25b1a38c3fbd30ca3e61ff077fc754f33df4fa58d2eee9862fc586"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:pilates-core-stretch:2026-12-09",
+          "starts_at": "2026-12-09T16:00:00+00:00",
+          "ends_at": "2026-12-09T17:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1369,
+          "description_sha256": "589921ee8d25b1a38c3fbd30ca3e61ff077fc754f33df4fa58d2eee9862fc586"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:pilates-core-stretch-plus:2026-11-21",
+          "starts_at": "2026-11-21T15:00:00+00:00",
+          "ends_at": "2026-11-21T16:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1402,
+          "description_sha256": "a222c8d91fb91fde051a410046a83357c3aa8642622b6752e34a572b283de46a"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:pilates-core-stretch-plus:2026-11-28",
+          "starts_at": "2026-11-28T15:00:00+00:00",
+          "ends_at": "2026-11-28T16:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1402,
+          "description_sha256": "a222c8d91fb91fde051a410046a83357c3aa8642622b6752e34a572b283de46a"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:pilates-w-faye-new:2026-11-16",
+          "starts_at": "2026-11-16T17:00:00+00:00",
+          "ends_at": "2026-11-16T18:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1368,
+          "description_sha256": "0be46df0c9be04a52d2540678c77ea315024c8d85158e4ce867fa50121c61ca6"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:pilates-w-faye-new:2026-11-18",
+          "starts_at": "2026-11-18T17:00:00+00:00",
+          "ends_at": "2026-11-18T18:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1368,
+          "description_sha256": "0be46df0c9be04a52d2540678c77ea315024c8d85158e4ce867fa50121c61ca6"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:pilates-w-faye-new:2026-11-23",
+          "starts_at": "2026-11-23T17:00:00+00:00",
+          "ends_at": "2026-11-23T18:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1368,
+          "description_sha256": "0be46df0c9be04a52d2540678c77ea315024c8d85158e4ce867fa50121c61ca6"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:pilates-w-faye-new:2026-11-25",
+          "starts_at": "2026-11-25T17:00:00+00:00",
+          "ends_at": "2026-11-25T18:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1368,
+          "description_sha256": "0be46df0c9be04a52d2540678c77ea315024c8d85158e4ce867fa50121c61ca6"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:body-sculpt-i:2026-11-16",
+          "starts_at": "2026-11-16T13:00:00+00:00",
+          "ends_at": "2026-11-16T14:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1567,
+          "description_sha256": "25b3b6d74f98d2ce07b543c9395879d2c3b3fa1d3509c41e132cdba581427196"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:body-sculpt-i:2026-11-19",
+          "starts_at": "2026-11-19T13:00:00+00:00",
+          "ends_at": "2026-11-19T14:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1567,
+          "description_sha256": "25b3b6d74f98d2ce07b543c9395879d2c3b3fa1d3509c41e132cdba581427196"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:body-sculpt-i:2026-11-23",
+          "starts_at": "2026-11-23T13:00:00+00:00",
+          "ends_at": "2026-11-23T14:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1567,
+          "description_sha256": "25b3b6d74f98d2ce07b543c9395879d2c3b3fa1d3509c41e132cdba581427196"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:body-sculpt-i:2026-11-30",
+          "starts_at": "2026-11-30T13:00:00+00:00",
+          "ends_at": "2026-11-30T14:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1567,
+          "description_sha256": "25b3b6d74f98d2ce07b543c9395879d2c3b3fa1d3509c41e132cdba581427196"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:body-sculpt-i:2026-12-03",
+          "starts_at": "2026-12-03T13:00:00+00:00",
+          "ends_at": "2026-12-03T14:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1567,
+          "description_sha256": "25b3b6d74f98d2ce07b543c9395879d2c3b3fa1d3509c41e132cdba581427196"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:body-sculpt-i:2026-12-07",
+          "starts_at": "2026-12-07T13:00:00+00:00",
+          "ends_at": "2026-12-07T14:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1567,
+          "description_sha256": "25b3b6d74f98d2ce07b543c9395879d2c3b3fa1d3509c41e132cdba581427196"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:body-sculpt-i:2026-12-10",
+          "starts_at": "2026-12-10T13:00:00+00:00",
+          "ends_at": "2026-12-10T14:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1567,
+          "description_sha256": "25b3b6d74f98d2ce07b543c9395879d2c3b3fa1d3509c41e132cdba581427196"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:body-sculpt-ii:2026-11-21",
+          "starts_at": "2026-11-21T15:00:00+00:00",
+          "ends_at": "2026-11-21T16:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1560,
+          "description_sha256": "1f402b3ae799138e06ea3bc6953b02a52d2b2d8d08a5356d13b2750f0574d4c7"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:body-sculpt-ii:2026-11-28",
+          "starts_at": "2026-11-28T15:00:00+00:00",
+          "ends_at": "2026-11-28T16:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1560,
+          "description_sha256": "1f402b3ae799138e06ea3bc6953b02a52d2b2d8d08a5356d13b2750f0574d4c7"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:body-sculpt-ii:2026-12-05",
+          "starts_at": "2026-12-05T15:00:00+00:00",
+          "ends_at": "2026-12-05T16:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1560,
+          "description_sha256": "1f402b3ae799138e06ea3bc6953b02a52d2b2d8d08a5356d13b2750f0574d4c7"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:body-sculpt-ii:2026-12-12",
+          "starts_at": "2026-12-12T15:00:00+00:00",
+          "ends_at": "2026-12-12T16:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1560,
+          "description_sha256": "1f402b3ae799138e06ea3bc6953b02a52d2b2d8d08a5356d13b2750f0574d4c7"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:move-strong-balance-i:2026-11-20",
+          "starts_at": "2026-11-20T15:00:00+00:00",
+          "ends_at": "2026-11-20T16:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1518,
+          "description_sha256": "99eaab0d47b223e3b5af557b327418be51be7e61d6f07b20aecb0787c80ae34f"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:move-strong-balance-i:2026-12-04",
+          "starts_at": "2026-12-04T15:00:00+00:00",
+          "ends_at": "2026-12-04T16:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1518,
+          "description_sha256": "99eaab0d47b223e3b5af557b327418be51be7e61d6f07b20aecb0787c80ae34f"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:move-strong-balance-i:2026-12-11",
+          "starts_at": "2026-12-11T15:00:00+00:00",
+          "ends_at": "2026-12-11T16:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1518,
+          "description_sha256": "99eaab0d47b223e3b5af557b327418be51be7e61d6f07b20aecb0787c80ae34f"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:move-strong-balance-ii:2026-11-21",
+          "starts_at": "2026-11-21T14:00:00+00:00",
+          "ends_at": "2026-11-21T15:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1520,
+          "description_sha256": "4f56abbb4b27400106620e5a031b092f8b364ea04bb4b3a6d249690ab36d271a"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:move-strong-balance-ii:2026-11-28",
+          "starts_at": "2026-11-28T14:00:00+00:00",
+          "ends_at": "2026-11-28T15:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1520,
+          "description_sha256": "4f56abbb4b27400106620e5a031b092f8b364ea04bb4b3a6d249690ab36d271a"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:move-strong-balance-ii:2026-12-05",
+          "starts_at": "2026-12-05T14:00:00+00:00",
+          "ends_at": "2026-12-05T15:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1520,
+          "description_sha256": "4f56abbb4b27400106620e5a031b092f8b364ea04bb4b3a6d249690ab36d271a"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:move-strong-balance-ii:2026-12-12",
+          "starts_at": "2026-12-12T14:00:00+00:00",
+          "ends_at": "2026-12-12T15:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1520,
+          "description_sha256": "4f56abbb4b27400106620e5a031b092f8b364ea04bb4b3a6d249690ab36d271a"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:move-strong-balance-iii:2026-11-17",
+          "starts_at": "2026-11-17T13:00:00+00:00",
+          "ends_at": "2026-11-17T14:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1517,
+          "description_sha256": "e570ad9b7badeaf9571b46b226263667a983c102ec7eff6cb654f369eac824fd"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:move-strong-balance-iii:2026-11-24",
+          "starts_at": "2026-11-24T13:00:00+00:00",
+          "ends_at": "2026-11-24T14:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1517,
+          "description_sha256": "e570ad9b7badeaf9571b46b226263667a983c102ec7eff6cb654f369eac824fd"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:move-strong-balance-iii:2026-12-01",
+          "starts_at": "2026-12-01T13:00:00+00:00",
+          "ends_at": "2026-12-01T14:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1517,
+          "description_sha256": "e570ad9b7badeaf9571b46b226263667a983c102ec7eff6cb654f369eac824fd"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:move-strong-balance-iii:2026-12-08",
+          "starts_at": "2026-12-08T13:00:00+00:00",
+          "ends_at": "2026-12-08T14:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1517,
+          "description_sha256": "e570ad9b7badeaf9571b46b226263667a983c102ec7eff6cb654f369eac824fd"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:sweat-sculpt:2026-11-20",
+          "starts_at": "2026-11-20T14:00:00+00:00",
+          "ends_at": "2026-11-20T15:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1505,
+          "description_sha256": "f10e0ea4cc1e236e8eeac40ca3e9c4cb03bdc0c504f8d75c14fadd178d92e14f"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:sweat-sculpt:2026-12-04",
+          "starts_at": "2026-12-04T14:00:00+00:00",
+          "ends_at": "2026-12-04T15:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1505,
+          "description_sha256": "f10e0ea4cc1e236e8eeac40ca3e9c4cb03bdc0c504f8d75c14fadd178d92e14f"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:sweat-sculpt:2026-12-11",
+          "starts_at": "2026-12-11T14:00:00+00:00",
+          "ends_at": "2026-12-11T15:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1505,
+          "description_sha256": "f10e0ea4cc1e236e8eeac40ca3e9c4cb03bdc0c504f8d75c14fadd178d92e14f"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:total-body-strength-conditioning-i:2026-11-16",
+          "starts_at": "2026-11-16T14:00:00+00:00",
+          "ends_at": "2026-11-16T15:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1712,
+          "description_sha256": "74a2ec054583e51c17269d968bf95258ab922e78dc3a9b08e6953a41a0e929b0"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:total-body-strength-conditioning-i:2026-11-18",
+          "starts_at": "2026-11-18T14:00:00+00:00",
+          "ends_at": "2026-11-18T15:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1712,
+          "description_sha256": "74a2ec054583e51c17269d968bf95258ab922e78dc3a9b08e6953a41a0e929b0"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:total-body-strength-conditioning-i:2026-11-23",
+          "starts_at": "2026-11-23T14:00:00+00:00",
+          "ends_at": "2026-11-23T15:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1712,
+          "description_sha256": "74a2ec054583e51c17269d968bf95258ab922e78dc3a9b08e6953a41a0e929b0"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:total-body-strength-conditioning-i:2026-11-25",
+          "starts_at": "2026-11-25T14:00:00+00:00",
+          "ends_at": "2026-11-25T15:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1712,
+          "description_sha256": "74a2ec054583e51c17269d968bf95258ab922e78dc3a9b08e6953a41a0e929b0"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:total-body-strength-conditioning-i:2026-11-30",
+          "starts_at": "2026-11-30T14:00:00+00:00",
+          "ends_at": "2026-11-30T15:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1712,
+          "description_sha256": "74a2ec054583e51c17269d968bf95258ab922e78dc3a9b08e6953a41a0e929b0"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:total-body-strength-conditioning-i:2026-12-02",
+          "starts_at": "2026-12-02T14:00:00+00:00",
+          "ends_at": "2026-12-02T15:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1712,
+          "description_sha256": "74a2ec054583e51c17269d968bf95258ab922e78dc3a9b08e6953a41a0e929b0"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:total-body-strength-conditioning-i:2026-12-07",
+          "starts_at": "2026-12-07T14:00:00+00:00",
+          "ends_at": "2026-12-07T15:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1712,
+          "description_sha256": "74a2ec054583e51c17269d968bf95258ab922e78dc3a9b08e6953a41a0e929b0"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:total-body-strength-conditioning-i:2026-12-09",
+          "starts_at": "2026-12-09T14:00:00+00:00",
+          "ends_at": "2026-12-09T15:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1712,
+          "description_sha256": "74a2ec054583e51c17269d968bf95258ab922e78dc3a9b08e6953a41a0e929b0"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:total-body-strength-conditioning-ii:2026-11-17",
+          "starts_at": "2026-11-17T14:00:00+00:00",
+          "ends_at": "2026-11-17T15:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1711,
+          "description_sha256": "cedb90036b6f6fe921aa3c424b55ba7e0c428581fa8206cc6111ddaa3741b4f1"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:total-body-strength-conditioning-ii:2026-11-19",
+          "starts_at": "2026-11-19T14:00:00+00:00",
+          "ends_at": "2026-11-19T15:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1711,
+          "description_sha256": "cedb90036b6f6fe921aa3c424b55ba7e0c428581fa8206cc6111ddaa3741b4f1"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:total-body-strength-conditioning-ii:2026-11-24",
+          "starts_at": "2026-11-24T14:00:00+00:00",
+          "ends_at": "2026-11-24T15:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1711,
+          "description_sha256": "cedb90036b6f6fe921aa3c424b55ba7e0c428581fa8206cc6111ddaa3741b4f1"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:total-body-strength-conditioning-ii:2026-12-01",
+          "starts_at": "2026-12-01T14:00:00+00:00",
+          "ends_at": "2026-12-01T15:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1711,
+          "description_sha256": "cedb90036b6f6fe921aa3c424b55ba7e0c428581fa8206cc6111ddaa3741b4f1"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:total-body-strength-conditioning-ii:2026-12-03",
+          "starts_at": "2026-12-03T14:00:00+00:00",
+          "ends_at": "2026-12-03T15:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1711,
+          "description_sha256": "cedb90036b6f6fe921aa3c424b55ba7e0c428581fa8206cc6111ddaa3741b4f1"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:total-body-strength-conditioning-ii:2026-12-08",
+          "starts_at": "2026-12-08T14:00:00+00:00",
+          "ends_at": "2026-12-08T15:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1711,
+          "description_sha256": "cedb90036b6f6fe921aa3c424b55ba7e0c428581fa8206cc6111ddaa3741b4f1"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:total-body-strength-conditioning-ii:2026-12-10",
+          "starts_at": "2026-12-10T14:00:00+00:00",
+          "ends_at": "2026-12-10T15:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1711,
+          "description_sha256": "cedb90036b6f6fe921aa3c424b55ba7e0c428581fa8206cc6111ddaa3741b4f1"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:dance-fitness:2026-11-18",
+          "starts_at": "2026-11-18T13:00:00+00:00",
+          "ends_at": "2026-11-18T14:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1519,
+          "description_sha256": "0330b51b384d01002e4d9ee51f54704c911aa13e57c64e898453c71c19bbbc32"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:dance-fitness:2026-11-25",
+          "starts_at": "2026-11-25T13:00:00+00:00",
+          "ends_at": "2026-11-25T14:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1519,
+          "description_sha256": "0330b51b384d01002e4d9ee51f54704c911aa13e57c64e898453c71c19bbbc32"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:dance-fitness:2026-12-02",
+          "starts_at": "2026-12-02T13:00:00+00:00",
+          "ends_at": "2026-12-02T14:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1519,
+          "description_sha256": "0330b51b384d01002e4d9ee51f54704c911aa13e57c64e898453c71c19bbbc32"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:dance-fitness:2026-12-09",
+          "starts_at": "2026-12-09T13:00:00+00:00",
+          "ends_at": "2026-12-09T14:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1519,
+          "description_sha256": "0330b51b384d01002e4d9ee51f54704c911aa13e57c64e898453c71c19bbbc32"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:abs-glutes:2026-11-16",
+          "starts_at": "2026-11-16T19:00:00+00:00",
+          "ends_at": "2026-11-16T20:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1718,
+          "description_sha256": "e7c1d142668acacdef82b8cef9cb6194cd8aedf34cb1d6e696a144e08bb3fa09"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:abs-glutes:2026-11-18",
+          "starts_at": "2026-11-18T19:00:00+00:00",
+          "ends_at": "2026-11-18T20:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1718,
+          "description_sha256": "e7c1d142668acacdef82b8cef9cb6194cd8aedf34cb1d6e696a144e08bb3fa09"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:abs-glutes:2026-11-23",
+          "starts_at": "2026-11-23T19:00:00+00:00",
+          "ends_at": "2026-11-23T20:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1718,
+          "description_sha256": "e7c1d142668acacdef82b8cef9cb6194cd8aedf34cb1d6e696a144e08bb3fa09"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:abs-glutes:2026-11-25",
+          "starts_at": "2026-11-25T19:00:00+00:00",
+          "ends_at": "2026-11-25T20:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1718,
+          "description_sha256": "e7c1d142668acacdef82b8cef9cb6194cd8aedf34cb1d6e696a144e08bb3fa09"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:abs-glutes:2026-11-30",
+          "starts_at": "2026-11-30T19:00:00+00:00",
+          "ends_at": "2026-11-30T20:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1718,
+          "description_sha256": "e7c1d142668acacdef82b8cef9cb6194cd8aedf34cb1d6e696a144e08bb3fa09"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:abs-glutes:2026-12-02",
+          "starts_at": "2026-12-02T19:00:00+00:00",
+          "ends_at": "2026-12-02T20:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1718,
+          "description_sha256": "e7c1d142668acacdef82b8cef9cb6194cd8aedf34cb1d6e696a144e08bb3fa09"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:abs-glutes:2026-12-07",
+          "starts_at": "2026-12-07T19:00:00+00:00",
+          "ends_at": "2026-12-07T20:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1718,
+          "description_sha256": "e7c1d142668acacdef82b8cef9cb6194cd8aedf34cb1d6e696a144e08bb3fa09"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:abs-glutes:2026-12-09",
+          "starts_at": "2026-12-09T19:00:00+00:00",
+          "ends_at": "2026-12-09T20:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1718,
+          "description_sha256": "e7c1d142668acacdef82b8cef9cb6194cd8aedf34cb1d6e696a144e08bb3fa09"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:flex-appeal-with-robin:2026-11-19",
+          "starts_at": "2026-11-19T16:00:00+00:00",
+          "ends_at": "2026-11-19T17:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1546,
+          "description_sha256": "7fb5d878b6c443ec92cee37bff15432f182d2e973b082d2a1732ab71d02fdb66"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:mixed-media:2026-11-17",
+          "starts_at": "2026-11-17T19:15:00+00:00",
+          "ends_at": "2026-11-17T21:15:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1599,
+          "description_sha256": "fc4a052253299217dcf741281431cd7ea54f775724bed9b0fef19a68a182d0c3"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:mixed-media:2026-12-01",
+          "starts_at": "2026-12-01T19:15:00+00:00",
+          "ends_at": "2026-12-01T21:15:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1599,
+          "description_sha256": "fc4a052253299217dcf741281431cd7ea54f775724bed9b0fef19a68a182d0c3"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:mixed-media:2026-12-08",
+          "starts_at": "2026-12-08T19:15:00+00:00",
+          "ends_at": "2026-12-08T21:15:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1599,
+          "description_sha256": "fc4a052253299217dcf741281431cd7ea54f775724bed9b0fef19a68a182d0c3"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:mixed-media:2026-12-15",
+          "starts_at": "2026-12-15T19:15:00+00:00",
+          "ends_at": "2026-12-15T21:15:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1599,
+          "description_sha256": "fc4a052253299217dcf741281431cd7ea54f775724bed9b0fef19a68a182d0c3"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:drawing-figures:2026-11-20",
+          "starts_at": "2026-11-20T14:30:00+00:00",
+          "ends_at": "2026-11-20T16:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1553,
+          "description_sha256": "9c359fa4b39115fb9ece2ee80fed60edce9616b9bd712ef0bab70ce0aa7c2884"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:drawing-figures:2026-12-04",
+          "starts_at": "2026-12-04T14:30:00+00:00",
+          "ends_at": "2026-12-04T16:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1553,
+          "description_sha256": "9c359fa4b39115fb9ece2ee80fed60edce9616b9bd712ef0bab70ce0aa7c2884"
+        },
+        {
+          "id": "brigantine_community_recreation_nj:drawing-figures:2026-12-11",
+          "starts_at": "2026-12-11T14:30:00+00:00",
+          "ends_at": "2026-12-11T16:00:00+00:00",
+          "venue_address": "265 42nd Street, Brigantine, NJ 08203",
+          "description_chars": 1553,
+          "description_sha256": "9c359fa4b39115fb9ece2ee80fed60edce9616b9bd712ef0bab70ce0aa7c2884"
+        }
+      ]
+    },
+    {
+      "source_key": "nj_shore_run_nj",
+      "feed_url": "https://www.njshorerun.com/running-club/run",
+      "kind": "html",
+      "platform_adapter": "html",
+      "timezone": "America/New_York",
+      "allowed_hosts": [
+        "www.njshorerun.com"
+      ],
+      "checkpoint_required": false,
+      "captured_replay": {
+        "count": 2,
+        "elapsed_seconds": 0.884,
+        "requests": [
+          {
+            "url": "https://www.njshorerun.com/running-club/run",
+            "accept": "text/html"
+          }
+        ],
+        "capture_path": "/workspace/scratch/1a66687e54ec/research-ac/local-next-recreation/nj_shore_run_nj-capture.json",
+        "capture_sha256": "bf2ae28a8f31716b619e1b5d0facd1528f7aedc2c00971b2e467ef355f40af25",
+        "full_nonblank_description_rows": 2,
+        "complete_street_rows": 2,
+        "reviewed_coordinate_rows": 2,
+        "max_description_chars": 832,
+        "unknown_end_rows": 2
+      },
+      "programs": [
+        {
+          "title": "4th Annual Ocean City Christmas Tree Run",
+          "occurrences": 1,
+          "description_chars": 155,
+          "description_sha256": "5401627304060c6840c88a8ed5837dc855575212aa0d23e5756ea013286718c1",
+          "first_start_utc": "2026-12-12T13:00:00+00:00",
+          "last_start_utc": "2026-12-12T13:00:00+00:00"
+        },
+        {
+          "title": "NJShoreRun Linwood Bike Path Group Run",
+          "occurrences": 1,
+          "description_chars": 832,
+          "description_sha256": "12a7c75f540fabf72e1424281c648a3cbe20e733b7e22c8e3951751ab52704a2",
+          "first_start_utc": "2026-11-15T13:00:00+00:00",
+          "last_start_utc": "2026-11-15T13:00:00+00:00"
+        }
+      ],
+      "event_receipts": [
+        {
+          "id": "nj_shore_run_nj:linwood-bike-path:2026-11-15",
+          "starts_at": "2026-11-15T13:00:00+00:00",
+          "ends_at": null,
+          "venue_address": "1210 Wabash Avenue, Linwood, NJ 08221",
+          "description_chars": 832,
+          "description_sha256": "12a7c75f540fabf72e1424281c648a3cbe20e733b7e22c8e3951751ab52704a2"
+        },
+        {
+          "id": "nj_shore_run_nj:christmas-tree-run:2026-12-12",
+          "starts_at": "2026-12-12T13:00:00+00:00",
+          "ends_at": null,
+          "venue_address": "825 Boardwalk, Ocean City, NJ 08226",
+          "description_chars": 155,
+          "description_sha256": "5401627304060c6840c88a8ed5837dc855575212aa0d23e5756ea013286718c1"
+        }
+      ]
+    }
+  ],
+  "transport": {
+    "runtime": "Existing caller-supplied guarded fetch, with source-specific exact allowed hosts and source identity.",
+    "research": "Ordinary public HTTP captures are not production guarded collection proof.",
+    "brigantine_robots": {
+      "url": "https://brigantinebeach.org/robots.txt",
+      "http_status": 200,
+      "bytes": 67,
+      "sha256": "9311bab30d8b5d05f5fa5563a251b8c96b8470873bb77c62d3d17c146d7acab7",
+      "capture_path": "/workspace/scratch/1a66687e54ec/research-ac/local-next-recreation/brigantine-robots.txt"
+    },
+    "njshorerun_robots": {
+      "url": "https://www.njshorerun.com/robots.txt",
+      "http_status": 404,
+      "result": "no robots policy at this URL"
+    },
+    "brigantine_current": {
+      "url": "https://brigantinebeach.org/municipal/departments/community-education-recreation/",
+      "http_status": 200,
+      "bytes": 158035,
+      "sha256": "a6bc39cc34ac2567cc98106bebe6f9162d36bced9b0f8b4755fba6d9316e8456",
+      "capture_path": "/workspace/scratch/1a66687e54ec/research-ac/local-next-recreation/brigantine-current.html"
+    },
+    "brigantine_document": {
+      "url": "https://brigantinebeach.org/wp-content/uploads/Fall-Brochure-2026-green.pdf",
+      "http_status": 200,
+      "bytes": 2955228,
+      "sha256": "7d727ba806414dfc1b31198356f6757a660c9b452fa637124614145e40f6f365",
+      "capture_path": "/workspace/scratch/1a66687e54ec/research-ac/local-next-recreation/brigantine-fall-2026.pdf"
+    },
+    "njshorerun_current": {
+      "url": "https://www.njshorerun.com/running-club/run",
+      "http_status": 200,
+      "bytes": 162477,
+      "sha256": "5809779b6c75ab550583201f71392bc5d232da297e8b3c63dd25bd218960cfea",
+      "capture_path": "/workspace/scratch/1a66687e54ec/research-ac/local-next-recreation/njshorerun-weekly.html"
+    },
+    "response_size_exception_required": false,
+    "existing_binary_body_limit": 3000000
+  },
+  "description_contract": {
+    "normalization": "Complete native event prose and program metadata, with Unicode NFKC and whitespace normalization; no literal HTML preservation claim.",
+    "brigantine": "Each accepted course retains all text through its final native Non-Sr fee, plus the entire first-to-last sentence of the publisher drop-in policy. The PDF edition and current publisher link are both required.",
+    "njshorerun": "Every current meetup paragraph through the race-meetup divider, and every save-the-date paragraph through the end of the publisher content block. Unknown event ends remain null.",
+    "limits": "Blank or >12000-character descriptions fail. Snapshots above500 events fail. No truncating slices.",
+    "brief_native_christmas_notice": "Current full publisher save-the-date body is brief and says more information will follow; no additional route details are invented."
+  },
+  "brigantine_schedule": {
+    "document_sha256": "7d727ba806414dfc1b31198356f6757a660c9b452fa637124614145e40f6f365",
+    "visual_pages_reviewed": [
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+    ],
+    "starred_drop_in_programs": 39,
+    "accepted_programs": 37,
+    "held_programs": {
+      "CARDIO STRONG*": "published_begin_date_Tuesday_conflicts_with_Monday_Wednesday_schedule",
+      "ACRYLIC & OTHER MEDIUMS*": "published_Friday_conflicts_with_explicit_Tuesday_dates"
+    },
+    "closures": [
+      "2026-10-12",
+      "2026-11-03",
+      "2026-11-11",
+      "2026-11-26",
+      "2026-11-27"
+    ],
+    "term_rule": "Only stated8/10 calendar-week terms are expanded, with exact published weekdays and clocks. Closures remove dates without extending the term or guessing makeup sessions. The two art schedules use explicit published dates.",
+    "other_programs": "Unstarred advance-registration courses, membership/reservation-only gym offerings, unclocked facility access and off-area trips are not represented as drop-in classes.",
+    "renewal": "A changed current brochure link or PDF digest fails for review; no projection into a later season."
+  },
+  "njshorerun_identity": {
+    "publisher": "https://www.njshorerun.com/running-club/run",
+    "distinct_previous_hold": "https://runsignup.com/Race/NJ/AtlanticCity/SouthJerseyRunClub",
+    "comparison": "Previously held source had expired June Saturday runs at Ocean Casino. This publisher has a current dated Sunday Linwood meetup and December Ocean City run; no old recurrence was projected.",
+    "year_rule": "The explicit weekly11/15/26 heading supplies calendar context; December12 must agree with its published Saturday. No annual or weekly recurrence is generated."
+  },
+  "venues": {
+    "brigantine": {
+      "resolved": [
+        "Brigantine Beach Community Center (approximate map location)",
+        "265 42nd Street, Brigantine, NJ 08203",
+        "Brigantine",
+        39.391450603496,
+        -74.395619930205,
+        "reviewed_nj_ogis_street_address"
+      ],
+      "street_source": "https://brigantinebeach.org/municipal/departments/community-education-recreation/",
+      "geocoder": {
+        "query": "265 42nd Street, Brigantine, NJ 08203",
+        "url": "https://geo.nj.gov/arcgis/rest/services/Tasks/NJ_Geocode/GeocodeServer/findAddressCandidates?SingleLine=265+42nd+Street%2C+Brigantine%2C+NJ+08203&outSR=4326&outFields=Match_addr%2CAddr_type%2CCity%2CPostal%2CRegion&f=pjson",
+        "response": {
+          "spatialReference": {
+            "wkid": 4326,
+            "latestWkid": 4326
+          },
+          "candidates": [
+            {
+              "address": "265 42nd Street South, Brigantine, New Jersey, 08203",
+              "location": {
+                "x": -74.395619930205,
+                "y": 39.391450603496
+              },
+              "score": 99.53,
+              "attributes": {
+                "Match_addr": "265 42nd Street South, Brigantine, New Jersey, 08203",
+                "Addr_type": "StreetAddress",
+                "City": "Brigantine",
+                "Postal": "08203",
+                "Region": "New Jersey"
+              },
+              "extent": {
+                "xmin": -74.396619930205,
+                "ymin": 39.390448812109,
+                "xmax": -74.394619930205,
+                "ymax": 39.39245239501
+              }
+            }
+          ]
+        }
+      },
+      "qualifier": "Interpolated StreetAddress at score99.53; visible approximate map location label."
+    },
+    "music_pier": {
+      "resolved": [
+        "Ocean City Music Pier",
+        "825 Boardwalk, Ocean City, NJ 08226",
+        "Ocean City",
+        39.275278,
+        -74.570425,
+        "reviewed_municipal_venue_jsonld"
+      ],
+      "primary": {
+        "url": "https://www.ocnj.us/maps/location/MusicPier",
+        "http_status": 200,
+        "bytes": 105781,
+        "sha256": "d5109040d165ea189be0b4d7eef7a9f7a07278f2741e07334b919e7550f97a08",
+        "capture_path": "/workspace/scratch/1a66687e54ec/research-ac/local-next-recreation/music-pier-official.html"
+      },
+      "publisher_geo": {
+        "latitude": 39.275278,
+        "longitude": -74.570425,
+        "postal_address": "825 Boardwalk, Ocean City, NJ08226"
+      },
+      "rejected_geocoder": {
+        "query": "825 Boardwalk, Ocean City, NJ 08226",
+        "url": "https://geo.nj.gov/arcgis/rest/services/Tasks/NJ_Geocode/GeocodeServer/findAddressCandidates?SingleLine=825+Boardwalk%2C+Ocean+City%2C+NJ+08226&outSR=4326&outFields=Match_addr%2CAddr_type%2CCity%2CPostal%2CRegion&f=pjson",
+        "response": {
+          "spatialReference": {
+            "wkid": 4326,
+            "latestWkid": 4326
+          },
+          "candidates": [
+            {
+              "address": "825 Boardwalk, Glen Gardner, New Jersey, 08826",
+              "location": {
+                "x": -74.569827958508,
+                "y": 39.275492485019
+              },
+              "score": 92.86,
+              "attributes": {
+                "Match_addr": "825 Boardwalk, Glen Gardner, New Jersey, 08826",
+                "Addr_type": "StreetAddress",
+                "City": "Glen Gardner",
+                "Postal": "08826",
+                "Region": "New Jersey"
+              },
+              "extent": {
+                "xmin": -74.570829971106,
+                "ymin": 39.274492485019,
+                "xmax": -74.568826002794,
+                "ymax": 39.276492485019
+              }
+            }
+          ]
+        }
+      },
+      "rejection_reason": "State candidate has conflicting Glen Gardner/08826 city and ZIP; never used."
+    },
+    "linwood": {
+      "resolved": [
+        "Linwood Bike Path — hockey rink parking (address estimated; approximate map location)",
+        "1210 Wabash Avenue, Linwood, NJ 08221",
+        "Linwood",
+        39.346137000003,
+        -74.573842500001,
+        "reviewed_publisher_meeting_intersection_and_estimated_park_street"
+      ],
+      "meeting_location_source": "https://www.njshorerun.com/running-club/run",
+      "rink_primary": {
+        "url": "https://www.linwoodstreethockey.com/Default.aspx?tabid=834097",
+        "http_status": 200,
+        "bytes": 45393,
+        "sha256": "0c72f7c17e42ba9a5305337e83c7c9dcf74295d9052b1bb03be72c898e56ea42",
+        "capture_path": "/workspace/scratch/1a66687e54ec/research-ac/local-next-recreation/linwood-hockey-directions.html"
+      },
+      "park_street_primary": {
+        "url": "https://acmjif.org/wp-content/uploads/2024/10/ACM-GatherGuard-Locations-9-24.pdf",
+        "http_status": 200,
+        "bytes": 149947,
+        "sha256": "90cc3d6b26772b18bf0fcdf2088b8c3eb4e68ae9944656d9a2bb29dd1ec83394",
+        "capture_path": "/workspace/scratch/1a66687e54ec/research-ac/local-next-recreation/linwood-municipal-property-inventory.pdf"
+      },
+      "street_inference": "Inventory page2 row195 says All Wars Memorial Park,1210Wabas,LinwoodNJ08221 (street column is clipped). Run publisher explicitly names Wabash Avenue and W Essex Avenue.1210WabashAvenue is a labelled park-level estimate; not claimed as a confirmed parking entrance.",
+      "intersection_geocoder_url": "https://geo.nj.gov/arcgis/rest/services/Tasks/NJ_Geocode/GeocodeServer/findAddressCandidates?SingleLine=Wabash+Avenue+and+West+Essex+Avenue%2C+Linwood%2C+NJ+08221&outSR=4326&outFields=Match_addr%2CAddr_type%2CCity%2CPostal%2CRegion&f=pjson",
+      "intersection_geocoder": {
+        "spatialReference": {
+          "wkid": 4326,
+          "latestWkid": 4326
+        },
+        "candidates": [
+          {
+            "address": "Wabash Avenue & Essex Avenue, Linwood, New Jersey, 08221",
+            "location": {
+              "x": -74.573842500001,
+              "y": 39.346137000003
+            },
+            "score": 99.69,
+            "attributes": {
+              "Match_addr": "Wabash Avenue & Essex Avenue, Linwood, New Jersey, 08221",
+              "Addr_type": "StreetInt",
+              "City": "Linwood",
+              "Postal": "08221",
+              "Region": "New Jersey"
+            },
+            "extent": {
+              "xmin": -74.574844631969,
+              "ymin": 39.345137000003,
+              "xmax": -74.572840425063,
+              "ymax": 39.347137000003
+            }
+          }
+        ]
+      },
+      "qualifier": "StreetInt score99.69 at the publisher meeting intersection, not a park or city centroid. Visible address estimated and approximate map location labels.",
+      "park_address_no_candidate": {
+        "query": "1210 Wabash Avenue, Linwood, NJ 08221",
+        "url": "https://geo.nj.gov/arcgis/rest/services/Tasks/NJ_Geocode/GeocodeServer/findAddressCandidates?SingleLine=1210+Wabash+Avenue%2C+Linwood%2C+NJ+08221&outSR=4326&outFields=Match_addr%2CAddr_type%2CCity%2CPostal%2CRegion&f=pjson",
+        "response": {
+          "spatialReference": {
+            "wkid": 4326,
+            "latestWkid": 4326
+          },
+          "candidates": []
+        }
+      }
+    }
+  },
+  "integration": {
+    "sources": "Merge module.SOURCES and module.ALLOWED_HOSTS into exact existing dispatch tables; call collect(source,fetch,deadline_at=...,now=...).",
+    "event_identity": "event_url accepts only each exact registered source URL.",
+    "checkpoints": [],
+    "body_limit_exception": null,
+    "max_events_per_source": 500,
+    "database": "Parent owns source-specific normal enrollment and complete-description staging/publication guards."
+  },
+  "complete_rows_capture": "/workspace/scratch/1a66687e54ec/research-ac/local-next-recreation/local-recreation-all-rows.json",
+  "complete_rows_capture_sha256": "5e1e04afad6b8c4a30c2745ea154ebfefa9f3d6851c1aef5a013a09262ee4373",
+  "combined_count": 193
+}
