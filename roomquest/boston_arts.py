@@ -325,7 +325,11 @@ def _bpl_page(payload, now):
 
 
 def _bpl_url(page):
-    return 'https://gateway.bibliocommons.com/v2/libraries/bpl/events?' + urlencode(dict(limit=100, page=page))
+    # The publisher's own getCalloutFeaturedEvent/getEvents client uses this
+    # exact sort. The unqualified collection has unstable shard ordering and
+    # can repeat some IDs while omitting others across a complete page walk.
+    return 'https://gateway.bibliocommons.com/v2/libraries/bpl/events?' + urlencode(
+        dict(limit=100, page=page, sort='definition.start asc'))
 
 
 def _bpl_checkpoint(value, now):
@@ -334,12 +338,18 @@ def _bpl_checkpoint(value, now):
     try:
         started = timestamp(value['started_at'])
         queue = value['queue']
+        native_ids = value['seen_ids']
         valid = (type(value['version']) is int and value['version'] == 1 and value['source_key'] == BPL
                  and type(value['cursor']) is int and type(value['manifest_count']) is int
                  and 0 <= value['cursor'] <= value['manifest_count'] <= 100
                  and isinstance(queue, list) and len(queue) == value['manifest_count']
                  and queue == [dict(page=i, url=_bpl_url(i)) for i in range(1, len(queue) + 1)]
                  and value['manifest_hash'] == _hash(queue)
+                 and type(value['native_count']) is int and 0 <= value['native_count'] <= 10000
+                 and isinstance(native_ids, list) and len(native_ids) <= value['native_count']
+                 and len(native_ids) == len(set(native_ids))
+                 and all(isinstance(identity, str) and re.fullmatch(r'[a-f0-9]{24}', identity) for identity in native_ids)
+                 and (value['cursor'] != value['manifest_count'] or len(native_ids) == value['native_count'])
                  and isinstance(value['events'], list) and len(value['events']) <= MAX_RECORDS
                  and isinstance(value['diagnostics'], list) and len(value['diagnostics']) <= 400
                  and value['window_start'] == started.astimezone(ZoneInfo(ZONE)).date().isoformat()
@@ -348,7 +358,8 @@ def _bpl_checkpoint(value, now):
         for row in value['events']:
             start, end = timestamp(row['starts_at']), timestamp(row.get('ends_at'))
             valid = (valid and re.fullmatch(r'[a-f0-9]{24}', row['id']) is not None
-                     and row['id'] not in seen and row['event_url'] == SOURCES[BPL][0] + '/' + row['id']
+                     and row['id'] not in seen and row['id'] in native_ids
+                     and row['event_url'] == SOURCES[BPL][0] + '/' + row['id']
                      and isinstance(row['description'], str) and 0 < len(row['description']) <= MAX_DESCRIPTION
                      and bool(row.get('venue_name')) and bool(STREET.match(row.get('venue_address', '')))
                      and re.search(r', MA \d{5}(?:-\d{4})?$', row['venue_address']) is not None
@@ -376,21 +387,33 @@ def _bpl_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None):
     if state is None:
         state = dict(version=1, source_key=BPL, started_at=current.isoformat(),
                      window_start=current.astimezone(ZoneInfo(ZONE)).date().isoformat(),
-                     manifest_hash=_hash([]), manifest_count=0, cursor=0, queue=[], events=[], diagnostics=[])
+                     manifest_hash=_hash([]), manifest_count=0, cursor=0, queue=[], events=[], diagnostics=[],
+                     native_count=None, seen_ids=[])
     prior = state['cursor']
     for _ in range(2):
         if monotonic() + 12 >= deadline:
             break
         page = state['cursor'] + 1
-        rows, diagnostics, paging = _bpl_page(fetch(_bpl_url(page), 'application/json'), timestamp(state['started_at']))
+        payload = fetch(_bpl_url(page), 'application/json')
+        rows, diagnostics, paging = _bpl_page(payload, timestamp(state['started_at']))
+        native_ids = json.loads(payload)['events']['items']
         pages = paging.get('pages')
-        if paging.get('page') != page or type(pages) is not int or not 1 <= pages <= 100:
+        count = paging.get('count')
+        if (paging.get('page') != page or type(pages) is not int or not 1 <= pages <= 100
+                or type(count) is not int or not 0 <= count <= 10000):
             raise ValueError('boston_arts_pagination_invalid')
-        if state['manifest_count'] and pages != state['manifest_count']:
+        if state['manifest_count'] and (pages != state['manifest_count'] or count != state['native_count']):
             raise ValueError('boston_arts_manifest_changed')
         if not state['manifest_count']:
             state['queue'] = [dict(page=i, url=_bpl_url(i)) for i in range(1, pages + 1)]
             state['manifest_hash'], state['manifest_count'] = _hash(state['queue']), pages
+            state['native_count'] = count
+        seen = set(state['seen_ids'])
+        if len(native_ids) != len(set(native_ids)) or seen.intersection(native_ids):
+            raise ValueError('boston_arts_pagination_invalid')
+        state['seen_ids'].extend(native_ids)
+        if len(state['seen_ids']) > count or page == pages and len(state['seen_ids']) != count:
+            raise ValueError('boston_arts_pagination_invalid')
         state['events'] = _unique(state['events'] + rows)
         state['diagnostics'].extend(diagnostics)
         state['cursor'] = page

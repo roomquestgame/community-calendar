@@ -1,0 +1,124 @@
+{
+  "scope": "B1 Dorchester and Lamplighter CX geocoder ambiguity repair for the remaining batch",
+  "production_writes_performed": false,
+  "evidence": [
+    {
+      "url": "https://www.dorchesterbrewing.com/contact-us/",
+      "response_sha256": null,
+      "capture_file": "boston-second/address-evidence/88d24f872d8656b60e78d14cda3448445ca55cc15d284a7ab72cd18e0db3f600.html"
+    },
+    {
+      "url": "https://lamplighterbrewing.com/pages/110-n-first-street-cx-taproom",
+      "response_sha256": "ac1ca37a083e4c65d2610b1cf1aa415dfb7e0f2f294082974e866235af7092d6",
+      "capture_file": "boston-second/address-evidence/8f284e80d91065e04aea7c309d6f34a074f6cb1ef594fda18a469d9cd50d5f8b.html"
+    },
+    {
+      "url": "https://cambridgecrossing.com/shop-dine/lamplighter-brewery-cx/",
+      "response_sha256": null,
+      "capture_file": "boston-second/address-evidence/095513a01ce4a7ac2a8364936e04d8743d5ca2b4d112f8bd1e2978bfee42e978.html"
+    }
+  ],
+  "venue_points": [
+    {
+      "key": "dorchester",
+      "venue_name": "Dorchester Brewing Company",
+      "venue_address": "1250 Massachusetts Avenue, Boston, MA 02125",
+      "lat": 42.322132,
+      "lng": -71.0623169,
+      "selector": "Official contact/footer Get Directions link: exact !3d and !4d place target; not @ viewport center",
+      "evidence_url": "https://www.dorchesterbrewing.com/contact-us/"
+    },
+    {
+      "key": "lamp_cx",
+      "venue_name": "Lamplighter Brewing CX",
+      "venue_address": "110 North First Street, Cambridge, MA 02141",
+      "lat": 42.372213,
+      "lng": -71.0753146,
+      "selector": "Official CX taproom Get Directions link: exact !3d and !4d place target; official Cambridge Crossing tenant page independently confirms ZIP",
+      "evidence_url": "https://lamplighterbrewing.com/pages/110-n-first-street-cx-taproom",
+      "postal_evidence_url": "https://cambridgecrossing.com/shop-dine/lamplighter-brewery-cx/"
+    }
+  ],
+  "validation": {
+    "focused_tests_passed": 15,
+    "captured_records_replayed": 19,
+    "point_changes": 8,
+    "unchanged_identity_description_dates_and_street": 19,
+    "source_or_address_mismatch_rejected": true,
+    "other_venue_points_unchanged": true
+  },
+  "changed_unpublished_points": [
+    {
+      "id": "boston:8769f7b0de0913483596eb30d94ac98ad64945297b6b6edddffcaebb2083a62d",
+      "title": "Lectures on Tap \u2013 \u201cAn Archaeologist\u2019s Guide to Surviving the Apocalypse\u201d",
+      "venue_name": "Dorchester Brewing Company",
+      "venue_address": "1250 Massachusetts Avenue, Boston, MA 02125",
+      "lat": 42.322132,
+      "lng": -71.0623169,
+      "event_url": "https://www.dorchesterbrewing.com/events/event/lectures-on-tap-the-songwriting-genius-of-bob-dylan-2/"
+    },
+    {
+      "id": "boston:d8e0fd0e9d228908a14c3dd24e485ce5e19b2c97b40923f39883a21005ba5b1e",
+      "title": "Hump Day Trivia",
+      "venue_name": "Dorchester Brewing Company",
+      "venue_address": "1250 Massachusetts Avenue, Boston, MA 02125",
+      "lat": 42.322132,
+      "lng": -71.0623169,
+      "event_url": "https://www.dorchesterbrewing.com/events/event/hump-day-trivia-83/"
+    },
+    {
+      "id": "boston:05da9d809159ead7b705910c2452883140fa9c854775b44d68881d2c1238e1d5",
+      "title": "Murder Mystery Co Dinner Theater Show",
+      "venue_name": "Dorchester Brewing Company",
+      "venue_address": "1250 Massachusetts Avenue, Boston, MA 02125",
+      "lat": 42.322132,
+      "lng": -71.0623169,
+      "event_url": "https://www.dorchesterbrewing.com/events/event/murder-mystery-co-dinner-theater-show-2/"
+    },
+    {
+      "id": "boston:2a59c69e1aa1a16dfe595b3481e37a1e5361fadc3c0f9c52f437261a30d10488",
+      "title": "Hump Day Trivia",
+      "venue_name": "Dorchester Brewing Company",
+      "venue_address": "1250 Massachusetts Avenue, Boston, MA 02125",
+      "lat": 42.322132,
+      "lng": -71.0623169,
+      "event_url": "https://www.dorchesterbrewing.com/events/event/hump-day-trivia-84/"
+    },
+    {
+      "id": "boston:e1518967bd0793cbfe5e09e2a8d85a65d1e756793d7355e0d029531f28ad7683",
+      "title": "Bark! A Pup and Handler Party",
+      "venue_name": "Dorchester Brewing Company",
+      "venue_address": "1250 Massachusetts Avenue, Boston, MA 02125",
+      "lat": 42.322132,
+      "lng": -71.0623169,
+      "event_url": "https://www.dorchesterbrewing.com/events/event/bark-a-pup-and-handler-party-6/"
+    },
+    {
+      "id": "boston:a0409159cfe37877e94cda9da8bd088ab76ce5a7c886d215ed0d0eca03fa38b0",
+      "title": "Bears, Brews & Boys",
+      "venue_name": "Dorchester Brewing Company",
+      "venue_address": "1250 Massachusetts Avenue, Boston, MA 02125",
+      "lat": 42.322132,
+      "lng": -71.0623169,
+      "event_url": "https://www.dorchesterbrewing.com/events/event/bears-brews-boys-20/"
+    },
+    {
+      "id": "boston:28ad1d4471e524f918a5a1415570e841246e9bae3aea7ba1a7e993cdc50da56f",
+      "title": "Jeopardy Bar League",
+      "venue_name": "Lamplighter Brewing CX",
+      "venue_address": "110 North First Street, Cambridge, MA 02141",
+      "lat": 42.372213,
+      "lng": -71.0753146,
+      "event_url": "https://lamplighterbrewing.com/products/jeopardy-bar-league-2"
+    },
+    {
+      "id": "boston:fb2db691a0979b75b23b8fc5b7331f5b96f25f5863f0393352e4f72f184c5f5f",
+      "title": "Survivor Watch Party",
+      "venue_name": "Lamplighter Brewing CX",
+      "venue_address": "110 North First Street, Cambridge, MA 02141",
+      "lat": 42.372213,
+      "lng": -71.0753146,
+      "event_url": "https://lamplighterbrewing.com/products/survivor-premiere-watch-party"
+    }
+  ]
+}

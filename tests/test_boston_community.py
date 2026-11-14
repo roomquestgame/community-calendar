@@ -190,6 +190,43 @@ def test_missing_end_stays_missing():
     assert row["ends_at"] is None
 
 
+@pytest.mark.parametrize("key,venue,address,point", [
+    (b.FOOD_FOREST, "Uphams Corner Food Forest", "11 A Everett Avenue, Boston, MA 02125", (42.315585, -71.063221)),
+    (b.FOOD_FOREST, "Hope Garden", "424 Geneva Avenue, Boston, MA 02122", (42.3007808, -71.0667882)),
+    (b.TITUS, "Museum of Fine Arts, Boston (MFA)", "465 Huntington Avenue, Boston, MA 02115", (42.339381, -71.094048)),
+])
+def test_reviewed_held_venue_points_preserve_native_street_and_narrative(key, venue, address, point):
+    def rows(actual_venue, actual_address, actual_key=key):
+        card = sq(location=actual_address, venue=actual_venue, point=(40.7207559, -74.0007613))
+        if actual_key == b.TITUS:
+            card = tuple(value.replace("https://www.bostonfoodforest.org/workshops/",
+                                       "https://www.titussparrowpark.org/events/") for value in card)
+        listing = '<div class="eventlist">' + card[1] + '</div>'
+        return b.collect(source(actual_key), lambda url, accept: listing if url == b.SOURCES[actual_key][0] else card[2], now=NOW)
+    row = rows(venue, address)[0]
+    assert (row["lat"], row["lng"]) == point
+    assert row["venue_address"] == address
+    assert row["description"] == "Join neighbors for a garden stewardship workshop."
+    assert row["location_evidence_url"] != row["event_url"]
+    # Exact venue/source/address binding: nearby rooms or changed streets must
+    # never borrow the reviewed public-site point.
+    assert rows(venue + " Annex", address)[0]["lat"] is None
+    assert rows(venue, "999 Different Street, Boston, MA 02125")[0]["lat"] is None
+    assert rows(venue, address, b.TITUS if key == b.FOOD_FOREST else b.FOOD_FOREST)[0]["lat"] is None
+
+
+def test_city_union_church_point_preserves_the_native_south_end_address():
+    item = rss_item().replace("Meeting Hall", "Union Church").replace("23 Drydock Ave", "485 Columbus Avenue")
+    item = item.replace("Boston", "South End").replace("02210", "02118")
+    row = b._city(rss(item), NOW, [])[0]
+    assert row["venue_address"] == "485 Columbus Avenue, South End, MA 02118"
+    assert row["venue_city"] == "South End"
+    assert (row["lat"], row["lng"]) == (42.3431615, -71.0791651)
+    assert row["location_evidence_url"] == "https://www.unionboston.org/visit"
+    near_miss = item.replace("Union Church", "Other Church")
+    assert b._city(rss(near_miss), NOW, [])[0]["lat"] is None
+
+
 def test_existing_cyclists_id_and_full_description_preserved():
     prose = "Safe streets meeting agenda and participation details. " * 60
     event = dict(id=17168, title="Boston Cyclists Union Fall Meeting", status="publish", all_day=False,

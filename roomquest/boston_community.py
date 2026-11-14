@@ -95,6 +95,26 @@ CITY_POSTAL_RESOLUTIONS = {
     ("Union Church", "485 Columbus Avenue", "South End"): (
         "02118", "https://www.titussparrowpark.org/events"),
 }
+# Follow-up review of still-unpublished B1 venue rows, November 14, 2026.
+# Match the exact source + native venue + full street only. Keep valid native
+# streets intact; publisher target pins replace default/missing event OG maps.
+# Google Maps !3d/!4d targets are used, never the @ viewport coordinates.
+REVIEWED_EVENT_POINTS = {
+    (FOOD_FOREST, "Uphams Corner Food Forest", "11 A Everett Avenue, Boston, MA 02125"): (
+        (42.315585, -71.063221), "https://www.bostonfoodforest.org/locations",
+        "Official food-forest locations page links the exact 11A Everett Avenue target pin; native event street retained."),
+    (FOOD_FOREST, "Hope Garden", "424 Geneva Avenue, Boston, MA 02122"): (
+        (42.3007808, -71.0667882), "https://www.bostonfoodforest.org/locations",
+        "Official Hope Garden map target for 424-428A Geneva Avenue includes the native event's 424 address; native street retained."),
+    (TITUS, "Museum of Fine Arts, Boston (MFA)", "465 Huntington Avenue, Boston, MA 02115"): (
+        (42.339381, -71.094048), "https://artsandculture.google.com/partner/museum-of-fine-arts-boston",
+        "Museum partner profile's exact address and Museum.geo, corroborated by MassGIS/MHC building BOS.7493; native street retained."),
+}
+CITY_EXACT_LOCATION_REPAIRS = {
+    ("Union Church", "485 Columbus Avenue, South End, MA 02118"): (
+        "485 Columbus Avenue, South End, MA 02118", "South End", (42.3431615, -71.0791651),
+        "https://www.unionboston.org/visit"),
+}
 
 
 def _full(value):
@@ -291,8 +311,12 @@ def _squarespace_detail(key, card, payload, now, diagnostics):
         image = meta.get("content") if meta else None
     provenance = ("Publisher event address, export and map destination agree; event OG point within Boston bounds."
                   if point else "Publisher event-specific full street; missing/default/conflicting coordinates left for geocoding.")
+    evidence = card["url"]
+    if reviewed := REVIEWED_EVENT_POINTS.get((key, venue, address[0])):
+        point, evidence, provenance = reviewed
     row = _row(key, title, start, end, card["url"], sha256(urlsplit(card["url"]).path.encode()).hexdigest(),
                text, venue, address[0], address[1], point=point, image=image, provenance=provenance,
+               evidence=evidence,
                category=", ".join(plain(a.get_text()) for a in main.select(".eventitem-meta-cats a, .eventitem-meta-tags a")))
     if row is None:
         _hold(key, card["url"], "outside_current_window", diagnostics)
@@ -450,11 +474,16 @@ def _city(payload, now, diagnostics):
         if not text:
             _hold(CITY, link, "boston_community_description_or_street_missing", diagnostics)
             continue
+        point = None
+        provenance = "Official City of Boston event street; exact venue/street ZIP resolutions only where omitted."
+        if reviewed := CITY_EXACT_LOCATION_REPAIRS.get((venue, address[0])):
+            street, city, point, evidence = reviewed
+            address = (street, city)
+            provenance = "Church's official 485 Columbus Avenue, Boston address and matching native businessLocationCoordinates corroborate the unchanged City South End street."
         for start, end in occurrences:
             identity = sha256((urlsplit(link).path + "|" + start.isoformat()).encode()).hexdigest()
             row = _row(CITY, title, start, end, link, identity, text, venue, address[0], address[1],
-                       category="Civic & Community", evidence=evidence,
-                       provenance="Official City of Boston event street; exact venue/street ZIP resolutions only where omitted.")
+                       point=point, category="Civic & Community", evidence=evidence, provenance=provenance)
             if row:
                 if identity in out and out[identity] != row:
                     raise ValueError("boston_community_feed_changed")

@@ -35,7 +35,7 @@ def checkpoint(key, *, cursor=1, manifest_count=1, events=None):
 
 class BostonWorkerTests(unittest.TestCase):
     def test_remaining_profiles_use_the_same_full_description_boundary(self):
-        for module in (arts,nightlife,outdoors):
+        for module in profiles.adapters():
             for key in module.SOURCES:
                 with self.subTest(source_key=key):
                     self.assertIs(profiles.validate_source(source(module,key)),module)
@@ -114,6 +114,32 @@ class BostonWorkerTests(unittest.TestCase):
                          'boston_incomplete_event')
         self.assertEqual(category_worker._error_code(worker.PreviewError('private_publisher_value')),
                          'unclassified_preview_error')
+
+    def test_remaining_museum_wire_capacity_is_limited_to_its_exact_profile(self):
+        from roomquest import boston_arts_remaining as remaining
+        key=remaining.MFA
+        large=checkpoint(key,cursor=500,manifest_count=500,events=[event() for _ in range(500)])
+        self.assertIs(profiles.validate_checkpoint(source(remaining,key),large),large)
+        for invalid in ({**large,'manifest_count':501},
+                        {**large,'events':large['events']+[event()]},
+                        {**large,'source_key':remaining.ICA}):
+            src=source(remaining,invalid['source_key'])
+            with self.subTest(source=invalid['source_key']),self.assertRaisesRegex(ValueError,'boston_checkpoint_invalid'):
+                profiles.validate_checkpoint(src,invalid)
+
+    def test_reviewed_intersection_requires_the_exact_source_venue_and_point(self):
+        from roomquest import boston_community_remaining as remaining
+        reviewed=remaining.REVIEWED_INTERSECTIONS[0]
+        row=event(**{k:v for k,v in reviewed.items() if k!='source_key'})
+        src=source(remaining,remaining.GREENWAY)
+        self.assertEqual(profiles.validate_records([row],src),[row])
+        for changed in ({**row,'lat':row['lat']+0.001},
+                        {**row,'venue_name':'Unreviewed nearby venue'},
+                        {**row,'lng':None}):
+            with self.assertRaisesRegex(ValueError,'boston_incomplete_event'):
+                profiles.validate_records([changed],src)
+        with self.assertRaisesRegex(ValueError,'boston_incomplete_event'):
+            profiles.validate_records([row],source(remaining,remaining.NATURE))
 
 
 if __name__=='__main__':unittest.main()

@@ -293,6 +293,36 @@ def render_cfengage_calendar(*, deadline_at: float | None = None) -> str:
         allowed_hosts=(CF_HOST,), calendar_form=calendar_form())
 
 
+def _valid_boston_cares_window(start_day, end_day):
+    if any(not isinstance(value, str) or not re.fullmatch(r'\d{4}-\d{2}-\d{2}', value)
+           for value in (start_day, end_day)):
+        return False
+    try:
+        start, end = date.fromisoformat(start_day), date.fromisoformat(end_day)
+        today = datetime.now(ZoneInfo('America/New_York')).date()
+        return (timedelta(0) < end - start <= timedelta(days=14)
+                and today - timedelta(days=1) <= start <= today + timedelta(days=14)
+                and end <= today + timedelta(days=28))
+    except ValueError:
+        return False
+
+
+def render_boston_cares_calendar(*, start_day, end_day, deadline_at=None):
+    """Read Boston Cares' exact anonymous public calendar display operation.
+
+    Only a bounded date window is caller supplied. No action, account,
+    registration, destination URL or arbitrary form fields can be submitted.
+    """
+    if not _valid_boston_cares_window(start_day, end_day):
+        raise PreviewError('invalid_calendar_render_parameters')
+    return _fetch_publisher_request(
+        'https://www.bostoncares.org/search/getOpportunitiesCalendar',
+        'application/json', respect_robots=True, deadline_at=deadline_at,
+        allowed_hosts=('www.bostoncares.org',), calendar_form={
+            'searchvo_startfrom': start_day, 'searchvo_endfrom': end_day,
+            'searchvo_searchresultblockid': '589'})
+
+
 def render_good_shepherd_calendar(*, nonce: str, args: str,
                                   deadline_at: float | None = None) -> str:
     """Read the one public calendar render action observed in publisher markup.
@@ -433,10 +463,20 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
             json_content_type = 'application/json; charset=utf-8'
     cfengage_form = False
     eventon_form = False
+    boston_cares_form = False
     if calendar_form is not None:
         from roomquest.richmond_public_calendars import CF_API, CF_HOST, calendar_form as cfengage_window
         cfengage_form = (url == CF_API and accept == 'application/json' and respect_robots
                          and allowed_hosts == (CF_HOST,) and calendar_form == cfengage_window())
+        boston_cares_form = (
+            url == 'https://www.bostoncares.org/search/getOpportunitiesCalendar'
+            and accept == 'application/json' and respect_robots
+            and allowed_hosts == ('www.bostoncares.org',)
+            and isinstance(calendar_form, dict)
+            and set(calendar_form) == {'searchvo_startfrom', 'searchvo_endfrom', 'searchvo_searchresultblockid'}
+            and calendar_form.get('searchvo_searchresultblockid') == '589'
+            and _valid_boston_cares_window(calendar_form.get('searchvo_startfrom'),
+                                          calendar_form.get('searchvo_endfrom')))
         from roomquest import eventon
         eventon_form = (url == eventon.ENDPOINT and accept == 'application/json'
                         and respect_robots and allowed_hosts == (eventon.HOST,)
@@ -449,7 +489,7 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
                                 for k in calendar_form))
         # A second boundary keeps internal callers from turning this into an
         # arbitrary write-capable transport. Never replay a POST on redirect.
-        if not (cfengage_form or eventon_form) and (url != 'https://goodshepherdsouthhill.org/wp-admin/admin-ajax.php'
+        if not (cfengage_form or eventon_form or boston_cares_form) and (url != 'https://goodshepherdsouthhill.org/wp-admin/admin-ajax.php'
                 or accept != 'text/html' or not respect_robots
                 or allowed_hosts != ('goodshepherdsouthhill.org',)
                 or not isinstance(calendar_form, dict)
@@ -484,7 +524,9 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
                               else 'https://goodshepherdsouthhill.org/welcome/calendar/')
         if eventon_form:
             headers['Referer'] = eventon.CALENDAR
-        if cfengage_form or eventon_form:
+        if boston_cares_form:
+            headers['Referer'] = 'https://www.bostoncares.org/calendar'
+        if cfengage_form or eventon_form or boston_cares_form:
             headers['X-Requested-With'] = 'XMLHttpRequest'
     elif calendar_json is not None:
         headers['Content-Type'] = json_content_type
@@ -561,7 +603,7 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
                     raise PreviewError("publisher_http_" + str(code))
                 if (calendar_form is not None and
                         response.headers.get('Content-Type', '').split(';', 1)[0].strip().lower()
-                        not in ({'application/json', 'text/html'} if cfengage_form else
+                        not in ({'application/json', 'text/html'} if (cfengage_form or boston_cares_form) else
                                 {'application/json'} if eventon_form else {'text/html'})):
                     response.close()
                     raise PreviewError('invalid_calendar_render_content_type')
@@ -908,9 +950,13 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                 raise PreviewError('publisher_checkpoint_required')
             deadline = min(monotonic() + 36,
                            deadline_at - 8 if deadline_at is not None else float('inf'))
+            extra = {}
+            if source_key == 'boston_cares_ma':
+                extra['render_calendar'] = lambda **window: render_boston_cares_calendar(
+                    **window, deadline_at=deadline)
             records = adapter.collect(source, lambda url, accept: fetch_publisher(
                 url, accept, respect_robots=True, deadline_at=deadline,
-                allowed_hosts=adapter.ALLOWED_HOSTS[source_key]), deadline_at=deadline)
+                allowed_hosts=adapter.ALLOWED_HOSTS[source_key]), deadline_at=deadline, **extra)
             boston_sources.validate_records(records, source)
         except PreviewError:
             raise
@@ -1914,6 +1960,9 @@ def _preview_fetch_chunk(source, pacing, *, adapter, allowed_hosts, collection_c
         deadline = min(monotonic() + 36, deadline_at - 9)
         try:
             adapter_args = {}
+            if source.get('source_key') == 'boston_cares_ma':
+                adapter_args['render_calendar'] = lambda **window: render_boston_cares_calendar(
+                    **window, deadline_at=deadline)
             from roomquest import atlantic_city_cardboard_arena
             if adapter is atlantic_city_cardboard_arena:
                 adapter_args['render_calendar'] = lambda **window: render_cardboard_arena_calendar(

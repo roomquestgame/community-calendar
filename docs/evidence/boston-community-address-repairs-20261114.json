@@ -1,0 +1,123 @@
+{
+  "reviewed_at": "2026-11-14T23:37:33.758599+00:00",
+  "scope": "Only still-unpublished B1 rows at four exact venue/source/street tuples; coordinates and provenance only, native descriptions/streets/starts retained.",
+  "capture_replay": {
+    "titus_sparrow_park_ma": {
+      "rows": 4,
+      "chunks": 2,
+      "full_description_and_street_unchanged": true
+    },
+    "city_of_boston_events_ma": {
+      "rows": 4,
+      "chunks": 0,
+      "full_description_and_street_unchanged": true
+    },
+    "boston_food_forest_coalition_ma": {
+      "rows": 5,
+      "chunks": 3,
+      "full_description_and_street_unchanged": true
+    }
+  },
+  "changed_occurrences": [
+    {
+      "source_key": "titus_sparrow_park_ma",
+      "id": "73353ae4cb92043126c77fc5640d50116812748036283388627d0aa4bd7292b5",
+      "event_url": "https://www.titussparrowpark.org/events/mfa-private-tour-november",
+      "venue_name": "Museum of Fine Arts, Boston (MFA)",
+      "venue_address": "465 Huntington Avenue, Boston, MA 02115",
+      "before_point": [
+        null,
+        null
+      ],
+      "after_point": [
+        42.339381,
+        -71.094048
+      ],
+      "description_sha256_unchanged": "b95b474f83dc78a06125825f54e4851c01f7f638647cb801b1fa22b097a60d91",
+      "street_unchanged": true,
+      "location_evidence_url": "https://artsandculture.google.com/partner/museum-of-fine-arts-boston",
+      "location_provenance": "Museum partner profile's exact address and Museum.geo, corroborated by MassGIS/MHC building BOS.7493; native street retained."
+    },
+    {
+      "source_key": "city_of_boston_events_ma",
+      "id": "0b48a20a0e9e8947581ad78c08434a369212fdd2ac8f0ef0ec5665cac2788b19",
+      "event_url": "https://www.boston.gov/calendar/age-strongs-medicare-open-enrollment-clinics-south-end-0",
+      "venue_name": "Union Church",
+      "venue_address": "485 Columbus Avenue, South End, MA 02118",
+      "before_point": [
+        null,
+        null
+      ],
+      "after_point": [
+        42.3431615,
+        -71.0791651
+      ],
+      "description_sha256_unchanged": "3acd9cf01177760e903c28c80017acfd6fb3ec87ae975dc623d1eaa4dfbd4a9d",
+      "street_unchanged": true,
+      "location_evidence_url": "https://www.unionboston.org/visit",
+      "location_provenance": "Church's official 485 Columbus Avenue, Boston address and matching native businessLocationCoordinates corroborate the unchanged City South End street."
+    },
+    {
+      "source_key": "boston_food_forest_coalition_ma",
+      "id": "42c564dc642bc1814805144de2a14fcc359ee9603e4a9fa7f0f0d7f266eb47e8",
+      "event_url": "https://www.bostonfoodforest.org/workshops/uphams-corner-food-forest-spring-cleanup-mexwm-pfaae-8leea-bjb52-txjjp-gepbj-976gt-lepg4-eklm5-4sc4y-k2bn3-7le7a-lczfp-ydpj2-cprrg-aj2gh-zm2s5-hyfma-46869-x8td9-5dlt9-67sge-bfeb8-tlemh-5csa8",
+      "venue_name": "Uphams Corner Food Forest",
+      "venue_address": "11 A Everett Avenue, Boston, MA 02125",
+      "before_point": [
+        null,
+        null
+      ],
+      "after_point": [
+        42.315585,
+        -71.063221
+      ],
+      "description_sha256_unchanged": "c51c6df5aaabae226b594e955903330053fe3f3c10b654d0671513f5942f4779",
+      "street_unchanged": true,
+      "location_evidence_url": "https://www.bostonfoodforest.org/locations",
+      "location_provenance": "Official food-forest locations page links the exact 11A Everett Avenue target pin; native event street retained."
+    },
+    {
+      "source_key": "boston_food_forest_coalition_ma",
+      "id": "55670ea4c2f8607b8ecffce37f72af4ea4f4eccd52446ed3e0ed279ab821d89a",
+      "event_url": "https://www.bostonfoodforest.org/workshops/hope-garden-weekly-work-day-a283y-bt5rd-dbt4g-gx3ny-b34y2-crwax-lk5xt-ewsny-lssys-flxgl-7f778-xbm2a",
+      "venue_name": "Hope Garden",
+      "venue_address": "424 Geneva Avenue, Boston, MA 02122",
+      "before_point": [
+        null,
+        null
+      ],
+      "after_point": [
+        42.3007808,
+        -71.0667882
+      ],
+      "description_sha256_unchanged": "ed4b7fcc1500b36368b355bba122ad2db7a58f1c63ec94dfacfaa4232e3582d4",
+      "street_unchanged": true,
+      "location_evidence_url": "https://www.bostonfoodforest.org/locations",
+      "location_provenance": "Official Hope Garden map target for 424-428A Geneva Avenue includes the native event's 424 address; native street retained."
+    }
+  ],
+  "evidence": [
+    {
+      "url": "https://www.bostonfoodforest.org/locations",
+      "sha256": "324369c164a41a5c55c4f4b1a3e83dc8fd22d3d95e65f555795f82079276e389",
+      "bytes": 748440
+    },
+    {
+      "url": "https://www.unionboston.org/visit",
+      "sha256": "f4dafdc9f17242537759da5344a944fa7d05a99e5b86c587694f2ee95a6d2d33",
+      "bytes": 920160
+    },
+    {
+      "url": "https://artsandculture.google.com/partner/museum-of-fine-arts-boston",
+      "sha256": "cda5c13a5609a78e4900c756868454ffda2d4215c3a813b9b65dc29c13426223",
+      "bytes": 1235263
+    },
+    {
+      "source": "Official MassGIS/MHC inventory exact building BOS.7493, OBJECTID47251",
+      "sha256": "001de4755f1296b589b76bed2c7c5a49779602d950a7bbab1169a3ad5eecf799",
+      "bytes": 5291
+    }
+  ],
+  "tests": "63 focused tests and 49 subtests, including exact positives, changed source, changed venue and changed street near misses",
+  "production_status": "Not claimed by this local replay; parent deploy verifies publication."
+}
