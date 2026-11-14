@@ -12,7 +12,7 @@ distinct source/venue/street tuples**. These are captured expectations, not live
 publication counts. All profiles use exact identities, America/New_York, the
 existing guarded HTML category worker and normal publication/geocoding paths.
 Nine use complete-only durable checkpoints. The matching application migration
-is `20261114233004_boston_remaining_source_expansion.sql`.
+is `20261114234341_boston_remaining_source_expansion.sql`.
 
 | Publisher | Official calendar | Change | Captured occurrences |
 | --- | --- | --- | ---: |
