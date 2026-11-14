@@ -8,7 +8,7 @@ Verified on 14 November 2026. These are new profiles, separate from the already 
 | SoWa Boston | 1 | 427–427 | Complete | Not needed |
 | Mill Forge Makerspace | 9 | 450–1813 | Complete | Not needed |
 | Arts at the Armory | 55 | 62–3576 | Complete | Not needed |
-| Trident Booksellers & Cafe | Pending | Pending | Pending | Not needed |
+| Trident Booksellers & Cafe | 40 | 267–3661 | Complete | 40/40; 70,162 bytes |
 | Brookline Booksmith | 20 | 229–4274 | Complete | 22/22; 54,062 bytes |
 | Harvard Book Store | 22 | 2323–7185 | Complete | 22/22; 125,734 bytes |
 | Porter Square Books | 18 | 209–4145 | Complete | 19/19; 45,554 bytes |

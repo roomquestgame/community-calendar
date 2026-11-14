@@ -33,7 +33,7 @@ All sources enter the existing HTML category worker with exact feed identity, Am
 | Remnant Brewing & Satellite | [https://www.remnantsomerville.com/live](https://www.remnantsomerville.com/live) | New source | 14 | Explicit timed native occurrences in the next 60 days; ongoing programs retained when their verified end is future. |
 | SoWa Boston | [https://www.sowaboston.com/events/](https://www.sowaboston.com/events/) | New source | 1 | TEC First Friday calendar; Christmas Market lives on a separate seasonal page and is not inferred into this feed. |
 | Friends of Titus Sparrow Park | [https://www.titussparrowpark.org/events](https://www.titussparrowpark.org/events) | New source | 4 | Official park, garden club and food-pantry programs; preserve each event's actual venue. |
-| Trident Booksellers & Cafe | [https://tridentbookscafe.com/events](https://tridentbookscafe.com/events) | New source | Capture finishing | Explicit timed native occurrences in the next 60 days; ongoing programs retained when their verified end is future. |
+| Trident Booksellers & Cafe | [https://tridentbookscafe.com/events](https://tridentbookscafe.com/events) | New source | 40 | Explicit timed native occurrences in the next 60 days; ongoing programs retained when their verified end is future. |
 
 ## Remaining review and implementation
 
@@ -52,5 +52,6 @@ The next consolidated batch will review the accessible calendars below. None is 
 ## Evidence
 
 - [Community and outdoors review](../../docs/evidence/boston-community-20261114.md)
-- Arts and nightlife companion evidence is added with this release after complete capture validation.
+- [Arts, libraries and bookstores](../../docs/evidence/boston-arts-2026-11-14.md)
+- [Nightlife, food and gaming](../../docs/evidence/boston-nightlife-research-20261114.md)
 - Final release receipts must identify the collector production commit, application merge, normal Database deploy run, source health, geocoding completion, and capture-to-staging-to-publication description/address equality.
