@@ -17,7 +17,7 @@ def source(key):
 def row_record(title, start, end, venue, address, city, url, identity, category="", *args, **kwargs):
     return dict(id=str(identity), title=title, starts_at=start, ends_at=end, venue_name=venue,
                 venue_address=address, venue_city=city, event_url=url, category=category,
-                lat=None, lng=None)
+                lat=kwargs.get("lat"), lng=kwargs.get("lng"))
 
 
 class AtlanticCityVenueTests(unittest.TestCase):
@@ -40,8 +40,44 @@ class AtlanticCityVenueTests(unittest.TestCase):
         self.assertGreater(len(rows[0]["description"]), 2000)
         self.assertEqual(rows[0]["venue_address"], venues.VENUES[venues.ANCHOR][1])
         self.assertEqual(rows[0]["category"], "")
-        self.assertIsNone(rows[0]["lat"])
+        self.assertEqual((rows[0]["lat"], rows[0]["lng"]), (39.3572301, -74.4262279))
+        self.assertEqual(rows[0]["location_provenance"], "reviewed_venue_location")
         fetch.assert_called_once_with(venues.SOURCES[venues.ANCHOR][0], "text/html")
+
+    def test_reviewed_points_require_exact_source_venue_and_street(self):
+        expected = {
+            venues.ANCHOR: (39.3572301, -74.4262279),
+            venues.SEASIDE: (39.3845487, -74.4296631),
+            venues.SMITHVILLE: (39.495354, -74.460754),
+        }
+        for key, point in expected.items():
+            venue, street, _ = venues.VENUES[key]
+            with self.subTest(source=key):
+                self.assertEqual(venues.reviewed_venue_location(key, venue, street), point)
+                self.assertIsNone(venues.reviewed_venue_location("unknown", venue, street))
+                self.assertIsNone(venues.reviewed_venue_location(key, "Other room", street))
+                self.assertIsNone(venues.reviewed_venue_location(key, venue, street.replace("NJ", "NY")))
+                self.assertIsNone(venues.reviewed_venue_location(key, venue, ""))
+                other = venues.SEASIDE if key != venues.SEASIDE else venues.ANCHOR
+                self.assertIsNone(venues.reviewed_venue_location(other, venue, street))
+
+    def test_reviewed_point_keeps_long_text_and_changed_street_unresolved(self):
+        now = datetime.now(timezone.utc)
+        body = "Complete artist biography and admission details. " * 118 + "Final paragraph."
+        params = (venues.ANCHOR, "Live performance", now + timedelta(days=1), None,
+                  "https://www.anchorrockclub.com/shows/live-performance", "live-performance", body)
+        resolved = venues._row(*params)
+        self.assertEqual((resolved["lat"], resolved["lng"]), (39.3572301, -74.4262279))
+        self.assertEqual(resolved["description"], body)
+        self.assertGreater(len(resolved["description"]), 5600)
+        self.assertEqual(resolved["starts_at"], (now + timedelta(days=1)).isoformat())
+        with patch.dict(venues.VENUES, {venues.ANCHOR: (
+                "Anchor Rock Club", "999 S New York Ave, Atlantic City, NJ 08401", "Atlantic City")}):
+            unresolved = venues._row(*params)
+        self.assertIsNone(unresolved["lat"])
+        self.assertIsNone(unresolved["lng"])
+        self.assertEqual(unresolved["description"], body)
+        self.assertEqual(unresolved["location_provenance"], "reviewed_venue_street_address_pending_geocode")
 
     def test_blank_or_oversized_narrative_is_not_silently_published(self):
         for body in ("<script>no event prose</script>", "a" * 12001):
