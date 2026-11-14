@@ -1,0 +1,113 @@
+{
+  "reviewed_date": "2026-11-14",
+  "baseline_exclusions": "26 active production feeds excluded. Visit Atlantic City remains explicitly disabled. NJ Audubon/Forsythe/Leadership prior 403 holds not retried; expired June South Jersey Run Club schedule not projected.",
+  "method": "Official public publisher sources; ordinary bounded unauthenticated HTTP after robots. Captures are research/parser fixtures, not production guarded-fetch proof.",
+  "candidates": [
+    {
+      "name": "EHT Community Center public drop-in programs",
+      "status": "implemented for current batch",
+      "collector": "atlantic_city_recreation",
+      "source": "https://eggharbornj.myrec.com/info/calendar/list.aspx?FacilityID=14784&AreaID=0",
+      "proof": "Current individual dated gym and chair-yoga sessions cross-checked with complete public drop-in program narratives.",
+      "future_example": "2026-11-16 12:00–14:00 Open Gym Basketball",
+      "street": "5045 English Creek Avenue, Egg Harbor Township, NJ 08234",
+      "timezone": "America/New_York",
+      "capture": "eht-calendar-list.html",
+      "rows": 30
+    },
+    {
+      "name": "Ocean City Aquatic & Fitness Center",
+      "status": "implemented for current batch, reviewed 2026 scope",
+      "collector": "atlantic_city_recreation",
+      "source": "https://www.ocnj.us/departments/CommunityServices/Aquatic-and-Fitness-Center",
+      "proof": "Explicit dated winter weekly PDF with intact per-class definitions, native Water Exercise FAQ and annual closure exceptions.",
+      "future_example": "2026-11-15 09:30–10:30 Yoga",
+      "street": "1735 Simpson Avenue, Ocean City, NJ 08226",
+      "timezone": "America/New_York",
+      "capture": "ocnj-winter-exercise.pdf",
+      "rows": 292,
+      "limitations": [
+        "2027 pending current holiday document",
+        "13 undefined class variants held",
+        "current cycling link points to expired Spring 2026 flyer"
+      ]
+    },
+    {
+      "name": "Hummingbird Yoga NJ",
+      "status": "remaining candidate, no enrollment in this batch",
+      "source": "https://www.hummingbirdyoganj.com/classes",
+      "proof": "Own public page supplies complete class paragraphs, explicit current weekly schedule, public drop-in rates and 60-minute yoga duration. Website contains November 2026 update markers.",
+      "future_native_schedule": [
+        "Saturday/Sunday 10:00 Kripalu",
+        "Monday 10:00 Joyful Morning Yoga",
+        "Tuesday/Thursday 17:30 Soulful Stretch",
+        "Wednesday 10:00 Flow and Restore",
+        "Wednesday 17:30 Restorative Yin",
+        "Friday 10:00 Mindful Movement",
+        "Thursday 19:00 Heartfulness Meditation"
+      ],
+      "street": "1637 New Road Suite 2, Northfield, NJ 08225",
+      "timezone": "America/New_York",
+      "collector_need": "Source-specific explicit-weekday HTML recurrence; holiday exceptions and live booking calendar still need review. Meditation duration is unconfirmed.",
+      "capture": "hummingbird-classes.html"
+    },
+    {
+      "name": "AtlantiCare LifeCenter public programs",
+      "status": "remaining candidate, outside focused recreation/markets batch; not enrolled",
+      "source": "https://www.atlanticare.org/event/2026/11/17/beyond-just-living-with-it-solutions-for-bladder-pelvic-floor-health",
+      "proof": "Official Event JSON-LD provides complete narrative, Nov 17 17:30–18:30 local clock, full PostalAddress and exact named location point.",
+      "street": "2500 English Creek Avenue Building 200, Egg Harbor Township, NJ 08234",
+      "point": [
+        39.4351719,
+        -74.6054889
+      ],
+      "timezone": "America/New_York",
+      "collector_need": "Reuse JSON-LD Event parser with full narrative and 12,000-char validation; discover complete calendar manifest.",
+      "capture": "atlanticare-event.html",
+      "other_primary_programs": [
+        "https://www.atlanticare.org/event/2026/11/04/nurture-nourish-a-mom-baby-meetup",
+        "https://www.atlanticare.org/event/2026/11/02/breastfeeding-baby-basics",
+        "https://www.atlanticare.org/event/2026/11/14/childbirth-classes"
+      ]
+    },
+    {
+      "name": "Proshot Pickleball",
+      "status": "remaining candidate; exact captured future event is full",
+      "source": "https://www.playproshot.net/programs/-friendsgiving-2026-proshot-pickleball",
+      "proof": "Public complete program body and native Nov 15, 2026 15:00–18:00 slot with nonmember admission; slot explicitly FULL, so not published.",
+      "street": "6725 East Black Horse Pike Unit 30B, Egg Harbor Township, NJ 08234",
+      "timezone": "America/New_York",
+      "collector_need": "Public PlayByPoint program calendar with native sessions, full body and availability; own introductory Wednesday program has no clock on accessible WordPress body.",
+      "capture": "proshot-friendsgiving.html",
+      "restrictions": "Public program pages allowed; robots disallows reservations, users, magic links, MFA and /home. None of those paths used."
+    },
+    {
+      "name": "HSOC Fast and Furriest Turkey Trot",
+      "status": "held: source edition and clock conflicts",
+      "source": "https://runsignup.com/Race/NJ/OceanCity/TheFastandthefurriest5KTurkeyTrot",
+      "proof": "Native registration header lists Nov 26, 2026 08:30 EST; full Description still says Nov 27, 2025. Kids start also conflicts with prose saying after 5K.",
+      "street": "825 Boardwalk, Ocean City, NJ 08226",
+      "timezone": "America/New_York",
+      "collector_need": "Existing RunSignup HTML pattern after organizer corrects full narrative. Distinct from already-live EHT Nature Reserve Turkey Trot.",
+      "capture": "hsoc-race.html"
+    },
+    {
+      "name": "Brigantine indoor pickleball",
+      "status": "held: publisher robots forbids all detail access",
+      "source": "https://player.courtreserve.com/players/events/e-1782262",
+      "proof": "Search-visible future sessions exist, but robots is User-agent:* Disallow:/. No detail retrieval attempted.",
+      "street": "265 42nd Street, Brigantine, NJ 08203",
+      "timezone": "America/New_York",
+      "capture": "courtreserve-robots.txt"
+    },
+    {
+      "name": "Atlantic City TCG Show",
+      "status": "ownership transferred to culture/community agent for current batch",
+      "source": "https://atlanticcitytcgshow.com/",
+      "proof": "Official December 20, 2026 show, early entry 10:00–12:00 and general 12:00–17:00; full About text and explicit family admission.",
+      "timezone": "America/New_York",
+      "street": "Showboat Resort, 801 Boardwalk, Atlantic City, NJ 08401",
+      "capture": "tcg-home.html"
+    }
+  ]
+}

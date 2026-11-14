@@ -1,5 +1,15 @@
 # Atlantic City source discovery and implementation — November 14, 2026
 
+## Active summary — independent-source implementation and captured proof
+
+The verified baseline immediately before this batch, observed at **2026-11-14 21:52:28.672087 UTC**, was **26 working sources and 850 active public occurrences**. **Visit Atlantic City is owner-disabled** and excluded from working coverage. The historical sections below retain their earlier release milestones and statuses.
+
+The [independent-source batch](INDEPENDENT_SOURCE_BATCH.md) records **nine new sources with 380 captured eligible occurrences**: Clancy's By The Bay, Cardinal Atlantic City, Renault Winery, Atlantic City Country Club public events, Ventnor Social, EHT Recreation public drop-in programs, Ocean City Aquatic & Fitness Center, Atlantic City TCG Show and Reed's Farm. Existing working sources are preserved. A combined local run passed **96 tests**. **Production deployment, guarded collection and staged/public verification were pending at documentation freeze**; captured counts are not publication receipts. The [canonical production report](https://github.com/roomquestgame/RoomQuestGame/blob/main/docs/evidence/atlantic-city-independent-production-report.md) maintains the current release and runtime status.
+
+Every accepted capture retains complete normalized publisher prose and a full street/ZIP address. Blank or over-12,000-character narratives and snapshots exceeding 500 accepted occurrences fail or remain held without clipping. The country club clubhouse map point and Ocean City's street-interpolated point carry visible approximate-location qualifiers. Ocean City's reviewed grid and holiday scope end at December 31, 2026 until current 2027 exceptions are verified.
+
+Top Deck Games remains research-only because Google robots disallows its public feed path. Seven Tap Tavern's individual detail pages under the [Blue Heron Pines calendar](https://blueheronpines.com/upcoming-events/) return HTTP 403 and remain held. Visit Atlantic City is not retried or reenabled. The [batch verification record](INDEPENDENT_SOURCE_BATCH.md#validation-and-release-proof) describes the captured contract; actual collector, database, staging and public-readback receipts belong to the canonical production report.
+
 ## Scope and production baseline
 
 Ben authorized broad local discovery, full-description ingestion, street-address resolution, batched PRs and production deployment, including Visit Atlantic City. Before this work, production inspection found no registered Atlantic City-area community sources; the initial 15-mile future-event sample contained 126 Ticketmaster events. Existing working sources are outside this change. Nearby county calendars are included, while event coordinates identify reviewed venue or campus destinations rather than coverage centers.

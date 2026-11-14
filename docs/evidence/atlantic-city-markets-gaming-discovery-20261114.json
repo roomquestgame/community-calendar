@@ -1,0 +1,143 @@
+{
+  "reviewed_at": "2026-11-14T22:03:51.631226+00:00",
+  "ready": [
+    {
+      "source_key": "atlantic_city_tcg_show_nj",
+      "feed_url": "https://atlanticcitytcgshow.com/",
+      "kind": "html",
+      "platform_adapter": "html",
+      "timezone": "America/New_York",
+      "publisher_name": "Atlantic City TCG Show",
+      "lat": 39.3643,
+      "lng": -74.4229,
+      "radius_miles": 20,
+      "note": "Own-site dated show; one occurrence includes both admission tiers and every About content section. Magic tournament remains TBD and is not a separate occurrence.",
+      "expected_capture_count": 1,
+      "audit": {
+        "source_key": "atlantic_city_tcg_show_nj",
+        "replayed_at": "2026-11-14T22:03:51.631226+00:00",
+        "verification_state": "captured_response_replay_not_production",
+        "request_count": 1,
+        "request_urls": [
+          "https://atlanticcitytcgshow.com/"
+        ],
+        "events": 1,
+        "parse_seconds": 0.145,
+        "description_min": 652,
+        "description_max": 652,
+        "blank_descriptions": 0,
+        "missing_full_addresses": 0,
+        "missing_points": 0,
+        "publisher_description_mismatches": [],
+        "first_start": "2026-12-20T15:00:00+00:00",
+        "last_start": "2026-12-20T15:00:00+00:00",
+        "complete_replay_sha256": "9c316db3d4342789c8446fbcd65ae60e6be89ef7a7e790a99b65099547a52a53",
+        "capture_fields_unchanged_after_final_guards": true
+      }
+    },
+    {
+      "source_key": "reeds_farm_nj",
+      "feed_url": "https://www.reedsorganicfarm.org/events",
+      "kind": "html",
+      "platform_adapter": "html",
+      "timezone": "America/New_York",
+      "publisher_name": "Reed’s Farm",
+      "lat": 39.3643,
+      "lng": -74.4229,
+      "radius_miles": 20,
+      "note": "Public native Boom calendar bound to the publisher Wix guest widget. Full native desc retained; 15 explicitly dated programs plus eight bounded weekly Pizza Day occurrences. Holiday closures and one non-event preorder window excluded; one blank-description Surf event held.",
+      "expected_capture_count": 23,
+      "audit": {
+        "source_key": "reeds_farm_nj",
+        "replayed_at": "2026-11-14T22:03:51.631226+00:00",
+        "verification_state": "captured_response_replay_not_production",
+        "request_count": 3,
+        "request_urls": [
+          "https://www.reedsorganicfarm.org/events",
+          "https://www.reedsorganicfarm.org/_api/v1/access-tokens",
+          "https://calendar.apiboomtech.com/api/published_calendar?comp_id=comp-licdd8bx&instance=<public-guest-instance>&time_zone=America%2FNew_York"
+        ],
+        "events": 23,
+        "parse_seconds": 0.067,
+        "description_min": 98,
+        "description_max": 1885,
+        "blank_descriptions": 0,
+        "missing_full_addresses": 0,
+        "missing_points": 0,
+        "publisher_description_mismatches": [],
+        "first_start": "2026-11-18T21:00:00+00:00",
+        "last_start": "2027-01-09T16:00:00+00:00",
+        "complete_replay_sha256": "1c01b0309c29af86242b0c7037bd4b6d2f732f88bb78d3aec7555c51f7bcbb4c",
+        "capture_fields_unchanged_after_final_guards": true
+      }
+    }
+  ],
+  "held": [
+    {
+      "source_key": "top_deck_games_eht_nj",
+      "publisher_name": "Top Deck Games — Egg Harbor Township",
+      "url": "https://www.topdeckgamesonline.com/",
+      "address": "3003 English Creek Ave, Egg Harbor Township, NJ 08234",
+      "status": "robots_held_not_registered",
+      "research_replay_count": 231,
+      "production_eligible_count": 0,
+      "reason": "Google Calendar robots disallows /calendar/ical/. A successful raw research response does not authorize production collection. Source absent from active SOURCES/ALLOWED_HOSTS; collect rejects before I/O.",
+      "robots_url": "https://calendar.google.com/robots.txt",
+      "robots_policy": "User-agent: *\nAllow: /$\nDisallow: /\n",
+      "robots_capture": "research-ac/second-pass-food/clancy-ics-robots.txt"
+    },
+    {
+      "publisher_name": "Wax, Packs, & Throwbacks",
+      "url": "https://waxpacksandthrowbacks.com/",
+      "address": "199 New Road Unit 16-17, Linwood, NJ 08221",
+      "status": "no_verified_future_primary_schedule",
+      "reason": "Public official event payload has four September 19/25/26/27 cards and no current November future dates. Third-party recurring listings were not promoted.",
+      "evidence": [
+        "research-ac/second-pass/wax-events.json"
+      ]
+    },
+    {
+      "publisher_name": "Cardboard Arena",
+      "url": "https://cardboardarena.com/",
+      "address": "15 8th Street, Hammonton, NJ 08037",
+      "status": "further_primary_schedule_qualification_required",
+      "reason": "Own site links Facebook events and supplies location/hours, but no dated event bodies. Native organizer platform Carde has search-index leads; complete public event payload not yet captured.",
+      "candidate_provider": "https://play.carde.io/",
+      "evidence": [
+        "research-ac/second-pass/cardboard-page.html",
+        "research-ac/second-pass/carde-home.html"
+      ]
+    },
+    {
+      "publisher_name": "Charity League of Atlantic County",
+      "url": "https://charityleague-ac.com/",
+      "status": "current_primary_flyer_requires_qualification",
+      "reason": "Own homepage confirms 2026 Christmas Mart on November 20, 2026, but the gallery flyer carries the schedule. Linked Christmas Mart page is 2025 photos. Full current official clock/narrative not yet transcribed; not a hard access failure.",
+      "evidence": [
+        "research-ac/second-pass/charity-current-page.html",
+        "research-ac/second-pass/charity-mart.html"
+      ]
+    },
+    {
+      "publisher_name": "Jessie’s of Linwood / Groovy Beach",
+      "urls": [
+        "https://www.jessiesoflinwood.com/",
+        "https://groovybeach.co/pages/upcoming-events"
+      ],
+      "address": "136 West Poplar Avenue, Linwood, NJ 08221",
+      "status": "full_future_primary_event_description_unavailable",
+      "reason": "Vendor table lists Holiday Market November 28, 9am–3pm without year or full narrative. Host page offers performer/vendor inquiries and older gallery material; these are not a confirmed recurring schedule.",
+      "evidence": [
+        "research-ac/second-pass/jessies-page.html",
+        "research-ac/second-pass/groovy-page.html"
+      ]
+    },
+    {
+      "publisher_name": "The Bookery / Carousel Collectibles",
+      "url": "https://www.carouselcollectibles.shop/",
+      "address": "6024 Main Street Main Floor #1, Mays Landing, NJ 08330",
+      "status": "no_verified_future_primary_schedule",
+      "reason": "Current independent bookstore discovery; located official shop, but dated future author/club/workshop schedule not verified. Historical third-party listings were not projected."
+    }
+  ]
+}

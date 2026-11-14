@@ -1,0 +1,114 @@
+{
+  "reviewed_at_utc": "2026-11-14T22:02:12Z",
+  "scope": {
+    "candidate_sources": 9,
+    "candidate_occurrences": 380,
+    "existing_active_public_occurrences": 1086,
+    "radius_miles": 30,
+    "center_lat": 39.3643,
+    "center_lng": -74.4229,
+    "window_days": 60,
+    "baseline_observed_at": "2026-11-14T22:00:09Z",
+    "active_definition": "Scheduled, not hidden, unexpired, with verified end or existing three-hour unknown-end lifetime still in the future."
+  },
+  "candidate_counts": {
+    "cardinal_atlantic_city_nj": 4,
+    "renault_winery_nj": 23,
+    "atlantic_city_country_club_nj": 2,
+    "ventnor_social_nj": 1,
+    "clancys_by_the_bay_nj": 4,
+    "egg_harbor_township_recreation_nj": 30,
+    "ocean_city_aquatic_fitness_nj": 292,
+    "atlantic_city_tcg_show_nj": 1,
+    "reeds_farm_nj": 23
+  },
+  "method": [
+    "Read-only production query captured all active public providers within30miles, including276 Ticketmaster occurrences and all local community sources.",
+    "Compared normalized full street identities and reviewed venue coordinates, then actual start/end participation windows and same-day occurrence evidence.",
+    "Reviewed same-title/same-day matches separately to avoid treating generic class names as duplicates.",
+    "Checked near-venue/time candidates manually; unrelated activities at neighboring venues remain distinct."
+  ],
+  "confirmed_duplicates": [],
+  "canonical_source_reassignments": [],
+  "confirmed_duplicate_count": 0,
+  "suppression_recommendation": "No candidate suppression is supported by the inspected active production evidence.",
+  "reviewed_nonduplicates": [
+    {
+      "candidate_source": "clancys_by_the_bay_nj",
+      "candidate_id": "clancy:21sqovrn9d0n6lnssuo7foc6f5_20261118T000000Z",
+      "candidate_title": "Karaoke with Lori Kelley",
+      "candidate_start": "2026-11-18T00:00:00+00:00",
+      "candidate_end": "2026-11-18T03:00:00+00:00",
+      "candidate_venue": "Clancy's By The Bay",
+      "candidate_street": "101 E Maryland Ave, Somers Point, NJ 08244",
+      "public_event_id": "7bb1ffdd-f23a-4187-ac4d-d30ff23b442c",
+      "public_source": "carolines_by_the_bay_nj",
+      "public_title": "Music Bingo",
+      "public_start": "2026-11-18 00:00:00+00",
+      "public_end": "2026-11-18 02:00:00+00",
+      "public_street": "450 Bay Avenue, Somers Point, NJ 08244",
+      "public_url": "https://carolinesnj.com/specials",
+      "distance_m": 172.5,
+      "same_street": false,
+      "clock_overlap": true,
+      "decision": "distinct_occurrences",
+      "reason": "These are separate named venues at different street addresses. Clancy’s hosts participant karaoke; Caroline’s hosts music bingo. Their concurrent clocks and 172.5m proximity do not make them the same participation opportunity."
+    },
+    {
+      "candidate_source": "ocean_city_aquatic_fitness_nj",
+      "candidate_title": "Chair Yoga",
+      "candidate_id": "ocean_city_aquatic_fitness_nj:1:12:00:Chair Yoga:2026-12-01",
+      "candidate_street": "1735 Simpson Avenue, Ocean City, NJ 08226",
+      "candidate_start": "2026-12-01T17:00:00+00:00",
+      "public_event_id": "fe8aadb9-d519-4740-a796-a0dcf3760305",
+      "public_source": "atlantic_county_library_nj",
+      "public_venue": "Egg Harbor Township Branch Library",
+      "public_street": "1 Swift Avenue, Egg Harbor Township, NJ 08234",
+      "public_start": "2026-12-01 15:00:00+00",
+      "decision": "distinct_occurrences",
+      "reason": "Ocean City Aquatic & Fitness Center at1735 Simpson Avenue offers Chair Yoga at12:00 local. The Egg Harbor Township Branch Library at1 Swift Avenue offers a separate10:00 local session. Exact title agreement does not establish the same venue or participation window."
+    },
+    {
+      "candidate_source": "ocean_city_aquatic_fitness_nj",
+      "candidate_title": "Chair Yoga",
+      "candidate_id": "ocean_city_aquatic_fitness_nj:1:12:00:Chair Yoga:2026-12-22",
+      "candidate_street": "1735 Simpson Avenue, Ocean City, NJ 08226",
+      "candidate_start": "2026-12-22T17:00:00+00:00",
+      "public_event_id": "d1a483aa-85d4-4bb7-92c8-343567708e77",
+      "public_source": "atlantic_county_library_nj",
+      "public_venue": "Egg Harbor Township Branch Library",
+      "public_street": "1 Swift Avenue, Egg Harbor Township, NJ 08234",
+      "public_start": "2026-12-22 15:00:00+00",
+      "decision": "distinct_occurrences",
+      "reason": "Ocean City Aquatic & Fitness Center at1735 Simpson Avenue offers Chair Yoga at12:00 local. The Egg Harbor Township Branch Library at1 Swift Avenue offers a separate10:00 local session. Exact title agreement does not establish the same venue or participation window."
+    }
+  ],
+  "existing_public_rows_within_200m_or_same_street": {
+    "cardinal_atlantic_city_nj": 18,
+    "renault_winery_nj": 0,
+    "atlantic_city_country_club_nj": 0,
+    "ventnor_social_nj": 0,
+    "clancys_by_the_bay_nj": 2,
+    "egg_harbor_township_recreation_nj": 0,
+    "ocean_city_aquatic_fitness_nj": 0,
+    "atlantic_city_tcg_show_nj": 0,
+    "reeds_farm_nj": 0
+  },
+  "excluded_from_candidate_set": [
+    {
+      "source_key": "top_deck_games_eht_nj",
+      "reason": "Publisher robots denies the calendar collection path; held research capture was explicitly excluded."
+    }
+  ],
+  "capture_sha256": {
+    "research-ac/nightlife-expansion/independent-replay.json": "69287fe2bb0de55cf12c0abc8c4581ff1067793ee2e968ec41ae18993be3b8fe",
+    "research-ac/second-pass-food/clancy-captured-events.json": "62b9a70ba4aee771af7922ee5e83564b6c1ec634689863ab334fb9c0737a9c65",
+    "research-ac/second-pass-recreation/egg_harbor_township_recreation_nj-replay.json": "72d7b00320ff8023c0fd00636e140d53424468be65c0d1d109c5d624a8947772",
+    "research-ac/second-pass-recreation/ocean_city_aquatic_fitness_nj-replay.json": "8d592b62d723e50d4fe85b71832e0148a57749ca1360a9f8fca321ba6d70079b",
+    "research-ac/second-pass/atlantic_city_tcg_show_nj-replay.json": "1a9b502bd7b6918e7ea9bdfb4817bec0ee8d2b6b8bfe7f092e86377c10650e6d",
+    "research-ac/second-pass/reeds_farm_nj-replay.json": "40f393caf175abf7651c260a00c7aeee801b7fc7a748644d364c7a8eb5134739"
+  },
+  "production_baseline_file": "research-ac/second-pass-active-public-events.json",
+  "mutations_performed": false,
+  "limits": "This is a pre-enrollment overlap review of the captured accepted sets against the active production snapshot. It does not suppress future publisher additions or replace the existing production deduplication contract."
+}

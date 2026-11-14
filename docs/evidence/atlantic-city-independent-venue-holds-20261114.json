@@ -1,0 +1,37 @@
+[
+  {
+    "publisher": "Gregory’s Restaurant & Bar",
+    "url": "https://www.gregorysbar.com/events",
+    "reason": "Live Wix calendar, but inspected event objects have blank description/about fields. No qualified future occurrence with complete prose was established."
+  },
+  {
+    "publisher": "Passion Vines",
+    "url": "https://passionvines.com/events",
+    "reason": "The official calendar links a CityHive provider. That provider’s robots URL returned Cloudflare HTTP403. No calendar/API request or bypass was attempted."
+  },
+  {
+    "publisher": "Byrdcage",
+    "url": "https://www.byrdcageac.com/events/",
+    "reason": "The current website returns HTTP200 but exposes no dated event bodies. The prior indexed 2025 schedule is stale."
+  },
+  {
+    "publisher": "Wonder Bar AC",
+    "url": "https://wonderbaracnj.com/events/",
+    "reason": "The current page displays an undated February25 scavenger hunt. No current dated schedule was identified."
+  },
+  {
+    "publisher": "Maynard’s Cafe",
+    "url": "https://www.maynards-cafe.com/live-music-upcoming-events",
+    "reason": "The upcoming-events section is empty. General Wednesday–Sunday music has no exact clock."
+  },
+  {
+    "publisher": "Balic Winery",
+    "url": "https://www.balicwinery.com/events.html",
+    "reason": "Future November21/22/27/28/29 dates are advertised. The exact current clocks and full event-specific prose need flyer review. This source remains outside the assigned four-source implementation batch."
+  },
+  {
+    "publisher": "Vagabond EHT",
+    "url": "https://www.vagabondkitchenandtap.com/home-eht",
+    "reason": "The current homepage displays Tuesday18:00 music bingo and Wednesday19:00 trivia on posters. Complete program text and date-specific freshness need further review. These belong to the EHT branch at3016 Ocean Heights Ave, not the Atlantic City branch."
+  }
+]

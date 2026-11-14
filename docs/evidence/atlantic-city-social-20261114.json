@@ -1,0 +1,86 @@
+{
+  "reviewed_at": "2026-11-14T22:02:26Z",
+  "source_key": "clancys_by_the_bay_nj",
+  "feed_url": "https://clancysrestaurantgroup.com/calendar/clancys-by-the-bay/",
+  "collector": "roomquest/atlantic_city_social.py",
+  "status": "captured parser evidence; guarded production verification pending",
+  "future_occurrences": 4,
+  "description_min": 66,
+  "description_max": 116,
+  "blank_descriptions": 0,
+  "publisher_fields": {
+    "description": ".simcal-event-description",
+    "occurrence": "native Google-calendar EID + dated Simple Calendar HTML",
+    "clock_validation": "ISO offsets, Unix epoch, visible clock and native EID occurrence must agree",
+    "venue": "publisher text: 101 East Maryland Avenue, Somers Point, NJ 08244"
+  },
+  "full_description_policy": "One HTML normalization; preserve native complete prose. Reject blank or more than 12,000 characters. Never substitute title or trim narrative.",
+  "recurrence_policy": "Only current-month individual publisher occurrences; no projected weekly dates.",
+  "venue_point": {
+    "spatialReference": {
+      "wkid": 4326,
+      "latestWkid": 4326
+    },
+    "candidates": [
+      {
+        "address": "101 East Maryland Avenue, Somers Point, New Jersey, 08244",
+        "location": {
+          "x": -74.589232500001,
+          "y": 39.318957000003
+        },
+        "score": 100,
+        "attributes": {
+          "Match_addr": "101 East Maryland Avenue, Somers Point, New Jersey, 08244",
+          "Addr_type": "PointAddress",
+          "City": "Somers Point",
+          "Postal": "08244",
+          "Region": "New Jersey"
+        },
+        "extent": {
+          "xmin": -74.590235067521,
+          "ymin": 39.317957000003,
+          "xmax": -74.58822998946,
+          "ymax": 39.319957000003
+        }
+      },
+      {
+        "address": "101 Maryland Avenue, Somers Point, New Jersey, 08244",
+        "location": {
+          "x": -74.592934247307,
+          "y": 39.32079204767
+        },
+        "score": 98.83,
+        "attributes": {
+          "Match_addr": "101 Maryland Avenue, Somers Point, New Jersey, 08244",
+          "Addr_type": "StreetAddress",
+          "City": "Somers Point",
+          "Postal": "08244",
+          "Region": "New Jersey"
+        },
+        "extent": {
+          "xmin": -74.593936920246,
+          "ymin": 39.31979204767,
+          "xmax": -74.591931631352,
+          "ymax": 39.32179204767
+        }
+      }
+    ]
+  },
+  "robots": {
+    "requested_url": "https://clancysrestaurantgroup.com/robots.txt",
+    "final_url": "https://clancysrestaurantgroup.com/robots.txt",
+    "status": 200,
+    "redirects": [],
+    "body": "# Squarespace Robots Txt\n\nUser-agent: AdsBot-Google\nDisallow: /config\nDisallow: /search\nDisallow: /account$\nDisallow: /account/\nDisallow: /api/\nDisallow: /static/\nDisallow:/*?author=*\nDisallow:/*&author=*\nDisallow:/*?tag=*\nDisallow:/*&tag=*\nDisallow:/*?month=*\nDisallow:/*&month=*\nDisallow:/*?view=*\nDisallow:/*&view=*\nDisallow:/*?format=json\nDisallow:/*&format=json\nDisallow:/*?format=page-context\nDisallow:/*&format=page-context\nDisallow:/*?format=main-content\nDisallow:/*&format=main-content\nDisallow:/*?format=json-pretty\nDisallow:/*&format=json-pretty\nDisallow:/*?format=ical\nDisallow:/*&format=ical\nDisallow:/*?reversePaginate=*\nDisallow:/*&reversePaginate=*\n\n\nUser-agent: AdsBot-Google-Mobile\nDisallow: /config\nDisallow: /search\nDisallow: /account$\nDisallow: /account/\nDisallow: /api/\nDisallow: /static/\nDisallow:/*?author=*\nDisallow:/*&author=*\nDisallow:/*?tag=*\nDisallow:/*&tag=*\nDisallow:/*?month=*\nDisallow:/*&month=*\nDisallow:/*?view=*\nDisallow:/*&view=*\nDisallow:/*?format=json\nDisallow:/*&format=json\nDisallow:/*?format=page-context\nDisallow:/*&format=page-context\nDisallow:/*?format=main-content\nDisallow:/*&format=main-content\nDisallow:/*?format=json-pretty\nDisallow:/*&format=json-pretty\nDisallow:/*?format=ical\nDisallow:/*&format=ical\nDisallow:/*?reversePaginate=*\nDisallow:/*&reversePaginate=*\n\n\nUser-agent: AdsBot-Google-Mobile-Apps\nDisallow: /config\nDisallow: /search\nDisallow: /account$\nDisallow: /account/\nDisallow: /api/\nDisallow: /static/\nDisallow:/*?author=*\nDisallow:/*&author=*\nDisallow:/*?tag=*\nDisallow:/*&tag=*\nDisallow:/*?month=*\nDisallow:/*&month=*\nDisallow:/*?view=*\nDisallow:/*&view=*\nDisallow:/*?format=json\nDisallow:/*&format=json\nDisallow:/*?format=page-context\nDisallow:/*&format=page-context\nDisallow:/*?format=main-content\nDisallow:/*&format=main-content\nDisallow:/*?format=json-pretty\nDisallow:/*&format=json-pretty\nDisallow:/*?format=ical\nDisallow:/*&format=ical\nDisallow:/*?reversePaginate=*\nDisallow:/*&reversePaginate=*\n\n\nUser-agent: *\nDisallow: /config\nDisallow: /search\nDisallow: /account$\nDisallow: /account/\nDisallow: /api/\nDisallow: /static/\nDisallow:/*?author=*\nDisallow:/*&author=*\nDisallow:/*?tag=*\nDisallow:/*&tag=*\nDisallow:/*?month=*\nDisallow:/*&month=*\nDisallow:/*?view=*\nDisallow:/*&view=*\nDisallow:/*?format=json\nDisallow:/*&format=json\nDisallow:/*?format=page-context\nDisallow:/*&format=page-context\nDisallow:/*?format=main-content\nDisallow:/*&format=main-content\nDisallow:/*?format=json-pretty\nDisallow:/*&format=json-pretty\nDisallow:/*?format=ical\nDisallow:/*&format=ical\nDisallow:/*?reversePaginate=*\nDisallow:/*&reversePaginate=*\n\n\nSitemap: https://www.richmeyerphoto.com/sitemap.xml\n"
+  },
+  "capture_sha256": {
+    "clancy.html": "2927f2686b54f9c2b3843628699e7abfb57ed0a7ecf671da4da899885ebf458c",
+    "clancy-robots.txt": "6a586aec7fac49aa80f8d239a1b5ef904126df1dc32c1bc3cd41c11bd0b92618"
+  },
+  "google_calendar_export": "Not used. calendar.google.com robots disallows the feed path; the native publisher HTML contains full prose.",
+  "additional_held_candidate": {
+    "publisher": "Seven Tap Tavern / Blue Heron Pines",
+    "listing": "https://blueheronpines.com/upcoming-events/",
+    "reason": "Current listing available but required event details returned HTTP 403. Full descriptions cannot be ingested reliably."
+  }
+}
