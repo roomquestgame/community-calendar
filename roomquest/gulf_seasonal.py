@@ -32,7 +32,8 @@ MAX_CITY_EVENTS_PER_PAGE = 50
 _CITY_EVENT = re.compile(
     r'https://neworleanscitypark[.]org/event/[a-z0-9-]+/(?:20\d{2}-\d{2}-\d{2}/)?'
 )
-# Arts New Orleans' existing iCal source (municipal_mapsee_123326fd5be1b9af7ecaaf9b)
+# Arts New Orleans' existing json/wordpress source, registry ID 4285
+# (municipal_mapsee_123326fd5be1b9af7ecaaf9b),
 # owns this reviewed series, with the precise Popp Bandstand address. City Park
 # republishes it with a generic park venue; retain the organizer's occurrences.
 _CITY_ORGANIZER_SERIES = {'arts-market-new-orleans-holiday-market'}

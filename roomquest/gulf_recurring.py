@@ -216,7 +216,18 @@ def _wix_location(key, item):
     return venue, street, city, lat, lng
 
 
+def _maple_audience(soup):
+    visible = _text(soup)
+    if (not re.search(r'\bALL\s+SHOWS\s+21\s*\+(?=\s|$)', visible, re.I)
+            or not re.search(r'Everyone must show a valid form of ID at the door\.', visible, re.I)):
+        raise ValueError('gulf_maple_audience_unverified')
+    # This is the calendar-wide policy, not text on an individual event page.
+    # Name its evidence in the fact while retaining the event identity envelope.
+    return '21+; valid ID required at the door. Calendar policy: ' + SOURCES[MAPLE]
+
+
 def _wix(key, soup, now):
+    audience = _maple_audience(soup) if key == MAPLE else None
     script = soup.select_one('script#wix-warmup-data[type="application/json"]')
     if script is None:
         raise ValueError('gulf_wix_calendar_missing')
@@ -271,10 +282,11 @@ def _wix(key, soup, now):
         url = 'https://' + urlsplit(SOURCES[key]).netloc + WIX_PREFIXES[key] + slug
         image = (item.get('mainImage') or {}).get('url')
         narrative = item.get('description') or item.get('about') or ''
+        facts = {'audience': audience} if audience else {}
+        if lat is None:
+            facts['meeting_location'] = 'Rivertown district; exact starting point is not supplied.'
         row = _row(key, identity, title, start, end, venue, street, city, url, now,
-                   lat=lat, lng=lng, narrative=narrative, image=image,
-                   facts={'meeting_location': 'Rivertown district; exact starting point is not supplied.'}
-                   if lat is None else None)
+                   lat=lat, lng=lng, narrative=narrative, image=image, facts=facts)
         if row:
             yield row
 
