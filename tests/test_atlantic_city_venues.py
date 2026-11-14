@@ -242,6 +242,41 @@ class AtlanticCityVenueTests(unittest.TestCase):
         self.assertTrue(rows[0]["ends_at"].startswith("2026-12-04T20:00"))
         self.assertEqual(expired, [])
 
+    def test_smithville_reviewed_girls_night_uses_listing_clock_and_full_detail(self):
+        listing = '''<div class="ic-list-events"><div class="ic-event">
+          <div class="ic-event-title"><h2><a href="/23-girls-night-out?date=2026-12-10-00-00">Girls Night Out</a></h2></div>
+          <span class="ic-single-next">Thursday, December 10</span>
+          <div class="ic-descshort">10am - 9pm extended shop hours and specials for the ladies!</div></div></div>'''
+        body = ("Avoid the mall rush and enjoy holiday shopping. Shoppe hours will be extended until 9pm*. "
+                "Not all shoppes participate. Please call individual shoppe(s) to confirm participation.")
+        detail = f'''<div class="ic-event-header"><h1>Girls Night Out</h1></div>
+          <div class="ic-full-description">{body}</div>
+          <div id="detail-date-list"><li class="alldates">Thursday, December 10</li></div>'''
+        fetch = Mock(side_effect=lambda url, accept: listing if url == venues.SOURCES[venues.SMITHVILLE][0] else detail)
+        with patch.object(venues, "record", side_effect=row_record):
+            rows = venues.collect(source(venues.SMITHVILLE), fetch, now=NOW)
+            expired = venues.collect(source(venues.SMITHVILLE), fetch,
+                                     now=datetime(2026, 12, 11, 3, tzinfo=timezone.utc))
+        self.assertEqual(len(rows), 1)
+        self.assertTrue(rows[0]['starts_at'].startswith('2026-12-10T10:00'))
+        self.assertTrue(rows[0]['ends_at'].startswith('2026-12-10T21:00'))
+        self.assertTrue(rows[0]['description'].endswith(body))
+        self.assertIn('10am - 9pm', rows[0]['description'])
+        self.assertEqual(expired, [])
+        detail = detail.replace('extended until 9pm', 'extended until 8pm')
+        with patch.object(venues, "record", side_effect=row_record):
+            with self.assertRaisesRegex(ValueError, 'smithville_schedule_conflict'):
+                venues.collect(source(venues.SMITHVILLE), fetch, now=NOW)
+
+    def test_smithville_girls_night_exception_does_not_invent_other_dates(self):
+        listing = '''<div class="ic-list-events"><div class="ic-event">
+          <div class="ic-event-title"><h2><a href="/23-girls-night-out?date=2026-12-11-00-00">Girls Night Out</a></h2></div>
+          <span class="ic-single-next">Friday, December 11</span>
+          <div class="ic-descshort">10am - 9pm extended shop hours and specials for the ladies!</div></div></div>'''
+        fetch = Mock(return_value=listing)
+        self.assertEqual(venues.collect(source(venues.SMITHVILLE), fetch, now=NOW), [])
+        self.assertEqual(fetch.call_count, 1)
+
 
 if __name__ == "__main__":
     unittest.main()

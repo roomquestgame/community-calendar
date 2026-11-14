@@ -6,6 +6,8 @@ from time import monotonic, sleep
 from urllib.error import HTTPError, URLError
 from roomquest.collector_errors import failure_details
 from roomquest.linked_event_descriptions import PROFILES as LINKED_DESCRIPTION_PROFILES
+from roomquest.atlantic_city_library_chamber import CHECKPOINT_KEYS as ATLANTIC_LIBRARY_CHECKPOINT_KEYS
+from roomquest.atlantic_city_nightlife_more import CHECKPOINT_KEYS as ATLANTIC_NIGHTLIFE_CHECKPOINT_KEYS
 from roomquest.preview_worker import PreviewError, supabase_rpc, _process_claimed_source
 
 CATEGORIES = frozenset(('ical', 'wordpress', 'jsonld', 'squarespace', 'library',
@@ -90,6 +92,67 @@ _ERROR_CODES = frozenset(('database_unavailable', 'staging_deadline',
     'invalid_atlantic_pdf_listing', 'atlantic_pdf_document_conflict',
     'atlantic_pdf_venue_changed', 'atlantic_pdf_conditions_changed',
     'atlantic_pdf_description_changed',
+    'atlantic_cape_conflicting_occurrence',
+    'atlantic_cape_filters_changed',
+    'atlantic_cape_identity_changed',
+    'atlantic_cape_location_changed',
+    'atlantic_cape_occurrence_changed',
+    'atlantic_cape_occurrence_time_conflict',
+    'atlantic_cape_occurrence_time_unresolved',
+    'atlantic_cape_occurrences_missing',
+    'atlantic_cape_pagination_changed',
+    'atlantic_cape_pagination_limit',
+    'atlantic_cape_payload_changed',
+    'atlantic_cape_snapshot_incomplete',
+    'atlantic_library_checkpoint_invalid',
+    'atlantic_library_checkpoint_size_limit',
+    'atlantic_library_checkpoint_source',
+    'atlantic_nightlife_checkpoint_invalid',
+    'atlantic_nightlife_checkpoint_size_limit',
+    'atlantic_nightlife_description_missing',
+    'atlantic_nightlife_duplicate_occurrence',
+    'atlantic_nightlife_event_identity',
+    'atlantic_nightlife_event_limit',
+    'chamber_event_identity_changed',
+    'chamber_identity_changed',
+    'chamber_payload_changed',
+    'conflicting_event_occurrence',
+    'eht_trot_clock_conflict',
+    'eht_trot_clock_unresolved',
+    'eht_trot_description_missing',
+    'eht_trot_event_identity_changed',
+    'eht_trot_manifest_changed',
+    'eht_trot_snapshot_incomplete',
+    'eht_trot_source_identity_changed',
+    'eht_trot_status_changed',
+    'eht_trot_venue_changed',
+    'federation_event_identity_changed',
+    'federation_pagination_duplicate',
+    'federation_pagination_identity_changed',
+    'federation_pagination_invalid',
+    'federation_payload_invalid',
+    'federation_timezone_changed',
+    'garden_state_calendar_changed',
+    'garden_state_calendar_incomplete',
+    'garden_state_calendar_time_conflict',
+    'garden_state_calendar_venue_changed',
+    'hard_rock_calendar_schedule_changed',
+    'hard_rock_calendar_venue_changed',
+    'hard_rock_detail_identity_changed',
+    'hard_rock_detail_schedule_changed',
+    'hard_rock_detail_status_changed',
+    'jfs_calendar_changed',
+    'jfs_description_container_changed',
+    'jfs_detail_identity_changed',
+    'jfs_detail_schedule_changed',
+    'jfs_event_identity_changed',
+    'margate_closure_range_invalid',
+    'margate_event_date_invalid',
+    'margate_feed_changed',
+    'source_record_limit',
+    'unregistered_atlantic_cape_source',
+    'unregistered_atlantic_library_chamber_source',
+    'unregistered_atlantic_nightlife_source',
     'unregistered_discover_halifax', 'invalid_html_event_payload',
     'collector_not_configured', 'unsupported_collector_rpc', 'unsupported_category',
     'source_parse_error', 'invalid_calendar_payload', 'event_schedule_missing',
@@ -212,7 +275,9 @@ def collect_category(category, ticket):
                 if category == 'html':
                     process_args['publisher_handoff'] = publisher_handoff
                     if ((source.get('source_key') in ('discover_halifax_va', 'visit_atlantic_city_nj', 'noyes_arts_atlantic_city_nj', 'atlantic_city_municipal_nj', 'greatday_atlantic_city_nj')
-                            or source.get('source_key') in LINKED_DESCRIPTION_PROFILES)
+                            or source.get('source_key') in LINKED_DESCRIPTION_PROFILES
+                            or source.get('source_key') in ATLANTIC_LIBRARY_CHECKPOINT_KEYS
+                            or source.get('source_key') in ATLANTIC_NIGHTLIFE_CHECKPOINT_KEYS)
                             and type(source.get('fetch_checkpoint_version')) is int
                             and source['fetch_checkpoint_version'] == 1):
                         process_args['collection_context'] = args
