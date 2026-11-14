@@ -7,6 +7,9 @@ from unittest.mock import patch
 
 from roomquest import category_worker, new_york_arts as arts
 from roomquest import new_york_nightlife as nightlife, new_york_outdoors as outdoors
+from roomquest import new_york_arts_remaining as arts_remaining
+from roomquest import new_york_social_remaining as social_remaining
+from roomquest import new_york_outdoors_remaining as outdoors_remaining
 from roomquest import new_york_sources as profiles, preview_worker as worker
 
 
@@ -34,6 +37,24 @@ def checkpoint(key, *, cursor=1, manifest_count=1, events=None):
 
 
 class NewYorkWorkerTests(unittest.TestCase):
+    def test_remaining_profiles_use_the_same_full_description_boundary(self):
+        for module in (arts_remaining,social_remaining,outdoors_remaining):
+            for key in module.SOURCES:
+                with self.subTest(source_key=key):
+                    self.assertIs(profiles.validate_source(source(module,key)),module)
+                    self.assertEqual(key in profiles.checkpoint_keys(),key in module.CHECKPOINT_KEYS)
+                    if key not in module.CHECKPOINT_KEYS:
+                        row=event()
+                        with patch.object(module,'collect',return_value=[row]):
+                            self.assertEqual(worker.preview_source(source(module,key))['p_events'],[row])
+
+    def test_expanded_checkpoint_bounds_are_specific_to_reviewed_pride_calendar(self):
+        pride=checkpoint(social_remaining.PRIDE,cursor=329,manifest_count=329)
+        profiles.validate_checkpoint(source(social_remaining,social_remaining.PRIDE),pride)
+        ordinary={**pride,'source_key':social_remaining.IRISH}
+        with self.assertRaisesRegex(ValueError,'new_york_checkpoint_invalid'):
+            profiles.validate_checkpoint(source(social_remaining,social_remaining.IRISH),ordinary)
+
     def test_ordinary_worker_retains_complete_narrative_and_postal_address(self):
         row=event()
         with patch.object(arts,'collect',return_value=[row]):

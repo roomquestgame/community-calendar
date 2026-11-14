@@ -130,10 +130,46 @@ class NewYorkArtsTests(unittest.TestCase):
         venue = dict(id=4279, venue="Queens County Farm Museum", address="73-50 Little Neck Parkway", city="Queens", state="NY", zip="11004")
         row = self.collect(ny.QUEENS_FARM, payload(event(ny.QUEENS_FARM, venue=venue)))[0]
         self.assertEqual(row["venue_address"], "73-50 Little Neck Parkway, Queens, NY 11004")
+        self.assertEqual((row["lat"], row["lng"]), (40.748426, -73.720186))
+        self.assertEqual(row["location_provenance"], "reviewed_nyc_pad_address_point")
+        self.assertIsNone(row["reason"])
+        self.assertIsNone(ny.reviewed_venue_location(ny.QUEENS_FARM, row["venue_name"], "73-70 Little Neck Parkway, Queens, NY 11004"))
         park = self.collect(ny.SI_MUSEUM, payload(event(ny.SI_MUSEUM, venue={"id": 4741, "venue": "Great Kills Park"})))[0]
         self.assertEqual(park["venue_address"], "3270 Hylan Boulevard, Staten Island, NY 10306")
         self.assertIn("park entrance", park["venue_name"])
         self.assertNotIn("Richmond Terrace", park["venue_address"])
+
+    def test_moving_image_exact_pad_point_never_follows_an_offsite_address(self):
+        row = self.collect(ny.MOVING_IMAGE, payload(event(ny.MOVING_IMAGE, categories=[{"name": "Screening"}])))[0]
+        self.assertEqual((row["lat"], row["lng"]), (40.756305, -73.923916))
+        self.assertEqual(row["venue_address"], "36-01 35th Avenue, Astoria, NY 11106")
+        self.assertEqual(row["location_provenance"], "reviewed_nyc_pad_address_point")
+        self.assertIsNone(row["reason"])
+        self.assertIsNone(ny.reviewed_venue_location(ny.MOVING_IMAGE, "Off-site cinema", row["venue_address"]))
+        self.assertIsNone(ny.reviewed_venue_location(ny.MOVING_IMAGE, row["venue_name"], "35-01 35th Avenue, Astoria, NY 11106"))
+
+    def test_remaining_museum_point_and_park_approximation_are_venue_bound(self):
+        museum = dict(id=28, venue="Staten Island Museum at Snug Harbor", address="1000 Richmond Terrace, Building A",
+                      city="Staten Island", state="NY", zip="10301")
+        row = self.collect(ny.SI_MUSEUM, payload(event(ny.SI_MUSEUM, venue=museum)))[0]
+        self.assertEqual((row["lat"], row["lng"]), (40.6444768, -74.1027563))
+        self.assertEqual(row["venue_address"], "1000 Richmond Terrace Building A, Staten Island, NY 10301")
+        park = dict(id=5184, venue="Wolfe&#8217;s Pond Park", address="420 Cornelia Ave.", city="Staten Island", state="NY", zip="10312")
+        body = "Meet in the parking lot near the Parks Dept. buildings."
+        row = self.collect(ny.SI_MUSEUM, payload(event(ny.SI_MUSEUM, venue=park, body=body)))[0]
+        self.assertEqual(row["venue_name"], "Wolfe’s Pond Park (approximate meeting point)")
+        self.assertEqual(row["venue_address"], "420 Cornelia Ave., Staten Island, NY 10312")
+        self.assertEqual((row["lat"], row["lng"]), (40.51806, -74.19006))
+        self.assertEqual(row["description"], body)
+        self.assertEqual(row["location_provenance"], "reviewed_named_park_approximate_meeting_point")
+        self.assertIsNone(ny.reviewed_venue_location(ny.SI_MUSEUM, "Wolfe’s Pond Park", row["venue_address"]))
+
+    def test_columbus_circle_point_does_not_replace_published_dumbo_venue(self):
+        self.assertEqual(ny.reviewed_venue_location(ny.POWERHOUSE, "Powerhouse at Columbus Circle",
+                         "10 Columbus Circle #304, New York, NY 10019"), (40.768554, -73.983181))
+        self.assertIsNone(ny.reviewed_venue_location(ny.POWERHOUSE, "POWERHOUSE Arena", "28 Adams Street, Brooklyn, NY 11201"))
+        self.assertIsNone(ny.reviewed_venue_location(ny.POWERHOUSE, "Powerhouse at Columbus Circle",
+                          "10 Columbus Circle #303, New York, NY 10019"))
 
     def test_unknown_or_conflicting_timezone_fails_instead_of_shifting_clock(self):
         for changes in ({"timezone": "UTC+0"}, {"utc_start_date": "2026-11-18 10:00:00"}):

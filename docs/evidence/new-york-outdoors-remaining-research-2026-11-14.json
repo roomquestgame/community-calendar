@@ -1,0 +1,155 @@
+{
+  "reviewed_at": "2026-11-14T22:45:56+00:00",
+  "location": "New York, NY — all five boroughs",
+  "status": "Implementation and local evidence ready; root must verify production transport and published rows",
+  "sources": [
+    {
+      "source": {
+        "source_key": "municipal_mapsee_a5f8d3546bd7cb625105dccf",
+        "feed_url": "https://cityparksfoundation.org/calendar/",
+        "kind": "html",
+        "platform_adapter": "html",
+        "timezone": "America/New_York"
+      },
+      "label": "City Parks Foundation",
+      "accepted": 40,
+      "held": 2,
+      "held_reasons": {
+        "ny_outdoors_remaining_location_unresolved": 2
+      },
+      "full_description_range": {
+        "min": 250,
+        "max": 990
+      },
+      "request_count": 3
+    },
+    {
+      "source": {
+        "source_key": "municipal_mapsee_fa65937887b2c538c7ce242f",
+        "feed_url": "https://data.cityofnewyork.us/Social-Services/Older-Adult-Center-OAC-Activities/fzy4-e84j",
+        "kind": "html",
+        "platform_adapter": "html",
+        "timezone": "America/New_York"
+      },
+      "label": "NYC Older Adult Center Activities (60+, next 21 days)",
+      "accepted": 399,
+      "held": 21,
+      "held_reasons": {
+        "ny_outdoors_remaining_time_unverified": 12,
+        "ny_outdoors_remaining_schedule_conflict": 6,
+        "ny_outdoors_remaining_not_public": 3
+      },
+      "full_description_range": {
+        "min": 5,
+        "max": 672
+      },
+      "request_count": 1
+    },
+    {
+      "source": {
+        "source_key": "nyc_parks_staten_island_urban_park_rangers_ny",
+        "feed_url": "https://data.cityofnewyork.us/City-Government/NYC-Parks-Public-Events-Upcoming-14-Days/w3wp-dpdi",
+        "kind": "html",
+        "platform_adapter": "html",
+        "timezone": "America/New_York"
+      },
+      "label": "NYC Parks — Staten Island Urban Park Rangers",
+      "accepted": 6,
+      "held": 1,
+      "held_reasons": {
+        "ny_outdoors_remaining_not_public": 1
+      },
+      "full_description_range": {
+        "min": 226,
+        "max": 376
+      },
+      "request_count": 1
+    }
+  ],
+  "reviewed_location_count": 32,
+  "reviewed_intersection_count": 28,
+  "description_verification": {
+    "city_parks": "All 42 current future event descriptions in TEC REST match complete detail-body text byte-for-byte after shared HTML normalization; API supplies complete meeting directions and contact terms.",
+    "socrata": "Use complete native description strings; no source excerpts, no generic 2000-character cap, no truncation. Empty and >12000-character narratives are held."
+  },
+  "access": {
+    "city_parks": "Official robots has no rule blocking the ordinary collector; canonical calendar and both native TEC API pages returned200. Historical www ICS URL redirects to canonical host.",
+    "nyc_open_data": "Official robots allows /resource and /api/views and asks crawl-delay1. Both exact21-day and StatenIsland/Rangers queries returned200. One transient503 on Ranger query succeeded on same-URL retry.",
+    "nyc_parks_details": "Direct official event HTML returned403 during research; no bypass. Native licensed municipal feed provides full content and exact named meeting coordinates; event link HTTP is upgraded only for exact official host/path."
+  },
+  "city_parks_cancellation": {
+    "status": "No active global cancellation verified",
+    "evidence": "Old inclement-weather text is inside an Elementor element with all desktop/tablet/mobile hidden classes, confirmed against current frontend CSS. Runtime removes fully hidden elements and acts on visible current weekend cancellation only. Undated broad visible cancellation fails for review."
+  },
+  "location_decisions": {
+    "approximate": "City Parks venue labels explicitly say approximate meeting point. Official named-park or specific playground/native event points locate actual parks, with preserved interior directions. No invented house numbers or organizer headquarters.",
+    "little_bay": "Publisher explicitly supplies14-18UtopiaParkway for map directions; nearby official PAD14-14point is a visible approximation. Full prose retains both shoreline approaches.",
+    "glenwood": "Header39thRoad vs narrative39thAvenue discrepancy retained. Official native Garden point and PAD exact named-park match support approximate header-street access.",
+    "older_cross_site": "Reviewed StNicks provider IDs C7501/C7502 can meet at each other’s centers; actual occurrence street/ZIP/point select the physical venue, never originating provider HQ.",
+    "older_audience": "NYC Aging official center page confirms60+ membership; source label and structured metadata preserve age scope without inserting prose into native descriptions."
+  },
+  "held_event_findings": [
+    {
+      "source_key": "municipal_mapsee_a5f8d3546bd7cb625105dccf",
+      "native_id": "22260",
+      "url": "https://cityparksfoundation.org/events/its-my-park-at-tilyou-playground/",
+      "reason": "Title/body Tilden Playground conflict with detail venue Tilyou Playground; no venue guess made across different parks."
+    },
+    {
+      "source_key": "municipal_mapsee_a5f8d3546bd7cb625105dccf",
+      "native_id": "22280",
+      "url": "https://cityparksfoundation.org/events/its-my-park-at-mckinley-park-57/",
+      "reason": "McKinley Park title/header conflict with Leif Ericson Park red-shed meeting directions."
+    },
+    {
+      "source_key": "municipal_mapsee_fa65937887b2c538c7ce242f",
+      "count": 12,
+      "reason": "Native end equals or precedes start; no invented duration or AM/PM correction."
+    },
+    {
+      "source_key": "municipal_mapsee_fa65937887b2c538c7ce242f",
+      "count": 6,
+      "reason": "Three dated Aerobics occurrences each duplicated with conflicting full prose; both originals held, deterministic complete description required."
+    },
+    {
+      "source_key": "municipal_mapsee_fa65937887b2c538c7ce242f",
+      "count": 3,
+      "reason": "Native isvirtualYes activities excluded from physical source."
+    },
+    {
+      "source_key": "nyc_parks_staten_island_urban_park_rangers_ny",
+      "native_id": "2300379",
+      "reason": "Publisher says registration is closed for Discovery Hike: Urban Mammals."
+    }
+  ],
+  "remaining": [
+    {
+      "source_key": "municipal_mapsee_0e46855a44eb788f36a2c0ab",
+      "label": "NYC Parks — full citywide public calendar",
+      "status": "Unchanged unresolved broad source",
+      "native_records_in_probe": 444,
+      "unique_native_locations": 201,
+      "reason": "Full citywide coverage requires reviewing201 venue/meeting locations and underlying data anomalies; the new separately named StatenIsland/Rangers subset does not relabel this source as fully repaired. Typed event links are now understood and can be reused when broad venue mapping is completed.",
+      "official_url": "https://data.cityofnewyork.us/City-Government/NYC-Parks-Public-Events-Upcoming-14-Days/w3wp-dpdi"
+    },
+    {
+      "source_key": "municipal_mapsee_844b6c0e0aca1771e1a1646f",
+      "also_source_key": "municipal_mapsee_76e20349fff9f8204e2d76ea",
+      "label": "NYC permitted events",
+      "status": "Hold — semantic data gaps",
+      "official_url": "https://data.cityofnewyork.us/City-Government/NYC-Permitted-Event-Information/tvpp-9vvx",
+      "reason": "Official schema defines start/end predominantly as setup/breakdown; records lack event descriptions and attendee event links, include private birthday parties. Fixing timezone/query URL alone cannot produce verified public event occurrences."
+    }
+  ],
+  "official_evidence_urls": [
+    "https://cityparksfoundation.org/calendar/",
+    "https://cityparksfoundation.org/wp-json/tribe/events/v1/events",
+    "https://data.cityofnewyork.us/Social-Services/Older-Adult-Center-OAC-Activities/fzy4-e84j",
+    "https://data.cityofnewyork.us/City-Government/NYC-Parks-Public-Events-Upcoming-14-Days/w3wp-dpdi",
+    "https://www.nyc.gov/site/dfta/services/older-adult-center.page",
+    "https://geosearch.planninglabs.nyc/docs/",
+    "https://www.vote.nyc/sites/default/files/pdf/publications/streetfinders/2026/Staten_Island_Street_Finder_2026.pdf",
+    "https://comptroller.nyc.gov/wp-content/uploads/documents/MD10_072A.pdf"
+  ],
+  "capture_file": "new-york-outdoors-remaining-live-capture-2026-11-14.json"
+}
