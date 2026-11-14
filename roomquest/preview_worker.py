@@ -1082,7 +1082,17 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         from roomquest import maryland_public_calendars, maryland_park_programs
         from roomquest.nebraska_venues import SOURCES as NEBRASKA_VENUES
         from roomquest import nebraska_final, richmond_public_calendars
-        if source_key in nebraska_final.SOURCES:
+        from roomquest import gulf_recurring, gulf_seasonal, gulf_venues
+        if source_key in gulf_recurring.SOURCES:
+            collect_html = gulf_recurring.collect
+            allowed_hosts = gulf_recurring.allowed_hosts(source_key)
+        elif source_key in gulf_seasonal.SOURCES:
+            collect_html = gulf_seasonal.collect
+            allowed_hosts = gulf_seasonal.allowed_hosts(source_key)
+        elif source_key in gulf_venues.SOURCES:
+            collect_html = gulf_venues.collect
+            allowed_hosts = gulf_venues.allowed_hosts(source_key)
+        elif source_key in nebraska_final.SOURCES:
             collect_html = nebraska_final.collect
             allowed_hosts = nebraska_final.SOURCES[source_key][1]
         elif source_key in richmond_public_calendars.SOURCES:
@@ -1781,6 +1791,9 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
         'victoria_town_calendar_va', 'vance_county_arts_council_nc'))
     from roomquest.holly_hill_sources import publisher_media as holly_hill_media
     publisher_media = publisher_media or holly_hill_media(source)
+    from roomquest import gulf_recurring, gulf_seasonal, gulf_venues
+    publisher_media = publisher_media or (html and any(
+        source_key in module.SOURCES for module in (gulf_recurring, gulf_seasonal, gulf_venues)))
     preview_rpc = ("community_collector_record_preview_v3"
                    if publisher_media
                    else "community_collector_record_preview_v2" if html or ical or civic

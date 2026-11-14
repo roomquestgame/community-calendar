@@ -28,6 +28,12 @@ ROSEMONT_REVIEWED_FEATURED_IMAGE = (
 def family(source_key, event_url):
     """Bind an enrolled publisher family to its own canonical event link."""
     try:
+        from roomquest import gulf_recurring, gulf_seasonal, gulf_venues
+        for module, prefix in ((gulf_recurring, 'gulf_recurring:'),
+                               (gulf_seasonal, 'gulf_seasonal:'),
+                               (gulf_venues, 'gulf_venues:')):
+            if source_key in module.SOURCES:
+                return prefix + source_key if module.event_url(source_key, event_url) else None
         from roomquest.holly_hill_businesses import SOURCES as HOLLY_BUSINESSES, event_url as holly_business_url
         if source_key in HOLLY_BUSINESSES:
             return 'holly_hill:' + source_key if holly_business_url(source_key, event_url) else None
@@ -172,6 +178,14 @@ def family(source_key, event_url):
 
 def image_url(value, publisher):
     if not isinstance(value, str) or len(value) > 2000:
+        return None
+    if isinstance(publisher, str) and publisher.startswith('gulf_'):
+        from roomquest import gulf_recurring, gulf_seasonal, gulf_venues
+        for module, prefix in ((gulf_recurring, 'gulf_recurring:'),
+                               (gulf_seasonal, 'gulf_seasonal:'),
+                               (gulf_venues, 'gulf_venues:')):
+            if publisher.startswith(prefix):
+                return module.photo_url(publisher.removeprefix(prefix), value)
         return None
     if publisher == 'mcgregor_hall_henderson_nc':
         from roomquest.mcgregor_hall import photo_url
