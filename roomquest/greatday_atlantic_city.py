@@ -45,7 +45,7 @@ LOCATIONS = (
     (r"2200\s+Fairmount\s+Ave(?:nue)?", "Noyes Arts Garage of Stockton University", "2200 Fairmount Avenue"),
     (r"1000\s+Boardwalk", "Hard Rock Hotel & Casino Atlantic City", "1000 Boardwalk"),
     (r"35\s+S(?:outh)?\.?\s+(?:Dr\.?|Doctor)\s+Martin\s+Luther\s+King(?:\s+Jr\.?)?\s+(?:Blvd|Boulevard)", "Carnegie Center", "35 S Dr Martin Luther King Boulevard"),
-    (r"201\s+N(?:orth)?\.?\s+Pennsylvania\s+Ave(?:nue)?", "New York Avenue School", "201 North Pennsylvania Avenue"),
+    (r"201\s+N(?:orth)?\.?\s+Pennsylvania\s+Ave(?:nue)?", "Pennsylvania Avenue School", "201 North Pennsylvania Avenue"),
     (r"167\s+S(?:outh)?\.?\s+Tennessee\s+Ave(?:nue)?", "C.R.O.P.S. Food Hub", "167 S Tennessee Avenue"),
     (r"250\s+N(?:orth)?\.?\s+New\s+York\s+Ave(?:nue)?", "Atlantic City PAL Building", "250 N New York Avenue"),
     (r"1\s+N(?:orth)?\.?\s+Tennessee\s+Ave(?:nue)?", "Atlantic City Free Public Library — Main Library", "1 North Tennessee Avenue"),
@@ -73,6 +73,13 @@ LOCATIONS = (
 # https://search.nj211.org/search/861ce7b3-ec45-5fe4-8e80-bc091265161b
 # Spanish Community Center's Atlantic City service location (not Landisville):
 # https://search.nj211.org/search/41c48b1e-4f9e-5c08-ad88-9b7bfd5deeb9
+# Carnegie's NJDEP Historic Property Features point (OBJECTID 43261, HIGH
+# location quality) uses its historic 35 South Illinois address.  The city's
+# 2008 Master Plan confirms Illinois was renamed Martin Luther King Boulevard;
+# city ordinance LF1608408 identifies the Carnegie Library at the current 35.
+# https://mapsdep.nj.gov/arcgis/rest/services/Features/Land/MapServer/54/query?objectIds=43261&outFields=*&outSR=4326&f=json
+# Pop Lloyd's exact named venue, street and GeoCoordinates are published at:
+# https://www.visitatlanticcity.com/listing/pop-lloyd-stadium/4863/
 VENUE_POINTS = {
     ("The Claridge Hotel", "123 South Indiana Avenue, Atlantic City, NJ 08401"): (39.3575555, -74.4317609),
     ("C.R.O.P.S. Food Hub", "167 S Tennessee Avenue, Atlantic City, NJ 08401"): (39.3593597, -74.4260272),
@@ -81,6 +88,8 @@ VENUE_POINTS = {
     ("Atlantic City PAL Building", "250 N New York Avenue, Atlantic City, NJ 08401"): (39.3653551, -74.4321693),
     ("Sister Jean's Kitchen", "108 N Pennsylvania Avenue, Atlantic City, NJ 08401"): (39.361843, -74.423196),
     ("Spanish Community Center", "3900 Ventnor Avenue, Atlantic City, NJ 08401"): (39.350256, -74.457095),
+    ("Carnegie Center", "35 S Dr Martin Luther King Boulevard, Atlantic City, NJ 08401"): (39.3593871, -74.4307969),
+    ("Pop Lloyd Stadium", "1200 N Doctor Martin Luther King Jr Boulevard, Atlantic City, NJ 08401"): (39.3725712, -74.4398345),
 }
 
 # The Nov 19 event's text and attached flyer pair New York Avenue School with

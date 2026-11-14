@@ -1,0 +1,23 @@
+{
+  "source_url": "https://www.visitatlanticcity.com/listing/pop-lloyd-stadium/4863/",
+  "http_status": 200,
+  "captured_html_sha256": "18ff9000b8f67a9c6d56f462e29b078091e4e109a3c2208206b93d197b94c430",
+  "venue": {
+    "@type": "SportsActivityLocation",
+    "name": "Pop Lloyd Stadium",
+    "url": "https://www.visitatlanticcity.com/listing/pop-lloyd-stadium/4863/",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "1200 N Doctor M.L.K. Blvd",
+      "addressLocality": "Atlantic City",
+      "addressRegion": "NJ",
+      "postalCode": "08401",
+      "addressCountry": "UNITED STATES"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 39.3725712,
+      "longitude": -74.4398345
+    }
+  }
+}

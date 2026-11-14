@@ -1,0 +1,247 @@
+{
+  "source_url": "https://mapsdep.nj.gov/arcgis/rest/services/Features/Land/MapServer/54/query?objectIds=43261&outFields=%2A&outSR=4326&f=json",
+  "result": {
+    "displayFieldName": "NAME",
+    "fieldAliases": {
+      "CREATED_USER": "CREATED_USER",
+      "CREATED_DATE": "CREATED_DATE",
+      "LAST_EDITED_USER": "LAST_EDITED_USER",
+      "LAST_EDITED_DATE": "LAST_EDITED_DATE",
+      "OBJECTID": "OBJECTID",
+      "NJEMS_SIID": "NJEMS Subject Item ID",
+      "FEATNUM": "Property Feature Number",
+      "FEATNAME": "Property Feature Name",
+      "FEATSTATUS": "Property Feature Status",
+      "FEAT_TYPE": "Property Feature Type",
+      "DEMOLISHED": "Demolished",
+      "LOC_RESTR": "Location Restricted",
+      "NJEMS_STID": "NJEMS Site ID",
+      "NJEMS_PIID": "NJEMS Program Interest ID",
+      "NAME": "Cultural Resource Name",
+      "ADDRESS": "Address",
+      "STATUS": "Designation Status",
+      "STAT_UPDT": "Designation Status Update",
+      "INV_ID": "SHPO Inventory Database ID Number",
+      "DIGIDATE": "GIS Digitizing Date",
+      "DIGISTAFF": "GIS Digitizing Staff",
+      "DIGICODE": "GIS Digitizing Source Code",
+      "DIGIPOST": "GIS Digitizing Status",
+      "DIGINOTE": "GIS Digitizing Notes",
+      "LOC_QUAL": "Location Quality",
+      "NOTES": "Notes",
+      "X_COORD": "NJSP X Coordinate",
+      "Y_COORD": "NJSP Y Coordinate",
+      "GLOBALID": "GLOBALID"
+    },
+    "geometryType": "esriGeometryPoint",
+    "spatialReference": {
+      "wkid": 4326,
+      "latestWkid": 4326
+    },
+    "fields": [
+      {
+        "name": "CREATED_USER",
+        "type": "esriFieldTypeString",
+        "alias": "CREATED_USER",
+        "length": 255
+      },
+      {
+        "name": "CREATED_DATE",
+        "type": "esriFieldTypeDate",
+        "alias": "CREATED_DATE",
+        "length": 8
+      },
+      {
+        "name": "LAST_EDITED_USER",
+        "type": "esriFieldTypeString",
+        "alias": "LAST_EDITED_USER",
+        "length": 255
+      },
+      {
+        "name": "LAST_EDITED_DATE",
+        "type": "esriFieldTypeDate",
+        "alias": "LAST_EDITED_DATE",
+        "length": 8
+      },
+      {
+        "name": "OBJECTID",
+        "type": "esriFieldTypeOID",
+        "alias": "OBJECTID"
+      },
+      {
+        "name": "NJEMS_SIID",
+        "type": "esriFieldTypeInteger",
+        "alias": "NJEMS Subject Item ID"
+      },
+      {
+        "name": "FEATNUM",
+        "type": "esriFieldTypeSmallInteger",
+        "alias": "Property Feature Number"
+      },
+      {
+        "name": "FEATNAME",
+        "type": "esriFieldTypeString",
+        "alias": "Property Feature Name",
+        "length": 150
+      },
+      {
+        "name": "FEATSTATUS",
+        "type": "esriFieldTypeString",
+        "alias": "Property Feature Status",
+        "length": 3
+      },
+      {
+        "name": "FEAT_TYPE",
+        "type": "esriFieldTypeString",
+        "alias": "Property Feature Type",
+        "length": 15
+      },
+      {
+        "name": "DEMOLISHED",
+        "type": "esriFieldTypeString",
+        "alias": "Demolished",
+        "length": 3
+      },
+      {
+        "name": "LOC_RESTR",
+        "type": "esriFieldTypeString",
+        "alias": "Location Restricted",
+        "length": 3
+      },
+      {
+        "name": "NJEMS_STID",
+        "type": "esriFieldTypeInteger",
+        "alias": "NJEMS Site ID"
+      },
+      {
+        "name": "NJEMS_PIID",
+        "type": "esriFieldTypeInteger",
+        "alias": "NJEMS Program Interest ID"
+      },
+      {
+        "name": "NAME",
+        "type": "esriFieldTypeString",
+        "alias": "Cultural Resource Name",
+        "length": 150
+      },
+      {
+        "name": "ADDRESS",
+        "type": "esriFieldTypeString",
+        "alias": "Address",
+        "length": 150
+      },
+      {
+        "name": "STATUS",
+        "type": "esriFieldTypeString",
+        "alias": "Designation Status",
+        "length": 25
+      },
+      {
+        "name": "STAT_UPDT",
+        "type": "esriFieldTypeDate",
+        "alias": "Designation Status Update",
+        "length": 8
+      },
+      {
+        "name": "INV_ID",
+        "type": "esriFieldTypeInteger",
+        "alias": "SHPO Inventory Database ID Number"
+      },
+      {
+        "name": "DIGIDATE",
+        "type": "esriFieldTypeDate",
+        "alias": "GIS Digitizing Date",
+        "length": 8
+      },
+      {
+        "name": "DIGISTAFF",
+        "type": "esriFieldTypeString",
+        "alias": "GIS Digitizing Staff",
+        "length": 50
+      },
+      {
+        "name": "DIGICODE",
+        "type": "esriFieldTypeSmallInteger",
+        "alias": "GIS Digitizing Source Code"
+      },
+      {
+        "name": "DIGIPOST",
+        "type": "esriFieldTypeSmallInteger",
+        "alias": "GIS Digitizing Status"
+      },
+      {
+        "name": "DIGINOTE",
+        "type": "esriFieldTypeString",
+        "alias": "GIS Digitizing Notes",
+        "length": 254
+      },
+      {
+        "name": "LOC_QUAL",
+        "type": "esriFieldTypeString",
+        "alias": "Location Quality",
+        "length": 10
+      },
+      {
+        "name": "NOTES",
+        "type": "esriFieldTypeString",
+        "alias": "Notes",
+        "length": 254
+      },
+      {
+        "name": "X_COORD",
+        "type": "esriFieldTypeDouble",
+        "alias": "NJSP X Coordinate"
+      },
+      {
+        "name": "Y_COORD",
+        "type": "esriFieldTypeDouble",
+        "alias": "NJSP Y Coordinate"
+      },
+      {
+        "name": "GLOBALID",
+        "type": "esriFieldTypeGlobalID",
+        "alias": "GLOBALID",
+        "length": 38
+      }
+    ],
+    "features": [
+      {
+        "attributes": {
+          "CREATED_USER": "BGISTASK",
+          "CREATED_DATE": 1774949639000,
+          "LAST_EDITED_USER": "BGISTASK",
+          "LAST_EDITED_DATE": 1774949639000,
+          "OBJECTID": 43261,
+          "NJEMS_SIID": 77043309,
+          "FEATNUM": 1,
+          "FEATNAME": "Atlantic City Free Public Library",
+          "FEATSTATUS": "C",
+          "FEAT_TYPE": "BLDG",
+          "DEMOLISHED": "NO",
+          "LOC_RESTR": "NO",
+          "NJEMS_STID": null,
+          "NJEMS_PIID": 99003476,
+          "NAME": "Atlantic City Free Public Library",
+          "ADDRESS": "35 South Illinois Avenue",
+          "STATUS": "ELIGIBLE_INDV",
+          "STAT_UPDT": 1688360400000,
+          "INV_ID": 5944,
+          "DIGIDATE": 1690261200000,
+          "DIGISTAFF": "JMC",
+          "DIGICODE": 7,
+          "DIGIPOST": 4,
+          "DIGINOTE": null,
+          "LOC_QUAL": "HIGH",
+          "NOTES": null,
+          "X_COORD": 511691.5681,
+          "Y_COORD": 191589.6486,
+          "GLOBALID": "{8EAF0386-C593-4471-AF57-D4B370D6EB52}"
+        },
+        "geometry": {
+          "x": -74.43079693901703,
+          "y": 39.35938711931456
+        }
+      }
+    ]
+  }
+}

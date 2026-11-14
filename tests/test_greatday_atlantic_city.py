@@ -111,11 +111,32 @@ class GreatDayTests(unittest.TestCase):
             ("Atlantic City PAL Building", "250 N New York Avenue", (39.3653551, -74.4321693)),
             ("Sister Jean's Kitchen", "108 N Pennsylvania Avenue", (39.361843, -74.423196)),
             ("Spanish Community Center", "3900 Ventnor Avenue", (39.350256, -74.457095)),
+            ("Carnegie Center", "35 S Dr Martin Luther King Boulevard", (39.3593871, -74.4307969)),
+            ("Pop Lloyd Stadium", "1200 N Doctor Martin Luther King Jr Boulevard", (39.3725712, -74.4398345)),
         ):
             exact = (name, street + ", Atlantic City, NJ 08401")
             self.assertEqual(gd.VENUE_POINTS[exact], point)
             self.assertIsNone(gd.VENUE_POINTS.get(("Different venue", exact[1])))
             self.assertIsNone(gd.VENUE_POINTS.get((name, "999 Unknown Avenue, Atlantic City, NJ 08401")))
+
+    def test_reviewed_carnegie_and_stadium_points_preserve_full_details(self):
+        body = ("Saturday, November 21, 2026 from 1 p.m. to 4 p.m. "
+                + "Complete event and participant details are retained. " * 100 + "Final paragraph.")
+        for street, point in (
+            ("35 S Dr Martin Luther King Boulevard", (39.3593871, -74.4307969)),
+            ("1200 N Doctor Martin Luther King Jr Boulevard", (39.3725712, -74.4398345)),
+        ):
+            item = dict(title="Community event", date="2026-11-21", location=street,
+                        category="COMMUNITY", image=None)
+            with patch.object(gd, "record", side_effect=row_record):
+                row, reason = gd._detail(gd.URL + "/community-event", item,
+                                         detail("Community event", body, address=street), NOW)
+            self.assertIsNone(reason)
+            self.assertEqual((row["lat"], row["lng"]), point)
+            self.assertEqual(row["description"], body)
+            self.assertGreater(len(row["description"]), 5000)
+            self.assertEqual(row["starts_at"], "2026-11-21T18:00:00+00:00")
+            self.assertEqual(row["ends_at"], "2026-11-21T21:00:00+00:00")
 
     def test_reviewed_school_conflict_holds_only_exact_occurrence(self):
         url = gd.URL + "/south-jersey-gas-energy-assistance-event"
@@ -132,6 +153,12 @@ class GreatDayTests(unittest.TestCase):
             row, reason = gd._detail(url, changed, detail(title, body.replace("19", "20"), "Nov 20, 2026", address), NOW)
             self.assertIsNotNone(row)
             self.assertIsNone(reason)
+
+    def test_pennsylvania_school_street_uses_district_confirmed_venue_name(self):
+        self.assertEqual(
+            gd._location("201 N. Pennsylvania Ave.", "Pennsylvania Avenue School community event."),
+            ("Pennsylvania Avenue School", "201 North Pennsylvania Avenue, Atlantic City, NJ 08401"),
+        )
 
     def test_blank_and_oversized_body_do_not_become_card_excerpt(self):
         url = gd.URL + "/test-event"

@@ -1,11 +1,11 @@
 import json
 import unittest
 from copy import deepcopy
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from unittest.mock import Mock, patch
 from urllib.parse import urlencode
 
-from icalendar import Calendar
+from icalendar import Calendar, Event
 from lzstring import LZString
 from bs4 import BeautifulSoup
 
@@ -95,6 +95,46 @@ class AtlanticCityCommunityTest(unittest.TestCase):
     def test_county_malformed_branch_street_uses_official_directory(self):
         actual = ac._county_location('801 Shore 08244, Somers Point, NJ, 08244, US', 'Pre-K storytime.')
         self.assertEqual(actual[1], '801 Shore Road, Somers Point, NJ 08244')
+
+    def test_county_normalizes_markup_before_shared_cap_and_keeps_override_prose(self):
+        start = (datetime.now(timezone.utc) + timedelta(days=2)).replace(
+            hour=14, minute=0, second=0, microsecond=0)
+        calendar = Calendar()
+        calendar.add('VERSION', '2.0')
+        expected = []
+        for index in range(2):
+            prose = f'Full occurrence {index} narrative with <literal text>.\nFinal admission condition {index}.'
+            raw = (f'<p>Full occurrence {index} narrative with &lt;literal text&gt;.</p><span data-layout="'
+                   + 'x' * 12000 + f'"></span><p>Final admission condition {index}.</p>')
+            self.assertGreater(len(raw), 12000)
+            self.assertEqual(ac._full_description(raw), prose)
+            event = Event()
+            event.add('UID', 'county-markup-boundary')
+            event.add('SUMMARY', 'Public library workshop')
+            event.add('DTSTART', start + timedelta(days=index))
+            event.add('DTEND', start + timedelta(days=index, hours=1))
+            event.add('DESCRIPTION', raw)
+            event.add('LOCATION', '1 Swift Drive, Egg Harbor Township, NJ 08234')
+            event.add('URL', 'https://atlanticcounty.librarycalendar.com/event/public-workshop')
+            if index:
+                event.add('RECURRENCE-ID', start + timedelta(days=index))
+            else:
+                event.add('RRULE', {'FREQ': 'DAILY', 'COUNT': 2})
+            calendar.add_component(event)
+            expected.append(prose)
+        rows = ac._normalize_ics(calendar.to_ical().decode(), ac.COUNTY)
+        self.assertEqual([row['description'] for row in rows], expected)
+        # StyledCalendar enters this seam with plain text already extracted.
+        # Its literal angle brackets must survive without a second HTML pass.
+        for event, prose in zip(calendar.walk('VEVENT'), expected):
+            event.pop('DESCRIPTION')
+            event.add('DESCRIPTION', prose)
+            event.pop('URL')
+            event.add('URL', ac.SOURCES[ac.CITY_LIBRARY][0])
+        rows = ac._normalize_ics(calendar.to_ical().decode(), ac.CITY_LIBRARY,
+                                 locations={'county-markup-boundary': ac.MAIN_LIBRARY},
+                                 already_normalized=True)
+        self.assertEqual([row['description'] for row in rows], expected)
 
     def test_numbered_street_preserves_suite_in_street_component(self):
         address, city = ac._nj_address('160 S. Pitney Road, Suite 3-4, Galloway, NJ 08205')

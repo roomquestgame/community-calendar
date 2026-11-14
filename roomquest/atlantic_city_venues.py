@@ -152,12 +152,18 @@ def reviewed_venue_location(key, venue, address):
     return None
 
 
-def _row(key, title, start, end, url, identity, body, *, image=None, category=""):
+def _row(key, title, start, end, url, identity, body, *, image=None, category="",
+         already_normalized=False):
     if EXCLUDED.search(title):
         return None
     if not event_url(key, url):
         raise ValueError("atlantic_city_event_identity")
-    body = narrative(body)
+    if not already_normalized:
+        body = narrative(body)
+    elif not isinstance(body, str) or not body.strip():
+        raise ValueError("atlantic_city_description_missing")
+    elif len(body) > MAX_DESCRIPTION:
+        raise ValueError("atlantic_city_description_limit")
     if end is not None and end <= start:
         raise ValueError("atlantic_city_schedule_conflict")
     venue, address, city = VENUES[key]
@@ -285,7 +291,7 @@ def _somers_brew(soup, now):
                 end = _clock(day, clock_end) if clock_end else None
                 if _within(start, end, now):
                     yield _row(SOMERS_BREW, label, start, end, SOURCES[SOMERS_BREW][0],
-                               f"{weekday}:{day}", body)
+                               f"{weekday}:{day}", body, already_normalized=True)
             day += timedelta(days=1)
 
 
@@ -316,7 +322,7 @@ def _seaside(soup, now):
                     start = _clock(day, _text(item.select_one(".pool-time")))
                     if _within(start, None, now):
                         yield _row(SEASIDE, title, start, None, SOURCES[SEASIDE][0],
-                                   f"{weekday}:{title}:{day}", body)
+                                   f"{weekday}:{title}:{day}", body, already_normalized=True)
                 day += timedelta(days=1)
     # One-off sound bowl sessions share a page with Wildwood. Select only the
     # explicitly named Harrah's session; never transplant the other venue.
@@ -337,7 +343,8 @@ def _seaside(soup, now):
                 # pricing and booking conditions, exactly as the host explains it.
                 body = narrative(feature)
                 yield _row(SEASIDE, _text(feature.select_one(".fe-title")), start, end,
-                           SOURCES[SEASIDE][0], "sound-bowl:" + day.isoformat(), body)
+                           SOURCES[SEASIDE][0], "sound-bowl:" + day.isoformat(), body,
+                           already_normalized=True)
 
 
 def _josie(source, fetch, deadline_at):
@@ -412,9 +419,10 @@ def _carolines(soup, now):
         if len(candidates) != 1:
             continue
         for item in card.select(".row"):
-            body = _text(item.select_one(".col-sm-8"))
-            if not re.search(r"\b(?:trivia|bingo|karaoke|open mic|live music)\b", body, re.I):
+            body_node = item.select_one(".col-sm-8")
+            if not re.search(r"\b(?:trivia|bingo|karaoke|open mic|live music)\b", _text(body_node), re.I):
                 continue
+            body = narrative(body_node)
             clocks = re.split(r"\s+[-–]\s+", _text(item.select_one(".col-sm-4")))
             if len(clocks) != 2:
                 raise ValueError("carolines_schedule_changed")
@@ -422,9 +430,9 @@ def _carolines(soup, now):
             if end <= start:
                 end += timedelta(days=1)
             if _within(start, end, now):
-                title = body.split("|")[0].strip()
+                title = " ".join(body.split("|")[0].split())
                 yield _row(CAROLINES, title, start, end, SOURCES[CAROLINES][0],
-                           f"{title}:{candidates[0]}", body)
+                           f"{title}:{candidates[0]}", body, already_normalized=True)
 
 
 def _smithville(soup, fetch, now):
@@ -502,7 +510,8 @@ def _smithville(soup, fetch, now):
                 continue
             start, end = _clock(start.date(), clocks[1]), _clock(start.date(), clocks[2])
         if _within(start, end, now):
-            yield _row(SMITHVILLE, title, start, end, url, path + ":" + encoded, body, image=image)
+            yield _row(SMITHVILLE, title, start, end, url, path + ":" + encoded, body,
+                       image=image, already_normalized=True)
 
 
 def collect(source, fetch, *, deadline_at=None, now=None):

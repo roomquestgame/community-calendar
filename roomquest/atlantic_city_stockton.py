@@ -18,7 +18,7 @@ from zoneinfo import ZoneInfo
 from bs4 import BeautifulSoup
 from icalendar import Calendar
 
-from roomquest.atlantic_city_community import _full_description, _nj_address
+from roomquest.atlantic_city_community import MAX_DESCRIPTION, _full_description, _nj_address
 from roomquest.mapsee_adapter import plain, record, timestamp
 
 
@@ -298,8 +298,13 @@ def _pac(payload, native_payload, now):
                     end = match['end']
                 extra = match['description']
                 if extra:
-                    full = extra if plain(narrative) in plain(extra) else narrative + '\n\n' + extra
-                    full = _full_description(full)
+                    # Both inputs are already normalized publisher text. A
+                    # second HTML parse would erase literal angle-bracket prose
+                    # decoded from entities, including admission instructions.
+                    full = (extra if ' '.join(narrative.split()) in ' '.join(extra.split())
+                            else narrative + '\n' + extra)
+                    if len(full) > MAX_DESCRIPTION:
+                        raise ValueError('publisher_description_limit')
             if venue is None:
                 venue = REVIEWED_CARD_VENUES.get((identifier, _key(title)))
             if 'student matinee' in subtitle.casefold():

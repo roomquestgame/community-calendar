@@ -78,6 +78,20 @@ class StocktonCalendarTest(unittest.TestCase):
         self.assertNotIn('Copied title', row['description'])
         self.assertEqual(row['venue_address'], st.MAIN_STREET)
 
+    @patch.object(st, 'record', side_effect=preview)
+    def test_normalized_literals_and_complete_final_suffix_survive_merge(self, _):
+        card_text = 'Read <card-only condition> and keep the final condition.'
+        native_text = ('Read <native-only condition> and keep the final condition.\n'
+                       + 'A complete publisher paragraph. ' * 80
+                       + 'Final instruction: retain <literal text> exactly.')
+        card_html = '<p>' + card_text.replace('<', '&lt;').replace('>', '&gt;') + '</p>'
+        native_html = '<p>' + native_text.replace('<', '&lt;').replace('>', '&gt;') + '</p>'
+        row = st._pac(pac_card(body=card_html),
+                      native_feed(native_event(body=native_html)), NOW)[0]
+        self.assertEqual(row['description'], card_text + '\n' + native_text)
+        self.assertGreater(len(row['description']), 2000)
+        self.assertTrue(row['description'].endswith('Final instruction: retain <literal text> exactly.'))
+
     def test_native_oversize_is_rejected_without_clipping(self):
         with self.assertRaisesRegex(ValueError, 'publisher_description_limit'):
             st._native_performances(native_feed(native_event(body='<p>' + 'x' * 12001 + '</p>')))

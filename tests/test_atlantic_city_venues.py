@@ -28,11 +28,12 @@ class AtlanticCityVenueTests(unittest.TestCase):
         return result, fetch
 
     def test_anchor_preserves_complete_prose_and_ignores_hidden_cancel_label(self):
-        body = ("A detailed account of the artists, music and admission policies. " * 45) + "Final sentence."
+        body = ("A detailed account of the artists, music and admission policies. " * 45) + "Bring <admission notes>. Final sentence."
+        encoded_body = body.replace('<', '&lt;').replace('>', '&gt;')
         card = f"""<div class="w-dyn-item"><a id="event-location" href="/shows/community-concert"></a>
           <div id="event-start">November 18, 2026 8:00 PM</div><div id="event-title">Community Concert</div>
           <div class="canclled w-condition-invisible">Show Cancelled</div>
-          <div id="event-desc"><p>{body}</p><script>untrusted script</script></div></div>"""
+          <div id="event-desc"><p>{encoded_body}</p><script>untrusted script</script></div></div>"""
         payload = '<div class="collection-list">' + card + card.replace('w-condition-invisible', '').replace('community-concert', 'cancelled-concert') + '</div>'
         rows, fetch = self.collect(venues.ANCHOR, payload)
         self.assertEqual(len(rows), 1)
@@ -83,6 +84,11 @@ class AtlanticCityVenueTests(unittest.TestCase):
         for body in ("<script>no event prose</script>", "a" * 12001):
             with self.assertRaises(ValueError):
                 venues.narrative(body)
+        for body in (" \n\t", "a" * 12001):
+            with self.assertRaises(ValueError):
+                venues._row(venues.SOMERS_BREW, "DJ Trivia", NOW + timedelta(days=2), None,
+                            venues.SOURCES[venues.SOMERS_BREW][0], "bounded-prose", body,
+                            already_normalized=True)
 
     def test_published_end_keeps_an_ongoing_event_during_its_last_hour(self):
         now = datetime.now(timezone.utc)
@@ -121,12 +127,14 @@ class AtlanticCityVenueTests(unittest.TestCase):
     def test_somers_month_scoping_and_unpublished_mahjong_time(self):
         payload = """<main><h1>November Hours – Open 7 days</h1><p>705 W New York Avenue</p>
           <p>MONDAYS – MAHJONG: Join the crew.</p>
-          <p>WEDNESDAYS – DJ TRIVIA: Signups at 7pm. No cost to participate.</p>
+          <p>WEDNESDAYS – DJ TRIVIA: Signups at 7pm. No cost to participate. Use &lt;team name&gt; on signup.</p>
           <p>THURSDAYS – LIVE MUSIC (6-8pm) – Weekly rotating local artists.</p></main>"""
         rows, _ = self.collect(venues.SOMERS_BREW, payload)
         self.assertEqual(len(rows), 4)
         self.assertEqual({row["title"] for row in rows}, {"DJ Trivia", "Live Music"})
         self.assertTrue(all(row["starts_at"].startswith("2026-11-") for row in rows))
+        self.assertTrue(all(row["description"].endswith("Use <team name> on signup.")
+                            for row in rows if row["title"] == "DJ Trivia"))
         stale, _ = self.collect(venues.SOMERS_BREW, payload, now=datetime(2026, 12, 1, tzinfo=timezone.utc))
         self.assertEqual(stale, [])
 
@@ -135,9 +143,9 @@ class AtlanticCityVenueTests(unittest.TestCase):
           <p class="pool-lead">Running Saturdays and Sundays, September 12 through December 27, 2026.</p>
           <div class="pool-day"><span class="pool-day-name">Saturday</span><div class="pool-class">
           <span class="pool-time">9:00 AM</span><h4>Yin + Restore Yoga</h4><p>Longer holds for a calm practice.</p>
-          </div></div><p class="pool-cta">No booking needed. $25 for non-hotel guests.</p></div>
+          </div></div><p class="pool-cta">No booking needed. $25 for non-hotel guests. Read &lt;class instructions&gt;.</p></div>
           <div class="feature-event-body"><h2 class="fe-title">Sound Bowl Meditation</h2>
-          <p>Crystal singing bowls, pillows and blankets.</p>
+          <p>Crystal singing bowls, pillows and blankets. Read &lt;meditation instructions&gt;.</p>
           <div class="fe-session"><p class="fe-s-label">Saturday · November 14, 2026</p>
           <span class="fe-s-time">6:00 PM</span><p class="fe-s-doors">Wildwood Crest</p></div>
           <div class="fe-session"><p class="fe-s-label">Friday · December 4, 2026</p>
@@ -147,18 +155,20 @@ class AtlanticCityVenueTests(unittest.TestCase):
         self.assertEqual(len(sound), 1)
         self.assertTrue(sound[0]["starts_at"].startswith("2026-12-04T19:00"))
         self.assertTrue(sound[0]["ends_at"].startswith("2026-12-04T20:00"))
+        self.assertIn("Read <meditation instructions>.", sound[0]["description"])
         yoga = [row for row in rows if "Yoga" in row["title"]]
         self.assertEqual(yoga[-1]["starts_at"][:10], "2026-12-26")
         self.assertTrue(all("777 Harrah's" in row["venue_address"] for row in rows))
         self.assertTrue(all("No booking needed" in row["description"] for row in yoga))
+        self.assertTrue(all("Read <class instructions>." in row["description"] for row in yoga))
 
     def test_carolines_only_current_week_and_weekday_agreement(self):
         payload = """<div class="onespecial"><h2>Monday November 16th</h2><div class="row">
-          <div class="col-sm-8">DJ Trivia | Hosted by Starshield Entertainment</div>
+          <div class="col-sm-8">DJ Trivia | Hosted by Starshield Entertainment. Use &lt;team name&gt; on signup.</div>
           <div class="col-sm-4">07:00 PM - 09:00 PM</div></div></div>"""
         rows, _ = self.collect(venues.CAROLINES, payload)
         self.assertEqual(len(rows), 1)
-        self.assertEqual(rows[0]["description"], "DJ Trivia | Hosted by Starshield Entertainment")
+        self.assertEqual(rows[0]["description"], "DJ Trivia | Hosted by Starshield Entertainment. Use <team name> on signup.")
         wrong_weekday, _ = self.collect(venues.CAROLINES, payload.replace("Monday", "Tuesday"))
         self.assertEqual(wrong_weekday, [])
         stale, _ = self.collect(venues.CAROLINES, payload, now=datetime(2026, 12, 1, tzinfo=timezone.utc))
@@ -196,9 +206,11 @@ class AtlanticCityVenueTests(unittest.TestCase):
               <span class="ic-single-next">Saturday, November 28</span>
               <span class="ic-single-starttime">{clock}</span></div>'''
         listing = '<div class="ic-list-events">' + card("01:00 PM", "2026-11-28-13-00") + card("05:00 PM", "2026-11-28-17-00") + '</div>'
-        body = "Historic Smithville, 615 E. Moss Mill Rd, Smithville, NJ 08205. " + "Holiday family performances. " * 80
+        body = ("Historic Smithville, 615 E. Moss Mill Rd, Smithville, NJ 08205. "
+                + "Holiday family performances. " * 80 + "Bring <program notes>. Final participation condition.")
+        encoded_body = body.replace('<', '&lt;').replace('>', '&gt;')
         detail = f'''<div class="ic-event-header"><h1>DICKENS FESTIVAL / RIDDLESBROOD</h1></div>
-          <div class="ic-full-description">{body}</div><div id="detail-date-list">
+          <div class="ic-full-description">{encoded_body}</div><div id="detail-date-list">
           <li class="alldates">Saturday, November 28 <span>01:00 PM</span></li>
           <li class="alldates">Saturday, November 28 <span>05:00 PM</span></li></div>'''
         fetch = Mock(side_effect=lambda url, accept: listing if url == venues.SOURCES[venues.SMITHVILLE][0] else detail)

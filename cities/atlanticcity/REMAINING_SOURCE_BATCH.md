@@ -14,7 +14,7 @@ This batch completes accessible calendars identified during the Atlantic City di
 | Oceanside I Family Success Center | https://oceanside1fsc.org/calendar%2Fevents | 6 | Current linked PDF, complete native descriptions and registration conditions |
 | Oceanside II Family Success Center | https://oceanside2fsc.org/calendar | 5 | Current English PDF, complete native descriptions and registration conditions |
 
-The captured replay contains **43 occurrences**, zero blank descriptions, zero over-limit descriptions and zero incomplete street/ZIP addresses. These are pre-deployment expectations; production counts are verified separately after the collector and migration are deployed. The machine-readable evidence records full-description MD5/SHA-256, dates, addresses and source identities for every expected occurrence.
+The captured replay contains **43 occurrences**, zero blank descriptions, zero over-limit descriptions and zero incomplete street/ZIP addresses. These were the pre-deployment expectations. Actual production collection now contains all 43 staged occurrences with matching full description hashes and postal streets. Forty additional events were public at the first completed readback; one Ducktown occurrence correctly matches the existing Noyes event, while two map destinations receive the reviewed points in the final correction batch. The machine-readable evidence records full-description MD5/SHA-256, dates, addresses and source identities for every expected occurrence.
 
 ## Description and schedule requirements
 
@@ -38,6 +38,10 @@ Oceanside's November 19 Friendsgiving names Atlantic Cape Community College with
 
 ## Release and verification
 
-Deploy this combined collector batch first, wait for READY, then deploy the seven-source database migration in one existing Database deploy workflow run. Enrollment, coverage, demand and publication requests only target newly inserted IDs. Existing source keys/feed URLs are checked for collisions. The current helper, description constraint and completion trigger are narrowly patched with drift checks, preserving concurrent regional work.
+Collector PR #211 deployed successfully before backend PR #912. Database run [43637780151](https://github.com/roomquestgame/RoomQuestGame/actions/runs/43637780151) applied the seven-source migration in one run and verified all 476 repository migration versions on production. Enrollment, coverage, demand and publication requests only target newly inserted IDs. Existing source keys/feed URLs are checked for collisions. The current helper, description constraint and completion trigger are narrowly patched with drift checks, preserving concurrent regional work.
 
 Focused parser and real category-worker tests cover complete prose, source identity, schedules, deduplication, exact PDF editions, URL bounds, checkpoint durability and failure behavior. Captured source replay is not proof of production networking: this local environment's guarded publisher DNS check returns `dns_unavailable`. Final verification must read actual production source status, fresh staged snapshots and active public records, compare full description hashes, validate full postal addresses and list real unpublished rows rather than historical address-wait entries.
+
+## Final preservation review
+
+[The consolidated correction review](../../docs/evidence/atlantic-city-description-guard-review-20261114.md) records reproduced future-input cases, their source-scoped fixes, exact venue points and the distinction between retained narratives and rights-gated anonymous display. Current publisher narratives were unaffected; final rollout evidence is maintained with the application production audit.
