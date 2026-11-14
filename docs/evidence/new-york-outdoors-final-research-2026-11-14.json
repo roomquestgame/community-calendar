@@ -1,0 +1,653 @@
+{
+  "reviewed_at": "2026-11-14T23:34:39.912658+00:00",
+  "snapshot_anchor": "2026-11-14T23:27:28.726055+00:00",
+  "location": "New York, NY — all five boroughs",
+  "status": "Nine complete collector implementations and local captures. Production transport and published counts are verified separately by the deployment readback.",
+  "source_count": 9,
+  "new_sources": 8,
+  "repaired_existing_sources": 1,
+  "accepted_total": 723,
+  "held_total": 447,
+  "long_descriptions_over2000": 98,
+  "sources": [
+    {
+      "source": {
+        "source_key": "fordham_university_ny",
+        "feed_url": "https://calendar.fordham.edu/",
+        "kind": "html",
+        "platform_adapter": "html",
+        "timezone": "America/New_York"
+      },
+      "label": "Fordham University — public in-person timed events",
+      "scope": "Complete official Localist query for 60 days: all 3 pages and 239 native records. Accept only the Public audience, published/live status, in-person attendance and explicitly timed instances. Hold 67 all-day records and 157 nonpublic or virtual records. Building and room names retain their reviewed physical locations.",
+      "accepted": 15,
+      "held": 224,
+      "held_reasons": {
+        "all_day_without_hours": 67,
+        "event_not_public": 157
+      },
+      "description_lengths": {
+        "min": 275,
+        "max": 1173
+      },
+      "http_calls": 3,
+      "chunks": 1,
+      "checkpoint_bytes": 0,
+      "description_hashes_captured": true
+    },
+    {
+      "source": {
+        "source_key": "bronx_river_alliance_ny",
+        "feed_url": "https://bronxriver.org/visit-the-river/calendar",
+        "kind": "html",
+        "platform_adapter": "html",
+        "timezone": "America/New_York"
+      },
+      "label": "Bronx River Alliance",
+      "scope": "Complete current calendar with 12 fully hydrated detail pages: 6 physical events and 6 virtual meetings. Process 3 details per persisted chunk. Preserve the native date/start/end table and full Elementor body. Resolve each park separately; use River House only for actual River House events.",
+      "accepted": 6,
+      "held": 6,
+      "held_reasons": {
+        "event_not_public": 6
+      },
+      "description_lengths": {
+        "min": 351,
+        "max": 1031
+      },
+      "http_calls": 13,
+      "chunks": 4,
+      "checkpoint_bytes": 12452,
+      "description_hashes_captured": true
+    },
+    {
+      "source": {
+        "source_key": "wave_hill_ny",
+        "feed_url": "https://www.wavehill.org/calendar",
+        "kind": "html",
+        "platform_adapter": "html",
+        "timezone": "America/New_York"
+      },
+      "label": "Wave Hill",
+      "scope": "Complete chronological calendar through 60 days, using 10 normal HTML calendar pages and 55 distinct full detail pages. Import only explicit native listed occurrences. Preserve full rich-text bodies, prices and accessibility terms. Retain 18 distinct interior meeting labels with a visibly approximate property access address at 4900 Independence Avenue. Never invent exhibition opening hours.",
+      "accepted": 78,
+      "held": 7,
+      "held_reasons": {
+        "event_not_public": 3,
+        "all_day_without_hours": 4
+      },
+      "description_lengths": {
+        "min": 145,
+        "max": 2933
+      },
+      "http_calls": 65,
+      "chunks": 19,
+      "checkpoint_bytes": 161582,
+      "description_hashes_captured": true
+    },
+    {
+      "source": {
+        "source_key": "brooklyn_bridge_park_ny",
+        "feed_url": "https://brooklynbridgepark.org/events/",
+        "kind": "html",
+        "platform_adapter": "html",
+        "timezone": "America/New_York"
+      },
+      "label": "Brooklyn Bridge Park",
+      "scope": "Complete 46-event native 60-day calendar, matching full WordPress ACF bodies and 3 native map locations, in exactly 3 GET requests. Cross-check all IDs, counts, dates and clocks. Hold one cancelled and one ended record. Bargemusic/Boathouse uses its actual 10 Montague Street destination, not park headquarters at 334 Furman Street.",
+      "accepted": 44,
+      "held": 2,
+      "held_reasons": {
+        "event_not_current": 1,
+        "event_not_public": 1
+      },
+      "description_lengths": {
+        "min": 556,
+        "max": 1466
+      },
+      "http_calls": 3,
+      "chunks": 1,
+      "checkpoint_bytes": 0,
+      "description_hashes_captured": true
+    },
+    {
+      "source": {
+        "source_key": "bkup_brooklyn_ny",
+        "feed_url": "https://www.bkup.nyc/events",
+        "kind": "html",
+        "platform_adapter": "html",
+        "timezone": "America/New_York"
+      },
+      "label": "Brooklyn Uprising / BKUP",
+      "scope": "Hydrate all 136 public listing detail URLs in 46 bounded chunks. Use the full editorial body, never shortened JSON-LD. Preserve complete coach biographies, fee/no-show policies, waivers, age 13+ terms, pass/membership requirements and offsite check-in directions. Accept 66 physical occurrences within 60 days; hold 59 outside the current horizon and 11 private one-on-one physical therapy appointments. Distinguish the main gym at 20 John Street from the Ritual Moves room at 32 Pearl Street.",
+      "accepted": 66,
+      "held": 70,
+      "held_reasons": {
+        "event_not_current": 59,
+        "event_not_public": 11
+      },
+      "description_lengths": {
+        "min": 266,
+        "max": 1723
+      },
+      "http_calls": 137,
+      "chunks": 46,
+      "checkpoint_bytes": 163214,
+      "description_hashes_captured": true
+    },
+    {
+      "source": {
+        "source_key": "nyrr_open_run_ny",
+        "feed_url": "https://prod.nyrr.org/open-run",
+        "kind": "html",
+        "platform_adapter": "html",
+        "timezone": "America/New_York"
+      },
+      "label": "NYRR Open Run — NYC parks",
+      "scope": "Read all 16 linked current SportsEvent detail pages: 15 NYC parks and one excluded New Jersey park. Expand only the explicit weekday/time within the publisher’s finite first/last registration dates and the 60-day horizon. Do not invent an event duration or indefinite recurrence. Capture 95 dated occurrences with complete meeting directions, course, access and FAQ text. Named street access estimates retain the publisher’s exact meeting coordinates and a visible approximate qualifier.",
+      "accepted": 95,
+      "held": 1,
+      "held_reasons": {
+        "venue_not_reviewed": 1
+      },
+      "description_lengths": {
+        "min": 2616,
+        "max": 3651
+      },
+      "http_calls": 17,
+      "chunks": 6,
+      "checkpoint_bytes": 385373,
+      "description_hashes_captured": true
+    },
+    {
+      "source": {
+        "source_key": "brooklyn_community_board_6_ny",
+        "feed_url": "https://brooklyncb6.cityofnewyork.us/events/",
+        "kind": "html",
+        "platform_adapter": "html",
+        "timezone": "America/New_York"
+      },
+      "label": "Brooklyn Community Board 6",
+      "scope": "Process all 98 native TEC records across 2 pages. Preserve complete native description strings; hold 12 blank narratives. Resolve named Old Stone House and farmers market entries from exact title/body bindings and primary venue evidence. Parse explicit native end clocks; repeated start/end values otherwise mean an unknown end. Bind seven Bike Bus estimates to the exact title, body, linked organizer and Thursday 08:00 clock. Bind the tree lighting to native ID 9086, official 2026 date and 16:30 start. All estimated meeting points are visibly qualified.",
+      "accepted": 62,
+      "held": 36,
+      "held_reasons": {
+        "event_not_current": 3,
+        "venue_not_reviewed": 4,
+        "event_not_public": 5,
+        "description_missing": 12,
+        "all_day_without_hours": 12
+      },
+      "description_lengths": {
+        "min": 10,
+        "max": 2205
+      },
+      "http_calls": 2,
+      "chunks": 1,
+      "checkpoint_bytes": 0,
+      "description_hashes_captured": true
+    },
+    {
+      "source": {
+        "source_key": "transportation_alternatives_ny",
+        "feed_url": "https://transalt.org/events",
+        "kind": "html",
+        "platform_adapter": "html",
+        "timezone": "America/New_York"
+      },
+      "label": "Transportation Alternatives",
+      "scope": "Use the publicly advertised Mobilize organizer 35772 GET endpoint. Process all 13 future native events; accept only approved public physical events with disclosed event-specific street addresses and points. Capture 11 timeslots from 8 native events. Hold 4 private-address events and one virtual event. Do not guess privately withheld meeting sites or substitute organizer offices.",
+      "accepted": 11,
+      "held": 5,
+      "held_reasons": {
+        "event_not_public": 5
+      },
+      "description_lengths": {
+        "min": 460,
+        "max": 1822
+      },
+      "http_calls": 1,
+      "chunks": 1,
+      "checkpoint_bytes": 0,
+      "description_hashes_captured": true
+    },
+    {
+      "source": {
+        "source_key": "municipal_mapsee_0e46855a44eb788f36a2c0ab",
+        "feed_url": "https://data.cityofnewyork.us/resource/w3wp-dpdi.json",
+        "kind": "html",
+        "platform_adapter": "html",
+        "timezone": "America/New_York"
+      },
+      "label": "NYC Parks — citywide public events, next14days",
+      "scope": "Repair the existing broad citywide source 4603. Query the complete native rolling 14-day Socrata window: 442 current records with a 501-row overflow sentinel. Review all 202 native venue/name/point groups across the five boroughs. Preserve complete descriptions, registration terms, instructors and contacts; unwrap typed native event links. Apply explicit direct-source ownership for City Parks Foundation, NYRR, Wave Hill and Staten Island Urban Park Rangers, plus three exact Greenbelt GUID/registration-ID pairs. Hold privately withheld Randall’s Island meeting points and conflicting Oak Ridge coordinates. The broad source is not relabeled as a Staten Island subset.",
+      "accepted": 346,
+      "held": 96,
+      "held_reasons": {
+        "event_not_current": 1,
+        "other_source_owns_event": 68,
+        "event_not_public": 23,
+        "venue_conflict": 2,
+        "street_unresolved": 2
+      },
+      "description_lengths": {
+        "min": 60,
+        "max": 1915
+      },
+      "http_calls": 1,
+      "chunks": 1,
+      "checkpoint_bytes": 0,
+      "description_hashes_captured": true
+    }
+  ],
+  "registry_scope": {
+    "existing_repair": {
+      "id": 4603,
+      "source_key": "municipal_mapsee_0e46855a44eb788f36a2c0ab",
+      "baseline_approval": "paused",
+      "baseline_health": "disabled",
+      "baseline_preview_error": "event_link_missing",
+      "baseline_active_public": 0,
+      "old_kind": "json",
+      "old_adapter": "socrata",
+      "new_profile": [
+        "https://data.cityofnewyork.us/resource/w3wp-dpdi.json",
+        "html",
+        "html"
+      ]
+    },
+    "new_aliases": "Eight new canonical hosts/source keys were checked against the live production registry and had no already working published source.",
+    "previous_working_excluded": [
+      "Food Bank for New York City",
+      "Brooklyn Bird Club",
+      "Scandinavia House"
+    ]
+  },
+  "complete_description_policy": {
+    "rules": "Accept no empty description or narrative exceeding 12,000 characters. Preserve complete publisher text after shared HTML normalization; never apply a generic 2,000-character cap or substitute a listing/JSON-LD excerpt. Every accepted record carries its complete description SHA-256.",
+    "detail_hydration": "Hydrate 136 BKUP, 55 Wave Hill, 12 Bronx River and 16 NYRR normal HTML detail pages before releasing their completed snapshots.",
+    "native_apis": "Use complete native bodies from Fordham Localist, CB6 TEC, Brooklyn Bridge Park ACF, Transportation Alternatives Mobilize and the official NYC Parks municipal dataset."
+  },
+  "venue_review_file": "new-york-outdoors-final-venue-review-2026-11-14.json",
+  "capture_file": "new-york-outdoors-final-capture-2026-11-14.json",
+  "reviewed_places": 268,
+  "reviewed_intersections": 84,
+  "remaining_source_holds": [
+    {
+      "publisher": "CUNY public events",
+      "official_url": "https://events.cuny.edu/",
+      "status": "held_robots_denied",
+      "reason": "Official robots allows several named search-engine agents but explicitly denies all paths to User-agent:*. The production collector user agent is denied. No calendar/detail fetch or user-agent spoof was attempted.",
+      "robots_file": "cuny-robots.txt"
+    },
+    {
+      "publisher": "The New School",
+      "official_url": "https://events.newschool.edu/",
+      "canonical_detail_host": "https://event.newschool.edu/",
+      "status": "held_canonical_access_denied",
+      "reason": "The allowed old-host sitemap lists 138 normal event paths. Three permitted detail probes redirected to event.newschool.edu, whose robots request returned HTTP 403. Old-host API paths are explicitly robots-denied. Public frontend search discovery does not justify bypassing the canonical access block. No private credentials or blocked canonical details were requested."
+    },
+    {
+      "publisher": "Gowanus Canal Conservancy",
+      "official_url": "https://gowanuscanalconservancy.org/events/",
+      "status": "held_robots_admission_unresolved",
+      "reason": "The official robots endpoint returned HTTP 202 twice, so the guarded transport could not establish publisher admission. No calendar/details were fetched and no workaround was used."
+    },
+    {
+      "publisher": "NYC Bird Alliance",
+      "official_url": "https://nycbirdalliance.org/events-birding/programs-and-events/local-trips-classes",
+      "calendar_url": "https://nycbirdalliance.app.neoncrm.com/event-list",
+      "status": "held_robots_denied_data_routes",
+      "reason": "The public Neon calendar HTML shell is allowed and returned HTTP 200, but its embedded axios POST route /nx/portal/event-list/list is robots-denied. Advertised feed and Outlook export routes under /nx are also denied. No POST request was made; adding POST support would not resolve the robots block. The legacy Mikle widget 153255 returned HTTP 404.",
+      "routes": [
+        {
+          "url": "https://nycbirdalliance.app.neoncrm.com/event-list",
+          "robots_allowed": true
+        },
+        {
+          "url": "https://nycbirdalliance.app.neoncrm.com/nx/portal/event-list/list",
+          "robots_allowed": false
+        },
+        {
+          "url": "https://nycbirdalliance.app.neoncrm.com/nx/feed?orgId=nycbirdalliance",
+          "robots_allowed": false
+        },
+        {
+          "url": "https://nycbirdalliance.app.neoncrm.com/nx/publicaccess/outlookCalendar?orgId=nycbirdalliance",
+          "robots_allowed": false
+        }
+      ],
+      "native_public_method": "POST",
+      "native_public_route": "/nx/portal/event-list/list",
+      "native_read_only_search_body": {
+        "eventName": "",
+        "categoryId": "",
+        "topicId": "",
+        "countMethod": "",
+        "eventPrice": "",
+        "eventLocation": "",
+        "year": "",
+        "month": "",
+        "day": "",
+        "anotherEvent": false
+      },
+      "native_require_login": false
+    },
+    {
+      "publisher": "Freshkills Park Alliance",
+      "official_url": "https://freshkillspark.org/calendar",
+      "alternate_url": "https://freshkillspark.org/upcoming-events",
+      "status": "held_no_current_future_program",
+      "reason": "Allowed current calendar views expose no upcoming dated program. The latest concrete captured event is April 4, 2026 and has expired. No recurrence or public park hours were invented from old entries."
+    },
+    {
+      "publisher": "Socrates Sculpture Park",
+      "official_url": "https://www.socratessculpturepark.org/public-programs/",
+      "status": "held_no_current_future_program",
+      "reason": "The current public-program view has no future program; the latest dated program is October 31, 2026 and has expired. Ongoing exhibition information and visitor hours do not establish a new timed program occurrence."
+    },
+    {
+      "publisher": "Boys Club of New York",
+      "existing_source_id": 4717,
+      "official_url": "https://bcny.org/",
+      "status": "held_existing_robots_denied",
+      "reason": "The existing production baseline is robots_denied. No disallowed endpoint, bypass or unproven reactivation was attempted."
+    },
+    {
+      "publisher": "NYC permitted events datasets",
+      "existing_source_ids": [
+        4604,
+        4605
+      ],
+      "official_url": "https://data.cityofnewyork.us/City-Government/NYC-Permitted-Event-Information/tvpp-9vvx",
+      "status": "held_missing_attendee_semantics_and_content",
+      "reason": "The schema describes permit setup/breakdown windows rather than verified attendee event times. Records lack full event descriptions and attendee links and include private birthday parties. Correcting timezone/query syntax alone would invent public event details."
+    }
+  ],
+  "previous_inventory_items_resolved": [
+    {
+      "publisher": "City Parks Foundation",
+      "status": "completed_previous_batch",
+      "evidence": "new-york-outdoors-remaining-research-2026-11-14.json"
+    },
+    {
+      "publisher": "NYU",
+      "status": "completed_previous_batch_by_arts",
+      "evidence": "new-york-arts-remaining-research-2026-11-14.json"
+    },
+    {
+      "publisher": "Greenbelt Conservancy",
+      "status": "completed_same_final_batch_by_social",
+      "source_key": "greenbelt_conservancy_staten_island_ny",
+      "official_url": "https://www.eventbrite.com/o/greenbelt-conservancy-10628899098",
+      "accepted": 5,
+      "reason": "The old sigreenbelt.org URL returns 404. The permitted official Eventbrite organizer and all five complete event pages provide the replacement. The direct source owns three exact Parks registration-linked matches and adds the November 20 Lenape/Corn storytime and November 28 orienteering program. No remaining direct-calendar engineering hold is claimed."
+    }
+  ],
+  "per_record_holds": {
+    "Parks": "Only two conflicting Oak Ridge pins and two privately withheld Randall’s Island Team RIVER meeting points remain unresolved location cases. Explicit virtual/cancelled records, direct-source ownership and ended occurrences are diagnosed separately by native ID. The original broad citywide calendar is processed in full.",
+    "CB6": "Hold 12 blank descriptions, 12 all-day entries without hours, 5 nonpublic/virtual entries, 4 missing meeting sites (three Agenda TBD committee meetings and one unspecified Prospect Park bird walk), and 3 ended entries. Bike Bus and tree lighting now have qualified street locations.",
+    "NYRR": "Lincoln Park, New Jersey is outside NYC. All 15 NYC park schedules are implemented.",
+    "Transportation Alternatives": "Four privately withheld event addresses and one virtual event are excluded. No private meeting site is inferred."
+  },
+  "checkpoint_contract": {
+    "keys": [
+      "bkup_brooklyn_ny",
+      "bronx_river_alliance_ny",
+      "nyrr_open_run_ny",
+      "wave_hill_ny"
+    ],
+    "max_details_per_chunk": 3,
+    "manifest_limit": 200,
+    "event_limit": 201,
+    "bytes_limit": 900000,
+    "max_actual_bytes": 385373,
+    "window_start": "America/New_York local date, formatted YYYY-MM-DD",
+    "completed_checkpoint": "Persist a dictionary with cursor equal to manifest_count, never None.",
+    "anchor": "Immutable UTC started_at and four-hour TTL. Retrying a completed checkpoint fetches nothing and returns the identical snapshot.",
+    "listing_budget": "The initial Wave Hill manifest uses at most 10 captured calendar GETs in this window. Once assembled, it can persist with cursor 0 if insufficient time remains for detail hydration. Later chunks perform at most 3 detail GETs."
+  },
+  "tests": {
+    "file": "tests/test_new_york_outdoors_final.py",
+    "passed": 28,
+    "covered": [
+      "Complete native body versus excerpt; fee, waiver and check-in preservation",
+      "Actual yoga room rather than check-in headquarters",
+      "Private appointment and private-location holds",
+      "Exact source profiles and allowed hosts",
+      "Complete pagination and Socrata overflow detection",
+      "Typed municipal event links",
+      "Per-event ownership in a shared park",
+      "Foster event-ID-bound street estimate",
+      "Unknown zero-duration ends and explicit native clocks",
+      "Bounded NYRR recurrence without invented event duration",
+      "Exact source/venue/street/point lookup",
+      "Local-date and completed-checkpoint wire contract",
+      "Immutable anchor, retry replay, tampering and deadline behavior"
+    ]
+  },
+  "access_findings": [
+    {
+      "name": "transalt-final-current",
+      "url": "https://api.mobilize.us/v1/organizations/35772/events?timeslot_end=gte_1794698848",
+      "robots_status": 404,
+      "robots_allowed": true,
+      "status": 200,
+      "redirect": null,
+      "bytes": 32644,
+      "sha256": "e3ad2053cef7af95f2ac8710fc49a0a9729f0205813707f08a41cc7eda4a3890",
+      "file": "transalt-final-current.json",
+      "receipt_file": "final-current-targets-receipts.json"
+    },
+    {
+      "name": "parks-final-current",
+      "url": "https://data.cityofnewyork.us/resource/w3wp-dpdi.json?%24where=endtime+%3E%3D+%272026-11-14T18%3A27%3A28%27+AND+starttime+%3C+%272026-11-28T00%3A00%3A00%27&%24order=starttime%2Cguid&%24limit=501",
+      "robots_status": 200,
+      "robots_allowed": true,
+      "status": 200,
+      "redirect": null,
+      "bytes": 485150,
+      "sha256": "670becc381becaf31f5d5704cd75f26058653b92c0b7f580dab1d6cb7c4fd752",
+      "file": "parks-final-current.json",
+      "receipt_file": "final-current-targets-receipts.json"
+    },
+    {
+      "name": "bridgepark-api",
+      "url": "https://brooklynbridgepark.org/wp-json/tribe/events/v1/events?per_page=100&start_date=2026-11-14&end_date=2027-01-13",
+      "robots_status": 200,
+      "robots_allowed": true,
+      "status": 404,
+      "redirect": null,
+      "bytes": 114,
+      "sha256": "321227fe038fc2f282fd904a174fbaf931eb5d763ce64eded0e6a3f31d32119f",
+      "file": "bridgepark-api.json",
+      "receipt_file": "round1-receipts.json"
+    },
+    {
+      "name": "cb6-api",
+      "url": "https://brooklyncb6.cityofnewyork.us/wp-json/tribe/events/v1/events?per_page=100&start_date=2026-11-14&end_date=2027-01-13",
+      "robots_status": 200,
+      "robots_allowed": true,
+      "status": 200,
+      "redirect": null,
+      "bytes": 176424,
+      "sha256": "710b1e683d530591b1b7387331ec78f0a93794d19c32aaa7917b048d93278694",
+      "file": "cb6-api.json",
+      "receipt_file": "round1-receipts.json"
+    },
+    {
+      "name": "fordham-1",
+      "url": "https://calendar.fordham.edu/api/2/events?start=2026-11-14&end=2027-01-13&pp=100&page=1",
+      "robots_status": 200,
+      "robots_allowed": true,
+      "status": 200,
+      "redirect": null,
+      "bytes": 358673,
+      "sha256": "935958f221ab226c76abd16ee6ef7a142be862f579c0b000801c92f471262aaa",
+      "file": "fordham-1.json",
+      "receipt_file": "round1-receipts.json"
+    },
+    {
+      "name": "newschool-detail-0",
+      "url": "https://events.newschool.edu/event/vlcseminarseriesmatterofintell",
+      "robots_status": 200,
+      "robots_allowed": true,
+      "status": 301,
+      "redirect": "https://event.newschool.edu/vlcseminarseriesmatterofintell",
+      "bytes": 73,
+      "sha256": "9758486d840e95b049f43d527152cfe068457408030cb425705ba84086fe19d1",
+      "file": "newschool-detail-0.html",
+      "receipt_file": "round4-receipts.json"
+    },
+    {
+      "name": "newschool-detail-1",
+      "url": "https://events.newschool.edu/event/olehbezborodko",
+      "robots_status": 200,
+      "robots_allowed": true,
+      "status": 301,
+      "redirect": "https://event.newschool.edu/olehbezborodko",
+      "bytes": 57,
+      "sha256": "dc7b2c2c55c9877cfd303015178df982a910b9ab83d524e9395567088bb87231",
+      "file": "newschool-detail-1.html",
+      "receipt_file": "round4-receipts.json"
+    },
+    {
+      "name": "newschool-detail-137",
+      "url": "https://events.newschool.edu/event/macespring27",
+      "robots_status": 200,
+      "robots_allowed": true,
+      "status": 301,
+      "redirect": "https://event.newschool.edu/macespring27",
+      "bytes": 55,
+      "sha256": "3bf639cfd39bbfde9330379341081935c58e3d46cb41d4997cdf1bcb87c33368",
+      "file": "newschool-detail-137.html",
+      "receipt_file": "round4-receipts.json"
+    },
+    {
+      "name": "newschool-canonical-0",
+      "url": "https://event.newschool.edu/vlcseminarseriesmatterofintell",
+      "robots_status": 403,
+      "robots_allowed": false,
+      "receipt_file": "round5-receipts.json"
+    },
+    {
+      "name": "newschool-canonical-1",
+      "url": "https://event.newschool.edu/olehbezborodko",
+      "robots_status": 403,
+      "robots_allowed": false,
+      "receipt_file": "round5-receipts.json"
+    },
+    {
+      "name": "newschool-canonical-137",
+      "url": "https://event.newschool.edu/macespring27",
+      "robots_status": 403,
+      "robots_allowed": false,
+      "receipt_file": "round5-receipts.json"
+    },
+    {
+      "name": "gowanus-recheck",
+      "url": "https://gowanuscanalconservancy.org/events/",
+      "robots_status": 202,
+      "robots_allowed": false,
+      "receipt_file": "round6-receipts.json"
+    },
+    {
+      "name": "birdalliance-neon-list",
+      "url": "https://nycbirdalliance.app.neoncrm.com/np/clients/nycbirdalliance/eventList.jsp",
+      "robots_status": 200,
+      "robots_allowed": true,
+      "status": 302,
+      "redirect": "https://nycbirdalliance.app.neoncrm.com:443/event-list",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "file": "birdalliance-neon-list.html",
+      "receipt_file": "round6-receipts.json"
+    },
+    {
+      "name": "birdalliance-feed",
+      "url": "https://nycbirdalliance.app.neoncrm.com/nx/feed?orgId=nycbirdalliance",
+      "robots_status": 200,
+      "robots_allowed": false,
+      "receipt_file": "round8-receipts.json"
+    },
+    {
+      "name": "birdalliance-outlook",
+      "url": "https://nycbirdalliance.app.neoncrm.com/np/outlookCalendar?orgId=nycbirdalliance",
+      "robots_status": 200,
+      "robots_allowed": true,
+      "status": 302,
+      "redirect": "https://nycbirdalliance.app.neoncrm.com:443/nx/publicaccess/outlookCalendar?orgId=nycbirdalliance",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "file": "birdalliance-outlook.html",
+      "receipt_file": "round8-receipts.json"
+    },
+    {
+      "name": "birdalliance-outlook-canonical",
+      "url": "https://nycbirdalliance.app.neoncrm.com/nx/publicaccess/outlookCalendar?orgId=nycbirdalliance",
+      "robots_status": 200,
+      "robots_allowed": false,
+      "receipt_file": "round9-receipts.json"
+    },
+    {
+      "name": "gowanus",
+      "url": "https://gowanuscanalconservancy.org/events/",
+      "robots_url": "https://gowanuscanalconservancy.org/robots.txt",
+      "robots_status": 202,
+      "robots_redirect": null,
+      "robots_allowed": false
+    },
+    {
+      "name": "bridgepark",
+      "url": "https://brooklynbridgepark.org/events/",
+      "robots_url": "https://brooklynbridgepark.org/robots.txt",
+      "robots_status": 200,
+      "robots_redirect": null,
+      "robots_allowed": true,
+      "status": 200,
+      "redirect": null,
+      "bytes": 248805
+    },
+    {
+      "name": "wavehill",
+      "url": "https://www.wavehill.org/calendar",
+      "robots_url": "https://www.wavehill.org/robots.txt",
+      "robots_status": 200,
+      "robots_redirect": null,
+      "robots_allowed": true,
+      "status": 200,
+      "redirect": null,
+      "bytes": 186688
+    },
+    {
+      "name": "bkup",
+      "url": "https://www.bkup.nyc/events",
+      "robots_url": "https://www.bkup.nyc/robots.txt",
+      "robots_status": 200,
+      "robots_redirect": null,
+      "robots_allowed": true,
+      "status": 200,
+      "redirect": null,
+      "bytes": 413706
+    },
+    {
+      "name": "cuny",
+      "url": "https://events.cuny.edu/",
+      "robots_url": "https://events.cuny.edu/robots.txt",
+      "robots_status": 200,
+      "robots_redirect": null,
+      "robots_allowed": false
+    },
+    {
+      "name": "nyrr",
+      "url": "https://prod.nyrr.org/open-run",
+      "robots_url": "https://prod.nyrr.org/robots.txt",
+      "robots_status": 200,
+      "robots_redirect": null,
+      "robots_allowed": true,
+      "status": 200,
+      "redirect": null,
+      "bytes": 449116
+    }
+  ],
+  "module_sha256": "cce8bc09a8108eb4fbefa0b1aba78ee39452a7cf42b3fc1a57cbf53813136d15"
+}

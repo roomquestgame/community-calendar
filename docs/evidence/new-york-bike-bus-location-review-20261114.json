@@ -1,0 +1,136 @@
+{
+  "checked_at": "2026-11-14T23:31:39.134217+00:00",
+  "decision": "Use a visibly approximate ride meeting point at the explicitly linked local organizer cafe. User authorizes educated venue-to-street resolution. The current native occurrence omits its venue; its source link, Gowanus route and unchanged weekly title tie it to Principles. This is not a claim that the exact future rendezvous was explicitly supplied in that occurrence.",
+  "native_scope": {
+    "title": "Grown-Up Bike Bus",
+    "website": "https://principlesbk.nyc/upcoming-events",
+    "description": "Weekly group ride from Gowanus to the Upper East Side. Thursdays 8:00 AM."
+  },
+  "native_ids": [
+    9080,
+    9053,
+    9088,
+    9091,
+    9095,
+    9060,
+    8926
+  ],
+  "native_rows": [
+    {
+      "id": 9080,
+      "url": "https://brooklyncb6.cityofnewyork.us/event/grown-up-bike-bus-26/",
+      "description": "Weekly group ride from Gowanus to the Upper East Side. Thursdays 8:00 AM.",
+      "website": "https://principlesbk.nyc/upcoming-events",
+      "start_date": "2026-11-19 08:00:00"
+    },
+    {
+      "id": 9053,
+      "url": "https://brooklyncb6.cityofnewyork.us/event/grown-up-bike-bus-23/",
+      "description": "Weekly group ride from Gowanus to the Upper East Side. Thursdays 8:00 AM.",
+      "website": "https://principlesbk.nyc/upcoming-events",
+      "start_date": "2026-11-26 08:00:00"
+    },
+    {
+      "id": 9088,
+      "url": "https://brooklyncb6.cityofnewyork.us/event/grown-up-bike-bus-27/",
+      "description": "Weekly group ride from Gowanus to the Upper East Side. Thursdays 8:00 AM.",
+      "website": "https://principlesbk.nyc/upcoming-events",
+      "start_date": "2026-12-03 08:00:00"
+    },
+    {
+      "id": 9091,
+      "url": "https://brooklyncb6.cityofnewyork.us/event/grown-up-bike-bus-28/",
+      "description": "Weekly group ride from Gowanus to the Upper East Side. Thursdays 8:00 AM.",
+      "website": "https://principlesbk.nyc/upcoming-events",
+      "start_date": "2026-12-10 08:00:00"
+    },
+    {
+      "id": 9095,
+      "url": "https://brooklyncb6.cityofnewyork.us/event/grown-up-bike-bus-29/",
+      "description": "Weekly group ride from Gowanus to the Upper East Side. Thursdays 8:00 AM.",
+      "website": "https://principlesbk.nyc/upcoming-events",
+      "start_date": "2026-12-17 08:00:00"
+    },
+    {
+      "id": 9060,
+      "url": "https://brooklyncb6.cityofnewyork.us/event/grown-up-bike-bus-24/",
+      "description": "Weekly group ride from Gowanus to the Upper East Side. Thursdays 8:00 AM.",
+      "website": "https://principlesbk.nyc/upcoming-events",
+      "start_date": "2026-12-24 08:00:00"
+    },
+    {
+      "id": 8926,
+      "url": "https://brooklyncb6.cityofnewyork.us/event/grown-up-bike-bus-15/",
+      "description": "Weekly group ride from Gowanus to the Upper East Side. Thursdays 8:00 AM.",
+      "website": "https://principlesbk.nyc/upcoming-events",
+      "start_date": "2026-12-31 08:00:00"
+    }
+  ],
+  "reviewed_location": {
+    "venue_address": "139 9th St, Brooklyn, NY 11215",
+    "venue_city": "Brooklyn",
+    "lat": 40.672485,
+    "lng": -73.992615,
+    "source_key": "brooklyn_community_board_6_ny",
+    "venue_name": "Principles GI Coffee House (approximate ride meeting point)",
+    "approximate": true,
+    "provenance": "user_authorized_inference_from_native_linked_organizer_current_address_and_exact_PAD",
+    "evidence_url": "https://principlesbk.nyc/contact-1"
+  },
+  "existing_native_cb6_venue": {
+    "source_key": "brooklyn_community_board_6_ny",
+    "native_identity": "1889",
+    "venue_name": "Principles GI Coffee House",
+    "venue_address": "139 9th St, Brooklyn, NY 11215",
+    "venue_city": "Brooklyn",
+    "lat": 40.672485,
+    "lng": -73.992615,
+    "evidence_url": "https://brooklyncb6.cityofnewyork.us/venue/principles-gi-coffee-house/",
+    "provenance": "publisher_full_street_and_exact_NYC_PAD_point",
+    "approximate": false,
+    "native_venue": "Principles GI Coffee House",
+    "geocode_evidence_url": "https://geosearch.planninglabs.nyc/v2/search?text=139+9th+St%2C+Brooklyn%2C+NY+11215"
+  },
+  "primary_evidence": [
+    {
+      "url": "https://principlesbk.nyc/contact-1",
+      "observation": "Current official contact address1399thStreet BrooklynNY11215."
+    },
+    {
+      "url": "https://principlesbk.nyc/",
+      "observation": "Current navigation points to upcoming-events-listing; old upcoming-events path404."
+    },
+    {
+      "url": "https://principlesbk.nyc/upcoming-events-listing",
+      "observation": "Current official events page200; public GoogleCalendar embed observed. No Googlecalendar/ICS request was made."
+    },
+    {
+      "url": "https://brooklyncb6.cityofnewyork.us/venue/principles-gi-coffee-house/",
+      "observation": "CB6 independently names Principles GI Coffee House at the same numberedstreet."
+    },
+    {
+      "url": "https://geosearch.planninglabs.nyc/v2/search?text=139+9th+St%2C+Brooklyn%2C+NY+11215",
+      "observation": "Exact NYC PAD point reused only for this actualstreet."
+    }
+  ],
+  "corroboration": [
+    {
+      "url": "https://coachrosa.nyc/classes-and-events/",
+      "observation": "Local cyclingcoach communitycalendar names thisThursday8AM ride fromPrinciples1399thStreet towardUpperEastSide. Used as corroboration ratherthanoverriding nativeoccurrence clocks."
+    }
+  ],
+  "captured_files": [
+    {
+      "path": "nyc-outdoors-final-probe/principles-robots.txt",
+      "sha256": "e6aeae37022090ad6046dc580256f8c7d15fc5cc5b06c88f64626a7408f2d841"
+    },
+    {
+      "path": "nyc-outdoors-final-probe/principles-home.html",
+      "sha256": "0d80c94008680600e2d305e9f9403aedd5d9832456071355ed2d062cb435aaeb"
+    },
+    {
+      "path": "nyc-outdoors-final-probe/principles-upcoming-listing.html",
+      "sha256": "78f2ff418c5876cd1a4176ec6f998d547dde8d0cac9e8a6085b37dd7fbf3db27"
+    }
+  ]
+}

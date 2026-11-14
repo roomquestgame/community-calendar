@@ -19,8 +19,10 @@ MAX_RECORDS = 500
 def adapters():
     from roomquest import new_york_arts, new_york_nightlife, new_york_outdoors
     from roomquest import new_york_arts_remaining, new_york_social_remaining, new_york_outdoors_remaining
+    from roomquest import new_york_arts_final, new_york_social_final, new_york_outdoors_final, new_york_family_final
     return (new_york_arts, new_york_nightlife, new_york_outdoors,
-            new_york_arts_remaining, new_york_social_remaining, new_york_outdoors_remaining)
+            new_york_arts_remaining, new_york_social_remaining, new_york_outdoors_remaining,
+            new_york_arts_final, new_york_social_final, new_york_outdoors_final, new_york_family_final)
 
 
 def adapter_for(key):

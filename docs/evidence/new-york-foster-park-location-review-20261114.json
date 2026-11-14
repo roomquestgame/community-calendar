@@ -1,0 +1,101 @@
+{
+  "checked_at": "2026-11-14T23:28:16.628104+00:00",
+  "native_event_id": "2315505",
+  "native_event": {
+    "title": "Show Rev. T. Wendell Foster Park Your Love! Volunteer Clean Up Event",
+    "guid": "2315505",
+    "link": {
+      "url": "http://www.nycgovparks.org/events/2026/11/21/park-clean-up-at-rev-wendell-foster-park"
+    },
+    "description": "Show Rev. T. Wendell Foster Park your love! Join in to clean up and green up your park!Special guests: Urban Park Rangers!Gloves &amp; tools will be provided. No registration necessary, just show up!Earn community service hours.Meet by the park, by the playground and basketball courts, near the E.164 St. park entrance.",
+    "starttime": "2026-11-21T11:00:00.000",
+    "endtime": "2026-11-21T13:00:00.000",
+    "categories": "Education | Volunteer | Urban Park Rangers | Wildlife",
+    "image": {
+      "url": "http://www.nycgovparks.org/common_images/events/6af3863079e90.jpg"
+    }
+  },
+  "reviewed_location": {
+    "source_key": "municipal_mapsee_0e46855a44eb788f36a2c0ab",
+    "native_identity": "2315505",
+    "venue_name": "Rev. T. Wendell Foster Park — East 164th Street entrance (approximate meeting point)",
+    "venue_address": "40 East 164th Street, Bronx, NY 10452",
+    "venue_city": "Bronx",
+    "lat": 40.830809,
+    "lng": -73.925479,
+    "approximate": true,
+    "provenance": "publisher_meeting_directions_plus_current_NYC_FacDB_Mullaly_Park_East164_street_and_exact_PAD",
+    "evidence_url": "https://geosearch.planninglabs.nyc/v2/search?text=40+East+164+Street+Bronx+NY+10452&size=5"
+  },
+  "current_facdb_row": {
+    "facname": "MULLALY PARK",
+    "address": "40 EAST 164 STREET",
+    "city": "BRONX",
+    "zipcode": "10452",
+    "latitude": "40.8308087875",
+    "longitude": "-73.9254791422",
+    "datasource": "dycd_service_sites",
+    "facgroup": "YOUTH SERVICES",
+    "facdomain": "EDUCATION, CHILD WELFARE, AND YOUTH"
+  },
+  "exact_pad_feature": {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -73.925479,
+        40.830809
+      ]
+    },
+    "properties": {
+      "id": "382394",
+      "gid": "nycpad:venue:382394",
+      "layer": "venue",
+      "source": "nycpad",
+      "source_id": "382394",
+      "country_code": "US",
+      "name": "40 EAST 164 STREET",
+      "housenumber": "40",
+      "street": "EAST 164 STREET",
+      "postalcode": "10452",
+      "confidence": 0.8,
+      "match_type": "fallback",
+      "accuracy": "point",
+      "country": "United States",
+      "country_gid": "whosonfirst:country:85633793",
+      "country_a": "USA",
+      "region": "New York",
+      "region_gid": "whosonfirst:region:85688543",
+      "region_a": "NY",
+      "county": "Bronx County",
+      "county_gid": "whosonfirst:county:102083063",
+      "county_a": "BX",
+      "locality": "New York",
+      "locality_gid": "whosonfirst:locality:85977539",
+      "locality_a": "NYC",
+      "borough": "Bronx",
+      "borough_gid": "whosonfirst:borough:421205773",
+      "neighbourhood": "Concourse",
+      "neighbourhood_gid": "whosonfirst:neighbourhood:85865669",
+      "label": "40 EAST 164 STREET, Bronx, NY, USA",
+      "addendum": {
+        "pad": {
+          "bbl": "2024930009",
+          "bin": "2116393",
+          "version": "26c"
+        }
+      }
+    }
+  },
+  "publisher_location_evidence": [
+    {
+      "url": "https://nycgovparks.org/facilities/playgrounds",
+      "observation": "Mullaly Playground (1) is at East164Street/JeromeAvenue in RevT.WendellFosterPark; exact gathering point is not asserted."
+    },
+    {
+      "url": "https://nycgovparks.org/parks/mullalypark/facilities/pools",
+      "observation": "FosterPool is on East164Street between Jerome and River Avenues; parkZIP10452, ParkID X034."
+    }
+  ],
+  "decision": "Educated access-point estimate authorized by user. Native cleanup prose directs participants to playground/basketball courts near East164Street park entrance. Current city facility address and exact PAD point agree; retain visible approximate qualifier. Do not reuse the point for future events without the same native park/entrance evidence."
+}

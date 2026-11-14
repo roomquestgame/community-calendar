@@ -275,6 +275,24 @@ def test_new_crawl_delay_separates_robots_and_first_calendar_request(monkeypatch
     worker.sleep.assert_called_once_with(10)
 
 
+@pytest.mark.parametrize("selected,expected", [(None, 10), (25, 25), (86401, None)])
+def test_transit_orphan_delay_is_honored_without_changing_permissions(monkeypatch, selected, expected):
+    raw = b"Crawl-delay: 10\nUser-agent: *\nDisallow: /private/\n"
+    if selected is not None:
+        raw += f"Crawl-delay: {selected}\n".encode()
+    transport(monkeypatch, raw)
+    monkeypatch.setattr(worker, "monotonic", lambda: 100.0)
+    with capture_publisher_pacing() as state:
+        if expected is None:
+            with pytest.raises(worker.PreviewError, match="^publisher_wait_requires_review$"):
+                worker.robots_allowed("www.nytransitmuseum.org", "/programs/")
+        else:
+            assert worker.robots_allowed("www.nytransitmuseum.org", "/programs/") is True
+            assert worker.robots_allowed("www.nytransitmuseum.org", "/private/event") is False
+            assert state["crawl_delay_seconds"] == expected
+            assert worker._publisher_next["www.nytransitmuseum.org"] >= 100 + expected
+
+
 def publisher_transport(monkeypatch, status, retry_after):
     response = SimpleNamespace(status_code=status, headers={"Retry-After": retry_after}, close=Mock())
     session = MagicMock()
