@@ -1,0 +1,1190 @@
+{
+  "reviewed_at": "2026-11-15T00:26:04.546105+00:00",
+  "scope": "Frozen final community delta after B3:11 exact venue tuples across4 sources,17 previously unpublished occurrences. Coordinates and location evidence/provenance only; all native descriptions, streets, identities, titles and schedules remain unchanged.",
+  "source_ids": [
+    4318,
+    5623,
+    5625,
+    5630
+  ],
+  "exact_tuples": 11,
+  "changed_occurrences": [
+    {
+      "id": "bc:53507000534370:53507000534371",
+      "title": "Christmas on the Heights!",
+      "starts_at": "2026-12-05T00:30:00+00:00",
+      "ends_at": "2026-12-05T02:30:00+00:00",
+      "venue_name": "Trinity Chapel",
+      "venue_address": "883 Centre Street, Newton, MA 02459",
+      "lat": 42.342777,
+      "lng": -71.19355,
+      "location_evidence_url": "https://events.bc.edu/trinity_chapel",
+      "location_provenance": "Boston College's verified Trinity Chapel place 190153 explicitly pairs this named chapel point with display address 883 Centre Street and ZIP 02459. Internal geo street uses the campus's 885 Centre Street alias; original display street retained.",
+      "source_key": "municipal_mapsee_64dd0126cc162e1c90b57edc",
+      "description_sha256": "fd93071d7c42a37783554003fc3f85372a0be050500e35ec6938bb771ce38c8b",
+      "description_length": 160,
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "id": "bc:53507015673986:53507015673987",
+      "title": "Christmas on the Heights!",
+      "starts_at": "2026-12-05T20:00:00+00:00",
+      "ends_at": "2026-12-05T22:00:00+00:00",
+      "venue_name": "Trinity Chapel",
+      "venue_address": "883 Centre Street, Newton, MA 02459",
+      "lat": 42.342777,
+      "lng": -71.19355,
+      "location_evidence_url": "https://events.bc.edu/trinity_chapel",
+      "location_provenance": "Boston College's verified Trinity Chapel place 190153 explicitly pairs this named chapel point with display address 883 Centre Street and ZIP 02459. Internal geo street uses the campus's 885 Centre Street alias; original display street retained.",
+      "source_key": "municipal_mapsee_64dd0126cc162e1c90b57edc",
+      "description_sha256": "fd93071d7c42a37783554003fc3f85372a0be050500e35ec6938bb771ce38c8b",
+      "description_length": 160,
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "id": "bc:53507029421214:53507029421215",
+      "title": "Christmas on the Heights!",
+      "starts_at": "2026-12-05T23:30:00+00:00",
+      "ends_at": "2026-12-06T01:30:00+00:00",
+      "venue_name": "Trinity Chapel",
+      "venue_address": "883 Centre Street, Newton, MA 02459",
+      "lat": 42.342777,
+      "lng": -71.19355,
+      "location_evidence_url": "https://events.bc.edu/trinity_chapel",
+      "location_provenance": "Boston College's verified Trinity Chapel place 190153 explicitly pairs this named chapel point with display address 883 Centre Street and ZIP 02459. Internal geo street uses the campus's 885 Centre Street alias; original display street retained.",
+      "source_key": "municipal_mapsee_64dd0126cc162e1c90b57edc",
+      "description_sha256": "fd93071d7c42a37783554003fc3f85372a0be050500e35ec6938bb771ce38c8b",
+      "description_length": 160,
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "id": "greenway:10056",
+      "title": "Giving Thanks: Coming Together",
+      "starts_at": "2026-11-15T19:00:00+00:00",
+      "ends_at": "2026-11-15T20:00:00+00:00",
+      "venue_name": "Armenian Heritage Park",
+      "venue_address": "115 Atlantic Avenue, Boston, MA 02110",
+      "lat": 42.36092235,
+      "lng": -71.0532390073,
+      "location_evidence_url": "https://www.rosekennedygreenway.org/map/",
+      "location_provenance": "The Greenway's official interactive map names Armenian Heritage Park at point marker 27465; this is the park marker, distinct from its sculpture marker. The park's official directions confirm 115 Atlantic Avenue. Native event venue and full street retained.",
+      "source_key": "rose_kennedy_greenway_ma",
+      "description_sha256": "0012b7f9448c44e31f5e03ce59733365f5e3ffed4cdcd2ed4c76695ef2219c02",
+      "description_length": 104,
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "id": "greenway:10057",
+      "title": "CANDLELIT LABYRINTH WALK: IN PEACE & HARMONY",
+      "starts_at": "2026-12-06T21:45:00+00:00",
+      "ends_at": "2026-12-06T22:45:00+00:00",
+      "venue_name": "Armenian Heritage Park",
+      "venue_address": "115 Atlantic Avenue, Boston, MA 02110",
+      "lat": 42.36092235,
+      "lng": -71.0532390073,
+      "location_evidence_url": "https://www.rosekennedygreenway.org/map/",
+      "location_provenance": "The Greenway's official interactive map names Armenian Heritage Park at point marker 27465; this is the park marker, distinct from its sculpture marker. The park's official directions confirm 115 Atlantic Avenue. Native event venue and full street retained.",
+      "source_key": "rose_kennedy_greenway_ma",
+      "description_sha256": "6a12ccf95e2a07b878bd3ae3a5face64f95ca69c5af7f8f172262f3bd26aba3a",
+      "description_length": 55,
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "id": "nature:104044:2026-11-22T13:00:00+00:00",
+      "title": "Arctic Waterbirds at Castle Island",
+      "starts_at": "2026-11-22T13:00:00+00:00",
+      "ends_at": "2026-11-22T15:00:00+00:00",
+      "venue_name": "Sullivan's Castle Island parking lot",
+      "venue_address": "2080 William J Day Boulevard, South Boston, MA 02127",
+      "lat": 42.338845,
+      "lng": -71.013235,
+      "location_evidence_url": "https://gis.boston.gov/arcgis/rest/services/SAM/Live_SAM_Address/MapServer/1",
+      "location_provenance": "Boston SAM primary address 149843 / building 157039 exactly matches Sullivan's 2080 William J Day Boulevard and ZIP 02127. Native program instructions place the meeting just in front of this restaurant; full street retained.",
+      "source_key": "boston_nature_center_ma",
+      "description_sha256": "6374c8185a27a7b0a2440cc9a0cd663dd2b9715ef03eb86746ba99f6dfc2051f",
+      "description_length": 1274,
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "id": "nature:104051:2026-12-13T13:00:00+00:00",
+      "title": "Ducks, Herons, & More at Millennium Park",
+      "starts_at": "2026-12-13T13:00:00+00:00",
+      "ends_at": "2026-12-13T15:00:00+00:00",
+      "venue_name": "Millennium Park parking lot near canoe launch",
+      "venue_address": "300 Gardner Street, West Roxbury, MA 02132",
+      "lat": 42.280515,
+      "lng": -71.184852,
+      "location_evidence_url": "https://www.brooklinebirdclub.org/tripevent/millennium-park-5/",
+      "location_provenance": "Program co-organizer Brookline Bird Club's current named Millennium Park Canoe Launch Place.geo and exact 300 Gardner Street match the native canoe-launch parking meeting instructions; full street retained.",
+      "source_key": "boston_nature_center_ma",
+      "description_sha256": "57d8f6138f0184efc094c12e378b0876362eeaec396e86bfed50d259f2c35a25",
+      "description_length": 963,
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "id": "cares:a0CUq00007d5WrrMAE",
+      "title": "Roxbury - Support the Fresh Truck Mobile Market @ ABCD Geneva",
+      "starts_at": "2026-11-18T19:50:00+00:00",
+      "ends_at": "2026-11-18T22:00:00+00:00",
+      "venue_name": "ABCD Geneva",
+      "venue_address": "198 Geneva Avenue, Dorchester, MA 02121",
+      "lat": 42.305581,
+      "lng": -71.075595,
+      "location_evidence_url": "https://gis.boston.gov/arcgis/rest/services/SAM/Live_SAM_Address/MapServer/1",
+      "location_provenance": "Boston SAM exact address 165585 / building 182767, OBJECTID 313981, supplies the 198 Geneva Avenue point and ZIP 02121. ABCD's official Dorchester site confirms this address; the parcel's separate primary frontage at 188 Geneva Avenue does not replace the native event street.",
+      "source_key": "boston_cares_ma",
+      "description_sha256": "e542ba3b1ee901b3e759edad3aa44c622e57d6343354f62b4e6d2b9d1cbf05cd",
+      "description_length": 1168,
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "id": "cares:a0CUq00007dV496MAC",
+      "title": "Dorchester - Support the Fresh Truck Mobile Market @ Elm Hill",
+      "starts_at": "2026-11-19T14:20:00+00:00",
+      "ends_at": "2026-11-19T18:00:00+00:00",
+      "venue_name": "Charles Street AME Church market",
+      "venue_address": "13 Elm Hill Avenue, Dorchester, MA 02121",
+      "lat": 42.312876,
+      "lng": -71.084335,
+      "location_evidence_url": "https://gis.boston.gov/arcgis/rest/services/Parcels/Parcels_current/FeatureServer/0",
+      "location_provenance": "Reviewed parking-site inference: centroid inside contiguous church municipal parcels 1202101000 and 1202102000, approximately 26 metres from their farthest boundary. Fresh Truck's current operator directions identify the church parking lot off Elm Hill at the native 13 address; the church's 5 Elm Hill parking guidance corroborates the site without replacing 13. This is not an exact address, doorway or truck-position point.",
+      "source_key": "boston_cares_ma",
+      "description_sha256": "e542ba3b1ee901b3e759edad3aa44c622e57d6343354f62b4e6d2b9d1cbf05cd",
+      "description_length": 1168,
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "id": "cares:a0CUq00007dVDH1MAO",
+      "title": "Charlestown - Support the Fresh Truck Mobile Market @ Charlestown BHA",
+      "starts_at": "2026-11-19T19:20:00+00:00",
+      "ends_at": "2026-11-19T22:00:00+00:00",
+      "venue_name": "Charlestown BHA market",
+      "venue_address": "38 O'Reilly Way, Charlestown, MA 02129",
+      "lat": 42.377886,
+      "lng": -71.058355,
+      "location_evidence_url": "https://gis.boston.gov/arcgis/rest/services/SAM/Live_SAM_Address/MapServer/3",
+      "location_provenance": "Reviewed street-segment interpolation: official Boston SAM segment 10894 / OBJECTID 12553 has right-even addresses 48 to 30. Native 38 is placed at arc-length fraction 10/18 on that segment, with no speculative curb offset. Fresh Truck confirms private street parking at 38 O'Reilly Way on BHA property. Full native street retained; this is a street-site estimate, not an exact building, entrance or truck-position point.",
+      "source_key": "boston_cares_ma",
+      "description_sha256": "c523d0da153161d2a9079b3d1427ad05990b5d80d75a551b8b0c548d3ab2e535",
+      "description_length": 1223,
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "id": "cares:a0CUq00007Oj4zFMAR",
+      "title": "Prepare Meals at the Friday Night Supper Program",
+      "starts_at": "2026-11-20T17:00:00+00:00",
+      "ends_at": "2026-11-20T21:00:00+00:00",
+      "venue_name": "Friday Night Supper Program at Arlington Street Church",
+      "venue_address": "351 Boylston Street, Boston, MA 02116",
+      "lat": 42.35203,
+      "lng": -71.071219,
+      "location_evidence_url": "https://gis.boston.gov/arcgis/rest/services/SAM/Live_SAM_Address/MapServer/1",
+      "location_provenance": "Boston SAM primary address 352350 / building 138413 exactly matches 351 Boylston Street and ZIP 02116. The Friday Night Supper Program confirms this Arlington Street Church site; native venue, street and full volunteer narrative retained.",
+      "source_key": "boston_cares_ma",
+      "description_sha256": "115dd5e88c95771f1118b1f070dfc2f8450dd26fe9a98430b66f8cc745b27082",
+      "description_length": 1682,
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "id": "cares:a0CUq00007OiUpMMAV",
+      "title": "Prepare the Dining Hall at the Friday Night Supper Program",
+      "starts_at": "2026-11-20T18:30:00+00:00",
+      "ends_at": "2026-11-20T21:00:00+00:00",
+      "venue_name": "Friday Night Supper Program at Arlington Street Church",
+      "venue_address": "351 Boylston Street, Boston, MA 02116",
+      "lat": 42.35203,
+      "lng": -71.071219,
+      "location_evidence_url": "https://gis.boston.gov/arcgis/rest/services/SAM/Live_SAM_Address/MapServer/1",
+      "location_provenance": "Boston SAM primary address 352350 / building 138413 exactly matches 351 Boylston Street and ZIP 02116. The Friday Night Supper Program confirms this Arlington Street Church site; native venue, street and full volunteer narrative retained.",
+      "source_key": "boston_cares_ma",
+      "description_sha256": "2350a860445771478a642ce6e02535651ed3ac6de60263c7ccd79490f69816c9",
+      "description_length": 1238,
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "id": "cares:a0CUq00007dVhIQMA0",
+      "title": "South End - Support the Fresh Truck Mobile Market @ Lenox Camden",
+      "starts_at": "2026-11-20T19:20:00+00:00",
+      "ends_at": "2026-11-20T22:00:00+00:00",
+      "venue_name": "Lenox Camden market",
+      "venue_address": "32 Kendall Street, Boston, MA 02118",
+      "lat": 42.335881,
+      "lng": -71.082262,
+      "location_evidence_url": "https://gis.boston.gov/arcgis/rest/services/SAM/Live_SAM_Address/MapServer/1",
+      "location_provenance": "Reviewed address-range/site inference: Boston SAM address 166706 / building 240453 gives the 30-40 Kendall Street range containing the native 32 stop. Fresh Truck's current calendar and November 2026 schedule confirm 32 Kendall Street, Boston 02118. SAM labels the range 02120/Mission Hill; that discrepancy is recorded while publisher street/ZIP are retained. This is not an exact 32 doorway or curb point.",
+      "source_key": "boston_cares_ma",
+      "description_sha256": "6c6889cc4a9962bb4ff2c6efb6b032952a241cf39a6664c09cc577d828ed8893",
+      "description_length": 1527,
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "id": "cares:a0CUq00007dWeq2MAC",
+      "title": "East Boston - Support the Fresh Truck Mobile Market @ Mario Umana Academy",
+      "starts_at": "2026-11-21T14:50:00+00:00",
+      "ends_at": "2026-11-21T17:00:00+00:00",
+      "venue_name": "Mario Umana Academy market",
+      "venue_address": "312 Border Street, East Boston, MA 02128",
+      "lat": 42.378386,
+      "lng": -71.040458,
+      "location_evidence_url": "https://gis.boston.gov/arcgis/rest/services/SAM/Live_SAM_Address/MapServer/1",
+      "location_provenance": "Boston SAM primary address 155833 / building 129848 exactly matches 312 Border Street and ZIP 02128. Fresh Truck's November 2026 schedule confirms this Mario Umana Academy market stop; the point represents the address site, not a claimed curb position.",
+      "source_key": "boston_cares_ma",
+      "description_sha256": "e73e6b7dc84a578706c8a2e5a86c1133ac801205b67c074f43cf34e3393e1559",
+      "description_length": 1281,
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "id": "cares:a0CUq00007dWgv3MAC",
+      "title": "Dorchester- Support the Fresh Truck Mobile Market @ United Housing Management",
+      "starts_at": "2026-11-21T18:50:00+00:00",
+      "ends_at": "2026-11-21T21:30:00+00:00",
+      "venue_name": "United Housing market",
+      "venue_address": "3 Quincy Street, Dorchester, MA 02121",
+      "lat": 42.31617,
+      "lng": -71.08221,
+      "location_evidence_url": "https://gis.boston.gov/arcgis/rest/services/SAM/Live_SAM_Address/MapServer/3",
+      "location_provenance": "Reviewed estimated street/site point: current Fresh Truck directions place the stop on Quincy Street from Warren, past the Neighborhood Network Center lot. Official SAM Quincy Street segment 25632 and NNC parcel 1202832000 support an estimate about five metres beyond the lot's eastern frontage, rounded to five decimals. Native 3 Quincy Street and ZIP 02121 retained. This is not an exact numbered address, doorway, curb or truck point; Quincy Place/Court and headquarters were excluded.",
+      "source_key": "boston_cares_ma",
+      "description_sha256": "b06d032eba102da75af18150037daf6af5a444aaf85b827052d2cfc7a993528a",
+      "description_length": 1563,
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "id": "cares:a0CUq00007d5WrsMAE",
+      "title": "Roxbury - Support the Fresh Truck Mobile Market @ ABCD Geneva",
+      "starts_at": "2026-11-25T19:50:00+00:00",
+      "ends_at": "2026-11-25T22:00:00+00:00",
+      "venue_name": "ABCD Geneva",
+      "venue_address": "198 Geneva Avenue, Dorchester, MA 02121",
+      "lat": 42.305581,
+      "lng": -71.075595,
+      "location_evidence_url": "https://gis.boston.gov/arcgis/rest/services/SAM/Live_SAM_Address/MapServer/1",
+      "location_provenance": "Boston SAM exact address 165585 / building 182767, OBJECTID 313981, supplies the 198 Geneva Avenue point and ZIP 02121. ABCD's official Dorchester site confirms this address; the parcel's separate primary frontage at 188 Geneva Avenue does not replace the native event street.",
+      "source_key": "boston_cares_ma",
+      "description_sha256": "e542ba3b1ee901b3e759edad3aa44c622e57d6343354f62b4e6d2b9d1cbf05cd",
+      "description_length": 1168,
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "id": "cares:a0CUq00007Oj9oBMAR",
+      "title": "Serve Food at the Friday Night Supper Program",
+      "starts_at": "2026-11-27T22:00:00+00:00",
+      "ends_at": "2026-11-28T01:00:00+00:00",
+      "venue_name": "Friday Night Supper Program at Arlington Street Church",
+      "venue_address": "351 Boylston Street, Boston, MA 02116",
+      "lat": 42.35203,
+      "lng": -71.071219,
+      "location_evidence_url": "https://gis.boston.gov/arcgis/rest/services/SAM/Live_SAM_Address/MapServer/1",
+      "location_provenance": "Boston SAM primary address 352350 / building 138413 exactly matches 351 Boylston Street and ZIP 02116. The Friday Night Supper Program confirms this Arlington Street Church site; native venue, street and full volunteer narrative retained.",
+      "source_key": "boston_cares_ma",
+      "description_sha256": "29597581a5039b8def5495c9e3975932c08d03c209b3ab425a7d15243546486f",
+      "description_length": 2117,
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    }
+  ],
+  "primary_evidence": [
+    {
+      "venue_name": "ABCD Geneva",
+      "venue_address": "198 Geneva Avenue, Dorchester, MA 02121",
+      "point": [
+        42.305581,
+        -71.075595
+      ],
+      "source_url": "https://gis.boston.gov/arcgis/rest/services/SAM/Live_SAM_Address/MapServer/1/query?f=json&where=STREET_NUMBER%3D%27198%27+AND+UPPER%28FULL_STREET_NAME%29%3D%27GENEVA+AVE%27&outFields=%2A&outSR=4326&returnGeometry=true&resultRecordCount=200",
+      "street_corroboration_url": "https://bostonabcd.org/location/abcd-dorchester-head-start/",
+      "primary_record": {
+        "attributes": {
+          "OBJECTID": 313981,
+          "SAM_ADDRESS_ID": 165585,
+          "BUILDING_ID": 182767,
+          "RELATIONSHIP_TYPE": 2,
+          "FULL_ADDRESS": "198 Geneva Ave",
+          "STREET_NUMBER": "198",
+          "IS_RANGE": 0,
+          "RANGE_FROM": null,
+          "RANGE_TO": null,
+          "UNIT": null,
+          "FULL_STREET_NAME": "Geneva Ave",
+          "STREET_ID": 1686,
+          "STREET_PREFIX": null,
+          "STREET_BODY": "Geneva",
+          "STREET_SUFFIX_ABBR": "Ave",
+          "STREET_FULL_SUFFIX": "Avenue",
+          "STREET_SUFFIX_DIR": null,
+          "STREET_NUMBER_SORT": 198,
+          "MAILING_NEIGHBORHOOD": "Dorchester",
+          "CITY": "BOSTON",
+          "STATE": "MA",
+          "ZIP_CODE": "02121",
+          "X_COORD": 770970.3956528,
+          "Y_COORD": 2936664.14989506,
+          "SAM_STREET_ID": 1686,
+          "WARD": "14",
+          "created_date": 1254101317000,
+          "last_edited_date": 1568648338000,
+          "PRIMARY_ADDRESS_ID": 63271,
+          "PRIMARY_ADDRESS": "188 Geneva Ave, Boston, MA 02121",
+          "PRIMARY_X_COORD": 770947.54858564,
+          "PRIMARY_Y_COORD": 2936619.43148056,
+          "MAP_PAR_ID": "1400038000",
+          "PARCEL_ID": "1400038000",
+          "SEGMENT_ID": 10039
+        },
+        "geometry": {
+          "x": -71.07559531190773,
+          "y": 42.30558106062792
+        }
+      },
+      "raw_capture": "research/arts-remaining/address-points/sam-abcd-geneva.json",
+      "raw_capture_sha256": "ee630c2c9c90406d2011dd288c650e087c1b83669e5deb52e84957b841d7d5f9",
+      "reviewed_address_alias": "SAM exact address165585/building182767/OBJECTID313981 matches198GenevaAvenue and02121. The record has primary parcel frontage188GenevaAvenue; retain the exact198 address confirmed by ABCD and used by the actual mobile market."
+    },
+    {
+      "venue_name": "Charles Street AME Church market",
+      "venue_address": "13 Elm Hill Avenue, Dorchester, MA 02121",
+      "point": [
+        42.312876,
+        -71.084335
+      ],
+      "precision": "reviewed church parking-site inference; not an exact 13 Elm Hill address point, door or truck marker.",
+      "source_url": "https://gis.boston.gov/arcgis/rest/services/Parcels/Parcels_current/FeatureServer/0/query?f=json&where=MAP_PAR_ID+IN+%28%271202101000%27%2C%271202102000%27%29&outFields=OBJECTID%2CMAP_PAR_ID%2CLOC_ID%2CPOLY_TYPE%2CSOURCE%2Clast_edited_date&outSR=4326&returnGeometry=true",
+      "primary_review": {
+        "native_venue": "Charles Street AME Church market",
+        "native_street": "13 Elm Hill Avenue, Dorchester, MA 02121",
+        "latitude": 42.31287555344592,
+        "longitude": -71.08433483335742,
+        "point_granularity": "reviewed church parking-site inference; not an exact 13 Elm Hill address point, door or truck marker.",
+        "method": "Area-weighted centroid of contiguous municipal parcels1202101000 and1202102000, using local equirectangular meter coordinates at42.31285N. Site inference only; not an exact13ElmHill address point, street-front door or truck marker.",
+        "maximum_parcel_extent_from_point_m": 26.076110131875456,
+        "point_inside_parcel_union": true,
+        "parcel_ids": [
+          "1202101000",
+          "1202102000"
+        ],
+        "uncertainty": "The current operator identifies the church private lot off Elm Hill; the exact fence position is unspecified. Proposed center lies within two contiguous municipal church parcels, approximately 26 m from their farthest boundary vertex. The publisher street stays 13 Elm Hill.",
+        "primary_operator_url": "https://ft-calendar.vercel.app/truck",
+        "primary_operator_event": {
+          "uid": "42ulcsmmln92mhvsdq1abqbjik_R20250904T133000@google.com",
+          "summary": "Elm Hill (In Person Only)",
+          "location": "13 Elm Hill Ave, Boston, MA 02121, USA",
+          "start": "$D2025-09-04T13:30:00.000Z",
+          "rruleString": "DTSTART;TZID=America/Indiana/Vincennes:20250904T133000\nRRULE:FREQ=WEEKLY;WKST=SU;BYDAY=TH",
+          "lastmodified": "$D2026-11-04T18:44:27.000Z"
+        },
+        "primary_meeting_guidance": "Private parking lot. Off Elm Hill Ave, turn into Charles St AME Church parking lot. Park along the fence facing the parking lot entrance.",
+        "primary_church_url": "https://www.csamechurch.org/faq",
+        "primary_church_guidance": "Church FAQ locates its parking lot at 5 Elm Hill Ave. This is site corroboration; 5 is not substituted for the current operator 13 Elm Hill street.",
+        "point_evidence_url": "https://gis.boston.gov/arcgis/rest/services/Parcels/Parcels_current/FeatureServer/0/query?f=json&where=MAP_PAR_ID+IN+%28%271202101000%27%2C%271202102000%27%29&outFields=OBJECTID%2CMAP_PAR_ID%2CLOC_ID%2CPOLY_TYPE%2CSOURCE%2Clast_edited_date&outSR=4326&returnGeometry=true",
+        "raw_current_parcels": "/workspace/scratch/3aa56d09ac0a/research/arts-remaining/address-points/charles-parking-current-parcels.json",
+        "raw_assessment": "/workspace/scratch/3aa56d09ac0a/research/arts-remaining/address-points/charles-13-15-parcels.json",
+        "raw_operator": "/workspace/scratch/3aa56d09ac0a/research/arts-remaining/address-points/elm-hill-current-operator-event.json",
+        "raw_church": "/workspace/scratch/3aa56d09ac0a/research/arts-remaining/address-points/charles-street-faq.html",
+        "residual_uncertainty": "The operator does not identify a parcel number or give a map marker. The parcel choice is a local site inference from the named church lot, Elm Hill access, native13 street number, adjacent church-owned parcels and church FAQ. The26m parcel extent is a geometry measurement, not a calibrated accuracy/confidence radius."
+      },
+      "raw_captures": [
+        {
+          "path": "research/arts-remaining/address-points/charles-street-parking-inference.json",
+          "sha256": "e7f02cdbae953200cd47dc7137c021a08d6464cfb7fc1dad2372c0357b5c4179"
+        },
+        {
+          "path": "research/arts-remaining/address-points/charles-parking-current-parcels.json",
+          "sha256": "4ad52f7b6ce027ba883f55a0505d1a7049542d3144bd2f66ef37b6dd4aabdb0e"
+        },
+        {
+          "path": "research/arts-remaining/address-points/charles-13-15-parcels.json",
+          "sha256": "4814f83a35ecc76a3fe91ce8bf363243e4c17dccfd232c5dac6424104656b032"
+        },
+        {
+          "path": "research/arts-remaining/address-points/elm-hill-current-operator-event.json",
+          "sha256": "76f7ad38909c2010b6d895332bf8d43ff4b81eb1623fa86f89b3e8bbc15e8fc2"
+        },
+        {
+          "path": "research/arts-remaining/address-points/charles-street-faq.html",
+          "sha256": "b2d12417fe080ff8796dfc0b82596b5443f48e0b75e092d81368bd641bed9498"
+        }
+      ],
+      "independent_recomputation": "Community agent independently recomputed the parcel centroid and segment interpolation; each matches the approved rounded point. Church centroid is inside the parcel union, approximately26m maximum extent."
+    },
+    {
+      "venue_name": "Charlestown BHA market",
+      "venue_address": "38 O'Reilly Way, Charlestown, MA 02129",
+      "point": [
+        42.377886,
+        -71.058355
+      ],
+      "precision": "reviewed street-segment interpolation at native address 38; not an exact truck, curb, building or entrance point.",
+      "source_url": "https://gis.boston.gov/arcgis/rest/services/SAM/Live_SAM_Address/MapServer/3/query?f=json&where=%28UPPER%28ST_NAME%29+IN+%28%27QUINCY%27%2C%27KENDALL%27%29+AND+UPPER%28ST_TYPE%29%3D%27ST%27%29+OR+UPPER%28ST_NAME%29+LIKE+%27%25REILLY%25%27&outFields=%2A&outSR=4326&returnGeometry=true&resultRecordCount=50",
+      "primary_review": {
+        "native_venue": "Charlestown BHA market",
+        "native_street": "38 O'Reilly Way, Charlestown, MA 02129",
+        "latitude": 42.377886208853916,
+        "longitude": -71.05835528902918,
+        "point_granularity": "reviewed street-segment interpolation at native address 38; not an exact truck, curb, building or entrance point.",
+        "method": "Arc-length interpolation along official Boston SAM street geometry, using right-even address range 48 to 30 and fraction (48-38)/(48-30)=10/18. No speculative road-side offset applied.",
+        "uncertainty": "Street-site location. The operator says private street parking at 38 on BHA property; exact curb/truck position is not supplied.",
+        "segment_object_id": 12553,
+        "segment_id": 10894,
+        "right_from": "48",
+        "right_to": "30",
+        "segment_length_m": 86.36220623363111,
+        "primary_operator_url": "https://ft-calendar.vercel.app/truck",
+        "primary_operator_event": {
+          "uid": "v6sq6sb0gm75f6gedo0pdi5arn_R20260409T183000@google.com",
+          "summary": "Charlestown BHA (In Person Only)",
+          "location": "38 O Reilly Way, Boston, MA 02129, USA",
+          "start": "$D2026-04-09T18:30:00.000Z",
+          "rruleString": "DTSTART;TZID=America/New_York:20260409T183000\nRRULE:FREQ=WEEKLY;WKST=SU;BYDAY=TH",
+          "lastmodified": "$D2026-11-04T18:44:46.000Z"
+        },
+        "primary_meeting_guidance": "Private street parking on BHA property. 38 O'Reilly Way.",
+        "point_evidence_url": "https://gis.boston.gov/arcgis/rest/services/SAM/Live_SAM_Address/MapServer/3/query?f=json&where=%28UPPER%28ST_NAME%29+IN+%28%27QUINCY%27%2C%27KENDALL%27%29+AND+UPPER%28ST_TYPE%29%3D%27ST%27%29+OR+UPPER%28ST_NAME%29+LIKE+%27%25REILLY%25%27&outFields=%2A&outSR=4326&returnGeometry=true&resultRecordCount=50",
+        "raw_geometry_capture": "/workspace/scratch/3aa56d09ac0a/boston-second/final-point-research/sam-street-segments-targets.json",
+        "operator_capture": "/workspace/scratch/3aa56d09ac0a/research/arts-remaining/address-points/freshtruck-calendar-events.json"
+      },
+      "raw_captures": [
+        {
+          "path": "research/arts-remaining/address-points/charlestown-street-inference.json",
+          "sha256": "617cec46a3c2e31f236ef28802b52705d154bebca74ff47185bba3bfd84e88d6"
+        },
+        {
+          "path": "boston-second/final-point-research/sam-street-segments-targets.json",
+          "sha256": "9190d73621ffca5b55cff0aba16fd39de4d967a291582e268229f5bf723abe5e"
+        },
+        {
+          "path": "research/arts-remaining/address-points/freshtruck-calendar-events.json",
+          "sha256": "187e52d1b48bfc20ebb2452e534c8a9aee560e1d06235c2bde08f6a25cece2e5"
+        }
+      ],
+      "independent_recomputation": "Community agent independently recomputed the parcel centroid and segment interpolation; each matches the approved rounded point. Church centroid is inside the parcel union, approximately26m maximum extent."
+    },
+    {
+      "venue_name": "Friday Night Supper Program at Arlington Street Church",
+      "venue_address": "351 Boylston Street, Boston, MA 02116",
+      "point": [
+        42.35203,
+        -71.071219
+      ],
+      "precision": "Official municipal exact address-site point; not an asserted entrance or truck curb.",
+      "source_url": "https://gis.boston.gov/arcgis/rest/services/SAM/Live_SAM_Address/MapServer/1/query?f=json&where=STREET_NUMBER%3D%27351%27+AND+UPPER%28FULL_STREET_NAME%29%3D%27BOYLSTON+ST%27&outFields=%2A&outSR=4326&returnGeometry=true&resultRecordCount=200",
+      "street_corroboration_url": "https://www.fridaynightsupper.org/contact/",
+      "primary_record": {
+        "attributes": {
+          "OBJECTID": 83070,
+          "SAM_ADDRESS_ID": 352350,
+          "BUILDING_ID": 138413,
+          "RELATIONSHIP_TYPE": 1,
+          "FULL_ADDRESS": "351 Boylston St",
+          "STREET_NUMBER": "351",
+          "IS_RANGE": 0,
+          "RANGE_FROM": null,
+          "RANGE_TO": null,
+          "UNIT": null,
+          "FULL_STREET_NAME": "Boylston St",
+          "STREET_ID": 504,
+          "STREET_PREFIX": null,
+          "STREET_BODY": "Boylston",
+          "STREET_SUFFIX_ABBR": "St",
+          "STREET_FULL_SUFFIX": "Street",
+          "STREET_SUFFIX_DIR": null,
+          "STREET_NUMBER_SORT": 351,
+          "MAILING_NEIGHBORHOOD": "Boston",
+          "CITY": "BOSTON",
+          "STATE": "MA",
+          "ZIP_CODE": "02116",
+          "X_COORD": 772069.1178648,
+          "Y_COORD": 2953596.73479623,
+          "SAM_STREET_ID": 504,
+          "WARD": "05",
+          "created_date": 1392113809000,
+          "last_edited_date": 1659535106000,
+          "PRIMARY_ADDRESS_ID": 352350,
+          "PRIMARY_ADDRESS": "351 Boylston St, Boston, MA 02116",
+          "PRIMARY_X_COORD": 772069.1178648,
+          "PRIMARY_Y_COORD": 2953596.73479623,
+          "MAP_PAR_ID": "0501227000",
+          "PARCEL_ID": "0501227000",
+          "SEGMENT_ID": 975
+        },
+        "geometry": {
+          "x": -71.07121896845005,
+          "y": 42.3520296460972
+        }
+      },
+      "raw_captures": [
+        {
+          "path": "research/arts-remaining/address-points/sam-friday-night-supper.json",
+          "sha256": "781e4de13aec740841db7a9a3f2da56f8f81f1d9475a707be661c207061cde5e"
+        }
+      ]
+    },
+    {
+      "venue_name": "Lenox Camden market",
+      "venue_address": "32 Kendall Street, Boston, MA 02118",
+      "point": [
+        42.335881,
+        -71.082262
+      ],
+      "precision": "Reviewed address-range/site inference; not exact32door or curb.",
+      "method": "Use official SAM30-40KendallStreet address166706/building240453, whose even range includes native32. Retain publisher street and02118 ZIP. SAM labels the range02120/MissionHill; this disagreement is explicit. The independent SAMLocator32Kendall result references the same166706range and corroborates the site within0.25m.",
+      "source_url": "https://gis.boston.gov/arcgis/rest/services/SAM/Live_SAM_Address/MapServer/1/query?f=json&where=UPPER%28FULL_STREET_NAME%29%3D%27KENDALL+ST%27+AND+%28STREET_NUMBER+LIKE+%27%2532%25%27+OR+IS_RANGE%3D1%29&outFields=%2A&outSR=4326&returnGeometry=true&resultRecordCount=200",
+      "street_corroboration_url": "https://ft-calendar.vercel.app/truck",
+      "primary_record": {
+        "attributes": {
+          "OBJECTID": 360838,
+          "SAM_ADDRESS_ID": 166706,
+          "BUILDING_ID": 240453,
+          "RELATIONSHIP_TYPE": 1,
+          "FULL_ADDRESS": "30-40 Kendall St",
+          "STREET_NUMBER": "30-40",
+          "IS_RANGE": 1,
+          "RANGE_FROM": "30",
+          "RANGE_TO": "40",
+          "UNIT": null,
+          "FULL_STREET_NAME": "Kendall St",
+          "STREET_ID": 2274,
+          "STREET_PREFIX": null,
+          "STREET_BODY": "Kendall",
+          "STREET_SUFFIX_ABBR": "St",
+          "STREET_FULL_SUFFIX": "Street",
+          "STREET_SUFFIX_DIR": null,
+          "STREET_NUMBER_SORT": 30,
+          "MAILING_NEIGHBORHOOD": "Mission Hill",
+          "CITY": "BOSTON",
+          "STATE": "MA",
+          "ZIP_CODE": "02120",
+          "X_COORD": 769112.8265333,
+          "Y_COORD": 2947697.18524364,
+          "SAM_STREET_ID": 2274,
+          "WARD": "09",
+          "created_date": 1254101317000,
+          "last_edited_date": 1769781671000,
+          "PRIMARY_ADDRESS_ID": 166706,
+          "PRIMARY_ADDRESS": "30-40 Kendall St, Boston, MA 02120",
+          "PRIMARY_X_COORD": 769112.8265333,
+          "PRIMARY_Y_COORD": 2947697.18524364,
+          "MAP_PAR_ID": "0901580000",
+          "PARCEL_ID": "0901580000",
+          "SEGMENT_ID": 19332
+        },
+        "geometry": {
+          "x": -71.08226249596017,
+          "y": 42.335881359199306
+        }
+      },
+      "current_operator_record": {
+        "uid": "eu3vtjuvia6b7hq591lna6v4h8_R20260220T193000@google.com",
+        "summary": "Lenox Camden (In Person Only)",
+        "location": "32 Kendall St, Boston, MA 02118, USA",
+        "start": "$D2026-02-20T19:30:00.000Z",
+        "rruleString": "DTSTART;TZID=America/New_York:20260220T193000\nRRULE:FREQ=WEEKLY",
+        "lastmodified": "$D2026-11-04T18:45:24.000Z"
+      },
+      "independent_locator_corroboration": {
+        "source_url": "https://geocoder.boston.gov/arcgis/rest/services/SAMLocator/GeocodeServer/findAddressCandidates?f=json&SingleLine=32+Kendall+Street%2C+Boston%2C+MA+02118&outFields=%2A&outSR=4326&maxLocations=5",
+        "address": "32 Kendall St, BOSTON, MA, 02120",
+        "score": 99.49,
+        "location": {
+          "x": -71.082261000001,
+          "y": 42.335883000003
+        },
+        "SAM_ID": 166706,
+        "FULL_ADDRESS": "30-40 Kendall St",
+        "AddRange": "30-40",
+        "Postal": "02120"
+      },
+      "raw_captures": [
+        {
+          "path": "research/arts-remaining/address-points/sam-lenox-32-range.json",
+          "sha256": "278b29d128e0026fb398c1dd857120a89ce9441549d164990094dbb8b68a7bf9"
+        },
+        {
+          "path": "research/arts-remaining/address-points/freshtruck-calendar-events.json",
+          "sha256": "187e52d1b48bfc20ebb2452e534c8a9aee560e1d06235c2bde08f6a25cece2e5"
+        },
+        {
+          "path": "boston-second/final-point-research/geocoder-lenox-camden.json",
+          "sha256": "03aa56a60de3808c9836bb5263062495d39d4d3f6a693b8ff22f33ddc5d3b67d"
+        }
+      ]
+    },
+    {
+      "venue_name": "Mario Umana Academy market",
+      "venue_address": "312 Border Street, East Boston, MA 02128",
+      "point": [
+        42.378386,
+        -71.040458
+      ],
+      "precision": "Official municipal exact address-site point; not an asserted entrance or truck curb.",
+      "source_url": "https://gis.boston.gov/arcgis/rest/services/SAM/Live_SAM_Address/MapServer/1/query?f=json&where=STREET_NUMBER%3D%27312%27+AND+UPPER%28FULL_STREET_NAME%29%3D%27BORDER+ST%27&outFields=%2A&outSR=4326&returnGeometry=true&resultRecordCount=200",
+      "street_corroboration_url": "https://cdn.shopify.com/s/files/1/0582/7896/9428/files/November_26.pdf?v=1793643796",
+      "primary_record": {
+        "attributes": {
+          "OBJECTID": 33324,
+          "SAM_ADDRESS_ID": 155833,
+          "BUILDING_ID": 129848,
+          "RELATIONSHIP_TYPE": 1,
+          "FULL_ADDRESS": "312 Border St",
+          "STREET_NUMBER": "312",
+          "IS_RANGE": 0,
+          "RANGE_FROM": null,
+          "RANGE_TO": null,
+          "UNIT": null,
+          "FULL_STREET_NAME": "Border St",
+          "STREET_ID": 473,
+          "STREET_PREFIX": null,
+          "STREET_BODY": "Border",
+          "STREET_SUFFIX_ABBR": "St",
+          "STREET_FULL_SUFFIX": "Street",
+          "STREET_SUFFIX_DIR": null,
+          "STREET_NUMBER_SORT": 312,
+          "MAILING_NEIGHBORHOOD": "East Boston",
+          "CITY": "BOSTON",
+          "STATE": "MA",
+          "ZIP_CODE": "02128",
+          "X_COORD": 780332.27784763,
+          "Y_COORD": 2963244.72206189,
+          "SAM_STREET_ID": 473,
+          "WARD": "01",
+          "created_date": 1253901362000,
+          "last_edited_date": 1590765203000,
+          "PRIMARY_ADDRESS_ID": 155833,
+          "PRIMARY_ADDRESS": "312 Border St, Boston, MA 02128",
+          "PRIMARY_X_COORD": 780332.27784763,
+          "PRIMARY_Y_COORD": 2963244.72206189,
+          "MAP_PAR_ID": "0103668000",
+          "PARCEL_ID": "0103668000",
+          "SEGMENT_ID": 12780
+        },
+        "geometry": {
+          "x": -71.04045763754725,
+          "y": 42.37838578404047
+        }
+      },
+      "raw_captures": [
+        {
+          "path": "research/arts-remaining/address-points/sam-mario-umana.json",
+          "sha256": "f9d2795aedd6d5d128861aa8dcb1086e6394d6cfffb30d34654ac557149542a0"
+        }
+      ]
+    },
+    {
+      "venue_name": "United Housing market",
+      "venue_address": "3 Quincy Street, Dorchester, MA 02121",
+      "point": [
+        42.31617,
+        -71.08221
+      ],
+      "precision": "Estimated street/site location only; not exact street-number, building entrance, parking bay or truck curb coordinates.",
+      "source_url": "https://gis.boston.gov/arcgis/rest/services/SAM/Live_SAM_Address/MapServer/3/query?f=json&where=%28UPPER%28ST_NAME%29+IN+%28%27QUINCY%27%2C%27KENDALL%27%29+AND+UPPER%28ST_TYPE%29%3D%27ST%27%29+OR+UPPER%28ST_NAME%29+LIKE+%27%25REILLY%25%27&outFields=%2A&outSR=4326&returnGeometry=true&resultRecordCount=50",
+      "primary_review": {
+        "source_key": "boston_cares_ma",
+        "venue_name": "United Housing market",
+        "venue_address": "3 Quincy Street, Dorchester, MA 02121",
+        "native_ids": [
+          "cares:a0CUq00007dWgv3MAC"
+        ],
+        "proposed_point": {
+          "latitude": 42.31617,
+          "longitude": -71.08221
+        },
+        "location_provenance": "inferred_publisher_site_point",
+        "precision": "Estimated street/site location only; not exact street-number, building entrance, parking bay or truck curb coordinates.",
+        "method": "Preserve current official Fresh Truck stop and Warren-to-Quincy/right-side/past-NNC-lot instructions. Use the official first Quincy STREET segment25632 (right odd range1–21). NNC434Warren parcel1202832000 provides the named landmark. Project its easternmost frontage corner to the same Quincy street centerline, then use a bounded estimate5metres east along that segment, beyond the named lot. Round to5decimal places. No invented perpendicular curb offset.",
+        "basis": {
+          "segment_id": 25632,
+          "segment_objectid": 12152,
+          "right_address_range": [
+            "1",
+            "21"
+          ],
+          "street": "Quincy ST",
+          "segment_url": "https://gis.boston.gov/arcgis/rest/services/SAM/Live_SAM_Address/MapServer/3/query?f=json&where=%28UPPER%28ST_NAME%29+IN+%28%27QUINCY%27%2C%27KENDALL%27%29+AND+UPPER%28ST_TYPE%29%3D%27ST%27%29+OR+UPPER%28ST_NAME%29+LIKE+%27%25REILLY%25%27&outFields=%2A&outSR=4326&returnGeometry=true&resultRecordCount=50",
+          "segment_length_metres": 98.69145778660187,
+          "nnc_parcel_id": "1202832000",
+          "nnc_address": "434 Warren Street, Dorchester, MA02121",
+          "nnc_official_identity_url": "https://www.suffolkdistrictattorney.com/calendar/2025/2/27/neighborhood-network-center-fraud-fighters-workshop",
+          "nnc_parcel_eastern_corner": [
+            -71.08231059585664,
+            42.316115780624884
+          ],
+          "landmark_projection_distance_from_warren_metres": 56.83955849505737,
+          "estimated_point_distance_from_warren_metres": 61.83955849505737,
+          "additional_distance_is_an_explicit_estimate_metres": 5,
+          "parcel_url": "https://gis.boston.gov/arcgis/rest/services/Parcels/Parcels_current/FeatureServer/0/query?f=json&where=MAP_PAR_ID%3D%271202832000%27&outFields=OBJECTID%2CMAP_PAR_ID%2CLOC_ID%2CPOLY_TYPE%2CSOURCE%2Clast_edited_date&outSR=4326&returnGeometry=true",
+          "native_operator_url": "https://ft-calendar.vercel.app/truck",
+          "native_operator_record_modified": "2026-11-04T18:45:38Z",
+          "street_and_zip_unchanged": true
+        },
+        "rejected": [
+          "Boston city locator wrong-street3QuincyPlace candidate despite98.04score",
+          "3QuincyCourt candidate in NorthEnd",
+          "Pure house-number3 linear-range point9.87metres fromWarren: not chosen because operator specifically says pastNNCparkinglot",
+          "FreshTruckorUHMheadquarters substitution"
+        ],
+        "raw_files": [
+          {
+            "path": "/workspace/scratch/3aa56d09ac0a/boston-second/final-point-research/fresh-truck-united-lenox-site-instructions.json",
+            "sha256": "b8e09cc777547544c25060fea5659d1e719f0f822decb4ea90e06903a2fa520c"
+          },
+          {
+            "path": "/workspace/scratch/3aa56d09ac0a/boston-second/final-point-research/sam-street-segments-targets.json",
+            "sha256": "9190d73621ffca5b55cff0aba16fd39de4d967a291582e268229f5bf723abe5e"
+          },
+          {
+            "path": "/workspace/scratch/3aa56d09ac0a/boston-second/final-point-research/sam-neighborhood-network434-warren.json",
+            "sha256": "1f78f881b55b00686d9779e9a9b67a7ca6333b79c9c7833717ced01896517e87"
+          },
+          {
+            "path": "/workspace/scratch/3aa56d09ac0a/boston-second/final-point-research/united-nnc-parcel-geometry.json",
+            "sha256": "acc0f9b94685af8ed408a89694b93385d712cf67a90d2b7148f68f119585a27b"
+          },
+          {
+            "path": "/workspace/scratch/3aa56d09ac0a/boston-second/final-point-research/united-nnc-parcel-assessment.json",
+            "sha256": "cc78c0458d8664c9fc043f94dcc7ebe502b1022207d94e316d871a42469abf63"
+          },
+          {
+            "path": "/workspace/scratch/3aa56d09ac0a/boston-second/final-point-research/geocoder-united-housing.json",
+            "sha256": "a98d988bac5a7d3043a72d51361afce81cb8d1a327d3c244c3de6926c22efd6d"
+          }
+        ]
+      },
+      "raw_captures": [
+        {
+          "path": "boston-second/final-point-research/united-housing-reviewed-site-inference.json",
+          "sha256": "8a2bafbf15c722f5911f48e06a26e6439b0b919b455f0a94dd065b52e5f75c8a"
+        },
+        {
+          "path": "boston-second/final-point-research/fresh-truck-united-lenox-site-instructions.json",
+          "sha256": "b8e09cc777547544c25060fea5659d1e719f0f822decb4ea90e06903a2fa520c"
+        },
+        {
+          "path": "boston-second/final-point-research/sam-street-segments-targets.json",
+          "sha256": "9190d73621ffca5b55cff0aba16fd39de4d967a291582e268229f5bf723abe5e"
+        },
+        {
+          "path": "boston-second/final-point-research/sam-neighborhood-network434-warren.json",
+          "sha256": "1f78f881b55b00686d9779e9a9b67a7ca6333b79c9c7833717ced01896517e87"
+        },
+        {
+          "path": "boston-second/final-point-research/united-nnc-parcel-geometry.json",
+          "sha256": "acc0f9b94685af8ed408a89694b93385d712cf67a90d2b7148f68f119585a27b"
+        },
+        {
+          "path": "boston-second/final-point-research/united-nnc-parcel-assessment.json",
+          "sha256": "cc78c0458d8664c9fc043f94dcc7ebe502b1022207d94e316d871a42469abf63"
+        },
+        {
+          "path": "boston-second/final-point-research/geocoder-united-housing.json",
+          "sha256": "a98d988bac5a7d3043a72d51361afce81cb8d1a327d3c244c3de6926c22efd6d"
+        }
+      ],
+      "review_decision": "Root approved this bounded local-context street/site inference for the exact currently unpublished tuple. No exact numbered address, curb, doorway or truck-point claim."
+    },
+    {
+      "id": "nature:104051:2026-12-13T13:00:00+00:00",
+      "title": "Ducks, Herons, & More at Millennium Park",
+      "starts_at": "2026-12-13T13:00:00+00:00",
+      "ends_at": "2026-12-13T15:00:00+00:00",
+      "venue_name": "Millennium Park parking lot near canoe launch",
+      "venue_address": "300 Gardner Street, West Roxbury, MA 02132",
+      "event_url": "https://www.massaudubon.org/programs/boston-nature-center/104051-ducks-herons-more-at-millennium-park",
+      "source_key": "boston_nature_center_ma",
+      "point": [
+        42.280515,
+        -71.184852
+      ],
+      "description_sha256": "57d8f6138f0184efc094c12e378b0876362eeaec396e86bfed50d259f2c35a25",
+      "evidence_url": "https://www.brooklinebirdclub.org/tripevent/millennium-park-5/",
+      "primary_record": {
+        "@type": "Place",
+        "name": "Boston &#8211; Millennium Park Canoe Launch",
+        "description": "",
+        "url": "https://www.brooklinebirdclub.org/location/boston-millennium-park-canoe-launch/",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "300 Gardner Street",
+          "addressLocality": "Boston",
+          "addressRegion": "MA",
+          "postalCode": "02132",
+          "addressCountry": "United States"
+        },
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": 42.280514818291,
+          "longitude": -71.184851724564
+        },
+        "telephone": "",
+        "sameAs": "https://ebird.org/hotspot/L350679"
+      },
+      "primary_venue_url": "https://www.brooklinebirdclub.org/location/boston-millennium-park-canoe-launch/",
+      "corroboration": "The current March14 2027 event /tripevent/millennium-park-8/ contains the identical Place.geo and the named canoe-launch location. Current Mass Audubon instructions and BBC meeting directions name the parking lot nearest the canoe launch.",
+      "point_granularity": "Explicit named canoe-launch venue point in co-organizer Place.geo, matched to current meeting instructions.",
+      "raw_capture": "community-remaining/address-evidence/195e2fe6dd462b30005f06c55370177a76d5f14fc18c3fa171b46ea450b4dae5.html",
+      "raw_capture_sha256": "bdc9b58ba75d663dfc6f6ca85c0b024376bcf6662fb319492c8fd2ebd4f3b45a",
+      "superseded_discovery": "Search cache for old2024 /millennium-park-9 gave a point about11m away, but live URL now404. Use the fresh200 current named venue geo instead."
+    },
+    {
+      "id": "nature:104044:2026-11-22T13:00:00+00:00",
+      "title": "Arctic Waterbirds at Castle Island",
+      "starts_at": "2026-11-22T13:00:00+00:00",
+      "ends_at": "2026-11-22T15:00:00+00:00",
+      "venue_name": "Sullivan's Castle Island parking lot",
+      "venue_address": "2080 William J Day Boulevard, South Boston, MA 02127",
+      "event_url": "https://www.massaudubon.org/programs/boston-nature-center/104044-arctic-waterbirds-at-castle-island",
+      "source_key": "boston_nature_center_ma",
+      "point": [
+        42.338845,
+        -71.013235
+      ],
+      "description_sha256": "6374c8185a27a7b0a2440cc9a0cd663dd2b9715ef03eb86746ba99f6dfc2051f",
+      "evidence_url": "https://gis.boston.gov/arcgis/rest/services/SAM/Live_SAM_Address/MapServer/1/query?f=json&where=STREET_NUMBER%3D%272080%27+AND+UPPER%28FULL_STREET_NAME%29+LIKE+%27%25DAY%25%27&outFields=%2A&outSR=4326&returnGeometry=true&resultRecordCount=20",
+      "primary_record": {
+        "attributes": {
+          "OBJECTID": 181820,
+          "SAM_ADDRESS_ID": 149843,
+          "BUILDING_ID": 157039,
+          "RELATIONSHIP_TYPE": 1,
+          "FULL_ADDRESS": "2080 William J Day Blvd",
+          "STREET_NUMBER": "2080",
+          "IS_RANGE": 0,
+          "RANGE_FROM": null,
+          "RANGE_TO": null,
+          "UNIT": null,
+          "FULL_STREET_NAME": "William J Day Blvd",
+          "STREET_ID": 4502,
+          "STREET_PREFIX": null,
+          "STREET_BODY": "William J Day",
+          "STREET_SUFFIX_ABBR": "Blvd",
+          "STREET_FULL_SUFFIX": "Boulevard",
+          "STREET_SUFFIX_DIR": null,
+          "STREET_NUMBER_SORT": 2080,
+          "MAILING_NEIGHBORHOOD": "South Boston",
+          "CITY": "BOSTON",
+          "STATE": "MA",
+          "ZIP_CODE": "02127",
+          "X_COORD": 787769.82038721,
+          "Y_COORD": 2948876.24390915,
+          "SAM_STREET_ID": 4502,
+          "WARD": "06",
+          "created_date": 1253873699000,
+          "last_edited_date": 1554219793000,
+          "PRIMARY_ADDRESS_ID": 149843,
+          "PRIMARY_ADDRESS": "2080 William J Day Blvd, Boston, MA 02127",
+          "PRIMARY_X_COORD": 787769.82038721,
+          "PRIMARY_Y_COORD": 2948876.24390915,
+          "MAP_PAR_ID": "0603418030",
+          "PARCEL_ID": "0603418030",
+          "SEGMENT_ID": 20181
+        },
+        "geometry": {
+          "x": -71.01323497615464,
+          "y": 42.338845285432065
+        }
+      },
+      "street_evidence": "https://www.sullivanscastleisland.com/location/castle-island/",
+      "point_granularity": "Exact restaurant street/site point; current program instructs the group to meet just in front of this restaurant, beside its parking lot.",
+      "raw_capture": "community-remaining/address-evidence/sam-sullivans.json",
+      "raw_capture_sha256": "f0e7b75cf37664a1177b0d78ec6738d1febff44b304dde4e5809e45d67d5a00f"
+    },
+    {
+      "venue_name": "Trinity Chapel",
+      "venue_address": "883 Centre Street, Newton, MA 02459",
+      "point": [
+        42.342777,
+        -71.19355
+      ],
+      "source_url": "https://events.bc.edu/trinity_chapel",
+      "primary_record": {
+        "id": 190153,
+        "display_name": "Trinity Chapel",
+        "type": "Business",
+        "neighborhood_id": null,
+        "city_id": null,
+        "campus_id": null,
+        "school_id": 141,
+        "created_at": "2015-06-25T11:33:09-04:00",
+        "updated_at": "2026-01-07T13:42:27-05:00",
+        "time_zone": "Eastern Time (US & Canada)",
+        "photo_id": null,
+        "ranking": 0,
+        "twitter_name": "",
+        "facebook_id": null,
+        "foursquare_id": null,
+        "urlname": "trinity_chapel",
+        "verified": true,
+        "tags": [],
+        "keywords": [],
+        "profile_views": 15174,
+        "name": "Trinity Chapel",
+        "description": "<p class=\"description\">Campus Ministry</p>\r\n",
+        "description_text": "Campus Ministry",
+        "geo": {
+          "latitude": "42.342777",
+          "longitude": "-71.19355",
+          "street": "885 Centre Street",
+          "city": "Newton",
+          "state": "MA",
+          "country": "US",
+          "zip": "02459"
+        },
+        "url": "http://www.bc.edu/offices/ministry/home.html",
+        "directions": "",
+        "phone": "",
+        "hours": "",
+        "parking": "",
+        "sponsored": false,
+        "address": "Boston College, Boston College Law School, 883 Centre Street, Newton, MA 02459, USA",
+        "filters": {},
+        "custom_fields": {},
+        "localist_url": "https://events.bc.edu/trinity_chapel",
+        "photo_url": "https://localist-images.azureedge.net/assets/main/thumbs/place-huge-1ae01f5f775302da2962f46a542cd6390860c83e1ffd724fa746a9f4d33f512c.png",
+        "photo_caption": null
+      },
+      "raw_capture": "community-remaining/address-evidence/34fd39faa50d48700af3b16b049e4a4330d95bc34c0a6bd54e9c5c7f89d19a1e.html",
+      "raw_capture_sha256": "f0a1749cdd66c731ca1d3cc14952a128e44381c2cdec9fc29dca8d41c7256eca",
+      "reviewed_address_alias": "The verified named chapel record gives display address883CentreStreet and native geo street885CentreStreet with the same Newton02459 ZIP. Retain the exact publisher display street and the named venue point, without applying a campus-wide default."
+    },
+    {
+      "venue_name": "Armenian Heritage Park",
+      "venue_address": "115 Atlantic Avenue, Boston, MA 02110",
+      "point": [
+        42.36092235,
+        -71.0532390073
+      ],
+      "source_url": "https://www.rosekennedygreenway.org/map/",
+      "street_corroboration_url": "https://www.armenianheritagepark.org/directions-parking",
+      "primary_record": {
+        "title": "Armenian Heritage Park",
+        "lat": "42.36092235",
+        "lng": "-71.0532390073",
+        "zoom": "18",
+        "geometry_type": "point",
+        "geometry": null,
+        "show_measurement": false,
+        "category_color": "#d36364",
+        "content": "Gardens Armenian Heritage Park LEARN MORE GET DIRECTIONS armenian-heritage-park",
+        "icon": "https://www.rosekennedygreenway.org/wp-content/uploads/2026/08/MapIcons2026_Gardens.png",
+        "types": [
+          "769"
+        ],
+        "post_id": "27465",
+        "address": "Gardens",
+        "text": "<a class=\"learnmore\" href=\"/park-highlight/plants-landscapes/\" />LEARN MORE</a><br><a class=\"get-direction\" target=\"_blank\" href=\"https://www.google.com/maps/dir/?api=1&amp;destination=42.3608908,-71.05321249999997\" />GET DIRECTIONS</a>",
+        "image": "https://www.rosekennedygreenway.org/wp-content/uploads/2019/06/labyrinth_fountain.jpg",
+        "audio": "",
+        "video": "",
+        "custom_fields": [],
+        "votes": 0,
+        "star_rating_avg": 0,
+        "star_rating_count": 0
+      },
+      "raw_capture": "boston-second/final-point-research/051bb854268d0e88c0f74c98be8c8a3bce8f67d4c34ff9187717bb61d7d9fc10.html",
+      "raw_capture_sha256": "5c39558cf75c595fb623e8f7fa2f5444edcdfc0fc762630315bd13db0e2d78c1",
+      "reviewed_named_point": "The exact titled park marker27465 has geometry_typepoint. The independent sculpture marker and general map viewport are not substituted."
+    }
+  ],
+  "explicit_local_context_inferences": [
+    "Lenox Camden market:30-40Kendall address range contains32; municipal ZIP/neighborhood conflict retained in provenance.",
+    "Charles Street AME Church market:centroid inside documented church parking parcels, approximately26m extent.",
+    "Charlestown BHA market:arc-length fraction10/18 along official even48-30 street segment; no curb offset.",
+    "United Housing market:estimated street location about5m beyond the named NNC lot frontage, grounded in current operator directions and municipal segment/parcel."
+  ],
+  "excluded_now_public_venues": [
+    "Thomas M. Menino YMCA",
+    "Village at Brookline",
+    "Villa Victoria market",
+    "St. Luke's-San Lucas Episcopal Church Food Pantry",
+    "HI Boston Hostel",
+    "Mission Park Apartments"
+  ],
+  "capture_replay": {
+    "baseline": "community-remaining/remaining-parsed-rows-b3-frozen.json",
+    "updated": "community-remaining/remaining-parsed-rows-final-location-repaired.json",
+    "full_records": 300,
+    "changed_records": 17,
+    "native_descriptions_streets_identities_titles_times_equal": true,
+    "changed_fields_only": [
+      "lat",
+      "lng",
+      "location_evidence_url",
+      "location_provenance",
+      "reason"
+    ],
+    "updated_capture_sha256": "fcccb2650b67e47e00bc935993d00c5ab26d900ece0176ae2968402c16d0892a"
+  },
+  "focused_tests": {
+    "passed": 181,
+    "command": "python -m pytest -q tests/test_boston_community.py tests/test_boston_community_remaining.py tests/test_boston_remaining_transport.py"
+  },
+  "worker_capture_replay": {
+    "captured_replay_only": true,
+    "live_database_writes": false,
+    "sources": {
+      "municipal_mapsee_64dd0126cc162e1c90b57edc": {
+        "worker_calls": 1,
+        "staged_rows": 76,
+        "checkpoint_writes": 0,
+        "stage_rpc_calls": 4,
+        "preview_rpc_calls": 1,
+        "public_post_windows": [],
+        "full_rows_exact_match": true,
+        "staged_before_complete": false
+      },
+      "rose_kennedy_greenway_ma": {
+        "worker_calls": 9,
+        "staged_rows": 70,
+        "checkpoint_writes": 9,
+        "stage_rpc_calls": 4,
+        "preview_rpc_calls": 1,
+        "public_post_windows": [],
+        "full_rows_exact_match": true,
+        "staged_before_complete": false
+      },
+      "boston_nature_center_ma": {
+        "worker_calls": 4,
+        "staged_rows": 21,
+        "checkpoint_writes": 4,
+        "stage_rpc_calls": 2,
+        "preview_rpc_calls": 1,
+        "public_post_windows": [],
+        "full_rows_exact_match": true,
+        "staged_before_complete": false
+      },
+      "boston_cares_ma": {
+        "worker_calls": 1,
+        "staged_rows": 133,
+        "checkpoint_writes": 0,
+        "stage_rpc_calls": 7,
+        "preview_rpc_calls": 1,
+        "public_post_windows": [
+          {
+            "start_day": "2026-11-14",
+            "end_day": "2026-11-27"
+          }
+        ],
+        "full_rows_exact_match": true,
+        "staged_before_complete": false
+      }
+    }
+  },
+  "checkpoint_guard": "Nature and Greenway points require exact source,venue,street,coordinates,evidence and provenance. Rehashed poisoned fields/dropped points fail; legacy no-point prefixes remain resumable. Unchanged18-second reserve,cap8,4-hourTTL,200-event limit,900000-byte bound and complete-only staging.",
+  "frozen_files": [
+    {
+      "path": "roomquest/boston_community_remaining.py",
+      "sha256": "7a58a4836783d1b40c4c47410b66a3711d1934bbc0b64ee8f6ca36a32235d591"
+    },
+    {
+      "path": "tests/test_boston_community_remaining.py",
+      "sha256": "fb9997a1ca11dfd7a64e6654e699ca8b42068f7e9285d6f7c567bd7d6e2b74c8"
+    }
+  ],
+  "production_status": "Frozen and ready for the parent consolidated release. No direct production writes or manual retries by this agent. Actual deployment and public equality are verified separately.",
+  "independent_review": {
+    "reviewer": "Boston arts subagent",
+    "result": "PASS; no blocker",
+    "checks": [
+      "Compared the B3 module diff: 11 new point tuples and bounded checkpoint point/evidence/provenance validation only.",
+      "Compared all 300 B3 and final capture rows: exactly 17 changes, limited to coordinates/location metadata/reason; native bodies, streets, IDs, titles, URLs, times and counts unchanged.",
+      "Reviewed focused near-miss and checkpoint coverage and explicit site/range/segment inference notes."
+    ]
+  }
+}

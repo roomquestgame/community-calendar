@@ -53,8 +53,8 @@ def test_bc_does_not_fill_private_blank_placeholder_or_away_events(changes):
     assert b._bc_events([bc_event(**changes)], NOW, []) == []
 
 
-def test_bc_geocode_conflict_does_not_override_reviewed_actual_street():
-    event = bc_event(location_name="Trinity Chapel", address="883 Centre Street, Newton, MA 02459",
+def test_bc_geocode_conflict_does_not_borrow_reviewed_nearby_venue_point():
+    event = bc_event(location_name="Trinity Chapel Annex", address="883 Centre Street, Newton, MA 02459",
                      geo={"street": "885 Centre Street", "city": "Newton", "state": "MA", "zip": "02459",
                           "latitude": 42.342777, "longitude": -71.19355})
     row = b._bc_events([event], NOW, [])[0]
@@ -70,13 +70,15 @@ def test_bc_pagination_must_be_complete():
         b.collect(source(b.BC), fetch, now=NOW)
 
 
-def greenway(index=0, body=None):
+def greenway(index=0, body=None, *, title=None, venue="Community Pavilion",
+             location="600 Atlantic Avenue, Boston, MA 02210"):
     start, end = START + timedelta(days=index), START + timedelta(days=index, hours=1)
-    title, url = f"Greenway community workshop {index}", f"https://www.rosekennedygreenway.org/events/workshop-{index}/"
+    title = title or f"Greenway community workshop {index}"
+    url = f"https://www.rosekennedygreenway.org/events/workshop-{index}/"
     card = dict(url=url, title=title, start=start.isoformat(), end=end.isoformat(),
-                native_id=str(index + 10), venue="Community Pavilion", categories=["Community"])
+                native_id=str(index + 10), venue=venue, categories=["Community"])
     export = "https://www.google.com/calendar/event?" + urlencode(dict(ctz=b.ZONE, text=title,
-        dates=f"{start:%Y%m%dT%H%M%S}/{end:%Y%m%dT%H%M%S}", location="600 Atlantic Avenue, Boston, MA 02210"))
+        dates=f"{start:%Y%m%dT%H%M%S}/{end:%Y%m%dT%H%M%S}", location=location))
     detail = (f'<link rel="canonical" href="{url}"><a class="em-a2c-google" href="{escape(export)}">Calendar</a>'
               '<div class="elementor-widget-theme-post-content"><div class="elementor-widget-container">'
               f'{body if body is not None else "<p>Join neighbors for a guided hands-on workshop.</p>"}</div></div>')
@@ -161,7 +163,108 @@ def test_nature_meeting_directions_override_reused_park_address():
         address={"streetAddress": "2010 Day Blvd.", "addressLocality": "South Boston", "addressRegion": "MA", "postalCode": "02127"})
     row = b._nature_detail(card, detail, NOW, [])[0]
     assert row["venue_address"] == "2080 William J Day Boulevard, South Boston, MA 02127"
-    assert row["lat"] is None
+    assert (row["lat"], row["lng"]) == (42.338845, -71.013235)
+
+
+def nature_point_fixture(place):
+    if place == "castle":
+        title = "Arctic Waterbirds at Castle Island"
+        meeting = "Meet in front of Sullivan's at 2080 William J Day Blvd, South Boston, MA 02127."
+    else:
+        title = "Ducks, Herons, & More at Millennium Park"
+        meeting = "Meet in the parking lot nearest the canoe launch; use 300 Gardner St, West Roxbury, MA 02132."
+    prose = "The naturalist explains seasonal birds, access and the route for all participants. " * 35
+    card, detail = nature(title=title, starts=[START], body=f"<p>{prose}</p><p>{meeting}</p>")
+    return card, detail, prose.strip(), meeting
+
+
+def greenway_point_fixture():
+    prose = "Walk the park labyrinth with neighbors and learn about its gardens and public art. " * 35
+    card, detail = greenway(body=f"<p>{prose}</p>", title="Giving Thanks: Coming Together",
+        venue="Armenian Heritage Park", location="Atlantic Avenue & Mercantile Street, Boston, MA")
+    return card, detail, prose.strip()
+
+
+def test_greenway_named_park_point_keeps_native_narrative_and_event_identity(monkeypatch):
+    card, detail, prose = greenway_point_fixture()
+    monkeypatch.setattr(b, "_greenway_manifest", lambda *args: [card])
+    part = b.collect_chunk(source(b.GREENWAY), lambda *args: detail, now=NOW)
+    assert part["complete"] and len(part["events"]) == 1
+    row = part["events"][0]
+    assert row["description"] == prose and len(prose) > 2000
+    assert row["venue_name"] == "Armenian Heritage Park"
+    assert row["venue_address"] == "115 Atlantic Avenue, Boston, MA 02110"
+    assert (row["lat"], row["lng"]) == (42.36092235, -71.0532390073)
+    assert row["location_evidence_url"] == "https://www.rosekennedygreenway.org/map/"
+    assert row["id"] == "greenway:10" and datetime.fromisoformat(row["starts_at"]) == START
+    boston_sources.validate_checkpoint(source(b.GREENWAY), part["checkpoint"], now=NOW)
+    boston_sources.validate_records(part["events"], source(b.GREENWAY))
+
+
+@pytest.mark.parametrize("place,venue,street,point", [
+    ("castle", "Sullivan's Castle Island parking lot",
+     "2080 William J Day Boulevard, South Boston, MA 02127", (42.338845, -71.013235)),
+    ("millennium", "Millennium Park parking lot near canoe launch",
+     "300 Gardner Street, West Roxbury, MA 02132", (42.280515, -71.184852)),
+])
+def test_nature_meeting_point_checkpoint_keeps_native_long_prose_and_identity(
+        monkeypatch, place, venue, street, point):
+    card, detail, prose, meeting = nature_point_fixture(place)
+    monkeypatch.setattr(b, "_nature_manifest", lambda *args: [card])
+    part = b.collect_chunk(source(b.NATURE), lambda *args: detail, now=NOW)
+    assert part["complete"] and len(part["events"]) == 1
+    row = part["events"][0]
+    assert row["description"].startswith(prose) and meeting in row["description"]
+    assert len(row["description"]) > 2000 and "Short JSON-LD teaser" not in row["description"]
+    assert row["venue_name"] == venue and row["venue_address"] == street
+    assert (row["lat"], row["lng"]) == point
+    assert row["id"] == "nature:100001:" + START.astimezone(timezone.utc).isoformat()
+    boston_sources.validate_checkpoint(source(b.NATURE), part["checkpoint"], now=NOW)
+    boston_sources.validate_records(part["events"], source(b.NATURE))
+
+
+@pytest.mark.parametrize("key,place", [(b.NATURE, "castle"), (b.NATURE, "millennium"),
+                                      (b.GREENWAY, "armenian")])
+@pytest.mark.parametrize("mutation", ["source", "venue", "street", "lat", "lng", "evidence", "provenance", "drop_point"])
+def test_reviewed_checkpoint_rejects_poisoned_exact_location(monkeypatch, key, place, mutation):
+    card, detail = (greenway_point_fixture() if key == b.GREENWAY else nature_point_fixture(place))[:2]
+    monkeypatch.setattr(b, "_greenway_manifest" if key == b.GREENWAY else "_nature_manifest", lambda *args: [card])
+    state = b.collect_chunk(source(key), lambda *args: detail, now=NOW)["checkpoint"]
+    row = state["events"][0]
+    if mutation == "source":
+        state["source_key"] = b.NATURE if key == b.GREENWAY else b.GREENWAY
+    elif mutation == "venue":
+        row["venue_name"] += " Annex"
+    elif mutation == "street":
+        row["venue_address"] = "999 Other Street, Boston, MA 02115"
+    elif mutation in {"lat", "lng"}:
+        row[mutation] += 0.001
+    elif mutation == "evidence":
+        row["location_evidence_url"] = "https://example.org/unreviewed"
+    elif mutation == "provenance":
+        row["location_provenance"] = "unreviewed point"
+    else:
+        row["lat"] = row["lng"] = None
+    # A rehashed outer row still cannot loosen the independently pinned point.
+    state["outcomes"][0]["rows_hash"] = b._digest(state["events"])
+    with pytest.raises(ValueError, match="checkpoint_invalid"):
+        b.collect_chunk(source(key), lambda *args: pytest.fail("poisoned checkpoint must not fetch"),
+                        checkpoint=state, now=NOW)
+
+
+@pytest.mark.parametrize("key", [b.NATURE, b.GREENWAY])
+def test_existing_checkpoint_without_reviewed_points_remains_resumable(monkeypatch, key):
+    card, detail = (greenway_point_fixture() if key == b.GREENWAY else nature_point_fixture("castle"))[:2]
+    monkeypatch.setattr(b, "_greenway_manifest" if key == b.GREENWAY else "_nature_manifest", lambda *args: [card])
+    reviewed = b.REVIEWED_EVENT_POINTS
+    monkeypatch.setattr(b, "REVIEWED_EVENT_POINTS", {k: v for k, v in reviewed.items() if k[0] != key})
+    legacy = b.collect_chunk(source(key), lambda *args: detail, now=NOW)["checkpoint"]
+    assert legacy["events"][0]["lat"] is None
+    monkeypatch.setattr(b, "REVIEWED_EVENT_POINTS", reviewed)
+    boston_sources.validate_checkpoint(source(key), legacy, now=NOW)
+    result = b.collect_chunk(source(key), lambda *args: pytest.fail("complete prefix must not refetch"),
+                             checkpoint=legacy, now=NOW)
+    assert result["complete"]
 
 
 @pytest.mark.parametrize("key", [b.GREENWAY, b.NATURE])
@@ -293,6 +396,27 @@ def test_cares_preserves_full_native_prose_and_fills_only_actual_venue():
     ("Fresh Truck", "Support the Fresh Truck Mobile Market @ Franklin Hill BGCB",
      "Franklin Hill Boys & Girls Club", "42 Shandon Road, Dorchester, MA 02124",
      "Dorchester", "02124", (42.295434, -71.090103)),
+    ("Fresh Truck", "Roxbury - Support the Fresh Truck Mobile Market @ ABCD Geneva",
+     "ABCD Geneva", "198 Geneva Avenue, Dorchester, MA 02121",
+     "Dorchester", "02121", (42.305581, -71.075595)),
+    ("Friday Night Supper Program", "Volunteer at Friday Night Supper Program",
+     "Friday Night Supper Program at Arlington Street Church", "351 Boylston Street, Boston, MA 02116",
+     "Boston", "02116", (42.35203, -71.071219)),
+    ("Fresh Truck", "East Boston - Support the Fresh Truck Mobile Market @ Mario Umana Academy",
+     "Mario Umana Academy market", "312 Border Street, East Boston, MA 02128",
+     "East Boston", "02128", (42.378386, -71.040458)),
+    ("Fresh Truck", "Roxbury - Support the Fresh Truck Mobile Market @ Lenox Camden",
+     "Lenox Camden market", "32 Kendall Street, Boston, MA 02118",
+     "Boston", "02118", (42.335881, -71.082262)),
+    ("Fresh Truck", "Dorchester - Support the Fresh Truck Mobile Market @ Elm Hill",
+     "Charles Street AME Church market", "13 Elm Hill Avenue, Dorchester, MA 02121",
+     "Dorchester", "02121", (42.312876, -71.084335)),
+    ("Fresh Truck", "Charlestown - Support the Fresh Truck Mobile Market @ Charlestown BHA",
+     "Charlestown BHA market", "38 O'Reilly Way, Charlestown, MA 02129",
+     "Charlestown", "02129", (42.377886, -71.058355)),
+    ("Fresh Truck", "Dorchester - Support the Fresh Truck Mobile Market @ United Housing Management",
+     "United Housing market", "3 Quincy Street, Dorchester, MA 02121",
+     "Dorchester", "02121", (42.31617, -71.08221)),
 ])
 def test_cares_reviewed_points_preserve_native_body_identity_and_full_street(
         organization, title, venue, street, city, zip_code, point):
@@ -305,6 +429,15 @@ def test_cares_reviewed_points_preserve_native_body_identity_and_full_street(
     assert row["description"] == body.strip() and len(row["description"]) > 2000
     assert row["id"] == "cares:" + item["occurrenceId"]
     assert datetime.fromisoformat(row["starts_at"]) == START
+    inference_notes = {
+        "Lenox Camden market": ("address-range/site inference", "30-40 Kendall", "02120/Mission Hill", "not an exact"),
+        "Charles Street AME Church market": ("parking-site inference", "1202101000", "1202102000", "not an exact"),
+        "Charlestown BHA market": ("street-segment interpolation", "48 to 30", "10/18", "not an exact"),
+        "United Housing market": ("estimated street/site point", "25632", "1202832000", "not an exact", "Quincy Place/Court"),
+    }
+    if venue in inference_notes:
+        assert all(note in row["location_provenance"] for note in inference_notes[venue])
+        assert row["location_provenance"] not in row["description"]
     boston_sources.validate_records([row], source(b.CARES))
 
 
@@ -328,6 +461,8 @@ def test_bc_conte_exact_native_labels_use_verified_place_point(venue):
      (42.355469, -71.061701), "https://gis.boston.gov/arcgis/rest/services/SAM/Live_SAM_Address/MapServer/1"),
     ("Simboli Chapel", "9 Lake Street, Boston, MA 02135",
      (42.341625, -71.164566), "https://events.bc.edu/Simboli_Hall"),
+    ("Trinity Chapel", "883 Centre Street, Newton, MA 02459",
+     (42.342777, -71.19355), "https://events.bc.edu/trinity_chapel"),
 ])
 def test_bc_reviewed_named_place_uses_explicit_point_and_keeps_display_street(venue, street, point, evidence):
     native_venue, room = ("Stuart House", "315") if venue == "Stuart House, 315" else (venue, "")
@@ -347,7 +482,7 @@ def test_bc_reviewed_named_place_uses_explicit_point_and_keeps_display_street(ve
 def test_reviewed_point_requires_exact_source_venue_and_street(profile, changed):
     key, venue, street = profile
     if changed == "source":
-        key = b.GREENWAY
+        key = b.NATURE if key == b.GREENWAY else b.GREENWAY
     elif changed == "venue":
         venue += " Annex"
     else:
