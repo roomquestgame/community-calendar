@@ -1,0 +1,2012 @@
+{
+  "checked_at": "2026-11-15T01:47:48.006851+00:00",
+  "commit": "3b58be1a2c5232b87242d07402ec8b86078dc1e7",
+  "module_sha256": "9cfbb2c6dffae59e370e8e871fb83ceb7a56e7463791460504f9a651f95c8c31",
+  "publisher_requests": 0,
+  "production_writes": false,
+  "scope": "Independent replay of exact current module against preserved native captures and the original frozen capture windows; original files retained unchanged.",
+  "published_evidence_urls": [
+    "https://github.com/roomquestgame/community-calendar/blob/3b58be1a2c5232b87242d07402ec8b86078dc1e7/docs/evidence/boston-community-additional-reconciliation-20261115.json",
+    "https://github.com/roomquestgame/community-calendar/blob/3b58be1a2c5232b87242d07402ec8b86078dc1e7/docs/evidence/boston-community-additional-893ab-reconciliation-20261115.json"
+  ],
+  "results": [
+    {
+      "source_key": "parkour_generations_boston_ma",
+      "original_window": "2026-11-15T01:06:56.831857+00:00",
+      "old_count": 6,
+      "new_count": 10,
+      "retained_identities": 4,
+      "added_identities": 6,
+      "removed_identities": 2,
+      "retained_native_descriptions_identical": true,
+      "complete_only_staging": true,
+      "original_capture_file": "outdoor-work/parkour_generations_boston_ma-rows.json",
+      "original_capture_file_sha256": "faece72330ccaf6655714be9281d901ce5c76cf68b7617587d2763677539fa21",
+      "output_file": "outdoor-work/replay-3b58/parkour_generations_boston_ma-rows.json",
+      "output_file_sha256": "329254b365a8d656c6b43c15265c80ad6d2409fb9f719300622de9059190f225",
+      "output_canonical_sha256": "1f1f3f53a82dac838e726acec6c4e82542b3596d8e92b3b05079b9da2583e828",
+      "published_evidence_canonical_sha256": "1f1f3f53a82dac838e726acec6c4e82542b3596d8e92b3b05079b9da2583e828",
+      "all_fields_equal_published_capture": true,
+      "claims": [
+        {
+          "claim": 1,
+          "cursor": 7,
+          "manifest_count": 7,
+          "accumulated_events": 10,
+          "emitted_events": 10,
+          "complete": true
+        }
+      ],
+      "captures": [
+        {
+          "url": "https://pkgenboston.com/local-events",
+          "sha256": "ab9bac2ab3f4c0df254b6e68ab8cea40ab9ca54824505f017fff027f24e53be4",
+          "captured_at": "2026-11-15T00:48:09.444677+00:00",
+          "capture": "/workspace/scratch/6c174d945c50/outdoor-work/captures/1c4d95fd429812daaad99989bd50080bbf5576399a4e0bbfd5989ed8522b2ddf.txt",
+          "imported_additional_capture": false
+        },
+        {
+          "url": "https://pkgenboston.com/local-events/2026/holiday-challenge",
+          "sha256": "c89883d84b6ca4c88b7c53739b4e7776f624272a4e51764a1d867bb7a17c5ac7",
+          "captured_at": "2026-11-15T01:03:01.758453+00:00",
+          "capture": "/workspace/scratch/6c174d945c50/outdoor-work/captures/8cbeb06f5476841fb8a815177747806495e0aa45ce2bd0efc30eb87732d33298.txt",
+          "imported_additional_capture": false
+        },
+        {
+          "url": "https://pkgenboston.com/local-events/2026/city-stick",
+          "sha256": "185626e79b922e53cca9062a04d85610cb8bc784e2504cee6968666244a8eb26",
+          "captured_at": "2026-11-15T01:02:52.603624+00:00",
+          "capture": "/workspace/scratch/6c174d945c50/outdoor-work/captures/26d8af7d35d64c1c116b5929a213b89066aa79274925e15d096ac04051f89649.txt",
+          "imported_additional_capture": false
+        },
+        {
+          "url": "https://pkgenboston.com/local-events/dojo-jam/2026-11",
+          "sha256": "b7b4b903befe3bf80ed33affb2c485d336bff7450cbd30c37647b22ffef819d1",
+          "captured_at": "2026-11-15T01:02:57.634480+00:00",
+          "capture": "/workspace/scratch/6c174d945c50/outdoor-work/captures/14beff0433f96590403b869cbfab2d7bef9f8517ec02f6ee2c82f88cefe46e93.txt",
+          "imported_additional_capture": false
+        },
+        {
+          "url": "https://pkgenboston.sites.zenplanner.com/event.cfm?eventId=F627675C-0625-4AC6-9410-A2DA10FF3F5C",
+          "sha256": "90942ac9dfa4bba6be6f20179fe909f1a5a97d89a6f1212d734b90dbe866149d",
+          "captured_at": "2026-11-15T01:05:22.506227+00:00",
+          "capture": "/workspace/scratch/3aa56d09ac0a/boston-additional/community/captures/35caf761e7ebd2d45adec86752603ae843e2a225a826c95d300ea9238134d675.txt",
+          "imported_additional_capture": true
+        },
+        {
+          "url": "https://pkgenboston.sites.zenplanner.com/event.cfm?eventId=AD58D198-525D-43BA-8F2F-1967B02668FD",
+          "sha256": "7c526ac87ffac58c83d497e6269ea90fb6d1bc1c6f1309804faa6fe08a60f300",
+          "captured_at": "2026-11-15T01:05:26.602168+00:00",
+          "capture": "/workspace/scratch/3aa56d09ac0a/boston-additional/community/captures/ee688754a86aee3b8fd730dd3ea6fe3177ef609bcb08eecdc7aefdddbefb9277.txt",
+          "imported_additional_capture": true
+        },
+        {
+          "url": "https://pkgenboston.com/local-events/dojo-jam/2026-12",
+          "sha256": "0d1ced7d971cdd302817a57289b176e0602e567ad4d8373a36bc47bb10a3822b",
+          "captured_at": "2026-11-15T01:03:06.174561+00:00",
+          "capture": "/workspace/scratch/6c174d945c50/outdoor-work/captures/889c17d8200c7029f359b61a78ba2610818003dde6dd82646bf84458f9b7d4f3.txt",
+          "imported_additional_capture": false
+        },
+        {
+          "url": "https://pkgenboston.com/local-events/2026/12/explorer",
+          "sha256": "f53b2eae0bfd3be47fb4e1b565f299bd51141640b52c598e7297afbdb1ffab00",
+          "captured_at": "2026-11-15T01:03:10.377342+00:00",
+          "capture": "/workspace/scratch/6c174d945c50/outdoor-work/captures/936514cead913425a3d5e3c2221f8e7dd63c31815c99ca1fe78d212008bcae96.txt",
+          "imported_additional_capture": false
+        },
+        {
+          "url": "https://pkgenboston.com/local-events/2027/01/04explorer",
+          "sha256": "d066d29ccb5f217410657c91d100db525ba5da50676a2da8353f8336841de1f1",
+          "captured_at": "2026-11-15T01:03:13.921323+00:00",
+          "capture": "/workspace/scratch/6c174d945c50/outdoor-work/captures/a4122d778d8b06b572e5722aaac256c08fa443ec31c4f2361164f8b477f9ce12.txt",
+          "imported_additional_capture": false
+        }
+      ],
+      "removed": [
+        {
+          "id": "parkour:6cbb177826f5fbccdb58abe591267fe0876b1479241df9c01152c8051610e4a9",
+          "starts_at": "2026-12-05T14:30:00+00:00",
+          "title": "Holiday Challenge 2026",
+          "description_sha256": "ef834ed529738f8add12f05c1bb6ce460d65f7aa3c6e94787e12bed173696459"
+        },
+        {
+          "id": "parkour:f98ef4c9c86f0dcc16595ea6a24ffe9c40762d5945014f945c2726949b49e102",
+          "starts_at": "2026-12-28T15:00:00+00:00",
+          "title": "Parkour Explorer School Break Clinic (DEC)",
+          "description_sha256": "587a959d53281b7993a2221894c1b6ba8d2ba0277526f9685001a95a844f3757"
+        }
+      ],
+      "added": [
+        {
+          "id": "parkour:f98ef4c9c86f0dcc16595ea6a24ffe9c40762d5945014f945c2726949b49e102:2026-12-28",
+          "starts_at": "2026-12-28T15:00:00+00:00",
+          "title": "Parkour Explorer School Break Clinic (DEC)",
+          "description_sha256": "587a959d53281b7993a2221894c1b6ba8d2ba0277526f9685001a95a844f3757"
+        },
+        {
+          "id": "parkour:f98ef4c9c86f0dcc16595ea6a24ffe9c40762d5945014f945c2726949b49e102:2026-12-29",
+          "starts_at": "2026-12-29T15:00:00+00:00",
+          "title": "Parkour Explorer School Break Clinic (DEC)",
+          "description_sha256": "587a959d53281b7993a2221894c1b6ba8d2ba0277526f9685001a95a844f3757"
+        },
+        {
+          "id": "parkour:f98ef4c9c86f0dcc16595ea6a24ffe9c40762d5945014f945c2726949b49e102:2026-12-30",
+          "starts_at": "2026-12-30T15:00:00+00:00",
+          "title": "Parkour Explorer School Break Clinic (DEC)",
+          "description_sha256": "587a959d53281b7993a2221894c1b6ba8d2ba0277526f9685001a95a844f3757"
+        },
+        {
+          "id": "parkour:f98ef4c9c86f0dcc16595ea6a24ffe9c40762d5945014f945c2726949b49e102:2026-12-31",
+          "starts_at": "2026-12-31T15:00:00+00:00",
+          "title": "Parkour Explorer School Break Clinic (DEC)",
+          "description_sha256": "587a959d53281b7993a2221894c1b6ba8d2ba0277526f9685001a95a844f3757"
+        },
+        {
+          "id": "parkour:zenplanner:AD58D198-525D-43BA-8F2F-1967B02668FD",
+          "starts_at": "2026-12-05T18:00:00+00:00",
+          "title": "PKGB Holiday Challenge - YOUTH 2026",
+          "description_sha256": "cb146f9d650c6d010af56f154303f09ade1dd544cd25790ec13a2768d0d2b75d"
+        },
+        {
+          "id": "parkour:zenplanner:F627675C-0625-4AC6-9410-A2DA10FF3F5C",
+          "starts_at": "2026-12-05T14:00:00+00:00",
+          "title": "PKGB Holiday Challenge - ADULT/TEEN 2026",
+          "description_sha256": "4ada27b92e1b66e7a69ee5e0433e58357b11c84079470bf73ff46b6656b04516"
+        }
+      ],
+      "retained_changes": [
+        {
+          "id": "parkour:128977224d6eccc07eb61a532482f2452a0defa61c239d0356e5e4c58d11d165",
+          "starts_at": "2027-01-04T15:00:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance"
+          ]
+        },
+        {
+          "id": "parkour:4628dff643989ba4c86b5ab3871b3e046de77775bbd3ed10579d717c6893874b",
+          "starts_at": "2026-11-28T18:00:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance"
+          ]
+        },
+        {
+          "id": "parkour:4724b28bf7c7854760d8284d2225ad602cc5094e2bd70fc67248559e2a7a39e6",
+          "starts_at": "2026-12-26T18:00:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance"
+          ]
+        }
+      ],
+      "native_records": [
+        {
+          "id": "parkour:c3d1fe3d6ffb712b9099aa373183794b7d299d6e3164ec8880c775bed58e6320",
+          "starts_at": "2026-11-21T14:00:00+00:00",
+          "full_native_record_sha256": "daae02c58ed52d2994b23274039d07b1cd0336f4a36bbc1c035ffd5c668b4039",
+          "description_sha256": "6beb1b947cc895d08d58dff4f0a2e6bf5dc058f9e1966987ae8f69bfe194a06a",
+          "description_length": 1004
+        },
+        {
+          "id": "parkour:4628dff643989ba4c86b5ab3871b3e046de77775bbd3ed10579d717c6893874b",
+          "starts_at": "2026-11-28T18:00:00+00:00",
+          "full_native_record_sha256": "4fb939aa0cc78589b13ea2b85d79095b671077fb2fb0bf479a95905487f8ce93",
+          "description_sha256": "2817d177e68230c07f1967af51bf86c19c83528fe2f75ea896da7ce415952b3d",
+          "description_length": 560
+        },
+        {
+          "id": "parkour:zenplanner:F627675C-0625-4AC6-9410-A2DA10FF3F5C",
+          "starts_at": "2026-12-05T14:00:00+00:00",
+          "full_native_record_sha256": "608a42476b3419e6b3b1c168845f8e9b81a621843731a1e15b49701c2f3a2198",
+          "description_sha256": "4ada27b92e1b66e7a69ee5e0433e58357b11c84079470bf73ff46b6656b04516",
+          "description_length": 1213
+        },
+        {
+          "id": "parkour:zenplanner:AD58D198-525D-43BA-8F2F-1967B02668FD",
+          "starts_at": "2026-12-05T18:00:00+00:00",
+          "full_native_record_sha256": "d881079fedd6882c49690659e37285e779ce041e39097608989bfaf386bfe746",
+          "description_sha256": "cb146f9d650c6d010af56f154303f09ade1dd544cd25790ec13a2768d0d2b75d",
+          "description_length": 1137
+        },
+        {
+          "id": "parkour:4724b28bf7c7854760d8284d2225ad602cc5094e2bd70fc67248559e2a7a39e6",
+          "starts_at": "2026-12-26T18:00:00+00:00",
+          "full_native_record_sha256": "96d1867d591f2be4c80f39195ad1915d47b66216cd21b6dee65a36609df5731d",
+          "description_sha256": "2817d177e68230c07f1967af51bf86c19c83528fe2f75ea896da7ce415952b3d",
+          "description_length": 560
+        },
+        {
+          "id": "parkour:f98ef4c9c86f0dcc16595ea6a24ffe9c40762d5945014f945c2726949b49e102:2026-12-28",
+          "starts_at": "2026-12-28T15:00:00+00:00",
+          "full_native_record_sha256": "29992d223d939bda8114f6e8c86b70054c30b929962aa0daa9c7817546cd0e8c",
+          "description_sha256": "587a959d53281b7993a2221894c1b6ba8d2ba0277526f9685001a95a844f3757",
+          "description_length": 1842
+        },
+        {
+          "id": "parkour:f98ef4c9c86f0dcc16595ea6a24ffe9c40762d5945014f945c2726949b49e102:2026-12-29",
+          "starts_at": "2026-12-29T15:00:00+00:00",
+          "full_native_record_sha256": "90c6c8ef2ebe97dc72c10047a366086d78fde0e5c9ebd27cb82085c23df71ce8",
+          "description_sha256": "587a959d53281b7993a2221894c1b6ba8d2ba0277526f9685001a95a844f3757",
+          "description_length": 1842
+        },
+        {
+          "id": "parkour:f98ef4c9c86f0dcc16595ea6a24ffe9c40762d5945014f945c2726949b49e102:2026-12-30",
+          "starts_at": "2026-12-30T15:00:00+00:00",
+          "full_native_record_sha256": "5313f6e84dec5c4fb0242de993015159d3933c5dd993f38ec7104ce3475ff05f",
+          "description_sha256": "587a959d53281b7993a2221894c1b6ba8d2ba0277526f9685001a95a844f3757",
+          "description_length": 1842
+        },
+        {
+          "id": "parkour:f98ef4c9c86f0dcc16595ea6a24ffe9c40762d5945014f945c2726949b49e102:2026-12-31",
+          "starts_at": "2026-12-31T15:00:00+00:00",
+          "full_native_record_sha256": "95556627b2340c3eb0f0ce486c73ef1d66e3929b6de5c7105bade0aa06e60a9e",
+          "description_sha256": "587a959d53281b7993a2221894c1b6ba8d2ba0277526f9685001a95a844f3757",
+          "description_length": 1842
+        },
+        {
+          "id": "parkour:128977224d6eccc07eb61a532482f2452a0defa61c239d0356e5e4c58d11d165",
+          "starts_at": "2027-01-04T15:00:00+00:00",
+          "full_native_record_sha256": "bc813bfc4f54bedff1ba782dce1fc4c81358df5071858d6eaaa4833ae66ba650",
+          "description_sha256": "d9e73a011c8d4d268b2961d52cdda21516b0b79f2ce698c679fc8e2a44c80fd8",
+          "description_length": 1785
+        }
+      ]
+    },
+    {
+      "source_key": "rock_spot_south_boston_ma",
+      "original_window": "2026-11-15T01:06:56.831857+00:00",
+      "old_count": 136,
+      "new_count": 75,
+      "retained_identities": 75,
+      "added_identities": 0,
+      "removed_identities": 61,
+      "retained_native_descriptions_identical": true,
+      "complete_only_staging": true,
+      "original_capture_file": "outdoor-work/rock_spot_south_boston_ma-rows.json",
+      "original_capture_file_sha256": "3e0bf9cf6b9e1198e89c52e1b649813d30b651ecac67a0a754a382f13cf6faaa",
+      "output_file": "outdoor-work/replay-3b58/rock_spot_south_boston_ma-rows.json",
+      "output_file_sha256": "b28489faebe4b95693bf7bd921167969ec9d9ff75451ed7fae9aad72c17d1039",
+      "output_canonical_sha256": "2249af117cb21c1266cbef909277e624e2f46b2b03c716596de095c8e6daf5ba",
+      "published_evidence_canonical_sha256": "2249af117cb21c1266cbef909277e624e2f46b2b03c716596de095c8e6daf5ba",
+      "all_fields_equal_published_capture": true,
+      "claims": [
+        {
+          "claim": 1,
+          "cursor": 8,
+          "manifest_count": 9,
+          "accumulated_events": 72,
+          "emitted_events": 0,
+          "complete": false
+        },
+        {
+          "claim": 2,
+          "cursor": 9,
+          "manifest_count": 9,
+          "accumulated_events": 75,
+          "emitted_events": 75,
+          "complete": true
+        }
+      ],
+      "captures": [
+        {
+          "url": "https://climber.hellocapitan.com/rockspot/schedule/events/95/?day=2026-11-14",
+          "sha256": "d2bb4eb9c379b680261f0dc7eb3b9eaa28ca7a953046fa0073244144452bdbe7",
+          "captured_at": "2026-11-15T01:02:53.089753+00:00",
+          "capture": "/workspace/scratch/6c174d945c50/outdoor-work/captures/0ff0cde332b2ff5bd4941454ae4ab9689730125df4ce9e04b164d7b865c7cb2d.txt",
+          "imported_additional_capture": false
+        },
+        {
+          "url": "https://climber.hellocapitan.com/rockspot/schedule/events/95/?day=2026-11-21",
+          "sha256": "ad962fdb263c63ced0856848ba10e8f8b21fa2fdbd70b1e81d116f4430ac1399",
+          "captured_at": "2026-11-15T01:02:58.052034+00:00",
+          "capture": "/workspace/scratch/6c174d945c50/outdoor-work/captures/592d19f768f78ae87df0754313c4d8d71e112a2840b3567f7f8400dd11465ce2.txt",
+          "imported_additional_capture": false
+        },
+        {
+          "url": "https://climber.hellocapitan.com/rockspot/schedule/events/95/?day=2026-11-28",
+          "sha256": "7df0d1d51046c19b377e4f8a1122bfa1e0cf5a00854e5ca9e13e542bd8316e3c",
+          "captured_at": "2026-11-15T01:03:02.466888+00:00",
+          "capture": "/workspace/scratch/6c174d945c50/outdoor-work/captures/d4ab472e73ec573cbac42b97d91b5b7ed3595ddf9aa886feff56104489f7f961.txt",
+          "imported_additional_capture": false
+        },
+        {
+          "url": "https://climber.hellocapitan.com/rockspot/schedule/events/95/?day=2026-12-05",
+          "sha256": "6bb6f0bf9490721fd551371aa31eb20fc28acc82149233bdb0bfb07e5cc875eb",
+          "captured_at": "2026-11-15T01:03:06.583895+00:00",
+          "capture": "/workspace/scratch/6c174d945c50/outdoor-work/captures/2ccfa5c7fcc74aa0f57bb6f3beb129ce19bad659d1c9a5aa6459ca2196dbfa67.txt",
+          "imported_additional_capture": false
+        },
+        {
+          "url": "https://climber.hellocapitan.com/rockspot/schedule/events/95/?day=2026-12-12",
+          "sha256": "486ebd28d4cbf7dd574428086593ddd1adf35b7b0dadd649876872ca7c86d127",
+          "captured_at": "2026-11-15T01:03:11.151660+00:00",
+          "capture": "/workspace/scratch/6c174d945c50/outdoor-work/captures/85180ef76bb96ee0780c510749ca0c22025c6b770eb39acf7d4203b16d4fb7a7.txt",
+          "imported_additional_capture": false
+        },
+        {
+          "url": "https://climber.hellocapitan.com/rockspot/schedule/events/95/?day=2026-12-19",
+          "sha256": "fc065277a44e6a36dfa19de57de19d523f4aeed3a72a6363f252bebbe330402d",
+          "captured_at": "2026-11-15T01:03:16.280164+00:00",
+          "capture": "/workspace/scratch/6c174d945c50/outdoor-work/captures/c2ab7071bdccadcc1462857fb40b2585ea07d1390dca05116128c5fab717e016.txt",
+          "imported_additional_capture": false
+        },
+        {
+          "url": "https://climber.hellocapitan.com/rockspot/schedule/events/95/?day=2026-12-26",
+          "sha256": "c89dcc41ff7321a6c091069147542d1dbe1802b968941da9bbcca5f97d0a18b3",
+          "captured_at": "2026-11-15T01:03:20.433259+00:00",
+          "capture": "/workspace/scratch/6c174d945c50/outdoor-work/captures/437fe810dce16b857d06ae42f53a0992da8079ecd680b1164a1a3dc0ad4ea776.txt",
+          "imported_additional_capture": false
+        },
+        {
+          "url": "https://climber.hellocapitan.com/rockspot/schedule/events/95/?day=2027-01-02",
+          "sha256": "d885e3ee3e3c0240223372748746dd798f4a4167d531cd74f80f974af151c0dd",
+          "captured_at": "2026-11-15T01:03:24.963046+00:00",
+          "capture": "/workspace/scratch/6c174d945c50/outdoor-work/captures/189d536602b6b420710eca1da83d229e0a820731e673174057eb2d7377b8de37.txt",
+          "imported_additional_capture": false
+        },
+        {
+          "url": "https://climber.hellocapitan.com/rockspot/schedule/events/95/?day=2027-01-09",
+          "sha256": "37e96dc11651a82e8e78c05d2e3a60320bd0a0cfe1a16c72b9bf915d178dcae5",
+          "captured_at": "2026-11-15T01:03:30.596037+00:00",
+          "capture": "/workspace/scratch/6c174d945c50/outdoor-work/captures/7e833be189cee2ded503aacbd10fd22e1f71e7cad1c1d3f45679e77c3e3b9989.txt",
+          "imported_additional_capture": false
+        }
+      ],
+      "removed": [
+        {
+          "id": "rockspot:1341882:1440706",
+          "starts_at": "2026-12-20T14:00:00+00:00",
+          "title": "Junior Senders (Part 3 of 3)",
+          "description_sha256": "cc283d82151d15d54a790d4595cc6d63d92fdaec5176972180148004110e7715"
+        },
+        {
+          "id": "rockspot:1341882:1440708",
+          "starts_at": "2026-12-13T14:00:00+00:00",
+          "title": "Junior Senders (Part 2 of 3)",
+          "description_sha256": "cc283d82151d15d54a790d4595cc6d63d92fdaec5176972180148004110e7715"
+        },
+        {
+          "id": "rockspot:1341911:1437848",
+          "starts_at": "2026-12-14T23:15:00+00:00",
+          "title": "Junior Senders (Part 3 of 3)",
+          "description_sha256": "cc283d82151d15d54a790d4595cc6d63d92fdaec5176972180148004110e7715"
+        },
+        {
+          "id": "rockspot:1341911:1437850",
+          "starts_at": "2026-12-07T23:15:00+00:00",
+          "title": "Junior Senders (Part 2 of 3)",
+          "description_sha256": "cc283d82151d15d54a790d4595cc6d63d92fdaec5176972180148004110e7715"
+        },
+        {
+          "id": "rockspot:1341913:1414264",
+          "starts_at": "2026-12-09T21:45:00+00:00",
+          "title": "Junior Senders (Part 2 of 3)",
+          "description_sha256": "cc283d82151d15d54a790d4595cc6d63d92fdaec5176972180148004110e7715"
+        },
+        {
+          "id": "rockspot:1341913:1414265",
+          "starts_at": "2026-12-16T21:45:00+00:00",
+          "title": "Junior Senders (Part 3 of 3)",
+          "description_sha256": "cc283d82151d15d54a790d4595cc6d63d92fdaec5176972180148004110e7715"
+        },
+        {
+          "id": "rockspot:1341914:1414274",
+          "starts_at": "2026-12-10T21:45:00+00:00",
+          "title": "Junior Senders (Part 2 of 3)",
+          "description_sha256": "cc283d82151d15d54a790d4595cc6d63d92fdaec5176972180148004110e7715"
+        },
+        {
+          "id": "rockspot:1341914:1414275",
+          "starts_at": "2026-12-17T21:45:00+00:00",
+          "title": "Junior Senders (Part 3 of 3)",
+          "description_sha256": "cc283d82151d15d54a790d4595cc6d63d92fdaec5176972180148004110e7715"
+        },
+        {
+          "id": "rockspot:1341916:1414282",
+          "starts_at": "2026-12-12T15:00:00+00:00",
+          "title": "Junior Senders (Part 2 of 3)",
+          "description_sha256": "cc283d82151d15d54a790d4595cc6d63d92fdaec5176972180148004110e7715"
+        },
+        {
+          "id": "rockspot:1341916:1414283",
+          "starts_at": "2026-12-19T15:00:00+00:00",
+          "title": "Junior Senders (Part 3 of 3)",
+          "description_sha256": "cc283d82151d15d54a790d4595cc6d63d92fdaec5176972180148004110e7715"
+        },
+        {
+          "id": "rockspot:1341918:1414302",
+          "starts_at": "2026-12-09T20:45:00+00:00",
+          "title": "Little Senders (Part 2 of 3)",
+          "description_sha256": "5a17f2300b9abad6eae99f2b9e055f6bd0ccb7235cbfd60c8511352f5216d38a"
+        },
+        {
+          "id": "rockspot:1341918:1414303",
+          "starts_at": "2026-12-16T20:45:00+00:00",
+          "title": "Little Senders (Part 3 of 3)",
+          "description_sha256": "5a17f2300b9abad6eae99f2b9e055f6bd0ccb7235cbfd60c8511352f5216d38a"
+        },
+        {
+          "id": "rockspot:1341921:1414311",
+          "starts_at": "2026-12-12T14:00:00+00:00",
+          "title": "Little Senders (Part 2 of 3)",
+          "description_sha256": "5a17f2300b9abad6eae99f2b9e055f6bd0ccb7235cbfd60c8511352f5216d38a"
+        },
+        {
+          "id": "rockspot:1341921:1414313",
+          "starts_at": "2026-12-19T14:00:00+00:00",
+          "title": "Little Senders (Part 3 of 3)",
+          "description_sha256": "5a17f2300b9abad6eae99f2b9e055f6bd0ccb7235cbfd60c8511352f5216d38a"
+        },
+        {
+          "id": "rockspot:1341922:1414317",
+          "starts_at": "2026-12-20T14:15:00+00:00",
+          "title": "Little Senders (Part 3 of 3)",
+          "description_sha256": "5a17f2300b9abad6eae99f2b9e055f6bd0ccb7235cbfd60c8511352f5216d38a"
+        },
+        {
+          "id": "rockspot:1341922:1414318",
+          "starts_at": "2026-12-13T14:15:00+00:00",
+          "title": "Little Senders (Part 2 of 3)",
+          "description_sha256": "5a17f2300b9abad6eae99f2b9e055f6bd0ccb7235cbfd60c8511352f5216d38a"
+        },
+        {
+          "id": "rockspot:1341923:1440704",
+          "starts_at": "2026-12-20T17:00:00+00:00",
+          "title": "Little Senders (Part 3 of 3)",
+          "description_sha256": "5a17f2300b9abad6eae99f2b9e055f6bd0ccb7235cbfd60c8511352f5216d38a"
+        },
+        {
+          "id": "rockspot:1341923:1440705",
+          "starts_at": "2026-12-13T17:00:00+00:00",
+          "title": "Little Senders (Part 2 of 3)",
+          "description_sha256": "5a17f2300b9abad6eae99f2b9e055f6bd0ccb7235cbfd60c8511352f5216d38a"
+        },
+        {
+          "id": "rockspot:1341925:1414337",
+          "starts_at": "2026-12-09T23:00:00+00:00",
+          "title": "Super Senders (Part 2 of 3)",
+          "description_sha256": "2c6fa6c2a117c6d5aed0abdf51ee9c1c1140b3c7ad03ab4a00c37e54557bfa19"
+        },
+        {
+          "id": "rockspot:1341925:1414338",
+          "starts_at": "2026-12-16T23:00:00+00:00",
+          "title": "Super Senders (Part 3 of 3)",
+          "description_sha256": "2c6fa6c2a117c6d5aed0abdf51ee9c1c1140b3c7ad03ab4a00c37e54557bfa19"
+        },
+        {
+          "id": "rockspot:1341926:1414347",
+          "starts_at": "2026-12-10T23:00:00+00:00",
+          "title": "Super Senders (Part 2 of 3)",
+          "description_sha256": "2c6fa6c2a117c6d5aed0abdf51ee9c1c1140b3c7ad03ab4a00c37e54557bfa19"
+        },
+        {
+          "id": "rockspot:1341926:1414348",
+          "starts_at": "2026-12-17T23:00:00+00:00",
+          "title": "Super Senders (Part 3 of 3)",
+          "description_sha256": "2c6fa6c2a117c6d5aed0abdf51ee9c1c1140b3c7ad03ab4a00c37e54557bfa19"
+        },
+        {
+          "id": "rockspot:1341928:1414359",
+          "starts_at": "2026-12-19T16:15:00+00:00",
+          "title": "Super Senders (Part 3 of 3)",
+          "description_sha256": "2c6fa6c2a117c6d5aed0abdf51ee9c1c1140b3c7ad03ab4a00c37e54557bfa19"
+        },
+        {
+          "id": "rockspot:1341928:1414360",
+          "starts_at": "2026-12-12T16:15:00+00:00",
+          "title": "Super Senders (Part 2 of 3)",
+          "description_sha256": "2c6fa6c2a117c6d5aed0abdf51ee9c1c1140b3c7ad03ab4a00c37e54557bfa19"
+        },
+        {
+          "id": "rockspot:1341930:1440701",
+          "starts_at": "2026-12-20T15:15:00+00:00",
+          "title": "Super Senders (Part 3 of 3)",
+          "description_sha256": "2c6fa6c2a117c6d5aed0abdf51ee9c1c1140b3c7ad03ab4a00c37e54557bfa19"
+        },
+        {
+          "id": "rockspot:1341930:1440702",
+          "starts_at": "2026-12-13T15:15:00+00:00",
+          "title": "Super Senders (Part 2 of 3)",
+          "description_sha256": "2c6fa6c2a117c6d5aed0abdf51ee9c1c1140b3c7ad03ab4a00c37e54557bfa19"
+        },
+        {
+          "id": "rockspot:1341933:1414392",
+          "starts_at": "2026-12-19T18:30:00+00:00",
+          "title": "Teen Senders (Part 3 of 3)",
+          "description_sha256": "85142ec7a3c7a5f442d1418c713098c843139106a3ce55969fc848074e9aa91d"
+        },
+        {
+          "id": "rockspot:1341933:1414393",
+          "starts_at": "2026-12-12T18:30:00+00:00",
+          "title": "Teen Senders (Part 2 of 3)",
+          "description_sha256": "85142ec7a3c7a5f442d1418c713098c843139106a3ce55969fc848074e9aa91d"
+        },
+        {
+          "id": "rockspot:1341934:1414402",
+          "starts_at": "2026-12-13T18:00:00+00:00",
+          "title": "Teen Senders (Part 2 of 3)",
+          "description_sha256": "85142ec7a3c7a5f442d1418c713098c843139106a3ce55969fc848074e9aa91d"
+        },
+        {
+          "id": "rockspot:1341934:1414403",
+          "starts_at": "2026-12-20T18:00:00+00:00",
+          "title": "Teen Senders (Part 3 of 3)",
+          "description_sha256": "85142ec7a3c7a5f442d1418c713098c843139106a3ce55969fc848074e9aa91d"
+        },
+        {
+          "id": "rockspot:1342170:1414948",
+          "starts_at": "2027-01-09T15:00:00+00:00",
+          "title": "Junior Senders (Part 2 of 10)",
+          "description_sha256": "cc283d82151d15d54a790d4595cc6d63d92fdaec5176972180148004110e7715"
+        },
+        {
+          "id": "rockspot:1342172:1414993",
+          "starts_at": "2027-01-10T15:45:00+00:00",
+          "title": "Junior Senders (Part 2 of 10)",
+          "description_sha256": "cc283d82151d15d54a790d4595cc6d63d92fdaec5176972180148004110e7715"
+        },
+        {
+          "id": "rockspot:1342175:1415016",
+          "starts_at": "2027-01-11T21:00:00+00:00",
+          "title": "Junior Senders (Part 2 of 10)",
+          "description_sha256": "cc283d82151d15d54a790d4595cc6d63d92fdaec5176972180148004110e7715"
+        },
+        {
+          "id": "rockspot:1342176:1415033",
+          "starts_at": "2027-01-11T23:15:00+00:00",
+          "title": "Junior Senders (Part 2 of 10)",
+          "description_sha256": "cc283d82151d15d54a790d4595cc6d63d92fdaec5176972180148004110e7715"
+        },
+        {
+          "id": "rockspot:1342177:1415041",
+          "starts_at": "2027-01-12T21:00:00+00:00",
+          "title": "Junior Senders (Part 2 of 10)",
+          "description_sha256": "cc283d82151d15d54a790d4595cc6d63d92fdaec5176972180148004110e7715"
+        },
+        {
+          "id": "rockspot:1342181:1415091",
+          "starts_at": "2027-01-09T14:00:00+00:00",
+          "title": "Little Senders (Part 2 of 10)",
+          "description_sha256": "5a17f2300b9abad6eae99f2b9e055f6bd0ccb7235cbfd60c8511352f5216d38a"
+        },
+        {
+          "id": "rockspot:1342182:1415115",
+          "starts_at": "2027-01-10T14:15:00+00:00",
+          "title": "Little Senders (Part 2 of 10)",
+          "description_sha256": "5a17f2300b9abad6eae99f2b9e055f6bd0ccb7235cbfd60c8511352f5216d38a"
+        },
+        {
+          "id": "rockspot:1342183:1415137",
+          "starts_at": "2027-01-10T16:30:00+00:00",
+          "title": "Little Senders (Part 2 of 10)",
+          "description_sha256": "5a17f2300b9abad6eae99f2b9e055f6bd0ccb7235cbfd60c8511352f5216d38a"
+        },
+        {
+          "id": "rockspot:1342184:1415151",
+          "starts_at": "2027-01-11T22:15:00+00:00",
+          "title": "Little Senders (Part 2 of 10)",
+          "description_sha256": "5a17f2300b9abad6eae99f2b9e055f6bd0ccb7235cbfd60c8511352f5216d38a"
+        },
+        {
+          "id": "rockspot:1342185:1415175",
+          "starts_at": "2027-01-13T20:45:00+00:00",
+          "title": "Little Senders (Part 2 of 10)",
+          "description_sha256": "5a17f2300b9abad6eae99f2b9e055f6bd0ccb7235cbfd60c8511352f5216d38a"
+        },
+        {
+          "id": "rockspot:1342187:1415191",
+          "starts_at": "2027-01-09T16:15:00+00:00",
+          "title": "Super Senders (Part 2 of 10)",
+          "description_sha256": "2c6fa6c2a117c6d5aed0abdf51ee9c1c1140b3c7ad03ab4a00c37e54557bfa19"
+        },
+        {
+          "id": "rockspot:1342228:1415259",
+          "starts_at": "2027-01-10T14:00:00+00:00",
+          "title": "Super Senders (Part 2 of 10)",
+          "description_sha256": "2c6fa6c2a117c6d5aed0abdf51ee9c1c1140b3c7ad03ab4a00c37e54557bfa19"
+        },
+        {
+          "id": "rockspot:1342229:1415278",
+          "starts_at": "2027-01-10T17:00:00+00:00",
+          "title": "Super Senders (Part 2 of 10)",
+          "description_sha256": "2c6fa6c2a117c6d5aed0abdf51ee9c1c1140b3c7ad03ab4a00c37e54557bfa19"
+        },
+        {
+          "id": "rockspot:1342230:1415294",
+          "starts_at": "2027-01-12T22:15:00+00:00",
+          "title": "Super Senders (Part 2 of 10)",
+          "description_sha256": "2c6fa6c2a117c6d5aed0abdf51ee9c1c1140b3c7ad03ab4a00c37e54557bfa19"
+        },
+        {
+          "id": "rockspot:1342232:1415317",
+          "starts_at": "2027-01-13T23:00:00+00:00",
+          "title": "Super Senders (Part 2 of 10)",
+          "description_sha256": "2c6fa6c2a117c6d5aed0abdf51ee9c1c1140b3c7ad03ab4a00c37e54557bfa19"
+        },
+        {
+          "id": "rockspot:1342235:1415342",
+          "starts_at": "2027-01-09T18:30:00+00:00",
+          "title": "Teen Senders (Part 2 of 10)",
+          "description_sha256": "85142ec7a3c7a5f442d1418c713098c843139106a3ce55969fc848074e9aa91d"
+        },
+        {
+          "id": "rockspot:1342236:1415367",
+          "starts_at": "2027-01-10T18:00:00+00:00",
+          "title": "Teen Senders (Part 2 of 10)",
+          "description_sha256": "85142ec7a3c7a5f442d1418c713098c843139106a3ce55969fc848074e9aa91d"
+        },
+        {
+          "id": "rockspot:1342237:1415387",
+          "starts_at": "2027-01-13T00:00:00+00:00",
+          "title": "Teen Senders (Part 2 of 10)",
+          "description_sha256": "85142ec7a3c7a5f442d1418c713098c843139106a3ce55969fc848074e9aa91d"
+        },
+        {
+          "id": "rockspot:1356161:1432337",
+          "starts_at": "2026-12-29T14:00:00+00:00",
+          "title": "Indoor Adventure Program - Full Week - Winter Adventure (Full Week) (Part 2 of 5)",
+          "description_sha256": "22cb33c6163f0fc3f7752198c738a95d51cb8087a3c255616ccedee23c906a54"
+        },
+        {
+          "id": "rockspot:1356161:1432338",
+          "starts_at": "2026-12-30T14:00:00+00:00",
+          "title": "Indoor Adventure Program - Full Week - Winter Adventure (Full Week) (Part 3 of 5)",
+          "description_sha256": "22cb33c6163f0fc3f7752198c738a95d51cb8087a3c255616ccedee23c906a54"
+        },
+        {
+          "id": "rockspot:1356161:1432339",
+          "starts_at": "2026-12-31T14:00:00+00:00",
+          "title": "Indoor Adventure Program - Full Week - Winter Adventure (Full Week) (Part 4 of 5)",
+          "description_sha256": "22cb33c6163f0fc3f7752198c738a95d51cb8087a3c255616ccedee23c906a54"
+        },
+        {
+          "id": "rockspot:1356161:1432340",
+          "starts_at": "2027-01-01T17:30:00+00:00",
+          "title": "Indoor Adventure Program - Full Week - Winter Adventure (Full Week) (Part 5 of 5)",
+          "description_sha256": "22cb33c6163f0fc3f7752198c738a95d51cb8087a3c255616ccedee23c906a54"
+        },
+        {
+          "id": "rockspot:1357142:1433726",
+          "starts_at": "2026-12-30T14:00:00+00:00",
+          "title": "Indoor Adventure Program - Full Week - Winter Adventure (Full Week | Mornings) (Part 3 of 4)",
+          "description_sha256": "22cb33c6163f0fc3f7752198c738a95d51cb8087a3c255616ccedee23c906a54"
+        },
+        {
+          "id": "rockspot:1357142:1433728",
+          "starts_at": "2026-12-31T14:00:00+00:00",
+          "title": "Indoor Adventure Program - Full Week - Winter Adventure (Full Week | Mornings) (Part 4 of 4)",
+          "description_sha256": "22cb33c6163f0fc3f7752198c738a95d51cb8087a3c255616ccedee23c906a54"
+        },
+        {
+          "id": "rockspot:1357142:1433729",
+          "starts_at": "2026-12-29T14:00:00+00:00",
+          "title": "Indoor Adventure Program - Full Week - Winter Adventure (Full Week | Mornings) (Part 2 of 4)",
+          "description_sha256": "22cb33c6163f0fc3f7752198c738a95d51cb8087a3c255616ccedee23c906a54"
+        },
+        {
+          "id": "rockspot:1357143:1433734",
+          "starts_at": "2026-12-29T17:30:00+00:00",
+          "title": "Indoor Adventure Program - Full Week - Winter Adventure (Full Week | Afternoons) (Part 2 of 5)",
+          "description_sha256": "22cb33c6163f0fc3f7752198c738a95d51cb8087a3c255616ccedee23c906a54"
+        },
+        {
+          "id": "rockspot:1357143:1433735",
+          "starts_at": "2027-01-01T17:30:00+00:00",
+          "title": "Indoor Adventure Program - Full Week - Winter Adventure (Full Week | Afternoons) (Part 5 of 5)",
+          "description_sha256": "22cb33c6163f0fc3f7752198c738a95d51cb8087a3c255616ccedee23c906a54"
+        },
+        {
+          "id": "rockspot:1357143:1433736",
+          "starts_at": "2026-12-31T17:30:00+00:00",
+          "title": "Indoor Adventure Program - Full Week - Winter Adventure (Full Week | Afternoons) (Part 4 of 5)",
+          "description_sha256": "22cb33c6163f0fc3f7752198c738a95d51cb8087a3c255616ccedee23c906a54"
+        },
+        {
+          "id": "rockspot:1357143:1433738",
+          "starts_at": "2026-12-30T17:30:00+00:00",
+          "title": "Indoor Adventure Program - Full Week - Winter Adventure (Full Week | Afternoons) (Part 3 of 5)",
+          "description_sha256": "22cb33c6163f0fc3f7752198c738a95d51cb8087a3c255616ccedee23c906a54"
+        },
+        {
+          "id": "rockspot:1360867:1438094",
+          "starts_at": "2026-12-07T21:00:00+00:00",
+          "title": "Little Senders (Part 2 of 3)",
+          "description_sha256": "5a17f2300b9abad6eae99f2b9e055f6bd0ccb7235cbfd60c8511352f5216d38a"
+        },
+        {
+          "id": "rockspot:1360867:1438096",
+          "starts_at": "2026-12-14T21:00:00+00:00",
+          "title": "Little Senders (Part 3 of 3)",
+          "description_sha256": "5a17f2300b9abad6eae99f2b9e055f6bd0ccb7235cbfd60c8511352f5216d38a"
+        }
+      ],
+      "added": [],
+      "retained_changes": [
+        {
+          "id": "rockspot:1154205:1201672",
+          "starts_at": "2026-11-18T23:00:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1154592:1202066",
+          "starts_at": "2026-11-19T23:30:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1156943:1205216",
+          "starts_at": "2026-11-26T23:30:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1157515:1205917",
+          "starts_at": "2026-11-28T13:00:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1158795:1207378",
+          "starts_at": "2026-12-03T23:30:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1161018:1210432",
+          "starts_at": "2026-12-10T23:30:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1161938:1211504",
+          "starts_at": "2026-12-12T13:00:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1163368:1213027",
+          "starts_at": "2026-12-16T23:00:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1163606:1213267",
+          "starts_at": "2026-12-17T23:30:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1166859:1216784",
+          "starts_at": "2026-12-24T23:30:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1167535:1218153",
+          "starts_at": "2026-12-26T13:00:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1169697:1220530",
+          "starts_at": "2026-12-31T23:30:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1172245:1224399",
+          "starts_at": "2027-01-07T23:30:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1172766:1224974",
+          "starts_at": "2027-01-09T13:00:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1247106:1307886",
+          "starts_at": "2026-11-26T23:30:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1247110:1307890",
+          "starts_at": "2026-12-03T23:30:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1247123:1307903",
+          "starts_at": "2026-11-19T23:30:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1247131:1307911",
+          "starts_at": "2026-12-10T23:30:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1311763:1382107",
+          "starts_at": "2026-12-20T19:00:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1311765:1382109",
+          "starts_at": "2026-12-13T19:00:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1311783:1382127",
+          "starts_at": "2027-01-03T19:00:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1311785:1382129",
+          "starts_at": "2026-12-06T19:00:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1311788:1382132",
+          "starts_at": "2027-01-10T19:00:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1311795:1382139",
+          "starts_at": "2026-11-29T19:00:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1311806:1382150",
+          "starts_at": "2026-12-27T19:00:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1341219:1413104",
+          "starts_at": "2026-12-12T19:00:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1341223:1413108",
+          "starts_at": "2026-12-26T19:00:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1341228:1413113",
+          "starts_at": "2026-11-28T19:00:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1341231:1413116",
+          "starts_at": "2027-01-02T19:00:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1341246:1413131",
+          "starts_at": "2026-12-19T19:00:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1341249:1413134",
+          "starts_at": "2027-01-09T19:00:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1341259:1413144",
+          "starts_at": "2026-12-05T19:00:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1341882:1440707",
+          "starts_at": "2026-12-06T14:00:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1341911:1437849",
+          "starts_at": "2026-11-30T23:15:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1341913:1414263",
+          "starts_at": "2026-12-02T21:45:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1341914:1414273",
+          "starts_at": "2026-12-03T21:45:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1341916:1414284",
+          "starts_at": "2026-12-05T15:00:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1341918:1414301",
+          "starts_at": "2026-12-02T20:45:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1341921:1414312",
+          "starts_at": "2026-12-05T14:00:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1341922:1414319",
+          "starts_at": "2026-12-06T14:15:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1341923:1440703",
+          "starts_at": "2026-12-06T17:00:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1341925:1414336",
+          "starts_at": "2026-12-02T23:00:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1341926:1414346",
+          "starts_at": "2026-12-03T23:00:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1341928:1414358",
+          "starts_at": "2026-12-05T16:15:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1341930:1440700",
+          "starts_at": "2026-12-06T15:15:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1341933:1414394",
+          "starts_at": "2026-12-05T18:30:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1341934:1414401",
+          "starts_at": "2026-12-06T18:00:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1342170:1414947",
+          "starts_at": "2027-01-02T15:00:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1342172:1414992",
+          "starts_at": "2027-01-03T15:45:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1342175:1415012",
+          "starts_at": "2027-01-04T21:00:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1342176:1415032",
+          "starts_at": "2027-01-04T23:15:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1342177:1415040",
+          "starts_at": "2027-01-05T21:00:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1342179:1415070",
+          "starts_at": "2027-01-07T21:45:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1342180:1415080",
+          "starts_at": "2027-01-08T21:00:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1342181:1415090",
+          "starts_at": "2027-01-02T14:00:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1342182:1415118",
+          "starts_at": "2027-01-03T14:15:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1342183:1415136",
+          "starts_at": "2027-01-03T16:30:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1342184:1415153",
+          "starts_at": "2027-01-04T22:15:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1342185:1415176",
+          "starts_at": "2027-01-06T20:45:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1342186:1415180",
+          "starts_at": "2027-01-07T20:45:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1342187:1415190",
+          "starts_at": "2027-01-02T16:15:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1342228:1415254",
+          "starts_at": "2027-01-03T14:00:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1342229:1415279",
+          "starts_at": "2027-01-03T17:00:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1342230:1415296",
+          "starts_at": "2027-01-05T22:15:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1342232:1415315",
+          "starts_at": "2027-01-06T23:00:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1342233:1415321",
+          "starts_at": "2027-01-07T23:00:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1342234:1415331",
+          "starts_at": "2027-01-08T22:15:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1342235:1415341",
+          "starts_at": "2027-01-02T18:30:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1342236:1415364",
+          "starts_at": "2027-01-03T18:00:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1342237:1415381",
+          "starts_at": "2027-01-06T00:00:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1342238:1415392",
+          "starts_at": "2027-01-09T00:00:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1356161:1432336",
+          "starts_at": "2026-12-28T14:00:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1357142:1433727",
+          "starts_at": "2026-12-28T14:00:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1357143:1433737",
+          "starts_at": "2026-12-28T17:30:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "rockspot:1360867:1438095",
+          "starts_at": "2026-11-30T21:00:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_provenance",
+            "reason"
+          ]
+        }
+      ],
+      "native_records": [
+        {
+          "id": "rockspot:1154205:1201672",
+          "starts_at": "2026-11-18T23:00:00+00:00",
+          "full_native_record_sha256": "ba32ef8e344fb1e81db0b28e3c61de90d8418771174b25b8b49007d762a394ce",
+          "description_sha256": "dfa54ee3aa584c77c9663202790d8c2df0b3d148533c0c973899f0256fbee886",
+          "description_length": 1360
+        },
+        {
+          "id": "rockspot:1154592:1202066",
+          "starts_at": "2026-11-19T23:30:00+00:00",
+          "full_native_record_sha256": "5ab517d95fee29da1f2d311629a67532efa0f66ed115f990706c1f7a4f701e49",
+          "description_sha256": "dfa54ee3aa584c77c9663202790d8c2df0b3d148533c0c973899f0256fbee886",
+          "description_length": 1360
+        },
+        {
+          "id": "rockspot:1247123:1307903",
+          "starts_at": "2026-11-19T23:30:00+00:00",
+          "full_native_record_sha256": "e5a81e3678ca9a7a8f1602f9dcc542dd737f104fa49b090c1a7427db5aea579a",
+          "description_sha256": "c27fd54cea4cb49a49d87f397d4afa7346be140ef983ad7b3daf06c0171dd704",
+          "description_length": 658
+        },
+        {
+          "id": "rockspot:1156943:1205216",
+          "starts_at": "2026-11-26T23:30:00+00:00",
+          "full_native_record_sha256": "9ed1f7a96fb5a4ac9e2a7b941b2f04fde5fc638f09fc56828999f0e887204e44",
+          "description_sha256": "dfa54ee3aa584c77c9663202790d8c2df0b3d148533c0c973899f0256fbee886",
+          "description_length": 1360
+        },
+        {
+          "id": "rockspot:1247106:1307886",
+          "starts_at": "2026-11-26T23:30:00+00:00",
+          "full_native_record_sha256": "5ad91cd7cce1cc22cae9da714952fd2de11445c1d9bcd0abece337903084f15b",
+          "description_sha256": "c27fd54cea4cb49a49d87f397d4afa7346be140ef983ad7b3daf06c0171dd704",
+          "description_length": 658
+        },
+        {
+          "id": "rockspot:1157515:1205917",
+          "starts_at": "2026-11-28T13:00:00+00:00",
+          "full_native_record_sha256": "fd46acb71d98621a606a78c2eee3d2b8d900a4ea487b74b104e7e16afc582990",
+          "description_sha256": "bf34d9785f112bb12560c16b9e9a69c2454562d41599b778f8582475ce71497a",
+          "description_length": 853
+        },
+        {
+          "id": "rockspot:1341228:1413113",
+          "starts_at": "2026-11-28T19:00:00+00:00",
+          "full_native_record_sha256": "e84ecfae50c94ff6f94a3bd03c06151b309ba677e2eaf86e0f77819a93327131",
+          "description_sha256": "51d9f730d5dec87f77d056742946e779d93dee2d43856caf22bfc872ce1e09ec",
+          "description_length": 579
+        },
+        {
+          "id": "rockspot:1311795:1382139",
+          "starts_at": "2026-11-29T19:00:00+00:00",
+          "full_native_record_sha256": "74c0768f5edce29d92f2498f6f15fb8bcd669acb3a5cca704380a503ab80b506",
+          "description_sha256": "51d9f730d5dec87f77d056742946e779d93dee2d43856caf22bfc872ce1e09ec",
+          "description_length": 579
+        },
+        {
+          "id": "rockspot:1360867:1438095",
+          "starts_at": "2026-11-30T21:00:00+00:00",
+          "full_native_record_sha256": "6d4c67e3067cada0bedb658cdb4a3bb59577f18551c221a966251316d1702cdd",
+          "description_sha256": "5a17f2300b9abad6eae99f2b9e055f6bd0ccb7235cbfd60c8511352f5216d38a",
+          "description_length": 1457
+        },
+        {
+          "id": "rockspot:1341911:1437849",
+          "starts_at": "2026-11-30T23:15:00+00:00",
+          "full_native_record_sha256": "fcc6a94bc988065a81bf56a6c864c1fc95913640e11513aa8e915137901b7fd9",
+          "description_sha256": "cc283d82151d15d54a790d4595cc6d63d92fdaec5176972180148004110e7715",
+          "description_length": 1361
+        },
+        {
+          "id": "rockspot:1341918:1414301",
+          "starts_at": "2026-12-02T20:45:00+00:00",
+          "full_native_record_sha256": "cc94c36e718d1ae115b9eeaa7991d0011cccda52fdd9f874fafa89983df93ae0",
+          "description_sha256": "5a17f2300b9abad6eae99f2b9e055f6bd0ccb7235cbfd60c8511352f5216d38a",
+          "description_length": 1457
+        },
+        {
+          "id": "rockspot:1341913:1414263",
+          "starts_at": "2026-12-02T21:45:00+00:00",
+          "full_native_record_sha256": "a873942ff8b2561e47264f6ce31d330d567010aef8ac952abd747fb1382af0ba",
+          "description_sha256": "cc283d82151d15d54a790d4595cc6d63d92fdaec5176972180148004110e7715",
+          "description_length": 1361
+        },
+        {
+          "id": "rockspot:1341925:1414336",
+          "starts_at": "2026-12-02T23:00:00+00:00",
+          "full_native_record_sha256": "1607b44bf41178ed0203cd6ced4abe491cbd82e89633b7bf77fe6868bd8bb579",
+          "description_sha256": "2c6fa6c2a117c6d5aed0abdf51ee9c1c1140b3c7ad03ab4a00c37e54557bfa19",
+          "description_length": 1167
+        },
+        {
+          "id": "rockspot:1341914:1414273",
+          "starts_at": "2026-12-03T21:45:00+00:00",
+          "full_native_record_sha256": "833d0454161502f192466898f9e7cddead8c7bf4d9f764af570e8a49b4cd1417",
+          "description_sha256": "cc283d82151d15d54a790d4595cc6d63d92fdaec5176972180148004110e7715",
+          "description_length": 1361
+        },
+        {
+          "id": "rockspot:1341926:1414346",
+          "starts_at": "2026-12-03T23:00:00+00:00",
+          "full_native_record_sha256": "1815af94490f160208bc24d7b95de30f77348a6b4a35c603968456a0584953b0",
+          "description_sha256": "2c6fa6c2a117c6d5aed0abdf51ee9c1c1140b3c7ad03ab4a00c37e54557bfa19",
+          "description_length": 1167
+        },
+        {
+          "id": "rockspot:1247110:1307890",
+          "starts_at": "2026-12-03T23:30:00+00:00",
+          "full_native_record_sha256": "4ca55c45205b742037a7f9da11fa5682f67eb171d3c056874742d3ce3b914b8b",
+          "description_sha256": "c27fd54cea4cb49a49d87f397d4afa7346be140ef983ad7b3daf06c0171dd704",
+          "description_length": 658
+        },
+        {
+          "id": "rockspot:1158795:1207378",
+          "starts_at": "2026-12-03T23:30:00+00:00",
+          "full_native_record_sha256": "730b8170f7c00e61096c34a5b216c2f79c0f7e020fa219d9c464732e46ac4ba4",
+          "description_sha256": "dfa54ee3aa584c77c9663202790d8c2df0b3d148533c0c973899f0256fbee886",
+          "description_length": 1360
+        },
+        {
+          "id": "rockspot:1341921:1414312",
+          "starts_at": "2026-12-05T14:00:00+00:00",
+          "full_native_record_sha256": "f78c1cbe1574365179ec85579f5de9da4391aa756e844c602e38f3f3ba9e5518",
+          "description_sha256": "5a17f2300b9abad6eae99f2b9e055f6bd0ccb7235cbfd60c8511352f5216d38a",
+          "description_length": 1457
+        },
+        {
+          "id": "rockspot:1341916:1414284",
+          "starts_at": "2026-12-05T15:00:00+00:00",
+          "full_native_record_sha256": "8e75ecf437a278f00d925b5b7cafbacda20e131b341ca8705e2673f9a875c9b0",
+          "description_sha256": "cc283d82151d15d54a790d4595cc6d63d92fdaec5176972180148004110e7715",
+          "description_length": 1361
+        },
+        {
+          "id": "rockspot:1341928:1414358",
+          "starts_at": "2026-12-05T16:15:00+00:00",
+          "full_native_record_sha256": "583563bdaa476c4ee65caf95f80885ab63e05fcf1198aa1108e2b5285f38c866",
+          "description_sha256": "2c6fa6c2a117c6d5aed0abdf51ee9c1c1140b3c7ad03ab4a00c37e54557bfa19",
+          "description_length": 1167
+        },
+        {
+          "id": "rockspot:1341933:1414394",
+          "starts_at": "2026-12-05T18:30:00+00:00",
+          "full_native_record_sha256": "3ec1f79defef0edc5b1b637e4ecb4c4c44c7a32b5d6cb37a938f7b7ce9bae525",
+          "description_sha256": "85142ec7a3c7a5f442d1418c713098c843139106a3ce55969fc848074e9aa91d",
+          "description_length": 1174
+        },
+        {
+          "id": "rockspot:1341259:1413144",
+          "starts_at": "2026-12-05T19:00:00+00:00",
+          "full_native_record_sha256": "46648620358927816318abe1e257a0b1adb4814847349c99578faf46a3351bf6",
+          "description_sha256": "51d9f730d5dec87f77d056742946e779d93dee2d43856caf22bfc872ce1e09ec",
+          "description_length": 579
+        },
+        {
+          "id": "rockspot:1341882:1440707",
+          "starts_at": "2026-12-06T14:00:00+00:00",
+          "full_native_record_sha256": "68a88d1361aa9541a69bbc56a44d8e4f4ef28fe96cd1297abd5c20837cf5469b",
+          "description_sha256": "cc283d82151d15d54a790d4595cc6d63d92fdaec5176972180148004110e7715",
+          "description_length": 1361
+        },
+        {
+          "id": "rockspot:1341922:1414319",
+          "starts_at": "2026-12-06T14:15:00+00:00",
+          "full_native_record_sha256": "b68e336362f38fc45372d2cbef3b9f88ae896773b87eb52f12ddb3854370da26",
+          "description_sha256": "5a17f2300b9abad6eae99f2b9e055f6bd0ccb7235cbfd60c8511352f5216d38a",
+          "description_length": 1457
+        },
+        {
+          "id": "rockspot:1341930:1440700",
+          "starts_at": "2026-12-06T15:15:00+00:00",
+          "full_native_record_sha256": "a7179e1fd0a346c9a9430f4618690bdc069205385955efe8a6eae50feb1c0fef",
+          "description_sha256": "2c6fa6c2a117c6d5aed0abdf51ee9c1c1140b3c7ad03ab4a00c37e54557bfa19",
+          "description_length": 1167
+        },
+        {
+          "id": "rockspot:1341923:1440703",
+          "starts_at": "2026-12-06T17:00:00+00:00",
+          "full_native_record_sha256": "7b41cdbfb0337d20b5295a7d96fe7835253ac3edbd4c4f0a5b6826100a633cfa",
+          "description_sha256": "5a17f2300b9abad6eae99f2b9e055f6bd0ccb7235cbfd60c8511352f5216d38a",
+          "description_length": 1457
+        },
+        {
+          "id": "rockspot:1341934:1414401",
+          "starts_at": "2026-12-06T18:00:00+00:00",
+          "full_native_record_sha256": "a5036db8a92a852e03c084457cfeb09b006763302c2045d2613214c4ec1bb4e3",
+          "description_sha256": "85142ec7a3c7a5f442d1418c713098c843139106a3ce55969fc848074e9aa91d",
+          "description_length": 1174
+        },
+        {
+          "id": "rockspot:1311785:1382129",
+          "starts_at": "2026-12-06T19:00:00+00:00",
+          "full_native_record_sha256": "1158a4ce88a39d7ec5ed607f10c682ba5af1eb6898b08d7fcd06bd3fadec880a",
+          "description_sha256": "51d9f730d5dec87f77d056742946e779d93dee2d43856caf22bfc872ce1e09ec",
+          "description_length": 579
+        },
+        {
+          "id": "rockspot:1161018:1210432",
+          "starts_at": "2026-12-10T23:30:00+00:00",
+          "full_native_record_sha256": "b525b275d5662ec14dada3e0cfe3e8f53c22631bc804ed1d7c1f4ba2b759be4c",
+          "description_sha256": "dfa54ee3aa584c77c9663202790d8c2df0b3d148533c0c973899f0256fbee886",
+          "description_length": 1360
+        },
+        {
+          "id": "rockspot:1247131:1307911",
+          "starts_at": "2026-12-10T23:30:00+00:00",
+          "full_native_record_sha256": "e13fdd8dfa66b204856ce3be8056363e7303ae5b75b61374295057398164d4e7",
+          "description_sha256": "c27fd54cea4cb49a49d87f397d4afa7346be140ef983ad7b3daf06c0171dd704",
+          "description_length": 658
+        },
+        {
+          "id": "rockspot:1161938:1211504",
+          "starts_at": "2026-12-12T13:00:00+00:00",
+          "full_native_record_sha256": "89e54e058f03a3ed47a3428efc414afe2608260c84bb5b2d4b437ee35e2cbb3c",
+          "description_sha256": "bf34d9785f112bb12560c16b9e9a69c2454562d41599b778f8582475ce71497a",
+          "description_length": 853
+        },
+        {
+          "id": "rockspot:1341219:1413104",
+          "starts_at": "2026-12-12T19:00:00+00:00",
+          "full_native_record_sha256": "fc1876f7bc82df7c9d16add8d95b29f6aad308f67d19619764c85bf8b1fb415e",
+          "description_sha256": "51d9f730d5dec87f77d056742946e779d93dee2d43856caf22bfc872ce1e09ec",
+          "description_length": 579
+        },
+        {
+          "id": "rockspot:1311765:1382109",
+          "starts_at": "2026-12-13T19:00:00+00:00",
+          "full_native_record_sha256": "1de4eb62162b36711dc92008f5d08cefa8e0106b9a6db57e1cb572eeae5e357d",
+          "description_sha256": "51d9f730d5dec87f77d056742946e779d93dee2d43856caf22bfc872ce1e09ec",
+          "description_length": 579
+        },
+        {
+          "id": "rockspot:1163368:1213027",
+          "starts_at": "2026-12-16T23:00:00+00:00",
+          "full_native_record_sha256": "fe145fa191f7a6fb17ba116591021c2a2fa7ba01a3d74af00b54530ecd9d2937",
+          "description_sha256": "dfa54ee3aa584c77c9663202790d8c2df0b3d148533c0c973899f0256fbee886",
+          "description_length": 1360
+        },
+        {
+          "id": "rockspot:1163606:1213267",
+          "starts_at": "2026-12-17T23:30:00+00:00",
+          "full_native_record_sha256": "b59ad62f8004c2ccd3bc7d291279958b466fc24f5698ea43eb5d81663ed16582",
+          "description_sha256": "dfa54ee3aa584c77c9663202790d8c2df0b3d148533c0c973899f0256fbee886",
+          "description_length": 1360
+        },
+        {
+          "id": "rockspot:1341246:1413131",
+          "starts_at": "2026-12-19T19:00:00+00:00",
+          "full_native_record_sha256": "a3d6c2de13f0653e21afc08900523a0ad7d06c9f9de06569cf96cd5a0a74ab58",
+          "description_sha256": "51d9f730d5dec87f77d056742946e779d93dee2d43856caf22bfc872ce1e09ec",
+          "description_length": 579
+        },
+        {
+          "id": "rockspot:1311763:1382107",
+          "starts_at": "2026-12-20T19:00:00+00:00",
+          "full_native_record_sha256": "02a11180be679d1a7e93c14ce9c57d1b468f6ffd8d4c37ebdf7f13cc12850c58",
+          "description_sha256": "51d9f730d5dec87f77d056742946e779d93dee2d43856caf22bfc872ce1e09ec",
+          "description_length": 579
+        },
+        {
+          "id": "rockspot:1166859:1216784",
+          "starts_at": "2026-12-24T23:30:00+00:00",
+          "full_native_record_sha256": "5ff18bbce844c96085b9a494b721eeaf8e11f735e6f127d25a89cdcab5f8792a",
+          "description_sha256": "dfa54ee3aa584c77c9663202790d8c2df0b3d148533c0c973899f0256fbee886",
+          "description_length": 1360
+        },
+        {
+          "id": "rockspot:1167535:1218153",
+          "starts_at": "2026-12-26T13:00:00+00:00",
+          "full_native_record_sha256": "89bf948974c2a09e2bed99206e46eff771055614510d250a821cf9dcc291a490",
+          "description_sha256": "bf34d9785f112bb12560c16b9e9a69c2454562d41599b778f8582475ce71497a",
+          "description_length": 853
+        },
+        {
+          "id": "rockspot:1341223:1413108",
+          "starts_at": "2026-12-26T19:00:00+00:00",
+          "full_native_record_sha256": "50bc4229ff5c18d8336e1d680e0a659ecc66b143a5b3368d5d6c828497f3639b",
+          "description_sha256": "51d9f730d5dec87f77d056742946e779d93dee2d43856caf22bfc872ce1e09ec",
+          "description_length": 579
+        },
+        {
+          "id": "rockspot:1311806:1382150",
+          "starts_at": "2026-12-27T19:00:00+00:00",
+          "full_native_record_sha256": "1d0da32a05e5c79e286d7d568b71218b94af820d6d6d7f71504f11d066f7f1a6",
+          "description_sha256": "51d9f730d5dec87f77d056742946e779d93dee2d43856caf22bfc872ce1e09ec",
+          "description_length": 579
+        },
+        {
+          "id": "rockspot:1356161:1432336",
+          "starts_at": "2026-12-28T14:00:00+00:00",
+          "full_native_record_sha256": "40a0eeea3416f5d25cdc633f4b0185843922072ddc80d3f3d95c2280973d2dc8",
+          "description_sha256": "22cb33c6163f0fc3f7752198c738a95d51cb8087a3c255616ccedee23c906a54",
+          "description_length": 3065
+        },
+        {
+          "id": "rockspot:1357142:1433727",
+          "starts_at": "2026-12-28T14:00:00+00:00",
+          "full_native_record_sha256": "4f9ec788d3046bacba133dd9a1f91621e7d517b9df829a15c28895e90881cd8e",
+          "description_sha256": "22cb33c6163f0fc3f7752198c738a95d51cb8087a3c255616ccedee23c906a54",
+          "description_length": 3065
+        },
+        {
+          "id": "rockspot:1357143:1433737",
+          "starts_at": "2026-12-28T17:30:00+00:00",
+          "full_native_record_sha256": "f65501bc2ac914a4eac8a7f846ff2c2d5a86c05f2cabcfa29ed719fafc6d7197",
+          "description_sha256": "22cb33c6163f0fc3f7752198c738a95d51cb8087a3c255616ccedee23c906a54",
+          "description_length": 3065
+        },
+        {
+          "id": "rockspot:1169697:1220530",
+          "starts_at": "2026-12-31T23:30:00+00:00",
+          "full_native_record_sha256": "cf1edadfb5152903b7e2075bc1de9fea3f13fbc6b805e3d476a9aa9fe6b4d1db",
+          "description_sha256": "dfa54ee3aa584c77c9663202790d8c2df0b3d148533c0c973899f0256fbee886",
+          "description_length": 1360
+        },
+        {
+          "id": "rockspot:1342181:1415090",
+          "starts_at": "2027-01-02T14:00:00+00:00",
+          "full_native_record_sha256": "01be5ef344d673019afd66520d0834722204efb289726b85ffe41e64019ac56b",
+          "description_sha256": "5a17f2300b9abad6eae99f2b9e055f6bd0ccb7235cbfd60c8511352f5216d38a",
+          "description_length": 1457
+        },
+        {
+          "id": "rockspot:1342170:1414947",
+          "starts_at": "2027-01-02T15:00:00+00:00",
+          "full_native_record_sha256": "1b967a6e990a13d0e8d230afb4130c17b5900f9e043f984269b0a2d92985c232",
+          "description_sha256": "cc283d82151d15d54a790d4595cc6d63d92fdaec5176972180148004110e7715",
+          "description_length": 1361
+        },
+        {
+          "id": "rockspot:1342187:1415190",
+          "starts_at": "2027-01-02T16:15:00+00:00",
+          "full_native_record_sha256": "f6cdfb96af71a9dfe82b356e55cadf1e5f8695bdee6da999a5003b3b4d03aa69",
+          "description_sha256": "2c6fa6c2a117c6d5aed0abdf51ee9c1c1140b3c7ad03ab4a00c37e54557bfa19",
+          "description_length": 1167
+        },
+        {
+          "id": "rockspot:1342235:1415341",
+          "starts_at": "2027-01-02T18:30:00+00:00",
+          "full_native_record_sha256": "18757e7468b2020a26c08ef93db57425050852299bc76c5f01d8013c6456b29d",
+          "description_sha256": "85142ec7a3c7a5f442d1418c713098c843139106a3ce55969fc848074e9aa91d",
+          "description_length": 1174
+        },
+        {
+          "id": "rockspot:1341231:1413116",
+          "starts_at": "2027-01-02T19:00:00+00:00",
+          "full_native_record_sha256": "07b808a2155fbc3d1397d95125e99854df11728b9348149cfafa4a1945d6e884",
+          "description_sha256": "51d9f730d5dec87f77d056742946e779d93dee2d43856caf22bfc872ce1e09ec",
+          "description_length": 579
+        },
+        {
+          "id": "rockspot:1342228:1415254",
+          "starts_at": "2027-01-03T14:00:00+00:00",
+          "full_native_record_sha256": "c730fe3b3f7762a5ec991b97b57121e9ec27a964e10dd10a87185bee16e5fd32",
+          "description_sha256": "2c6fa6c2a117c6d5aed0abdf51ee9c1c1140b3c7ad03ab4a00c37e54557bfa19",
+          "description_length": 1167
+        },
+        {
+          "id": "rockspot:1342182:1415118",
+          "starts_at": "2027-01-03T14:15:00+00:00",
+          "full_native_record_sha256": "7b39f9b821ccf746f252c78aab93564541b8f54e22e8ce3447452775e2ccbabe",
+          "description_sha256": "5a17f2300b9abad6eae99f2b9e055f6bd0ccb7235cbfd60c8511352f5216d38a",
+          "description_length": 1457
+        },
+        {
+          "id": "rockspot:1342172:1414992",
+          "starts_at": "2027-01-03T15:45:00+00:00",
+          "full_native_record_sha256": "e8e6004fa0a6c97ef19ff91618731ac619f4fd0157777c442b325635462bf8ae",
+          "description_sha256": "cc283d82151d15d54a790d4595cc6d63d92fdaec5176972180148004110e7715",
+          "description_length": 1361
+        },
+        {
+          "id": "rockspot:1342183:1415136",
+          "starts_at": "2027-01-03T16:30:00+00:00",
+          "full_native_record_sha256": "2a8db1a082376b72310427fcb17c31c520192adbef11a6f97d3f10702ab3f594",
+          "description_sha256": "5a17f2300b9abad6eae99f2b9e055f6bd0ccb7235cbfd60c8511352f5216d38a",
+          "description_length": 1457
+        },
+        {
+          "id": "rockspot:1342229:1415279",
+          "starts_at": "2027-01-03T17:00:00+00:00",
+          "full_native_record_sha256": "d464162fc0deeabfa7b63619397c43397b8525541cb3da6bbe49b531cfdd982e",
+          "description_sha256": "2c6fa6c2a117c6d5aed0abdf51ee9c1c1140b3c7ad03ab4a00c37e54557bfa19",
+          "description_length": 1167
+        },
+        {
+          "id": "rockspot:1342236:1415364",
+          "starts_at": "2027-01-03T18:00:00+00:00",
+          "full_native_record_sha256": "b1598de5b01c6744da29e7385739e9b92d5c85882a132f085637af516422a9f2",
+          "description_sha256": "85142ec7a3c7a5f442d1418c713098c843139106a3ce55969fc848074e9aa91d",
+          "description_length": 1174
+        },
+        {
+          "id": "rockspot:1311783:1382127",
+          "starts_at": "2027-01-03T19:00:00+00:00",
+          "full_native_record_sha256": "ab9fecfc33aae15ebc06cfcb7696144bad083ef8b2bba8ef794e0ce195e83801",
+          "description_sha256": "51d9f730d5dec87f77d056742946e779d93dee2d43856caf22bfc872ce1e09ec",
+          "description_length": 579
+        },
+        {
+          "id": "rockspot:1342175:1415012",
+          "starts_at": "2027-01-04T21:00:00+00:00",
+          "full_native_record_sha256": "f0300f7c9038ba96a5ab3bbdd1ca3bf19ac55877c7fe4e71c23196a3d71a0afb",
+          "description_sha256": "cc283d82151d15d54a790d4595cc6d63d92fdaec5176972180148004110e7715",
+          "description_length": 1361
+        },
+        {
+          "id": "rockspot:1342184:1415153",
+          "starts_at": "2027-01-04T22:15:00+00:00",
+          "full_native_record_sha256": "8820d0e78b03881a67a6c5dcce632b2351ff66b6721800abf046951548236aa2",
+          "description_sha256": "5a17f2300b9abad6eae99f2b9e055f6bd0ccb7235cbfd60c8511352f5216d38a",
+          "description_length": 1457
+        },
+        {
+          "id": "rockspot:1342176:1415032",
+          "starts_at": "2027-01-04T23:15:00+00:00",
+          "full_native_record_sha256": "827809264ffe77f7030ddb520e7a4f46c5de7ee7e00daba1016a56c62168ac57",
+          "description_sha256": "cc283d82151d15d54a790d4595cc6d63d92fdaec5176972180148004110e7715",
+          "description_length": 1361
+        },
+        {
+          "id": "rockspot:1342177:1415040",
+          "starts_at": "2027-01-05T21:00:00+00:00",
+          "full_native_record_sha256": "c45f5de8b38130b049dc723afc1727f5e491ec0dfc268597c9e8a7fd1b41c9d1",
+          "description_sha256": "cc283d82151d15d54a790d4595cc6d63d92fdaec5176972180148004110e7715",
+          "description_length": 1361
+        },
+        {
+          "id": "rockspot:1342230:1415296",
+          "starts_at": "2027-01-05T22:15:00+00:00",
+          "full_native_record_sha256": "dd75a797153c51538dd5f29c487cce8b186f803df85b7ed3505c214aae9ebe2a",
+          "description_sha256": "2c6fa6c2a117c6d5aed0abdf51ee9c1c1140b3c7ad03ab4a00c37e54557bfa19",
+          "description_length": 1167
+        },
+        {
+          "id": "rockspot:1342237:1415381",
+          "starts_at": "2027-01-06T00:00:00+00:00",
+          "full_native_record_sha256": "597c1241bf76d2c6afa36b76198e815c08ce33afd7cb91c2e065e37036444c47",
+          "description_sha256": "85142ec7a3c7a5f442d1418c713098c843139106a3ce55969fc848074e9aa91d",
+          "description_length": 1174
+        },
+        {
+          "id": "rockspot:1342185:1415176",
+          "starts_at": "2027-01-06T20:45:00+00:00",
+          "full_native_record_sha256": "d82a10103f3558cac9ab407a03af08cab898c13c7943cf58073f4a664b0dd8d5",
+          "description_sha256": "5a17f2300b9abad6eae99f2b9e055f6bd0ccb7235cbfd60c8511352f5216d38a",
+          "description_length": 1457
+        },
+        {
+          "id": "rockspot:1342232:1415315",
+          "starts_at": "2027-01-06T23:00:00+00:00",
+          "full_native_record_sha256": "f753b1040d8351c86d0a33e9df55acead1c143bd7a8bab6486649206b9bb9512",
+          "description_sha256": "2c6fa6c2a117c6d5aed0abdf51ee9c1c1140b3c7ad03ab4a00c37e54557bfa19",
+          "description_length": 1167
+        },
+        {
+          "id": "rockspot:1342186:1415180",
+          "starts_at": "2027-01-07T20:45:00+00:00",
+          "full_native_record_sha256": "a9f08cedad4776e32b27907dd1a29952ffad50b931171360e6ced301de825821",
+          "description_sha256": "5a17f2300b9abad6eae99f2b9e055f6bd0ccb7235cbfd60c8511352f5216d38a",
+          "description_length": 1457
+        },
+        {
+          "id": "rockspot:1342179:1415070",
+          "starts_at": "2027-01-07T21:45:00+00:00",
+          "full_native_record_sha256": "1ea7a49c2d540a9b8618ddd1071ddc810c32b19419af0d7133644cf10bb2f3a3",
+          "description_sha256": "cc283d82151d15d54a790d4595cc6d63d92fdaec5176972180148004110e7715",
+          "description_length": 1361
+        },
+        {
+          "id": "rockspot:1342233:1415321",
+          "starts_at": "2027-01-07T23:00:00+00:00",
+          "full_native_record_sha256": "a9b1cf65235e40eacf1d674dec8b396de747ca6ec0c041ff361d0974765cf4f9",
+          "description_sha256": "2c6fa6c2a117c6d5aed0abdf51ee9c1c1140b3c7ad03ab4a00c37e54557bfa19",
+          "description_length": 1167
+        },
+        {
+          "id": "rockspot:1172245:1224399",
+          "starts_at": "2027-01-07T23:30:00+00:00",
+          "full_native_record_sha256": "84cb60a2f40eb09467956f6dc7f58498e78f3c7847c5f8aaa0e7b2f40a68f108",
+          "description_sha256": "dfa54ee3aa584c77c9663202790d8c2df0b3d148533c0c973899f0256fbee886",
+          "description_length": 1360
+        },
+        {
+          "id": "rockspot:1342180:1415080",
+          "starts_at": "2027-01-08T21:00:00+00:00",
+          "full_native_record_sha256": "7678b0ee0df6343554bf3a18d55c1b4bd3c0ed3f74ae825ce6f499e13ff54d22",
+          "description_sha256": "cc283d82151d15d54a790d4595cc6d63d92fdaec5176972180148004110e7715",
+          "description_length": 1361
+        },
+        {
+          "id": "rockspot:1342234:1415331",
+          "starts_at": "2027-01-08T22:15:00+00:00",
+          "full_native_record_sha256": "9e407d96792de277a25989f807231f366b44caffacab39b613aaf95054b0149f",
+          "description_sha256": "2c6fa6c2a117c6d5aed0abdf51ee9c1c1140b3c7ad03ab4a00c37e54557bfa19",
+          "description_length": 1167
+        },
+        {
+          "id": "rockspot:1342238:1415392",
+          "starts_at": "2027-01-09T00:00:00+00:00",
+          "full_native_record_sha256": "823497ba11c4e42be75a6edba299d3f7867565eb6f8c6a316ea645521e694622",
+          "description_sha256": "85142ec7a3c7a5f442d1418c713098c843139106a3ce55969fc848074e9aa91d",
+          "description_length": 1174
+        },
+        {
+          "id": "rockspot:1172766:1224974",
+          "starts_at": "2027-01-09T13:00:00+00:00",
+          "full_native_record_sha256": "bb60a1becd28a8169f8fe22f3bbbc1f307e67a0f9e9437129a89f10f22953299",
+          "description_sha256": "bf34d9785f112bb12560c16b9e9a69c2454562d41599b778f8582475ce71497a",
+          "description_length": 853
+        },
+        {
+          "id": "rockspot:1341249:1413134",
+          "starts_at": "2027-01-09T19:00:00+00:00",
+          "full_native_record_sha256": "108d1b1bfe71f1b5e3fab0932a1dc4b2466fc5e6c40729571586b76dac34cfa0",
+          "description_sha256": "51d9f730d5dec87f77d056742946e779d93dee2d43856caf22bfc872ce1e09ec",
+          "description_length": 579
+        },
+        {
+          "id": "rockspot:1311788:1382132",
+          "starts_at": "2027-01-10T19:00:00+00:00",
+          "full_native_record_sha256": "30646a829c05b827990da22a5ff33974fa9f7c1aa70615796a18d5132cb026b2",
+          "description_sha256": "51d9f730d5dec87f77d056742946e779d93dee2d43856caf22bfc872ce1e09ec",
+          "description_length": 579
+        }
+      ]
+    }
+  ]
+}

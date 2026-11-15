@@ -1,0 +1,192 @@
+{
+  "schema_version": 1,
+  "source_key": "tracksmith_trackhouse_boston_ma",
+  "production_writes": false,
+  "original_captures_preserved": true,
+  "explanation": "The research downloader used requests.Response.text with Content-Type text/html and no charset, producing Latin-1 mojibake from UTF-8 response bytes. Strict Latin-1 re-encoding reconstructs those bytes; the production transport correctly decodes UTF-8 when charset is absent. No prose is shortened or manually substituted. The same corrected decoding restores the December14 yoga en dash and explicit19:30 local end.",
+  "method": "Strict entire-document encode(latin1).decode(utf-8-sig), then unchanged collector parser. No lossy replacement, normalization exemption, or publisher retry.",
+  "captures": [
+    {
+      "url": "https://www.tracksmith.com/pages/trackhouse",
+      "content_type": "text/html",
+      "original_text_sha256": "a32ec10ed4dc2371232a2d0c005d10bd4a9732f2514f1912ce33e5d21447ec7b",
+      "original_capture_file": "outdoor-work/captures/13052fb4a744ea6c061b60bca4491fd2f0c50aba6072bb57dd0b2841ff382930.txt",
+      "changed": false,
+      "strict_reconstruction_error": "UnicodeEncodeError"
+    },
+    {
+      "url": "https://www.tracksmith.com/events/church-of-the-long-run-boston-11-15",
+      "content_type": "text/html",
+      "original_text_sha256": "b7c61a81039f62d6c9f57220a0bf2e334ac86bca82e1c7379412d0958c292258",
+      "original_capture_file": "outdoor-work/captures/ddd4253a9e9eefe23169f7a476842a7d7af159fe246fd10822c82ea4ef60cc01.txt",
+      "changed": true,
+      "reconstructed_response_sha256": "2c85801e096cf1590caaef28cbe6602629dbb7a0afb14039c6accb09cc96f49e",
+      "decoded_utf8_sha256": "2c85801e096cf1590caaef28cbe6602629dbb7a0afb14039c6accb09cc96f49e"
+    },
+    {
+      "url": "https://www.tracksmith.com/events/trackhouse-yoga-boston-11-16",
+      "content_type": "text/html",
+      "original_text_sha256": "caae51d56967240e397d049bbfe00a12e4aa0bb37d334d63e61b40bca9171cda",
+      "original_capture_file": "outdoor-work/captures/1c61d229720250f9912d7f5d77ba7b7ad3253eb9021839957084e8a09558d166.txt",
+      "changed": false,
+      "strict_reconstruction_error": "UnicodeEncodeError"
+    },
+    {
+      "url": "https://www.tracksmith.com/events/tracksmith-x-the-newbury-hotel-morning-miles-11-17",
+      "content_type": "text/html",
+      "original_text_sha256": "52da99879e703be6c42ffea3075442939766216d3eb9cda447ddd8d02128b671",
+      "original_capture_file": "outdoor-work/captures/2babf28d79ce6012375f591822c5e4138bf890d67cd456e9384301b86516de0b.txt",
+      "changed": true,
+      "reconstructed_response_sha256": "638f2cd6100d10950665c4632f6a91d657b3555db9243d83bf6611152aa58d8c",
+      "decoded_utf8_sha256": "638f2cd6100d10950665c4632f6a91d657b3555db9243d83bf6611152aa58d8c"
+    },
+    {
+      "url": "https://www.tracksmith.com/events/speed-session-boston-11-18",
+      "content_type": "text/html",
+      "original_text_sha256": "9953922ca245f76f5fcb7462488b9e690dd4141cf2441680c9c2f31dc7284aac",
+      "original_capture_file": "outdoor-work/captures/5953e6c8f7a266c53e7ce9109c34027d86d5808fa5392265275186cfdbc9afae.txt",
+      "changed": true,
+      "reconstructed_response_sha256": "fd185edad86108f5400a4dfd83c3c6f65060cb385226e0d99bdbc52d79e29e2d",
+      "decoded_utf8_sha256": "fd185edad86108f5400a4dfd83c3c6f65060cb385226e0d99bdbc52d79e29e2d"
+    },
+    {
+      "url": "https://www.tracksmith.com/events/morning-miles-boston-11-20",
+      "content_type": "text/html",
+      "original_text_sha256": "f8dab9d27675c9a3ce8e5cd69b1262ba2fdfe3d677fd52a2522681ad0a658b9e",
+      "original_capture_file": "outdoor-work/captures/c65f844b6cdd08885006a3127bcf2967d4120fcc021d2946f451f4ece4aa2794.txt",
+      "changed": true,
+      "reconstructed_response_sha256": "2c0721b898c9146a4d896cb4258860b5ffd82e1e80a987cccdad67f354633350",
+      "decoded_utf8_sha256": "2c0721b898c9146a4d896cb4258860b5ffd82e1e80a987cccdad67f354633350"
+    },
+    {
+      "url": "https://www.tracksmith.com/events/church-of-the-long-run-boston-11-22",
+      "content_type": "text/html",
+      "original_text_sha256": "085770149fe2e04ce176231851f50fea45efc869b86b9c142d3b54c431f087a8",
+      "original_capture_file": "outdoor-work/captures/41e81070f80ec05a9b56a3508f61ed64997e986290083d9d272d83468dfb0f8b.txt",
+      "changed": true,
+      "reconstructed_response_sha256": "4a8deed300aeb3d1f08f9c70de46bca666ba7d6abb92e410e96d898151698b44",
+      "decoded_utf8_sha256": "4a8deed300aeb3d1f08f9c70de46bca666ba7d6abb92e410e96d898151698b44"
+    },
+    {
+      "url": "https://www.tracksmith.com/events/speed-session-boston-11-25",
+      "content_type": "text/html",
+      "original_text_sha256": "20336e3c27abc004dc59a7dbc0986bd34e449d475e479d8add1f2a499a277ed5",
+      "original_capture_file": "outdoor-work/captures/25fa625b24e3ed4536969226f82f977e3e5f3f2753c47f0ab453f1b9ddef77a2.txt",
+      "changed": true,
+      "reconstructed_response_sha256": "54373c049d83357c01af77758ec05ffa1960688a06bde2fb878fb6697be874ac",
+      "decoded_utf8_sha256": "54373c049d83357c01af77758ec05ffa1960688a06bde2fb878fb6697be874ac"
+    },
+    {
+      "url": "https://www.tracksmith.com/events/morning-miles-boston-11-27",
+      "content_type": "text/html",
+      "original_text_sha256": "fc434dd5e52e5de27e4a5fe32e993a609980771e2336d0c4e8d390c5abbe45bb",
+      "original_capture_file": "outdoor-work/captures/08874d28718791246fda34901645415833d0ad093f2739e30c88fb7d8496c963.txt",
+      "changed": true,
+      "reconstructed_response_sha256": "417f7c9c3be79c2f190cdd29d8c88cad5900cd3c56fb65717d95d41fe3f729d3",
+      "decoded_utf8_sha256": "417f7c9c3be79c2f190cdd29d8c88cad5900cd3c56fb65717d95d41fe3f729d3"
+    },
+    {
+      "url": "https://www.tracksmith.com/events/trackhouse-core-boston-11-4",
+      "content_type": "text/html",
+      "original_text_sha256": "e29f4e6ee77e37c953884ac8acf375863020670d516a05213f399b1ca08d7aa2",
+      "original_capture_file": "outdoor-work/captures/7603047969288cb357ea28bf25288ea6fe5c49398846a4df3db2f93c0291f05b.txt",
+      "changed": true,
+      "reconstructed_response_sha256": "5c4fb9b674486dd994ce28fa3f1c5a30db2290f00d5aacd104d782fb27ae4b22",
+      "decoded_utf8_sha256": "5c4fb9b674486dd994ce28fa3f1c5a30db2290f00d5aacd104d782fb27ae4b22"
+    },
+    {
+      "url": "https://www.tracksmith.com/events/trackhouse-yoga-boston-12-14",
+      "content_type": "text/html",
+      "original_text_sha256": "25c2b684743232acb5b830ad26d5859e408e5c41d164dbbd2f13d2779b75ee37",
+      "original_capture_file": "outdoor-work/captures/37989cbc7fac3abc65cb6694ba820e93f92096be5385e37c7452fdeb3d19c6a9.txt",
+      "changed": true,
+      "reconstructed_response_sha256": "979700a9ac7596c439ba625b152f3e9ccfb0fec82324b04c4bb7d3b3740e7e7e",
+      "decoded_utf8_sha256": "979700a9ac7596c439ba625b152f3e9ccfb0fec82324b04c4bb7d3b3740e7e7e"
+    }
+  ],
+  "records": [
+    {
+      "id": "tracksmith:church-of-the-long-run-boston-11-15",
+      "native_description_sha256": "0ba88f3d7c0bf5c7d5ce6a679699dd1484f973fce705afcc1c8586cf2b46060d",
+      "description_length": 777,
+      "starts_at": "2026-11-15T14:00:00+00:00",
+      "ends_at": null,
+      "mismatches": []
+    },
+    {
+      "id": "tracksmith:trackhouse-yoga-boston-11-16",
+      "native_description_sha256": "813a2bdcc2ee95a19a112b881f196c49b198f3fbd1ea0063cbdaf3464785c6a4",
+      "description_length": 200,
+      "starts_at": "2026-11-16T23:30:00+00:00",
+      "ends_at": "2026-11-17T00:30:00+00:00",
+      "mismatches": []
+    },
+    {
+      "id": "tracksmith:tracksmith-x-the-newbury-hotel-morning-miles-11-17",
+      "native_description_sha256": "1fb463ce56d3d3045e96896b103c1206aa39ba04563ad3ea238e04155abd1799",
+      "description_length": 409,
+      "starts_at": "2026-11-17T11:30:00+00:00",
+      "ends_at": null,
+      "mismatches": []
+    },
+    {
+      "id": "tracksmith:speed-session-boston-11-18",
+      "native_description_sha256": "52a2c7a35b3d352d66b078e38f6505e97d7d89fc5b994994b692ab3db8b5fc15",
+      "description_length": 604,
+      "starts_at": "2026-11-18T23:30:00+00:00",
+      "ends_at": null,
+      "mismatches": []
+    },
+    {
+      "id": "tracksmith:morning-miles-boston-11-20",
+      "native_description_sha256": "345fb87d204a7c0c590cdfb812f686c03fb31ae8c027a324190eb557afa13736",
+      "description_length": 443,
+      "starts_at": "2026-11-20T11:30:00+00:00",
+      "ends_at": null,
+      "mismatches": []
+    },
+    {
+      "id": "tracksmith:church-of-the-long-run-boston-11-22",
+      "native_description_sha256": "ff396a1d58b0efa9696884cd1ad2f6203fb9f3a1b21da4a43646ff30a823a05a",
+      "description_length": 766,
+      "starts_at": "2026-11-22T14:00:00+00:00",
+      "ends_at": null,
+      "mismatches": []
+    },
+    {
+      "id": "tracksmith:speed-session-boston-11-25",
+      "native_description_sha256": "3bc9b9a31345f4d9a197e85337e22f353f7c03648a9e7024ca0ac1c07d4a93a6",
+      "description_length": 470,
+      "starts_at": "2026-11-25T23:30:00+00:00",
+      "ends_at": null,
+      "mismatches": []
+    },
+    {
+      "id": "tracksmith:morning-miles-boston-11-27",
+      "native_description_sha256": "732af461773f04118306c62b45a090b14f0f13ea7aa0c136f00beceb654d3418",
+      "description_length": 499,
+      "starts_at": "2026-11-27T13:00:00+00:00",
+      "ends_at": null,
+      "mismatches": []
+    },
+    {
+      "id": "tracksmith:trackhouse-core-boston-11-4",
+      "native_description_sha256": "7a05eb22701efe0ef4a129b0dfd78c1131a88427e24d9ffd9ce40b095a67a9ed",
+      "description_length": 218,
+      "starts_at": "2026-12-04T12:30:00+00:00",
+      "ends_at": "2026-12-04T13:00:00+00:00",
+      "mismatches": []
+    },
+    {
+      "id": "tracksmith:trackhouse-yoga-boston-12-14",
+      "native_description_sha256": "813a2bdcc2ee95a19a112b881f196c49b198f3fbd1ea0063cbdaf3464785c6a4",
+      "description_length": 200,
+      "starts_at": "2026-12-14T23:30:00+00:00",
+      "ends_at": "2026-12-15T00:30:00+00:00",
+      "mismatches": []
+    }
+  ],
+  "all_fields_match_live_stage": true,
+  "corrected_capture": "outdoor-work/tracksmith-corrected-utf8-rows-20261115.json",
+  "decoding_scope": "Nine detail documents were reversible Latin-1 representations of UTF-8 bytes. The listing and November16 yoga capture already contain non-Latin-1 Unicode; they were retained byte-for-byte. All10 replayed rows exactly match live staging."
+}
