@@ -20,9 +20,11 @@ def adapters():
     from roomquest import (
         boston_arts, boston_nightlife, boston_community,
         boston_arts_remaining, boston_nightlife_remaining, boston_community_remaining,
+        boston_arts_additional, boston_nightlife_additional, boston_community_additional,
     )
     return (boston_arts, boston_nightlife, boston_community,
-            boston_arts_remaining, boston_nightlife_remaining, boston_community_remaining)
+            boston_arts_remaining, boston_nightlife_remaining, boston_community_remaining,
+            boston_arts_additional, boston_nightlife_additional, boston_community_additional)
 
 
 def adapter_for(key):

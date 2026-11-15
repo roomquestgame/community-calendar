@@ -61,3 +61,10 @@ Captured counts above remain a historical research snapshot.
 - [Arts, libraries and bookstores](../../docs/evidence/boston-arts-2026-11-14.md)
 - [Nightlife, food and gaming](../../docs/evidence/boston-nightlife-research-20261114.md)
 - Final release receipts must identify the collector production commit, application merge, normal Database deploy run, source health, geocoding completion, and capture-to-staging-to-publication description/address equality.
+
+## Additional venue batch resumed November 15, 2026 UTC
+
+The separately discovered 21-calendar music, comedy, arts, family, fitness and
+community batch is tracked in [the additional source ledger](ADDITIONAL_SOURCES_20261115.md).
+Its enrollment excludes every source above and the earlier remaining-source rollout.
+Captured counts and actual production counts are recorded separately.
