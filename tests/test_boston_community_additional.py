@@ -93,9 +93,30 @@ def test_central_rock_only_expands_current_explicit_monthly_rule():
     rows = b.collect(source(b.CENTRAL), fetch, now=NOW)
     assert [r['starts_at'] for r in rows] == ['2026-11-20T00:00:00+00:00', '2026-12-18T00:00:00+00:00']
     assert all(r['venue_address'] == '170 Alewife Brook Parkway, Cambridge, MA 02138' for r in rows)
+    assert all((r['lat'], r['lng']) == (42.390776, -71.142459) for r in rows)
+    assert all(r['location_evidence_url'] == 'https://centralrockgym.com/cambridge/' for r in rows)
+    assert 'maps?q=42.390776,-71.142459' in rows[0]['location_provenance']
     assert len(rows[0]['description']) == 1755
     with pytest.raises(ValueError, match='schedule_changed'):
         b.collect(source(b.CENTRAL), fetch, now=NOW + timedelta(days=150))
+
+
+@pytest.mark.parametrize('key,venue,street', [
+    (b.TRACKSMITH, 'Central Rock Gym Cambridge', '170 Alewife Brook Parkway, Cambridge, MA 02138'),
+    (b.CENTRAL, 'Another Cambridge gym', '170 Alewife Brook Parkway, Cambridge, MA 02138'),
+    (b.CENTRAL, 'Central Rock Gym Cambridge', '20 Brattle Street, Cambridge, MA 02138'),
+    (b.CENTRAL, 'Rock Spot Climbing South Boston', '30 Old Colony Avenue, South Boston, MA 02127'),
+    (b.ROCKSPOT, 'Rock Spot Climbing Boston Dedham', '30 Old Colony Avenue, South Boston, MA 02127'),
+    (b.ROCKSPOT, 'Rock Spot Climbing South Boston', '67 Sprague Street, Boston, MA 02136'),
+])
+def test_reviewed_point_cannot_leak_to_another_source_venue_or_street(key, venue, street):
+    url = ('https://www.tracksmith.com/events/trackhouse-yoga-boston-11-16'
+        if key == b.TRACKSMITH else 'https://climber.hellocapitan.com/rockspot/schedule/event/141109/select-num-participants/'
+        if key == b.ROCKSPOT else b.SOURCES[key][0])
+    row = b._row(key, 'Community climbing', NOW + timedelta(days=1), None,
+        url, 'reviewed-point-boundary', 'Complete participant activity description.',
+        venue, street, 'Cambridge')
+    assert row['lat'] is None and row['lng'] is None
 
 
 def test_rockspot_keeps_public_booking_not_private_inventory_or_closed_cohorts():
@@ -107,6 +128,8 @@ def test_rockspot_keeps_public_booking_not_private_inventory_or_closed_cohorts()
     assert any('Ladies Climbing' in r['title'] for r in rows)
     assert min(len(r['description']) for r in rows) > 500
     assert {r['venue_address'] for r in rows} == {'30 Old Colony Avenue, South Boston, MA 02127'}
+    assert {(r['lat'], r['lng']) for r in rows} == {(42.3372967, -71.0561203)}
+    assert {r['location_evidence_url'] for r in rows} == {'https://rockspotclimbing.com/locations/ma/southboston/'}
 
 
 def harbor_payload(**changes):

@@ -75,7 +75,13 @@ VENUE_KEYS = {LIZARD: {"lizard"}, IMPROV: {"improv"}, LAUGH: {"laugh"},
 # The publisher's Directions & Parking page binds this explicit ACF venue
 # marker to Club Passim at 47 Palmer Street. Off-site events never inherit it.
 # No unrelated map viewport, organization default, or guessed point is imported.
-POINTS = {"passim": (42.3741826, -71.11964540000002)}
+POINTS = {
+    "passim": (42.3741826, -71.11964540000002),
+    # The Boston page links its verified Untappd venue 11948597. Its native
+    # hosted-event location binds this point to 152 Hampden St, Boston; its venue
+    # map agrees. This is not the brewery's Providence organization location.
+    "long_live": (42.3278, -71.0748),
+}
 VENUE_EVIDENCE = {
     "lizard": "https://lizardloungeclub.com/venue/lizard-lounge/",
     "improv": SOURCES[IMPROV][0], "laugh": SOURCES[LAUGH][0],
@@ -83,7 +89,7 @@ VENUE_EVIDENCE = {
     "armory": "https://artsatthearmory.org/contact-us/getting-here/",
     "arrow": "https://www.arrowstarts.org/faq",
     "burren_front": SOURCES[BURREN][0], "burren_back": SOURCES[BURREN][0],
-    "long_live": SOURCES[LONG_LIVE][0],
+    "long_live": "https://untappd.com/v/long-live-roxbury/11948597",
 }
 HOLD_CODES = {"boston_nightlife_description_missing", "boston_nightlife_description_limit",
               "boston_additional_venue_unresolved", "boston_additional_schedule_conflict",
@@ -524,8 +530,10 @@ def _burren_dates(soup, now):
 
 def _burren_clocks(day, raw):
     text = plain(raw).rstrip(":").strip().lower().replace(" ", "").replace("–", "-")
-    if "&" in text:
-        return [_occurrence(_clock(day, x)) for x in text.split("&")]
+    if "," in text or "&" in text:
+        # Native showcase listings enumerate individual shows with commas and
+        # an optional final ampersand; each clock still has to parse strictly.
+        return [_occurrence(_clock(day, x)) for x in re.split(r",?&|,", text)]
     if "-" in text:
         first, last = text.split("-", 1)
         if not re.search(r"[ap]m$", first):
@@ -573,8 +581,11 @@ def _burren_manifest(payload, now):
         identity = _hash([url, title, venue])
         group_key = (url, title, venue, prose)
         if group_key not in grouped:
+            # A missing calendar teaser must still hydrate the linked event's
+            # full narrative; an unlinked blank description remains held.
+            native_body = _NO_BODY if not prose and url != SOURCES[BURREN][0] else str(body)
             grouped[group_key] = _packet(BURREN, url, title, identity, occurrences, venue=venue,
-                body=str(body), needs_detail=url != SOURCES[BURREN][0])
+                body=native_body, needs_detail=url != SOURCES[BURREN][0])
         else:
             grouped[group_key]["occurrences"].extend(x for x in occurrences if x not in grouped[group_key]["occurrences"])
     return list(grouped.values())

@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "reviewed_at": "2026-11-15",
+  "production_writes": false,
+  "scope": "Two exact source/venue/street collector points for actual ambiguous address holds; no generic geocoder cache or other-source changes.",
+  "records": [
+    {
+      "source_key": "central_rock_cambridge_ma",
+      "source_id": 5638,
+      "venue_name": "Central Rock Gym Cambridge",
+      "venue_address": "170 Alewife Brook Parkway, Cambridge, MA 02138",
+      "latitude": 42.390776,
+      "longitude": -71.142459,
+      "evidence_url": "https://centralrockgym.com/cambridge/",
+      "provenance": "Publisher Cambridge location page pairs 170 Alewife Brook Pkwy, Cambridge 02138 with Get Directions https://www.google.com/maps?q=42.390776,-71.142459. Reviewed 2026-11-15; exact source, venue name and street only. The event explicitly identifies this Cambridge facility.",
+      "affected_captured_rows": 2,
+      "primary_capture": {
+        "url": "https://centralrockgym.com/cambridge/",
+        "observed_at": "2026-11-15T01:24:25.034365+00:00",
+        "status": 200,
+        "content_type": "text/html; charset=UTF-8",
+        "sha256": "fdba1f490c1d4dca48dee3990b73d9d95320bd1dbc1adace02eb97854785c95a"
+      },
+      "native_map_fact": {
+        "kind": "directions_target",
+        "href": "https://www.google.com/maps?q=42.390776,-71.142459",
+        "address": "170 Alewife Brook Pkwy, Cambridge, Massachusetts 02138"
+      }
+    },
+    {
+      "source_key": "rock_spot_south_boston_ma",
+      "source_id": 5652,
+      "venue_name": "Rock Spot Climbing South Boston",
+      "venue_address": "30 Old Colony Avenue, South Boston, MA 02127",
+      "latitude": 42.3372967,
+      "longitude": -71.0561203,
+      "evidence_url": "https://rockspotclimbing.com/locations/ma/southboston/",
+      "provenance": "Publisher South Boston location map marker 0 names Rock Spot Climbing: South Boston at 30 Old Colony Avenue, Boston MA 02127 and supplies 42.3372967,-71.0561203. Reviewed 2026-11-15; exact source, venue name and street only. Separate parking marker 1 is excluded.",
+      "affected_captured_rows": 136,
+      "primary_capture": {
+        "url": "https://rockspotclimbing.com/locations/ma/southboston/",
+        "observed_at": "2026-11-15T00:58:56.160353+00:00",
+        "status": 200,
+        "content_type": "text/html; charset=UTF-8",
+        "sha256": "18b900adb376df919521db163d9a6465d54debbf8afabcd4569f0daba4c59cf1"
+      },
+      "native_map_fact": {
+        "kind": "publisher_map_marker",
+        "object": "av_google_map['av_gmap_0']['marker']['0']",
+        "label": "Rock Spot Climbing: South Boston",
+        "address": "30 Old Colony Avenue",
+        "city": "Boston",
+        "state": "MA",
+        "postal_code": "02127",
+        "lat": 42.3372967,
+        "long": -71.0561203,
+        "excluded_marker": "marker1 is C Street Parking, at42.3366601,-71.0552427"
+      }
+    }
+  ],
+  "collector_module_sha256": "6064e5d7a0c7634a8d56118d5bd807699c84c606e241db8839c813a801b6d364",
+  "verification": {
+    "command": "python -m pytest -q tests/test_boston_community_additional.py -k 'central or rockspot or reviewed_point'",
+    "passed": 8,
+    "deselected": 16,
+    "warning": "Environment AnyIO pytest deprecation warning only."
+  }
+}

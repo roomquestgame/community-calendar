@@ -56,8 +56,8 @@ SOURCE_NOTES = {
     PARKOUR: 'Official Squarespace dated HTML; full detail narratives and event-specific streets. ICS lacks descriptions and is not used as a prose fallback.',
     TRACKSMITH: 'Official current Trackhouse listing and complete event details; dated JSON-LD reconciled with visible start clocks. Partner hotel runs retain their actual meeting venue.',
     TRUSTEES: 'Metro Boston program listing only; complete native detail prose, exact dates and actual garden streets. Statewide deCordova programming is a separate source.',
-    CENTRAL: 'Publisher explicitly states the third Thursday monthly at 7–9pm. Bounded 60-day recurrence is checked against the current named edition and native post freshness.',
-    ROCKSPOT: 'Official public Capitan scheduler, next 60 days; complete native descriptions and explicitly dated public bookable classes/meetups. Private appointments, rentals and closed course parts excluded.',
+    CENTRAL: 'Publisher explicitly states the third Thursday monthly at 7–9pm. Bounded 60-day recurrence is checked against the current named edition and native post freshness. Exact Cambridge venue point comes from the publisher location page Get Directions link.',
+    ROCKSPOT: 'Official public Capitan scheduler, next 60 days; complete native descriptions and explicitly dated public bookable classes/meetups. Private appointments, rentals and closed course parts excluded. Exact South Boston facility point comes from its publisher venue map marker.',
     HARBOR: 'Official calendar links organizer Eventbrite details; full native description, native date and meeting point. Exact bocce street disagreement resolved from structured publisher point and municipal park context.',
 }
 ALLOWED_HOSTS = {k: (urlsplit(v[0]).hostname,) for k, v in SOURCES.items()}
@@ -81,6 +81,22 @@ HARBOR_BOCCE_PROVENANCE = ('Publisher structured venue/address and its event-spe
     'The narrative says423; Boston parks records place these courts between Puopolo517 and Langone529–543 Commercial Street, supporting523. '
     'Native narrative retained unchanged; reviewed physical meeting-site resolution, not a claim that the conflicting prose agrees.')
 HARBOR_BOCCE_EVIDENCE = 'https://www.boston.gov/departments/parks-and-recreation/improvements-langone-park-and-puopolo-playground'
+REVIEWED_VENUE_POINTS = {
+    (CENTRAL, 'Central Rock Gym Cambridge', '170 Alewife Brook Parkway, Cambridge, MA 02138'): {
+        'point': (42.390776, -71.142459),
+        'evidence': 'https://centralrockgym.com/cambridge/',
+        'provenance': ('Publisher Cambridge location page pairs 170 Alewife Brook Pkwy, Cambridge 02138 with '
+            'Get Directions https://www.google.com/maps?q=42.390776,-71.142459. '
+            'Reviewed 2026-11-15; exact source, venue name and street only. The event explicitly identifies this Cambridge facility.'),
+    },
+    (ROCKSPOT, 'Rock Spot Climbing South Boston', '30 Old Colony Avenue, South Boston, MA 02127'): {
+        'point': (42.3372967, -71.0561203),
+        'evidence': 'https://rockspotclimbing.com/locations/ma/southboston/',
+        'provenance': ('Publisher South Boston location map marker 0 names Rock Spot Climbing: South Boston '
+            'at 30 Old Colony Avenue, Boston MA 02127 and supplies 42.3372967,-71.0561203. '
+            'Reviewed 2026-11-15; exact source, venue name and street only. Separate parking marker 1 is excluded.'),
+    },
+}
 ERROR_CODES = {'unregistered_boston_additional_source', 'boston_additional_calendar_changed',
     'boston_additional_detail_changed', 'boston_additional_description_missing',
     'boston_additional_description_limit', 'boston_additional_street_unresolved',
@@ -191,6 +207,10 @@ def _row(key, title, start, end, url, identity, body, venue, street, city, *, po
         raise ValueError('boston_additional_description_limit')
     if not event_url(key, url):
         raise ValueError('boston_additional_detail_changed')
+    reviewed = REVIEWED_VENUE_POINTS.get((key, venue, street)) if point is None else None
+    if reviewed:
+        point = reviewed['point']
+        evidence, provenance = reviewed['evidence'], reviewed['provenance']
     row = record(title, start.isoformat(), end.isoformat() if end else None, venue, street, city,
         url, identity, '', lat=point[0] if point else None, lng=point[1] if point else None,
         tz=ZONE, publisher_geo=True, retain_until_end=True)
