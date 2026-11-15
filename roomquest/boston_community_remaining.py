@@ -79,6 +79,37 @@ REVIEWED_EVENT_POINTS = {
         (42.295434, -71.090103),
         "https://gis.boston.gov/arcgis/rest/services/SAM/Live_SAM_Address/MapServer/1",
         "Boston SAM exact address 353255 / building 216265 at 42 Shandon Road and ZIP 02124; Fresh Truck's November 2026 schedule confirms this market stop. The club's separate 5 Shandon Road entrance is not used."),
+    (CARES, "ABCD Geneva", "198 Geneva Avenue, Dorchester, MA 02121"): (
+        (42.305581, -71.075595),
+        "https://gis.boston.gov/arcgis/rest/services/SAM/Live_SAM_Address/MapServer/1",
+        "Boston SAM exact address 165585 / building 182767, OBJECTID 313981, supplies the 198 Geneva Avenue point and ZIP 02121. ABCD's official Dorchester site confirms this address; the parcel's separate primary frontage at 188 Geneva Avenue does not replace the native event street."),
+    (CARES, "Friday Night Supper Program at Arlington Street Church", "351 Boylston Street, Boston, MA 02116"): (
+        (42.35203, -71.071219),
+        "https://gis.boston.gov/arcgis/rest/services/SAM/Live_SAM_Address/MapServer/1",
+        "Boston SAM primary address 352350 / building 138413 exactly matches 351 Boylston Street and ZIP 02116. The Friday Night Supper Program confirms this Arlington Street Church site; native venue, street and full volunteer narrative retained."),
+    (CARES, "Mario Umana Academy market", "312 Border Street, East Boston, MA 02128"): (
+        (42.378386, -71.040458),
+        "https://gis.boston.gov/arcgis/rest/services/SAM/Live_SAM_Address/MapServer/1",
+        "Boston SAM primary address 155833 / building 129848 exactly matches 312 Border Street and ZIP 02128. Fresh Truck's November 2026 schedule confirms this Mario Umana Academy market stop; the point represents the address site, not a claimed curb position."),
+    (CARES, "Lenox Camden market", "32 Kendall Street, Boston, MA 02118"): (
+        (42.335881, -71.082262),
+        "https://gis.boston.gov/arcgis/rest/services/SAM/Live_SAM_Address/MapServer/1",
+        "Reviewed address-range/site inference: Boston SAM address 166706 / building 240453 gives the 30-40 Kendall Street range containing the native 32 stop. Fresh Truck's current calendar and November 2026 schedule confirm 32 Kendall Street, Boston 02118. SAM labels the range 02120/Mission Hill; that discrepancy is recorded while publisher street/ZIP are retained. This is not an exact 32 doorway or curb point."),
+    (CARES, "Charles Street AME Church market", "13 Elm Hill Avenue, Dorchester, MA 02121"): (
+        (42.312876, -71.084335),
+        "https://gis.boston.gov/arcgis/rest/services/Parcels/Parcels_current/FeatureServer/0",
+        "Reviewed parking-site inference: centroid inside contiguous church municipal parcels 1202101000 and 1202102000, approximately 26 metres from their farthest boundary. Fresh Truck's current operator directions identify the church parking lot off Elm Hill at the native 13 address; the church's 5 Elm Hill parking guidance corroborates the site without replacing 13. This is not an exact address, doorway or truck-position point."),
+    (CARES, "Charlestown BHA market", "38 O'Reilly Way, Charlestown, MA 02129"): (
+        (42.377886, -71.058355),
+        "https://gis.boston.gov/arcgis/rest/services/SAM/Live_SAM_Address/MapServer/3",
+        "Reviewed street-segment interpolation: official Boston SAM segment 10894 / OBJECTID 12553 has right-even addresses 48 to 30. Native 38 is placed at arc-length fraction 10/18 on that segment, with no speculative curb offset. Fresh Truck confirms private street parking at 38 O'Reilly Way on BHA property. Full native street retained; this is a street-site estimate, not an exact building, entrance or truck-position point."),
+    (CARES, "United Housing market", "3 Quincy Street, Dorchester, MA 02121"): (
+        (42.31617, -71.08221),
+        "https://gis.boston.gov/arcgis/rest/services/SAM/Live_SAM_Address/MapServer/3",
+        "Reviewed estimated street/site point: current Fresh Truck directions place the stop on Quincy Street from Warren, past the Neighborhood Network Center lot. Official SAM Quincy Street segment 25632 and NNC parcel 1202832000 support an estimate about five metres beyond the lot's eastern frontage, rounded to five decimals. Native 3 Quincy Street and ZIP 02121 retained. This is not an exact numbered address, doorway, curb or truck point; Quincy Place/Court and headquarters were excluded."),
+    (GREENWAY, "Armenian Heritage Park", "115 Atlantic Avenue, Boston, MA 02110"): (
+        (42.36092235, -71.0532390073), "https://www.rosekennedygreenway.org/map/",
+        "The Greenway's official interactive map names Armenian Heritage Park at point marker 27465; this is the park marker, distinct from its sculpture marker. The park's official directions confirm 115 Atlantic Avenue. Native event venue and full street retained."),
     (BC, "Chestnut Hill, Mass., Conte Forum", "2601 Beacon Street, Chestnut Hill, MA 02467"): (
         (42.335342, -71.167717), "https://events.bc.edu/conte_forum",
         "Boston College's verified Localist place 190074 has exact Conte Forum address, ZIP and native geo; original athletic venue label retained."),
@@ -98,6 +129,17 @@ REVIEWED_EVENT_POINTS = {
     (BC, "Simboli Chapel", "9 Lake Street, Boston, MA 02135"): (
         (42.341625, -71.164566), "https://events.bc.edu/Simboli_Hall",
         "Boston College's verified Simboli Hall place 190053 supplies exact 9 Lake Street, Boston 02135 and native geo. This is the containing building point for Simboli Chapel; original chapel label and street retained."),
+    (BC, "Trinity Chapel", "883 Centre Street, Newton, MA 02459"): (
+        (42.342777, -71.19355), "https://events.bc.edu/trinity_chapel",
+        "Boston College's verified Trinity Chapel place 190153 explicitly pairs this named chapel point with display address 883 Centre Street and ZIP 02459. Internal geo street uses the campus's 885 Centre Street alias; original display street retained."),
+    (NATURE, "Sullivan's Castle Island parking lot", "2080 William J Day Boulevard, South Boston, MA 02127"): (
+        (42.338845, -71.013235),
+        "https://gis.boston.gov/arcgis/rest/services/SAM/Live_SAM_Address/MapServer/1",
+        "Boston SAM primary address 149843 / building 157039 exactly matches Sullivan's 2080 William J Day Boulevard and ZIP 02127. Native program instructions place the meeting just in front of this restaurant; full street retained."),
+    (NATURE, "Millennium Park parking lot near canoe launch", "300 Gardner Street, West Roxbury, MA 02132"): (
+        (42.280515, -71.184852),
+        "https://www.brooklinebirdclub.org/tripevent/millennium-park-5/",
+        "Program co-organizer Brookline Bird Club's current named Millennium Park Canoe Launch Place.geo and exact 300 Gardner Street match the native canoe-launch parking meeting instructions; full street retained."),
 }
 MAX_MANIFEST = 200
 MAX_RECORDS = 500
@@ -843,11 +885,21 @@ def _checkpoint_valid(key, state, now):
             exact_intersection = any(all(row.get(field) == place[field]
                 for field in ("venue_name", "venue_address", "lat", "lng"))
                 for place in REVIEWED_INTERSECTIONS if place["source_key"] == key)
+            reviewed = REVIEWED_EVENT_POINTS.get((key, row.get("venue_name"), row.get("venue_address")))
+            exact_reviewed_point = bool(reviewed and (row.get("lat"), row.get("lng")) == reviewed[0]
+                and row.get("location_evidence_url") == reviewed[1]
+                and row.get("location_provenance") == reviewed[2])
+            # Preserve old no-point prefixes while binding any newly reviewed
+            # point and its evidence to the exact source, venue and street.
+            if (reviewed and (row.get("location_evidence_url") == reviewed[1]
+                    or row.get("location_provenance") == reviewed[2]) and not exact_reviewed_point):
+                return False
             if (row.get("title") != card["title"] or row.get("timezone") != ZONE
                     or not isinstance(row.get("description"), str) or not row["description"].strip()
                     or len(row["description"]) > 12000 or not row.get("venue_name")
                     or (not _street(row.get("venue_address")) and not exact_intersection)
-                    or ((row.get("lat") is not None or row.get("lng") is not None) and not exact_intersection)
+                    or ((row.get("lat") is not None or row.get("lng") is not None)
+                        and not (exact_intersection or exact_reviewed_point))
                     or (row.get("image_url") and not photo_url(key, row["image_url"]))):
                 return False
             start = _offset_time(row.get("starts_at"))

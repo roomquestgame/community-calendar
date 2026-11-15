@@ -1,0 +1,242 @@
+{
+  "reviewed_at": "2026-11-15T00:10:20.344935+00:00",
+  "scope": "Two actual unresolved Boston Nature Center meeting sites exposed after complete production ingestion. Local collector correction only; no production writes. All B3 source, point and continuation changes are preserved.",
+  "source_id": 5625,
+  "source_key": "boston_nature_center_ma",
+  "source_feed": "https://www.massaudubon.org/programs/boston-nature-center",
+  "points": [
+    {
+      "id": "nature:104044:2026-11-22T13:00:00+00:00",
+      "title": "Arctic Waterbirds at Castle Island",
+      "starts_at": "2026-11-22T13:00:00+00:00",
+      "ends_at": "2026-11-22T15:00:00+00:00",
+      "venue_name": "Sullivan's Castle Island parking lot",
+      "venue_address": "2080 William J Day Boulevard, South Boston, MA 02127",
+      "event_url": "https://www.massaudubon.org/programs/boston-nature-center/104044-arctic-waterbirds-at-castle-island",
+      "source_key": "boston_nature_center_ma",
+      "point": [
+        42.338845,
+        -71.013235
+      ],
+      "description_sha256": "6374c8185a27a7b0a2440cc9a0cd663dd2b9715ef03eb86746ba99f6dfc2051f",
+      "evidence_url": "https://gis.boston.gov/arcgis/rest/services/SAM/Live_SAM_Address/MapServer/1/query?f=json&where=STREET_NUMBER%3D%272080%27+AND+UPPER%28FULL_STREET_NAME%29+LIKE+%27%25DAY%25%27&outFields=%2A&outSR=4326&returnGeometry=true&resultRecordCount=20",
+      "primary_record": {
+        "attributes": {
+          "OBJECTID": 181820,
+          "SAM_ADDRESS_ID": 149843,
+          "BUILDING_ID": 157039,
+          "RELATIONSHIP_TYPE": 1,
+          "FULL_ADDRESS": "2080 William J Day Blvd",
+          "STREET_NUMBER": "2080",
+          "IS_RANGE": 0,
+          "RANGE_FROM": null,
+          "RANGE_TO": null,
+          "UNIT": null,
+          "FULL_STREET_NAME": "William J Day Blvd",
+          "STREET_ID": 4502,
+          "STREET_PREFIX": null,
+          "STREET_BODY": "William J Day",
+          "STREET_SUFFIX_ABBR": "Blvd",
+          "STREET_FULL_SUFFIX": "Boulevard",
+          "STREET_SUFFIX_DIR": null,
+          "STREET_NUMBER_SORT": 2080,
+          "MAILING_NEIGHBORHOOD": "South Boston",
+          "CITY": "BOSTON",
+          "STATE": "MA",
+          "ZIP_CODE": "02127",
+          "X_COORD": 787769.82038721,
+          "Y_COORD": 2948876.24390915,
+          "SAM_STREET_ID": 4502,
+          "WARD": "06",
+          "created_date": 1253873699000,
+          "last_edited_date": 1554219793000,
+          "PRIMARY_ADDRESS_ID": 149843,
+          "PRIMARY_ADDRESS": "2080 William J Day Blvd, Boston, MA 02127",
+          "PRIMARY_X_COORD": 787769.82038721,
+          "PRIMARY_Y_COORD": 2948876.24390915,
+          "MAP_PAR_ID": "0603418030",
+          "PARCEL_ID": "0603418030",
+          "SEGMENT_ID": 20181
+        },
+        "geometry": {
+          "x": -71.01323497615464,
+          "y": 42.338845285432065
+        }
+      },
+      "street_evidence": "https://www.sullivanscastleisland.com/location/castle-island/",
+      "point_granularity": "Exact restaurant street/site point; current program instructs the group to meet just in front of this restaurant, beside its parking lot.",
+      "raw_capture": "community-remaining/address-evidence/sam-sullivans.json",
+      "raw_capture_sha256": "f0e7b75cf37664a1177b0d78ec6738d1febff44b304dde4e5809e45d67d5a00f"
+    },
+    {
+      "id": "nature:104051:2026-12-13T13:00:00+00:00",
+      "title": "Ducks, Herons, & More at Millennium Park",
+      "starts_at": "2026-12-13T13:00:00+00:00",
+      "ends_at": "2026-12-13T15:00:00+00:00",
+      "venue_name": "Millennium Park parking lot near canoe launch",
+      "venue_address": "300 Gardner Street, West Roxbury, MA 02132",
+      "event_url": "https://www.massaudubon.org/programs/boston-nature-center/104051-ducks-herons-more-at-millennium-park",
+      "source_key": "boston_nature_center_ma",
+      "point": [
+        42.280515,
+        -71.184852
+      ],
+      "description_sha256": "57d8f6138f0184efc094c12e378b0876362eeaec396e86bfed50d259f2c35a25",
+      "evidence_url": "https://www.brooklinebirdclub.org/tripevent/millennium-park-5/",
+      "primary_record": {
+        "@type": "Place",
+        "name": "Boston &#8211; Millennium Park Canoe Launch",
+        "description": "",
+        "url": "https://www.brooklinebirdclub.org/location/boston-millennium-park-canoe-launch/",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "300 Gardner Street",
+          "addressLocality": "Boston",
+          "addressRegion": "MA",
+          "postalCode": "02132",
+          "addressCountry": "United States"
+        },
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": 42.280514818291,
+          "longitude": -71.184851724564
+        },
+        "telephone": "",
+        "sameAs": "https://ebird.org/hotspot/L350679"
+      },
+      "primary_venue_url": "https://www.brooklinebirdclub.org/location/boston-millennium-park-canoe-launch/",
+      "corroboration": "The current March14 2027 event /tripevent/millennium-park-8/ contains the identical Place.geo and the named canoe-launch location. Current Mass Audubon instructions and BBC meeting directions name the parking lot nearest the canoe launch.",
+      "point_granularity": "Explicit named canoe-launch venue point in co-organizer Place.geo, matched to current meeting instructions.",
+      "raw_capture": "community-remaining/address-evidence/195e2fe6dd462b30005f06c55370177a76d5f14fc18c3fa171b46ea450b4dae5.html",
+      "raw_capture_sha256": "bdc9b58ba75d663dfc6f6ca85c0b024376bcf6662fb319492c8fd2ebd4f3b45a",
+      "superseded_discovery": "Search cache for old2024 /millennium-park-9 gave a point about11m away, but live URL now404. Use the fresh200 current named venue geo instead."
+    }
+  ],
+  "capture_comparison": {
+    "baseline": "community-remaining/remaining-parsed-rows-b3-frozen.json",
+    "updated": "community-remaining/remaining-parsed-rows-nature-point-repaired.json",
+    "rows": 300,
+    "changed_rows": 2,
+    "changed_fields_only": [
+      "lat",
+      "lng",
+      "location_evidence_url",
+      "location_provenance",
+      "reason"
+    ],
+    "all_native_descriptions_streets_identities_titles_times_equal": true,
+    "changed_occurrences": [
+      {
+        "source_key": "boston_nature_center_ma",
+        "id": "nature:104044:2026-11-22T13:00:00+00:00",
+        "title": "Arctic Waterbirds at Castle Island",
+        "starts_at": "2026-11-22T13:00:00+00:00",
+        "ends_at": "2026-11-22T15:00:00+00:00",
+        "venue_name": "Sullivan's Castle Island parking lot",
+        "venue_address": "2080 William J Day Boulevard, South Boston, MA 02127",
+        "point": [
+          42.338845,
+          -71.013235
+        ],
+        "full_description_sha256": "6374c8185a27a7b0a2440cc9a0cd663dd2b9715ef03eb86746ba99f6dfc2051f",
+        "description_length": 1274,
+        "changed_fields": [
+          "lat",
+          "lng",
+          "location_evidence_url",
+          "location_provenance",
+          "reason"
+        ],
+        "location_evidence_url": "https://gis.boston.gov/arcgis/rest/services/SAM/Live_SAM_Address/MapServer/1",
+        "location_provenance": "Boston SAM primary address 149843 / building 157039 exactly matches Sullivan's 2080 William J Day Boulevard and ZIP 02127. Native program instructions place the meeting just in front of this restaurant; full street retained."
+      },
+      {
+        "source_key": "boston_nature_center_ma",
+        "id": "nature:104051:2026-12-13T13:00:00+00:00",
+        "title": "Ducks, Herons, & More at Millennium Park",
+        "starts_at": "2026-12-13T13:00:00+00:00",
+        "ends_at": "2026-12-13T15:00:00+00:00",
+        "venue_name": "Millennium Park parking lot near canoe launch",
+        "venue_address": "300 Gardner Street, West Roxbury, MA 02132",
+        "point": [
+          42.280515,
+          -71.184852
+        ],
+        "full_description_sha256": "57d8f6138f0184efc094c12e378b0876362eeaec396e86bfed50d259f2c35a25",
+        "description_length": 963,
+        "changed_fields": [
+          "lat",
+          "lng",
+          "location_evidence_url",
+          "location_provenance",
+          "reason"
+        ],
+        "location_evidence_url": "https://www.brooklinebirdclub.org/tripevent/millennium-park-5/",
+        "location_provenance": "Program co-organizer Brookline Bird Club's current named Millennium Park Canoe Launch Place.geo and exact 300 Gardner Street match the native canoe-launch parking meeting instructions; full street retained."
+      }
+    ]
+  },
+  "tests": {
+    "passed": 136,
+    "command": "python -m pytest -q tests/test_boston_community.py tests/test_boston_community_remaining.py tests/test_boston_remaining_transport.py",
+    "point_checkpoint_cases": [
+      "Exact source/venue/street positive rows retain long native prose and IDs",
+      "Wrong source, venue, street, latitude, longitude, evidence, provenance, or dropped point fails even after rows_hash is recomputed",
+      "An existing no-point Nature prefix remains valid and resumes without refetch",
+      "Complete-only staging and the B3 eight-detail cap/eighteen-second reserve remain unchanged"
+    ]
+  },
+  "actual_worker_capture_replay": {
+    "captured_replay_only": true,
+    "live_database_writes": false,
+    "sources": {
+      "municipal_mapsee_64dd0126cc162e1c90b57edc": {
+        "worker_calls": 1,
+        "staged_rows": 76,
+        "checkpoint_writes": 0,
+        "stage_rpc_calls": 4,
+        "preview_rpc_calls": 1,
+        "public_post_windows": [],
+        "full_rows_exact_match": true,
+        "staged_before_complete": false
+      },
+      "rose_kennedy_greenway_ma": {
+        "worker_calls": 9,
+        "staged_rows": 70,
+        "checkpoint_writes": 9,
+        "stage_rpc_calls": 4,
+        "preview_rpc_calls": 1,
+        "public_post_windows": [],
+        "full_rows_exact_match": true,
+        "staged_before_complete": false
+      },
+      "boston_nature_center_ma": {
+        "worker_calls": 4,
+        "staged_rows": 21,
+        "checkpoint_writes": 4,
+        "stage_rpc_calls": 2,
+        "preview_rpc_calls": 1,
+        "public_post_windows": [],
+        "full_rows_exact_match": true,
+        "staged_before_complete": false
+      },
+      "boston_cares_ma": {
+        "worker_calls": 1,
+        "staged_rows": 133,
+        "checkpoint_writes": 0,
+        "stage_rpc_calls": 7,
+        "preview_rpc_calls": 1,
+        "public_post_windows": [
+          {
+            "start_day": "2026-11-14",
+            "end_day": "2026-11-27"
+          }
+        ],
+        "full_rows_exact_match": true,
+        "staged_before_complete": false
+      }
+    }
+  },
+  "transport_notes": "Public evidence HTTP reads honor the sites robots policies. Local fetch_publisher probe could not resolve DNS; no production transport change or denial bypass is proposed. Restaurant robots200 allowed and location200; BBC robots200 allowed and current events200.",
+  "production_status": "Not deployed by this local receipt. Parent will consolidate any final waits in a multi-item release."
+}
