@@ -1,8 +1,14 @@
 """Pilot admission, bounded transport and authenticated scheduler checks."""
+from http.server import HTTPServer
+import json
 import os
+from threading import Thread
 import unittest
 from unittest.mock import MagicMock, patch
+from urllib.error import HTTPError
+from urllib.request import Request, urlopen
 
+from api.index import handler as EntrypointHandler
 from api.things_to_do import handler
 from roomquest import things_to_do_worker as worker
 from roomquest import preview_worker as transport
@@ -203,6 +209,70 @@ class EndpointTests(unittest.TestCase):
             request.do_POST()
             self.assertEqual(request.reply.call_args.args[0], 405)
             run.assert_not_called()
+
+
+class EntrypointRouteTests(unittest.TestCase):
+    """Exercise the configured api.index:handler over real local HTTP."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.server = HTTPServer(("127.0.0.1", 0), EntrypointHandler)
+        cls.thread = Thread(target=cls.server.serve_forever, daemon=True)
+        cls.thread.start()
+        cls.root = "http://127.0.0.1:" + str(cls.server.server_port)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.server.shutdown()
+        cls.server.server_close()
+        cls.thread.join()
+
+    def request(self, *, path="/api/things-to-do-pilot", token=None, method="GET"):
+        headers = {"Authorization": "Bearer " + token} if token else {}
+        request = Request(self.root + path, headers=headers, method=method)
+        try:
+            response = urlopen(request, timeout=2)
+        except HTTPError as exc:
+            response = exc
+        with response:
+            return response.status, json.load(response), response.headers
+
+    def test_missing_or_wrong_cron_auth_reaches_pilot_401_without_work(self):
+        with patch.dict(os.environ, {"CRON_SECRET": "cron-fixture"}), \
+                patch("api.things_to_do.run_batch") as run:
+            for token in (None, "wrong"):
+                with self.subTest(token=token):
+                    status, body, headers = self.request(token=token)
+                    self.assertEqual((status, body), (401, {"error": "unauthorized"}))
+                    self.assertEqual(headers["Cache-Control"], "no-store")
+            run.assert_not_called()
+
+    def test_authenticated_get_reaches_real_pilot_handler_once(self):
+        with patch.dict(os.environ, {"CRON_SECRET": "cron-fixture"}), \
+                patch("api.things_to_do.run_batch", return_value={"status": "idle"}) as run:
+            status, body, headers = self.request(token="cron-fixture")
+            self.assertEqual((status, body), (200, {"status": "idle"}))
+            self.assertEqual(headers["Cache-Control"], "no-store")
+            run.assert_called_once_with()
+
+    def test_post_is_405_without_starting_work(self):
+        with patch.dict(os.environ, {"CRON_SECRET": "cron-fixture"}), \
+                patch("api.things_to_do.run_batch") as run:
+            status, body, _ = self.request(token="cron-fixture", method="POST")
+            self.assertEqual((status, body), (405, {"error": "method_not_allowed"}))
+            run.assert_not_called()
+
+    def test_query_path_is_404_without_falling_into_any_worker(self):
+        with patch.dict(os.environ, {"CRON_SECRET": "cron-fixture"}), \
+                patch("api.things_to_do.run_batch") as pilot, \
+                patch("api.preview.collect_previews") as preview:
+            for method in ("GET", "POST"):
+                with self.subTest(method=method):
+                    status, body, _ = self.request(
+                        path="/api/things-to-do-pilot?url=https://example.com", token="cron-fixture", method=method)
+                    self.assertEqual((status, body), (404, {"error": "not_found"}))
+            pilot.assert_not_called()
+            preview.assert_not_called()
 
 
 class RedirectTests(unittest.TestCase):
