@@ -433,10 +433,11 @@ def _error_code(error):
     if not isinstance(error, PreviewError):
         return 'unexpected_error'
     value = error.args[0] if len(error.args) == 1 else None
-    from roomquest import new_york_sources, boston_sources
+    from roomquest import new_york_sources, boston_sources, raleigh_direct_sources
     if type(value) is str and (value in _ERROR_CODES
             or value in new_york_sources.diagnostic_codes()
             or value in boston_sources.diagnostic_codes()
+            or value in raleigh_direct_sources.diagnostic_codes()
             or re.fullmatch(r'publisher_http_[1-5][0-9]{2}', value)):
         return value
     return 'unclassified_preview_error'
@@ -569,7 +570,7 @@ def report_category_failure(category, error):
 
 
 def collect_category(category, ticket):
-    from roomquest import new_york_sources, boston_sources
+    from roomquest import new_york_sources, boston_sources, raleigh_direct_sources
     diagnostics = _Diagnostics(category)
     try:
         if category not in CATEGORIES:
@@ -600,7 +601,8 @@ def collect_category(category, ticket):
                             or source.get('source_key') in ATLANTIC_CARDBOARD_CHECKPOINT_KEYS
                             or source.get('source_key') in ATLANTIC_LOCAL_VENUE_CHECKPOINT_KEYS
                             or source.get('source_key') in new_york_sources.checkpoint_keys()
-                            or source.get('source_key') in boston_sources.checkpoint_keys())
+                            or source.get('source_key') in boston_sources.checkpoint_keys()
+                            or source.get('source_key') in raleigh_direct_sources.checkpoint_keys())
                             and type(source.get('fetch_checkpoint_version')) is int
                             and source['fetch_checkpoint_version'] == 1):
                         process_args['collection_context'] = args
