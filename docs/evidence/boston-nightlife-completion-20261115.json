@@ -1,0 +1,761 @@
+{
+  "verified_at": "2026-11-15T01:29:18.941226+00:00",
+  "scope": "Burren clock enumeration and complete linked descriptions; exact Long Live Roxbury venue point.",
+  "production_status": "Prepared and locally verified; completion production deployment is handled separately.",
+  "production_failure": {
+    "source_id": 5637,
+    "collection_run_id": 6822,
+    "at": "2026-11-15T01:21:29.664733+00:00",
+    "diagnostic": "boston_nightlife_schedule_changed",
+    "staged": 0,
+    "checkpoint": null,
+    "native_title": "ALL THAT MUSIC ACADEMY - WINTER SHOWCASE!",
+    "native_date": "2026-12-13",
+    "native_clock": "10:30am, 12:30pm, 2:30pm, & 4:30pm:"
+  },
+  "burren": {
+    "baseline_count": 105,
+    "refreshed_count": 123,
+    "baseline_rows_sha256": "bed9acb0a30e254fcedf6bc3dda6b403970fa37e6f69551b68d3e12a8a4a3ebe",
+    "refreshed_rows_sha256": "7f34f734f173b7fba797233e4698e15385c35b1b0b3b10aabda03e00b3c0c49b",
+    "unchanged": 105,
+    "added_count": 18,
+    "changed_count": 0,
+    "removed_count": 0,
+    "added": [
+      {
+        "id": "boston:0ba1faca30d1d8cc87793fd230812b7dc4b3e46607d3e380fa344b81d8b0b5c3",
+        "title": "AROUND THE TABLE SESSION",
+        "starts_at": "2026-11-21T22:00:00+00:00",
+        "ends_at": "2026-11-22T01:00:00+00:00",
+        "event_url": "https://www.burren.com/music.html",
+        "venue_name": "The Burren — Front Room",
+        "venue_address": "247 Elm Street, Somerville, MA 02144",
+        "lat": null,
+        "lng": null,
+        "native_id": "ddb139eb6c47eff6a6260f0c234e473751b9bc14d1ff4079f59f3f24b8f534fa",
+        "description_chars": 32,
+        "description_sha256": "3b664ff053d38585c09fe66c9a23d7a259871c6f45d54bac9e9ab1c90efec925"
+      },
+      {
+        "id": "boston:f46a09e14ff5cce4a591ec8c45ccc87ec1a4b059210a11ce5eb62af549642037",
+        "title": "TIGER MOAN First Sunday Blues",
+        "starts_at": "2026-12-07T00:30:00+00:00",
+        "ends_at": null,
+        "event_url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=788",
+        "venue_name": "The Burren — Back Room",
+        "venue_address": "247 Elm Street, Somerville, MA 02144",
+        "lat": null,
+        "lng": null,
+        "native_id": "b43d1d77352bc34786c0ed0373d87433de4ff7747774ecf0a3647ace7b9521c2",
+        "description_chars": 714,
+        "description_sha256": "d1d314be9a0b16f03113d00a7b23f0146f37c37e7d35836c0b87596a9a86d636"
+      },
+      {
+        "id": "boston:1b4caf545c72bd641afad959546255fdc96607504fbf44630c9e9c75472d5cee",
+        "title": "THE DJANGO CADRE",
+        "starts_at": "2026-12-09T00:00:00+00:00",
+        "ends_at": null,
+        "event_url": "https://www.burren.com/music.html",
+        "venue_name": "The Burren — Front Room",
+        "venue_address": "247 Elm Street, Somerville, MA 02144",
+        "lat": null,
+        "lng": null,
+        "native_id": "60163c9c506b43a6013901db01e2cb50573cd8d4da13e8cb73b0944c818a3a33",
+        "description_chars": 10,
+        "description_sha256": "c57550b30bc792cb2696ba2e5cce35befe6306593a425e449eddad446eb7ee1f"
+      },
+      {
+        "id": "boston:fd4c36a510fef6199b876101deec0bf57adebc19feae3fb1dbfbe32c402f2a5c",
+        "title": "SILVER ARROW BAND",
+        "starts_at": "2026-12-09T01:15:00+00:00",
+        "ends_at": null,
+        "event_url": "https://www.burren.com/music.html",
+        "venue_name": "The Burren — Back Room",
+        "venue_address": "247 Elm Street, Somerville, MA 02144",
+        "lat": null,
+        "lng": null,
+        "native_id": "547ac9ffc33730298d4d633098e4c148e39180043fb7973511a6051903a5985b",
+        "description_chars": 69,
+        "description_sha256": "6926313640428a84cf1ff58b0536fa8f3b98f4bdf42dad731141ddadcd4635dd"
+      },
+      {
+        "id": "boston:ae09870a589c52a6d3c4353d751809784c55e62879cb3ff5557b9758131bf76d",
+        "title": "ALL THAT MUSIC ACADEMY - WINTER SHOWCASE!",
+        "starts_at": "2026-12-13T15:30:00+00:00",
+        "ends_at": null,
+        "event_url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1077",
+        "venue_name": "The Burren — Back Room",
+        "venue_address": "247 Elm Street, Somerville, MA 02144",
+        "lat": null,
+        "lng": null,
+        "native_id": "f94b81eaf626bf267f1db7da0e1402c54b896c9769d9b6e5493e1ab83d3e933c",
+        "description_chars": 540,
+        "description_sha256": "fe9d636e59fd6b5d65a49308afdf492066b3f0e9cddaee09ec8f3d333defe586"
+      },
+      {
+        "id": "boston:2b21bc3abcd33838371156823e4f6a81563ceb449d65266390d99c704fe6ac32",
+        "title": "ALL THAT MUSIC ACADEMY - WINTER SHOWCASE!",
+        "starts_at": "2026-12-13T17:30:00+00:00",
+        "ends_at": null,
+        "event_url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1077",
+        "venue_name": "The Burren — Back Room",
+        "venue_address": "247 Elm Street, Somerville, MA 02144",
+        "lat": null,
+        "lng": null,
+        "native_id": "f94b81eaf626bf267f1db7da0e1402c54b896c9769d9b6e5493e1ab83d3e933c",
+        "description_chars": 540,
+        "description_sha256": "fe9d636e59fd6b5d65a49308afdf492066b3f0e9cddaee09ec8f3d333defe586"
+      },
+      {
+        "id": "boston:f0a7b4e09e0623eb3d2ecb4e684b07057617a6166c633f80a4e56b05a81b982d",
+        "title": "ALL THAT MUSIC ACADEMY - WINTER SHOWCASE!",
+        "starts_at": "2026-12-13T19:30:00+00:00",
+        "ends_at": null,
+        "event_url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1077",
+        "venue_name": "The Burren — Back Room",
+        "venue_address": "247 Elm Street, Somerville, MA 02144",
+        "lat": null,
+        "lng": null,
+        "native_id": "f94b81eaf626bf267f1db7da0e1402c54b896c9769d9b6e5493e1ab83d3e933c",
+        "description_chars": 540,
+        "description_sha256": "fe9d636e59fd6b5d65a49308afdf492066b3f0e9cddaee09ec8f3d333defe586"
+      },
+      {
+        "id": "boston:d500fdae0fc1015f297812ac181eab91a956847dc17bac18c2e76dbbc16e6872",
+        "title": "ALL THAT MUSIC ACADEMY - WINTER SHOWCASE!",
+        "starts_at": "2026-12-13T21:30:00+00:00",
+        "ends_at": null,
+        "event_url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1077",
+        "venue_name": "The Burren — Back Room",
+        "venue_address": "247 Elm Street, Somerville, MA 02144",
+        "lat": null,
+        "lng": null,
+        "native_id": "f94b81eaf626bf267f1db7da0e1402c54b896c9769d9b6e5493e1ab83d3e933c",
+        "description_chars": 540,
+        "description_sha256": "fe9d636e59fd6b5d65a49308afdf492066b3f0e9cddaee09ec8f3d333defe586"
+      },
+      {
+        "id": "boston:7e0e1f50faf2b5cf9e68689fc34e4a3fa2ae7349260b987c700b34aa9c1e8c17",
+        "title": "THE DJANGO CADRE",
+        "starts_at": "2026-12-16T00:00:00+00:00",
+        "ends_at": null,
+        "event_url": "https://www.burren.com/music.html",
+        "venue_name": "The Burren — Front Room",
+        "venue_address": "247 Elm Street, Somerville, MA 02144",
+        "lat": null,
+        "lng": null,
+        "native_id": "60163c9c506b43a6013901db01e2cb50573cd8d4da13e8cb73b0944c818a3a33",
+        "description_chars": 10,
+        "description_sha256": "c57550b30bc792cb2696ba2e5cce35befe6306593a425e449eddad446eb7ee1f"
+      },
+      {
+        "id": "boston:77c142bde3c5a9988bcef7a2fb93feb0601ed6cec0d0e35928513af2d50f2da1",
+        "title": "EVAN GOODROW",
+        "starts_at": "2026-12-19T00:00:00+00:00",
+        "ends_at": null,
+        "event_url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1",
+        "venue_name": "The Burren — Back Room",
+        "venue_address": "247 Elm Street, Somerville, MA 02144",
+        "lat": null,
+        "lng": null,
+        "native_id": "7f71ff1de834983e36b072cc4324687b70998f09a5d186dbf8e9a7b1245218ac",
+        "description_chars": 549,
+        "description_sha256": "deead0e05590a58030a57e6b2e367be0081ab6280575b184126f86be5c86b121"
+      },
+      {
+        "id": "boston:cae24c9c80eba3362b446515f324968b6293a77e1ed5c4588de58e924cd34f24",
+        "title": "JUMP THE LINE",
+        "starts_at": "2026-12-19T03:00:00+00:00",
+        "ends_at": null,
+        "event_url": "https://www.burren.com/music.html",
+        "venue_name": "The Burren — Back Room",
+        "venue_address": "247 Elm Street, Somerville, MA 02144",
+        "lat": null,
+        "lng": null,
+        "native_id": "933dae7b8bbebea6292475aec5f467e3fefe4f5a09ebf4deb573a6af17b4755a",
+        "description_chars": 10,
+        "description_sha256": "10429a35ccb756ff23021e8f106bfd81156002fcc14a8e93c5e19cd5f428a15a"
+      },
+      {
+        "id": "boston:3a9055a0b5f75bc775c9be3c66b6612b4c0eb0c9a6deec41dd6005f6ae0f62f9",
+        "title": "BLUEGRASS JAM",
+        "starts_at": "2027-01-02T19:00:00+00:00",
+        "ends_at": "2027-01-02T22:00:00+00:00",
+        "event_url": "https://www.burren.com/music.html",
+        "venue_name": "The Burren — Front Room",
+        "venue_address": "247 Elm Street, Somerville, MA 02144",
+        "lat": null,
+        "lng": null,
+        "native_id": "53a94ee022366a09df8184397a33c35bfd41ff5655d94b1acb80794c3ed1b080",
+        "description_chars": 37,
+        "description_sha256": "99fc8afd9580a8f40f1415ad2d5aab18f00ae61ecc3e1edfffd42f0db6b46937"
+      },
+      {
+        "id": "boston:a1b0f244501b3705bc7d9fd1495c4253349414462789381c64a1897914fce628",
+        "title": "DOUBLE BARRELL, MILL STREET",
+        "starts_at": "2027-01-03T00:00:00+00:00",
+        "ends_at": null,
+        "event_url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1930",
+        "venue_name": "The Burren — Back Room",
+        "venue_address": "247 Elm Street, Somerville, MA 02144",
+        "lat": null,
+        "lng": null,
+        "native_id": "38373c34e0a54e1260e65ea82938f268fd1a00ca6717e1fd46de3df45b65af0e",
+        "description_chars": 960,
+        "description_sha256": "fc525f8681adfee4efafc273796e62cd85fa62c64cc2f9358aa71414c7ac69c4"
+      },
+      {
+        "id": "boston:34b89b61664ba801d43e798cd69f09ff7d01dc20a95a9072e1d95a71056a6f31",
+        "title": "IRISH SESSION",
+        "starts_at": "2027-01-03T02:30:00+00:00",
+        "ends_at": null,
+        "event_url": "https://www.burren.com/music.html",
+        "venue_name": "The Burren — Front Room",
+        "venue_address": "247 Elm Street, Somerville, MA 02144",
+        "lat": null,
+        "lng": null,
+        "native_id": "394a9fa7012279b30d2f3442020cb1073c894a4832a9930beb69d508541f34c3",
+        "description_chars": 44,
+        "description_sha256": "a58aea9df48e12907c0b52239a62e70ac303c7d28a8bd59752d13796f6651d9a"
+      },
+      {
+        "id": "boston:bc02cff2ea548d9f4e69af03c0ba68ce3faae10edcdd47a27dba960ed427e403",
+        "title": "TBD",
+        "starts_at": "2027-01-03T03:00:00+00:00",
+        "ends_at": null,
+        "event_url": "https://www.burren.com/music.html",
+        "venue_name": "The Burren — Back Room",
+        "venue_address": "247 Elm Street, Somerville, MA 02144",
+        "lat": null,
+        "lng": null,
+        "native_id": "ec944ef89a4a729abd25e383c1b08cf2e800fdf6cb79d1e28fca7aa1298b0c91",
+        "description_chars": 10,
+        "description_sha256": "10429a35ccb756ff23021e8f106bfd81156002fcc14a8e93c5e19cd5f428a15a"
+      },
+      {
+        "id": "boston:436b81f48dba9b9d167582366cef30d506b055900cd7d0d3c597647f5f4173ca",
+        "title": "MATT HEATON'S BURREN BOOGIE: FAMILY MUSIC SPECIAL MONDAY EDITION",
+        "starts_at": "2027-01-04T17:00:00+00:00",
+        "ends_at": null,
+        "event_url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1697",
+        "venue_name": "The Burren — Back Room",
+        "venue_address": "247 Elm Street, Somerville, MA 02144",
+        "lat": null,
+        "lng": null,
+        "native_id": "dca3d7194d2a9ef84bcd440890e01e897b506f5c38eb4e412434b52e2c02a6c5",
+        "description_chars": 727,
+        "description_sha256": "0b3f4a5281e3777d86f4f1a790ac861575cd85f9a4855e8a2ca47accae4fcd7a"
+      },
+      {
+        "id": "boston:5fa1f99aca70b7d5acadf6bc8d92569fcb4fe660595d76710d948eaf4e58849c",
+        "title": "TRIVIA NIGHT",
+        "starts_at": "2027-01-05T01:00:00+00:00",
+        "ends_at": null,
+        "event_url": "https://www.burren.com/music.html",
+        "venue_name": "The Burren — Back Room",
+        "venue_address": "247 Elm Street, Somerville, MA 02144",
+        "lat": null,
+        "lng": null,
+        "native_id": "5cc9445962b19888638380b1e2eab7259a57179c5f13c6bb67713aec444f9089",
+        "description_chars": 49,
+        "description_sha256": "05bfdbe43e48e05b91bce435609c07667e4914c9cf00312a7c55f0d1c786be25"
+      },
+      {
+        "id": "boston:e140938008cdf957877c71ebe115292a7c11b5f5698ba5ee0a215d58556789e3",
+        "title": "IRISH SESSION",
+        "starts_at": "2027-01-05T01:30:00+00:00",
+        "ends_at": null,
+        "event_url": "https://www.burren.com/music.html",
+        "venue_name": "The Burren — Front Room",
+        "venue_address": "247 Elm Street, Somerville, MA 02144",
+        "lat": null,
+        "lng": null,
+        "native_id": "394a9fa7012279b30d2f3442020cb1073c894a4832a9930beb69d508541f34c3",
+        "description_chars": 66,
+        "description_sha256": "ccd9f2461d4a14659c0aedc677ddbcd6ec642c4c640c37d3181bda85dbba7a78"
+      }
+    ],
+    "changed": [],
+    "removed": [],
+    "holds": [],
+    "missing_descriptions": 0,
+    "missing_streets": 0,
+    "description_min": 9,
+    "description_max": 4526,
+    "blank_teaser_hydrated": {
+      "id": "boston:a1b0f244501b3705bc7d9fd1495c4253349414462789381c64a1897914fce628",
+      "title": "DOUBLE BARRELL, MILL STREET",
+      "starts_at": "2027-01-03T00:00:00+00:00",
+      "ends_at": null,
+      "event_url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1930",
+      "venue_name": "The Burren — Back Room",
+      "venue_address": "247 Elm Street, Somerville, MA 02144",
+      "lat": null,
+      "lng": null,
+      "native_id": "38373c34e0a54e1260e65ea82938f268fd1a00ca6717e1fd46de3df45b65af0e",
+      "description_chars": 960,
+      "description_sha256": "fc525f8681adfee4efafc273796e62cd85fa62c64cc2f9358aa71414c7ac69c4"
+    }
+  },
+  "long_live": {
+    "source_key": "long_live_roxbury_ma",
+    "venue_name": "Long Live Roxbury",
+    "venue_address": "152 Hampden Street, Boston, MA 02119",
+    "lat": 42.3278,
+    "lng": -71.0748,
+    "location_provenance": "reviewed_publisher_street_point",
+    "location_evidence_url": "https://untappd.com/v/long-live-roxbury/11948597",
+    "rows": 3,
+    "binding": "Exact source key, venue name and full street address only",
+    "address_source": "https://www.longlivebeerworks.com/contact",
+    "publisher_link_source": "https://www.longlivebeerworks.com/boston",
+    "publisher_link_text": "Our tap menu",
+    "native_location_source": "https://untappd.com/v/long-live-roxbury/11948597/event/877264",
+    "native_location": {
+      "lat": 42.3278,
+      "lng": -71.0748,
+      "event_lat": 42.3278,
+      "event_lng": -71.0748,
+      "event_street": "152 Hampden St",
+      "event_city": "Boston",
+      "event_state": "MA"
+    },
+    "venue_map_url": "https://www.google.com/maps?near=42.3278008,-71.0747986&q=Long+Live+Roxbury+152+Hampden+Street+Boston+MA",
+    "changed_fields": [
+      "lat",
+      "lng",
+      "location_provenance",
+      "location_evidence_url",
+      "reason"
+    ],
+    "resolved_reason": "missing_verified_venue_geo",
+    "unchanged_event_fields": "All titles, dates, narratives, streets and IDs remain identical."
+  },
+  "focused_tests": {
+    "command": "python -m pytest -q tests/test_boston_nightlife_additional.py -k 'burren or long_live'",
+    "passed": 11,
+    "deselected": 20
+  },
+  "worker_replay": {
+    "code_sha256": "edcfc5e6cbc12a31a6bed08e17812be3ffa470965cdcfc0b44479343f6762b28",
+    "profiles": [
+      {
+        "source_key": "burren_ma",
+        "claims": 4,
+        "staged": 123,
+        "checkpoint_writes": 4,
+        "publication_calls": 1,
+        "full_native_row_equality": true,
+        "partial_stage_calls": 0,
+        "partial_claims": 3,
+        "max_stage_size": 20,
+        "simulated_rpc_only": true
+      },
+      {
+        "source_key": "long_live_roxbury_ma",
+        "claims": 1,
+        "staged": 3,
+        "checkpoint_writes": 1,
+        "publication_calls": 1,
+        "full_native_row_equality": true,
+        "partial_stage_calls": 0,
+        "partial_claims": 0,
+        "max_stage_size": 3,
+        "simulated_rpc_only": true
+      }
+    ]
+  },
+  "lizard_backoff": {
+    "source_id": 5646,
+    "source_key": "lizard_lounge_ma",
+    "approval": "approved",
+    "health": "unchecked",
+    "preview_status": "queued",
+    "diagnostic": "publisher_http_504",
+    "failure_count": 3,
+    "latest_attempt": "2026-11-15T01:26:39.994067+00:00",
+    "next_check_at": "2026-11-15T01:30:39.994067+00:00",
+    "publication_next_attempt_at": "2026-11-15T01:30:39.994067+00:00",
+    "staged": 0,
+    "action": "Read-only inspection; no reset, retry or parser change."
+  },
+  "code_sha256": "edcfc5e6cbc12a31a6bed08e17812be3ffa470965cdcfc0b44479343f6762b28",
+  "tests_sha256": "6de2814ec1fe61b633b3653339d6ae54df55ad55d44de6a913d1b631615f8aa4",
+  "transport": {
+    "ordinary_robots_aware_captures": 41,
+    "production_guarded_transport_verified_locally": false,
+    "local_guarded_transport_result": "dns_unavailable",
+    "captures": [
+      {
+        "url": "https://www.burren.com/music.html",
+        "status": 200,
+        "bytes": 163986,
+        "sha256_raw": "4937ed89182311bd7921eb25298d2357b19ce6660e79c02d558e6f51212c4e2f",
+        "sha256_text": "4937ed89182311bd7921eb25298d2357b19ce6660e79c02d558e6f51212c4e2f",
+        "checked_at": "2026-11-15T01:23:45.294825+00:00",
+        "content_type": "text/html; charset=utf-8"
+      },
+      {
+        "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=774",
+        "status": 200,
+        "bytes": 276640,
+        "sha256": "74029fa41f67dcccd210af2e3f022a2dbf4d12525daa24043921366576018c18",
+        "checked_at": "2026-11-15T01:24:49.608292+00:00",
+        "encoding": "utf-8-sig",
+        "content_type": "text/html"
+      },
+      {
+        "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1557",
+        "status": 200,
+        "bytes": 276140,
+        "sha256": "bcec9d04756ce5e555581563917caf2b161f5ff129bc0fcd2f89cb90b7259c99",
+        "checked_at": "2026-11-15T01:24:50.780836+00:00",
+        "encoding": "utf-8-sig",
+        "content_type": "text/html"
+      },
+      {
+        "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1907",
+        "status": 200,
+        "bytes": 276883,
+        "sha256": "5d16bc0004523120ddaf9d24d2e3fd823f24875feda9af0569ab1bb59c1b2785",
+        "checked_at": "2026-11-15T01:24:51.952865+00:00",
+        "encoding": "utf-8-sig",
+        "content_type": "text/html"
+      },
+      {
+        "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1779",
+        "status": 200,
+        "bytes": 278227,
+        "sha256": "d952f8740c964dcfed772d57382ead51f7804b0ef99f2397aab98f37150300f1",
+        "checked_at": "2026-11-15T01:24:53.181656+00:00",
+        "encoding": "utf-8-sig",
+        "content_type": "text/html"
+      },
+      {
+        "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=862",
+        "status": 200,
+        "bytes": 277689,
+        "sha256": "e2777021714d402c5c4c4958401fbec660c55d42a8a04c3661a24590621b518d",
+        "checked_at": "2026-11-15T01:24:54.410591+00:00",
+        "encoding": "utf-8-sig",
+        "content_type": "text/html"
+      },
+      {
+        "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1889",
+        "status": 200,
+        "bytes": 276501,
+        "sha256": "68388531cea7050e612e5e361af504386a152e0e6a2d6890f2aef56d6033d0b7",
+        "checked_at": "2026-11-15T01:24:55.603846+00:00",
+        "encoding": "utf-8-sig",
+        "content_type": "text/html"
+      },
+      {
+        "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1911",
+        "status": 200,
+        "bytes": 280539,
+        "sha256": "a8b36f1e571e54963d6b80b821a243b8caff7692c2e6092078dda98041726f9f",
+        "checked_at": "2026-11-15T01:24:56.831300+00:00",
+        "encoding": "utf-8-sig",
+        "content_type": "text/html"
+      },
+      {
+        "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1583",
+        "status": 200,
+        "bytes": 276459,
+        "sha256": "f1bcabc3b163851eab9b43d8dde2e535adcc35eec20af38c190a2aa65c2b6eb3",
+        "checked_at": "2026-11-15T01:24:58.032191+00:00",
+        "encoding": "utf-8-sig",
+        "content_type": "text/html"
+      },
+      {
+        "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1902",
+        "status": 200,
+        "bytes": 276184,
+        "sha256": "2e113036381c5cf68ca114847fab40a1883e04480312ced9253412250e5f6061",
+        "checked_at": "2026-11-15T01:25:17.824116+00:00",
+        "encoding": "utf-8-sig",
+        "content_type": "text/html"
+      },
+      {
+        "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1890",
+        "status": 200,
+        "bytes": 280591,
+        "sha256": "9e45e29fd0c19b4171820ca967268ffa82861c2fc0bca1fb04442fc20677b244",
+        "checked_at": "2026-11-15T01:25:19.043908+00:00",
+        "encoding": "utf-8-sig",
+        "content_type": "text/html"
+      },
+      {
+        "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1066",
+        "status": 200,
+        "bytes": 278201,
+        "sha256": "73dfd945d63dcd7d78c2d8f8ad1eeebe848ae86ba1cb1937345c67f93403a990",
+        "checked_at": "2026-11-15T01:25:20.225728+00:00",
+        "encoding": "utf-8-sig",
+        "content_type": "text/html"
+      },
+      {
+        "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1923",
+        "status": 200,
+        "bytes": 275973,
+        "sha256": "9e3ae8ccf9f5c7650271a747d68015d6d98607a59177117f0648b0fa997c9cfa",
+        "checked_at": "2026-11-15T01:25:21.438627+00:00",
+        "encoding": "utf-8-sig",
+        "content_type": "text/html"
+      },
+      {
+        "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1000",
+        "status": 200,
+        "bytes": 278471,
+        "sha256": "cffeb13b2aaf338acac4e0c3a38f8362a099c0efee0caac4860f7518daeb3513",
+        "checked_at": "2026-11-15T01:25:22.619352+00:00",
+        "encoding": "utf-8-sig",
+        "content_type": "text/html"
+      },
+      {
+        "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=61",
+        "status": 200,
+        "bytes": 276675,
+        "sha256": "ceaa0e16e199dda7d0e8f60fe3af556eab21f7d1f2564df1b61fcf83cf50ba73",
+        "checked_at": "2026-11-15T01:25:23.810760+00:00",
+        "encoding": "utf-8-sig",
+        "content_type": "text/html"
+      },
+      {
+        "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1129",
+        "status": 200,
+        "bytes": 277695,
+        "sha256": "10506e736d8ab6d376d8435ecfb690e933ed7e9760d48b641a494ef5a641da33",
+        "checked_at": "2026-11-15T01:25:24.991854+00:00",
+        "encoding": "utf-8-sig",
+        "content_type": "text/html"
+      },
+      {
+        "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=970",
+        "status": 200,
+        "bytes": 276454,
+        "sha256": "f66915955ded0126a3fa20322c594ba7951f517a181a4975d9b94aa2bf0d152f",
+        "checked_at": "2026-11-15T01:25:26.186209+00:00",
+        "encoding": "utf-8-sig",
+        "content_type": "text/html"
+      },
+      {
+        "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1926",
+        "status": 200,
+        "bytes": 281047,
+        "sha256": "4759e0691102ae3abc678421ff5a4e962c615d2140fb3845b83f40d8df4e8fc7",
+        "checked_at": "2026-11-15T01:25:27.382147+00:00",
+        "encoding": "utf-8-sig",
+        "content_type": "text/html"
+      },
+      {
+        "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1931",
+        "status": 200,
+        "bytes": 278154,
+        "sha256": "41fa236030aa2eb182a819c8b526f82c5f34e55aa56f5e0e6166a360141a6826",
+        "checked_at": "2026-11-15T01:25:28.563203+00:00",
+        "encoding": "utf-8-sig",
+        "content_type": "text/html"
+      },
+      {
+        "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1928",
+        "status": 200,
+        "bytes": 277336,
+        "sha256": "7cbf955aaf92a915a375fdd2b9e795778be5c44717728b142ef9bbd52dcda355",
+        "checked_at": "2026-11-15T01:25:29.811220+00:00",
+        "encoding": "utf-8-sig",
+        "content_type": "text/html"
+      },
+      {
+        "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1460",
+        "status": 200,
+        "bytes": 276679,
+        "sha256": "a724eac029be10b668c6a4d5dae05b15038fae41ac17de6f26cc7cf2ea7c7377",
+        "checked_at": "2026-11-15T01:25:31.005287+00:00",
+        "encoding": "utf-8-sig",
+        "content_type": "text/html"
+      },
+      {
+        "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1295",
+        "status": 200,
+        "bytes": 276946,
+        "sha256": "a06754ff50c14a471f13ddaa89889ce7a0479ae169b6fdac00bb7ffa09161a50",
+        "checked_at": "2026-11-15T01:25:32.189274+00:00",
+        "encoding": "utf-8-sig",
+        "content_type": "text/html"
+      },
+      {
+        "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1922",
+        "status": 200,
+        "bytes": 276811,
+        "sha256": "9ac81004206482257512f3d12d971c5933d8f26bf96b0a1385bd63048ac8cace",
+        "checked_at": "2026-11-15T01:25:33.404516+00:00",
+        "encoding": "utf-8-sig",
+        "content_type": "text/html"
+      },
+      {
+        "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1176",
+        "status": 200,
+        "bytes": 275864,
+        "sha256": "2b2f606774ef6659f33d697f29f1a9dcce016915bccb974ac3001ca987606646",
+        "checked_at": "2026-11-15T01:25:34.580724+00:00",
+        "encoding": "utf-8-sig",
+        "content_type": "text/html"
+      },
+      {
+        "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=788",
+        "status": 200,
+        "bytes": 276501,
+        "sha256": "a2d664272da51f1fac7ed7884fdc1b336986ae150d9659d07a52aa52fb57bfab",
+        "checked_at": "2026-11-15T01:25:35.779500+00:00",
+        "encoding": "utf-8-sig",
+        "content_type": "text/html"
+      },
+      {
+        "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1235",
+        "status": 200,
+        "bytes": 276398,
+        "sha256": "9ff71525bfe05883d6839a487118e57fd0dc3f039b8804ebe5f284f545aa45c6",
+        "checked_at": "2026-11-15T01:25:36.962557+00:00",
+        "encoding": "utf-8-sig",
+        "content_type": "text/html"
+      },
+      {
+        "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=746",
+        "status": 200,
+        "bytes": 275838,
+        "sha256": "97ec9a694e3aead5ab4a4fdb91a7f63464f37e5fd4ad40c54d1fe8151e17c574",
+        "checked_at": "2026-11-15T01:25:38.144968+00:00",
+        "encoding": "utf-8-sig",
+        "content_type": "text/html"
+      },
+      {
+        "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=780",
+        "status": 200,
+        "bytes": 277768,
+        "sha256": "9c899cbf9ea3fdd8a7671e6f0ec8d397e0336bdda572403058a0a4714f524e6e",
+        "checked_at": "2026-11-15T01:25:39.328156+00:00",
+        "encoding": "utf-8-sig",
+        "content_type": "text/html"
+      },
+      {
+        "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1053",
+        "status": 200,
+        "bytes": 276944,
+        "sha256": "90a4a665fb9aadd95431e808f23e041a9159dcc0779095d4eb5432a23267487c",
+        "checked_at": "2026-11-15T01:25:40.536568+00:00",
+        "encoding": "utf-8-sig",
+        "content_type": "text/html"
+      },
+      {
+        "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=100",
+        "status": 200,
+        "bytes": 276279,
+        "sha256": "28c363485d2633f6382e2b34103ad72d8376cca0c9501a3c0cc4c16a44932989",
+        "checked_at": "2026-11-15T01:25:41.712201+00:00",
+        "encoding": "utf-8-sig",
+        "content_type": "text/html"
+      },
+      {
+        "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1077",
+        "status": 200,
+        "bytes": 276430,
+        "sha256": "ec76c33b3832ba46bdecb3a7ec85cb6741e983eaf7589ea320e06f9a457e6cf3",
+        "checked_at": "2026-11-15T01:25:42.931330+00:00",
+        "encoding": "utf-8-sig",
+        "content_type": "text/html"
+      },
+      {
+        "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=822",
+        "status": 200,
+        "bytes": 277278,
+        "sha256": "23830ae07c0d73aed7c566399905b0aa7ebdacba0df4b8bb0268f51b2ffc5c38",
+        "checked_at": "2026-11-15T01:25:44.125534+00:00",
+        "encoding": "utf-8-sig",
+        "content_type": "text/html"
+      },
+      {
+        "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=779",
+        "status": 200,
+        "bytes": 276982,
+        "sha256": "9a4c85df7765de0eac8468a2a0c9cb13e7c05dea1ebb3a1dac0fb8e107be500b",
+        "checked_at": "2026-11-15T01:25:45.352979+00:00",
+        "encoding": "utf-8-sig",
+        "content_type": "text/html"
+      },
+      {
+        "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1924",
+        "status": 200,
+        "bytes": 277728,
+        "sha256": "88f74704e8dbaf9651b038abe66442b41f186643c96424a1579584b2c7905687",
+        "checked_at": "2026-11-15T01:25:46.542837+00:00",
+        "encoding": "utf-8-sig",
+        "content_type": "text/html"
+      },
+      {
+        "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1",
+        "status": 200,
+        "bytes": 276242,
+        "sha256": "e5d6607919f559ae1ac20b0d4c0202abcd8b30251e94b7bd139b8989edb5166e",
+        "checked_at": "2026-11-15T01:25:47.727899+00:00",
+        "encoding": "utf-8-sig",
+        "content_type": "text/html"
+      },
+      {
+        "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=794",
+        "status": 200,
+        "bytes": 276905,
+        "sha256": "b46cb489b4cfabf39caafd4465f81de470cf7c709cd581674d5d4ed557dc57d0",
+        "checked_at": "2026-11-15T01:25:48.923954+00:00",
+        "encoding": "utf-8-sig",
+        "content_type": "text/html"
+      },
+      {
+        "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1719",
+        "status": 200,
+        "bytes": 276502,
+        "sha256": "5dac65fc32a212c909082f3a1adc133cdd2f2b20a6a9ba130164c9f81ece1835",
+        "checked_at": "2026-11-15T01:25:50.112255+00:00",
+        "encoding": "utf-8-sig",
+        "content_type": "text/html"
+      },
+      {
+        "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1702",
+        "status": 200,
+        "bytes": 277429,
+        "sha256": "2a15f030df04c23f8829f6f17d4e0ddad3507744558d32cc1d118407204089ed",
+        "checked_at": "2026-11-15T01:25:51.293355+00:00",
+        "encoding": "utf-8-sig",
+        "content_type": "text/html"
+      },
+      {
+        "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1697",
+        "status": 200,
+        "bytes": 276761,
+        "sha256": "aaedd7d7d6885bc92a513f1d572f2173a0095b0789146075cab03e00b71b0a1f",
+        "checked_at": "2026-11-15T01:25:52.493231+00:00",
+        "encoding": "utf-8-sig",
+        "content_type": "text/html"
+      },
+      {
+        "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1929",
+        "status": 200,
+        "bytes": 276866,
+        "sha256": "6abdd526128eed5145a2667093948525e2964e83c84931a8d69c6af733ed8dff",
+        "checked_at": "2026-11-15T01:25:53.687159+00:00",
+        "encoding": "utf-8-sig",
+        "content_type": "text/html"
+      },
+      {
+        "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1930",
+        "status": 200,
+        "bytes": 276900,
+        "sha256": "5991994d910294ccb2126dfbdbbeab10678286ef75ed3c72a1725e520ed80a2b",
+        "checked_at": "2026-11-15T01:26:28.885248+00:00",
+        "encoding": "utf-8-sig",
+        "content_type": "text/html"
+      }
+    ]
+  }
+}

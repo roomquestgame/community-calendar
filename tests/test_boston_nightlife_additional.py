@@ -219,6 +219,21 @@ def test_burren_weekday_conflict_and_closed_session_suppression():
         b._burren_manifest(burren_calendar(wrong), NOW)
 
 
+def test_burren_native_showcase_comma_list_preserves_all_four_showtimes():
+    cards = [("SUNDAY DECEMBER 13, 2026", "ALL THAT MUSIC ACADEMY - WINTER SHOWCASE!",
+              "10:30am, 12:30pm, 2:30pm, & 4:30pm:", FULL, None, "THE BACK ROOM")]
+    calendar = burren_calendar(cards)
+    result = b.collect_chunk(source(b.BURREN), lambda url, accept: calendar, now=NOW)
+    assert result["complete"]
+    assert [b.timestamp(row["starts_at"]).astimezone(b.ZoneInfo(b.ZONE)).strftime("%H:%M")
+            for row in result["events"]] == ["10:30", "12:30", "14:30", "16:30"]
+    assert all(row["ends_at"] is None and row["description"] == FULL
+               and row["venue_address"] == "247 Elm Street, Somerville, MA 02144"
+               for row in result["events"])
+    with pytest.raises(ValueError, match="schedule_changed"):
+        b.collect_chunk(source(b.BURREN), lambda url, accept: calendar.replace("2:30pm, &", "TBD, &"), now=NOW)
+
+
 def test_burren_linked_native_description_is_complete_and_preserves_calendar_context():
     target = "https://tickets.24hourmusic.com/eventperformances.asp?evt=1890"
     card = ("SUNDAY NOVEMBER 22, 2026", "Hollow Harvest", "5pm:", "Published food-bank benefit context.", target, "THE BACK ROOM")
@@ -231,6 +246,24 @@ def test_burren_linked_native_description_is_complete_and_preserves_calendar_con
     assert b._identity(b.BURREN, dict(item, **item["occurrences"][0])) == b._identity(b.BURREN, dict(changed, **changed["occurrences"][0]))
 
 
+def test_burren_blank_calendar_teaser_still_hydrates_full_linked_description():
+    url = "https://tickets.24hourmusic.com/eventperformances.asp?evt=1930"
+    card = ("SATURDAY JANUARY 2, 2027", "Double Barrell, Mill Street", "7pm:", "", url, "THE BACK ROOM")
+    pages = {b.SOURCES[b.BURREN][0]: burren_calendar([card]),
+             url: '<h2 class="event-page-head">Double Barrell, Mill Street</h2>'
+             '<div class="event-performances-description"><p>' + FULL + '</p></div>'
+             '<script>display({iEvent:1930});</script>'}
+    calls = []
+    def fetch(target, accept):
+        calls.append(target)
+        return pages[target]
+    result = b.collect_chunk(source(b.BURREN), fetch, now=NOW)
+    assert result["complete"] and len(result["events"]) == 1
+    assert calls == [b.SOURCES[b.BURREN][0], url]
+    assert result["events"][0]["description"] == FULL
+    assert result["checkpoint"]["diagnostics"] == []
+
+
 def test_long_live_named_dates_only_preserve_holiday_omissions_and_boston_location():
     items = b._long_live_manifest(long_live_page(), NOW)
     assert [x["occurrences"][0]["start"][:10] for x in items] == ["2026-11-19", "2026-12-03", "2026-12-10"]
@@ -238,6 +271,19 @@ def test_long_live_named_dates_only_preserve_holiday_omissions_and_boston_locati
     row = b._row(b.LONG_LIVE, dict(items[0], **items[0]["occurrences"][0]))
     assert row["venue_address"] == "152 Hampden Street, Boston, MA 02119"
     assert row["schedule_window_days"] == 28 and "Recent Press" not in row["description"]
+
+
+def test_long_live_reviewed_point_requires_exact_roxbury_venue_and_street():
+    venue, street, _ = b.VENUES["long_live"]
+    item = b._long_live_manifest(long_live_page(), NOW)[0]
+    row = b._row(b.LONG_LIVE, dict(item, **item["occurrences"][0]))
+    assert (row["lat"], row["lng"]) == (42.3278, -71.0748)
+    assert row["location_provenance"] == "reviewed_publisher_street_point"
+    assert row["location_evidence_url"] == "https://untappd.com/v/long-live-roxbury/11948597"
+    assert b.reviewed_venue_location(b.LONG_LIVE, venue, street) == (42.3278, -71.0748)
+    assert b.reviewed_venue_location(b.PASSIM, venue, street) is None
+    assert b.reviewed_venue_location(b.LONG_LIVE, "Long Live Beerworks Providence", street) is None
+    assert b.reviewed_venue_location(b.LONG_LIVE, venue, "40R Sprague Street, Providence, RI 02907") is None
 
 
 def test_long_live_changed_rule_and_wrong_weekday_do_not_create_assumed_dates():
