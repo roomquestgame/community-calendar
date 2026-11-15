@@ -161,6 +161,25 @@ def test_changed_detail_identity_is_not_used_as_description():
         r._tec_detail(r.SLIMS, item, tec_detail(dict(event, title="Another Show")))
 
 
+def test_slims_artist_schema_url_requires_exact_native_page_identity():
+    event = tec_event(description="")
+    item = r._tec_listing(r.SLIMS, tec_payload([event]), NOW)[0][0]
+    def page(body=FULL):
+        detail = tec_detail(event, body).replace(event["url"], "https://artist.example/album")
+        return ('<html><head><link rel="canonical" href="' + event["url"] + '"></head>'
+                '<body class="single-tribe_events postid-1">' + detail + '</body></html>')
+    assert r._tec_detail(r.SLIMS, item, page()) == FULL
+    with pytest.raises(ValueError, match="description_missing"):
+        r._tec_detail(r.SLIMS, item, page(""))
+    for changed in (page().replace(event["url"], "https://slimsraleigh.com/calendar/other/"),
+                    page().replace("postid-1", "postid-2"),
+                    page().replace('"name": "Native Show 1"', '"name": "Other Show"'),
+                    page().replace('"startDate": "2026-11-20T19:30:00-05:00"',
+                                   '"startDate": "2026-11-21T19:30:00-05:00"')):
+        with pytest.raises(ValueError, match="detail_changed"):
+            r._tec_detail(r.SLIMS, item, changed)
+
+
 def test_neptunes_uses_complete_upcoming_array_and_rejects_default_nyc_point():
     item = r._neptunes(square_payload([square_event()]), NOW)[0]
     row = r._row(r.NEPTUNES, item, item["occurrences"][0])

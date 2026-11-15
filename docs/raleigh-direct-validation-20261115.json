@@ -1,0 +1,303 @@
+{
+  "scope": "Complete captured-publisher replays for all 20 Raleigh integration profiles; research evidence only, not production import counts.",
+  "snapshot_date": "2026-11-15",
+  "source_count": 20,
+  "accepted_total": 773,
+  "description_contract": "Complete available native narrative, 1–12,000 characters; unavailable/oversized descriptions held, never truncated.",
+  "street_contract": "Every accepted row has a verified numbered street, locality, NC and postal code; ordinary geocoder resolves coordinates.",
+  "focused_tests": 148,
+  "independent_review": "Transport, completion proof, fairground schedules, SQL branch preservation, and Slim canonical/post/title/start exception reviewed.",
+  "sources": [
+    {
+      "source_key": "artspace_raleigh_nc",
+      "feed_url": "https://artspacenc.org/calendar/",
+      "capture_started_at": "2026-11-15T12:00:00+00:00",
+      "accepted": 16,
+      "held_or_excluded": 6,
+      "diagnostics": {
+        "raleigh_arts_not_public": 4,
+        "raleigh_arts_schedule_unresolved": 2
+      },
+      "blank_descriptions": 0,
+      "max_description_chars": 1323,
+      "full_street_count": 16,
+      "captured_rows_sha256": "8810c85a7d12bea7cd4e69ef3123d0dd00a0d31ce021b06f1553c2f11b6f9888",
+      "checkpoint_bytes": 56043
+    },
+    {
+      "source_key": "cannonball_music_hall_nc",
+      "feed_url": "https://www.cannonballmusichall.com/upcomingshows",
+      "capture_started_at": "2026-11-15T12:00:00+00:00",
+      "accepted": 18,
+      "held_or_excluded": 1,
+      "diagnostics": {
+        "raleigh_direct_description_missing": 1
+      },
+      "blank_descriptions": 0,
+      "max_description_chars": 1129,
+      "full_street_count": 18,
+      "captured_rows_sha256": "cf49cc30f0979cca4ab76320b48beb5d097948fda80576c5f56ddfe749b38491",
+      "checkpoint_bytes": 25699
+    },
+    {
+      "source_key": "downtown_cary_park_nc",
+      "feed_url": "https://downtowncarypark.com/calendar",
+      "capture_started_at": "2026-11-15T12:00:00+00:00",
+      "accepted": 85,
+      "held_or_excluded": 1,
+      "diagnostics": {
+        "raleigh_arts_street_unresolved": 1
+      },
+      "blank_descriptions": 0,
+      "max_description_chars": 1672,
+      "full_street_count": 85,
+      "captured_rows_sha256": "a61e711d2d840322bafe4b5dc8426662e26b15df26430dd3c7b5a7d3f31cd303",
+      "checkpoint_bytes": 180311
+    },
+    {
+      "source_key": "game_theory_raleigh_nc",
+      "feed_url": "https://gametheorystore.com/calendar/",
+      "capture_started_at": "2026-11-15T12:11:03.072752+00:00",
+      "accepted": 24,
+      "held_or_excluded": 100,
+      "diagnostics": {
+        "raleigh_direct_description_missing": 97,
+        "raleigh_direct_nonpublic": 3
+      },
+      "blank_descriptions": 0,
+      "max_description_chars": 53,
+      "full_street_count": 24,
+      "captured_rows_sha256": "2403f94f5909fe4584405b7cca8cacee0818a0566e9c5a9bd79e85bddacf5d02",
+      "checkpoint_bytes": 35013
+    },
+    {
+      "source_key": "goodnights_comedy_raleigh_nc",
+      "feed_url": "https://www.goodnightscomedy.com/events",
+      "capture_started_at": "2026-11-15T11:57:01.702048+00:00",
+      "accepted": 101,
+      "held_or_excluded": 1,
+      "diagnostics": {
+        "raleigh_direct_nonpublic": 1
+      },
+      "blank_descriptions": 0,
+      "max_description_chars": 3002,
+      "full_street_count": 101,
+      "captured_rows_sha256": "466e0a92838ca743b14a2064a4d070bb6a37b295c0f473f2482135795154bb09",
+      "checkpoint_bytes": 257134
+    },
+    {
+      "source_key": "hone_sharpen_raleigh_nc",
+      "feed_url": "https://hone-sharpen.com/",
+      "capture_started_at": "2026-11-15T12:00:00+00:00",
+      "accepted": 1,
+      "held_or_excluded": 34,
+      "diagnostics": {
+        "raleigh_direct_description_missing": 34
+      },
+      "blank_descriptions": 0,
+      "max_description_chars": 334,
+      "full_street_count": 1,
+      "captured_rows_sha256": "bd13abe98f3c5384be61131e53f3fbff5e24defeb720526465309317e3a88cab",
+      "checkpoint_bytes": 12755
+    },
+    {
+      "source_key": "koka_booth_amphitheatre_nc",
+      "feed_url": "https://www.boothamphitheatre.com/tickets/",
+      "capture_started_at": "2026-11-15T12:00:00+00:00",
+      "accepted": 50,
+      "held_or_excluded": 0,
+      "diagnostics": {},
+      "blank_descriptions": 0,
+      "max_description_chars": 2795,
+      "full_street_count": 50,
+      "captured_rows_sha256": "9cafa899670f33094b53ae4792f7aad312d84e5f7c0404a2858693087f8bbebf",
+      "checkpoint_bytes": 184808
+    },
+    {
+      "source_key": "lenovo_center_nc",
+      "feed_url": "https://www.lenovocenter.com/events/all",
+      "capture_started_at": "2026-11-15T12:00:00+00:00",
+      "accepted": 17,
+      "held_or_excluded": 21,
+      "diagnostics": {
+        "raleigh_performance_description_missing": 21
+      },
+      "blank_descriptions": 0,
+      "max_description_chars": 4960,
+      "full_street_count": 17,
+      "captured_rows_sha256": "420c270dc1c714c383868aafd06625701f0d92360fe9a754e1ab0c0a4ce43773",
+      "checkpoint_bytes": 49486
+    },
+    {
+      "source_key": "martin_marietta_center_nc",
+      "feed_url": "https://www.martinmariettacenter.com/events",
+      "capture_started_at": "2026-11-15T12:00:00+00:00",
+      "accepted": 65,
+      "held_or_excluded": 1,
+      "diagnostics": {
+        "raleigh_performance_description_missing": 1
+      },
+      "blank_descriptions": 0,
+      "max_description_chars": 1143,
+      "full_street_count": 65,
+      "captured_rows_sha256": "e45346dad2620e80cd9566a6c1b210b3b7a6fef8d411d157eed8911b8a7bc79b",
+      "checkpoint_bytes": 103694
+    },
+    {
+      "source_key": "municipal_dfbc4fd7bb8cf284b5c0856d",
+      "feed_url": "https://www.naturalsciences.org/calendar/",
+      "capture_started_at": "2026-11-15T12:00:00+00:00",
+      "accepted": 83,
+      "held_or_excluded": 13,
+      "diagnostics": {
+        "raleigh_arts_outside_area": 12,
+        "raleigh_arts_street_unresolved": 1
+      },
+      "blank_descriptions": 0,
+      "max_description_chars": 2105,
+      "full_street_count": 83,
+      "captured_rows_sha256": "5f1f9013169e4533590928b26f60d79c5dfd2fcd7a9fc7845510de5d6d31d4f1",
+      "checkpoint_bytes": 452366
+    },
+    {
+      "source_key": "nc_state_fair_events_nc",
+      "feed_url": "https://www.ncagr.gov/divisions/ncstatefair/events",
+      "capture_started_at": "2026-11-15T11:57:01.443929+00:00",
+      "accepted": 39,
+      "held_or_excluded": 4,
+      "diagnostics": {
+        "raleigh_direct_schedule_missing": 4
+      },
+      "blank_descriptions": 0,
+      "max_description_chars": 1413,
+      "full_street_count": 39,
+      "captured_rows_sha256": "94919033d2a834504c2611ddc06adb46bf23d6d4127875dfdc504a99093c31c7",
+      "checkpoint_bytes": 59607
+    },
+    {
+      "source_key": "neptunes_raleigh_nc",
+      "feed_url": "https://www.neptunesraleigh.com/events",
+      "capture_started_at": "2026-11-15T12:00:00+00:00",
+      "accepted": 26,
+      "held_or_excluded": 0,
+      "diagnostics": {},
+      "blank_descriptions": 0,
+      "max_description_chars": 229,
+      "full_street_count": 26,
+      "captured_rows_sha256": "06be7a3646741ac0c773b045cd03015c8f177889bca69d62407a4c338e592240",
+      "checkpoint_bytes": 25616
+    },
+    {
+      "source_key": "our_giving_kitchen_raleigh_nc",
+      "feed_url": "https://www.ogkraleigh.org/events",
+      "capture_started_at": "2026-11-15T11:57:01.982982+00:00",
+      "accepted": 2,
+      "held_or_excluded": 0,
+      "diagnostics": {},
+      "blank_descriptions": 0,
+      "max_description_chars": 1091,
+      "full_street_count": 2,
+      "captured_rows_sha256": "ea0a3acb3d9a0481b4fe33d491bfbb61423e50b168737a9ec38f2a6be5a17620",
+      "checkpoint_bytes": 4558
+    },
+    {
+      "source_key": "raleigh_improv_nc",
+      "feed_url": "https://improv.com/raleigh/calendar/",
+      "capture_started_at": "2026-11-15T12:00:00+00:00",
+      "accepted": 32,
+      "held_or_excluded": 0,
+      "diagnostics": {},
+      "blank_descriptions": 0,
+      "max_description_chars": 3091,
+      "full_street_count": 32,
+      "captured_rows_sha256": "85baea189206aebf3afdf48ff02ffa68b630ee1bf7c6ea20b5426bd49e7c955c",
+      "checkpoint_bytes": 87319
+    },
+    {
+      "source_key": "raleigh_little_theatre_nc",
+      "feed_url": "https://raleighlittletheatre.org/shows-and-events/",
+      "capture_started_at": "2026-11-15T12:00:00+00:00",
+      "accepted": 49,
+      "held_or_excluded": 0,
+      "diagnostics": {},
+      "blank_descriptions": 0,
+      "max_description_chars": 2042,
+      "full_street_count": 49,
+      "captured_rows_sha256": "a6367a2f4309babadb277d21c3b2b83973486bb0132a10f56bf8d6611707fc6f",
+      "checkpoint_bytes": 148586
+    },
+    {
+      "source_key": "slims_dive_bar_raleigh_nc",
+      "feed_url": "https://slimsraleigh.com/calendar/",
+      "capture_started_at": "2026-11-15T12:00:00+00:00",
+      "accepted": 9,
+      "held_or_excluded": 35,
+      "diagnostics": {
+        "raleigh_direct_description_missing": 35
+      },
+      "blank_descriptions": 0,
+      "max_description_chars": 62,
+      "full_street_count": 9,
+      "captured_rows_sha256": "4154cf557f46dbbe6b2c44910911d899b1f72a555bcb8a37a650d723b7e07f00",
+      "checkpoint_bytes": 18846
+    },
+    {
+      "source_key": "sports_social_cary_nc",
+      "feed_url": "https://sportsandsocial.com/cary/events/",
+      "capture_started_at": "2026-11-15T12:00:00+00:00",
+      "accepted": 63,
+      "held_or_excluded": 3,
+      "diagnostics": {
+        "raleigh_direct_schedule_unresolved": 3
+      },
+      "blank_descriptions": 0,
+      "max_description_chars": 1401,
+      "full_street_count": 63,
+      "captured_rows_sha256": "bf5b57db05ccae99c6589b6cca4887fe79aab1171bba04c847318b6bd05ee99a",
+      "checkpoint_bytes": 125005
+    },
+    {
+      "source_key": "tin_roof_raleigh_nc",
+      "feed_url": "https://tinroofraleigh.com/calendar/",
+      "capture_started_at": "2026-11-15T12:00:00+00:00",
+      "accepted": 80,
+      "held_or_excluded": 2,
+      "diagnostics": {
+        "raleigh_additional_outside_window": 2
+      },
+      "blank_descriptions": 0,
+      "max_description_chars": 442,
+      "full_street_count": 80,
+      "captured_rows_sha256": "61f5623283bbb92c5debfcc5d113c40a0a772a44b7f2506936bcc9fd1f327e34",
+      "checkpoint_bytes": 139151
+    },
+    {
+      "source_key": "transfer_co_food_hall_raleigh_nc",
+      "feed_url": "https://transfer-co-food-hall.squarespace.com/upcoming-events",
+      "capture_started_at": "2026-11-15T11:57:11.772997+00:00",
+      "accepted": 9,
+      "held_or_excluded": 1,
+      "diagnostics": {
+        "raleigh_direct_schedule_conflict": 1
+      },
+      "blank_descriptions": 0,
+      "max_description_chars": 755,
+      "full_street_count": 9,
+      "captured_rows_sha256": "aee8d0a8a5e1375f44d007a94f770f4ff4949d0358e2933516a5affea84dd2db",
+      "checkpoint_bytes": 18494
+    },
+    {
+      "source_key": "triangle_rock_club_salvage_yard_nc",
+      "feed_url": "https://account.trianglerockclub.com/salvage-yard/programs/run-club",
+      "capture_started_at": "2026-11-15T12:08:11.678571+00:00",
+      "accepted": 4,
+      "held_or_excluded": 0,
+      "diagnostics": {},
+      "blank_descriptions": 0,
+      "max_description_chars": 767,
+      "full_street_count": 4,
+      "captured_rows_sha256": "94cd289f73f3c3e33077eecc129a8bb065b3d581701a1ac4f4f8d7c036d44f16",
+      "checkpoint_bytes": 8197
+    }
+  ]
+}
