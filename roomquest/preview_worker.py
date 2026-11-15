@@ -100,6 +100,15 @@ class ReviewedRobotsRedirects(RejectRedirects):
             return Request(newurl, headers={
                 'User-Agent': 'RoomQuestCommunityCalendar/0.1 (community-event research)'
             }, method='GET')
+        # Observed November 14: Night Shift publishes its robots policy at
+        # this exact same-origin WordPress endpoint, not a challenge page.
+        if (request.full_url == 'https://nightshiftbrewing.com/robots.txt'
+                and newurl == 'https://nightshiftbrewing.com/?robots=1'
+                and code == 301 and request.get_method() == 'GET'):
+            validate_public_dns('nightshiftbrewing.com')
+            return Request(newurl, headers={
+                'User-Agent': 'RoomQuestCommunityCalendar/0.1 (community-event research)'
+            }, method='GET')
         return super().redirect_request(request, fp, code, msg, headers, newurl)
 
 

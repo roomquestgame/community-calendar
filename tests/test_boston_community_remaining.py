@@ -102,7 +102,7 @@ def test_greenway_unknown_location_never_becomes_conservancy_headquarters():
 
 
 def test_durable_snapshot_only_emits_complete_and_rejects_mutations(monkeypatch):
-    items = [greenway(i) for i in range(4)]
+    items = [greenway(i) for i in range(9)]
     monkeypatch.setattr(b, "_greenway_manifest", lambda *args: [i[0] for i in items])
     calls = []
     def fetch(url, accept):
@@ -110,14 +110,14 @@ def test_durable_snapshot_only_emits_complete_and_rejects_mutations(monkeypatch)
         return dict((c["url"], html) for c, html in items)[url]
     first = b.collect_chunk(source(b.GREENWAY), fetch, now=NOW)
     assert not first["complete"] and first["events"] == []
-    assert first["checkpoint"]["cursor"] == 3
+    assert first["checkpoint"]["cursor"] == 8
     boston_sources.validate_checkpoint(source(b.GREENWAY), first["checkpoint"], now=NOW)
     poisoned = deepcopy(first["checkpoint"])
     poisoned["events"][0]["description"] = "Changed checkpoint narrative"
     with pytest.raises(ValueError, match="checkpoint_invalid"):
         b.collect_chunk(source(b.GREENWAY), fetch, checkpoint=poisoned, now=NOW)
     complete = b.collect_chunk(source(b.GREENWAY), fetch, checkpoint=first["checkpoint"], now=NOW)
-    assert complete["complete"] and len(complete["events"]) == 4 and len(calls) == 4
+    assert complete["complete"] and len(complete["events"]) == 9 and len(calls) == 9
     boston_sources.validate_records(complete["events"], source(b.GREENWAY))
     with pytest.raises(ValueError, match="checkpoint_invalid"):
         b.collect_chunk(source(b.GREENWAY), fetch, checkpoint=first["checkpoint"], now=NOW + timedelta(hours=5))
@@ -164,6 +164,84 @@ def test_nature_meeting_directions_override_reused_park_address():
     assert row["lat"] is None
 
 
+@pytest.mark.parametrize("key", [b.GREENWAY, b.NATURE])
+@pytest.mark.parametrize("response_seconds,read_checkpoint_seconds,expected_claims", [
+    (0.25, 0, 2), (5, 0, 3), (17, 0, 9), (0.25, 17, None),
+])
+def test_actual_worker_continuation_respects_slow_reads_and_reserve(
+        monkeypatch, key, response_seconds, read_checkpoint_seconds, expected_claims):
+    from roomquest import preview_worker as worker
+    from urllib.parse import urlsplit
+    items = []
+    for index in range(9):
+        card, body = greenway(index) if key == b.GREENWAY else nature(starts=[START])
+        if key == b.NATURE:
+            card = {**card, "url": card["url"].replace("100001", str(100001 + index))}
+        items.append((card, body))
+    manifest_name = "_greenway_manifest" if key == b.GREENWAY else "_nature_manifest"
+    detail = b._greenway_detail if key == b.GREENWAY else b._nature_detail
+    expected = [row for card, body in items for row in detail(card, body, NOW, [])]
+    monkeypatch.setattr(b, manifest_name, lambda *args: [card for card, _ in items])
+    clock, saved, revision, staged, reads, previews = [0.0], [None], [0], [], [], []
+    monkeypatch.setattr(b, "monotonic", lambda: clock[0])
+    monkeypatch.setattr(worker, "monotonic", lambda: clock[0])
+    src = {**source(key), "fetch_checkpoint_version": 1}
+    bodies = {card["url"]: body for card, body in items}
+
+    def fetch(url, accept, **kwargs):
+        assert kwargs["respect_robots"] is True
+        assert urlsplit(url).hostname in kwargs["allowed_hosts"]
+        assert clock[0] + 18 < kwargs["deadline_at"]
+        reads.append(url)
+        clock[0] += response_seconds
+        return bodies[url]
+
+    def rpc(operation, args):
+        if operation == "community_collector_read_fetch_checkpoint":
+            clock[0] += read_checkpoint_seconds
+            return {"revision": revision[0], "checkpoint": saved[0]}
+        if operation == "community_collector_write_fetch_checkpoint":
+            saved[0] = args["p_checkpoint"]
+            revision[0] += 1
+            boston_sources.validate_checkpoint(src, saved[0])
+            return {"checkpoint_saved": True, "revision": revision[0]}
+        if operation == "community_collector_record_staged_events":
+            assert saved[0]["cursor"] == saved[0]["manifest_count"]
+            boston_sources.validate_records(args["p_events"], src)
+            staged.extend(args["p_events"])
+            return len(args["p_events"])
+        if operation == "community_collector_record_preview_v2":
+            assert args["p_error"] is None
+            previews.append(args)
+            return {"ok": True}
+        raise AssertionError(operation)
+
+    monkeypatch.setattr(worker, "fetch_publisher", fetch)
+    monkeypatch.setattr(worker, "supabase_rpc", rpc)
+    for claim in range(expected_claims or 1):
+        clock[0] = claim * 60
+        prior_reads = len(reads)
+        # Existing production snapshots may already have a three-detail prefix.
+        # Resume that old prefix under the new cap without refetching it.
+        monkeypatch.setattr(b, "DETAILS_PER_CHUNK", 3 if claim == 0
+            and response_seconds == 0.25 and not read_checkpoint_seconds else 8)
+        result = worker._process_claimed_source_with_pacing(src,
+            {"wait_unbounded": False, "crawl_delay_seconds": 0, "retry_after_seconds": 0},
+            deadline_at=clock[0] + 60,
+            collection_context={"p_category": "html", "p_ticket": "test-captured-source"})
+        assert len(reads) - prior_reads <= 8
+        assert result["failed"] == 0
+        if result.get("fetch_pending"):
+            assert not staged and not previews
+        else:
+            assert result["complete"] == 1 and claim + 1 == expected_claims
+    if expected_claims is None:
+        assert not reads and saved[0]["cursor"] == 0 and not staged and not previews
+    else:
+        assert len(reads) == len(set(reads)) == 9
+        assert staged == expected and len(previews) == 1
+
+
 def cares_item(**changes):
     item = dict(opportunityName="Distribute Food at East End House Pantry", organizationServedName="East End House",
         opportunityLink="https://www.bostoncares.org/opportunity/a0CUq00007PDnO0MAL", occurrenceId="a0CUq00007PDnO0MAL",
@@ -194,6 +272,96 @@ def test_cares_preserves_full_native_prose_and_fills_only_actual_venue():
     assert row["venue_address"] == "105 Spring Street, Cambridge, MA 02141"
     assert row["venue_name"] == "East End House Community Food Pantry"
     boston_sources.validate_records([row], source(b.CARES))
+
+
+@pytest.mark.parametrize("organization,title,venue,street,city,zip_code,point", [
+    ("Catholic Charities Boston", "Organize Food at Yawkey Center Food Pantry",
+     "Catholic Charities Yawkey Center Food Pantry", "185 Columbia Road, Dorchester, MA 02121",
+     "Dorchester", "02121", (42.306336, -71.076838)),
+    ("Torchlight Recovery", "Help with Daily Operations at Torchlight Recovery Cafe",
+     "Torchlight Recovery Cafe", "2 Washington Street, Dorchester, MA 02121",
+     "Dorchester", "02121", (42.308499, -71.082661)),
+    ("First Congregational Church Food Pantry of Revere", "Unload Deliveries for the FCC Food Pantry of Revere",
+     "First Congregational Church Food Pantry", "230 Beach Street, Revere, MA 02151",
+     "Revere", "02151", (42.409298, -71.008602)),
+    ("Mass Farmers Markets", "Central Square Farmers Market",
+     "Central Square Farmers Market", "76 Bishop Allen Drive, Cambridge, MA 02139",
+     "Cambridge", "02139", (42.3649, -71.1009)),
+    ("Mass Farmers Markets", "Copley Square Farmers Market",
+     "Copley Square Farmers Market", "227-230 Dartmouth Street, Boston, MA 02116",
+     "Boston", "02116", (42.3495856, -71.0770735)),
+    ("Fresh Truck", "Support the Fresh Truck Mobile Market @ Franklin Hill BGCB",
+     "Franklin Hill Boys & Girls Club", "42 Shandon Road, Dorchester, MA 02124",
+     "Dorchester", "02124", (42.295434, -71.090103)),
+])
+def test_cares_reviewed_points_preserve_native_body_identity_and_full_street(
+        organization, title, venue, street, city, zip_code, point):
+    body = "Help neighbors distribute food and prepare supplies. Meet at " + street + ". " + "Native access details. " * 130
+    item = cares_item(organizationServedName=organization, opportunityName=title,
+                      description=body, locationCity=city, locationZipCode=zip_code)
+    row = cares_parse(item)[0]
+    assert (row["lat"], row["lng"]) == point
+    assert row["venue_name"] == venue and row["venue_address"] == street
+    assert row["description"] == body.strip() and len(row["description"]) > 2000
+    assert row["id"] == "cares:" + item["occurrenceId"]
+    assert datetime.fromisoformat(row["starts_at"]) == START
+    boston_sources.validate_records([row], source(b.CARES))
+
+
+@pytest.mark.parametrize("venue", ["Chestnut Hill, Mass., Conte Forum", "Chestnut, Hill, Mass., Conte Forum"])
+def test_bc_conte_exact_native_labels_use_verified_place_point(venue):
+    event = bc_event(location_name=venue, address="", geo={})
+    row = b._bc_events([event], NOW, [])[0]
+    assert (row["lat"], row["lng"]) == (42.335342, -71.167717)
+    assert row["venue_name"] == venue
+    assert row["venue_address"] == "2601 Beacon Street, Chestnut Hill, MA 02467"
+    assert row["description"] == "Researchers explain the local river ecosystem."
+    assert row["id"] == "bc:42:43" and row["location_evidence_url"] == "https://events.bc.edu/conte_forum"
+
+
+@pytest.mark.parametrize("venue,street,point,evidence", [
+    ("Stuart House, 315", "899 Centre Street, Newton, MA 02459",
+     (42.341629, -71.193954), "https://events.bc.edu/stuart_house"),
+    ("Chestnut Hill, Mass., Alumni Stadium", "2604 Beacon Street, Chestnut Hill, MA 02467",
+     (42.334999, -71.166389), "https://events.bc.edu/alumni_stadium"),
+    ("MCLE Conference Center", "10 Winter Place, Boston, MA 02108",
+     (42.355469, -71.061701), "https://gis.boston.gov/arcgis/rest/services/SAM/Live_SAM_Address/MapServer/1"),
+    ("Simboli Chapel", "9 Lake Street, Boston, MA 02135",
+     (42.341625, -71.164566), "https://events.bc.edu/Simboli_Hall"),
+])
+def test_bc_reviewed_named_place_uses_explicit_point_and_keeps_display_street(venue, street, point, evidence):
+    native_venue, room = ("Stuart House", "315") if venue == "Stuart House, 315" else (venue, "")
+    event = bc_event(location_name=native_venue, room_number=room, address="", geo={})
+    row = b._bc_events([event], NOW, [])[0]
+    assert (row["lat"], row["lng"]) == point
+    assert row["venue_name"] == venue and row["venue_address"] == street
+    assert row["location_evidence_url"] == evidence
+    assert row["description"] == "Researchers explain the local river ecosystem."
+    assert row["id"] == "bc:42:43"
+    assert b._bc_events([bc_event(location_name=native_venue, room_number=room,
+        address="999 Other Street, Boston, MA 02115", geo={})], NOW, []) == []
+
+
+@pytest.mark.parametrize("profile", list(b.REVIEWED_EVENT_POINTS))
+@pytest.mark.parametrize("changed", ["source", "venue", "street"])
+def test_reviewed_point_requires_exact_source_venue_and_street(profile, changed):
+    key, venue, street = profile
+    if changed == "source":
+        key = b.GREENWAY
+    elif changed == "venue":
+        venue += " Annex"
+    else:
+        street = "999 " + street.split(" ", 1)[1]
+    row = b._row(key, "Community activity", START, START + timedelta(hours=1),
+                 "https://www.bostoncares.org/opportunity/a0CUq00007PDnO0MAL", "native-id",
+                 "Full publisher instructions for the public activity.", venue, street, "Boston")
+    assert row["lat"] is None and row["lng"] is None
+
+
+def test_bc_conte_conflicting_native_street_remains_held():
+    event = bc_event(location_name="Chestnut Hill, Mass., Conte Forum",
+                     address="999 Beacon Street, Chestnut Hill, MA 02467", geo={})
+    assert b._bc_events([event], NOW, []) == []
 
 
 @pytest.mark.parametrize("changes", [{"volunteersStillNeeded": "0"}, {"locationType": None},

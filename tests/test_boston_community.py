@@ -194,6 +194,7 @@ def test_missing_end_stays_missing():
     (b.FOOD_FOREST, "Uphams Corner Food Forest", "11 A Everett Avenue, Boston, MA 02125", (42.315585, -71.063221)),
     (b.FOOD_FOREST, "Hope Garden", "424 Geneva Avenue, Boston, MA 02122", (42.3007808, -71.0667882)),
     (b.TITUS, "Museum of Fine Arts, Boston (MFA)", "465 Huntington Avenue, Boston, MA 02115", (42.339381, -71.094048)),
+    (b.TITUS, "Titus Sparrow Park", "75 West Rutland Square, Boston, MA 02118", (42.343569, -71.0797897)),
 ])
 def test_reviewed_held_venue_points_preserve_native_street_and_narrative(key, venue, address, point):
     def rows(actual_venue, actual_address, actual_key=key):

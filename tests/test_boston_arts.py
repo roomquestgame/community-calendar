@@ -152,7 +152,9 @@ class BostonArtsTests(unittest.TestCase):
     def test_bpl_traverses_all_pages_and_retains_long_body_and_chinatown_street(self):
         long = 'A story and a song. ' * 130 + 'Final library instruction.'
         fetch = Mock(side_effect=[bpl_payload(1, body=long), bpl_payload(2, day=28), bpl_payload(3)])
-        first = b.collect_chunk(source(b.BPL), fetch, now=NOW)
+        # Resume the deployed two-page version-one checkpoint without restart.
+        with patch.object(b, 'BPL_PAGES_PER_CHUNK', 2):
+            first = b.collect_chunk(source(b.BPL), fetch, now=NOW)
         self.assertFalse(first['complete'])
         self.assertEqual(first['checkpoint']['cursor'], 2)
         self.assertEqual(first['events'], [])
@@ -173,13 +175,15 @@ class BostonArtsTests(unittest.TestCase):
             b.collect_chunk(source(b.BPL),duplicate,now=NOW)
         payloads=[json.loads(bpl_payload(n)) for n in (1,2,3)]
         for item in payloads:item['events']['pagination']['count']=4
-        first=b.collect_chunk(source(b.BPL),Mock(side_effect=[json.dumps(x)for x in payloads[:2]]),now=NOW)
+        with patch.object(b,'BPL_PAGES_PER_CHUNK',2):
+            first=b.collect_chunk(source(b.BPL),Mock(side_effect=[json.dumps(x)for x in payloads[:2]]),now=NOW)
         self.assertFalse(first['complete']);self.assertEqual(first['events'],[])
         with self.assertRaisesRegex(ValueError,'pagination_invalid'):
             b.collect_chunk(source(b.BPL),Mock(return_value=json.dumps(payloads[2])),checkpoint=first['checkpoint'],now=NOW)
 
     def test_bpl_changed_page_manifest_and_cross_source_checkpoint_fail(self):
-        first = b.collect_chunk(source(b.BPL), Mock(side_effect=[bpl_payload(1), bpl_payload(2)]), now=NOW)
+        with patch.object(b, 'BPL_PAGES_PER_CHUNK', 2):
+            first = b.collect_chunk(source(b.BPL), Mock(side_effect=[bpl_payload(1), bpl_payload(2)]), now=NOW)
         with self.assertRaisesRegex(ValueError, 'manifest_changed'):
             b.collect_chunk(source(b.BPL), Mock(return_value=bpl_payload(3, pages=4)), checkpoint=first['checkpoint'], now=NOW)
         state = deepcopy(first['checkpoint'])

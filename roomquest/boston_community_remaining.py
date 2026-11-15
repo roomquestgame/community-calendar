@@ -50,11 +50,62 @@ REVIEWED_INTERSECTIONS = ({"source_key": GREENWAY,
     "venue_name": "Boston Harbor Distillery at The Greenway",
     "venue_address": "High Street & Atlantic Avenue, Boston, MA 02110",
     "lat": 42.3566833, "lng": -71.0507724},)
+# Exact physical venues still ambiguous in production after the November 14
+# batch. Streets and native occurrence bodies/identities remain unchanged.
+# Government address/building geometry and the publisher's own place record
+# establish these points; no viewport center or organization headquarters.
+REVIEWED_EVENT_POINTS = {
+    (CARES, "Catholic Charities Yawkey Center Food Pantry", "185 Columbia Road, Dorchester, MA 02121"): (
+        (42.306336, -71.076838),
+        "https://gis.boston.gov/arcgis/rest/services/SAM/Live_SAM_Address/MapServer/1",
+        "Boston SAM primary address 35171 / building 207372, exact 185 Columbia Road and ZIP 02121; Catholic Charities confirms this Yawkey pantry site."),
+    (CARES, "Torchlight Recovery Cafe", "2 Washington Street, Dorchester, MA 02121"): (
+        (42.308499, -71.082661),
+        "https://gis.boston.gov/arcgis/rest/services/SAM/Live_SAM_Address/MapServer/1",
+        "Boston SAM exact address 438957 / building 183083, primary 145975 at 2-4 Washington Street; Torchlight confirms both address forms and ZIP 02121."),
+    (CARES, "First Congregational Church Food Pantry", "230 Beach Street, Revere, MA 02151"): (
+        (42.409298, -71.008602),
+        "https://services1.arcgis.com/hGdibHYSPO59RG1h/ArcGIS/rest/services/MHC_Inventory_GDB/FeatureServer/0",
+        "MassGIS/MHC building REV.45 / OBJECTID 51351 names First Congregational Church at 230 Beach Street, Revere; current church pantry directions corroborate."),
+    (CARES, "Central Square Farmers Market", "76 Bishop Allen Drive, Cambridge, MA 02139"): (
+        (42.3649, -71.1009),
+        "https://www.centralsq.org/mapajax.json/member-groups/special-events",
+        "Central Square BID's named market feature 423649711009 supplies explicit geometry at 76 Bishop Allen Drive and links the market operator."),
+    (CARES, "Copley Square Farmers Market", "227-230 Dartmouth Street, Boston, MA 02116"): (
+        (42.3495856, -71.0770735),
+        "https://marketspread.com/market/5060/copley-square-farmers-market/",
+        "The market operator embeds Marketspread market 5060; its named McKim Plaza profile supplies explicit geo.position at 227 Dartmouth Street, and the operator confirms the native 227-230 range."),
+    (CARES, "Franklin Hill Boys & Girls Club", "42 Shandon Road, Dorchester, MA 02124"): (
+        (42.295434, -71.090103),
+        "https://gis.boston.gov/arcgis/rest/services/SAM/Live_SAM_Address/MapServer/1",
+        "Boston SAM exact address 353255 / building 216265 at 42 Shandon Road and ZIP 02124; Fresh Truck's November 2026 schedule confirms this market stop. The club's separate 5 Shandon Road entrance is not used."),
+    (BC, "Chestnut Hill, Mass., Conte Forum", "2601 Beacon Street, Chestnut Hill, MA 02467"): (
+        (42.335342, -71.167717), "https://events.bc.edu/conte_forum",
+        "Boston College's verified Localist place 190074 has exact Conte Forum address, ZIP and native geo; original athletic venue label retained."),
+    (BC, "Chestnut, Hill, Mass., Conte Forum", "2601 Beacon Street, Chestnut Hill, MA 02467"): (
+        (42.335342, -71.167717), "https://events.bc.edu/conte_forum",
+        "Boston College's verified Localist place 190074 has exact Conte Forum address, ZIP and native geo; original athletic venue label retained."),
+    (BC, "Stuart House, 315", "899 Centre Street, Newton, MA 02459"): (
+        (42.341629, -71.193954), "https://events.bc.edu/stuart_house",
+        "Boston College's verified Stuart House place 190148 and the event's Place.geo agree; the publisher pairs this point with 899 Centre Street while its geo street uses the campus's 885 address. Native display street and room retained."),
+    (BC, "Chestnut Hill, Mass., Alumni Stadium", "2604 Beacon Street, Chestnut Hill, MA 02467"): (
+        (42.334999, -71.166389), "https://events.bc.edu/alumni_stadium",
+        "Boston College's verified Alumni Stadium place 190055 explicitly supplies this geo and display street 2604 Beacon Street; its internal geo street/ZIP differs as 2587 Beacon Street/02135. Reviewed named stadium identity and original display street retained."),
+    (BC, "MCLE Conference Center", "10 Winter Place, Boston, MA 02108"): (
+        (42.355469, -71.061701),
+        "https://gis.boston.gov/arcgis/rest/services/SAM/Live_SAM_Address/MapServer/1",
+        "Boston SAM exact 10 Winter Place address 356713 / building 218689; MCLE confirms the Temple Place back entrance matching SAM's primary frontage. SAM postcode 02111 differs from publisher 02108, which is retained."),
+    (BC, "Simboli Chapel", "9 Lake Street, Boston, MA 02135"): (
+        (42.341625, -71.164566), "https://events.bc.edu/Simboli_Hall",
+        "Boston College's verified Simboli Hall place 190053 supplies exact 9 Lake Street, Boston 02135 and native geo. This is the containing building point for Simboli Chapel; original chapel label and street retained."),
+}
 MAX_MANIFEST = 200
 MAX_RECORDS = 500
 MAX_CHECKPOINT_EVENTS = 200
 MAX_CHECKPOINT_BYTES = 900000
-DETAILS_PER_CHUNK = 3
+# Use available time in the existing worker claim while retaining the same
+# 18-second admission reserve before every ordinary, paced detail fetch.
+DETAILS_PER_CHUNK = 8
 LOCALITIES = BOSTON_LOCALITIES | {"Back Bay", "Bay Village", "West End", "Dedham"}
 ERROR_CODES = {"unregistered_boston_remaining_source", "boston_remaining_feed_changed",
     "boston_remaining_calendar_changed", "boston_remaining_detail_changed",
@@ -141,6 +192,8 @@ def _row(key, title, start, end, url, identity, body, venue, street, city, *, po
          categories=(), photo=None, provenance="publisher_event_street", evidence=None):
     if not body or not body.strip() or len(body) > 12000:
         raise ValueError("boston_remaining_description_missing")
+    if reviewed := REVIEWED_EVENT_POINTS.get((key, venue, street)):
+        point, evidence, provenance = reviewed
     row = record(title, start.isoformat(), end.isoformat() if end else None,
                  venue, street, city, url, identity, "", lat=point[0] if point else None,
                  lng=point[1] if point else None, tz=ZONE, publisher_geo=True, retain_until_end=True)

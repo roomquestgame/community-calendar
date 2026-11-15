@@ -126,7 +126,9 @@ class BostonArtsRemainingTests(unittest.TestCase):
 
     def test_mfa_all_listing_pages_finish_before_any_rows_are_exposed(self):
         fetch=Mock(side_effect=[mfa_listing(1,1),mfa_listing(2),mfa_detail(1),mfa_detail(2)])
-        first=b.collect_chunk(source(b.MFA),fetch,now=NOW)
+        # A saved one-page checkpoint from the deployed version remains valid.
+        with patch.dict(b.LISTING_PAGES_PER_CHUNK,{b.MFA:1}):
+            first=b.collect_chunk(source(b.MFA),fetch,now=NOW)
         self.assertFalse(first['checkpoint']['listing_complete'])
         second=b.collect_chunk(source(b.MFA),fetch,checkpoint=first['checkpoint'],now=NOW)
         self.assertFalse(second['complete']);self.assertEqual(second['events'],[])
@@ -150,14 +152,14 @@ class BostonArtsRemainingTests(unittest.TestCase):
         self.assertEqual([r['id']for r in rows],[r['id']for r in moved])
 
     def test_larger_mfa_chunk_remains_bounded_and_stops_before_deadline_reserve(self):
-        listing=''.join(mfa_listing(n) for n in range(1,13)).replace('</main><main>','')
+        listing=''.join(mfa_listing(n) for n in range(1,23)).replace('</main><main>','')
         state=b.collect_chunk(source(b.MFA),Mock(return_value=listing),now=NOW)['checkpoint']
         def detail(url, accept):
             return mfa_detail(int(url.rsplit('=',1)[1]))
         fetch=Mock(side_effect=detail)
         chunk=b.collect_chunk(source(b.MFA),fetch,checkpoint=state,now=NOW)
-        self.assertEqual(chunk['checkpoint']['cursor'],10)
-        self.assertEqual(fetch.call_count,10)
+        self.assertEqual(chunk['checkpoint']['cursor'],20)
+        self.assertEqual(fetch.call_count,20)
         self.assertFalse(chunk['complete']);self.assertEqual(chunk['events'],[])
         fetch.reset_mock()
         with patch.object(b,'monotonic',side_effect=[0,24]):

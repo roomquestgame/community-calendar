@@ -1,0 +1,30 @@
+{
+  "checked_at": "2026-11-15T00:03:06.954312+00:00",
+  "scope": "Final local integrated verification of the consolidated remaining Boston fixes; no production publication claim.",
+  "pytest": {
+    "passed": 182,
+    "subtests_passed": 52,
+    "warnings": [
+      "Existing AnyIO/Pytest CallSpec2 deprecation"
+    ],
+    "command": "python -m pytest -q tests/test_boston_arts.py tests/test_boston_arts_remaining.py tests/test_boston_arts_continuation.py tests/test_boston_community.py tests/test_boston_community_remaining.py tests/test_boston_nightlife_remaining.py tests/test_boston_nightlife_remaining_continuation.py tests/test_boston_nightshift_robots.py tests/test_boston_remaining_transport.py tests/test_boston_worker.py"
+  },
+  "shared_worker_change": "Only the exact same-origin Night Shift robots GET301 redirect; no shared scheduling or budget change.",
+  "ordinary_pacing_preserved": true,
+  "checkpoint_schema_preserved": true,
+  "partial_staging": false,
+  "point_tuples": 13,
+  "routine_github_test_workflow_dispatched": false,
+  "latest_main_integration": {
+    "checked_at": "2026-11-15 00:05:30 UTC",
+    "base_commit": "e25155c0344aed6a68610607bb0b6b8aeb8eed94",
+    "preserved_change": "NYC PR #225 robots checkpoint continuations; the only Boston change to the fresh shared worker is the reviewed nine-line Night Shift redirect.",
+    "passed": 211,
+    "subtests_passed": 3,
+    "warnings": [
+      "Existing AnyIO/Pytest CallSpec2 deprecation"
+    ],
+    "initial_fixture_materialization_issue": "14 upstream test cases first lacked tests/test_new_york_arts_final.py in the scratch checkout. After retrieving the unchanged exact-main fixture, all 211 cases passed.",
+    "command": "python -m pytest -q tests/test_boston_nightshift_robots.py tests/test_boston_arts.py tests/test_boston_arts_remaining.py tests/test_boston_arts_continuation.py tests/test_boston_community.py tests/test_boston_community_remaining.py tests/test_boston_nightlife_remaining_continuation.py tests/test_publisher_robots_checkpoint.py"
+  }
+}

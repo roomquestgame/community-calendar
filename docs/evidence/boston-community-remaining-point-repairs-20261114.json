@@ -1,0 +1,1932 @@
+{
+  "checked_at": "2026-11-15T00:02:32.138347+00:00",
+  "scope": "Local exact-tuple point corrections after B2 production geocoder ambiguity. No production writes, source enrollments, dates, native full descriptions, streets, or identities changed.",
+  "source_keys": [
+    "boston_cares_ma",
+    "municipal_mapsee_64dd0126cc162e1c90b57edc",
+    "titus_sparrow_park_ma"
+  ],
+  "venue_count": 12,
+  "exact_tuples": 13,
+  "regression_tests": {
+    "passed": 111,
+    "command": "python -m pytest -q tests/test_boston_community.py tests/test_boston_community_remaining.py tests/test_boston_remaining_transport.py"
+  },
+  "full_capture_replay": {
+    "rows": 300,
+    "description_address_date_identity_equality": true,
+    "changed_rows": 70,
+    "changed_by_source": {
+      "municipal_mapsee_64dd0126cc162e1c90b57edc": 23,
+      "boston_cares_ma": 47
+    },
+    "changed_fields_only": [
+      "lat",
+      "lng",
+      "location_evidence_url",
+      "location_provenance",
+      "reason"
+    ]
+  },
+  "primary_evidence": [
+    {
+      "venue": "Catholic Charities Yawkey Center Food Pantry",
+      "street": "185 Columbia Road, Dorchester, MA 02121",
+      "point": [
+        42.306336,
+        -71.076838
+      ],
+      "source_query": "https://gis.boston.gov/arcgis/rest/services/SAM/Live_SAM_Address/MapServer/1/query?f=json&where=STREET_NUMBER%3D%27185%27+AND+UPPER%28FULL_STREET_NAME%29%3D%27COLUMBIA+RD%27&outFields=%2A&outSR=4326&returnGeometry=true&resultRecordCount=100",
+      "street_evidence": "https://www.ccab.org/about-us/locations/",
+      "primary_record": {
+        "attributes": {
+          "OBJECTID": 344137,
+          "SAM_ADDRESS_ID": 35171,
+          "BUILDING_ID": 207372,
+          "RELATIONSHIP_TYPE": 1,
+          "FULL_ADDRESS": "185 Columbia Rd",
+          "STREET_NUMBER": "185",
+          "IS_RANGE": 0,
+          "RANGE_FROM": null,
+          "RANGE_TO": null,
+          "UNIT": null,
+          "FULL_STREET_NAME": "Columbia Rd",
+          "STREET_ID": 950,
+          "STREET_PREFIX": null,
+          "STREET_BODY": "Columbia",
+          "STREET_SUFFIX_ABBR": "Rd",
+          "STREET_FULL_SUFFIX": "Road",
+          "STREET_SUFFIX_DIR": null,
+          "STREET_NUMBER_SORT": 185,
+          "MAILING_NEIGHBORHOOD": "Dorchester",
+          "CITY": "BOSTON",
+          "STATE": "MA",
+          "ZIP_CODE": "02121",
+          "X_COORD": 770632.99114388,
+          "Y_COORD": 2936937.46923031,
+          "SAM_STREET_ID": 950,
+          "WARD": "14",
+          "created_date": 1253873699000,
+          "last_edited_date": 1644409838000,
+          "PRIMARY_ADDRESS_ID": 35171,
+          "PRIMARY_ADDRESS": "185 Columbia Rd, Boston, MA 02121",
+          "PRIMARY_X_COORD": 770632.99114388,
+          "PRIMARY_Y_COORD": 2936937.46923031,
+          "MAP_PAR_ID": "1400082000",
+          "PARCEL_ID": "1400082000",
+          "SEGMENT_ID": 13410
+        },
+        "geometry": {
+          "x": -71.07683759280258,
+          "y": 42.306335663157874
+        }
+      },
+      "capture": "community-remaining/address-evidence/sam-yawkey.json",
+      "capture_sha256": "d556b8522c806e9d643e88b95274adc3045cd74ffe25ea596a724c0f9686d522"
+    },
+    {
+      "venue": "Torchlight Recovery Cafe",
+      "street": "2 Washington Street, Dorchester, MA 02121",
+      "point": [
+        42.308499,
+        -71.082661
+      ],
+      "source_query": "https://gis.boston.gov/arcgis/rest/services/SAM/Live_SAM_Address/MapServer/1/query?f=json&where=STREET_NUMBER+in+%28%272%27%2C%272-4%27%2C%274%27%29+AND+UPPER%28FULL_STREET_NAME%29%3D%27WASHINGTON+ST%27+AND+ZIP_CODE%3D%2702121%27&outFields=%2A&outSR=4326&returnGeometry=true&resultRecordCount=100",
+      "street_evidence": "https://torchlightrecovery.org/contact-us/",
+      "primary_record": {
+        "attributes": {
+          "OBJECTID": 315743,
+          "SAM_ADDRESS_ID": 438957,
+          "BUILDING_ID": 183083,
+          "RELATIONSHIP_TYPE": 2,
+          "FULL_ADDRESS": "2 Washington St",
+          "STREET_NUMBER": "2",
+          "IS_RANGE": 0,
+          "RANGE_FROM": null,
+          "RANGE_TO": null,
+          "UNIT": null,
+          "FULL_STREET_NAME": "Washington St",
+          "STREET_ID": 4357,
+          "STREET_PREFIX": null,
+          "STREET_BODY": "Washington",
+          "STREET_SUFFIX_ABBR": "St",
+          "STREET_FULL_SUFFIX": "Street",
+          "STREET_SUFFIX_DIR": null,
+          "STREET_NUMBER_SORT": 2,
+          "MAILING_NEIGHBORHOOD": "Dorchester",
+          "CITY": "BOSTON",
+          "STATE": "MA",
+          "ZIP_CODE": "02121",
+          "X_COORD": 769054.01529922,
+          "Y_COORD": 2937717.93978223,
+          "SAM_STREET_ID": 4357,
+          "WARD": "14",
+          "created_date": 1567600672000,
+          "last_edited_date": 1642500357000,
+          "PRIMARY_ADDRESS_ID": 145975,
+          "PRIMARY_ADDRESS": "2-4 Washington St, Boston, MA 02121",
+          "PRIMARY_X_COORD": 769054.01529922,
+          "PRIMARY_Y_COORD": 2937717.94011031,
+          "MAP_PAR_ID": "1400721000",
+          "PARCEL_ID": "1400721000",
+          "SEGMENT_ID": 27161
+        },
+        "geometry": {
+          "x": -71.08266059556422,
+          "y": 42.30849866241988
+        }
+      },
+      "capture": "community-remaining/address-evidence/sam-torchlight.json",
+      "capture_sha256": "990057e1f86c8889981c5d44cab6a8265afba6add11e32e07622f07a89620a8b"
+    },
+    {
+      "venue": "First Congregational Church Food Pantry",
+      "street": "230 Beach Street, Revere, MA 02151",
+      "point": [
+        42.409298,
+        -71.008602
+      ],
+      "source_query": "https://services1.arcgis.com/hGdibHYSPO59RG1h/ArcGIS/rest/services/MHC_Inventory_GDB/FeatureServer/0/query?f=json&where=TOWN_NAME%3D%27Revere%27+AND+%28ADDRESS+LIKE+%27230%25%27+OR+UPPER%28HISTORIC_N%29+LIKE+%27%25CONGREGATIONAL%25%27%29&outFields=%2A&outSR=4326&returnGeometry=true&resultRecordCount=100",
+      "street_evidence": "https://firstcongrevere.org/food-pantry",
+      "primary_record": {
+        "attributes": {
+          "OBJECTID": 51351,
+          "MHCN": "REV.45",
+          "DEMOLISHED": " ",
+          "TYPE": "Building",
+          "DESIGNATIO": " ",
+          "D_DATE": " ",
+          "LEGEND": "Inventoried Property",
+          "HISTORIC_N": "Old Orthodox Church",
+          "COMMON_NAM": "First Congregatoinal Church of Revere",
+          "ADDRESS": "230 Beach St",
+          "TOWN_NAME": "Revere",
+          "CONSTRUCTI": "1849",
+          "ARCHITECTU": "Colonial Revival;",
+          "MAKER": " ",
+          "USE_TYPE": "Church;",
+          "SIGNIFICAN": "Architecture; Community Planning; Religion;",
+          "GlobalID": "7105ae76-1ac7-4e2d-abbc-10d18b8d15a4"
+        },
+        "geometry": {
+          "x": -71.00860199993527,
+          "y": 42.40929799924586
+        }
+      },
+      "capture": "community-remaining/address-evidence/mhc-revere.json",
+      "capture_sha256": "0db3b6087b32cd6aea051824287ca9700dea6caf2474104dcb5df44ce3c3017d"
+    },
+    {
+      "venue": "Central Square Farmers Market",
+      "street": "76 Bishop Allen Drive, Cambridge, MA 02139",
+      "point": [
+        42.3649,
+        -71.1009
+      ],
+      "source_query": "https://www.centralsq.org/mapajax.json/member-groups/special-events",
+      "street_evidence": "https://marketspread.com/market/4432/cambridge-central-square-farmers-market/",
+      "primary_record": {
+        "name": "Central Square Farmers Market",
+        "id": "423649711009",
+        "type": "eat-drink",
+        "color": null,
+        "geometry": {
+          "location": {
+            "lat": 42.3649,
+            "lng": -71.1009
+          }
+        },
+        "imgurl": "https://www.centralsq.org/media/pages/members/central-square-farmers-market/0ce04ac9c2-1642118589/milk6614.jpg",
+        "address": "76 Bishop Allen Dr",
+        "order": 1,
+        "posture": "open",
+        "memberlink": "https://www.massfarmersmarkets.org/central",
+        "googlelink": "https://goo.gl/maps/aokSHYyiZTyqFWdPA",
+        "offsetLeft": 0,
+        "offsetBottom": 8,
+        "pageid": "members/central-square-farmers-market"
+      },
+      "capture": "community-remaining/address-evidence/02119e410880c7b43aa45869e7658941e4372204387832c8c52553b3b85e126e.html",
+      "capture_sha256": "aa0ae0c4e057128a75ee3d7ef324ad6badb36ebbbba1a669d39e87d9cbc62c80"
+    },
+    {
+      "venue": "Conte Forum",
+      "native_aliases": [
+        "Chestnut Hill, Mass., Conte Forum",
+        "Chestnut, Hill, Mass., Conte Forum"
+      ],
+      "street": "2601 Beacon Street, Chestnut Hill, MA 02467",
+      "point": [
+        42.335342,
+        -71.167717
+      ],
+      "source_query": "https://events.bc.edu/api/2/places?pp=100&page=1",
+      "street_evidence": "https://events.bc.edu/conte_forum",
+      "primary_record": {
+        "id": 190074,
+        "updated_at": "2015-06-29T10:44:45-04:00",
+        "verified": true,
+        "name": "Conte Forum",
+        "geo": {
+          "latitude": "42.335342",
+          "longitude": "-71.167717",
+          "street": "2601 Beacon Street",
+          "city": "Boston",
+          "state": "MA",
+          "country": "US",
+          "zip": "02467"
+        },
+        "address": "2601 Beacon Street, Chestnut Hill, MA 02467, USA",
+        "localist_url": "https://events.bc.edu/conte_forum"
+      },
+      "capture": "community-remaining/bcplaces.html",
+      "capture_sha256": "ebf25d2d64cb094d042b44ca87691bdad2850e95d50f2889b9b958e9678a8946"
+    },
+    {
+      "venue": "Copley Square Farmers Market",
+      "street": "227-230 Dartmouth Street, Boston, MA 02116",
+      "point": [
+        42.3495856,
+        -71.0770735
+      ],
+      "source_query": "https://marketspread.com/market/5060/copley-square-farmers-market/",
+      "street_evidence": "https://www.massfarmersmarkets.org/volunteer",
+      "primary_record": {
+        "market_id": 5060,
+        "market_name": "Copley Square Farmers Market",
+        "geo.position": "42.3495856;-71.0770735",
+        "ICBM": "42.3495856, -71.0770735",
+        "address": "227 Dartmouth St, Boston, MA 02116, USA",
+        "place": "McKim Plaza outside Boston Public Library - Central",
+        "official_operator_url": "https://www.massfarmersmarkets.org/copley",
+        "official_operator_embeds": "https://marketspread.com/widget/market/5060/?type=events_map&element=copley-square-farmers-market-events_map&widget_id=614",
+        "operator_volunteer_street": "227\u2013230 Dartmouth St"
+      },
+      "capture": "community-remaining/address-evidence/06f87c0f55ff73ca944ee0c56e1fc5dd2881f94e88f047c00675c44cfa6e8030.html",
+      "capture_sha256": "67f8ce81b4d7b3cd3185633c02cbe175883ea229382e4893e0d4ac3370953cce",
+      "ordinary_transport": {
+        "robots_status": 200,
+        "robots_allowed": true,
+        "status": 200
+      },
+      "excluded_points": [
+        "Global operator Waltham headquarters",
+        "Google map viewport center"
+      ]
+    },
+    {
+      "venue": "Titus Sparrow Park",
+      "street": "75 West Rutland Square, Boston, MA 02118",
+      "point": [
+        42.343569,
+        -71.0797897
+      ],
+      "source_query": "https://www.titussparrowpark.org/",
+      "primary_record": {
+        "blockId": "8fa1d0530eebf586cb68",
+        "location": {
+          "mapLat": 42.343569,
+          "mapLng": -71.07978969999999,
+          "mapZoom": 12,
+          "addressLine1": "75 West Rutland Square",
+          "addressLine2": "Boston, MA, 02118",
+          "addressCountry": "United States",
+          "markerLat": 42.343569,
+          "markerLng": -71.07978969999999
+        }
+      },
+      "capture": "community-remaining/address-evidence/3823e96adc0f1002041a3815a4d7eff0c4ed51ccd355ad1df025e0b06f469091.html",
+      "capture_sha256": "fcb0db4dcc87ef6736d10ff498c5da6f1587bd654b2c8d3ba10058e9f5f4f4a8",
+      "ordinary_transport": {
+        "robots_status": 200,
+        "robots_allowed": true,
+        "status": 200
+      },
+      "corroboration": {
+        "source_query": "https://gis.boston.gov/arcgis/rest/services/SAM/Live_SAM_Address/MapServer/1/query?f=json&where=STREET_NUMBER%3D%2775%27+AND+UPPER%28STREET_BODY%29+LIKE+%27%25RUTLAND%25%27&outFields=%2A&outSR=4326&returnGeometry=true&resultRecordCount=20",
+        "record": {
+          "attributes": {
+            "OBJECTID": 195,
+            "SAM_ADDRESS_ID": 342665,
+            "BUILDING_ID": 95356,
+            "RELATIONSHIP_TYPE": 1,
+            "FULL_ADDRESS": "75 W Rutland Sq",
+            "STREET_NUMBER": "75",
+            "IS_RANGE": 0,
+            "RANGE_FROM": null,
+            "RANGE_TO": null,
+            "UNIT": null,
+            "FULL_STREET_NAME": "W Rutland Sq",
+            "STREET_ID": 3693,
+            "STREET_PREFIX": "W",
+            "STREET_BODY": "Rutland",
+            "STREET_SUFFIX_ABBR": "Sq",
+            "STREET_FULL_SUFFIX": "Square",
+            "STREET_SUFFIX_DIR": null,
+            "STREET_NUMBER_SORT": 75,
+            "MAILING_NEIGHBORHOOD": "Roxbury",
+            "CITY": "BOSTON",
+            "STATE": "MA",
+            "ZIP_CODE": "02118",
+            "X_COORD": 769778.5122098,
+            "Y_COORD": 2950519.1234974,
+            "SAM_STREET_ID": 3693,
+            "WARD": "04",
+            "created_date": 1283431766000,
+            "last_edited_date": 1787841162916,
+            "PRIMARY_ADDRESS_ID": 342665,
+            "PRIMARY_ADDRESS": "75 W Rutland Sq, Boston, MA 02118",
+            "PRIMARY_X_COORD": 769778.5122098,
+            "PRIMARY_Y_COORD": 2950519.1234974,
+            "MAP_PAR_ID": "0400830000",
+            "PARCEL_ID": "0400830000",
+            "SEGMENT_ID": 27173
+          },
+          "geometry": {
+            "x": -71.07974903419841,
+            "y": 42.34361587863199
+          }
+        },
+        "capture": "community-remaining/address-evidence/sam-titus.json",
+        "capture_sha256": "a3eb33c6c46ab00fac6b02b6848c5e227cc74e3d7296b0e03112be210815343f"
+      },
+      "excluded_points": [
+        "Unrelated 75 Rutland Street",
+        "Map center without explicit marker fields"
+      ]
+    },
+    {
+      "venue": "Stuart House, 315",
+      "street": "899 Centre Street, Newton, MA 02459",
+      "point": [
+        42.341629,
+        -71.193954
+      ],
+      "source_query": "https://events.bc.edu/stuart_house",
+      "primary_record": {
+        "id": 190148,
+        "display_name": "Stuart House",
+        "type": "Business",
+        "neighborhood_id": null,
+        "city_id": null,
+        "campus_id": null,
+        "school_id": 141,
+        "created_at": "2015-06-25T11:33:02-04:00",
+        "updated_at": "2026-01-07T13:41:39-05:00",
+        "time_zone": "Eastern Time (US & Canada)",
+        "photo_id": 287500,
+        "ranking": 0,
+        "twitter_name": "",
+        "facebook_id": null,
+        "foursquare_id": null,
+        "urlname": "stuart_house",
+        "verified": true,
+        "tags": [],
+        "keywords": [],
+        "profile_views": 7819,
+        "name": "Stuart House",
+        "description": "<p>Boston College Law School</p>\r\n",
+        "description_text": "Boston College Law School",
+        "geo": {
+          "latitude": "42.341629",
+          "longitude": "-71.193954",
+          "street": "885 Centre Street",
+          "city": "Newton",
+          "state": "MA",
+          "country": "US",
+          "zip": "02459"
+        },
+        "url": "http://www.bc.edu/schools/law/",
+        "directions": "",
+        "phone": "",
+        "hours": "",
+        "parking": "",
+        "sponsored": false,
+        "address": "Boston College, Boston College Law School, 899 Centre Street, Newton, MA 02459, USA",
+        "filters": {},
+        "custom_fields": {},
+        "localist_url": "https://events.bc.edu/stuart_house",
+        "photo_url": "https://localist-images.azureedge.net/photos/287500/huge/c5fa9cdd692fb1a6a2d2addc9bfad2ada4ffbf63.jpg",
+        "photo_caption": null
+      },
+      "capture": "community-remaining/address-evidence/34fd39faa50d48700af3b16b049e4a4330d95bc34c0a6bd54e9c5c7f89d19a1e.html",
+      "capture_sha256": "f0a1749cdd66c731ca1d3cc14952a128e44381c2cdec9fc29dca8d41c7256eca",
+      "ordinary_transport": {
+        "robots_status": 200,
+        "robots_allowed": true,
+        "status": 200
+      },
+      "reviewed_native_address_disagreement": {
+        "display_address_retained": "Boston College, Boston College Law School, 899 Centre Street, Newton, MA 02459, USA",
+        "geo_address_metadata": {
+          "latitude": "42.341629",
+          "longitude": "-71.193954",
+          "street": "885 Centre Street",
+          "city": "Newton",
+          "state": "MA",
+          "country": "US",
+          "zip": "02459"
+        },
+        "decision": "Use explicit geometry of the verified named venue. Preserve the publisher display street and native event room/label; do not rewrite from the different internal geo street."
+      },
+      "corroboration": {
+        "official_contact": "https://www.bc.edu/bc-web/offices/office-of-university-communications/for-the-media/boston-college-faculty-experts/cole--felipe-ford.html",
+        "address": "Stuart House, 885 Centre Street, Newton, MA 02459",
+        "direct_event_schema_location": {
+          "name": "Stuart House",
+          "address": "Boston College, Boston College Law School, 899 Centre Street, Newton, MA 02459, USA",
+          "latitude": 42.341629,
+          "longitude": -71.193954
+        },
+        "native_event_url": "https://events.bc.edu/event/where-do-we-go-from-here"
+      }
+    },
+    {
+      "venue": "Chestnut Hill, Mass., Alumni Stadium",
+      "street": "2604 Beacon Street, Chestnut Hill, MA 02467",
+      "point": [
+        42.334999,
+        -71.166389
+      ],
+      "source_query": "https://events.bc.edu/alumni_stadium",
+      "primary_record": {
+        "id": 190055,
+        "display_name": "Alumni Stadium",
+        "type": "Business",
+        "neighborhood_id": null,
+        "city_id": null,
+        "campus_id": null,
+        "school_id": 141,
+        "created_at": "2015-06-25T11:30:10-04:00",
+        "updated_at": "2026-01-05T13:49:15-05:00",
+        "time_zone": "Eastern Time (US & Canada)",
+        "photo_id": 287391,
+        "ranking": 0,
+        "twitter_name": "",
+        "facebook_id": null,
+        "foursquare_id": null,
+        "urlname": "alumni_stadium",
+        "verified": true,
+        "tags": [],
+        "keywords": [],
+        "profile_views": 11465,
+        "name": "Alumni Stadium",
+        "description": "<p>Boston College Athletics</p>\r\n",
+        "description_text": "Boston College Athletics",
+        "geo": {
+          "latitude": "42.334999",
+          "longitude": "-71.166389",
+          "street": "2587 Beacon Street",
+          "city": "Boston",
+          "state": "MA",
+          "country": "US",
+          "zip": "02135"
+        },
+        "url": "http://bceagles.cstv.com/",
+        "directions": "",
+        "phone": "",
+        "hours": "",
+        "parking": "",
+        "sponsored": false,
+        "address": "2604 Beacon Street, Chestnut Hill, MA 02467, USA",
+        "filters": {},
+        "custom_fields": {},
+        "localist_url": "https://events.bc.edu/alumni_stadium",
+        "photo_url": "https://localist-images.azureedge.net/photos/287391/huge/e30020a4ffb457557ee53eabe5f16b503ff8bea6.jpg",
+        "photo_caption": null
+      },
+      "capture": "community-remaining/bcplaces.html",
+      "capture_sha256": "ebf25d2d64cb094d042b44ca87691bdad2850e95d50f2889b9b958e9678a8946",
+      "ordinary_transport": {
+        "robots_status": 200,
+        "robots_allowed": true,
+        "status": 200
+      },
+      "reviewed_native_address_disagreement": {
+        "display_address_retained": "2604 Beacon Street, Chestnut Hill, MA 02467, USA",
+        "geo_address_metadata": {
+          "latitude": "42.334999",
+          "longitude": "-71.166389",
+          "street": "2587 Beacon Street",
+          "city": "Boston",
+          "state": "MA",
+          "country": "US",
+          "zip": "02135"
+        },
+        "decision": "Use explicit geometry of the verified named venue. Preserve the publisher display street and native event room/label; do not rewrite from the different internal geo street."
+      }
+    },
+    {
+      "venue": "MCLE Conference Center",
+      "street": "10 Winter Place, Boston, MA 02108",
+      "point": [
+        42.355469,
+        -71.061701
+      ],
+      "source_query": "https://gis.boston.gov/arcgis/rest/services/SAM/Live_SAM_Address/MapServer/1/query?f=json&where=STREET_NUMBER%3D%2710%27%20AND%20UPPER(FULL_STREET_NAME)%3D%27WINTER%20PL%27&outFields=*&outSR=4326&returnGeometry=true&resultRecordCount=20",
+      "primary_record": {
+        "attributes": {
+          "OBJECTID": 385576,
+          "SAM_ADDRESS_ID": 356713,
+          "BUILDING_ID": 218689,
+          "RELATIONSHIP_TYPE": 2,
+          "FULL_ADDRESS": "10 Winter Pl 3",
+          "STREET_NUMBER": "10",
+          "IS_RANGE": 0,
+          "RANGE_FROM": null,
+          "RANGE_TO": null,
+          "UNIT": "3",
+          "FULL_STREET_NAME": "Winter Pl",
+          "STREET_ID": 4636,
+          "STREET_PREFIX": null,
+          "STREET_BODY": "Winter",
+          "STREET_SUFFIX_ABBR": "Pl",
+          "STREET_FULL_SUFFIX": "Place",
+          "STREET_SUFFIX_DIR": null,
+          "STREET_NUMBER_SORT": 10,
+          "MAILING_NEIGHBORHOOD": "Boston",
+          "CITY": "BOSTON",
+          "STATE": "MA",
+          "ZIP_CODE": "02111",
+          "X_COORD": 774635.53366372,
+          "Y_COORD": 2954863.05837905,
+          "SAM_STREET_ID": 4636,
+          "WARD": "03",
+          "created_date": 1435595368000,
+          "last_edited_date": null,
+          "PRIMARY_ADDRESS_ID": 170253,
+          "PRIMARY_ADDRESS": "30-42 Temple Pl, Boston, MA 02111",
+          "PRIMARY_X_COORD": 774612.79125513,
+          "PRIMARY_Y_COORD": 2954834.6798269,
+          "MAP_PAR_ID": "0304789000",
+          "PARCEL_ID": "0304789000",
+          "SEGMENT_ID": 8733
+        },
+        "geometry": {
+          "x": -71.06170059151906,
+          "y": 42.35546867202956
+        }
+      },
+      "capture": "community-remaining/address-evidence/sam-mcle.json",
+      "capture_sha256": "f12d1a6a2c27d486dd32600962caf268d293359ebeb3aba557264ac4a9af94e8",
+      "street_evidence": "https://www.mcle.org/need-help/directions",
+      "secondary_frontage_evidence": "https://www.mcle.org/need-help/faq/code/H_3/subcode/H_22",
+      "reviewed_native_address_disagreement": {
+        "government_zip": "02111",
+        "publisher_zip_retained": "02108",
+        "government_primary_frontage": "30-42 Temple Pl, Boston, MA 02111",
+        "publisher_corroboration": "MCLE FAQ explicitly describes its back entrance on Temple Place; official directions retain 10 Winter Place and ZIP 02108."
+      }
+    },
+    {
+      "venue": "Franklin Hill Boys & Girls Club",
+      "street": "42 Shandon Road, Dorchester, MA 02124",
+      "point": [
+        42.295434,
+        -71.090103
+      ],
+      "source_query": "https://gis.boston.gov/arcgis/rest/services/SAM/Live_SAM_Address/MapServer/1/query?f=json&where=STREET_NUMBER%3D%2742%27+AND+UPPER%28FULL_STREET_NAME%29%3D%27SHANDON+RD%27&outFields=%2A&outSR=4326&returnGeometry=true&resultRecordCount=20",
+      "primary_record": {
+        "attributes": {
+          "OBJECTID": 383427,
+          "SAM_ADDRESS_ID": 353255,
+          "BUILDING_ID": 216265,
+          "RELATIONSHIP_TYPE": 2,
+          "FULL_ADDRESS": "42 Shandon Rd",
+          "STREET_NUMBER": "42",
+          "IS_RANGE": 0,
+          "RANGE_FROM": null,
+          "RANGE_TO": null,
+          "UNIT": null,
+          "FULL_STREET_NAME": "Shandon Rd",
+          "STREET_ID": 3837,
+          "STREET_PREFIX": null,
+          "STREET_BODY": "Shandon",
+          "STREET_SUFFIX_ABBR": "Rd",
+          "STREET_FULL_SUFFIX": "Road",
+          "STREET_SUFFIX_DIR": null,
+          "STREET_NUMBER_SORT": 42,
+          "MAILING_NEIGHBORHOOD": "Dorchester",
+          "CITY": "BOSTON",
+          "STATE": "MA",
+          "ZIP_CODE": "02124",
+          "X_COORD": 767063.77846606,
+          "Y_COORD": 2932947.17143664,
+          "SAM_STREET_ID": 3837,
+          "WARD": "14",
+          "created_date": 1404987289000,
+          "last_edited_date": 1404987289000,
+          "PRIMARY_ADDRESS_ID": 350762,
+          "PRIMARY_ADDRESS": "30-42 Shandon Rd, Boston, MA 02124",
+          "PRIMARY_X_COORD": 767063.77846606,
+          "PRIMARY_Y_COORD": 2932947.17143664,
+          "MAP_PAR_ID": "1404264050",
+          "PARCEL_ID": "1404264050",
+          "SEGMENT_ID": 26806
+        },
+        "geometry": {
+          "x": -71.09010306581231,
+          "y": 42.295433889815
+        }
+      },
+      "capture": "community-remaining/address-evidence/sam-franklin-hill.json",
+      "capture_sha256": "9999747414bfa5cacadae8a63fb19ee9bafc7fafafd44d7e465c3ffa9fc0b899",
+      "street_evidence": "https://cdn.shopify.com/s/files/1/0582/7896/9428/files/November_26.pdf?v=1793643796",
+      "street_capture": "community-remaining/freshtruck-nov2026.pdf",
+      "street_capture_sha256": "c51ccf15a8455476c1b8f10a06087c9e3f02e6800f3e08e1da592c62988893d6",
+      "reviewed_meeting_point": "The mobile market operator explicitly lists 42 Shandon Rd, Franklin Hill BGCB. The clubhouse entrance at 5 Shandon Road is not substituted for this market stop."
+    },
+    {
+      "venue": "Simboli Chapel",
+      "street": "9 Lake Street, Boston, MA 02135",
+      "point": [
+        42.341625,
+        -71.164566
+      ],
+      "source_query": "https://events.bc.edu/Simboli_Hall",
+      "primary_record": {
+        "id": 190053,
+        "display_name": "Simboli Hall",
+        "type": "Business",
+        "neighborhood_id": null,
+        "city_id": null,
+        "campus_id": null,
+        "school_id": 141,
+        "created_at": "2015-06-25T11:30:06-04:00",
+        "updated_at": "2024-09-20T13:16:55-04:00",
+        "time_zone": "Eastern Time (US & Canada)",
+        "photo_id": 287389,
+        "ranking": 0,
+        "twitter_name": "",
+        "facebook_id": null,
+        "foursquare_id": null,
+        "urlname": "Simboli_Hall",
+        "verified": true,
+        "tags": [],
+        "keywords": [],
+        "profile_views": 12174,
+        "name": "Simboli Hall",
+        "description": "<p>Clough School of Theology and Ministry</p>\r\n",
+        "description_text": "Clough School of Theology and Ministry",
+        "geo": {
+          "latitude": "42.341625",
+          "longitude": "-71.164566",
+          "street": "9 Lake Street",
+          "city": "Boston",
+          "state": "MA",
+          "country": "US",
+          "zip": "02135"
+        },
+        "url": "http://www.bc.edu/cstm",
+        "directions": "",
+        "phone": "",
+        "hours": "",
+        "parking": "",
+        "sponsored": false,
+        "address": "Boston College, Boston College - Brighton Campus, 9 Lake Street, Boston, MA 02135, USA",
+        "filters": {},
+        "custom_fields": {},
+        "localist_url": "https://events.bc.edu/Simboli_Hall",
+        "photo_url": "https://localist-images.azureedge.net/photos/287389/huge/1f62e495c0e9c6fb96980ad31198f87a1fd64417.jpg",
+        "photo_caption": null
+      },
+      "capture": "community-remaining/address-evidence/34fd39faa50d48700af3b16b049e4a4330d95bc34c0a6bd54e9c5c7f89d19a1e.html",
+      "capture_sha256": "f0a1749cdd66c731ca1d3cc14952a128e44381c2cdec9fc29dca8d41c7256eca",
+      "point_granularity": "Containing Simboli Hall building. Exact native street and chapel label retained; source place address, geo street and ZIP agree."
+    }
+  ],
+  "changed_occurrences": [
+    {
+      "source_key": "municipal_mapsee_64dd0126cc162e1c90b57edc",
+      "id": "bc:53617795888891:53617795889917",
+      "venue_name": "Chestnut Hill, Mass., Conte Forum",
+      "venue_address": "2601 Beacon Street, Chestnut Hill, MA 02467",
+      "lat": 42.335342,
+      "lng": -71.167717,
+      "description_sha256": "da176494babb67334f8a2a124cf9f365f3432a03c52e2603e51def2b66d2fb8d",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "municipal_mapsee_64dd0126cc162e1c90b57edc",
+      "id": "bc:53520480714740:53520480715766",
+      "venue_name": "Chestnut, Hill, Mass., Conte Forum",
+      "venue_address": "2601 Beacon Street, Chestnut Hill, MA 02467",
+      "lat": 42.335342,
+      "lng": -71.167717,
+      "description_sha256": "828a31e59f9df119caa4a283d50a5e46916432ade4c986b1711fb87cafe4f038",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "municipal_mapsee_64dd0126cc162e1c90b57edc",
+      "id": "bc:54489216512422:54489216513447",
+      "venue_name": "Stuart House, 315",
+      "venue_address": "899 Centre Street, Newton, MA 02459",
+      "lat": 42.341629,
+      "lng": -71.193954,
+      "description_sha256": "45f842b6d8d8fec25701fa7402c11c0ec42443b53f1fc1951b5038e249fc7ef3",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "municipal_mapsee_64dd0126cc162e1c90b57edc",
+      "id": "bc:53502780852213:53502780853239",
+      "venue_name": "Chestnut Hill, Mass., Conte Forum",
+      "venue_address": "2601 Beacon Street, Chestnut Hill, MA 02467",
+      "lat": 42.335342,
+      "lng": -71.167717,
+      "description_sha256": "ded3082e46882ad2eca9d78201c9fb539cf8750677638aad579f641a85adde3c",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "municipal_mapsee_64dd0126cc162e1c90b57edc",
+      "id": "bc:54489233285578:54489233286603",
+      "venue_name": "MCLE Conference Center",
+      "venue_address": "10 Winter Place, Boston, MA 02108",
+      "lat": 42.355469,
+      "lng": -71.061701,
+      "description_sha256": "39ce7448f8694fccc34117f5e999faa5662d81ebb9244100221038b6860e1666",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "municipal_mapsee_64dd0126cc162e1c90b57edc",
+      "id": "bc:53502780871681:53502780872707",
+      "venue_name": "Chestnut Hill, Mass., Conte Forum",
+      "venue_address": "2601 Beacon Street, Chestnut Hill, MA 02467",
+      "lat": 42.335342,
+      "lng": -71.167717,
+      "description_sha256": "9ef96e8c2166ac6c553263991a43154f647ddd1ef24822e40110152b46209f80",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "municipal_mapsee_64dd0126cc162e1c90b57edc",
+      "id": "bc:54470702147171:54470702148196",
+      "venue_name": "Simboli Chapel",
+      "venue_address": "9 Lake Street, Boston, MA 02135",
+      "lat": 42.341625,
+      "lng": -71.164566,
+      "description_sha256": "f6522c2897404eedb36264c0aef0e4fbd256cf351a5b37dc86868306cd3c02be",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "municipal_mapsee_64dd0126cc162e1c90b57edc",
+      "id": "bc:52582693017556:52582693018582",
+      "venue_name": "Chestnut Hill, Mass., Alumni Stadium",
+      "venue_address": "2604 Beacon Street, Chestnut Hill, MA 02467",
+      "lat": 42.334999,
+      "lng": -71.166389,
+      "description_sha256": "9612efe61dcc68e548bc543124b2ec1181f6e7ad9f4963c3be0f9df26dc6c837",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "municipal_mapsee_64dd0126cc162e1c90b57edc",
+      "id": "bc:53520480761866:53520480762892",
+      "venue_name": "Chestnut, Hill, Mass., Conte Forum",
+      "venue_address": "2601 Beacon Street, Chestnut Hill, MA 02467",
+      "lat": 42.335342,
+      "lng": -71.167717,
+      "description_sha256": "21b14ca1afbddb9166e5eb86578efd53b65177095f64f8bc2138052f3ce7728e",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "municipal_mapsee_64dd0126cc162e1c90b57edc",
+      "id": "bc:53502780894221:53502780895247",
+      "venue_name": "Chestnut Hill, Mass., Conte Forum",
+      "venue_address": "2601 Beacon Street, Chestnut Hill, MA 02467",
+      "lat": 42.335342,
+      "lng": -71.167717,
+      "description_sha256": "c0fff5c354e025c8d917bbf58f344b498810778d8e5ac988431865953000a7ee",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "municipal_mapsee_64dd0126cc162e1c90b57edc",
+      "id": "bc:53617795993377:53617795994403",
+      "venue_name": "Chestnut Hill, Mass., Conte Forum",
+      "venue_address": "2601 Beacon Street, Chestnut Hill, MA 02467",
+      "lat": 42.335342,
+      "lng": -71.167717,
+      "description_sha256": "3a28a0ed5ae1998d27b6c077925a6023b033a1da2101477c1be01e7df0a044c3",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "municipal_mapsee_64dd0126cc162e1c90b57edc",
+      "id": "bc:53520480862262:53520480863288",
+      "venue_name": "Chestnut, Hill, Mass., Conte Forum",
+      "venue_address": "2601 Beacon Street, Chestnut Hill, MA 02467",
+      "lat": 42.335342,
+      "lng": -71.167717,
+      "description_sha256": "96dcd1115425fcc1099e14915cadf64b8850e8cc822362e9bad809d4a57cbdc9",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "municipal_mapsee_64dd0126cc162e1c90b57edc",
+      "id": "bc:53520480887873:53520480889923",
+      "venue_name": "Chestnut, Hill, Mass., Conte Forum",
+      "venue_address": "2601 Beacon Street, Chestnut Hill, MA 02467",
+      "lat": 42.335342,
+      "lng": -71.167717,
+      "description_sha256": "ed0a9faa51c88399a44aa021792a40f94af85981879b1c3d8ed0f514f9739649",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "municipal_mapsee_64dd0126cc162e1c90b57edc",
+      "id": "bc:53502780986429:53502780987455",
+      "venue_name": "Chestnut Hill, Mass., Conte Forum",
+      "venue_address": "2601 Beacon Street, Chestnut Hill, MA 02467",
+      "lat": 42.335342,
+      "lng": -71.167717,
+      "description_sha256": "e000d8161c75d6919b04d5e60cc5971199a4efb140103772859aa8ed604d2bf3",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "municipal_mapsee_64dd0126cc162e1c90b57edc",
+      "id": "bc:53520480920652:53520480921678",
+      "venue_name": "Chestnut, Hill, Mass., Conte Forum",
+      "venue_address": "2601 Beacon Street, Chestnut Hill, MA 02467",
+      "lat": 42.335342,
+      "lng": -71.167717,
+      "description_sha256": "376ffa90bf1268f78de37e7dab30cb230e87985f46258be167abfccd97b2affd",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "municipal_mapsee_64dd0126cc162e1c90b57edc",
+      "id": "bc:53520480948311:53520480949337",
+      "venue_name": "Chestnut, Hill, Mass., Conte Forum",
+      "venue_address": "2601 Beacon Street, Chestnut Hill, MA 02467",
+      "lat": 42.335342,
+      "lng": -71.167717,
+      "description_sha256": "1fb079c4195475b6362675e42d3ae47fbc58d9389a16588c3f3c78e2893a2058",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "municipal_mapsee_64dd0126cc162e1c90b57edc",
+      "id": "bc:53520480974946:53520480975972",
+      "venue_name": "Chestnut, Hill, Mass., Conte Forum",
+      "venue_address": "2601 Beacon Street, Chestnut Hill, MA 02467",
+      "lat": 42.335342,
+      "lng": -71.167717,
+      "description_sha256": "0ca93f6d6c500c12fac71018b56e56896ab52b22603ef3920adb14eabb3fabbe",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "municipal_mapsee_64dd0126cc162e1c90b57edc",
+      "id": "bc:53874411853363:53874411854389",
+      "venue_name": "Chestnut Hill, Mass., Conte Forum",
+      "venue_address": "2601 Beacon Street, Chestnut Hill, MA 02467",
+      "lat": 42.335342,
+      "lng": -71.167717,
+      "description_sha256": "89f41be6815daca3efe50b31970213e615dde298079718346ddfde2a3cca1c6c",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "municipal_mapsee_64dd0126cc162e1c90b57edc",
+      "id": "bc:53936333810561:53936333812611",
+      "venue_name": "Chestnut, Hill, Mass., Conte Forum",
+      "venue_address": "2601 Beacon Street, Chestnut Hill, MA 02467",
+      "lat": 42.335342,
+      "lng": -71.167717,
+      "description_sha256": "487671efca9e18f0f54ef7acfa36ac4d54ffbe2263ee59a6712a78edd1b171a1",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "municipal_mapsee_64dd0126cc162e1c90b57edc",
+      "id": "bc:53874411875903:53874411876929",
+      "venue_name": "Chestnut Hill, Mass., Conte Forum",
+      "venue_address": "2601 Beacon Street, Chestnut Hill, MA 02467",
+      "lat": 42.335342,
+      "lng": -71.167717,
+      "description_sha256": "302a8d48301c4a43ddacd01a558b55d0a95e32d466ddd6d99c12d5a60f53382f",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "municipal_mapsee_64dd0126cc162e1c90b57edc",
+      "id": "bc:53936333863820:53936333864846",
+      "venue_name": "Chestnut, Hill, Mass., Conte Forum",
+      "venue_address": "2601 Beacon Street, Chestnut Hill, MA 02467",
+      "lat": 42.335342,
+      "lng": -71.167717,
+      "description_sha256": "4415379df58539e31e906e8f1c740c9a9eda7ae3a127e24dfb97bd9762dd3fa6",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "municipal_mapsee_64dd0126cc162e1c90b57edc",
+      "id": "bc:53874411895371:53874411896397",
+      "venue_name": "Chestnut Hill, Mass., Conte Forum",
+      "venue_address": "2601 Beacon Street, Chestnut Hill, MA 02467",
+      "lat": 42.335342,
+      "lng": -71.167717,
+      "description_sha256": "d768a30b09e6a3cb01167928dde4c387aba0e046c6609b84ea93007b6f7565ed",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "municipal_mapsee_64dd0126cc162e1c90b57edc",
+      "id": "bc:53246201760514:53989438105192",
+      "venue_name": "Chestnut Hill, Mass., Conte Forum",
+      "venue_address": "2601 Beacon Street, Chestnut Hill, MA 02467",
+      "lat": 42.335342,
+      "lng": -71.167717,
+      "description_sha256": "fca88e1b97ba844fccbe160f320d798fb83f7e65e58b147fbb83ca3aa4043949",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "boston_cares_ma",
+      "id": "cares:a0Cj2000002xzmTEAQ",
+      "venue_name": "Catholic Charities Yawkey Center Food Pantry",
+      "venue_address": "185 Columbia Road, Dorchester, MA 02121",
+      "lat": 42.306336,
+      "lng": -71.076838,
+      "description_sha256": "e50a7dcb51c2ff3d7e9ac03dd28f74650322688d7edeb071a2bacc16b8e73b8c",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "boston_cares_ma",
+      "id": "cares:a0CUq00007V1KCpMAN",
+      "venue_name": "Catholic Charities Yawkey Center Food Pantry",
+      "venue_address": "185 Columbia Road, Dorchester, MA 02121",
+      "lat": 42.306336,
+      "lng": -71.076838,
+      "description_sha256": "e50a7dcb51c2ff3d7e9ac03dd28f74650322688d7edeb071a2bacc16b8e73b8c",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "boston_cares_ma",
+      "id": "cares:a0CUq00007OjwY0MAJ",
+      "venue_name": "First Congregational Church Food Pantry",
+      "venue_address": "230 Beach Street, Revere, MA 02151",
+      "lat": 42.409298,
+      "lng": -71.008602,
+      "description_sha256": "912986d94f7b3d8b87889eee0e58b92829817e640a5a7cc57c5cfbcf0b6cd4cc",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "boston_cares_ma",
+      "id": "cares:a0CUq00007PDnO0MAL",
+      "venue_name": "Central Square Farmers Market",
+      "venue_address": "76 Bishop Allen Drive, Cambridge, MA 02139",
+      "lat": 42.3649,
+      "lng": -71.1009,
+      "description_sha256": "4f53732c7a146e024e6d1a5c767c4a0cce75019519165f8f8ea1fc9fdcbd8df4",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "boston_cares_ma",
+      "id": "cares:a0CUq00007PCf9fMAD",
+      "venue_name": "Central Square Farmers Market",
+      "venue_address": "76 Bishop Allen Drive, Cambridge, MA 02139",
+      "lat": 42.3649,
+      "lng": -71.1009,
+      "description_sha256": "4f53732c7a146e024e6d1a5c767c4a0cce75019519165f8f8ea1fc9fdcbd8df4",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "boston_cares_ma",
+      "id": "cares:a0CUq00007LGVnRMAX",
+      "venue_name": "Torchlight Recovery Cafe",
+      "venue_address": "2 Washington Street, Dorchester, MA 02121",
+      "lat": 42.308499,
+      "lng": -71.082661,
+      "description_sha256": "08c20a84090016e45a22a7d931a7587b9afac0aa5c7e9abab5f374953ba5ce9c",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "boston_cares_ma",
+      "id": "cares:a0CUq00007LGgWQMA1",
+      "venue_name": "Torchlight Recovery Cafe",
+      "venue_address": "2 Washington Street, Dorchester, MA 02121",
+      "lat": 42.308499,
+      "lng": -71.082661,
+      "description_sha256": "08c20a84090016e45a22a7d931a7587b9afac0aa5c7e9abab5f374953ba5ce9c",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "boston_cares_ma",
+      "id": "cares:a0CUq00007V00JhMAJ",
+      "venue_name": "Catholic Charities Yawkey Center Food Pantry",
+      "venue_address": "185 Columbia Road, Dorchester, MA 02121",
+      "lat": 42.306336,
+      "lng": -71.076838,
+      "description_sha256": "e50a7dcb51c2ff3d7e9ac03dd28f74650322688d7edeb071a2bacc16b8e73b8c",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "boston_cares_ma",
+      "id": "cares:a0CUq00007V1KCqMAN",
+      "venue_name": "Catholic Charities Yawkey Center Food Pantry",
+      "venue_address": "185 Columbia Road, Dorchester, MA 02121",
+      "lat": 42.306336,
+      "lng": -71.076838,
+      "description_sha256": "e50a7dcb51c2ff3d7e9ac03dd28f74650322688d7edeb071a2bacc16b8e73b8c",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "boston_cares_ma",
+      "id": "cares:a0CUq00007PDq2kMAD",
+      "venue_name": "Copley Square Farmers Market",
+      "venue_address": "227-230 Dartmouth Street, Boston, MA 02116",
+      "lat": 42.3495856,
+      "lng": -71.0770735,
+      "description_sha256": "d74a6d46af8aecab7513a3e12f67b846a37b3aff4c7a0b5cd12559d56c6e2983",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "boston_cares_ma",
+      "id": "cares:a0CUq00007LGVnSMAX",
+      "venue_name": "Torchlight Recovery Cafe",
+      "venue_address": "2 Washington Street, Dorchester, MA 02121",
+      "lat": 42.308499,
+      "lng": -71.082661,
+      "description_sha256": "08c20a84090016e45a22a7d931a7587b9afac0aa5c7e9abab5f374953ba5ce9c",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "boston_cares_ma",
+      "id": "cares:a0CUq00007LGgWRMA1",
+      "venue_name": "Torchlight Recovery Cafe",
+      "venue_address": "2 Washington Street, Dorchester, MA 02121",
+      "lat": 42.308499,
+      "lng": -71.082661,
+      "description_sha256": "08c20a84090016e45a22a7d931a7587b9afac0aa5c7e9abab5f374953ba5ce9c",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "boston_cares_ma",
+      "id": "cares:a0CUq00007d5COOMA2",
+      "venue_name": "Franklin Hill Boys & Girls Club",
+      "venue_address": "42 Shandon Road, Dorchester, MA 02124",
+      "lat": 42.295434,
+      "lng": -71.090103,
+      "description_sha256": "afa74c8b48fbfa2ec855008d7ceb7185485fd1bbc71775e2db6fce991452b10d",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "boston_cares_ma",
+      "id": "cares:a0CUq00007V00JpMAJ",
+      "venue_name": "Catholic Charities Yawkey Center Food Pantry",
+      "venue_address": "185 Columbia Road, Dorchester, MA 02121",
+      "lat": 42.306336,
+      "lng": -71.076838,
+      "description_sha256": "e50a7dcb51c2ff3d7e9ac03dd28f74650322688d7edeb071a2bacc16b8e73b8c",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "boston_cares_ma",
+      "id": "cares:a0CUq00007V1KCrMAN",
+      "venue_name": "Catholic Charities Yawkey Center Food Pantry",
+      "venue_address": "185 Columbia Road, Dorchester, MA 02121",
+      "lat": 42.306336,
+      "lng": -71.076838,
+      "description_sha256": "e50a7dcb51c2ff3d7e9ac03dd28f74650322688d7edeb071a2bacc16b8e73b8c",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "boston_cares_ma",
+      "id": "cares:a0CUq00007LGVnTMAX",
+      "venue_name": "Torchlight Recovery Cafe",
+      "venue_address": "2 Washington Street, Dorchester, MA 02121",
+      "lat": 42.308499,
+      "lng": -71.082661,
+      "description_sha256": "08c20a84090016e45a22a7d931a7587b9afac0aa5c7e9abab5f374953ba5ce9c",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "boston_cares_ma",
+      "id": "cares:a0CUq00007LGgWSMA1",
+      "venue_name": "Torchlight Recovery Cafe",
+      "venue_address": "2 Washington Street, Dorchester, MA 02121",
+      "lat": 42.308499,
+      "lng": -71.082661,
+      "description_sha256": "08c20a84090016e45a22a7d931a7587b9afac0aa5c7e9abab5f374953ba5ce9c",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "boston_cares_ma",
+      "id": "cares:a0CUq00007OgqsRMAR",
+      "venue_name": "First Congregational Church Food Pantry",
+      "venue_address": "230 Beach Street, Revere, MA 02151",
+      "lat": 42.409298,
+      "lng": -71.008602,
+      "description_sha256": "f557d63d4bea1461ed9e7cf81880230838b6ae2d02d6346b4f91c100b3b3fc42",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "boston_cares_ma",
+      "id": "cares:a0CUq00007V00JyMAJ",
+      "venue_name": "Catholic Charities Yawkey Center Food Pantry",
+      "venue_address": "185 Columbia Road, Dorchester, MA 02121",
+      "lat": 42.306336,
+      "lng": -71.076838,
+      "description_sha256": "e50a7dcb51c2ff3d7e9ac03dd28f74650322688d7edeb071a2bacc16b8e73b8c",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "boston_cares_ma",
+      "id": "cares:a0CUq00007V1KCsMAN",
+      "venue_name": "Catholic Charities Yawkey Center Food Pantry",
+      "venue_address": "185 Columbia Road, Dorchester, MA 02121",
+      "lat": 42.306336,
+      "lng": -71.076838,
+      "description_sha256": "e50a7dcb51c2ff3d7e9ac03dd28f74650322688d7edeb071a2bacc16b8e73b8c",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "boston_cares_ma",
+      "id": "cares:a0CUq00007LGVnUMAX",
+      "venue_name": "Torchlight Recovery Cafe",
+      "venue_address": "2 Washington Street, Dorchester, MA 02121",
+      "lat": 42.308499,
+      "lng": -71.082661,
+      "description_sha256": "08c20a84090016e45a22a7d931a7587b9afac0aa5c7e9abab5f374953ba5ce9c",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "boston_cares_ma",
+      "id": "cares:a0CUq00007LGgWTMA1",
+      "venue_name": "Torchlight Recovery Cafe",
+      "venue_address": "2 Washington Street, Dorchester, MA 02121",
+      "lat": 42.308499,
+      "lng": -71.082661,
+      "description_sha256": "08c20a84090016e45a22a7d931a7587b9afac0aa5c7e9abab5f374953ba5ce9c",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "boston_cares_ma",
+      "id": "cares:a0CUq00007V00K7MAJ",
+      "venue_name": "Catholic Charities Yawkey Center Food Pantry",
+      "venue_address": "185 Columbia Road, Dorchester, MA 02121",
+      "lat": 42.306336,
+      "lng": -71.076838,
+      "description_sha256": "e50a7dcb51c2ff3d7e9ac03dd28f74650322688d7edeb071a2bacc16b8e73b8c",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "boston_cares_ma",
+      "id": "cares:a0CUq00007V1KCtMAN",
+      "venue_name": "Catholic Charities Yawkey Center Food Pantry",
+      "venue_address": "185 Columbia Road, Dorchester, MA 02121",
+      "lat": 42.306336,
+      "lng": -71.076838,
+      "description_sha256": "e50a7dcb51c2ff3d7e9ac03dd28f74650322688d7edeb071a2bacc16b8e73b8c",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "boston_cares_ma",
+      "id": "cares:a0CUq00007PDq2tMAD",
+      "venue_name": "Copley Square Farmers Market",
+      "venue_address": "227-230 Dartmouth Street, Boston, MA 02116",
+      "lat": 42.3495856,
+      "lng": -71.0770735,
+      "description_sha256": "d74a6d46af8aecab7513a3e12f67b846a37b3aff4c7a0b5cd12559d56c6e2983",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "boston_cares_ma",
+      "id": "cares:a0CUq00007LGVnVMAX",
+      "venue_name": "Torchlight Recovery Cafe",
+      "venue_address": "2 Washington Street, Dorchester, MA 02121",
+      "lat": 42.308499,
+      "lng": -71.082661,
+      "description_sha256": "08c20a84090016e45a22a7d931a7587b9afac0aa5c7e9abab5f374953ba5ce9c",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "boston_cares_ma",
+      "id": "cares:a0CUq00007LGgWUMA1",
+      "venue_name": "Torchlight Recovery Cafe",
+      "venue_address": "2 Washington Street, Dorchester, MA 02121",
+      "lat": 42.308499,
+      "lng": -71.082661,
+      "description_sha256": "08c20a84090016e45a22a7d931a7587b9afac0aa5c7e9abab5f374953ba5ce9c",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "boston_cares_ma",
+      "id": "cares:a0CUq00007LGMOwMAP",
+      "venue_name": "Torchlight Recovery Cafe",
+      "venue_address": "2 Washington Street, Dorchester, MA 02121",
+      "lat": 42.308499,
+      "lng": -71.082661,
+      "description_sha256": "08c20a84090016e45a22a7d931a7587b9afac0aa5c7e9abab5f374953ba5ce9c",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "boston_cares_ma",
+      "id": "cares:a0Cj2000002xzmUEAQ",
+      "venue_name": "Catholic Charities Yawkey Center Food Pantry",
+      "venue_address": "185 Columbia Road, Dorchester, MA 02121",
+      "lat": 42.306336,
+      "lng": -71.076838,
+      "description_sha256": "e50a7dcb51c2ff3d7e9ac03dd28f74650322688d7edeb071a2bacc16b8e73b8c",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "boston_cares_ma",
+      "id": "cares:a0CUq00007V1KCuMAN",
+      "venue_name": "Catholic Charities Yawkey Center Food Pantry",
+      "venue_address": "185 Columbia Road, Dorchester, MA 02121",
+      "lat": 42.306336,
+      "lng": -71.076838,
+      "description_sha256": "e50a7dcb51c2ff3d7e9ac03dd28f74650322688d7edeb071a2bacc16b8e73b8c",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "boston_cares_ma",
+      "id": "cares:a0CUq00007PDnO1MAL",
+      "venue_name": "Central Square Farmers Market",
+      "venue_address": "76 Bishop Allen Drive, Cambridge, MA 02139",
+      "lat": 42.3649,
+      "lng": -71.1009,
+      "description_sha256": "4f53732c7a146e024e6d1a5c767c4a0cce75019519165f8f8ea1fc9fdcbd8df4",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "boston_cares_ma",
+      "id": "cares:a0CUq00007PCf9gMAD",
+      "venue_name": "Central Square Farmers Market",
+      "venue_address": "76 Bishop Allen Drive, Cambridge, MA 02139",
+      "lat": 42.3649,
+      "lng": -71.1009,
+      "description_sha256": "4f53732c7a146e024e6d1a5c767c4a0cce75019519165f8f8ea1fc9fdcbd8df4",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "boston_cares_ma",
+      "id": "cares:a0CUq00007LGVnWMAX",
+      "venue_name": "Torchlight Recovery Cafe",
+      "venue_address": "2 Washington Street, Dorchester, MA 02121",
+      "lat": 42.308499,
+      "lng": -71.082661,
+      "description_sha256": "08c20a84090016e45a22a7d931a7587b9afac0aa5c7e9abab5f374953ba5ce9c",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "boston_cares_ma",
+      "id": "cares:a0CUq00007LGgWVMA1",
+      "venue_name": "Torchlight Recovery Cafe",
+      "venue_address": "2 Washington Street, Dorchester, MA 02121",
+      "lat": 42.308499,
+      "lng": -71.082661,
+      "description_sha256": "08c20a84090016e45a22a7d931a7587b9afac0aa5c7e9abab5f374953ba5ce9c",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "boston_cares_ma",
+      "id": "cares:a0CUq00007V00JiMAJ",
+      "venue_name": "Catholic Charities Yawkey Center Food Pantry",
+      "venue_address": "185 Columbia Road, Dorchester, MA 02121",
+      "lat": 42.306336,
+      "lng": -71.076838,
+      "description_sha256": "e50a7dcb51c2ff3d7e9ac03dd28f74650322688d7edeb071a2bacc16b8e73b8c",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "boston_cares_ma",
+      "id": "cares:a0CUq00007V1KCvMAN",
+      "venue_name": "Catholic Charities Yawkey Center Food Pantry",
+      "venue_address": "185 Columbia Road, Dorchester, MA 02121",
+      "lat": 42.306336,
+      "lng": -71.076838,
+      "description_sha256": "e50a7dcb51c2ff3d7e9ac03dd28f74650322688d7edeb071a2bacc16b8e73b8c",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "boston_cares_ma",
+      "id": "cares:a0CUq00007PDq2lMAD",
+      "venue_name": "Copley Square Farmers Market",
+      "venue_address": "227-230 Dartmouth Street, Boston, MA 02116",
+      "lat": 42.3495856,
+      "lng": -71.0770735,
+      "description_sha256": "d74a6d46af8aecab7513a3e12f67b846a37b3aff4c7a0b5cd12559d56c6e2983",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "boston_cares_ma",
+      "id": "cares:a0CUq00007PDCQRMA5",
+      "venue_name": "Copley Square Farmers Market",
+      "venue_address": "227-230 Dartmouth Street, Boston, MA 02116",
+      "lat": 42.3495856,
+      "lng": -71.0770735,
+      "description_sha256": "d74a6d46af8aecab7513a3e12f67b846a37b3aff4c7a0b5cd12559d56c6e2983",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "boston_cares_ma",
+      "id": "cares:a0CUq00007Ojn7IMAR",
+      "venue_name": "First Congregational Church Food Pantry",
+      "venue_address": "230 Beach Street, Revere, MA 02151",
+      "lat": 42.409298,
+      "lng": -71.008602,
+      "description_sha256": "912986d94f7b3d8b87889eee0e58b92829817e640a5a7cc57c5cfbcf0b6cd4cc",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "boston_cares_ma",
+      "id": "cares:a0CUq00007LGVnXMAX",
+      "venue_name": "Torchlight Recovery Cafe",
+      "venue_address": "2 Washington Street, Dorchester, MA 02121",
+      "lat": 42.308499,
+      "lng": -71.082661,
+      "description_sha256": "08c20a84090016e45a22a7d931a7587b9afac0aa5c7e9abab5f374953ba5ce9c",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "boston_cares_ma",
+      "id": "cares:a0CUq00007LGgWWMA1",
+      "venue_name": "Torchlight Recovery Cafe",
+      "venue_address": "2 Washington Street, Dorchester, MA 02121",
+      "lat": 42.308499,
+      "lng": -71.082661,
+      "description_sha256": "08c20a84090016e45a22a7d931a7587b9afac0aa5c7e9abab5f374953ba5ce9c",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "boston_cares_ma",
+      "id": "cares:a0CUq00007d5COPMA2",
+      "venue_name": "Franklin Hill Boys & Girls Club",
+      "venue_address": "42 Shandon Road, Dorchester, MA 02124",
+      "lat": 42.295434,
+      "lng": -71.090103,
+      "description_sha256": "afa74c8b48fbfa2ec855008d7ceb7185485fd1bbc71775e2db6fce991452b10d",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "boston_cares_ma",
+      "id": "cares:a0CUq00007V00JqMAJ",
+      "venue_name": "Catholic Charities Yawkey Center Food Pantry",
+      "venue_address": "185 Columbia Road, Dorchester, MA 02121",
+      "lat": 42.306336,
+      "lng": -71.076838,
+      "description_sha256": "e50a7dcb51c2ff3d7e9ac03dd28f74650322688d7edeb071a2bacc16b8e73b8c",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "boston_cares_ma",
+      "id": "cares:a0CUq00007LGVnYMAX",
+      "venue_name": "Torchlight Recovery Cafe",
+      "venue_address": "2 Washington Street, Dorchester, MA 02121",
+      "lat": 42.308499,
+      "lng": -71.082661,
+      "description_sha256": "08c20a84090016e45a22a7d931a7587b9afac0aa5c7e9abab5f374953ba5ce9c",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "boston_cares_ma",
+      "id": "cares:a0CUq00007LGgWXMA1",
+      "venue_name": "Torchlight Recovery Cafe",
+      "venue_address": "2 Washington Street, Dorchester, MA 02121",
+      "lat": 42.308499,
+      "lng": -71.082661,
+      "description_sha256": "08c20a84090016e45a22a7d931a7587b9afac0aa5c7e9abab5f374953ba5ce9c",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "boston_cares_ma",
+      "id": "cares:a0CUq00007OgqsSMAR",
+      "venue_name": "First Congregational Church Food Pantry",
+      "venue_address": "230 Beach Street, Revere, MA 02151",
+      "lat": 42.409298,
+      "lng": -71.008602,
+      "description_sha256": "f557d63d4bea1461ed9e7cf81880230838b6ae2d02d6346b4f91c100b3b3fc42",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    },
+    {
+      "source_key": "boston_cares_ma",
+      "id": "cares:a0CUq00007LHYihMAH",
+      "venue_name": "Torchlight Recovery Cafe",
+      "venue_address": "2 Washington Street, Dorchester, MA 02121",
+      "lat": 42.308499,
+      "lng": -71.082661,
+      "description_sha256": "08c20a84090016e45a22a7d931a7587b9afac0aa5c7e9abab5f374953ba5ce9c",
+      "changed_fields": [
+        "lat",
+        "lng",
+        "location_evidence_url",
+        "location_provenance",
+        "reason"
+      ]
+    }
+  ],
+  "worker_replay": {
+    "captured_replay_only": true,
+    "live_database_writes": false,
+    "sources": {
+      "municipal_mapsee_64dd0126cc162e1c90b57edc": {
+        "worker_calls": 1,
+        "staged_rows": 76,
+        "checkpoint_writes": 0,
+        "stage_rpc_calls": 4,
+        "preview_rpc_calls": 1,
+        "public_post_windows": [],
+        "full_rows_exact_match": true,
+        "staged_before_complete": false
+      },
+      "rose_kennedy_greenway_ma": {
+        "worker_calls": 9,
+        "staged_rows": 70,
+        "checkpoint_writes": 9,
+        "stage_rpc_calls": 4,
+        "preview_rpc_calls": 1,
+        "public_post_windows": [],
+        "full_rows_exact_match": true,
+        "staged_before_complete": false
+      },
+      "boston_nature_center_ma": {
+        "worker_calls": 4,
+        "staged_rows": 21,
+        "checkpoint_writes": 4,
+        "stage_rpc_calls": 2,
+        "preview_rpc_calls": 1,
+        "public_post_windows": [],
+        "full_rows_exact_match": true,
+        "staged_before_complete": false
+      },
+      "boston_cares_ma": {
+        "worker_calls": 1,
+        "staged_rows": 133,
+        "checkpoint_writes": 0,
+        "stage_rpc_calls": 7,
+        "preview_rpc_calls": 1,
+        "public_post_windows": [
+          {
+            "start_day": "2026-11-14",
+            "end_day": "2026-11-27"
+          }
+        ],
+        "full_rows_exact_match": true,
+        "staged_before_complete": false
+      }
+    }
+  },
+  "b1_additional_capture_replay": {
+    "sources": {
+      "city_of_boston_events_ma": {
+        "rows": 4,
+        "chunks": 0,
+        "full_description_and_street_unchanged": true
+      },
+      "titus_sparrow_park_ma": {
+        "rows": 4,
+        "chunks": 2,
+        "full_description_and_street_unchanged": true
+      },
+      "boston_food_forest_coalition_ma": {
+        "rows": 5,
+        "chunks": 3,
+        "full_description_and_street_unchanged": true
+      }
+    },
+    "changes": [
+      {
+        "source_key": "titus_sparrow_park_ma",
+        "id": "0f7c31633645367c72f83f75fbf115eb1014971f020aeaec4f909737afe55493",
+        "event_url": "https://www.titussparrowpark.org/events/november-park-cleanup",
+        "venue_name": "Titus Sparrow Park",
+        "venue_address": "75 West Rutland Square, Boston, MA 02118",
+        "before_point": [
+          null,
+          null
+        ],
+        "after_point": [
+          42.343569,
+          -71.0797897
+        ],
+        "description_sha256_unchanged": "91516894933b9f54a30a69e7ea091c056b0ea0a9cade35f6cc580a583ed1f478",
+        "street_unchanged": true,
+        "location_evidence_url": "https://www.titussparrowpark.org/",
+        "location_provenance": "Friends of Titus Sparrow Park's explicit map marker is tied to 75 West Rutland Square and ZIP 02118, corroborated by Boston SAM address 342665; native street retained."
+      }
+    ],
+    "rows": 22
+  },
+  "continuation_review": {
+    "change": "Raise only this adapter detail cap from3 to8, retaining the18-second before-fetch reserve and every shared transport/pacing/deadline/checkpoint bound.",
+    "before_worker_calls": {
+      "municipal_mapsee_64dd0126cc162e1c90b57edc": 1,
+      "rose_kennedy_greenway_ma": 24,
+      "boston_nature_center_ma": 9,
+      "boston_cares_ma": 1
+    },
+    "after_worker_calls": {
+      "municipal_mapsee_64dd0126cc162e1c90b57edc": 1,
+      "rose_kennedy_greenway_ma": 9,
+      "boston_nature_center_ma": 4,
+      "boston_cares_ma": 1
+    },
+    "full_complete_rows_equal": true,
+    "slow_response_actual_worker_tests": {
+      "sources": [
+        "rose_kennedy_greenway_ma",
+        "boston_nature_center_ma"
+      ],
+      "nine_manifest_detail_read_cost_seconds": [
+        0.25,
+        5,
+        17
+      ],
+      "claims_to_complete": [
+        2,
+        3,
+        9
+      ],
+      "checkpoint_read_cost17_seconds": "zero detail reads, cursor0 saved, no staging or complete-preview call",
+      "assertions": [
+        "Every fetch carries respect_robots=true and exact allowed_hosts",
+        "Every detail begins with more than18seconds remaining",
+        "At most8details perclaim",
+        "Incomplete snapshots emit no staging or complete preview",
+        "Complete records equal native parsed records",
+        "No duplicate detail requests across resumed claims",
+        "Existing three-detail prefix resumes under the new eight-detail cap"
+      ]
+    }
+  }
+}
