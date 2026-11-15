@@ -1,0 +1,434 @@
+{
+  "reviewed_at": "2026-11-15T00:21:58.237959+00:00",
+  "source": {
+    "source_key": "balic_winery_nj",
+    "feed_url": "https://www.balicwinery.com/events.html",
+    "kind": "html",
+    "platform_adapter": "html",
+    "timezone": "America/New_York",
+    "publisher_name": "Balic Winery",
+    "allowed_hosts": [
+      "www.balicwinery.com",
+      "www.bittersweetduo.com",
+      "bethtinnon.com"
+    ],
+    "checkpoint_required": false,
+    "expected_current_rows": 2,
+    "coverage_radius_miles": 30
+  },
+  "qualification": "ready_two_current_dated_performances_three_explicit_start_time_holds",
+  "collection_contract": {
+    "entrypoint": "roomquest.atlantic_city_remaining_balic.collect(source, fetch, *, deadline_at=None, now=None)",
+    "transport": "Existing guarded HTML/JPEG callback; no direct network operations in the adapter.",
+    "calls": [
+      {
+        "url": "https://www.balicwinery.com/events.html",
+        "accept": "text/html"
+      },
+      {
+        "url": "https://www.balicwinery.com/uploads/6/8/4/3/68439105/published/balic-winery-gala-2026-entainters-fall-1024.jpg?1793131015",
+        "accept": "image/jpeg"
+      },
+      {
+        "url": "https://www.bittersweetduo.com/our-upcoming-schedule",
+        "accept": "text/html"
+      },
+      {
+        "url": "https://bethtinnon.com/event/6594096/764728165/beth-tinnon-at-balic-winery-for-their-holiday-extravaganza",
+        "accept": "text/html"
+      }
+    ],
+    "ordinary_fetch_count": 4,
+    "event_url_contract": "https://www.balicwinery.com/events.html",
+    "image_url_contract": "https://www.balicwinery.com/uploads/6/8/4/3/68439105/published/balic-winery-gala-2026-entainters-fall-1024.jpg?1793131015",
+    "checkpoint_keys": [],
+    "window_days": 60,
+    "description_limit": 12000,
+    "description_limit_behavior": "Reject blank or over-limit complete native descriptions; never clip or fill.",
+    "description_composition": "Complete reviewed gala poster transcription, every current native announcement paragraph, and the exact performer schedule line or complete native event notes.",
+    "edition_policy": "Current winery page must advertise the exact reviewed image and five-date announcement; image bytes must match SHA256. New or changed gala poster requires review.",
+    "times": "Performer native clocks only. No inference from winery opening hours. Both currently 13:00-17:00 America/New_York.",
+    "eligibility": "Only reviewed named gala occurrences with explicit current performer clocks; cancelled/private/postponed/sold-out changed text fails review.",
+    "ongoing": "Known ends remain eligible until actual end. Unknown ends stay null.",
+    "pacing": "Beth Tinnon robots publishes Crawl-delay 10; existing production transport must honor it unchanged."
+  },
+  "poster": {
+    "url": "https://www.balicwinery.com/uploads/6/8/4/3/68439105/published/balic-winery-gala-2026-entainters-fall-1024.jpg?1793131015",
+    "sha256": "f4520c111867064b4adba04521d9bc0ab1e1355d00dd3b2f319f73dda33ea2e4",
+    "bytes": 216747,
+    "full_transcription": "Balic Winery\nHoliday Galas\nSAT, NOVEMBER 21-\nACOUSTIC BREEZE TRIO\n/THEY BRING THE LIVELY AND UPBEAT ATMOSPHERE TO WINERY/\nSUN, NOVEMBER 22\nFran The Piano Man\nFRI, NOVEMBER 27\nBitter Sweet Duo\nSAT, NOVEMBER 28\nBeth Tinnon\nSUN, NOVEMBER 29\nOnce Upon a Full Moon Night",
+    "year_evidence": "Publisher asset filename explicitly says gala-2026; the five printed weekday/date pairs match November 2026. Performer schedule heading and Beth JSON-LD independently confirm 2026."
+  },
+  "performer_evidence": [
+    {
+      "url": "https://www.bittersweetduo.com/our-upcoming-schedule",
+      "publisher": "BitterSweet Duo",
+      "schedule_heading": "BITTERSWEET DUO SCHEDULE 2026",
+      "complete_native_occurrence_text": "11/27 Friday Balic Winery 1pm to 5pm",
+      "date": "2026-11-27",
+      "start_local": "13:00",
+      "end_local": "17:00"
+    },
+    {
+      "url": "https://bethtinnon.com/event/6594096/764728165/beth-tinnon-at-balic-winery-for-their-holiday-extravaganza",
+      "publisher": "Beth Tinnon",
+      "discovered_from": "https://bethtinnon.com/calendar",
+      "pagination_link": "https://bethtinnon.com/calendar/features/load/calendar_feature_1522703.turbo_stream?calendar_page=2",
+      "native_event_jsonld": {
+        "@context": "http://schema.org",
+        "@type": "MusicEvent",
+        "name": "BETH TINNON at BALIC Winery for their holiday extravaganza",
+        "startDate": "2026-11-28T13:00:00",
+        "url": "https://bethtinnon.com/event/6594096/764728165/beth-tinnon-at-balic-winery-for-their-holiday-extravaganza",
+        "description": "Inside the tasting room, join Beth Tinnon bring your own snacks or visit their website for more information",
+        "endDate": "2026-11-28T17:00:00",
+        "image": "https://images.zoogletools.com/s:bzglfiles/u/394499/2e832c11636455003582b2f9638690ccb6370e50/original/img-2916.jpeg/!!/b%3AW1sicmVzaXplIixbNjAwLG51bGwseyJ3aXRob3V0RW5sYXJnZW1lbnQiOnRydWUsImZpdCI6Im91dHNpZGUifV1dXQ%3D%3D/meta%3AeyJzcmNCdWNrZXQiOiJiemdsZmlsZXMifQ%3D%3D.jpg",
+        "location": {
+          "@type": "Place",
+          "name": "Balic Winery",
+          "address": "6623 Harding Hwy, Mays Landing, NJ, US"
+        }
+      },
+      "full_body_matches_rendered_notes": true
+    }
+  ],
+  "venue": {
+    "name": "Balic Winery",
+    "full_street": "6623 Harding Hwy, Mays Landing, NJ 08330",
+    "street_source_url": "https://www.balicwinery.com/events.html",
+    "native_address_text": "Route 40 (6623 Harding Hwy) Mays Landing, NJ 08330",
+    "lat": 39.460896000003,
+    "lng": -74.791057500001,
+    "provenance": "reviewed_nj_ogis_point_address",
+    "nj_ogis_response": {
+      "spatialReference": {
+        "wkid": 4326,
+        "latestWkid": 4326
+      },
+      "candidates": [
+        {
+          "address": "6623 Harding Highway, Mays Landing, New Jersey, 08330",
+          "location": {
+            "x": -74.791057500001,
+            "y": 39.460896000003
+          },
+          "score": 100,
+          "attributes": {
+            "Match_addr": "6623 Harding Highway, Mays Landing, New Jersey, 08330",
+            "Addr_type": "PointAddress",
+            "City": "Mays Landing",
+            "Postal": "08330",
+            "Region": "New Jersey"
+          },
+          "extent": {
+            "xmin": -74.792065837883,
+            "ymin": 39.459896000003,
+            "xmax": -74.790049219451,
+            "ymax": 39.461896000003
+          }
+        }
+      ]
+    },
+    "nj_ogis_query_url": "https://geo.nj.gov/arcgis/rest/services/Tasks/NJ_Geocode/GeocodeServer/findAddressCandidates?SingleLine=6623+Harding+Highway%2C+Mays+Landing%2C+NJ+08330&outSR=4326&outFields=Match_addr%2CAddr_type%2CCity%2CPostal%2CRegion&f=pjson",
+    "publisher_explicit_marker_url": "//www.weebly.com/weebly/apps/generateMap.php?map=google&elementid=123397521818593512&ineditor=0&control=3&width=500px&height=400px&overviewmap=0&scalecontrol=1&typecontrol=0&zoom=7&long=-74.79109319999998&lat=39.4608841&domain=www&point=1&align=3&reseller=false",
+    "publisher_marker_lat": 39.4608841,
+    "publisher_marker_lng": -74.79109319999998,
+    "precision_note": "Venue address destination; not a room or entrance pin. State PointAddress score 100 corroborates the publisher point=1 marker within approximately 3 metres."
+  },
+  "held_occurrences": [
+    {
+      "date": "2026-11-21",
+      "title": "Acoustic Breeze Trio",
+      "reason": "publisher_start_time_missing",
+      "evidence_url": "https://www.balicwinery.com/events.html",
+      "evidence_image_url": "https://www.balicwinery.com/uploads/6/8/4/3/68439105/published/balic-winery-gala-2026-entainters-fall-1024.jpg?1793131015",
+      "release_condition": "Current official event-specific start clock, with unambiguous 2026 occurrence identity."
+    },
+    {
+      "date": "2026-11-22",
+      "title": "Fran The Piano Man",
+      "reason": "publisher_start_time_missing",
+      "evidence_url": "https://www.balicwinery.com/events.html",
+      "evidence_image_url": "https://www.balicwinery.com/uploads/6/8/4/3/68439105/published/balic-winery-gala-2026-entainters-fall-1024.jpg?1793131015",
+      "release_condition": "Current official event-specific start clock, with unambiguous 2026 occurrence identity."
+    },
+    {
+      "date": "2026-11-29",
+      "title": "Once Upon a Full Moon Night",
+      "reason": "publisher_start_time_missing",
+      "evidence_url": "https://www.balicwinery.com/events.html",
+      "evidence_image_url": "https://www.balicwinery.com/uploads/6/8/4/3/68439105/published/balic-winery-gala-2026-entainters-fall-1024.jpg?1793131015",
+      "release_condition": "Current official event-specific start clock, with unambiguous 2026 occurrence identity."
+    }
+  ],
+  "remaining_search_outcome": {
+    "checked": [
+      "Current winery events page, home page, stay-in-touch page, exact advertised gala image",
+      "Linked official Facebook identity and indexed official-channel searches for each date and performer",
+      "Current BitterSweet Duo 2026 schedule",
+      "Current Beth Tinnon calendar and linked exact Balic event"
+    ],
+    "unresolved": "No primary event-specific start clock found for Nov 21 Acoustic Breeze Trio, Nov 22 Fran The Piano Man, or Nov 29 Once Upon a Full Moon Night.",
+    "excluded_clock_evidence": "Winery opening hours and historical events were not used as performance times.",
+    "contact": "No email, phone, social message, or other external contact made.",
+    "access": "No blocked-publisher retries, login, alternate-host bypass, or unguarded collector endpoint introduced."
+  },
+  "access_permissions": [
+    {
+      "url": "https://www.balicwinery.com/events.html",
+      "robots_file": "balic-robots.txt",
+      "allowed_for_production_user_agent": true,
+      "crawl_delay_seconds": 1
+    },
+    {
+      "url": "https://www.balicwinery.com/uploads/6/8/4/3/68439105/published/balic-winery-gala-2026-entainters-fall-1024.jpg?1793131015",
+      "robots_file": "balic-robots.txt",
+      "allowed_for_production_user_agent": true,
+      "crawl_delay_seconds": 1
+    },
+    {
+      "url": "https://www.bittersweetduo.com/our-upcoming-schedule",
+      "robots_file": "bittersweet-robots.txt",
+      "allowed_for_production_user_agent": true,
+      "crawl_delay_seconds": 1
+    },
+    {
+      "url": "https://bethtinnon.com/event/6594096/764728165/beth-tinnon-at-balic-winery-for-their-holiday-extravaganza",
+      "robots_file": "beth-robots.txt",
+      "allowed_for_production_user_agent": true,
+      "crawl_delay_seconds": 10
+    }
+  ],
+  "capture_receipts": [
+    {
+      "url": "https://www.bittersweetduo.com/robots.txt",
+      "status": 200,
+      "location": null,
+      "content_type": "text/plain; charset=utf-8",
+      "bytes": 496,
+      "sha256": "f1f3a15d1db98db7c88440264d92a181cadac3e360097565712979195964ea26",
+      "file": "bittersweet-robots.txt",
+      "captured_at": "2026-11-15T00:16:42.707341+00:00",
+      "seconds": 4.793
+    },
+    {
+      "url": "https://www.balicwinery.com/robots.txt",
+      "status": 200,
+      "location": null,
+      "content_type": "text/plain; charset=UTF-8",
+      "bytes": 261,
+      "sha256": "23a638ac26d47d2ee23cd14e101b7d071107caea07a80e3f2a43c2fbdae27972",
+      "file": "balic-robots.txt",
+      "captured_at": "2026-11-15T00:16:44.884108+00:00",
+      "seconds": 6.973
+    },
+    {
+      "url": "https://bethtinnon.com/robots.txt",
+      "status": 200,
+      "location": null,
+      "content_type": "text/plain; charset=utf-8",
+      "bytes": 373,
+      "sha256": "0c2ee9a959a1f20dd28fe9bfc98ba82c6f826fd612e998eac90f348c4157cac2",
+      "file": "beth-robots.txt",
+      "captured_at": "2026-11-15T00:16:45.933470+00:00",
+      "seconds": 8.017
+    },
+    {
+      "url": "https://www.bittersweetduo.com/our-upcoming-schedule",
+      "status": 200,
+      "location": null,
+      "content_type": "text/html; charset=UTF-8",
+      "bytes": 615406,
+      "sha256": "6c98ddf167535298b297c9d38cd1bb92dbb70b9ef6d03b5f3eb46d5002d97ace",
+      "file": "bittersweet-schedule.html",
+      "captured_at": "2026-11-15T00:16:48.840724+00:00",
+      "seconds": 4.883
+    },
+    {
+      "url": "https://www.balicwinery.com/events.html",
+      "status": 200,
+      "location": null,
+      "content_type": "text/html; charset=UTF-8",
+      "bytes": 219840,
+      "sha256": "e4303f8384588147ba88ea10a6ccae95effe2d1635e9e8ca553e8832b9bae396",
+      "file": "balic-events.html",
+      "captured_at": "2026-11-15T00:16:50.080585+00:00",
+      "seconds": 3.945
+    },
+    {
+      "url": "https://bethtinnon.com/calendar",
+      "status": 200,
+      "location": null,
+      "content_type": "text/html; charset=utf-8",
+      "bytes": 79271,
+      "sha256": "c2f1615bbf07cde1a84ed66d63737328d8b43a6eb1f5091f85fdfcd22efa8f35",
+      "file": "beth-calendar.html",
+      "captured_at": "2026-11-15T00:16:51.949454+00:00",
+      "seconds": 4.765
+    },
+    {
+      "url": "https://www.balicwinery.com/",
+      "status": 200,
+      "location": null,
+      "content_type": "text/html; charset=UTF-8",
+      "bytes": 91941,
+      "sha256": "cac9782a8e82e6bc90bf11715f1885ad01588d2a46c215ef74c6918a40f4ee83",
+      "file": "balic-home.html",
+      "captured_at": "2026-11-15T00:16:54.447473+00:00",
+      "seconds": 3.116
+    },
+    {
+      "url": "https://www.balicwinery.com/stay-in-touch.html",
+      "status": 200,
+      "location": null,
+      "content_type": "text/html; charset=UTF-8",
+      "bytes": 58349,
+      "sha256": "7bf79fe4745a2f15b90e6dee65557f40e2dd65bd19cdbf65f462e9be01d60926",
+      "file": "balic-stay-in-touch.html",
+      "captured_at": "2026-11-15T00:16:59.021011+00:00",
+      "seconds": 3.323
+    },
+    {
+      "url": "https://www.balicwinery.com/uploads/6/8/4/3/68439105/published/balic-winery-gala-2026-entainters-fall-1024.jpg?1793131015",
+      "status": 200,
+      "location": null,
+      "content_type": "image/jpeg",
+      "bytes": 216747,
+      "sha256": "f4520c111867064b4adba04521d9bc0ab1e1355d00dd3b2f319f73dda33ea2e4",
+      "file": "balic-gala-2026.jpg",
+      "captured_at": "2026-11-15T00:17:05.367474+00:00",
+      "seconds": 5.094
+    },
+    {
+      "url": "https://bethtinnon.com/robots.txt",
+      "status": 200,
+      "location": null,
+      "content_type": "text/plain; charset=utf-8",
+      "bytes": 373,
+      "sha256": "0c2ee9a959a1f20dd28fe9bfc98ba82c6f826fd612e998eac90f348c4157cac2",
+      "file": "beth-followup-robots.txt",
+      "captured_at": "2026-11-15T00:17:17.328875+00:00",
+      "seconds": 5.909
+    },
+    {
+      "url": "https://bethtinnon.com/calendar/features/load/calendar_feature_1522703.turbo_stream?calendar_page=2",
+      "status": 200,
+      "location": null,
+      "content_type": "text/vnd.turbo-stream.html; charset=utf-8",
+      "bytes": 53351,
+      "sha256": "1adf633321ed87bb6a86674402b6c491dede48f358a46e52956f3b4f14b51d4e",
+      "file": "beth-calendar-page2.html",
+      "captured_at": "2026-11-15T00:17:23.169491+00:00",
+      "seconds": 4.59
+    },
+    {
+      "url": "https://geo.nj.gov/robots.txt",
+      "status": 404,
+      "location": null,
+      "content_type": "text/html;charset=ISO-8859-1",
+      "bytes": 1339,
+      "sha256": "69a1e685db48a0770604355bc86b9653cac021ee9741f578f16185eda8532383",
+      "file": "njogis-robots.txt",
+      "captured_at": "2026-11-15T00:18:08.258792+00:00",
+      "seconds": 3.607
+    },
+    {
+      "url": "https://bethtinnon.com/robots.txt",
+      "status": 200,
+      "location": null,
+      "content_type": "text/plain; charset=utf-8",
+      "bytes": 373,
+      "sha256": "0c2ee9a959a1f20dd28fe9bfc98ba82c6f826fd612e998eac90f348c4157cac2",
+      "file": "beth-detail-robots.txt",
+      "captured_at": "2026-11-15T00:18:08.440535+00:00",
+      "seconds": 3.791
+    },
+    {
+      "url": "https://geo.nj.gov/arcgis/rest/services/Tasks/NJ_Geocode/GeocodeServer/findAddressCandidates?SingleLine=6623+Harding+Highway%2C+Mays+Landing%2C+NJ+08330&outSR=4326&outFields=Match_addr%2CAddr_type%2CCity%2CPostal%2CRegion&f=pjson",
+      "status": 200,
+      "location": null,
+      "content_type": "text/plain;charset=UTF-8",
+      "bytes": 606,
+      "sha256": "61efb4ab65c2f7dee2cd3ca66460a34f588393729a91e74dddead8aa819f2f4a",
+      "file": "balic-njogis.json",
+      "captured_at": "2026-11-15T00:18:13.097862+00:00",
+      "seconds": 3.589
+    },
+    {
+      "url": "https://bethtinnon.com/event/6594096/764728165/beth-tinnon-at-balic-winery-for-their-holiday-extravaganza",
+      "status": 200,
+      "location": null,
+      "content_type": "text/html; charset=utf-8",
+      "bytes": 57337,
+      "sha256": "4a9352ff51beb45a8292a821038b5e0fa95d8932e7eaab7d810fd901bbd11da4",
+      "file": "beth-balic-detail.html",
+      "captured_at": "2026-11-15T00:18:13.452520+00:00",
+      "seconds": 3.762
+    }
+  ],
+  "replay": {
+    "events": [
+      {
+        "source_key": "balic_winery_nj",
+        "id": "c28ed832cf1feae2bc945799be2d3206edca56dc2d63b9fb833b7c9660323b10",
+        "title": "Balic Winery Holiday Galas — Bitter Sweet Duo",
+        "starts_at": "2026-11-27T18:00:00+00:00",
+        "ends_at": "2026-11-27T22:00:00+00:00",
+        "venue_name": "Balic Winery",
+        "lat": 39.460896000003,
+        "lng": -74.791057500001,
+        "event_url": "https://www.balicwinery.com/events.html",
+        "category": "",
+        "venue_address": "6623 Harding Hwy, Mays Landing, NJ 08330",
+        "venue_city": "Mays Landing",
+        "reason": null,
+        "description": "Balic Winery\nHoliday Galas\nSAT, NOVEMBER 21-\nACOUSTIC BREEZE TRIO\n/THEY BRING THE LIVELY AND UPBEAT ATMOSPHERE TO WINERY/\nSUN, NOVEMBER 22\nFran The Piano Man\nFRI, NOVEMBER 27\nBitter Sweet Duo\nSAT, NOVEMBER 28\nBeth Tinnon\nSUN, NOVEMBER 29\nOnce Upon a Full Moon Night\n\nLive Music  November 21, 22, 27, 28, & 29th\nFor more information please call us at\n609 625 2166\n\n11/27 Friday Balic Winery 1pm to 5pm",
+        "timezone": "America/New_York",
+        "attendance_mode": "in_person",
+        "image_url": "https://www.balicwinery.com/uploads/6/8/4/3/68439105/published/balic-winery-gala-2026-entainters-fall-1024.jpg?1793131015",
+        "location_provenance": "reviewed_nj_ogis_point_address",
+        "description_length": 400,
+        "description_sha256": "c513ec8894ebbd9c3ac49332aaea6589afeb509071345224610e3aa6e78f02c1"
+      },
+      {
+        "source_key": "balic_winery_nj",
+        "id": "da54086fdf0eee8c41e6ca77cde9424982eb4b39e3a684b7940571f95721da4f",
+        "title": "BETH TINNON at BALIC Winery for their holiday extravaganza",
+        "starts_at": "2026-11-28T18:00:00+00:00",
+        "ends_at": "2026-11-28T22:00:00+00:00",
+        "venue_name": "Balic Winery",
+        "lat": 39.460896000003,
+        "lng": -74.791057500001,
+        "event_url": "https://www.balicwinery.com/events.html",
+        "category": "",
+        "venue_address": "6623 Harding Hwy, Mays Landing, NJ 08330",
+        "venue_city": "Mays Landing",
+        "reason": null,
+        "description": "Balic Winery\nHoliday Galas\nSAT, NOVEMBER 21-\nACOUSTIC BREEZE TRIO\n/THEY BRING THE LIVELY AND UPBEAT ATMOSPHERE TO WINERY/\nSUN, NOVEMBER 22\nFran The Piano Man\nFRI, NOVEMBER 27\nBitter Sweet Duo\nSAT, NOVEMBER 28\nBeth Tinnon\nSUN, NOVEMBER 29\nOnce Upon a Full Moon Night\n\nLive Music  November 21, 22, 27, 28, & 29th\nFor more information please call us at\n609 625 2166\n\nInside the tasting room, join Beth Tinnon bring your own snacks or visit their website for more information",
+        "timezone": "America/New_York",
+        "attendance_mode": "in_person",
+        "image_url": "https://www.balicwinery.com/uploads/6/8/4/3/68439105/published/balic-winery-gala-2026-entainters-fall-1024.jpg?1793131015",
+        "location_provenance": "reviewed_nj_ogis_point_address",
+        "description_length": 471,
+        "description_sha256": "0180e321355406764cac66c131a7d283cc7907ff786e85189ed546e6f257a01e"
+      }
+    ],
+    "row_count": 2,
+    "blank_descriptions": 0,
+    "truncated_descriptions": 0,
+    "oversize_descriptions": 0,
+    "maximum_description_length": 471,
+    "missing_full_street_or_zip": 0,
+    "missing_venue_point": 0,
+    "unknown_ends": 0,
+    "offline_parse_seconds": 0.298,
+    "network_timing_note": "Capture request timings are individual research receipts, not a production end-to-end timing claim."
+  },
+  "verification": {
+    "focused_tests": 13,
+    "focused_tests_result": "passed",
+    "command": "PYTHONPATH=collector python -m unittest discover -s collector/tests -p test_atlantic_city_remaining_balic.py -v",
+    "module_sha256": "05d2dbd6595d9e43fb98eb396768ba74b2fb2a638259875dd9c7dbf287f2e563",
+    "tests_sha256": "06a67fc548116401c37c38ea3394519bd7176b7d030aad0be706547aecd529c4"
+  }
+}

@@ -1109,13 +1109,17 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
     from roomquest import atlantic_city_reviewed_posters, atlantic_city_studio, atlantic_city_cardboard_arena
     from roomquest import atlantic_city_local_community, atlantic_city_local_markets
     from roomquest import atlantic_city_local_recreation, atlantic_city_local_venues
+    from roomquest import atlantic_city_remaining_fair, atlantic_city_remaining_inland
+    from roomquest import atlantic_city_remaining_balic
     continuation_adapters = (atlantic_city_library_chamber, atlantic_city_nightlife_more,
                              atlantic_city_outdoors_more, atlantic_city_social,
                              atlantic_city_independent_venues, atlantic_city_recreation,
                              atlantic_city_markets_gaming, atlantic_city_reviewed_posters,
                              atlantic_city_studio, atlantic_city_cardboard_arena,
                              atlantic_city_local_community, atlantic_city_local_markets,
-                             atlantic_city_local_recreation, atlantic_city_local_venues)
+                             atlantic_city_local_recreation, atlantic_city_local_venues,
+                             atlantic_city_remaining_fair, atlantic_city_remaining_inland,
+                             atlantic_city_remaining_balic)
     continuation_adapter = next((module for module in continuation_adapters
                                  if source_key in module.SOURCES), None)
     if (source_key in atlantic_city_community.SOURCES

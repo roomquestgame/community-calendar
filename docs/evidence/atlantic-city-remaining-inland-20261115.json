@@ -1,0 +1,335 @@
+{
+  "observed_at": "2026-11-15T00:19:19.340360+00:00",
+  "status": "implemented_and_captured_replay_verified; production verification remains with consolidated release",
+  "source": {
+    "source_key": "inland_family_success_nj",
+    "feed_url": "https://www.centerffs.org/our-services/community-connections/inland-fsc",
+    "kind": "html",
+    "platform_adapter": "html",
+    "timezone": "America/New_York"
+  },
+  "allowed_hosts": [
+    "www.centerffs.org"
+  ],
+  "checkpoint_required": false,
+  "source_identity_contract": "Exact source key/feed URL/kind/html adapter/New York timezone; exactly the current English November calendar link; alternate or additional English editions fail for review.",
+  "capture_manifest": {
+    "robots_status": 200,
+    "robots_permits_source": true,
+    "captures": [
+      {
+        "path": "inland.html",
+        "url": "https://www.centerffs.org/our-services/community-connections/inland-fsc",
+        "actual_url": "https://www.centerffs.org/our-services/community-connections/inland-fsc",
+        "status": 200,
+        "bytes": 69559,
+        "sha256": "8eead5e249c833f8d21ca147da97fea3d48ef80e090759eb9caa041857b98071",
+        "content_type": null
+      },
+      {
+        "path": "inland-november-2026.pdf",
+        "url": "https://www.centerffs.org/sites/default/files/2026-10/Inland%20English%20November%202026%20Calendar.docx.pdf",
+        "actual_url": "https://www.centerffs.org/sites/default/files/2026-10/Inland%20English%20November%202026%20Calendar.docx.pdf",
+        "status": 200,
+        "bytes": 2940114,
+        "sha256": "45724f7e2fb3deef9527a618b1279953c0b3d71f5aba6ef796340c2555f8eb6c",
+        "content_type": null
+      },
+      {
+        "path": "inland-point.json",
+        "url": "https://geo.nj.gov/arcgis/rest/services/Tasks/NJ_Geocode/GeocodeServer/findAddressCandidates?SingleLine=3073+English+Creek+Avenue%2C+Egg+Harbor+Township%2C+NJ+08234&outSR=4326&outFields=Match_addr%2CAddr_type%2CCity%2CPostal%2CRegion&f=pjson",
+        "actual_url": "https://geo.nj.gov/arcgis/rest/services/Tasks/NJ_Geocode/GeocodeServer/findAddressCandidates?SingleLine=3073+English+Creek+Avenue%2C+Egg+Harbor+Township%2C+NJ+08234&outSR=4326&outFields=Match_addr%2CAddr_type%2CCity%2CPostal%2CRegion&f=pjson",
+        "status": 200,
+        "bytes": 637,
+        "sha256": "dc5eecfba1c5a9730919a6f9dfd4b9437c703bbb60ec08fef1223fea05effada",
+        "content_type": null
+      }
+    ]
+  },
+  "calendar": {
+    "url": "https://www.centerffs.org/sites/default/files/2026-10/Inland%20English%20November%202026%20Calendar.docx.pdf",
+    "link_label": "November 2026 English Calendar",
+    "sha256": "45724f7e2fb3deef9527a618b1279953c0b3d71f5aba6ef796340c2555f8eb6c",
+    "bytes": 2940114,
+    "pages": 2,
+    "visual_review": "Both pages rendered with pdftoppm and inspected. November 2026 heading, all five date cells/clocks, county eligibility, registration reminder and current return address verified visually.",
+    "rendered_page_sha256": {
+      "calendar-1.png": "5ae6d98f6d668e210e495e4aedde3817c623fb3250f4cc88493066a78a0c5dbe",
+      "calendar-2.png": "62fc09143267a0e19ec7a8f56ae3be42229d01afa35a21e068ccde87de000ac8"
+    },
+    "complete_snapshot_scope": "Nine programs in the current month: four already past at collection review and all five remaining dated programs implemented. Nov26/27 explicit center closures are not events. Undated resource/food-pack/volunteer services are not projected into occurrences.",
+    "recurrence": "None. The reviewed November PDF digest binds all dates and clocks. Changed PDFs or English calendar links fail explicitly; no December/next-year recurrence is synthesized.",
+    "response_body_guard": {
+      "bytes": 3000000,
+      "change_required": false
+    }
+  },
+  "description_contract": {
+    "native_source": "Complete normalized native page-2 program paragraphs, including the STEM trailing subject text and complete dinner registration/limited-capacity requirement.",
+    "additional_publisher_text": "Rendered PDF header Free & Open to All of Atlantic County plus the full current own-site public invitation and Eventbrite/phone registration paragraph.",
+    "normalization": "Native PDF whitespace is normalized once by the existing PDF helper; extracted prose is not reparsed as HTML. No clipping or invented synopsis.",
+    "maximum_chars": 12000,
+    "oversized": "Reject complete snapshot; never truncate to fit.",
+    "blank_descriptions": 0,
+    "largest_description_chars": 632
+  },
+  "venue": {
+    "name": "Inland Family Success Center",
+    "street_address": "3050 Spruce Avenue, Egg Harbor Township, NJ 08234",
+    "city": "Egg Harbor Township",
+    "latitude": 39.411594000003,
+    "longitude": -74.585974500001,
+    "location_provenance": "reviewed_november_return_location_and_nj_ogis_point_address",
+    "street_estimated": false,
+    "point_approximate": false,
+    "current_event_evidence": "The November PDF first-page footer expressly announces WE ARE BACK AT: 3050 Spruve Ave. The publisher site contact block supplies the correct spelling 3050 Spruce Avenue and Egg Harbor Township NJ08234.",
+    "older_notice_not_used": "The page also retains a temporary 3073 English Creek Ave notice for renovations beginning in June; the November calendar return announcement is the newer event-specific location evidence.",
+    "runtime_guard": "Changed relocation notices or contact addresses require review; the known June notice may remain or be removed. Only the exact source/name/street maps to the reviewed point.",
+    "point_evidence": {
+      "requested_address": "3050 Spruce Avenue, Egg Harbor Township, NJ 08234",
+      "url": "https://geo.nj.gov/arcgis/rest/services/Tasks/NJ_Geocode/GeocodeServer/findAddressCandidates?SingleLine=3050+Spruce+Avenue%2C+Egg+Harbor+Township%2C+NJ+08234&outSR=4326&outFields=Match_addr%2CAddr_type%2CCity%2CPostal%2CRegion&f=pjson",
+      "http_status": 200,
+      "body_sha256": "42cc6a817954e6ce7519861ff1b5605b9ce89ce9a7ab381504d18a6bb1848823",
+      "result": {
+        "spatialReference": {
+          "wkid": 4326,
+          "latestWkid": 4326
+        },
+        "candidates": [
+          {
+            "address": "3050 Spruce Avenue, Egg Harbor Township, New Jersey, 08234",
+            "location": {
+              "x": -74.585974500001,
+              "y": 39.411594000003
+            },
+            "score": 100,
+            "attributes": {
+              "Match_addr": "3050 Spruce Avenue, Egg Harbor Township, New Jersey, 08234",
+              "Addr_type": "PointAddress",
+              "City": "Egg Harbor Township",
+              "Postal": "08234",
+              "Region": "New Jersey"
+            },
+            "extent": {
+              "xmin": -74.586976983087,
+              "ymin": 39.410594000003,
+              "xmax": -74.584972074082,
+              "ymax": 39.412594000003
+            }
+          }
+        ]
+      }
+    }
+  },
+  "guarded_transport_attempt": {
+    "attempted_at": "2026-11-15T00:18:33.636778+00:00",
+    "transport": "preview_worker.fetch_publisher",
+    "respect_robots": true,
+    "allowed_hosts": [
+      "www.centerffs.org"
+    ],
+    "deadline_seconds": 36,
+    "status": "blocked",
+    "error_type": "PreviewError",
+    "error_code": "dns_unavailable"
+  },
+  "transport_note": "Ordinary supported public HTTP captures succeeded with robots permission. The unmodified production fetch wrapper was attempted once locally and stopped at dns_unavailable; no guard bypass. Captured replay is separate from subsequent production validation.",
+  "tests": {
+    "command": "python -m unittest tests.test_atlantic_city_remaining_inland -v",
+    "passed": 13,
+    "failed": 0,
+    "coverage": [
+      "full native bodies above2000 characters and literal markup preserved",
+      "all five exact NY/local to UTC clocks and verified ends",
+      "PDF digest/size/month identity",
+      "English-only current link selection",
+      "public registration and venue context changes",
+      "complete grid/paragraph manifest",
+      "12000 character rejection",
+      "ongoing/past/60-day window boundaries and no recurrence",
+      "exact source identities and callback URLs/deadline"
+    ]
+  },
+  "integration": {
+    "signature": "collect(source, fetch, *, deadline_at=None, now=None)",
+    "source_entry": [
+      "https://www.centerffs.org/our-services/community-connections/inland-fsc",
+      "html",
+      "html"
+    ],
+    "diagnostic_codes": [
+      "collection_deadline",
+      "inland_calendar_edition_unreviewed",
+      "inland_clock_invalid",
+      "inland_description_limit",
+      "inland_listing_identity_changed",
+      "inland_program_description_changed",
+      "inland_program_manifest_changed",
+      "inland_record_incomplete",
+      "inland_registration_changed",
+      "inland_venue_context_changed",
+      "unregistered_atlantic_remaining_inland_source"
+    ],
+    "shared_edits_required": "Root adds bounded HTML adapter dispatch/category codes and source-scoped registry/description profile in the consolidated batch. No checkpoint profile or response-size exception."
+  },
+  "captured_proof": {
+    "source": {
+      "source_key": "inland_family_success_nj",
+      "feed_url": "https://www.centerffs.org/our-services/community-connections/inland-fsc",
+      "kind": "html",
+      "platform_adapter": "html",
+      "timezone": "America/New_York"
+    },
+    "observed_at": "2026-11-15T00:19:19.340360+00:00",
+    "captured_rows": 5,
+    "fetches": [
+      {
+        "url": "https://www.centerffs.org/our-services/community-connections/inland-fsc",
+        "accept": "text/html"
+      },
+      {
+        "url": "https://www.centerffs.org/sites/default/files/2026-10/Inland%20English%20November%202026%20Calendar.docx.pdf",
+        "accept": "application/pdf"
+      }
+    ],
+    "capture_sha256": "c3c53474016e04fdd39f9e2d1bf68831486ed64ef97e2d4e267ffc49d23da77b",
+    "capture_bytes": 6186,
+    "events": [
+      {
+        "source_key": "inland_family_success_nj",
+        "id": "inland_family_success_nj:autumn-book-club-movie:2026-11-16",
+        "title": "Autumn Book Club Movie Screening: Little Woman",
+        "starts_at": "2026-11-16T22:00:00+00:00",
+        "ends_at": "2026-11-17T00:00:00+00:00",
+        "venue_name": "Inland Family Success Center",
+        "venue_address": "3050 Spruce Avenue, Egg Harbor Township, NJ 08234",
+        "venue_city": "Egg Harbor Township",
+        "lat": 39.411594000003,
+        "lng": -74.585974500001,
+        "event_url": "https://www.centerffs.org/our-services/community-connections/inland-fsc",
+        "timezone": "America/New_York",
+        "location_provenance": "reviewed_november_return_location_and_nj_ogis_point_address",
+        "local_date": "2026-11-16",
+        "starts_local": "17:00",
+        "ends_local": "19:00",
+        "reviewed_grid_text": "16 Autumn Book Club Movie Screening: Little Woman 5:00pm-7:00pm 17",
+        "native_paragraph_chars": 220,
+        "native_paragraph_sha256": "2ba5b7ec5cc59803c9dbda189b7e3c05f0912abc84293d5312ad511ee8a01e35",
+        "native_paragraph_first_anchor": "Autumn Book Club Movie:",
+        "native_paragraph_last_anchor": "storytelling, discussion, and community.",
+        "description_chars": 422,
+        "description_sha256": "2be1fbf17e251bdf50d0f5174c68e0e223df3ff8d1ffecaee45905b9bd1c2cd0",
+        "complete_native_paragraph_preserved": true,
+        "full_registration_preserved": true
+      },
+      {
+        "source_key": "inland_family_success_nj",
+        "id": "inland_family_success_nj:paint-build-turkey:2026-11-21",
+        "title": "Paint & Build a Turkey",
+        "starts_at": "2026-11-21T16:00:00+00:00",
+        "ends_at": "2026-11-21T17:00:00+00:00",
+        "venue_name": "Inland Family Success Center",
+        "venue_address": "3050 Spruce Avenue, Egg Harbor Township, NJ 08234",
+        "venue_city": "Egg Harbor Township",
+        "lat": 39.411594000003,
+        "lng": -74.585974500001,
+        "event_url": "https://www.centerffs.org/our-services/community-connections/inland-fsc",
+        "timezone": "America/New_York",
+        "location_provenance": "reviewed_november_return_location_and_nj_ogis_point_address",
+        "local_date": "2026-11-21",
+        "starts_local": "11:00",
+        "ends_local": "12:00",
+        "reviewed_grid_text": "21 Paint & Build A Turkey! 11:00am-12:00pm 23",
+        "native_paragraph_chars": 199,
+        "native_paragraph_sha256": "b0ccacc91b17914d7af39e0fe5e2d811c502a53301aa663ce8644f36d553a9aa",
+        "native_paragraph_first_anchor": "Paint & Build a Turkey:",
+        "native_paragraph_last_anchor": "while enjoying a festive hands-on activity.",
+        "description_chars": 401,
+        "description_sha256": "eb96d8decde6007d617dd4e96591b16359aa95ccb10052741661d673cbe60966",
+        "complete_native_paragraph_preserved": true,
+        "full_registration_preserved": true
+      },
+      {
+        "source_key": "inland_family_success_nj",
+        "id": "inland_family_success_nj:thanksgiving-dinner:2026-11-23",
+        "title": "Thanksgiving Dinner",
+        "starts_at": "2026-11-23T22:00:00+00:00",
+        "ends_at": "2026-11-24T00:00:00+00:00",
+        "venue_name": "Inland Family Success Center",
+        "venue_address": "3050 Spruce Avenue, Egg Harbor Township, NJ 08234",
+        "venue_city": "Egg Harbor Township",
+        "lat": 39.411594000003,
+        "lng": -74.585974500001,
+        "event_url": "https://www.centerffs.org/our-services/community-connections/inland-fsc",
+        "timezone": "America/New_York",
+        "location_provenance": "reviewed_november_return_location_and_nj_ogis_point_address",
+        "local_date": "2026-11-23",
+        "starts_local": "17:00",
+        "ends_local": "19:00",
+        "reviewed_grid_text": "23 Thanksgiving Dinner 5:00pm-7:00pm 24",
+        "native_paragraph_chars": 288,
+        "native_paragraph_sha256": "37c276df9cc66be2ef79f3386994989780c04a49134628cd4287bf6215eead31",
+        "native_paragraph_first_anchor": "Thanksgiving Dinner:",
+        "native_paragraph_last_anchor": "so be sure to register early!*",
+        "description_chars": 490,
+        "description_sha256": "434baed879245f61c46a03c84ecb672451837af3514623ec7ae82f52f3b34740",
+        "complete_native_paragraph_preserved": true,
+        "full_registration_preserved": true
+      },
+      {
+        "source_key": "inland_family_success_nj",
+        "id": "inland_family_success_nj:science-stem-e:2026-11-24",
+        "title": "Science with STEM-E-NJ",
+        "starts_at": "2026-11-24T21:00:00+00:00",
+        "ends_at": "2026-11-24T22:00:00+00:00",
+        "venue_name": "Inland Family Success Center",
+        "venue_address": "3050 Spruce Avenue, Egg Harbor Township, NJ 08234",
+        "venue_city": "Egg Harbor Township",
+        "lat": 39.411594000003,
+        "lng": -74.585974500001,
+        "event_url": "https://www.centerffs.org/our-services/community-connections/inland-fsc",
+        "timezone": "America/New_York",
+        "location_provenance": "reviewed_november_return_location_and_nj_ogis_point_address",
+        "local_date": "2026-11-24",
+        "starts_local": "16:00",
+        "ends_local": "17:00",
+        "reviewed_grid_text": "24 Science with STEM-E Science, Technology, Engineering & Mathematic 4:00pm-5:00pm 25",
+        "native_paragraph_chars": 270,
+        "native_paragraph_sha256": "7b756fc1e4a022e2b4284f4a650cfd101771a2085c9b4ca209ffd48542a66de9",
+        "native_paragraph_first_anchor": "Science with STEM-E-NJ:",
+        "native_paragraph_last_anchor": "Science, Technology, Engineering & Mathematic",
+        "description_chars": 472,
+        "description_sha256": "979ec689e71227c53bc8c08db4e0f81dd6cd0dd0db4e39b7882517a391369b7a",
+        "complete_native_paragraph_preserved": true,
+        "full_registration_preserved": true
+      },
+      {
+        "source_key": "inland_family_success_nj",
+        "id": "inland_family_success_nj:yoga-meditation-tarak:2026-11-30",
+        "title": "Yoga & Meditation with Tarak",
+        "starts_at": "2026-11-30T21:30:00+00:00",
+        "ends_at": "2026-11-30T23:00:00+00:00",
+        "venue_name": "Inland Family Success Center",
+        "venue_address": "3050 Spruce Avenue, Egg Harbor Township, NJ 08234",
+        "venue_city": "Egg Harbor Township",
+        "lat": 39.411594000003,
+        "lng": -74.585974500001,
+        "event_url": "https://www.centerffs.org/our-services/community-connections/inland-fsc",
+        "timezone": "America/New_York",
+        "location_provenance": "reviewed_november_return_location_and_nj_ogis_point_address",
+        "local_date": "2026-11-30",
+        "starts_local": "16:30",
+        "ends_local": "18:00",
+        "reviewed_grid_text": "30 Yoga & Meditation with Tarak 4:30pm-6:00pm",
+        "native_paragraph_chars": 430,
+        "native_paragraph_sha256": "c48b030079bfd000a599dc92c66d142ac0dea39d385f92ffd8b062e6c36571bc",
+        "native_paragraph_first_anchor": "Yoga & Meditation with Tarak:",
+        "native_paragraph_last_anchor": "slow down, breathe, and recharge.",
+        "description_chars": 632,
+        "description_sha256": "e8302092b67ffd66a4e71fd0d34dc51b09ef8d0457cd9b23662b0379cb727455",
+        "complete_native_paragraph_preserved": true,
+        "full_registration_preserved": true
+      }
+    ]
+  }
+}
