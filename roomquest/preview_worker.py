@@ -520,10 +520,37 @@ def render_cardboard_arena_calendar(*, starts_at, ends_at, deadline_at=None):
         deadline_at=deadline_at, allowed_hosts=('api.carde.io',), cardboard_arena_calendar=True)
 
 
+def render_artspace_calendar(*, year, month, atts, window_start, deadline_at=None):
+    """Read the publisher's exact anonymous MEC month-display operation."""
+    from roomquest.raleigh_direct_arts import ARTSPACE_API, artspace_calendar_form
+    try:
+        form = artspace_calendar_form(year, month, atts, window_start)
+    except ValueError as exc:
+        raise PreviewError('invalid_calendar_render_parameters') from exc
+    return _fetch_publisher_request(ARTSPACE_API, 'application/json', respect_robots=True,
+        deadline_at=deadline_at, allowed_hosts=('artspacenc.org',), calendar_form=form)
+
+
+def read_game_theory_events(*, public_key, window_start, window_end, deadline_at=None):
+    """Read the store's public event table using its frontend publishable key.
+
+    The key is extracted from the official public calendar by the adapter. It
+    never enters checkpoints or logs and is scoped to one host, route and query.
+    """
+    from roomquest.raleigh_direct_community import GAME_API_HOST, game_theory_request
+    try:
+        url = game_theory_request(public_key, window_start, window_end)
+    except ValueError as exc:
+        raise PreviewError('invalid_game_theory_request') from exc
+    return _fetch_publisher_request(url, 'application/json', respect_robots=True,
+        deadline_at=deadline_at, allowed_hosts=(GAME_API_HOST,), game_theory_key=public_key)
+
+
 def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = False,
                              deadline_at: float | None = None, allowed_hosts=None,
                              calendar_form=None, calendar_json=None, localhop_app_id=None,
-                             cardboard_arena_calendar=False, visit_raleigh_api=False) -> str | bytes:
+                             cardboard_arena_calendar=False, visit_raleigh_api=False,
+                             game_theory_key=None) -> str | bytes:
     """Use the shared bounded transport for approved HTTPS publisher content.
 
     Keep URL/DNS validation and bounded downloads. As in upstream Udell,
@@ -531,6 +558,15 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
     destination URLs still pass public-network checks before each GET redirect.
     Reviewed display-only POSTs are source scoped and never redirected.
     """
+    if game_theory_key is not None:
+        from roomquest.raleigh_direct_community import GAME_API_HOST, valid_game_theory_request
+        if (not respect_robots or accept != 'application/json'
+                or allowed_hosts != (GAME_API_HOST,)
+                or not valid_game_theory_request(url, game_theory_key)
+                or calendar_form is not None or calendar_json is not None
+                or localhop_app_id is not None or cardboard_arena_calendar is not False
+                or visit_raleigh_api is not False):
+            raise PreviewError('invalid_game_theory_request')
     if visit_raleigh_api is not False:
         from roomquest import visit_raleigh
         if (visit_raleigh_api is not True or not respect_robots or accept != 'application/json'
@@ -583,6 +619,7 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
     cfengage_form = False
     eventon_form = False
     boston_cares_form = False
+    artspace_form = False
     if calendar_form is not None:
         from roomquest.richmond_public_calendars import CF_API, CF_HOST, calendar_form as cfengage_window
         cfengage_form = (url == CF_API and accept == 'application/json' and respect_robots
@@ -596,6 +633,10 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
             and calendar_form.get('searchvo_searchresultblockid') == '589'
             and _valid_boston_cares_window(calendar_form.get('searchvo_startfrom'),
                                           calendar_form.get('searchvo_endfrom')))
+        from roomquest.raleigh_direct_arts import ARTSPACE_API, valid_artspace_calendar_form
+        artspace_form = (url == ARTSPACE_API and accept == 'application/json' and respect_robots
+                         and allowed_hosts == ('artspacenc.org',)
+                         and valid_artspace_calendar_form(calendar_form))
         from roomquest import eventon
         eventon_form = (url == eventon.ENDPOINT and accept == 'application/json'
                         and respect_robots and allowed_hosts == (eventon.HOST,)
@@ -608,7 +649,7 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
                                 for k in calendar_form))
         # A second boundary keeps internal callers from turning this into an
         # arbitrary write-capable transport. Never replay a POST on redirect.
-        if not (cfengage_form or eventon_form or boston_cares_form) and (url != 'https://goodshepherdsouthhill.org/wp-admin/admin-ajax.php'
+        if not (cfengage_form or eventon_form or boston_cares_form or artspace_form) and (url != 'https://goodshepherdsouthhill.org/wp-admin/admin-ajax.php'
                 or accept != 'text/html' or not respect_robots
                 or allowed_hosts != ('goodshepherdsouthhill.org',)
                 or not isinstance(calendar_form, dict)
@@ -650,13 +691,18 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
             headers['Referer'] = eventon.CALENDAR
         if boston_cares_form:
             headers['Referer'] = 'https://www.bostoncares.org/calendar'
-        if cfengage_form or eventon_form or boston_cares_form:
+        if artspace_form:
+            headers['Referer'] = 'https://artspacenc.org/calendar/'
+        if cfengage_form or eventon_form or boston_cares_form or artspace_form:
             headers['X-Requested-With'] = 'XMLHttpRequest'
     elif calendar_json is not None:
         headers['Content-Type'] = json_content_type
         headers['Referer'] = json_referer
     if localhop_app_id is not None:
         headers["X-Parse-Application-Id"] = localhop_app_id
+    if game_theory_key is not None:
+        headers['apikey'] = game_theory_key
+        headers['Authorization'] = 'Bearer ' + game_theory_key
     if cardboard_arena_calendar:
         # Public GenericEvents routing identity published in the store's SSR.
         # This is neither a credential nor an arbitrary caller-supplied header.
@@ -711,7 +757,7 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
                         response.close()
                         raise
                 if response.status_code in (301, 302, 303, 307, 308):
-                    if calendar_form is not None or calendar_json is not None or localhop_app_id is not None or cardboard_arena_calendar or visit_raleigh_api:
+                    if calendar_form is not None or calendar_json is not None or localhop_app_id is not None or cardboard_arena_calendar or visit_raleigh_api or game_theory_key is not None:
                         response.close()
                         raise PreviewError('calendar_render_redirect_blocked')
                     from urllib.parse import urljoin
@@ -727,7 +773,7 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
                     raise PreviewError("publisher_http_" + str(code))
                 if (calendar_form is not None and
                         response.headers.get('Content-Type', '').split(';', 1)[0].strip().lower()
-                        not in ({'application/json', 'text/html'} if (cfengage_form or boston_cares_form) else
+                        not in ({'application/json', 'text/html'} if (cfengage_form or boston_cares_form or artspace_form) else
                                 {'application/json'} if eventon_form else {'text/html'})):
                     response.close()
                     raise PreviewError('invalid_calendar_render_content_type')
@@ -736,7 +782,7 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
                         != render_content_type):
                     response.close()
                     raise PreviewError('invalid_calendar_render_content_type')
-                if (cardboard_arena_calendar and response.headers.get('Content-Type', '').split(';', 1)[0].strip().lower()
+                if ((cardboard_arena_calendar or game_theory_key is not None) and response.headers.get('Content-Type', '').split(';', 1)[0].strip().lower()
                         != 'application/json'):
                     response.close()
                     raise PreviewError('invalid_calendar_render_content_type')
@@ -1066,6 +1112,13 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
     from roomquest.rockhouse import SOURCES as ROCKHOUSE_SOURCES
     from roomquest import civic_local_calendars, civic_schedule, legistar, municipal_notices, virginia_civic
     source_key = source.get('source_key')
+    from roomquest import raleigh_direct_sources
+    if raleigh_direct_sources.adapter_for(source_key) is not None:
+        try:
+            raleigh_direct_sources.validate_source(source)
+        except ValueError as exc:
+            raise PreviewError('unregistered_raleigh_direct_source') from exc
+        raise PreviewError('publisher_checkpoint_required')
     if source_key == 'visit_raleigh_nc':
         from roomquest.visit_raleigh import validate_source
         try:
@@ -2205,6 +2258,19 @@ def _preview_boston_chunk(source, pacing, *, collection_context, deadline_at,
         publisher_handoff=publisher_handoff, observe_phase=observe_phase)
 
 
+def _preview_raleigh_direct_chunk(source, pacing, *, collection_context, deadline_at,
+                                 publisher_handoff=None, observe_phase=None):
+    from roomquest import raleigh_direct_sources
+    try:
+        adapter = raleigh_direct_sources.validate_source(source)
+    except ValueError as exc:
+        raise PreviewError('unregistered_raleigh_direct_source') from exc
+    return _preview_fetch_chunk(source, pacing, adapter=adapter,
+        allowed_hosts=adapter.ALLOWED_HOSTS[source['source_key']],
+        collection_context=collection_context, deadline_at=deadline_at,
+        publisher_handoff=publisher_handoff, observe_phase=observe_phase)
+
+
 def _preview_fetch_chunk(source, pacing, *, adapter, allowed_hosts, collection_context,
                          deadline_at, publisher_handoff=None, observe_phase=None):
     """Persist one lease-fenced complete-manifest chunk before any staging."""
@@ -2247,6 +2313,13 @@ def _preview_fetch_chunk(source, pacing, *, adapter, allowed_hosts, collection_c
             from roomquest import atlantic_city_cardboard_arena
             if adapter is atlantic_city_cardboard_arena:
                 adapter_args['render_calendar'] = lambda **window: render_cardboard_arena_calendar(
+                    **window, deadline_at=deadline)
+            from roomquest import raleigh_direct_arts, raleigh_direct_community
+            if adapter is raleigh_direct_arts and source['source_key'] == raleigh_direct_arts.ARTSPACE:
+                adapter_args['render_calendar'] = lambda **window: render_artspace_calendar(
+                    **window, deadline_at=deadline)
+            if adapter is raleigh_direct_community and source['source_key'] == raleigh_direct_community.GAME:
+                adapter_args['read_public_events'] = lambda **window: read_game_theory_events(
                     **window, deadline_at=deadline)
             chunk = adapter.collect_chunk(
                 source, lambda url, accept: fetch_publisher(
@@ -2394,6 +2467,8 @@ def _preview_fetch_chunk(source, pacing, *, adapter, allowed_hosts, collection_c
             codes.update(new_york_sources.diagnostic_codes())
             from roomquest import boston_sources
             codes.update(boston_sources.diagnostic_codes())
+            from roomquest import raleigh_direct_sources
+            codes.update(raleigh_direct_sources.diagnostic_codes())
             raise PreviewError(reason if type(reason) is str and reason in codes
                                else "invalid_html_event_payload") from exc
         if pacing["wait_unbounded"]:
@@ -2415,6 +2490,14 @@ def _preview_fetch_chunk(source, pacing, *, adapter, allowed_hosts, collection_c
             except ValueError as exc:
                 raise PreviewError(str(exc)) from exc
         operation = "community_collector_write_fetch_checkpoint"
+        from roomquest import raleigh_direct_sources
+        if raleigh_direct_sources.adapter_for(source.get('source_key')) is not None:
+            try:
+                raleigh_direct_sources.validate_checkpoint(source, chunk.get('checkpoint'))
+                if chunk.get('complete') and not raleigh_direct_sources.checkpoint_complete(source, chunk['checkpoint']):
+                    raise ValueError('raleigh_direct_checkpoint_invalid')
+            except ValueError as exc:
+                raise PreviewError(str(exc)) from exc
         _observe_collection_phase(observe_phase, "fetch", operation=operation)
         acknowledged = supabase_rpc(operation, {
             **args, "p_expected_revision": saved["revision"],
@@ -2431,6 +2514,12 @@ def _preview_fetch_chunk(source, pacing, *, adapter, allowed_hosts, collection_c
         # A complete cursor is durable before the ordinary staging path starts.
         # Its database row is cleared atomically by successful preview recording.
         records = chunk["events"]
+        from roomquest import raleigh_direct_sources
+        if raleigh_direct_sources.adapter_for(source.get('source_key')) is not None:
+            try:
+                raleigh_direct_sources.validate_records(records, source)
+            except ValueError as exc:
+                raise PreviewError(str(exc)) from exc
         from roomquest import new_york_sources
         if new_york_sources.adapter_for(source.get('source_key')) is not None:
             try:
@@ -2466,6 +2555,8 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
     new_york_checkpoint_keys = new_york_sources.checkpoint_keys()
     from roomquest import boston_sources
     boston_checkpoint_keys = boston_sources.checkpoint_keys()
+    from roomquest import raleigh_direct_sources
+    raleigh_direct_checkpoint_keys = raleigh_direct_sources.checkpoint_keys()
     from roomquest import atlantic_city_library_chamber, atlantic_city_nightlife_more
     from roomquest import atlantic_city_studio, atlantic_city_cardboard_arena
     from roomquest import atlantic_city_local_venues
@@ -2485,6 +2576,7 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
                 or checkpoint_key in continuation_checkpoint_keys
                 or checkpoint_key in new_york_checkpoint_keys
                 or checkpoint_key in boston_checkpoint_keys
+                or checkpoint_key in raleigh_direct_checkpoint_keys
                 or checkpoint_key in linked_description_profiles)
                 and collection_context is not None
                 and type(source.get("fetch_checkpoint_version")) is int
@@ -2492,6 +2584,7 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
             preview_chunk = (_preview_halifax_chunk if checkpoint_key == "discover_halifax_va"
                              else _preview_new_york_chunk if checkpoint_key in new_york_checkpoint_keys
                              else _preview_boston_chunk if checkpoint_key in boston_checkpoint_keys
+                             else _preview_raleigh_direct_chunk if checkpoint_key in raleigh_direct_checkpoint_keys
                              else _preview_atlantic_continuation_chunk if checkpoint_key in continuation_checkpoint_keys
                              else _preview_greatday_chunk if checkpoint_key == "greatday_atlantic_city_nj"
                              else _preview_visit_atlantic_chunk if checkpoint_key == "visit_atlantic_city_nj"
