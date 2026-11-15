@@ -1,6 +1,8 @@
 """Per-collection, bounded publisher wait evidence for the existing DB queue.
 
-No raw header or robots body crosses the RPC boundary. Waits beyond a day, or
+These numeric pacing fields contain no raw header or robots body. The separate
+publisher_robots_checkpoint module authenticates a short-lived complete policy
+cache for three explicitly reviewed HTML continuations. Waits beyond a day, or
 unrepresentable Retry-After values, require explicit review rather than a
 shorter invented wait. A ContextVar keeps concurrent legacy previews isolated.
 """

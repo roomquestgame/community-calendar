@@ -704,6 +704,14 @@ def _new_state(key, queue, started):
                 manifest_count=len(queue), cursor=0, queue=queue, events=[], diagnostics=[], manifest_verified=not queue)
 
 
+def _bounded_transport_pause(key, exc):
+    """A fresh robots check may use the remaining budget of these slow hosts."""
+    from roomquest.preview_worker import PreviewError
+    return key in {TRANSIT, FLUSHING} and (
+        isinstance(exc, PreviewError) and str(exc) in {"publisher_pacing_deferred", "source_fetch_deadline"}
+        or type(exc) is ValueError and str(exc) == "collection_deadline")
+
+
 def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None, max_details=2):
     key = _source(source)
     if key not in CHECKPOINT_KEYS:
@@ -718,6 +726,7 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
         state = _new_state(key, _manifest(key, fetch, deadline, started), started)
     queue = state["queue"]
     prior = state["cursor"]
+    interrupted = False
     maximum = min(3 if key in {MAKER, BPL} else 2, max(1, int(max_details)))
     detail = {TRANSIT: _transit_detail, FLUSHING: _flushing_detail, MAKER: _maker_detail, BPL: _bpl_detail}[key]
     while state["cursor"] < len(queue) and state["cursor"] - prior < maximum:
@@ -729,6 +738,9 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
         try:
             rows = _unique(detail(item, fetch(item["url"], "text/html"), timestamp(state["started_at"])))
         except ValueError as exc:
+            if _bounded_transport_pause(key, exc):
+                interrupted = True
+                break
             if str(exc) not in HOLD_REASONS:
                 raise
             rows, reason = [], str(exc)
@@ -740,12 +752,19 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
     # and resume details directly; do not spend the same crawl delay reloading
     # the listing on every invocation. Before any publication, reload the full
     # manifest and discard all hydrated rows if identity/schedule facts changed.
-    if state["cursor"] == len(queue) and not state["manifest_verified"] and monotonic() + 15 < deadline:
-        latest = _manifest(key, fetch, deadline, started)
-        if _digest(latest) != state["manifest_hash"]:
-            state = _new_state(key, latest, started)
+    if not interrupted and state["cursor"] == len(queue) and not state["manifest_verified"] and monotonic() + 15 < deadline:
+        try:
+            latest = _manifest(key, fetch, deadline, started)
+        except ValueError as exc:
+            if not _bounded_transport_pause(key, exc):
+                raise
+            # Retain the fully described prefix, still unverified and private.
+            # The next lease must complete the ordinary final manifest check.
         else:
-            state["manifest_verified"] = True
+            if _digest(latest) != state["manifest_hash"]:
+                state = _new_state(key, latest, started)
+            else:
+                state["manifest_verified"] = True
     if len(state["events"]) > MAX_RECORDS or len(json.dumps(state, ensure_ascii=False).encode()) > MAX_CHECKPOINT_BYTES:
         raise ValueError("nyc_final_checkpoint_size_limit")
     complete = state["manifest_verified"]

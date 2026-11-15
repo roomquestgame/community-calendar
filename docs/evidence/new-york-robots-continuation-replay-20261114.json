@@ -1,0 +1,846 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-11-14T23:59:08.101587+00:00",
+  "validation": "Offline replay of saved native publisher responses through real guarded transport and checkpoint worker. DNS/HTTP/RPC origins are fakes; every chunk clears process-local caches. No publisher network request or production mutation occurred.",
+  "database_contract": "Simulated existing revision-fenced checkpoint RPC and not_before admission; unchanged 30-second effective collection budget inside 39-second source budget.",
+  "distinct_source_count": 3,
+  "distinct_event_count": 41,
+  "results": [
+    {
+      "source_key": "radegast_hall_brooklyn_ny",
+      "legacy_prefix": false,
+      "complete": true,
+      "events": 12,
+      "full_capture_equal": true,
+      "actual_projection_sha256": "9691a75b27d62605765da14e6a360f5c7681efbc827c42cbcacddaf05ac8930f",
+      "expected_projection_sha256": "9691a75b27d62605765da14e6a360f5c7681efbc827c42cbcacddaf05ac8930f",
+      "robot_requests": 1,
+      "calendar_requests": 2,
+      "minimum_same_host_request_gap": 62.0,
+      "advertised_delay_floor": 60,
+      "maximum_chunk_seconds": 1.0,
+      "maximum_checkpoint_bytes": 20828,
+      "chunks": [
+        {
+          "index": 1,
+          "revision": 1,
+          "cursor": 0,
+          "manifest_count": 0,
+          "events": 0,
+          "phase": "robots",
+          "requests": 1,
+          "elapsed": 1.0,
+          "snapshot_fetched_at": "2026-11-14T23:21:37.012117+00:00",
+          "snapshot_expires_at": "2026-11-14T23:26:37.012117+00:00",
+          "checkpoint_bytes": 1193,
+          "complete": false
+        },
+        {
+          "index": 2,
+          "revision": 2,
+          "cursor": 12,
+          "manifest_count": 16,
+          "events": 9,
+          "phase": "events",
+          "requests": 1,
+          "elapsed": 1.0,
+          "snapshot_fetched_at": "2026-11-14T23:21:37.012117+00:00",
+          "snapshot_expires_at": "2026-11-14T23:26:37.012117+00:00",
+          "checkpoint_bytes": 15750,
+          "complete": false
+        },
+        {
+          "index": 3,
+          "revision": 3,
+          "cursor": 16,
+          "manifest_count": 16,
+          "events": 12,
+          "phase": "events",
+          "requests": 1,
+          "elapsed": 1.0,
+          "snapshot_fetched_at": "2026-11-14T23:21:37.012117+00:00",
+          "snapshot_expires_at": "2026-11-14T23:26:37.012117+00:00",
+          "checkpoint_bytes": 20828,
+          "complete": true
+        }
+      ],
+      "requests": [
+        {
+          "kind": "robots",
+          "url": "https://radegasthall.com/robots.txt",
+          "at": 100.0
+        },
+        {
+          "kind": "calendar",
+          "url": "https://radegasthall.com/wp-admin/admin-ajax.php?action=wpamelia_api&call=/events&bookings=false&range=future&page=1",
+          "at": 162.0
+        },
+        {
+          "kind": "calendar",
+          "url": "https://radegasthall.com/wp-admin/admin-ajax.php?action=wpamelia_api&call=/events&bookings=false&range=future&page=2",
+          "at": 224.0
+        }
+      ],
+      "capture_proofs": {
+        "https://radegasthall.com/robots.txt": {
+          "path": "/workspace/scratch/086e7d1878f1/nyc-social-final-research/radegast-robots.txt",
+          "bytes": 42,
+          "sha256": "6288dde2996947fa48d1dd7de610bc66852ec0e288a275a3f8b44c6883d5b7f2"
+        },
+        "https://radegasthall.com/wp-admin/admin-ajax.php?action=wpamelia_api&call=/events&bookings=false&range=future&page=1": {
+          "path": "/workspace/scratch/086e7d1878f1/nyc-social-final-research/radegast-events-1.json",
+          "bytes": 40272,
+          "sha256": "2e936985540fe99a4eb5d52e9fc00deaf3588efeff38d2e3b6adfc673a421a6f"
+        },
+        "https://radegasthall.com/wp-admin/admin-ajax.php?action=wpamelia_api&call=/events&bookings=false&range=future&page=2": {
+          "path": "/workspace/scratch/086e7d1878f1/nyc-social-final-research/radegast-events-2.json",
+          "bytes": 11127,
+          "sha256": "654d283e56a3b26477c39bcd0fc370d13cc5eaab6bd07dee3d5641c4fbc2f655"
+        }
+      }
+    },
+    {
+      "source_key": "ny_transit_museum_ny",
+      "legacy_prefix": false,
+      "complete": true,
+      "events": 17,
+      "full_capture_equal": true,
+      "actual_projection_sha256": "fae3fd845bf83927ebb474f726f7f65a954f734a42b753fa77c7fd61a16133f9",
+      "expected_projection_sha256": "fae3fd845bf83927ebb474f726f7f65a954f734a42b753fa77c7fd61a16133f9",
+      "robot_requests": 3,
+      "calendar_requests": 21,
+      "minimum_same_host_request_gap": 10.0,
+      "advertised_delay_floor": 10,
+      "maximum_chunk_seconds": 22.0,
+      "maximum_checkpoint_bytes": 64329,
+      "chunks": [
+        {
+          "index": 1,
+          "revision": 1,
+          "cursor": 1,
+          "manifest_count": 19,
+          "events": 1,
+          "phase": null,
+          "requests": 3,
+          "elapsed": 22.0,
+          "snapshot_fetched_at": "2026-11-14T23:21:37.012117+00:00",
+          "snapshot_expires_at": "2026-11-14T23:26:37.012117+00:00",
+          "checkpoint_bytes": 12129,
+          "complete": false
+        },
+        {
+          "index": 2,
+          "revision": 2,
+          "cursor": 3,
+          "manifest_count": 19,
+          "events": 3,
+          "phase": null,
+          "requests": 2,
+          "elapsed": 11.0,
+          "snapshot_fetched_at": "2026-11-14T23:21:37.012117+00:00",
+          "snapshot_expires_at": "2026-11-14T23:26:37.012117+00:00",
+          "checkpoint_bytes": 22461,
+          "complete": false
+        },
+        {
+          "index": 3,
+          "revision": 3,
+          "cursor": 5,
+          "manifest_count": 19,
+          "events": 5,
+          "phase": null,
+          "requests": 2,
+          "elapsed": 11.0,
+          "snapshot_fetched_at": "2026-11-14T23:21:37.012117+00:00",
+          "snapshot_expires_at": "2026-11-14T23:26:37.012117+00:00",
+          "checkpoint_bytes": 32793,
+          "complete": false
+        },
+        {
+          "index": 4,
+          "revision": 4,
+          "cursor": 7,
+          "manifest_count": 19,
+          "events": 6,
+          "phase": null,
+          "requests": 2,
+          "elapsed": 11.0,
+          "snapshot_fetched_at": "2026-11-14T23:21:37.012117+00:00",
+          "snapshot_expires_at": "2026-11-14T23:26:37.012117+00:00",
+          "checkpoint_bytes": 34962,
+          "complete": false
+        },
+        {
+          "index": 5,
+          "revision": 5,
+          "cursor": 9,
+          "manifest_count": 19,
+          "events": 8,
+          "phase": null,
+          "requests": 2,
+          "elapsed": 11.0,
+          "snapshot_fetched_at": null,
+          "snapshot_expires_at": null,
+          "checkpoint_bytes": 41269,
+          "complete": false
+        },
+        {
+          "index": 6,
+          "revision": 6,
+          "cursor": 11,
+          "manifest_count": 19,
+          "events": 10,
+          "phase": null,
+          "requests": 3,
+          "elapsed": 22.0,
+          "snapshot_fetched_at": "2026-11-14T23:27:48.012117+00:00",
+          "snapshot_expires_at": "2026-11-14T23:32:48.012117+00:00",
+          "checkpoint_bytes": 48521,
+          "complete": false
+        },
+        {
+          "index": 7,
+          "revision": 7,
+          "cursor": 13,
+          "manifest_count": 19,
+          "events": 11,
+          "phase": null,
+          "requests": 2,
+          "elapsed": 11.0,
+          "snapshot_fetched_at": "2026-11-14T23:27:48.012117+00:00",
+          "snapshot_expires_at": "2026-11-14T23:32:48.012117+00:00",
+          "checkpoint_bytes": 52730,
+          "complete": false
+        },
+        {
+          "index": 8,
+          "revision": 8,
+          "cursor": 15,
+          "manifest_count": 19,
+          "events": 13,
+          "phase": null,
+          "requests": 2,
+          "elapsed": 11.0,
+          "snapshot_fetched_at": "2026-11-14T23:27:48.012117+00:00",
+          "snapshot_expires_at": "2026-11-14T23:32:48.012117+00:00",
+          "checkpoint_bytes": 58328,
+          "complete": false
+        },
+        {
+          "index": 9,
+          "revision": 9,
+          "cursor": 17,
+          "manifest_count": 19,
+          "events": 15,
+          "phase": null,
+          "requests": 2,
+          "elapsed": 11.0,
+          "snapshot_fetched_at": "2026-11-14T23:27:48.012117+00:00",
+          "snapshot_expires_at": "2026-11-14T23:32:48.012117+00:00",
+          "checkpoint_bytes": 61359,
+          "complete": false
+        },
+        {
+          "index": 10,
+          "revision": 10,
+          "cursor": 19,
+          "manifest_count": 19,
+          "events": 17,
+          "phase": null,
+          "requests": 3,
+          "elapsed": 21.0,
+          "snapshot_fetched_at": "2026-11-14T23:33:07.012117+00:00",
+          "snapshot_expires_at": "2026-11-14T23:38:07.012117+00:00",
+          "checkpoint_bytes": 64329,
+          "complete": false
+        },
+        {
+          "index": 11,
+          "revision": 11,
+          "cursor": 19,
+          "manifest_count": 19,
+          "events": 17,
+          "phase": null,
+          "requests": 1,
+          "elapsed": 1.0,
+          "snapshot_fetched_at": "2026-11-14T23:33:07.012117+00:00",
+          "snapshot_expires_at": "2026-11-14T23:38:07.012117+00:00",
+          "checkpoint_bytes": 64328,
+          "complete": true
+        }
+      ],
+      "requests": [
+        {
+          "kind": "robots",
+          "url": "https://www.nytransitmuseum.org/robots.txt",
+          "at": 100.0
+        },
+        {
+          "kind": "calendar",
+          "url": "https://www.nytransitmuseum.org/wp-json/tribe/events/v1/events?per_page=100&page=1&start_date=2026-11-14&end_date=2027-01-13",
+          "at": 111.0
+        },
+        {
+          "kind": "calendar",
+          "url": "https://www.nytransitmuseum.org/program/2026holidayrides/2026-11-29/",
+          "at": 121.0
+        },
+        {
+          "kind": "calendar",
+          "url": "https://www.nytransitmuseum.org/program/2026holidayrides/2026-12-06/",
+          "at": 183.0
+        },
+        {
+          "kind": "calendar",
+          "url": "https://www.nytransitmuseum.org/program/2026holidayrides/2026-12-13/",
+          "at": 193.0
+        },
+        {
+          "kind": "calendar",
+          "url": "https://www.nytransitmuseum.org/program/2026holidayrides/2026-12-20/",
+          "at": 255.0
+        },
+        {
+          "kind": "calendar",
+          "url": "https://www.nytransitmuseum.org/program/2026holidayrides/2026-12-27/",
+          "at": 265.0
+        },
+        {
+          "kind": "calendar",
+          "url": "https://www.nytransitmuseum.org/program/brooklyn-11-21/",
+          "at": 327.0
+        },
+        {
+          "kind": "calendar",
+          "url": "https://www.nytransitmuseum.org/program/day-habilitation-day-fall2026/",
+          "at": 337.0
+        },
+        {
+          "kind": "calendar",
+          "url": "https://www.nytransitmuseum.org/program/grandcentral-12-11-2/",
+          "at": 399.0
+        },
+        {
+          "kind": "calendar",
+          "url": "https://www.nytransitmuseum.org/program/grandcentral-12-11/",
+          "at": 409.0
+        },
+        {
+          "kind": "robots",
+          "url": "https://www.nytransitmuseum.org/robots.txt",
+          "at": 471.0
+        },
+        {
+          "kind": "calendar",
+          "url": "https://www.nytransitmuseum.org/program/movers-and-makers-family-tour-and-workshop-dec13/",
+          "at": 482.0
+        },
+        {
+          "kind": "calendar",
+          "url": "https://www.nytransitmuseum.org/program/penn-12-16-2/",
+          "at": 492.0
+        },
+        {
+          "kind": "calendar",
+          "url": "https://www.nytransitmuseum.org/program/penn-12-16/",
+          "at": 554.0
+        },
+        {
+          "kind": "calendar",
+          "url": "https://www.nytransitmuseum.org/program/secondav-11-21/",
+          "at": 564.0
+        },
+        {
+          "kind": "calendar",
+          "url": "https://www.nytransitmuseum.org/program/system-improvements/",
+          "at": 626.0
+        },
+        {
+          "kind": "calendar",
+          "url": "https://www.nytransitmuseum.org/program/transit-tots-13dec/",
+          "at": 636.0
+        },
+        {
+          "kind": "calendar",
+          "url": "https://www.nytransitmuseum.org/program/transit-tots-15nov/",
+          "at": 698.0
+        },
+        {
+          "kind": "calendar",
+          "url": "https://www.nytransitmuseum.org/program/transit-tots-20dec/",
+          "at": 708.0
+        },
+        {
+          "kind": "calendar",
+          "url": "https://www.nytransitmuseum.org/program/transit-tots-22nov/",
+          "at": 770.0
+        },
+        {
+          "kind": "calendar",
+          "url": "https://www.nytransitmuseum.org/program/transit-tots-6dec/",
+          "at": 780.0
+        },
+        {
+          "kind": "robots",
+          "url": "https://www.nytransitmuseum.org/robots.txt",
+          "at": 790.0
+        },
+        {
+          "kind": "calendar",
+          "url": "https://www.nytransitmuseum.org/wp-json/tribe/events/v1/events?per_page=100&page=1&start_date=2026-11-14&end_date=2027-01-13",
+          "at": 852.0
+        }
+      ],
+      "capture_proofs": {
+        "https://www.nytransitmuseum.org/robots.txt": {
+          "path": "/workspace/scratch/086e7d1878f1/nyc_research/arts_final/transit-robots.txt",
+          "bytes": 197,
+          "sha256": "a9e57176e3b6931a0830523974562253ff2caf798307a175b1f2bf85251294f8"
+        },
+        "https://www.nytransitmuseum.org/wp-json/tribe/events/v1/events?per_page=100&page=1&start_date=2026-11-14&end_date=2027-01-13": {
+          "path": "/workspace/scratch/086e7d1878f1/nyc_research/arts_final/transit-api.json",
+          "bytes": 218286,
+          "sha256": "27702399118863fcc2c1cc12265c96c323d07a3238857cd3714dfef157952475"
+        },
+        "https://www.nytransitmuseum.org/program/2026holidayrides/2026-11-29/": {
+          "path": "/workspace/scratch/086e7d1878f1/nyc_research/arts_final/transit-484f97cad808a959.html",
+          "bytes": 146524,
+          "sha256": "128f7ce17b462a7ecac225744e841b8c8c2249e9ca69d4929e9791acb7be9943"
+        },
+        "https://www.nytransitmuseum.org/program/2026holidayrides/2026-12-06/": {
+          "path": "/workspace/scratch/086e7d1878f1/nyc_research/arts_final/transit-f9e02a9c6ee85bfd.html",
+          "bytes": 146523,
+          "sha256": "342d426bae122d3dc67af51e2b765b28c1bb0e6530738d34bff6394fcd1c67a0"
+        },
+        "https://www.nytransitmuseum.org/program/2026holidayrides/2026-12-13/": {
+          "path": "/workspace/scratch/086e7d1878f1/nyc_research/arts_final/transit-73ff3ba734dc13d5.html",
+          "bytes": 146524,
+          "sha256": "1234555589ee07a5708382d6bfcab28e05d552007ac6dac7377f53ad2654e13d"
+        },
+        "https://www.nytransitmuseum.org/program/2026holidayrides/2026-12-20/": {
+          "path": "/workspace/scratch/086e7d1878f1/nyc_research/arts_final/transit-05efcb3abd1ee41d.html",
+          "bytes": 146524,
+          "sha256": "ec1427ea10fa8eec73fc24293b7f892b3f8daf16b2c46aa862fe5f2c07cfdcf5"
+        },
+        "https://www.nytransitmuseum.org/program/2026holidayrides/2026-12-27/": {
+          "path": "/workspace/scratch/086e7d1878f1/nyc_research/arts_final/transit-37a4ebcbc5bc9b05.html",
+          "bytes": 146524,
+          "sha256": "091f6de760c805642e3f4b39e3411b33dde73167e3f59b921a215420d19a38c2"
+        },
+        "https://www.nytransitmuseum.org/program/brooklyn-11-21/": {
+          "path": "/workspace/scratch/086e7d1878f1/nyc_research/arts_final/transit-5559ec0cd15dca8e.html",
+          "bytes": 150460,
+          "sha256": "8419d749b0459a8e404d91e63d504ddcae62e8c57ed5f64ea0bdae13fb8d4adb"
+        },
+        "https://www.nytransitmuseum.org/program/day-habilitation-day-fall2026/": {
+          "path": "/workspace/scratch/086e7d1878f1/nyc_research/arts_final/transit-74d466632f51720f.html",
+          "bytes": 136092,
+          "sha256": "820a61851bda116eb26c446350bcd97ae11c83add4d2296d911203ab5c0ba275"
+        },
+        "https://www.nytransitmuseum.org/program/grandcentral-12-11-2/": {
+          "path": "/workspace/scratch/086e7d1878f1/nyc_research/arts_final/transit-698748c7cd39dfd0.html",
+          "bytes": 149719,
+          "sha256": "0e07dd66eb81c6e0f4116eac3f3be408ea92ba5c7100410b675f1581b8337346"
+        },
+        "https://www.nytransitmuseum.org/program/grandcentral-12-11/": {
+          "path": "/workspace/scratch/086e7d1878f1/nyc_research/arts_final/transit-6a0565c88528f129.html",
+          "bytes": 149685,
+          "sha256": "d6dff1f1c74e966c74b2e5ef1282b0e129b9ff198daa8b26623ffcbfef2c6aec"
+        },
+        "https://www.nytransitmuseum.org/program/movers-and-makers-family-tour-and-workshop-dec13/": {
+          "path": "/workspace/scratch/086e7d1878f1/nyc_research/arts_final/transit-d3f54e21edeb6dc7.html",
+          "bytes": 136040,
+          "sha256": "08adae77f54b38a0729268b4d7288b3e0b5f96b8ad05a5fe51ad63056fbe6877"
+        },
+        "https://www.nytransitmuseum.org/program/penn-12-16-2/": {
+          "path": "/workspace/scratch/086e7d1878f1/nyc_research/arts_final/transit-5b2f4df26ef42b0d.html",
+          "bytes": 151512,
+          "sha256": "1a34dcce9faa75845a917fa5f1af04fcac314adf2e4d8a97fd264bea7417e8dd"
+        },
+        "https://www.nytransitmuseum.org/program/penn-12-16/": {
+          "path": "/workspace/scratch/086e7d1878f1/nyc_research/arts_final/transit-84c53512bb9b1894.html",
+          "bytes": 151478,
+          "sha256": "83fe70f9e8b1b664808b22c4a60a4c3068eec8e0f9f083c73522473ef878ca2f"
+        },
+        "https://www.nytransitmuseum.org/program/secondav-11-21/": {
+          "path": "/workspace/scratch/086e7d1878f1/nyc_research/arts_final/transit-67dfb6426da02edb.html",
+          "bytes": 149436,
+          "sha256": "8eefa6ccd6282574a9624f082c4b5288b23f54b9701ed0b0f5bbf075400fc909"
+        },
+        "https://www.nytransitmuseum.org/program/system-improvements/": {
+          "path": "/workspace/scratch/086e7d1878f1/nyc_research/arts_final/transit-d1bca1718fd1c3da.html",
+          "bytes": 147492,
+          "sha256": "3dbf0aa2f48d2809d44a1f2b618d80152db660c5f1b0207f7b1039693e2301b0"
+        },
+        "https://www.nytransitmuseum.org/program/transit-tots-13dec/": {
+          "path": "/workspace/scratch/086e7d1878f1/nyc_research/arts_final/transit-58b0767502261877.html",
+          "bytes": 133900,
+          "sha256": "6fe4a0dd14299f8559857c54c05d78b00654a72e28c173a947e888771e1a8a2d"
+        },
+        "https://www.nytransitmuseum.org/program/transit-tots-15nov/": {
+          "path": "/workspace/scratch/086e7d1878f1/nyc_research/arts_final/transit-c81acd7797f3994c.html",
+          "bytes": 134047,
+          "sha256": "9b946dde51fd42dbd4642f3586173c384e81200c040b65bba02b6942e5f15097"
+        },
+        "https://www.nytransitmuseum.org/program/transit-tots-20dec/": {
+          "path": "/workspace/scratch/086e7d1878f1/nyc_research/arts_final/transit-2c716d72f8360c1b.html",
+          "bytes": 133892,
+          "sha256": "39be3e9953b333003a3aae2e18f05c89ef793395e965970f5a69e5a250f20fd3"
+        },
+        "https://www.nytransitmuseum.org/program/transit-tots-22nov/": {
+          "path": "/workspace/scratch/086e7d1878f1/nyc_research/arts_final/transit-91f9b98926e45a03.html",
+          "bytes": 133900,
+          "sha256": "c94721a0563220ef28b18ef2d56fca02eb5c4dd56b78050c3725a8a47e9d71d9"
+        },
+        "https://www.nytransitmuseum.org/program/transit-tots-6dec/": {
+          "path": "/workspace/scratch/086e7d1878f1/nyc_research/arts_final/transit-9fa9211a9aa35d29.html",
+          "bytes": 137364,
+          "sha256": "bf357439fcca7d5fab466e64e219985aa9d0702b51f102375fc3a6ce5177d4d0"
+        }
+      }
+    },
+    {
+      "source_key": "flushing_town_hall_ny",
+      "legacy_prefix": false,
+      "complete": true,
+      "events": 12,
+      "full_capture_equal": true,
+      "actual_projection_sha256": "0be2e632fc91be03645f89664181c2205936c30f15bab8c458ff3916a843338f",
+      "expected_projection_sha256": "0be2e632fc91be03645f89664181c2205936c30f15bab8c458ff3916a843338f",
+      "robot_requests": 2,
+      "calendar_requests": 14,
+      "minimum_same_host_request_gap": 10.0,
+      "advertised_delay_floor": 10,
+      "maximum_chunk_seconds": 22.0,
+      "maximum_checkpoint_bytes": 38788,
+      "chunks": [
+        {
+          "index": 1,
+          "revision": 1,
+          "cursor": 1,
+          "manifest_count": 12,
+          "events": 1,
+          "phase": null,
+          "requests": 3,
+          "elapsed": 22.0,
+          "snapshot_fetched_at": "2026-11-14T23:21:37.012117+00:00",
+          "snapshot_expires_at": "2026-11-14T23:26:37.012117+00:00",
+          "checkpoint_bytes": 12068,
+          "complete": false
+        },
+        {
+          "index": 2,
+          "revision": 2,
+          "cursor": 3,
+          "manifest_count": 12,
+          "events": 3,
+          "phase": null,
+          "requests": 2,
+          "elapsed": 11.0,
+          "snapshot_fetched_at": "2026-11-14T23:21:37.012117+00:00",
+          "snapshot_expires_at": "2026-11-14T23:26:37.012117+00:00",
+          "checkpoint_bytes": 17666,
+          "complete": false
+        },
+        {
+          "index": 3,
+          "revision": 3,
+          "cursor": 5,
+          "manifest_count": 12,
+          "events": 5,
+          "phase": null,
+          "requests": 2,
+          "elapsed": 11.0,
+          "snapshot_fetched_at": "2026-11-14T23:21:37.012117+00:00",
+          "snapshot_expires_at": "2026-11-14T23:26:37.012117+00:00",
+          "checkpoint_bytes": 23367,
+          "complete": false
+        },
+        {
+          "index": 4,
+          "revision": 4,
+          "cursor": 7,
+          "manifest_count": 12,
+          "events": 7,
+          "phase": null,
+          "requests": 2,
+          "elapsed": 11.0,
+          "snapshot_fetched_at": "2026-11-14T23:21:37.012117+00:00",
+          "snapshot_expires_at": "2026-11-14T23:26:37.012117+00:00",
+          "checkpoint_bytes": 26481,
+          "complete": false
+        },
+        {
+          "index": 5,
+          "revision": 5,
+          "cursor": 9,
+          "manifest_count": 12,
+          "events": 8,
+          "phase": null,
+          "requests": 2,
+          "elapsed": 11.0,
+          "snapshot_fetched_at": null,
+          "snapshot_expires_at": null,
+          "checkpoint_bytes": 22070,
+          "complete": false
+        },
+        {
+          "index": 6,
+          "revision": 6,
+          "cursor": 11,
+          "manifest_count": 12,
+          "events": 10,
+          "phase": null,
+          "requests": 3,
+          "elapsed": 22.0,
+          "snapshot_fetched_at": "2026-11-14T23:27:48.012117+00:00",
+          "snapshot_expires_at": "2026-11-14T23:32:48.012117+00:00",
+          "checkpoint_bytes": 33011,
+          "complete": false
+        },
+        {
+          "index": 7,
+          "revision": 7,
+          "cursor": 12,
+          "manifest_count": 12,
+          "events": 12,
+          "phase": null,
+          "requests": 2,
+          "elapsed": 11.0,
+          "snapshot_fetched_at": "2026-11-14T23:27:48.012117+00:00",
+          "snapshot_expires_at": "2026-11-14T23:32:48.012117+00:00",
+          "checkpoint_bytes": 38788,
+          "complete": true
+        }
+      ],
+      "requests": [
+        {
+          "kind": "robots",
+          "url": "https://www.flushingtownhall.org/robots.txt",
+          "at": 100.0
+        },
+        {
+          "kind": "calendar",
+          "url": "https://www.flushingtownhall.org/events",
+          "at": 111.0
+        },
+        {
+          "kind": "calendar",
+          "url": "https://www.flushingtownhall.org/show-details/2026-native-american-market-social",
+          "at": 121.0
+        },
+        {
+          "kind": "calendar",
+          "url": "https://www.flushingtownhall.org/show-details/a-collective-thread-collaborative-drawings-with-older-adults",
+          "at": 183.0
+        },
+        {
+          "kind": "calendar",
+          "url": "https://www.flushingtownhall.org/show-details/calpullis-navidad",
+          "at": 193.0
+        },
+        {
+          "kind": "calendar",
+          "url": "https://www.flushingtownhall.org/show-details/global-mashup-hollywood-meets-bollywood",
+          "at": 255.0
+        },
+        {
+          "kind": "calendar",
+          "url": "https://www.flushingtownhall.org/show-details/mapping-queens-stewards-of-historic-houses-heritage-sites",
+          "at": 265.0
+        },
+        {
+          "kind": "calendar",
+          "url": "https://www.flushingtownhall.org/show-details/max-pollak-the-rumbatap-jam",
+          "at": 327.0
+        },
+        {
+          "kind": "calendar",
+          "url": "https://www.flushingtownhall.org/show-details/mexican-headpiece-making-workshop",
+          "at": 337.0
+        },
+        {
+          "kind": "calendar",
+          "url": "https://www.flushingtownhall.org/show-details/monthly-jazz-jam-celebrating-jewish-composers-of-christmas-music-their-songs",
+          "at": 399.0
+        },
+        {
+          "kind": "calendar",
+          "url": "https://www.flushingtownhall.org/show-details/office-hours",
+          "at": 409.0
+        },
+        {
+          "kind": "robots",
+          "url": "https://www.flushingtownhall.org/robots.txt",
+          "at": 471.0
+        },
+        {
+          "kind": "calendar",
+          "url": "https://www.flushingtownhall.org/show-details/raising-our-voices-building-bridges-through-words-movement",
+          "at": 482.0
+        },
+        {
+          "kind": "calendar",
+          "url": "https://www.flushingtownhall.org/show-details/senior-theater-acting-repertory-star-presents-40-years-young-at-heart",
+          "at": 492.0
+        },
+        {
+          "kind": "calendar",
+          "url": "https://www.flushingtownhall.org/show-details/stones-throw",
+          "at": 554.0
+        },
+        {
+          "kind": "calendar",
+          "url": "https://www.flushingtownhall.org/events",
+          "at": 564.0
+        }
+      ],
+      "capture_proofs": {
+        "https://www.flushingtownhall.org/robots.txt": {
+          "path": "/workspace/scratch/086e7d1878f1/nyc_research/arts_final/flushing-robots.txt",
+          "bytes": 4490,
+          "sha256": "4a26969ee985f6ee73471b08229a04d88a74ed3b9473b8a9be047ca00f8609e7"
+        },
+        "https://www.flushingtownhall.org/events": {
+          "path": "/workspace/scratch/086e7d1878f1/nyc_research/arts_final/flushing.body",
+          "bytes": 95457,
+          "sha256": "430f3ab853e682c6168dfbb73b446eaa3219f89c19d0425cf2f3b1edc4df45b8"
+        },
+        "https://www.flushingtownhall.org/show-details/2026-native-american-market-social": {
+          "path": "/workspace/scratch/086e7d1878f1/nyc_research/arts_final/flushing-30618bccbb5c959c.html",
+          "bytes": 68143,
+          "sha256": "a3ad9a0b011e368bc327df31dacd30d00344a6118c8c29ddfcc630508e7083fa"
+        },
+        "https://www.flushingtownhall.org/show-details/a-collective-thread-collaborative-drawings-with-older-adults": {
+          "path": "/workspace/scratch/086e7d1878f1/nyc_research/arts_final/flushing-cb8e9d22db22b52c.html",
+          "bytes": 67406,
+          "sha256": "7c8a78f5db4d8c5734deebc10a2316674ef25db9539aa0832cc43f083715a328"
+        },
+        "https://www.flushingtownhall.org/show-details/calpullis-navidad": {
+          "path": "/workspace/scratch/086e7d1878f1/nyc_research/arts_final/flushing-a958be600f8e263f.html",
+          "bytes": 70509,
+          "sha256": "73beb6d0abc1c875b6f0e332c07b8716a90d1924b259112b6d5f8bb796c7bfa0"
+        },
+        "https://www.flushingtownhall.org/show-details/global-mashup-hollywood-meets-bollywood": {
+          "path": "/workspace/scratch/086e7d1878f1/nyc_research/arts_final/flushing-a2f9c81107f89dbf.html",
+          "bytes": 70130,
+          "sha256": "67f9ebe3bbc04e82f3640733515f126b27a9b2cf24800ab69af08b8ba47a5d10"
+        },
+        "https://www.flushingtownhall.org/show-details/mapping-queens-stewards-of-historic-houses-heritage-sites": {
+          "path": "/workspace/scratch/086e7d1878f1/nyc_research/arts_final/flushing-7f80efa243032a61.html",
+          "bytes": 72460,
+          "sha256": "78a7031a0788906f153569dd7a1e567765d2870f8dadf593cbcd064e2722b593"
+        },
+        "https://www.flushingtownhall.org/show-details/max-pollak-the-rumbatap-jam": {
+          "path": "/workspace/scratch/086e7d1878f1/nyc_research/arts_final/flushing-eeabea317f765468.html",
+          "bytes": 67336,
+          "sha256": "3544d6f2e0366927a339505a6362252d32a0c1a94305d5c5345c9e6f65a304a5"
+        },
+        "https://www.flushingtownhall.org/show-details/mexican-headpiece-making-workshop": {
+          "path": "/workspace/scratch/086e7d1878f1/nyc_research/arts_final/flushing-ef50f9a52663801b.html",
+          "bytes": 66174,
+          "sha256": "8cb25be89491ada7bcdf62aa0c3eda52de22030c4d914118474b2ba041d9a377"
+        },
+        "https://www.flushingtownhall.org/show-details/monthly-jazz-jam-celebrating-jewish-composers-of-christmas-music-their-songs": {
+          "path": "/workspace/scratch/086e7d1878f1/nyc_research/arts_final/flushing-13f8b1ed916750da.html",
+          "bytes": 72230,
+          "sha256": "da00d3057cf131e3ff78454570d3f3cb3ce886c1f8508a7505f138f3320ac434"
+        },
+        "https://www.flushingtownhall.org/show-details/office-hours": {
+          "path": "/workspace/scratch/086e7d1878f1/nyc_research/arts_final/flushing-a9791ce41a7bf37c.html",
+          "bytes": 72709,
+          "sha256": "169f8b975fab61ec3af1957e0bff378ccf7e9e15f4d902e4829775940804f827"
+        },
+        "https://www.flushingtownhall.org/show-details/raising-our-voices-building-bridges-through-words-movement": {
+          "path": "/workspace/scratch/086e7d1878f1/nyc_research/arts_final/flushing-a1291a11f341b271.html",
+          "bytes": 66478,
+          "sha256": "f7f3fdb00a06386c1e0d0d696b05f93d5ff2023b006c0f65231a9ffb31253e64"
+        },
+        "https://www.flushingtownhall.org/show-details/senior-theater-acting-repertory-star-presents-40-years-young-at-heart": {
+          "path": "/workspace/scratch/086e7d1878f1/nyc_research/arts_final/flushing-065cde3ccc680491.html",
+          "bytes": 66313,
+          "sha256": "c62daf27ec1b6fa49408764a78610c79155c35d3371f5f9ddb14fbac30c846ac"
+        },
+        "https://www.flushingtownhall.org/show-details/stones-throw": {
+          "path": "/workspace/scratch/086e7d1878f1/nyc_research/arts_final/flushing-8b5647165f6bc929.html",
+          "bytes": 68101,
+          "sha256": "836716b52bc474f9bd08409915a8e3d077b6bd5aa2d8aff961b46005ae1c96f3"
+        }
+      }
+    },
+    {
+      "source_key": "radegast_hall_brooklyn_ny",
+      "legacy_prefix": true,
+      "complete": true,
+      "events": 12,
+      "full_capture_equal": true,
+      "actual_projection_sha256": "9691a75b27d62605765da14e6a360f5c7681efbc827c42cbcacddaf05ac8930f",
+      "expected_projection_sha256": "9691a75b27d62605765da14e6a360f5c7681efbc827c42cbcacddaf05ac8930f",
+      "robot_requests": 1,
+      "calendar_requests": 1,
+      "minimum_same_host_request_gap": 62.0,
+      "advertised_delay_floor": 60,
+      "maximum_chunk_seconds": 1.0,
+      "maximum_checkpoint_bytes": 20809,
+      "chunks": [
+        {
+          "index": 1,
+          "revision": 2,
+          "cursor": 12,
+          "manifest_count": 16,
+          "events": 9,
+          "phase": null,
+          "requests": 1,
+          "elapsed": 1.0,
+          "snapshot_fetched_at": "2026-11-14T23:21:37.012117+00:00",
+          "snapshot_expires_at": "2026-11-14T23:26:37.012117+00:00",
+          "checkpoint_bytes": 15731,
+          "complete": false
+        },
+        {
+          "index": 2,
+          "revision": 3,
+          "cursor": 16,
+          "manifest_count": 16,
+          "events": 12,
+          "phase": null,
+          "requests": 1,
+          "elapsed": 1.0,
+          "snapshot_fetched_at": "2026-11-14T23:21:37.012117+00:00",
+          "snapshot_expires_at": "2026-11-14T23:26:37.012117+00:00",
+          "checkpoint_bytes": 20809,
+          "complete": true
+        }
+      ],
+      "requests": [
+        {
+          "kind": "robots",
+          "url": "https://radegasthall.com/robots.txt",
+          "at": 100.0
+        },
+        {
+          "kind": "calendar",
+          "url": "https://radegasthall.com/wp-admin/admin-ajax.php?action=wpamelia_api&call=/events&bookings=false&range=future&page=2",
+          "at": 162.0
+        }
+      ],
+      "capture_proofs": {
+        "https://radegasthall.com/wp-admin/admin-ajax.php?action=wpamelia_api&call=/events&bookings=false&range=future&page=1": {
+          "path": "/workspace/scratch/086e7d1878f1/nyc-social-final-research/radegast-events-1.json",
+          "bytes": 40272,
+          "sha256": "2e936985540fe99a4eb5d52e9fc00deaf3588efeff38d2e3b6adfc673a421a6f"
+        },
+        "https://radegasthall.com/robots.txt": {
+          "path": "/workspace/scratch/086e7d1878f1/nyc-social-final-research/radegast-robots.txt",
+          "bytes": 42,
+          "sha256": "6288dde2996947fa48d1dd7de610bc66852ec0e288a275a3f8b44c6883d5b7f2"
+        },
+        "https://radegasthall.com/wp-admin/admin-ajax.php?action=wpamelia_api&call=/events&bookings=false&range=future&page=2": {
+          "path": "/workspace/scratch/086e7d1878f1/nyc-social-final-research/radegast-events-2.json",
+          "bytes": 11127,
+          "sha256": "654d283e56a3b26477c39bcd0fc370d13cc5eaab6bd07dee3d5641c4fbc2f655"
+        }
+      }
+    }
+  ]
+}
