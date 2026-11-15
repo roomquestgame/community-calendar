@@ -384,10 +384,12 @@ def pace_publisher(host: str, deadline: float, *, reserve=True) -> None:
 
 
 def fetch_publisher(url: str, accept: str, *, respect_robots: bool = False,
-                    deadline_at: float | None = None, allowed_hosts=None) -> str | bytes:
+                    deadline_at: float | None = None, allowed_hosts=None,
+                    follow_redirects: bool = True) -> str | bytes:
     """Fetch an approved public source with the existing bounded GET transport."""
     return _fetch_publisher_request(url, accept, respect_robots=respect_robots,
-                                    deadline_at=deadline_at, allowed_hosts=allowed_hosts)
+                                    deadline_at=deadline_at, allowed_hosts=allowed_hosts,
+                                    follow_redirects=follow_redirects)
 
 
 def fetch_visit_raleigh_page(url: str, *, deadline_at=None) -> str:
@@ -598,7 +600,8 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
                              calendar_form=None, calendar_json=None, localhop_app_id=None,
                              cardboard_arena_calendar=False, visit_raleigh_api=False,
                              game_theory_key=None, chapel_calendar_body=None,
-                             comedyworx_instance=None, brewing_instance=None) -> str | bytes:
+                             comedyworx_instance=None, brewing_instance=None,
+                             follow_redirects: bool = True) -> str | bytes:
     """Use the shared bounded transport for approved HTTPS publisher content.
 
     Keep URL/DNS validation and bounded downloads. As in upstream Udell,
@@ -834,6 +837,9 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
                         response.close()
                         raise
                 if response.status_code in (301, 302, 303, 307, 308):
+                    if not follow_redirects:
+                        response.close()
+                        raise PreviewError("redirect_blocked")
                     if calendar_form is not None or calendar_json is not None or localhop_app_id is not None or cardboard_arena_calendar or visit_raleigh_api or game_theory_key is not None or chapel_calendar_body is not None or comedyworx_instance is not None or brewing_instance is not None:
                         response.close()
                         raise PreviewError('calendar_render_redirect_blocked')
@@ -2072,7 +2078,8 @@ def supabase_rpc(path: str, payload: dict, *, timeout: float = 4):
     allowed = {"community_collector_claim_category", "community_collector_publish_category", "community_collector_finish_category", "community_collector_claim_previews", "community_collector_claim_demand_preview", "community_collector_claim_chambermaster", "community_collector_record_preview", "community_collector_record_preview_v2", "community_collector_record_preview_v3",
                "community_collector_read_fetch_checkpoint", "community_collector_write_fetch_checkpoint",
                "community_collector_record_staged_events", "community_collector_geocoder", "community_collector_geocoder_claim",
-               "community_collector_venues", "community_collector_media", "community_collector_media_demand"}
+               "community_collector_venues", "community_collector_media", "community_collector_media_demand",
+               "community_collector_things_to_do"}
     if path not in allowed:
         raise PreviewError("unsupported_collector_rpc")
     root = os.environ.get("SUPABASE_URL", "")
