@@ -1,0 +1,48 @@
+{
+  "reviewed_at": "2026-11-15T01:41:05.362282+00:00",
+  "reviewer": "independent nyc_review agent",
+  "mode": "read-only code, captured narrative and official venue-map review; no production changes or publisher requests",
+  "module_sha256": "081a0361d01da20ce1d1e235984ead6a2026e2c9ac5765e5f5b7861cd5266b4a",
+  "tests_observed": "15 focused tests passed, 9 unittest subtests passed before the two unused G-room aliases were removed; author confirms same tests plus new alias rejection assertions pass afterward",
+  "reports": [
+    {
+      "source_key": "prospect_park_alliance_brooklyn_ny",
+      "records": 62,
+      "approximate_locations": 13,
+      "description_min": 413,
+      "description_max": 2062,
+      "all_records_pass_registry_and_exact_reviewed_points": true
+    },
+    {
+      "source_key": "snug_harbor_staten_island_ny",
+      "records": 89,
+      "approximate_locations": 73,
+      "description_min": 564,
+      "description_max": 4100,
+      "all_records_pass_registry_and_exact_reviewed_points": true
+    }
+  ],
+  "findings": [
+    {
+      "severity": "resolved",
+      "finding": "Unused Harbor Room and Dance Center aliases mapped to the specifically named Gallery1 tuple; neither is present in the current captured records.",
+      "resolution": "Author removed both aliases and added hold assertions; no captured count changed."
+    }
+  ],
+  "accepted_evidence": [
+    "Current official site-map Y lies beside G; conflicting PAD1000Y was rejected.",
+    "Cottage D is on western Cottage Row, distinct from Temple Row Building D.",
+    "Sustainability Center is southeast feature21 beside FarmRoad, not the western wetlands.",
+    "Six map-derived feature points are explicitly approximate; official C/G/P building centroids retain precise building identity.",
+    "Prospect native venue points and two exact dated volunteer-registration bindings avoid a generic park office.",
+    "Whole manifests are revalidated before public emission; partial checkpoint rows remain private.",
+    "Stored row hashes plus source-native identity, time and point checks reject accidental truncation or mutation.",
+    "Snug existing working Children's Museum entries and exact already-public partner occurrences stay excluded.",
+    "Full native Prospect descriptions are checked against rendered narrative; Snug preserves full event prose rather than summary JSON-LD."
+  ],
+  "limitations": [
+    "Captured replay is not production publication verification.",
+    "Snug feature points are educated estimates from a schematic publisher map, not survey or entrance coordinates.",
+    "Exact native street postal10301 is retained despite city PAD10310 metadata discrepancy."
+  ]
+}

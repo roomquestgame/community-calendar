@@ -1,0 +1,29 @@
+{
+  "reviewed_at": "2026-11-15",
+  "scope": "Additional remaining-source triage only; no production registrations or event writes.",
+  "candidates": [
+    {
+      "name": "Gamestoria",
+      "official_url": "https://gamestoria.com/",
+      "calendar_url": "https://gamestoria.com/monthlycalendar",
+      "status": "held_schedule_conflict_and_calendar_access",
+      "findings": [
+        "Current homepage lists Sunday Pioneer at 3pm, while the calendar and detailed weekly page list 2pm and retain obsolete pandemic access text.",
+        "The homepage has current November 2026 announcements; that does not resolve the conflicting weekly schedule.",
+        "The publicly embedded Google Calendar ID was used only to identify its standard public ICS URL. Fresh calendar.google.com/robots.txt returned 200 and disallowed retrieval; no calendar payload was fetched."
+      ],
+      "evidence": "new-york-gamestoria-feed-review-20261115.json"
+    },
+    {
+      "name": "Brooklyn Pop-Up",
+      "official_url": "https://www.brooklynpop-up.com/",
+      "status": "held_no_verified_new_native_occurrence_payload",
+      "findings": [
+        "The official HTML is a Softr app shell with a public markets-list configuration, not an embedded dated event manifest.",
+        "Its explicitly linked renderer could not be inspected under normal access guards because assets.softr-files.com/robots.txt returned403. The script and unverified backend routes were not fetched.",
+        "Public search results include stale 2025 markets and partner appearances already covered by existing New York sources. No new dated occurrence is asserted from those results."
+      ],
+      "evidence": "new-york-brooklyn-popup-renderer-review-20261115.json"
+    }
+  ]
+}
