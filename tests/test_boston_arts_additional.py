@@ -1,232 +1,119 @@
-from copy import deepcopy
-from datetime import datetime, timezone
-from html import escape
-import base64
 import json
+import base64
+from copy import deepcopy
+from datetime import datetime, timedelta, timezone
+from time import monotonic
 import unittest
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
-from roomquest import boston_arts_additional as b
-from tests.test_new_york_arts import fake_record
+from roomquest import boston_arts_additional as a
+from roomquest.event_description import description
+from icalendar import Calendar, Event
 
-NOW = datetime(2026, 11, 15, 1, tzinfo=timezone.utc)
+NOW = datetime(2026, 11, 15, 2, tzinfo=timezone.utc)
 
 
 def source(key):
-    return dict(source_key=key, feed_url=b.SOURCES[key][0], kind='html', platform_adapter='html', timezone=b.ZONE)
+    return dict(source_key=key, feed_url=a.SOURCES[key][0], kind='html', platform_adapter='html', timezone=a.ZONE)
 
 
-def coolidge_detail(ticket='evtinfo=123~token', path='ticketsearchcriteria.aspx', body='Full cinema discussion.', extra=''):
-    return ('<h1>Film and discussion</h1><div class="field--name-body"><div class="field__label">Body</div>'
-            '<div class="field__item">' + escape(body) + '</div></div>'
-            '<div class="film-showtime-list"><span class="datepicker__day">Tue</span><span class="datepicker__date">11/17</span>'
-            '<div class="sales-state--DuringSales"><a class="showtime-ticket__button" href="https://store.coolidge.org/websales/pages/'
-            + path + '?' + ticket + '"><span class="showtime-ticket__time">10:00am</span><span class="showtime-ticket__venue">ECEC</span></a></div>'
-            + extra + '</div>')
+def hmsc_listing():
+    return '<h1>Upcoming Programs</h1><main><a href="/calendar_event/fossil-day/">Fossil Day</a></main>'
 
 
-def museum_detail(body='Full public program narrative.', dates='Sunday, November 22, 2026 | 12:00 pm', title='Science conversation'):
-    return ('<h1>' + escape(title) + '</h1><div class="event-show-header"><span class="date-time">' + escape(dates)
-            + '</span></div><div class="event-details"><div class="desktop-only">' + escape(body)
-            + '</div><div class="mobile-only">Duplicate mobile text.</div></div><div class="speaker-listing">Complete speaker biography.</div>')
+def hmsc_detail(body='<p>Meet museum paleontologists and explore their complete research stories.</p>', location='Harvard Museum of Natural History,26 Oxford Street,Cambridge,MA02138'):
+    return '<h1>Fossil Day</h1><a href="https://calendar.google.com/calendar/r/eventedit?dates=20261121T180000Z/20261121T210000Z">Google Calendar</a><article class="calendar_event"><div class="entry-content"><p>Location: ' + location + '</p>' + body + '</div></article>'
 
 
-def pem_event(start='2027-01-08T15:00:00-05:00', end='2027-01-08T16:30:00-05:00'):
-    return {'@type': 'Event', 'name': 'Winter art', 'startDate': start, 'endDate': end,
-            'eventStatus': 'https://schema.org/EventScheduled', 'location': {'address': {'streetAddress': '161 Essex Street, Salem, MA 01970'}},
-            'offers': {'url': 'https://www.pem.org/events/winter-art', 'availability': 'https://schema.org/InStock'}}
+def mos_detail(line, body, title='Science of Wellness with Cody Rigsby'):
+    return '<h1>' + title + '</h1><section class="event-show-header">Public Event<p class="date-time">' + line + '</p></section><section class="event-details"><div class="desktop-only">' + body + '</div><div class="mobile-only">' + body + '</div></section><div class="speaker-listing">Complete speaker biography.</div>'
 
 
-def pem_detail(events, body='Complete museum instructions.'):
-    return '<main><section class="introBlock">' + escape(body) + '</section><section class="keepExploring">Unrelated event excerpt.</section></main>' + ''.join('<script type="application/ld+json">' + json.dumps(e) + '</script>' for e in events)
+def pem_detail(body, *, availability='https://schema.org/InStock', point_address='161 Essex Street, Salem, MA 01970'):
+    url='https://www.pem.org/events/polar-origami'
+    events=[dict({'@type':'Event'},name='Polar Origami',startDate='2026-12-04T15:00:00-05:00',endDate='2026-12-04T16:30:00-05:00',eventStatus='https://schema.org/EventScheduled',offers=dict(url=url,availability=availability),location=dict(address=dict(streetAddress=point_address)),description='Only an excerpt.')]
+    return '<main><section class="introBlock">'+body+'</section><section class="keepExploring">Unrelated recommendations.</section><section class="newsletter">Subscribe.</section>'+''.join('<script type="application/ld+json">'+json.dumps(e)+'</script>' for e in events)+'</main>'
 
 
-def pem_listing(events):
-    return '<script type="application/ld+json">' + json.dumps({'@type': 'CollectionPage', 'mainEntity': {'itemListElement': [dict(position=i+1, item=dict(e, url=e['offers']['url'])) for i,e in enumerate(events)]}}) + '</script>'
+def eliot_card(url='/classes/bookbinding', title='Bookbinding', status='4 spots left', start='2026-11-22T13:00:00-05:00', end='2026-11-22T19:00:00-05:00'):
+    return '<div class="calendar"><div class="contents"><a href="'+url+'">'+title+'</a><span class="date-display-start" content="'+start+'"></span><span class="date-display-end" content="'+end+'"></span>'+status+'</div></div>'
 
 
-class BostonAdditionalArtsTests(unittest.TestCase):
-    def setUp(self):
-        stub = patch.object(b, 'record', side_effect=fake_record)
-        stub.start(); self.addCleanup(stub.stop)
+class Contracts(unittest.TestCase):
+    def test_exact_source_and_event_url_bindings(self):
+        for key in a.SOURCES:
+            self.assertEqual(a._source(source(key)),key)
+            bad=source(key);bad['timezone']='UTC'
+            with self.assertRaisesRegex(ValueError,'source_unregistered'):a._source(bad)
+        url='https://www.pem.org/events/polar-origami'
+        self.assertTrue(a.event_url(a.PEM,url))
+        for bad in [url+'?next=https://evil.example',url+'#fragment',url.replace('www.pem.org','www.pem.org.evil.example'),url.replace('/events/','/events/../')]:
+            self.assertFalse(a.event_url(a.PEM,bad))
 
-    def test_registration_is_exact_and_untrusted_urls_cannot_expand_scope(self):
-        self.assertEqual(len(b.SOURCES), 8)
-        for key in b.SOURCES:
-            self.assertEqual(b._source(source(key)), key)
-            wrong = source(key); wrong['feed_url'] += '?next=http://127.0.0.1'
-            with self.assertRaisesRegex(ValueError, 'source_unregistered'): b._source(wrong)
-        self.assertFalse(b.event_url(b.MOS, 'https://www.mos.org/events/%2e%2e/private'))
-        self.assertFalse(b._listing_url(b.COOLIDGE, 'https://coolidge.org/films-events/welcome-coolidge-corner-theatre?view_args=202612&redirect=other'))
-
-    def test_museum_complete_body_and_speaker_biography_survive(self):
-        body = 'A native science narrative. ' * 100 + 'Final accessibility instructions.'
-        item = b._item(b.MOS, 'https://www.mos.org/events/conversation', 'Science conversation')
-        row = b._mos_detail(item, museum_detail(body), NOW)[0]
-        self.assertIn(body, row['description'])
-        self.assertIn('Complete speaker biography.', row['description'])
-        self.assertNotIn('Duplicate mobile', row['description'])
-        self.assertEqual(row['venue_address'], '1 Science Park, Boston, MA 02114')
-        with self.assertRaisesRegex(ValueError, 'description_limit'):
-            b._mos_detail(item, museum_detail('X' * 12001), NOW)
-
-    def test_museum_multiple_native_dates_and_times_do_not_invent_end(self):
-        slots = b._mos_schedule('February 25–26, 2027 | 8:00 pm; February 27, 2027 | 2:00 pm and 8:00 pm')
-        self.assertEqual([s[0].isoformat() for s in slots], ['2027-02-25T20:00:00-05:00', '2027-02-26T20:00:00-05:00', '2027-02-27T14:00:00-05:00', '2027-02-27T20:00:00-05:00'])
-        self.assertTrue(all(s[1] is None for s in slots))
-        with self.assertRaisesRegex(ValueError, 'schedule_unresolved'):
-            b._mos_schedule('Monday, November 22, 2026 | 12:00 pm')
-
-    def test_museum_keeps_open_family_session_but_excludes_sold_out_evening(self):
-        item = b._item(b.MOS, 'https://www.mos.org/events/science-wellness-cody-rigsby', 'Science of Wellness with Cody Rigsby')
-        body = 'The Science of Wellness Fireside Chat is SOLD OUT! Family-friendly Ask Cody remains available. Complete program text.'
-        slots = 'Sunday, November 22, 2026 | Family-friendly “Ask Cody” session – 12:00 pm; Science of Wellness fireside chat – 7:30 pm'
-        rows = b._mos_detail(item, museum_detail(body, slots, item['title']), NOW)
-        self.assertEqual(len(rows), 1)
-        self.assertEqual(rows[0]['starts_at'], '2026-11-22T12:00:00-05:00')
-        self.assertIn('SOLD OUT', rows[0]['description'])
-        self.assertIn('Family-friendly', rows[0]['title'])
-
-    def test_cinema_bundle_guid_and_individual_tickets_preserve_native_sessions(self):
-        item = b._item(b.COOLIDGE, 'https://coolidge.org/events/film-discussion', 'Film and discussion')
-        row = b._coolidge_detail(item, coolidge_detail(body='A full cinema narrative. '*100 + 'Last instruction.'), NOW)[0]
-        self.assertTrue(row['id'].endswith(':123'))
-        self.assertIn('Last instruction.', row['description'])
-        self.assertEqual(row['venue_address'], '290 Harvard Street, Brookline, MA 02446')
-        guid = 'fe57c7b0-0962-42cd-9479-cbf03c4082cb'
-        row = b._coolidge_detail(item, coolidge_detail('guid=' + guid, 'entrypoint.aspx'), NOW)[0]
-        self.assertTrue(row['id'].endswith(guid + ':2026-11-17T10:00:00-05:00'))
-        with self.assertRaisesRegex(ValueError, 'identity_changed'):
-            b._coolidge_detail(item, coolidge_detail('guid=unvalidated', 'entrypoint.aspx'), NOW)
-
-    def test_cinema_sold_out_ticket_does_not_block_other_native_times(self):
-        item = b._item(b.COOLIDGE, 'https://coolidge.org/events/film-discussion', 'Film and discussion')
-        extra = '<div class="sales-state--AfterSales"><a class="showtime-ticket__button" href="https://store.coolidge.org/websales/pages/ticketsearchcriteria.aspx?evtinfo=999"><span class="showtime-ticket__time">9:00am</span></a></div>'
-        rows = b._coolidge_detail(item, coolidge_detail(extra=extra), NOW)
-        self.assertEqual(len(rows), 1)
-        self.assertEqual(rows[0]['starts_at'], '2026-11-17T10:00:00-05:00')
-
-    def test_eliot_preserves_exact_offsite_partner_location_and_full_materials(self):
-        item = b._item(b.ELIOT, 'https://eliotschool.org/classes/sharpening', 'Sharpening',
-                       sessions=[dict(start='2026-11-18T18:00:00-05:00',end='2026-11-18T20:00:00-05:00')])
-        payload = ('<h1>Sharpening</h1><div class="field-name-field-location"><div class="field-item">'
-                   'Boston Building Resources, 100 Terrace St, Boston, MA 02120</div></div>'
-                   '<div class="view-classes-courses-tabs-view view-display-id-block_1">Full class instructions.</div>'
-                   '<div class="view-classes-courses-tabs-view view-display-id-block_3">Final tools and materials.</div>')
-        row = b._eliot_detail(item,payload,NOW)[0]
-        self.assertEqual(row['venue_address'],'100 Terrace Street, Boston, MA 02120')
-        self.assertEqual(row['venue_name'],'Boston Building Resources')
-        self.assertIn('Final tools and materials.',row['description'])
-        with self.assertRaisesRegex(ValueError,'street_unresolved'):
-            b._eliot_detail(item,payload.replace('100 Terrace St','200 Terrace St'),NOW)
-
-    def test_trustees_canonical_identity_and_separate_native_yoga_sessions(self):
-        item = b._item(b.DECORDOVA, 'https://thetrustees.org/event/123/', 'Family and adult yoga')
-        payload = ('<link rel="canonical" href="'+item['url']+'"><meta property="og:title" content="'+item['title']+'">'
-                   '<div class="event-text__when">Wednesday, November 18, 2026<br>10:30-11AM (Family Yoga) and 11:30AM-12:30PM (Adult Yoga)</div>'
-                   '<div class="event-text__column-right wysiwyg">Complete class instructions.</div>'
-                   '<div class="event-text__location">51 Sandy Pond Road Lincoln, MA 01773</div>')
-        rows = b._trust_detail(item,payload,NOW)
-        self.assertEqual(len(rows),2)
-        self.assertEqual(rows[0]['starts_at'],'2026-11-18T10:30:00-05:00')
-        self.assertEqual(rows[1]['ends_at'],'2026-11-18T12:30:00-05:00')
-        self.assertEqual(rows[1]['title'],'Family and adult yoga — Adult Yoga')
-        item['title']='Family – adult yoga'
-        changed=payload.replace('Family and adult yoga','Family - adult yoga')
-        self.assertEqual(len(b._trust_detail(item,changed,NOW)),2)
-        item['title']='Family and adult yoga'
-        with self.assertRaisesRegex(ValueError,'identity_changed'):
-            b._trust_detail(item,payload.replace(item['url'],item['url']+'other'),NOW)
-
-    def test_aquarium_native_body_and_complete_rest_totals(self):
-        body = 'Full Aquarium native event narrative. '*100+'Final visitor instruction.'
-        event = dict(id=42,title='Public science talk',url='https://www.neaq.org/event/public-science-talk/',
-                     description=body,categories=[],status='publish',all_day=False,
-                     timezone=b.ZONE,start_date='2026-11-18 18:00:00',end_date='2026-11-18 19:00:00',
-                     utc_start_date='2026-11-18 23:00:00',utc_end_date='2026-11-19 00:00:00',
-                     venue=dict(address='1 Central Wharf',city='Boston',state='MA',zip='02110'))
-        html='<h1>Events and Programs</h1><article class="tribe-events-pro-photo__event"><time datetime="2026-11-18"></time><h3 class="tribe-events-pro-photo__event-title">Public science talk</h3><a>Tickets</a></article>'
-        data=dict(events=[event],total=1,total_pages=1)
-        row=b.collect(source(b.AQUARIUM),Mock(side_effect=[html,json.dumps(data)]),now=NOW)[0]
-        self.assertEqual(row['description'],body)
-        self.assertEqual(row['venue_address'],'1 Central Wharf, Boston, MA 02110')
-        data['total']=2
-        with self.assertRaisesRegex(ValueError,'pagination_changed'):
-            b.collect(source(b.AQUARIUM),Mock(side_effect=[html,json.dumps(data)]),now=NOW)
-        data['total']=1
-        for key,value in [('event_status','canceled'),('event_status','cancelled'),('event_status','postponed'),('hide_from_listings',True),('is_virtual',True),('virtual','1')]:
-            event[key]=value
-            self.assertEqual(b.collect(source(b.AQUARIUM),Mock(side_effect=[html,json.dumps(data)]),now=NOW),[])
-            del event[key]
-        event['start_date']='2026-12-18 18:00:00'
-        with self.assertRaisesRegex(ValueError,'pagination_changed'):
-            b.collect(source(b.AQUARIUM),Mock(side_effect=[html,json.dumps(data)]),now=NOW)
-        event['start_date']='2026-11-18 18:00:00'
-        self.assertEqual(b.collect(source(b.AQUARIUM),Mock(side_effect=[html.replace('Tickets','SOLD OUT'),json.dumps(data)]),now=NOW),[])
-        event['categories']=[dict(name='Members')]
-        self.assertEqual(b.collect(source(b.AQUARIUM),Mock(side_effect=[html,json.dumps(data)]),now=NOW),[])
-
-    def test_pem_retains_ended_siblings_only_for_programs_with_current_occurrences(self):
-        expired = pem_event('2026-11-14T10:30:00-05:00', '2026-11-14T12:00:00-05:00')
-        current = pem_event()
-        items, pages = b._pem_listing(pem_listing([expired, current]), NOW)
-        self.assertEqual(len(items), 1); self.assertEqual(len(items[0]['sessions']), 2)
-        self.assertEqual(b._pem_listing(pem_listing([expired]), NOW), ([], []))
-        self.assertEqual(pages, [])
-
-    def test_pem_narrow_native_sessions_replace_series_envelopes(self):
-        a = pem_event(); broad = pem_event(end='2027-01-29T16:30:00-05:00')
-        item = b._item(b.PEM, a['offers']['url'], a['name'], sessions=[dict(start=a['startDate'], end=a['endDate'])])
-        rows = b._pem_detail(item, pem_detail([a,broad], 'Full art directions. '*100+'Final material list.'), NOW)
-        self.assertEqual(len(rows), 1)
-        self.assertEqual(rows[0]['ends_at'], '2027-01-08T16:30:00-05:00')
-        self.assertIn('Final material list.', rows[0]['description'])
-        self.assertNotIn('Unrelated event', rows[0]['description'])
-        self.assertEqual((rows[0]['lat'],rows[0]['lng']), (42.521442,-70.892372))
-        a1 = dict(start='2027-01-02T11:00:00-05:00', end='2027-01-02T11:30:00-05:00')
-        a2 = dict(start='2027-01-02T11:30:00-05:00', end='2027-01-02T12:00:00-05:00')
-        envelope = dict(start=a1['start'], end='2027-01-02T15:00:00-05:00')
-        self.assertEqual(len(b._pem_occurrences([a1,a2,envelope])),2)
-
-    def test_pem_refresh_after_first_session_ends_cannot_publish_series_envelope(self):
-        now=datetime(2027,1,10,15,tzinfo=timezone.utc)
-        first=pem_event(); later=pem_event('2027-01-15T15:00:00-05:00','2027-01-15T16:30:00-05:00')
-        envelope=pem_event(end='2027-01-29T16:30:00-05:00')
-        item=b._pem_listing(pem_listing([first,later,envelope]),now)[0][0]
-        self.assertEqual(len(item['sessions']),3)
-        rows=b._pem_detail(item,pem_detail([first,later,envelope]),now)
-        self.assertEqual(len(rows),1);self.assertEqual(rows[0]['starts_at'],later['startDate'])
-        future_only=b._pem_occurrences([dict(start=e['startDate'],end=e['endDate'])for e in [later,envelope]])
-        self.assertEqual(future_only,[(b.timestamp(later['startDate']),b.timestamp(later['endDate']))])
-        fetch=Mock(side_effect=[pem_listing([first,later,envelope]),pem_detail([first,later,envelope])])
-        stage=b.collect_chunk(source(b.PEM),fetch,now=now)
-        final=b.collect_chunk(source(b.PEM),fetch,checkpoint=stage['checkpoint'],now=now)
-        self.assertTrue(final['complete']);self.assertEqual(len(final['events']),1)
-
-    def test_pem_native_markdown_validates_canonical_ics_and_preserves_full_narrative(self):
-        event = pem_event(); item = b._item(b.PEM,event['offers']['url'],event['name'],sessions=[dict(start=event['startDate'],end=event['endDate'])])
-        ics='BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nUID:test\nSUMMARY:Winter art\nDTSTART:20270108T200000Z\nDTEND:20270108T213000Z\nLOCATION:161 Essex St\\, Salem\\, MA 01970\nEND:VEVENT\nEND:VCALENDAR'
-        body = 'Native art materials and instructions. '*100 + 'Last safety instruction.'
-        payload = '---\ntitle: "Winter art"\ncanonical_url: "'+item['url']+'"\n---\n# Winter art\n[Apple](data:text/calendar;charset=utf8;base64,'+base64.b64encode(ics.encode()).decode()+')\n## Know before you go\nIncluded with admission\n'+body+'\nStay up to date.\nNewsletter'
-        row = b._pem_detail(item,payload,NOW)[0]
-        self.assertIn(body,row['description']);self.assertNotIn('Newsletter',row['description'])
-        with self.assertRaisesRegex(ValueError,'identity_changed'):
-            b._pem_detail(item,payload.replace(item['url'],item['url']+'-changed'),NOW)
-
-    def test_durable_checkpoint_emits_only_complete_batch_and_rejects_address_tampering(self):
-        event=pem_event(); listing=pem_listing([event]); details=pem_detail([event])
-        fetch=Mock(side_effect=[listing,details])
-        first=b.collect_chunk(source(b.PEM),fetch,now=NOW)
+    def test_checkpoint_complete_only_preserves_entire_body(self):
+        narrative='<p>'+('The full native narrative contains essential detail. '*100)+'</p><p>Final paragraph must survive.</p>'
+        payload=hmsc_detail(narrative)
+        fetch=lambda url,accept: hmsc_listing() if url==a.SOURCES[a.HMSC][0] else payload
+        first=a.collect_chunk(source(a.HMSC),fetch,now=NOW)
         self.assertFalse(first['complete']);self.assertEqual(first['events'],[])
-        final=b.collect_chunk(source(b.PEM),fetch,checkpoint=first['checkpoint'],now=NOW)
-        self.assertTrue(final['complete']);self.assertEqual(len(final['events']),1)
-        b._checkpoint(final['checkpoint'],b.PEM,NOW)
-        tampered=deepcopy(final['checkpoint']);tampered['events'][0]['venue_address']='1 Fake Street, Boston, MA 02110'
-        with self.assertRaisesRegex(ValueError,'checkpoint_invalid'):b._checkpoint(tampered,b.PEM,NOW)
-        tampered=deepcopy(first['checkpoint']);tampered['queue'][0]['url']='https://127.0.0.1/private';tampered['manifest_hash']=b._hash(tampered['queue'])
-        with self.assertRaisesRegex(ValueError,'checkpoint_invalid'):b._checkpoint(tampered,b.PEM,NOW)
-        fetch.reset_mock();b.collect_chunk(source(b.PEM),fetch,checkpoint=final['checkpoint'],now=NOW);fetch.assert_not_called()
+        second=a.collect_chunk(source(a.HMSC),fetch,checkpoint=first['checkpoint'],now=NOW)
+        self.assertTrue(second['complete']);self.assertEqual(len(second['events']),1)
+        row=second['events'][0]
+        self.assertGreater(len(row['description']),2000)
+        self.assertIn('Final paragraph must survive.',row['description'])
+        self.assertEqual(row['description'],description('<p>Location: Harvard Museum of Natural History,26 Oxford Street,Cambridge,MA02138</p>'+narrative,limit=12001))
+        self.assertEqual(second['checkpoint']['started_at'],first['checkpoint']['started_at'])
+        a._checkpoint(second['checkpoint'],a.HMSC,NOW)
 
+    def test_checkpoint_rejects_foreign_manifest_point_address_and_clock(self):
+        fetch=lambda url,accept:hmsc_listing() if url==a.SOURCES[a.HMSC][0] else hmsc_detail()
+        one=a.collect_chunk(source(a.HMSC),fetch,now=NOW)
+        done=a.collect_chunk(source(a.HMSC),fetch,checkpoint=one['checkpoint'],now=NOW)
+        for field,value in [('event_url','https://hmsc.harvard.edu/calendar_event/foreign/'),('venue_address','27 Oxford Street,Cambridge,MA02138'),('lat',42.3),('location_provenance','inferred'),('starts_at','2028-01-01T00:00:00+00:00'),('starts_at','2026-11-21T19:00:00+00:00'),('id','foreign'),('description','Changed native narrative.'),('title','Wrong title')]:
+            bad=deepcopy(done['checkpoint']);bad['events'][0][field]=value
+            with self.subTest(field=field),self.assertRaisesRegex(ValueError,'checkpoint_invalid'):a._checkpoint(bad,a.HMSC,NOW)
+            with self.subTest(field=field,phase='completed_resume'),self.assertRaisesRegex(ValueError,'checkpoint_invalid'):
+                a.collect_chunk(source(a.HMSC),lambda *_:self.fail('invalid completed checkpoint must not fetch'),checkpoint=bad,now=NOW)
+        bad=deepcopy(one['checkpoint']);bad['queue'][0]['title']='Changed'
+        with self.assertRaisesRegex(ValueError,'checkpoint_invalid'):a._checkpoint(bad,a.HMSC,NOW)
+
+    def test_checkpoint_expiry_and_deadline_reserve(self):
+        fetch=lambda url,accept:hmsc_listing()
+        one=a.collect_chunk(source(a.HMSC),fetch,now=NOW)
+        self.assertIsNone(a._checkpoint(one['checkpoint'],a.HMSC,NOW+timedelta(hours=4,seconds=1)))
+        with patch.object(a,'monotonic',return_value=100):
+            with self.assertRaisesRegex(ValueError,'collection_deadline'):
+                a.collect_chunk(source(a.HMSC),lambda *_:self.fail('fetch must not start inside reserve'),now=NOW,deadline_at=111)
+
+    def test_only_unprocessed_legacy_checkpoint_upgrades_without_restarting(self):
+        fetch=lambda url,accept:hmsc_listing() if url==a.SOURCES[a.HMSC][0] else hmsc_detail()
+        one=a.collect_chunk(source(a.HMSC),fetch,now=NOW)
+        legacy=deepcopy(one['checkpoint']);legacy.pop('outcomes');legacy.pop('outcome_hash')
+        restored=a._checkpoint(legacy,a.HMSC,NOW)
+        self.assertEqual(restored['started_at'],legacy['started_at'])
+        self.assertEqual(restored['queue'],legacy['queue'])
+        self.assertEqual(restored['listed_pages'],legacy['listed_pages'])
+        self.assertEqual(restored['outcomes'],[])
+        done=a.collect_chunk(source(a.HMSC),fetch,checkpoint=restored,now=NOW)
+        processed_legacy=deepcopy(done['checkpoint']);processed_legacy.pop('outcomes');processed_legacy.pop('outcome_hash')
+        with self.assertRaisesRegex(ValueError,'checkpoint_invalid'):
+            a.collect_chunk(source(a.HMSC),lambda *_:self.fail('processed legacy rows cannot be re-attested'),checkpoint=processed_legacy,now=NOW)
+
+    def test_missing_and_oversize_description_are_explicit_holds(self):
+        for body,reason in [('', 'description_missing'),('<p>'+'x'*12001+'</p>','description_limit')]:
+            item=a._item(a.PEM,'https://www.pem.org/events/polar-origami','Polar Origami')
+            with self.subTest(reason=reason),self.assertRaisesRegex(ValueError,reason):a._pem_detail(item,pem_detail(body),NOW)
+
+
+class Museums(unittest.TestCase):
+    def test_mos_native_pagination_requires_all_rows(self):
+        card='<h3 class="listing-item__title"><a href="/events/program">Program</a></h3><div class="listing-item__date">Saturday, November 21, 2026 | 1:00pm</div>'
+        url='https://www.mos.org/api/v1/event-listing/event_detail/96+101/all/all/all/all?items_per_page=18&sort_by=date_asc'
+        data=dict(pager=dict(current_page=0,items_per_page=18,total_pages=2,total_results=20),results=[dict(event_listing=card.replace('/program','/program-'+str(i))) for i in range(18)])
+        queue,next_pages=a._mos_listing(json.dumps(data),url,NOW)
+        self.assertEqual(len(queue),18);self.assertEqual(next_pages,[url+'&page=1'])
+        data['results'].pop()
+        with self.assertRaisesRegex(ValueError,'pagination_changed'):a._mos_listing(json.dumps(data),url,NOW)
 
     def test_mos_rejects_cross_page_duplicate_or_changed_total_before_completion(self):
         url='https://www.mos.org/api/v1/event-listing/event_detail/96+101/all/all/all/all?items_per_page=18&sort_by=date_asc'
@@ -234,23 +121,21 @@ class BostonAdditionalArtsTests(unittest.TestCase):
         page=lambda number,ids,total=20:json.dumps(dict(pager=dict(current_page=number,items_per_page=18,total_pages=2,total_results=total),results=[dict(event_listing=card.format(i)) for i in ids]))
         for second in (page(1,[17,19]),page(1,[18],19)):
             def fetch(target,accept):
-                if target==b.SOURCES[b.MOS][0]:return '<div id="event-listing" data-api-url="'+url+'"></div>'
+                if target==a.SOURCES[a.MOS][0]:return '<div id="event-listing" data-api-url="'+url+'"></div>'
                 return second if target.endswith('&page=1') else page(0,range(18))
             with self.subTest(second=second),self.assertRaisesRegex(ValueError,'pagination_changed'):
-                b.collect_chunk(source(b.MOS),fetch,now=NOW)
-
+                a.collect_chunk(source(a.MOS),fetch,now=NOW)
 
     def test_mos_raw_coverage_includes_filtered_past_native_ids(self):
         url='https://www.mos.org/api/v1/event-listing/event_detail/96+101/all/all/all/all?items_per_page=18&sort_by=date_asc'
         card='<h3 class="listing-item__title"><a href="/events/program-{0}">Program {0}</a></h3><div class="listing-item__date">{1} | 1:00pm</div>'
         data=json.dumps(dict(pager=dict(current_page=0,items_per_page=18,total_pages=1,total_results=2),results=[dict(event_listing=card.format(1,'Friday, November 13, 2026')),dict(event_listing=card.format(2,'Saturday, November 21, 2026'))]))
-        fetch=lambda target,accept:'<div id="event-listing" data-api-url="'+url+'"></div>' if target==b.SOURCES[b.MOS][0] else data
-        result=b.collect_chunk(source(b.MOS),fetch,now=NOW)
+        fetch=lambda target,accept:'<div id="event-listing" data-api-url="'+url+'"></div>' if target==a.SOURCES[a.MOS][0] else data
+        result=a.collect_chunk(source(a.MOS),fetch,now=NOW)
         self.assertEqual(result['checkpoint']['native_total'],2)
         self.assertEqual(len(result['checkpoint']['native_seen']),2)
         self.assertEqual(result['checkpoint']['manifest_count'],1)
-        b._checkpoint(result['checkpoint'],b.MOS,NOW)
-
+        a._checkpoint(result['checkpoint'],a.MOS,NOW)
 
     def test_trustees_rejects_cross_page_duplicate_before_completion(self):
         def page(number,ids):
@@ -259,9 +144,164 @@ class BostonAdditionalArtsTests(unittest.TestCase):
             return '<script>window.FWP_JSON = '+json.dumps(data)+';</script><div class="facetwp-template"><div class="event-cards">'+cards+'</div></div>'
         fetch=lambda url,accept:page(2,[16,18]) if '_paged=2' in url else page(1,range(1,17))
         with self.assertRaisesRegex(ValueError,'pagination_changed'):
-            b.collect_chunk(source(b.DECORDOVA),fetch,now=NOW)
+            a.collect_chunk(source(a.DECORDOVA),fetch,now=NOW)
+
+    def test_mos_family_session_survives_sold_out_evening(self):
+        url='https://www.mos.org/events/science-wellness-cody-rigsby'
+        item=a._item(a.MOS,url,'Science of Wellness with Cody Rigsby')
+        line='Sunday, November 22, 2026 | Family-friendly “Ask Cody” session – 12:00 pm; Science of Wellness fireside chat – 7:30 pm'
+        body='<p>The Science of Wellness Fireside Chat is SOLD OUT!</p><p>Families can attend the noon session. Full program details retained.</p>'
+        rows=a._mos_detail(item,mos_detail(line,body),NOW)
+        self.assertEqual(len(rows),1)
+        self.assertEqual(a.timestamp(rows[0]['starts_at']).hour,17)
+        self.assertIn('Ask Cody',rows[0]['title'])
+        self.assertIn('Full program details retained.',rows[0]['description'])
+        self.assertEqual(rows[0]['description'].count('Families can attend'),1)
+
+    def test_mos_date_range_expands_only_explicit_dates(self):
+        rows=a._mos_schedule('February 25–26, 2027 | 8:00pm; February 27, 2027 | 2:00pm and 8:00pm')
+        self.assertEqual([(v[0].day,v[0].hour) for v in rows],[(25,20),(26,20),(27,14),(27,20)])
+
+    def test_hmsc_named_museum_and_online(self):
+        item=a._item(a.HMSC,'https://hmsc.harvard.edu/calendar_event/fossil-day/','Fossil Day')
+        rows=a._hmsc_detail(item,hmsc_detail(location='Harvard Museum of Natural History,ClassroomB,Cambridge,MA02138'),NOW)
+        self.assertEqual(rows[0]['venue_address'],'26 Oxford Street, Cambridge, MA 02138')
+        with self.assertRaisesRegex(ValueError,'not_public'):a._hmsc_detail(item,hmsc_detail('<p>Online Workshop</p>'),NOW)
+
+    def test_pem_full_body_and_native_point(self):
+        item=a._item(a.PEM,'https://www.pem.org/events/polar-origami','Polar Origami')
+        full='<p>'+('Fold and discover the complete native program. '*70)+'</p><p>Final access details.</p>'
+        rows=a._pem_detail(item,pem_detail(full),NOW)
+        self.assertEqual(len(rows),1);row=rows[0]
+        self.assertEqual(row['description'],description(full,limit=12001))
+        self.assertEqual((row['lat'],row['lng']),(42.521442,-70.892372))
+        self.assertNotIn('excerpt',row['description']);self.assertNotIn('recommendations',row['description'])
+        self.assertEqual(a._pem_detail(item,pem_detail(full,availability='https://schema.org/SoldOut'),NOW),[])
+
+    def test_pem_native_markdown_binds_ics_and_all_manifest_sessions(self):
+        url='https://www.pem.org/events/foldable-scenes'
+        sessions=[dict(start='2026-12-04T15:00:00-05:00',end='2026-12-04T16:30:00-05:00'),
+                  dict(start='2026-12-11T15:00:00-05:00',end='2026-12-11T16:30:00-05:00')]
+        item=a._item(a.PEM,url,'Foldable Scenes',sessions=sessions)
+        cal=Calendar();ev=Event();ev.add('summary',item['title']);ev.add('location','161 Essex St, Salem, MA 01970')
+        ev.add('dtstart',a.timestamp(sessions[0]['start']).astimezone(timezone.utc));ev.add('dtend',a.timestamp(sessions[0]['end']).astimezone(timezone.utc));cal.add_component(ev)
+        payload='---\ntitle: "Foldable Scenes"\ncanonical_url: "'+url+'"\n---\n[Apple](data:text/calendar;charset=utf8;base64,'+base64.b64encode(cal.to_ical()).decode()+')\n## Know before you go\nCreate Space Studios\n\nComplete native program and final access details.\n\nStay up to date.\nNewsletter'
+        rows=a._pem_detail(item,payload,NOW)
+        self.assertEqual(len(rows),2);self.assertIn('final access details.',rows[0]['description']);self.assertNotIn('Newsletter',rows[0]['description'])
+        with self.assertRaisesRegex(ValueError,'identity_changed'):
+            a._pem_detail(item,payload.replace('canonical_url: "'+url,'canonical_url: "https://www.pem.org/events/other'),NOW)
+
+    def test_pem_concurrent_native_envelope_handling_retains_individual_sessions(self):
+        values=[dict(start='2027-01-02T11:00:00-05:00',end='2027-01-02T11:30:00-05:00'),
+                dict(start='2027-01-02T11:30:00-05:00',end='2027-01-02T12:00:00-05:00'),
+                dict(start='2027-01-02T11:00:00-05:00',end='2027-01-02T12:00:00-05:00')]
+        occurrences=a._pem_occurrences(values)
+        self.assertEqual(len(occurrences),2)
+        self.assertTrue(all(end-start==timedelta(minutes=30)for start,end in occurrences))
+        standalone=[dict(start='2026-12-04T09:00:00-05:00',end='2026-12-06T17:00:00-05:00')]
+        self.assertEqual(len(a._pem_occurrences(standalone)),1)
+
+    def test_trustees_native_total_and_separate_yoga_sessions(self):
+        card='<div class="teaser-event"><a href="https://thetrustees.org/event/123/"></a><h3 class="teaser-event__title">Art of Presence: Yoga at deCordova</h3><div class="teaser-event__location">deCordova Sculpture Park and Museum | Lincoln</div></div>'
+        data=dict(preload_data=dict(settings=dict(pager=dict(page=1,per_page=16,total_rows=1,total_pages=1))))
+        listing='<script>window.FWP_JSON = '+json.dumps(data)+';</script><div class="facetwp-template"><div class="event-cards">'+card+'</div></div>'
+        items,following=a._trust_listing(listing,a.SOURCES[a.DECORDOVA][0])
+        self.assertEqual(len(items),1);self.assertEqual(following,[])
+        with self.assertRaisesRegex(ValueError,'pagination_changed'):
+            a._trust_listing(listing.replace(card,''),a.SOURCES[a.DECORDOVA][0])
+        html='<link rel="canonical" href="https://thetrustees.org/event/123/"><meta property="og:title" content="Art of Presence: Yoga at deCordova"><div class="event-text__when"><p>Monday, November 23, 2026</p><p>10:30-11AM (Family Yoga) and 11:30AM-12:30PM (Adult Yoga)</p></div><div class="event-text__column-right wysiwyg"><p>Complete native program details.</p></div><div class="event-text__location">51 Sandy Pond Road Lincoln, MA 01773</div>'
+        rows=a._trust_detail(items[0],html,NOW)
+        self.assertEqual(len(rows),2);self.assertIn('Family Yoga',rows[0]['title']);self.assertIn('Adult Yoga',rows[1]['title'])
+        self.assertNotEqual(rows[0]['id'],rows[1]['id'])
 
 
+class SchoolsAndCinema(unittest.TestCase):
+    def test_eliot_follows_native_overflow_and_month(self):
+        html='<div class="calendar-calendar">'+eliot_card()+'<a href="/calendar/day/2026-11-22">See all7events</a><a href="/calendar/month/2026-12">December »</a></div>'
+        rows,pages=a._eliot_listing(html,a.SOURCES[a.ELIOT][0],NOW)
+        self.assertEqual(len(rows),1)
+        self.assertEqual(a.timestamp(rows[0]['sessions'][0]['start']),a.timestamp('2026-11-22T18:00:00+00:00'))
+        self.assertEqual(len(pages),2)
+        both=a._merge(rows+rows)
+        self.assertEqual(len(both[0]['sessions']),1)
 
-if __name__ == '__main__':
-    unittest.main()
+    def test_eliot_excludes_closed_and_private_reservations(self):
+        html='<div class="calendar-calendar">'+eliot_card(status='Closed')+eliot_card(title='Private Studio Sessions')+'</div>'
+        rows,_=a._eliot_listing(html,a.SOURCES[a.ELIOT][0],NOW)
+        self.assertEqual(rows,[])
+        rows,_=a._eliot_listing('<div class="calendar-calendar">'+eliot_card(title='Full Color Painting')+'</div>',a.SOURCES[a.ELIOT][0],NOW)
+        self.assertEqual(len(rows),1)
+
+    def test_bac_conflicting_weekday_never_publishes(self):
+        html='<footer>86 Monmouth Street,Brookline,MA02446</footer><figcaption class="caption"><span class="class-listing">Watercolor Ages:16+ Date:Tue, Dec 10, 2026 Time:6:30–9:30pm Workshop Fee:$95 Full native workshop description. <a href="https://campscui.active.com/orgs/BrooklineArtsCenter?session=123">Register</a></span></figcaption>'
+        # Native footer is formatted with spaces; the contradiction is the weekday.
+        html=html.replace('86 Monmouth Street,Brookline,MA02446','86 Monmouth Street, Brookline, MA 02446')
+        self.assertEqual(a._bac(html,NOW),[])
+
+    def test_coolidge_each_native_showtime_is_an_occurrence(self):
+        item=a._item(a.COOLIDGE,'https://coolidge.org/films/example','Example')
+        html='<h1>Example</h1><div class="field--name-body"><div class="field__label">Body</div><div class="field__item"><p>Full native film narrative.</p></div></div>'
+        html+='<div class="film-showtime-list"><span class="datepicker__day">Sun</span><span class="datepicker__date">11/22</span>'
+        for i,t in [('100','10:30am'),('101','1:00pm')]:
+            html+='<div class="availability--individual sales-state--DuringSales"><a class="showtime-ticket__button" href="https://store.coolidge.org/websales/pages/ticketsearchcriteria.aspx?evtinfo='+i+'~native"><span class="showtime-ticket__time">'+t+'</span><span class="showtime-ticket__venue">MH2</span></a></div>'
+        html+='</div>'
+        rows=a._coolidge_detail(item,html,NOW)
+        self.assertEqual(len(rows),2);self.assertNotEqual(rows[0]['id'],rows[1]['id'])
+        self.assertEqual(rows[0]['description'],'Full native film narrative.')
+        self.assertTrue(all(r['venue_address']=='290 Harvard Street, Brookline, MA 02446' for r in rows))
+        with self.assertRaisesRegex(ValueError,'identity_changed'):
+            a._coolidge_detail(item,html.replace('ticketsearchcriteria.aspx','unrelated.aspx'),NOW)
+
+    def test_coolidge_native_group_sessions_are_distinct_and_closed_sales_excluded(self):
+        item=a._item(a.COOLIDGE,'https://coolidge.org/events/class','Class')
+        html='<h1>Class</h1><div class="field--name-body"><div class="field__label">Body</div><div class="field__item"><p>Complete native class description.</p></div></div>'
+        for day,status in [('11/22','DuringSales'),('11/29','DuringSales'),('12/06','AfterEvent')]:
+            html+='<div class="film-showtime-list"><span class="datepicker__day">Sun</span><span class="datepicker__date">'+day+'</span><div class="availability--all sales-state--'+status+'"><a class="showtime-ticket__button" href="https://store.coolidge.org/websales/pages/entrypoint.aspx?guid=fe57c7b0-0962-42cd-9479-cbf03c4082cb"><span class="showtime-ticket__time">10:00am</span><span class="showtime-ticket__venue">ECEC</span></a></div></div>'
+        rows=a._coolidge_detail(item,html,NOW)
+        self.assertEqual(len(rows),2);self.assertNotEqual(rows[0]['id'],rows[1]['id'])
+        self.assertEqual(rows[0]['description'],rows[1]['description'])
+
+    def test_coolidge_pager_is_native_bounded_and_followed(self):
+        html='<div class="film-card"><h3 class="film-card__title"><a href="/films/example">Example</a></h3></div><div class="pager__item--next"><a href="/films-events/welcome-coolidge-corner-theatre?view_args=202612">Next</a></div>'
+        items,pages=a._coolidge_listing(html,a.SOURCES[a.COOLIDGE][0],NOW)
+        self.assertEqual(len(items),1);self.assertEqual(len(pages),2)
+        with self.assertRaisesRegex(ValueError,'pagination_changed'):
+            a._coolidge_listing(html.replace('/films-events/welcome','https://foreign.example/films-events/welcome'),a.SOURCES[a.COOLIDGE][0],NOW)
+
+    def test_eliot_native_offsite_street_is_not_assigned_to_schoolhouse(self):
+        item=a._item(a.ELIOT,'https://eliotschool.org/classes/sharpening','Sharpening',sessions=[dict(start='2026-11-22T13:00:00-05:00',end='2026-11-22T16:00:00-05:00')])
+        html='<h1>Sharpening</h1><div class="view-classes-courses-tabs-view view-display-id-block_1"><p>Complete native sharpening description.</p></div><div class="field-name-field-location"><div class="field-item">Boston Building Resources, 100 Terrace St, Boston, MA 02120</div></div>'
+        rows=a._eliot_detail(item,html,NOW)
+        self.assertEqual(rows[0]['venue_address'],'100 Terrace Street, Boston, MA 02120')
+        with self.assertRaisesRegex(ValueError,'street_unresolved'):
+            a._eliot_detail(item,html.replace('100 Terrace St','101 Terrace St'),NOW)
+
+
+class Aquarium(unittest.TestCase):
+    def test_future_eligible_feed_preserves_full_description(self):
+        native=dict(id=12,title='Ocean Science Night',status='publish',all_day=False,url='https://www.neaq.org/event/ocean-science-night/',timezone=a.ZONE,start_date='2026-11-20 18:00:00',end_date='2026-11-20 21:00:00',utc_start_date='2026-11-20 23:00:00',utc_end_date='2026-11-21 02:00:00',description='<p>'+('Complete native marine-science program. '*75)+'</p><p>Final details.</p>',venue=dict(address='1 Central Wharf',city='Boston',state='MA',zip='02110'),categories=[])
+        data=dict(events=[native],total_pages=1,total=1)
+        html='<h1>Events and Programs</h1><article class="tribe-events-pro-photo__event"><time datetime="2026-11-20"></time><h3 class="tribe-events-pro-photo__event-title">Ocean Science Night</h3><a>Tickets</a></article>'
+        fetch=lambda url,accept:html if '/wp-json/' not in url else json.dumps(data)
+        rows=a.collect(source(a.AQUARIUM),fetch,now=NOW)
+        self.assertEqual(len(rows),1);self.assertIn('Final details.',rows[0]['description']);self.assertGreater(len(rows[0]['description']),2000)
+        native['categories']=[dict(name='Members')]
+        self.assertEqual(a.collect(source(a.AQUARIUM),fetch,now=NOW),[])
+        native['categories']=[]
+        for field in ['is_virtual','hide_from_listings']:
+            native[field]=True
+            self.assertEqual(a.collect(source(a.AQUARIUM),fetch,now=NOW),[])
+            native.pop(field)
+
+    def test_sold_out_calendar_excludes_native_feed_record(self):
+        native=dict(id=12,title='Aquarium After Dark',status='publish',all_day=False,categories=[],start_date='2026-11-20 18:00:00')
+        data=dict(events=[native],total_pages=1,total=1)
+        html='<h1>Events and Programs</h1><article class="tribe-events-pro-photo__event"><time datetime="2026-11-20"></time><h3 class="tribe-events-pro-photo__event-title">Aquarium After Dark</h3><a>SOLD OUT</a></article>'
+        fetch=lambda url,accept:html if '/wp-json/' not in url else json.dumps(data)
+        self.assertEqual(a.collect(source(a.AQUARIUM),fetch,now=NOW),[])
+        native['start_date']='2026-12-20 18:00:00'
+        with self.assertRaisesRegex(ValueError,'pagination_changed'):
+            a.collect(source(a.AQUARIUM),fetch,now=NOW)
+
+
+if __name__=='__main__':unittest.main()

@@ -1,0 +1,69 @@
+{
+  "source_key": "lizard_lounge_ma",
+  "source_id": 5646,
+  "deployed_base_sha": "7798bd5886a7de4ac0635ab8c3bca79d4b3f9105",
+  "observed_production_state": {
+    "checked_at": "2026-11-15T01:33:25Z",
+    "status": "paused",
+    "health_status": "disabled",
+    "fetch_status": "failed",
+    "preview_error": "publisher_http_504",
+    "intake_reason": "html_retry_exhausted",
+    "ordinary_retries_exhausted_at": "2026-11-15T01:30:54Z",
+    "source": "Coordinating agent read-only production readback."
+  },
+  "method": "One bounded ordinary request sequence from the research environment: robots.txt first, original configured calendar, and the unchanged deployed API route with its normal current window. No alternative host, credentials, proxy or access bypass. No further publisher attempts.",
+  "checks": [
+    {
+      "url": "https://lizardloungeclub.com/robots.txt",
+      "status": 200,
+      "observed_at": "2026-11-15T01:34:14.789843+00:00",
+      "location": null,
+      "content_type": "text/plain",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/concurrent-reconciliation/lizard-recovery-check/raw-a40ae5b0f80e198656b06cee.txt",
+      "bytes": 1285,
+      "sha256": "a16f76764274a3f9308017556ef5a9d53ae9eba039bd98df3e9f17502ab50746",
+      "role": "robots"
+    },
+    {
+      "url": "https://lizardloungeclub.com/calendar/",
+      "status": 200,
+      "observed_at": "2026-11-15T01:34:21.371156+00:00",
+      "location": null,
+      "content_type": "text/html; charset=UTF-8",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/concurrent-reconciliation/lizard-recovery-check/raw-724f10ef7c53555eb0782537.html",
+      "bytes": 362728,
+      "sha256": "4da90163cdfed61bfaad12fd05278230a17878262cd935e90f7f843ba604f1a1",
+      "role": "publisher",
+      "robots_allowed": true
+    },
+    {
+      "url": "https://lizardloungeclub.com/wp-json/tribe/events/v1/events?per_page=50&start_date=2026-11-14+00%3A00%3A00&end_date=2027-01-14+00%3A00%3A00&status=publish&page=1",
+      "status": 200,
+      "observed_at": "2026-11-15T01:34:25.962692+00:00",
+      "location": null,
+      "content_type": "application/json; charset=UTF-8",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/concurrent-reconciliation/lizard-recovery-check/raw-480ee8f8115b20cd491f90e7.html",
+      "bytes": 296311,
+      "sha256": "d4e3f258040c32a71abb77c4972b97ab7ac7ac7fe2b589f407bb530edd961e74",
+      "role": "publisher",
+      "robots_allowed": true
+    }
+  ],
+  "robots_permission": "The captured robots.txt permits both requested publisher paths for the ordinary collector user agent; both publisher records have robots_allowed=true.",
+  "conditional_release_plan": {
+    "owner": "Coordinating release agent",
+    "action": "One normal production retry in the same completion batch after the reconciled collector is READY.",
+    "guards": [
+      "Exact source key lizard_lounge_ma and source ID 5646.",
+      "Still paused, disabled and failed with publisher_http_504 and html_retry_exhausted.",
+      "No active checkpoint.",
+      "No changed manual override, publisher-access decision, rights state or incompatible active lease."
+    ],
+    "basis": "A 504 is a transient publisher response; the original permitted calendar and API each returned 200 in this single research check."
+  },
+  "production_restart_performed_by_this_agent": false,
+  "production_recovery_verified": false,
+  "scope_limit": "The 200 observations establish research-environment recovery only. They do not establish production network reachability, ingestion, completed publication or persistent availability. The prior-local-day query correction addresses overnight-event coverage and is not represented as a 504 fix.",
+  "raw_capture_manifest": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/concurrent-reconciliation/lizard-recovery-check/capture-lizardloungeclub.com.json"
+}

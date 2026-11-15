@@ -53,7 +53,7 @@ LABELS = {
 }
 SOURCE_NOTES = {
     ARBORETUM: 'Official permitted ICS with complete native descriptions, compared with current calendar; exact publisher meeting sites, including reviewed Flora Way gate intersection.',
-    PARKOUR: 'Official Squarespace dated HTML; full detail narratives and event-specific streets. ICS lacks descriptions and is not used as a prose fallback.',
+    PARKOUR: 'Official Squarespace dated HTML and exact linked public ZenPlanner sessions; complete narratives and event-specific streets. Explicit individual-day clinic signup permits the dated daily sessions. ICS lacks descriptions and is not used as a prose fallback.',
     TRACKSMITH: 'Official current Trackhouse listing and complete event details; dated JSON-LD reconciled with visible start clocks. Partner hotel runs retain their actual meeting venue.',
     TRUSTEES: 'Metro Boston program listing only; complete native detail prose, exact dates and actual garden streets. Statewide deCordova programming is a separate source.',
     CENTRAL: 'Publisher explicitly states the third Thursday monthly at 7–9pm. Bounded 60-day recurrence is checked against the current named edition and native post freshness. Exact Cambridge venue point comes from the publisher location page Get Directions link.',
@@ -62,6 +62,12 @@ SOURCE_NOTES = {
 }
 ALLOWED_HOSTS = {k: (urlsplit(v[0]).hostname,) for k, v in SOURCES.items()}
 ALLOWED_HOSTS[HARBOR] = ('www.bostonharbornow.org', 'www.eventbrite.com')
+ALLOWED_HOSTS[PARKOUR] = ('pkgenboston.com', 'pkgenboston.sites.zenplanner.com')
+HOLIDAY_PARENT = 'https://pkgenboston.com/local-events/2026/holiday-challenge'
+HOLIDAY_SESSIONS = {
+    'F627675C-0625-4AC6-9410-A2DA10FF3F5C': ('PKGB Holiday Challenge - ADULT/TEEN 2026', '9am - 12pm Adult / Teen Signup'),
+    'AD58D198-525D-43BA-8F2F-1967B02668FD': ('PKGB Holiday Challenge - YOUTH 2026', '1pm - 3pm Youth Signup'),
+}
 CHECKPOINT_KEYS = {PARKOUR, TRACKSMITH, TRUSTEES, ROCKSPOT, HARBOR}
 MAX_MANIFEST = 200
 MAX_RECORDS = 200
@@ -76,11 +82,16 @@ REVIEWED_INTERSECTIONS = ({
 },)
 GATE_EVIDENCE = 'https://arboretum.harvard.edu/venue/bussey-street-gate/'
 GATE_PROVENANCE = ('Exact publisher Flora Way Gate point and directions place the meeting at the end of Hemlock Hill Road on Flora Way; '
-    'street intersection supplied for the unnumbered gate. ZIP02131 is a reviewed Roslindale street-context resolution, corroborated by City of Boston Flora Way park records; no headquarters or invented house number.')
+    'street intersection supplied for the unnumbered gate. ZIP 02131 is a reviewed Roslindale street-context resolution, corroborated by City of Boston Flora Way park records; no headquarters or invented house number.')
 HARBOR_BOCCE_PROVENANCE = ('Publisher structured venue/address and its event-specific point identify the bocce courts at523 Commercial Street. '
     'The narrative says423; Boston parks records place these courts between Puopolo517 and Langone529–543 Commercial Street, supporting523. '
     'Native narrative retained unchanged; reviewed physical meeting-site resolution, not a claim that the conflicting prose agrees.')
 HARBOR_BOCCE_EVIDENCE = 'https://www.boston.gov/departments/parks-and-recreation/improvements-langone-park-and-puopolo-playground'
+DOJO_POINT = (42.382388, -71.105441)
+DOJO_EVIDENCE = 'https://www.somervillema.gov/events/2023/10/30/annual-candlelight-vigil-honor-domestic-violence-awareness-month'
+DOJO_PROVENANCE = ('City of Somerville named-event map feature 50785 identifies The Dojo at Somernova at 15 Properzi Way with this point; '
+    'the current venue website confirms the identical street. Conflicting publisher event pins replaced by this reviewed building/site point, '
+    'not a claimed exact classroom or door.')
 REVIEWED_VENUE_POINTS = {
     (CENTRAL, 'Central Rock Gym Cambridge', '170 Alewife Brook Parkway, Cambridge, MA 02138'): {
         'point': (42.390776, -71.142459),
@@ -169,6 +180,12 @@ def event_url(key, value):
             ROCKSPOT: r'/rockspot/schedule/event/[1-9][0-9]*/select-num-participants/',
             HARBOR: r'/e/[a-z0-9-]+-tickets-[1-9][0-9]*',
         }
+        if key == PARKOUR and p.netloc == 'pkgenboston.sites.zenplanner.com':
+            query = parse_qs(p.query)
+            return bool(p.scheme == 'https' and p.path == '/event.cfm' and not p.fragment
+                and set(query) == {'eventId'} and len(query['eventId']) == 1
+                and query['eventId'][0] in HOLIDAY_SESSIONS
+                and p.query == 'eventId=' + query['eventId'][0])
         host = 'www.eventbrite.com' if key == HARBOR else ALLOWED_HOSTS[key][0]
         return bool(p.scheme == 'https' and p.netloc == host and not (p.query or p.fragment)
             and re.fullmatch(patterns[key], p.path) and '..' not in p.path.split('/'))
@@ -201,16 +218,15 @@ def _range(day, value):
 
 def _row(key, title, start, end, url, identity, body, venue, street, city, *, point=None,
          categories=(), evidence=None, provenance='Publisher event-specific full street address.'):
-    if not body or not body.strip():
+    if not body or not body.strip() or plain(body).casefold() == plain(title).casefold():
         raise ValueError('boston_additional_description_missing')
     if len(body) > MAX_DESCRIPTION:
         raise ValueError('boston_additional_description_limit')
     if not event_url(key, url):
         raise ValueError('boston_additional_detail_changed')
-    reviewed = REVIEWED_VENUE_POINTS.get((key, venue, street)) if point is None else None
+    reviewed = REVIEWED_VENUE_POINTS.get((key, venue, street))
     if reviewed:
-        point = reviewed['point']
-        evidence, provenance = reviewed['evidence'], reviewed['provenance']
+        point, evidence, provenance = reviewed['point'], reviewed['evidence'], reviewed['provenance']
     row = record(title, start.isoformat(), end.isoformat() if end else None, venue, street, city,
         url, identity, '', lat=point[0] if point else None, lng=point[1] if point else None,
         tz=ZONE, publisher_geo=True, retain_until_end=True)
@@ -272,7 +288,8 @@ def _arboretum(fetch, now, deadline_at, diagnostics):
             continue
         start = item.decoded('DTSTART') if item.get('DTSTART') else None
         end = item.decoded('DTEND') if item.get('DTEND') else None
-        if not isinstance(start, datetime) or start.tzinfo is None or (end and not isinstance(end, datetime)):
+        if (not isinstance(start, datetime) or start.tzinfo is None
+                or (end and (not isinstance(end, datetime) or end.tzinfo is None or end <= start))):
             _hold(ARBORETUM, url, 'boston_additional_time_conflict', diagnostics)
             continue
         if not _within(start, end, now):
@@ -361,11 +378,127 @@ def _parkour_detail(card, payload, now, diagnostics):
         _hold(PARKOUR, card['url'], 'boston_additional_description_missing' if not body
             else 'boston_additional_street_unresolved', diagnostics)
         return []
-    row = _row(PARKOUR, card['title'], start, end, card['url'],
-        'parkour:' + sha256(urlsplit(card['url']).path.encode()).hexdigest(), body,
-        venue, address[0], address[1], point=_detail_point(soup, main, location),
-        categories=[plain(a.get_text()) for a in main.select('.eventitem-meta-cats a, .eventitem-meta-tags a')],
-        provenance='Publisher event-specific full street; coordinates accepted only when event export, visible address and map destination agree.')
+    sessions = _parkour_sessions(card, body)
+    if not sessions:
+        _hold(PARKOUR, card['url'], 'boston_additional_time_conflict', diagnostics)
+        return []
+    point = _detail_point(soup, main, location)
+    provenance = 'Publisher event-specific full street; coordinates accepted only when event export, visible address and map destination agree.'
+    evidence = card['url']
+    if (venue, address[0]) == ('The Dojo @ Somernova', '15 Properzi Way, Somerville, MA 02143'):
+        point, evidence, provenance = DOJO_POINT, DOJO_EVIDENCE, DOJO_PROVENANCE
+    out = []
+    for begins, ends in sessions:
+        identity = 'parkour:' + sha256(urlsplit(card['url']).path.encode()).hexdigest()
+        if len(sessions) > 1:
+            identity += ':' + begins.date().isoformat()
+        row = _row(PARKOUR, card['title'], begins, ends, card['url'], identity, body,
+            venue, address[0], address[1], point=point,
+            categories=[plain(a.get_text()) for a in main.select('.eventitem-meta-cats a, .eventitem-meta-tags a')],
+            evidence=evidence, provenance=provenance)
+        if row:
+            if len(sessions) > 1:
+                row['publisher_schedule_rule'] = 'Each explicitly advertised day, 10 am–3 pm; publisher offers individual-day signup for the dated clinic range.'
+            out.append(row)
+    return out
+
+
+def _parkour_sessions(card, body):
+    start, end = _offset(card['start']), _offset(card['end'])
+    if not start or not end:
+        return []
+    start, end = start.astimezone(ZoneInfo(ZONE)), end.astimezone(ZoneInfo(ZONE))
+    if start.date() == end.date():
+        return [(start, end)]
+    total = (end.date() - start.date()).days + 1
+    text = plain(body)
+    single = re.search(r'1-day and (\d+)-day signup options', text, re.I)
+    span = re.search(r'TIME / LOCATION (\d{1,2}(?::\d{2})?\s*[ap]m)\s*[-–]\s*(\d{1,2}(?::\d{2})?\s*[ap]m) at The Dojo', text, re.I)
+    dates = re.search(r'DATES [A-Z]{3} (\d{1,2})/(\d{1,2})\s*[-–]\s*[A-Z]{3} (\d{1,2})/(\d{1,2})', text)
+    if (not card['title'].startswith('Parkour Explorer School Break Clinic') or not 2 <= total <= 10
+            or not single or int(single[1]) != total or not span or not dates
+            or (int(dates[1]), int(dates[2])) != (start.month, start.day)
+            or (int(dates[3]), int(dates[4])) != (end.month, end.day)):
+        return []
+    times = [_range(start.date() + timedelta(days=i), span[1] + '-' + span[2]) for i in range(total)]
+    return times if times[0][0] == start and times[-1][1] == end else []
+
+
+def _parkour_linked_sessions(card, payload):
+    soup = BeautifulSoup(payload, 'html.parser')
+    main = soup.select_one('.eventitem')
+    title = main.select_one('.eventitem-title') if main else None
+    body = main.select_one('.eventitem-column-content .sqs-layout') if main else None
+    canonical = soup.select_one('meta[property="og:url"]')
+    venue = main.select_one('.eventitem-meta-address-line--title') if main else None
+    if (title is None or body is None or plain(title.get_text()) != card['title']
+            or card['url'] != HOLIDAY_PARENT or canonical is None or canonical.get('content') != card['url']
+            or venue is None or plain(venue.get_text()) != card['venue']):
+        raise ValueError('boston_additional_detail_changed')
+    start, end, facts = _google_times(main)
+    if (not start or not end or start.isoformat() != card['start'] or end.isoformat() != card['end']
+            or plain((facts.get('location') or [''])[0]) != card['location']):
+        raise ValueError('boston_additional_time_conflict')
+    day = start.astimezone(ZoneInfo(ZONE)).date()
+    if day != date(2026, 12, 5):
+        raise ValueError('boston_additional_schedule_changed')
+    out = []
+    for native_id, (native_title, label) in HOLIDAY_SESSIONS.items():
+        url = 'https://pkgenboston.sites.zenplanner.com/event.cfm?eventId=' + native_id
+        anchors = [a for a in body.select('a[href]') if a['href'] == url and plain(a.get_text()) == label]
+        if len(anchors) != 1:
+            raise ValueError('boston_additional_schedule_changed')
+        match = re.match(r'^(\d{1,2}[ap]m) - (\d{1,2}[ap]m)', label)
+        begins, ends = _range(day, match[1] + '-' + match[2])
+        out.append({'url': url, 'title': native_title, 'kind': 'zenplanner', 'parent_url': card['url'],
+            'native_id': native_id, 'start': begins.isoformat(), 'end': ends.isoformat(),
+            'venue': card['venue'], 'location': card['location']})
+    return out
+
+
+def _parkour_zen_detail(card, payload, now, diagnostics):
+    soup = BeautifulSoup(payload, 'html.parser')
+    field = soup.select_one('fieldset')
+    title = field.select_one('legend') if field else None
+    if title is None or plain(title.get_text()) != card['title']:
+        raise ValueError('boston_additional_detail_changed')
+    labels = {plain(n.get_text()): n for n in field.select('strong')}
+    if not {'Date:', 'Time:', 'Location:'} <= set(labels):
+        raise ValueError('boston_additional_detail_changed')
+    try:
+        day = datetime.strptime(plain(labels['Date:'].next_sibling), '%B %d, %Y').date()
+    except ValueError:
+        raise ValueError('boston_additional_time_conflict')
+    clocks = plain(labels['Time:'].parent.get_text()).removeprefix('Time:').strip().replace(' to ', '-')
+    start, end = _range(day, clocks)
+    if start != _offset(card['start']) or end != _offset(card['end']):
+        raise ValueError('boston_additional_time_conflict')
+    adr = field.select_one('.adr')
+    parts = [plain(adr.select_one(c).get_text()) if adr and adr.select_one(c) else ''
+        for c in ('.street-address', '.locality', '.region', '.postal-code')]
+    address = _street(parts[0] + ', ' + parts[1] + ', ' + parts[2] + ' ' + parts[3])
+    location_label = plain(labels['Location:'].parent.get_text()).removeprefix('Location:').strip()
+    if (not address or address != _street(card['location'])
+            or location_label != 'The Dojo @ Somernova SOM' or card['venue'] != 'The Dojo @ Somernova'):
+        raise ValueError('boston_additional_location_conflict')
+    # The current public template has one paragraph containing multiple native
+    # blocks. Retain every narrative sibling before its Date facts, including
+    # later paragraphs/lists if the publisher expands that same content area.
+    narrative = []
+    for sibling in title.next_siblings:
+        if sibling is labels['Date:'] or (getattr(sibling, 'name', None)
+                and labels['Date:'] in sibling.descendants):
+            break
+        narrative.append(str(sibling))
+    body = _full(''.join(narrative))
+    if not body:
+        _hold(PARKOUR, card['url'], 'boston_additional_description_missing', diagnostics)
+        return []
+    row = _row(PARKOUR, card['title'], start, end, card['url'], 'parkour:zenplanner:' + card['native_id'],
+        body, card['venue'], address[0], address[1], point=DOJO_POINT,
+        evidence=DOJO_EVIDENCE, provenance=DOJO_PROVENANCE)
+    if row:
+        row['publisher_schedule_rule'] = 'Separate native registration session reconciles the aggregate Squarespace header; date and start/end verified against the current linked booking detail.'
     return [row] if row else []
 
 
@@ -392,7 +525,9 @@ def _tracksmith_detail(card, payload, now, diagnostics):
     schemas = _schemas(soup)
     content = soup.select_one('.event-page__content')
     h1 = soup.select_one('h1.event-page__title')
-    if len(schemas) != 1 or content is None or h1 is None:
+    canonical = soup.select_one('link[rel="canonical"]')
+    if (len(schemas) != 1 or content is None or h1 is None
+            or canonical is None or canonical.get('href') != card['url']):
         raise ValueError('boston_additional_detail_changed')
     item = schemas[0]
     if plain(item.get('name')) != card['title'] or plain(h1.get_text()) != card['title']:
@@ -517,7 +652,7 @@ def _trustees_detail(card, payload, now, diagnostics):
     if venue == 'Leland St Cooperative Garden' and street == '2-6 Leland St, Jamaica Plain, MA 02130':
         # The event's exact4Leland entrance lies within its own2–6 site range.
         # Preserve the publisher range rather than replace it with another venue.
-        provenance = 'Native garden address range2–6 Leland Street contains the narrative4Leland entrance; exact actual garden retained.'
+        provenance = 'Native garden address range 2–6 Leland Street contains the narrative 4 Leland entrance; exact actual garden retained.'
     row = _row(TRUSTEES, card['title'], start, end, card['url'],
         'trustees:' + urlsplit(card['url']).path.strip('/').split('/')[-1], text,
         venue, street, city, evidence=evidence, provenance=provenance)
@@ -617,6 +752,11 @@ def _rock_page(card, payload, now, diagnostics):
             # Capitan displays bookable private inventory beside public events.
             # A class without an open public Book link is a closed cohort/slot.
             if re.search(r'\b(?:rental|birthday|party deposit|overnight|private|group visit|scout)\b', title, re.I):
+                continue
+            installment = re.search(r'\(Part (\d+) of (\d+)\)', title)
+            if installment and int(installment[1]) > 1:
+                # Later course installments are not standalone admission even
+                # while the parent course's registration link remains open.
                 continue
             book = item.select_one('a[href*="/select-num-participants/"]')
             details = item.select_one('div[id^="event-details-"] > div.mt-2')
@@ -763,10 +903,22 @@ def _manifest(key, fetch, now, deadline_at):
     payload = fetch(SOURCES[key][0], 'text/html')
     fn = {PARKOUR: _parkour_manifest, TRACKSMITH: _tracksmith_manifest,
           TRUSTEES: _trustees_manifest, HARBOR: _harbor_manifest}[key]
-    return fn(payload, now)
+    manifest = fn(payload, now)
+    if key == PARKOUR:
+        expanded = []
+        for card in manifest:
+            if card['url'] == HOLIDAY_PARENT:
+                _budget(deadline_at, 18)
+                expanded.extend(_parkour_linked_sessions(card, fetch(card['url'], 'text/html')))
+            else:
+                expanded.append(card)
+        return expanded
+    return manifest
 
 
 def _detail(key, card, payload, now, diagnostics):
+    if key == PARKOUR and card.get('kind') == 'zenplanner':
+        return _parkour_zen_detail(card, payload, now, diagnostics)
     fn = {PARKOUR: _parkour_detail, TRACKSMITH: _tracksmith_detail,
           TRUSTEES: _trustees_detail, ROCKSPOT: _rock_page, HARBOR: _harbor_detail}[key]
     return fn(card, payload, now, diagnostics)
@@ -790,6 +942,23 @@ def _card_valid(key, card, started):
     if not event_url(key, card.get('url')):
         return False
     if key == PARKOUR:
+        if card.get('kind') == 'zenplanner':
+            if (card.get('native_id') not in HOLIDAY_SESSIONS or card.get('parent_url') != HOLIDAY_PARENT
+                    or card['url'] != 'https://pkgenboston.sites.zenplanner.com/event.cfm?eventId=' + card['native_id']
+                    or card['title'] != HOLIDAY_SESSIONS[card['native_id']][0]):
+                return False
+            label = HOLIDAY_SESSIONS[card['native_id']][1]
+            clocks = re.match(r'^(\d{1,2}[ap]m) - (\d{1,2}[ap]m)', label)
+            expected = _range(date(2026, 12, 5), clocks[1] + '-' + clocks[2])
+            if ((_offset(card.get('start')), _offset(card.get('end'))) != expected
+                    or card.get('venue') != 'The Dojo @ Somernova'
+                    or _street(card.get('location')) != ('15 Properzi Way, Somerville, MA 02143', 'Somerville')):
+                return False
+        elif urlsplit(card['url']).hostname != 'pkgenboston.com' or card['url'] == HOLIDAY_PARENT:
+            # A deployed older manifest may still contain the contradictory
+            # aggregate holiday header. It must be rediscovered as the two
+            # verified registration sessions before any prefix can publish.
+            return False
         return bool(_offset(card.get('start')) and (card.get('end') is None or _offset(card['end']))
             and isinstance(card.get('location'), str) and isinstance(card.get('venue'), str))
     if key == TRACKSMITH:
@@ -803,12 +972,17 @@ def _row_valid(key, row, card, started):
         return False
     if (row.get('timezone') != ZONE or row.get('attendance_mode') != 'in_person'
             or not isinstance(row.get('description'), str) or not row['description'].strip()
+            or plain(row['description']).casefold() == plain(row.get('title')).casefold()
             or len(row['description']) > MAX_DESCRIPTION or not row.get('venue_name')
             or not _street(row.get('venue_address')) or not row.get('location_provenance')
             or not row.get('location_evidence_url')):
         return False
     point = _point(row.get('lat'), row.get('lng'))
     if (row.get('lat') is not None or row.get('lng') is not None) and not point:
+        return False
+    reviewed = REVIEWED_VENUE_POINTS.get((key, row['venue_name'], row['venue_address']))
+    if reviewed and (point != reviewed['point'] or row['location_evidence_url'] != reviewed['evidence']
+            or row['location_provenance'] != reviewed['provenance']):
         return False
     start, end = _offset(row.get('starts_at')), _offset(row.get('ends_at')) if row.get('ends_at') else None
     if not start or (row.get('ends_at') and not end) or (end and end <= start) or not _within(start, end, started):
@@ -819,10 +993,23 @@ def _row_valid(key, row, card, started):
         return False
     if key == PARKOUR:
         address = _street(card['location'])
-        if (not address or row['venue_name'] != card['venue'] or row['venue_address'] != address[0]
-                or start != _offset(card['start']) or end != _offset(card['end'])):
+        if not address or row['venue_name'] != card['venue'] or row['venue_address'] != address[0]:
             return False
-        identity = 'parkour:' + sha256(urlsplit(card['url']).path.encode()).hexdigest()
+        if card.get('kind') == 'zenplanner':
+            if start != _offset(card['start']) or end != _offset(card['end']):
+                return False
+            identity = 'parkour:zenplanner:' + card['native_id']
+        else:
+            sessions = _parkour_sessions(card, row['description'])
+            if (start, end) not in sessions:
+                return False
+            identity = 'parkour:' + sha256(urlsplit(card['url']).path.encode()).hexdigest()
+            if len(sessions) > 1:
+                identity += ':' + start.astimezone(ZoneInfo(ZONE)).date().isoformat()
+        if (row['venue_name'], row['venue_address']) == ('The Dojo @ Somernova', '15 Properzi Way, Somerville, MA 02143'):
+            if (point != DOJO_POINT or row['location_evidence_url'] != DOJO_EVIDENCE
+                    or row['location_provenance'] != DOJO_PROVENANCE):
+                return False
     elif key == TRACKSMITH:
         local = start.astimezone(ZoneInfo(ZONE))
         if local.strftime('%-d %b') != card['day_label'] or _clock(local.date(), card['clock']) != start:
@@ -839,6 +1026,13 @@ def _row_valid(key, row, card, started):
                     or row['location_evidence_url'] != HARBOR_BOCCE_EVIDENCE):
                 return False
     else:
+        title = row.get('title', '')
+        installment = re.search(r'\(Part (\d+) of (\d+)\)', title)
+        if (re.search(r'\b(?:rental|birthday|party deposit|overnight|private|group visit|scout)\b', title, re.I)
+                or installment and int(installment[1]) > 1):
+            # Reject old durable prefixes collected before the public-course
+            # eligibility correction, even if their stored hash is intact.
+            return False
         if (row.get('publisher_schedule_page') != card['url']
                 or row['venue_name'] != 'Rock Spot Climbing South Boston'
                 or row['venue_address'] != '30 Old Colony Avenue, South Boston, MA 02127'
@@ -854,7 +1048,7 @@ def _checkpoint_valid(key, state, now):
     try:
         started = _offset(state['started_at'])
         manifest = state['manifest']
-        if (state['version'] != 1 or state['source_key'] != key or not started
+        if (type(state['version']) is not int or state['version'] != 1 or state['source_key'] != key or not started
                 or started.utcoffset() != timedelta(0) or not -60 <= (now - started).total_seconds() <= 14400
                 or state['window_start'] != started.astimezone(ZoneInfo(ZONE)).date().isoformat()
                 or type(state['cursor']) is not int or type(state['manifest_count']) is not int

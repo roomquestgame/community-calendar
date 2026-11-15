@@ -83,8 +83,8 @@ def passim_detail(item, *, body=FULL, title=None, date_header=None, show=None, v
         '<script type="application/ld+json">' + json.dumps(schema) + '</script>')
 
 
-def passim_pages(count=14):
-    literals = [passim_literal(i) for i in range(1, count + 1)]
+def passim_pages(count=14, *, start=START):
+    literals = [passim_literal(i, start=start) for i in range(1, count + 1)]
     listing = passim_calendar(literals)
     items = b._passim_manifest(listing, NOW)
     return {b.SOURCES[b.PASSIM][0]: listing, **{item["url"]: passim_detail(item) for item in items}}
@@ -126,10 +126,23 @@ def test_closures_and_private_events_are_not_fake_concerts():
     assert not queue
 
 
+def test_lizard_query_keeps_preceding_local_day_for_after_midnight_shows():
+    from urllib.parse import parse_qs, urlsplit
+    after_midnight = datetime(2026, 11, 15, 1, 0, tzinfo=b.ZoneInfo(b.ZONE))
+    query = parse_qs(urlsplit(b._tec_url(after_midnight)).query)
+    assert query["start_date"] == ["2026-11-14 00:00:00"]
+    assert query["end_date"] == ["2027-01-15 00:00:00"]
+
+
 @pytest.mark.parametrize("body,reason", [(None, "description_missing"), ("", "description_missing"), ("<p>" + "n" * 12001 + "</p>", "description_limit")])
 def test_no_blank_or_clipped_upstream_narrative(body, reason):
     queue, _ = b._lizard_listing(tec_payload([tec_event(description=body)]), NOW)
     assert queue[0]["held"].endswith(reason) and "body" not in queue[0]
+
+
+def test_changed_json_description_type_is_not_stringified_into_an_event():
+    with pytest.raises(ValueError, match="calendar_changed"):
+        b._lizard_listing(tec_payload([tec_event(description={"summary": "Unexpected shape"})]), NOW)
 
 
 @pytest.mark.parametrize("key", [b.IMPROV, b.LAUGH])
@@ -158,7 +171,6 @@ def test_passim_reads_whole_inert_calendar_and_show_clock_as_local():
     row = b._row(b.PASSIM, dict(item, **item["occurrences"][0], **full))
     assert row["starts_at"] == START.astimezone(timezone.utc).isoformat()
     assert row["ends_at"] is None
-    assert (row["lat"], row["lng"]) == (42.3741826, -71.11964540000002)
 
 
 def test_inert_calendar_rejects_expressions_and_unsupported_date_reinterpretation():
@@ -180,6 +192,8 @@ def test_passim_multi_showtime_date_checks_and_never_uses_doors_as_show():
     assert full["venue_key"] == "passim"
     with pytest.raises(ValueError, match="schedule_conflict"):
         b._passim_detail(item, passim_detail(item, show="6:30PM"))
+    with pytest.raises(ValueError, match="schedule_conflict"):
+        b._passim_detail(item, passim_detail(item, date_header="Saturday, November 20, 2026", show="2 Shows! 5:00PM and 8:00PM"))
 
 
 def test_passim_actual_offsite_beats_default_club_schema_and_old_artist_venues():
@@ -189,7 +203,6 @@ def test_passim_actual_offsite_beats_default_club_schema_and_old_artist_venues()
     assert full["venue_key"] == "armory"
     row = b._row(b.PASSIM, dict(item, **item["occurrences"][0], **full))
     assert row["venue_address"] == "191 Highland Avenue, Somerville, MA 02143"
-    assert row["lat"] is None and row["lng"] is None
     ordinary = b._passim_manifest(passim_calendar([passim_literal()]), NOW)[0]
     assert b._passim_detail(ordinary, passim_detail(ordinary, body=FULL + " Previously performed at Carnegie Hall."))["venue_key"] == "passim"
 
@@ -198,6 +211,28 @@ def test_passim_generic_ticket_fee_only_is_not_synthesized_event_description():
     item = b._passim_manifest(passim_calendar([passim_literal()]), NOW)[0]
     with pytest.raises(ValueError, match="description_missing"):
         b._passim_detail(item, passim_detail(item, body=""))
+
+
+def test_exact_existing_armory_occurrence_is_excluded_with_provenance_only():
+    literal = passim_literal(18601, title="Boston Fiddle Funk Folk Festival at The Armory", start=START.replace(minute=0))
+    literal["link"] = "https://www.passim.org/live-music/events/boston-fiddle-funk-folk-festival-at-the-armory/"
+    listing = passim_calendar([literal])
+    calls = []
+    result = b.collect_chunk(source(b.PASSIM), lambda url, accept: calls.append(url) or listing, now=NOW)
+    assert result["complete"] and result["events"] == []
+    assert calls == [b.SOURCES[b.PASSIM][0]]  # Already working details are not re-ingested.
+    diagnostic = result["checkpoint"]["diagnostics"][0]
+    assert diagnostic["disposition"] == "already_published"
+    assert diagnostic["published_source_key"] == "arts_at_the_armory_ma"
+    assert diagnostic["published_external_event_id"] == "20320@artsatthearmory.org"
+    assert diagnostic["published_starts_at"] == "2026-11-20T23:00:00+00:00"
+    b._checkpoint(result["checkpoint"], b.PASSIM, NOW)
+    item = b._passim_manifest(listing, NOW)[0]
+    assert b._existing_overlap(b.PASSIM, item, item["occurrences"][0])
+    later = b._occurrence(START.replace(minute=0) + timedelta(days=1))
+    assert b._existing_overlap(b.PASSIM, item, later) is None
+    other = dict(item, url="https://www.passim.org/live-music/events/another-armory-performance/")
+    assert b._existing_overlap(b.PASSIM, other, item["occurrences"][0]) is None
 
 
 def test_burren_explicit_year_anchor_rollover_rooms_and_multiple_shows():
@@ -211,27 +246,54 @@ def test_burren_explicit_year_anchor_rollover_rooms_and_multiple_shows():
     assert queue[0]["venue_key"] == "burren_back" and queue[1]["venue_key"] == "burren_front"
 
 
+def test_burren_four_explicit_comma_and_ampersand_show_clocks():
+    cards = [("SUNDAY DECEMBER 13, 2026", "Winter Showcase", "10:30am, 12:30pm, 2:30pm, & 4:30pm:",
+              "Musicians of all ages perform their winter showcase.", None, "THE BACK ROOM")]
+    item = b._burren_manifest(burren_calendar(cards), NOW)[0]
+    assert [b.timestamp(x["start"]).hour for x in item["occurrences"]] == [10, 12, 14, 16]
+    assert all(b.timestamp(x["start"]).minute == 30 and x["end"] is None for x in item["occurrences"])
+    assert len({b._identity(b.BURREN, dict(item, **x)) for x in item["occurrences"]}) == 4
+
+
+@pytest.mark.parametrize("clocks", ["10:30am,,12:30pm", "10:30am,&", "10:30,12:30pm", "10:30am,&12:30pm,", "5pm & 5pm", "5pm & 8-9pm"])
+def test_burren_malformed_clock_lists_do_not_invent_or_drop_showtimes(clocks):
+    with pytest.raises(ValueError, match="schedule_conflict"):
+        b._burren_clocks(START.date(), clocks)
+
+
+def test_passim_deployed_checkpoint_preserves_point_and_only_removes_exact_overlap(monkeypatch):
+    literal = passim_literal(18601, title="Boston Fiddle Funk Folk Festival at The Armory", start=START.replace(minute=0))
+    literal["link"] = "https://www.passim.org/live-music/events/boston-fiddle-funk-folk-festival-at-the-armory/"
+    listing = passim_calendar([literal, passim_literal(2)])
+    items = b._passim_manifest(listing, NOW)
+    lead = '<p>This event takes place at <a href="https://artsatthearmory.org/">Arts at the Armory</a>.</p>'
+    pages = {b.SOURCES[b.PASSIM][0]: listing, **{item["url"]: passim_detail(item,
+        venue_lead=lead if item["url"] == literal["link"] else "") for item in items}}
+    with monkeypatch.context() as prior_release:
+        prior_release.setattr(b, "EXISTING_PUBLISHED_OVERLAPS", {})
+        legacy = b.collect_chunk(source(b.PASSIM), lambda url, accept: pages[url], now=NOW)
+    saved = deepcopy(legacy["checkpoint"])
+    assert len(legacy["events"]) == 2
+    retained = [row for row in legacy["events"] if row["event_url"] != literal["link"]]
+    calls = []
+    result = b.collect_chunk(source(b.PASSIM), lambda url, accept: calls.append(url) or pages[url],
+                             checkpoint=saved, now=NOW + timedelta(minutes=5))
+    assert result["complete"] and result["events"] == retained and saved == legacy["checkpoint"]
+    assert calls == [b.SOURCES[b.PASSIM][0]]
+    assert result["checkpoint"]["started_at"] == saved["started_at"]
+    assert result["checkpoint"]["cursor"] == saved["cursor"]
+    assert (retained[0]["lat"], retained[0]["lng"]) == (42.3741826, -71.11964540000002)
+    assert b.reviewed_venue_location(b.PASSIM, *b.VENUES["armory"][:2]) is None
+    assert result["checkpoint"]["diagnostics"][0]["disposition"] == "already_published"
+    assert b._checkpoint(result["checkpoint"], b.PASSIM, NOW + timedelta(minutes=6)) == result["checkpoint"]
+
+
 def test_burren_weekday_conflict_and_closed_session_suppression():
     cards = [("FRIDAY NOVEMBER 20, 2026", "Irish Session", "9:30pm:", "Weekly closed session with our musicians.", None, "THE FRONT ROOM")]
     assert b._burren_manifest(burren_calendar(cards), NOW) == []
     wrong = [("THURSDAY NOVEMBER 20, 2026", *cards[0][1:])]
     with pytest.raises(ValueError, match="schedule_conflict"):
         b._burren_manifest(burren_calendar(wrong), NOW)
-
-
-def test_burren_native_showcase_comma_list_preserves_all_four_showtimes():
-    cards = [("SUNDAY DECEMBER 13, 2026", "ALL THAT MUSIC ACADEMY - WINTER SHOWCASE!",
-              "10:30am, 12:30pm, 2:30pm, & 4:30pm:", FULL, None, "THE BACK ROOM")]
-    calendar = burren_calendar(cards)
-    result = b.collect_chunk(source(b.BURREN), lambda url, accept: calendar, now=NOW)
-    assert result["complete"]
-    assert [b.timestamp(row["starts_at"]).astimezone(b.ZoneInfo(b.ZONE)).strftime("%H:%M")
-            for row in result["events"]] == ["10:30", "12:30", "14:30", "16:30"]
-    assert all(row["ends_at"] is None and row["description"] == FULL
-               and row["venue_address"] == "247 Elm Street, Somerville, MA 02144"
-               for row in result["events"])
-    with pytest.raises(ValueError, match="schedule_changed"):
-        b.collect_chunk(source(b.BURREN), lambda url, accept: calendar.replace("2:30pm, &", "TBD, &"), now=NOW)
 
 
 def test_burren_linked_native_description_is_complete_and_preserves_calendar_context():
@@ -246,22 +308,19 @@ def test_burren_linked_native_description_is_complete_and_preserves_calendar_con
     assert b._identity(b.BURREN, dict(item, **item["occurrences"][0])) == b._identity(b.BURREN, dict(changed, **changed["occurrences"][0]))
 
 
-def test_burren_blank_calendar_teaser_still_hydrates_full_linked_description():
+@pytest.mark.parametrize("detail_body,accepted", [(FULL, True), ("", False)])
+def test_burren_blank_calendar_teaser_hydrates_linked_native_narrative_first(detail_body, accepted):
     url = "https://tickets.24hourmusic.com/eventperformances.asp?evt=1930"
-    card = ("SATURDAY JANUARY 2, 2027", "Double Barrell, Mill Street", "7pm:", "", url, "THE BACK ROOM")
-    pages = {b.SOURCES[b.BURREN][0]: burren_calendar([card]),
-             url: '<h2 class="event-page-head">Double Barrell, Mill Street</h2>'
-             '<div class="event-performances-description"><p>' + FULL + '</p></div>'
-             '<script>display({iEvent:1930});</script>'}
+    calendar = burren_calendar([("SUNDAY NOVEMBER 22, 2026", "Two Local Bands", "5pm:", "", url, "THE BACK ROOM")])
+    detail = '<h2 class="event-page-head">Two Local Bands</h2><div class="event-performances-description"><p>' + detail_body + '</p></div><script>display({iEvent:1930});</script>'
     calls = []
-    def fetch(target, accept):
-        calls.append(target)
-        return pages[target]
-    result = b.collect_chunk(source(b.BURREN), fetch, now=NOW)
-    assert result["complete"] and len(result["events"]) == 1
-    assert calls == [b.SOURCES[b.BURREN][0], url]
-    assert result["events"][0]["description"] == FULL
-    assert result["checkpoint"]["diagnostics"] == []
+    result = b.collect_chunk(source(b.BURREN), lambda target, accept: calls.append(target) or (calendar if target == b.SOURCES[b.BURREN][0] else detail), now=NOW)
+    assert result["complete"] and calls == [b.SOURCES[b.BURREN][0], url]
+    if accepted:
+        assert len(result["events"]) == 1 and result["events"][0]["description"] == FULL
+    else:
+        assert not result["events"]
+        assert result["checkpoint"]["diagnostics"][0]["reason"] == "boston_nightlife_description_missing"
 
 
 def test_long_live_named_dates_only_preserve_holiday_omissions_and_boston_location():
@@ -291,6 +350,22 @@ def test_long_live_changed_rule_and_wrong_weekday_do_not_create_assumed_dates():
         b._long_live_manifest(long_live_page(rule="Every Friday 7–10pm"), NOW)
     items = b._long_live_manifest(long_live_page(agenda="Nov 18 An Unconfirmed Wednesday<br>Dec 3 Samuel Batista<br>Dec 10 Fernando Brandao"), NOW)
     assert items[0]["held"] == "boston_additional_schedule_conflict"
+
+
+@pytest.mark.parametrize("key,venue_key,point,method", [
+    (b.LIZARD, "lizard", (42.382129, -71.119494), "reviewed_municipal_exact_address_point"),
+    (b.BURREN, "burren_front", (42.39539, -71.121737), "reviewed_municipal_named_building_point"),
+    (b.BURREN, "burren_back", (42.39539, -71.121737), "reviewed_municipal_named_building_point"),
+])
+def test_primary_municipal_points_are_bound_to_exact_existing_venue_street(key, venue_key, point, method):
+    url = "https://lizardloungeclub.com/event/point-proof/" if key == b.LIZARD else b.SOURCES[b.BURREN][0]
+    item = b._packet(key, url, "Point proof", "proof", [b._occurrence(START)], venue=venue_key, body=FULL)
+    row = b._row(key, dict(item, **item["occurrences"][0]))
+    assert (row["lat"], row["lng"]) == point and row["location_provenance"] == method
+    assert row["venue_address"] == b.VENUES[venue_key][1]
+    assert row["location_evidence_url"] == b.POINT_EVIDENCE[venue_key]
+    assert b.reviewed_venue_location(key, row["venue_name"], "Unrelated Street, Boston, MA 02119") is None
+    assert b.reviewed_venue_location(b.IMPROV, row["venue_name"], row["venue_address"]) is None
 
 
 @pytest.mark.parametrize("key,url", [(b.PASSIM, "https://www.passim.org/wp-admin/"),
@@ -343,6 +418,33 @@ def test_checkpoint_rejects_tampering_and_aligns_to_four_hour_common_ttl():
         b._checkpoint(bad, b.PASSIM, NOW)
     with pytest.raises(ValueError, match="checkpoint_invalid"):
         b._checkpoint(saved, b.PASSIM, NOW - timedelta(seconds=61))
+
+
+def test_burren_legacy_null_point_prefix_preserves_progress_and_rejects_other_location_states():
+    calendar = burren_calendar([("SUNDAY NOVEMBER 22, 2026", "Native session", "5pm:", FULL, None, "THE FRONT ROOM")])
+    state = b.collect_chunk(source(b.BURREN), lambda url, accept: calendar, now=NOW)["checkpoint"]
+    old = deepcopy(state)
+    row = old["events"][0]
+    row.update(lat=None, lng=None, location_evidence_url=b.SOURCES[b.BURREN][0],
+               location_provenance="reviewed_publisher_street_pending_geocode", reason="missing_verified_venue_geo")
+    old["row_hashes"][row["id"]] = b._hash(row)
+    preserved = deepcopy(old)
+    assert b._checkpoint(old, b.BURREN, NOW) == old == preserved
+    resumed = b.collect_chunk(source(b.BURREN), lambda url, accept: calendar, checkpoint=old, now=NOW)
+    assert resumed["complete"] and resumed["events"] == old["events"]
+    assert resumed["checkpoint"]["started_at"] == old["started_at"] and old == preserved
+    for field, replacement in (("venue_name", "Unrelated room"), ("venue_address", "1 Wrong Street, Somerville, MA 02144"),
+            ("lat", 42.39539), ("lng", -71.121737), ("location_evidence_url", "https://example.invalid/"),
+            ("location_provenance", "reviewed_publisher_street_point"), ("reason", "ready")):
+        bad = deepcopy(old)
+        bad["events"][0][field] = replacement
+        bad["row_hashes"][row["id"]] = b._hash(bad["events"][0])
+        with pytest.raises(ValueError, match="checkpoint_invalid"):
+            b._checkpoint(bad, b.BURREN, NOW)
+    bad = deepcopy(old)
+    bad["events"][0]["description"] = "A changed body without its saved hash."
+    with pytest.raises(ValueError, match="checkpoint_invalid"):
+        b._checkpoint(bad, b.BURREN, NOW)
 
 
 def test_no_request_starts_inside_deadline_reserve(monkeypatch):

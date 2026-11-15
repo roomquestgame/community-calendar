@@ -1,0 +1,85 @@
+{
+  "prepared_at": "2026-11-15T01:30:59.861304+00:00",
+  "scope": "Read-only primary coordinates for existing remaining nightlife sources; no collector or production changes by researcher.",
+  "points": [
+    {
+      "source_key": "burren_ma",
+      "native_street": "247 Elm Street, Somerville, MA 02144",
+      "proposed_lat": 42.39539,
+      "proposed_lng": -71.121737,
+      "method": "municipal_named_building_point",
+      "primary_url": "https://www.somervillema.gov/buildings/burren-pub-back-room",
+      "selector": ".field--name-field-building-location-on-map .field__item",
+      "native_wkt": "POINT (-71.121737 42.39539)",
+      "identity": {
+        "heading": "The Burren Pub (Back Room)",
+        "address_line1": "247 Elm Street",
+        "locality": "Somerville",
+        "administrative_area": "MA",
+        "postal_code": "02144"
+      },
+      "scope_limit": "Official named-building/site point. Applying to front and back room labels at this same exact 247 Elm Street is building-level location resolution; no room or doorway precision claim.",
+      "proof": {
+        "url": "https://www.somervillema.gov/buildings/burren-pub-back-room",
+        "checked_at": "2026-11-15T01:30:10.420668+00:00",
+        "status": 200,
+        "content_type": "text/html; charset=UTF-8",
+        "robots_allowed": true,
+        "sha256": "3b116bd4d34b3419a9182d503bac1a0b00c4fe67900d49e4b689ab9c22394024",
+        "raw_sha256": "3b116bd4d34b3419a9182d503bac1a0b00c4fe67900d49e4b689ab9c22394024",
+        "capture": "/workspace/scratch/3aa56d09ac0a/boston-additional/community/captures/a92286734a66a131ed218b3b2ae604846dfa112d53496fcf4e8220f77aff83f7.txt",
+        "raw_capture": "/workspace/scratch/3aa56d09ac0a/boston-additional/community/captures/a92286734a66a131ed218b3b2ae604846dfa112d53496fcf4e8220f77aff83f7.bin"
+      }
+    },
+    {
+      "source_key": "lizard_lounge_ma",
+      "native_venue": "Lizard Lounge",
+      "native_street": "1667 Massachusetts Avenue, Cambridge, MA 02138",
+      "proposed_lat": 42.382129,
+      "proposed_lng": -71.119494,
+      "native_lat": "42.3821292829635",
+      "native_lng": "-71.1194937058235",
+      "method": "municipal_exact_address_point",
+      "primary_dataset": "https://data.cambridgema.gov/General-Government/Master-Addresses-List/vup6-kpwv",
+      "dataset_documentation": "https://www.cambridgema.gov/gis/gisdatadictionary/address/address_addresspoints",
+      "native_row": {
+        "address_id": "25973",
+        "full_addr": "1667 Massachusetts Ave",
+        "street_number": "1667",
+        "stname": "Massachusetts Ave",
+        "building_id": "214-7",
+        "maplot": "156-25",
+        "latitude": "42.3821292829635",
+        "longitude": "-71.1194937058235",
+        "zip_code": "2138"
+      },
+      "query": "https://data.cambridgema.gov/resource/vup6-kpwv.json?%24where=street_number%3D%271667%27+AND+upper%28stname%29+like+%27MASSACHUSETTS%25%27&%24select=address_id%2Cfull_addr%2Cstreet_number%2Cstname%2Cbuilding_id%2Cmaplot%2Clatitude%2Clongitude%2Czip_code&%24limit=10",
+      "result_count": 1,
+      "postal_note": "Municipal zip_code is numeric 2138; the leading zero is preserved as 02138 from the existing native publisher street. No conflicting postal code or street substitution.",
+      "scope_limit": "Exact municipal address/building location, not a distinct basement-room or entrance coordinate.",
+      "proof": {
+        "url": "https://data.cambridgema.gov/resource/vup6-kpwv.json?%24where=street_number%3D%271667%27+AND+upper%28stname%29+like+%27MASSACHUSETTS%25%27&%24select=address_id%2Cfull_addr%2Cstreet_number%2Cstname%2Cbuilding_id%2Cmaplot%2Clatitude%2Clongitude%2Czip_code&%24limit=10",
+        "checked_at": "2026-11-15T01:30:23.788626+00:00",
+        "status": 200,
+        "content_type": "application/json;charset=utf-8",
+        "robots_allowed": true,
+        "sha256": "84c19763c4882a9c626c37a85d8395dc3f6655506ff197ce07c9a2488a1d2ada",
+        "raw_sha256": "84c19763c4882a9c626c37a85d8395dc3f6655506ff197ce07c9a2488a1d2ada",
+        "capture": "/workspace/scratch/3aa56d09ac0a/boston-additional/community/captures/16db9edc3f05c27c418be21886810e496202abb6ea1afaeb277e5625425019a4.txt",
+        "raw_capture": "/workspace/scratch/3aa56d09ac0a/boston-additional/community/captures/16db9edc3f05c27c418be21886810e496202abb6ea1afaeb277e5625425019a4.bin"
+      },
+      "publisher_address_proof": {
+        "url": "https://lizardloungeclub.com/venue/lizard-lounge/",
+        "checked_at": "2026-11-15T01:30:23.034501+00:00",
+        "status": 200,
+        "content_type": "text/html; charset=UTF-8",
+        "robots_allowed": true,
+        "sha256": "cff18d632f5576a64898444e4ad2931d23bad9cf679862082e2575ce4f04aaf3",
+        "raw_sha256": "cff18d632f5576a64898444e4ad2931d23bad9cf679862082e2575ce4f04aaf3",
+        "capture": "/workspace/scratch/3aa56d09ac0a/boston-additional/community/captures/739a98681ca9dcd2648509be707931a7a350690332030df334b4e6813f50d4d5.txt",
+        "raw_capture": "/workspace/scratch/3aa56d09ac0a/boston-additional/community/captures/739a98681ca9dcd2648509be707931a7a350690332030df334b4e6813f50d4d5.bin"
+      }
+    }
+  ],
+  "rejected_access_path": "Cambridge tourism site robots.txt returned 301; not followed or used. The municipal Master Addresses dataset is an independent authoritative city data source with its own allowed public API."
+}
