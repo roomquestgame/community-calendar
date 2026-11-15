@@ -1,0 +1,85 @@
+{
+  "prepared_at": "2026-11-15T13:23:53.027944+00:00",
+  "status": "validated_for_batched_release_not_production_receipt",
+  "base_commit": "3b568152c763dc2aa032cfa98020d51833de0c33",
+  "capture_anchor": "2026-11-15T13:00:00+00:00",
+  "focused_tests": {
+    "passed": 127,
+    "failed": 0,
+    "warning": "Unrelated installed pytest plugin deprecation"
+  },
+  "accepted_counts": {
+    "comedyworx_raleigh_nc": 31,
+    "chapel_of_bones_raleigh_nc": 21,
+    "jc_raulston_family_workshops_nc": 25
+  },
+  "accepted_total": 77,
+  "blank_descriptions": 0,
+  "missing_street_addresses": 0,
+  "captured_bodies_committed": false,
+  "ephemeral_public_tokens_committed": false,
+  "disabled_sources": {
+    "shopspace_raleigh_nc": "research_booking_calendar_robots_denied",
+    "noco_brews_bites_raleigh_nc": "research_native_calendar_http_403",
+    "crooked_hammock_raleigh_nc": "research_calendar_graphql_unauthorized"
+  },
+  "jcra_independent_review": {
+    "module_sha256": "544123d5246c2fc6ac3daf364e9a4584521129698712d89cbb76f87e79023441",
+    "anchor": "2026-11-15T13:00:00+00:00",
+    "offline_only": true,
+    "source_key": "jc_raulston_family_workshops_nc",
+    "accepted": 25,
+    "manifest_count": 15,
+    "holds": {
+      "raleigh_jcra_sold_out": 6,
+      "raleigh_jcra_not_public": 1
+    },
+    "accepted_native_category_count": 24,
+    "descriptions_preserved_from_prior_replay": true,
+    "all_noncategory_row_fields_unchanged": true,
+    "shared_records_valid": true,
+    "shared_checkpoint_valid": true,
+    "shared_completion_valid": true,
+    "truncated_native_grid_rejected": true,
+    "checkpoint_bytes": 67194,
+    "fetch_count": 13,
+    "chunks": 7,
+    "native_corpus_sha256_verified": true,
+    "output_files": {
+      "checkpoint.json": "ff9e0afc763d9ac34c6303a74e96a179737f1af50faf97ab0c3346e2c6b05a3c",
+      "normalized-events.json": "4d7d0b7b0d01eaa0c5410adeb8ed513b31a807fc32c116edfcbf835b80bdba14",
+      "capture-manifest.json": "7b9d7cde1c50b2ebc3326943995811c313936c7d4466d19319e5fddf374907a9"
+    }
+  },
+  "fairgrounds_recurrence": {
+    "passed": true,
+    "focused_tests": 29,
+    "current_record_count": 39,
+    "current_records_byte_identical": true,
+    "current_diagnostics_identical": true,
+    "diagnostics": 4,
+    "records_sha256": "d0c0fb0803390d50c65c48bd310bdc0480a5c49ff8ff37373d07329e0979ff42",
+    "calendar_sha256": "efe79ad795cb3492539aed309a82cec6c111d5a6d0d6eac650a709a5b4f90b8d",
+    "module_sha256": "cce86b644186072f77bc280e98443da2aec0117aa2839a23f5234d695242dec4",
+    "test_sha256": "6dcd4af733e9d5b63a4041d43c176354f1202037d474fac89581edfed3053383",
+    "actual_published_closed_dates": [
+      "2026-01-31",
+      "2026-02-01"
+    ],
+    "publisher_requests": 0,
+    "production_writes": 0
+  },
+  "files": {
+    "roomquest/raleigh_direct_jcra.py": "544123d5246c2fc6ac3daf364e9a4584521129698712d89cbb76f87e79023441",
+    "roomquest/raleigh_followup_performance.py": "37a0e32d5b3bc945d4854c52a3059029188170992572990dcd6d57630ff444f0",
+    "roomquest/raleigh_direct_sources.py": "89a1876bc623a05bdb385c34eff317a62be15d58bab7573cbbe0731e8e658901",
+    "roomquest/preview_worker.py": "f32b21980dc6f7910bb20c4b21c85202c60a977ea0ba50ce4351c0960e8480a6",
+    "roomquest/raleigh_direct_community.py": "cce86b644186072f77bc280e98443da2aec0117aa2839a23f5234d695242dec4",
+    "tests/test_raleigh_direct_jcra.py": "b808a2b5e618cad1fb9806ce7adb76277b35602d5b944095c5ea7e433e72908e",
+    "tests/test_raleigh_followup_performance.py": "c55839e06cb96d338dd29c98108b1bf424076fa324f58cff364136803c83a6bc",
+    "tests/test_raleigh_followup_transport.py": "df15c8f7bafa7b198b2c7fb192b12d6fdff0521e90490ff0a2da4a44d48db55b",
+    "tests/test_raleigh_direct_community.py": "6dcd4af733e9d5b63a4041d43c176354f1202037d474fac89581edfed3053383",
+    "docs/raleigh-followup-performance-evidence-20261115.md": "de286250b289e7ab5691ea7aa9b8e4842617ede08bf9b5a8f66bb0a1b5d38810",
+    "docs/raleigh-followup-20261115.md": "7f590dd1ecb475d579d75230c85ef8f519c74c0ba4b35c5ff7af31b0ae8f6c8a"
+  }
+}

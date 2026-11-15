@@ -13,8 +13,10 @@ MAX_RECORDS = 500
 def adapters():
     from roomquest import raleigh_direct_community, raleigh_direct_nightlife, raleigh_direct_arts
     from roomquest import raleigh_direct_performance, raleigh_direct_additional
+    from roomquest import raleigh_followup_performance, raleigh_direct_jcra
     return (raleigh_direct_community, raleigh_direct_nightlife, raleigh_direct_arts,
-            raleigh_direct_performance, raleigh_direct_additional)
+            raleigh_direct_performance, raleigh_direct_additional,
+            raleigh_followup_performance, raleigh_direct_jcra)
 
 
 def adapter_for(key):
