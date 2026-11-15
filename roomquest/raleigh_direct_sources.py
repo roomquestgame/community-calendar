@@ -14,9 +14,11 @@ def adapters():
     from roomquest import raleigh_direct_community, raleigh_direct_nightlife, raleigh_direct_arts
     from roomquest import raleigh_direct_performance, raleigh_direct_additional
     from roomquest import raleigh_followup_performance, raleigh_direct_jcra
+    from roomquest import raleigh_next_culture, raleigh_next_community, raleigh_next_social
     return (raleigh_direct_community, raleigh_direct_nightlife, raleigh_direct_arts,
             raleigh_direct_performance, raleigh_direct_additional,
-            raleigh_followup_performance, raleigh_direct_jcra)
+            raleigh_followup_performance, raleigh_direct_jcra,
+            raleigh_next_culture, raleigh_next_community, raleigh_next_social)
 
 
 def adapter_for(key):
