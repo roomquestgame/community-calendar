@@ -1,0 +1,129 @@
+{
+  "checked_at": "2026-11-15T01:39:28.337336+00:00",
+  "deployed_reference": "893ab34db65ab7d10697ecae598419cd19650ddb",
+  "deployed_module_sha256": "2b553a96ec008b9c7c74d94095fd1b5ea6c3b43c689dc27321aa5ff89db06281",
+  "proposed_module_sha256": "9cfbb2c6dffae59e370e8e871fb83ceb7a56e7463791460504f9a651f95c8c31",
+  "scope": "Cached publisher inputs only, no new research, no production writes. Exact deployed Central/RockSpot point bindings, evidence and source notes retained; own stricter schedule/eligibility/checkpoint guards preserved.",
+  "total_expected_rows": 111,
+  "unblocked_rows": 101,
+  "historical_arboretum_rows": 10,
+  "deployed_comparison": [
+    {
+      "source_key": "parkour_generations_boston_ma",
+      "deployed_rows": 6,
+      "proposed_rows": 10,
+      "retained_identities": 4,
+      "removed": 2,
+      "added": 6,
+      "changed_retained": [
+        {
+          "id": "parkour:128977224d6eccc07eb61a532482f2452a0defa61c239d0356e5e4c58d11d165",
+          "starts_at": "2027-01-04T15:00:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance"
+          ]
+        },
+        {
+          "id": "parkour:4628dff643989ba4c86b5ab3871b3e046de77775bbd3ed10579d717c6893874b",
+          "starts_at": "2026-11-28T18:00:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance"
+          ]
+        },
+        {
+          "id": "parkour:4724b28bf7c7854760d8284d2225ad602cc5094e2bd70fc67248559e2a7a39e6",
+          "starts_at": "2026-12-26T18:00:00+00:00",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance"
+          ]
+        }
+      ],
+      "deployed_rows_sha256": "634359b4a38ff4de656d0c78fb220dfbaab9191bfcb6496f54d80eaf29eada56",
+      "proposed_rows_sha256": "1f1f3f53a82dac838e726acec6c4e82542b3596d8e92b3b05079b9da2583e828"
+    },
+    {
+      "source_key": "tracksmith_trackhouse_boston_ma",
+      "deployed_rows": 10,
+      "proposed_rows": 10,
+      "retained_identities": 10,
+      "removed": 0,
+      "added": 0,
+      "changed_retained": [],
+      "deployed_rows_sha256": "3af426d8baf8aa95b18c0ade0f0b3be22eba06bb3a692b36ca9996333df96b04",
+      "proposed_rows_sha256": "3af426d8baf8aa95b18c0ade0f0b3be22eba06bb3a692b36ca9996333df96b04"
+    },
+    {
+      "source_key": "trustees_metro_boston_ma",
+      "deployed_rows": 2,
+      "proposed_rows": 2,
+      "retained_identities": 2,
+      "removed": 0,
+      "added": 0,
+      "changed_retained": [],
+      "deployed_rows_sha256": "88a79253f8e0d572683f2ea6497fc469b41c79d5506ee20461f20240d3dbaa00",
+      "proposed_rows_sha256": "88a79253f8e0d572683f2ea6497fc469b41c79d5506ee20461f20240d3dbaa00"
+    },
+    {
+      "source_key": "central_rock_cambridge_ma",
+      "deployed_rows": 2,
+      "proposed_rows": 2,
+      "retained_identities": 2,
+      "removed": 0,
+      "added": 0,
+      "changed_retained": [],
+      "deployed_rows_sha256": "6d52385fd5fca5ada35134f043a04382831e7b604577fe14d5a877397e3abf93",
+      "proposed_rows_sha256": "6d52385fd5fca5ada35134f043a04382831e7b604577fe14d5a877397e3abf93"
+    },
+    {
+      "source_key": "rock_spot_south_boston_ma",
+      "deployed_rows": 136,
+      "proposed_rows": 75,
+      "retained_identities": 75,
+      "removed": 61,
+      "added": 0,
+      "changed_retained": [],
+      "deployed_rows_sha256": "1d016f9cb79b85cea298d781994f6b54d369315426d85eecb435be454e6ea32c",
+      "proposed_rows_sha256": "2249af117cb21c1266cbef909277e624e2f46b2b03c716596de095c8e6daf5ba"
+    },
+    {
+      "source_key": "boston_harbor_now_ma",
+      "deployed_rows": 2,
+      "proposed_rows": 2,
+      "retained_identities": 2,
+      "removed": 0,
+      "added": 0,
+      "changed_retained": [],
+      "deployed_rows_sha256": "8d286b95170094a82749bcdeb7215fbf39a3095c8e16faa61d3f74956a3ba291",
+      "proposed_rows_sha256": "8d286b95170094a82749bcdeb7215fbf39a3095c8e16faa61d3f74956a3ba291"
+    }
+  ],
+  "central_rock_full_output_equals_latest_deployed": true,
+  "all_75_retained_rock_spot_rows_equal_latest_deployed": true,
+  "source_notes_exact_deployed": true,
+  "previous_capture_delta": {
+    "changed_rows": 77,
+    "allowed_changed_fields": [
+      "location_provenance",
+      "location_evidence_url"
+    ],
+    "all_native_fields_and_points_preserved": true
+  },
+  "raw_comparison_receipt": "boston-additional/community/reconciliation-893ab.json",
+  "test_result": "45 passed,70 subtests passed; one pre-existing pytest/anyio warning",
+  "actual_worker_replay": {
+    "rows": 101,
+    "all_fields_equal": true,
+    "no_partial_staging": true,
+    "receipt": "boston-additional/community/actual-worker-replay.json"
+  },
+  "tracksmith_public_equality_receipt": "boston-community-additional-tracksmith-public-equality-20261115.json"
+}

@@ -1,0 +1,519 @@
+{
+  "remote_main": "893ab34db65ab7d10697ecae598419cd19650ddb",
+  "observed_at": "2026-11-15T01:31:56.539933+00:00",
+  "comparisons": [
+    {
+      "source_key": "lizard_lounge_ma",
+      "anchor": "2026-11-15T01:05:48.842206+00:00",
+      "remote_records": 30,
+      "reconciled_records": 30,
+      "exact_equal": false,
+      "changed_fields": {
+        "location_provenance": 30,
+        "lat": 30,
+        "location_evidence_url": 30,
+        "reason": 30,
+        "lng": 30
+      },
+      "remote_only": [],
+      "local_only": [],
+      "remote_sha256": "a084ce6649f9aa67e714748a92bc72670ce456472c6ed8cc0ece376e712f0e02",
+      "reconciled_sha256": "37df0287e69c716bef602f5410a0e143c42ad417ff93e7b4b09fe41e82eeb4bd"
+    },
+    {
+      "source_key": "improv_asylum_ma",
+      "anchor": "2026-11-15T01:05:48.842206+00:00",
+      "remote_records": 85,
+      "reconciled_records": 85,
+      "exact_equal": true,
+      "changed_fields": {},
+      "remote_only": [],
+      "local_only": [],
+      "remote_sha256": "d853a299a2896f38e1ee0fa195d4a442c3b9857e48587eb55e92f42134fcae24",
+      "reconciled_sha256": "d853a299a2896f38e1ee0fa195d4a442c3b9857e48587eb55e92f42134fcae24"
+    },
+    {
+      "source_key": "laugh_boston_ma",
+      "anchor": "2026-11-15T01:05:48.842206+00:00",
+      "remote_records": 37,
+      "reconciled_records": 37,
+      "exact_equal": true,
+      "changed_fields": {},
+      "remote_only": [],
+      "local_only": [],
+      "remote_sha256": "3e8b08213d7e07e5f1ef5a3fee1f307edadaa89ae2c31865d963631205368e67",
+      "reconciled_sha256": "3e8b08213d7e07e5f1ef5a3fee1f307edadaa89ae2c31865d963631205368e67"
+    },
+    {
+      "source_key": "club_passim_ma",
+      "anchor": "2026-11-15T01:05:48.842206+00:00",
+      "remote_records": 61,
+      "reconciled_records": 60,
+      "exact_equal": false,
+      "changed_fields": {},
+      "remote_only": [
+        "boston:4fd0e214fdbbb9e2fd35de23b948c6a01ef688f1e2f3b54abbec5af919527273"
+      ],
+      "local_only": [],
+      "remote_sha256": "c72e4c5f47b9bad353f871c9602e318c003ef8da6f02dd3d6449d492c2e6146c",
+      "reconciled_sha256": "a807e34354e2d315743af0cdae46909553c72f886e5cebc9ca9099da8f4a8f83"
+    },
+    {
+      "source_key": "burren_ma",
+      "anchor": "2026-11-15T01:24:05.742325+00:00",
+      "remote_records": 123,
+      "reconciled_records": 123,
+      "exact_equal": false,
+      "changed_fields": {
+        "location_provenance": 123,
+        "lat": 123,
+        "location_evidence_url": 123,
+        "reason": 123,
+        "lng": 123
+      },
+      "remote_only": [],
+      "local_only": [],
+      "remote_sha256": "2eb969abdfa12a383b8dbc46b5c558e1c79f99d55ad76ecbe5d87edcc32ea7cb",
+      "reconciled_sha256": "177f27b1830f6be73f4e57ff75e5938628efa6373e8c8db08b7569b09d295c60"
+    },
+    {
+      "source_key": "long_live_roxbury_ma",
+      "anchor": "2026-11-15T01:05:48.842206+00:00",
+      "remote_records": 3,
+      "reconciled_records": 3,
+      "exact_equal": true,
+      "changed_fields": {},
+      "remote_only": [],
+      "local_only": [],
+      "remote_sha256": "dcae253db5ae9966c62fa935b53b962d1a59f48a8fa5a4ba7623a94b8fb0289d",
+      "reconciled_sha256": "dcae253db5ae9966c62fa935b53b962d1a59f48a8fa5a4ba7623a94b8fb0289d"
+    }
+  ],
+  "working_comedy_sources_unchanged": true,
+  "no_production_writes": true,
+  "passim": {
+    "deployed_point_preserved": true,
+    "checkpoint_revision": 3,
+    "started_at": "2026-11-15T01:21:28.279910+00:00",
+    "pending_cursor": 36,
+    "legacy_events": 54,
+    "retained_legacy_events": 53,
+    "final_records": 60,
+    "resumed_claims": 1,
+    "requests": 5,
+    "retained_rows_field_mismatches": 0,
+    "removed_only_exact_reviewed_overlap": true,
+    "final_sha256": "a807e34354e2d315743af0cdae46909553c72f886e5cebc9ca9099da8f4a8f83"
+  },
+  "burren": {
+    "fresh_calendar": {
+      "url": "https://www.burren.com/music.html",
+      "status": 200,
+      "observed_at": "2026-11-15T01:24:05.742325+00:00",
+      "location": null,
+      "content_type": "text/html; charset=utf-8",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/concurrent-reconciliation/raw-03d19dd6ada7fd279095fec0.html",
+      "bytes": 163986,
+      "sha256": "4937ed89182311bd7921eb25298d2357b19ce6660e79c02d558e6f51212c4e2f",
+      "role": "publisher",
+      "robots_allowed": true
+    },
+    "fresh_detail_requests": 5,
+    "reused_prior_detail_captures": true,
+    "native_explicit_clock_list": "10:30am, 12:30pm, 2:30pm, & 4:30pm:",
+    "prior_error": "boston_nightlife_schedule_changed",
+    "current_manifest": 65,
+    "current_records": 123,
+    "reference_claims": 41,
+    "bounded_claims": 4,
+    "reference_rows_equal": true,
+    "full_native_body_mismatches": 0,
+    "diagnostics": [],
+    "rows_sha256": "177f27b1830f6be73f4e57ff75e5938628efa6373e8c8db08b7569b09d295c60",
+    "already_deployed_fixes_preserved": "Current main 893ab already supports explicit comma lists and linked blank-teaser hydration. This completion retains that hydration expression, adds strict malformed/duplicate clock rejection, and supplies the municipal same-building point. All 123 valid native records preserve non-location fields."
+  },
+  "point": {
+    "source_key": "long_live_roxbury_ma",
+    "venue": [
+      "Long Live Roxbury",
+      "152 Hampden Street, Boston, MA 02119",
+      "Boston"
+    ],
+    "point": [
+      42.3278,
+      -71.0748
+    ],
+    "provenance": "reviewed_publisher_street_point",
+    "evidence_url": "https://untappd.com/v/long-live-roxbury/11948597",
+    "deployed_point_preserved": true,
+    "full_row_equality_with_current_deployed": true,
+    "primary_evidence_review": "Concurrent PR 232 documents Boston page linked verified Untappd venue 11948597, hosted-event location and venue map at the exact Boston street; no new network request in this reconciliation."
+  },
+  "refresh_scope": [
+    {
+      "source_key": "burren_ma",
+      "source_id": 5637,
+      "condition": "The concurrent 893ab/PR941 release already restarts the parser failure. Preserve its normal active checkpoint. Only complete, current, still-unpublished rows with original null native geometry at the two exact Burren room/street tuples may receive the reviewed building point; never refresh working published copies."
+    },
+    {
+      "source_key": "long_live_roxbury_ma",
+      "source_id": 5647,
+      "condition": "Preserve the verified publisher point already deployed by 893ab and the concurrent migration; refresh only any still-unpublished exact 152 Hampden Street row if needed, with that same publisher point."
+    },
+    {
+      "source_key": "club_passim_ma",
+      "source_id": 5639,
+      "condition": "No checkpoint reset; exact redundant Armory row only if already staged/published by prior deployment"
+    },
+    {
+      "source_key": "lizard_lounge_ma",
+      "source_id": 5646,
+      "condition": "One normal retry only if the exact paused/disabled/failed publisher_http_504 + html_retry_exhausted state remains, with no checkpoint or changed manual/access/rights state, after collector READY.",
+      "evidence": "docs/evidence/boston-nightlife-additional-lizard-recovery-20261115.json"
+    }
+  ],
+  "no_forced_refresh": [
+    "improv_asylum_ma",
+    "laugh_boston_ma"
+  ],
+  "preventive_points": [
+    {
+      "source_key": "burren_ma",
+      "native_street": "247 Elm Street, Somerville, MA 02144",
+      "proposed_lat": 42.39539,
+      "proposed_lng": -71.121737,
+      "method": "municipal_named_building_point",
+      "primary_url": "https://www.somervillema.gov/buildings/burren-pub-back-room",
+      "selector": ".field--name-field-building-location-on-map .field__item",
+      "native_wkt": "POINT (-71.121737 42.39539)",
+      "identity": {
+        "heading": "The Burren Pub (Back Room)",
+        "address_line1": "247 Elm Street",
+        "locality": "Somerville",
+        "administrative_area": "MA",
+        "postal_code": "02144"
+      },
+      "scope_limit": "Official named-building/site point. Applying to front and back room labels at this same exact 247 Elm Street is building-level location resolution; no room or doorway precision claim.",
+      "proof": {
+        "url": "https://www.somervillema.gov/buildings/burren-pub-back-room",
+        "checked_at": "2026-11-15T01:30:10.420668+00:00",
+        "status": 200,
+        "content_type": "text/html; charset=UTF-8",
+        "robots_allowed": true,
+        "sha256": "3b116bd4d34b3419a9182d503bac1a0b00c4fe67900d49e4b689ab9c22394024",
+        "raw_sha256": "3b116bd4d34b3419a9182d503bac1a0b00c4fe67900d49e4b689ab9c22394024",
+        "capture": "/workspace/scratch/3aa56d09ac0a/boston-additional/community/captures/a92286734a66a131ed218b3b2ae604846dfa112d53496fcf4e8220f77aff83f7.txt",
+        "raw_capture": "/workspace/scratch/3aa56d09ac0a/boston-additional/community/captures/a92286734a66a131ed218b3b2ae604846dfa112d53496fcf4e8220f77aff83f7.bin"
+      }
+    },
+    {
+      "source_key": "lizard_lounge_ma",
+      "native_venue": "Lizard Lounge",
+      "native_street": "1667 Massachusetts Avenue, Cambridge, MA 02138",
+      "proposed_lat": 42.382129,
+      "proposed_lng": -71.119494,
+      "native_lat": "42.3821292829635",
+      "native_lng": "-71.1194937058235",
+      "method": "municipal_exact_address_point",
+      "primary_dataset": "https://data.cambridgema.gov/General-Government/Master-Addresses-List/vup6-kpwv",
+      "dataset_documentation": "https://www.cambridgema.gov/gis/gisdatadictionary/address/address_addresspoints",
+      "native_row": {
+        "address_id": "25973",
+        "full_addr": "1667 Massachusetts Ave",
+        "street_number": "1667",
+        "stname": "Massachusetts Ave",
+        "building_id": "214-7",
+        "maplot": "156-25",
+        "latitude": "42.3821292829635",
+        "longitude": "-71.1194937058235",
+        "zip_code": "2138"
+      },
+      "query": "https://data.cambridgema.gov/resource/vup6-kpwv.json?%24where=street_number%3D%271667%27+AND+upper%28stname%29+like+%27MASSACHUSETTS%25%27&%24select=address_id%2Cfull_addr%2Cstreet_number%2Cstname%2Cbuilding_id%2Cmaplot%2Clatitude%2Clongitude%2Czip_code&%24limit=10",
+      "result_count": 1,
+      "postal_note": "Municipal zip_code is numeric 2138; the leading zero is preserved as 02138 from the existing native publisher street. No conflicting postal code or street substitution.",
+      "scope_limit": "Exact municipal address/building location, not a distinct basement-room or entrance coordinate.",
+      "proof": {
+        "url": "https://data.cambridgema.gov/resource/vup6-kpwv.json?%24where=street_number%3D%271667%27+AND+upper%28stname%29+like+%27MASSACHUSETTS%25%27&%24select=address_id%2Cfull_addr%2Cstreet_number%2Cstname%2Cbuilding_id%2Cmaplot%2Clatitude%2Clongitude%2Czip_code&%24limit=10",
+        "checked_at": "2026-11-15T01:30:23.788626+00:00",
+        "status": 200,
+        "content_type": "application/json;charset=utf-8",
+        "robots_allowed": true,
+        "sha256": "84c19763c4882a9c626c37a85d8395dc3f6655506ff197ce07c9a2488a1d2ada",
+        "raw_sha256": "84c19763c4882a9c626c37a85d8395dc3f6655506ff197ce07c9a2488a1d2ada",
+        "capture": "/workspace/scratch/3aa56d09ac0a/boston-additional/community/captures/16db9edc3f05c27c418be21886810e496202abb6ea1afaeb277e5625425019a4.txt",
+        "raw_capture": "/workspace/scratch/3aa56d09ac0a/boston-additional/community/captures/16db9edc3f05c27c418be21886810e496202abb6ea1afaeb277e5625425019a4.bin"
+      },
+      "publisher_address_proof": {
+        "url": "https://lizardloungeclub.com/venue/lizard-lounge/",
+        "checked_at": "2026-11-15T01:30:23.034501+00:00",
+        "status": 200,
+        "content_type": "text/html; charset=UTF-8",
+        "robots_allowed": true,
+        "sha256": "cff18d632f5576a64898444e4ad2931d23bad9cf679862082e2575ce4f04aaf3",
+        "raw_sha256": "cff18d632f5576a64898444e4ad2931d23bad9cf679862082e2575ce4f04aaf3",
+        "capture": "/workspace/scratch/3aa56d09ac0a/boston-additional/community/captures/739a98681ca9dcd2648509be707931a7a350690332030df334b4e6813f50d4d5.txt",
+        "raw_capture": "/workspace/scratch/3aa56d09ac0a/boston-additional/community/captures/739a98681ca9dcd2648509be707931a7a350690332030df334b4e6813f50d4d5.bin"
+      }
+    }
+  ],
+  "focused_tests": {
+    "command": "python -m pytest tests/test_boston_nightlife_additional.py tests/test_boston_nightlife_additional_worker.py -q",
+    "passed": 49,
+    "scope": "Historical pre-893ab point reconciliation run; see the final combined integration receipt for the current snapshot."
+  },
+  "code": [
+    {
+      "path": "/workspace/scratch/3aa56d09ac0a/community-calendar/roomquest/boston_nightlife_additional.py",
+      "bytes": 53254,
+      "sha256": "742ad38b25d3d57def9abf67581234ec3188056a16c5bde55638e029b5f50192"
+    },
+    {
+      "path": "/workspace/scratch/3aa56d09ac0a/community-calendar/tests/test_boston_nightlife_additional.py",
+      "bytes": 27924,
+      "sha256": "6db47ea1dbe6359e6f003c0c1b8281f17acf5cb28fb711d7cbd4c95d4c1a6e04"
+    },
+    {
+      "path": "/workspace/scratch/3aa56d09ac0a/community-calendar/tests/test_boston_nightlife_additional_worker.py",
+      "bytes": 5850,
+      "sha256": "084ed582152cef89041b4e63d270b1fbd43582db20cba9d77240cfefbd5974f8"
+    }
+  ],
+  "evidence": [
+    {
+      "path": "/workspace/scratch/3aa56d09ac0a/boston-additional/concurrent-main/roomquest/boston_nightlife_additional.py",
+      "bytes": 45341,
+      "sha256": "23725238ab62b3e7daac625915326713eea802f47afcb8215b704d6cf7a8c865"
+    },
+    {
+      "path": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/concurrent-reconciliation/production-checkpoint-before.json",
+      "bytes": 253278,
+      "sha256": "bf96313f683d476f29d3099f1e42fd753d343fba47662a5c77357deabb639ed6"
+    },
+    {
+      "path": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/concurrent-reconciliation/passim-armory-retirement-fingerprint.json",
+      "bytes": 1066,
+      "sha256": "75ac47f84b87d84f7f056b5e60bdb010cf64e461fd801527f9bea00fc62a1e7b"
+    },
+    {
+      "path": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/concurrent-reconciliation/long-live-boston-sam-152-hampden.json",
+      "bytes": 5029,
+      "sha256": "cb41858d8f49607aca331566eed77434990d1c9a0c7f5c07c9e1012125817c27"
+    },
+    {
+      "path": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/concurrent-reconciliation/long-live-boston-sam-request.json",
+      "bytes": 536,
+      "sha256": "a223b13d57573d11ce234676456fa3deb359ee0a4699c92f596daffc18212c7f"
+    },
+    {
+      "path": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/concurrent-reconciliation/capture-www.burren.com.json",
+      "bytes": 949,
+      "sha256": "46fc4ae7c6c8adc165407d4d3a28933decb950b71d30aa34f49f39a202ac6173"
+    },
+    {
+      "path": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/concurrent-reconciliation/capture-tickets.24hourmusic.com.json",
+      "bytes": 2975,
+      "sha256": "6d74d05f440b8f628943f3048c0d5530679fb39530df95ebcd241298d02c5e3e"
+    },
+    {
+      "path": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/concurrent-reconciliation/burren-current-staged-rows.json",
+      "bytes": 156432,
+      "sha256": "65d58760581d715f13ea9a30a5e334c9590f3432d2580d5b3ef28f7b4f6b2c69"
+    },
+    {
+      "path": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/concurrent-reconciliation/burren-current-native-body-proofs.json",
+      "bytes": 45379,
+      "sha256": "77402f012f580b74ef21de880395792db859e4ad7161773859434e3a2786eae7"
+    },
+    {
+      "path": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/reconcile_concurrent.py",
+      "bytes": 11045,
+      "sha256": "36af992af279419992523a3f049975c23a291fbd30db476ecba08d7688778321"
+    },
+    {
+      "path": "/workspace/scratch/3aa56d09ac0a/boston-additional/concurrent-893ab/roomquest/boston_nightlife_additional.py",
+      "bytes": 46080,
+      "sha256": "3a79357494c81694eab0b2a9d6388fa15ec2a470b65bcc4bd8980b3a8e252582"
+    },
+    {
+      "path": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/reconcile_893ab.py",
+      "bytes": 6916,
+      "sha256": "7f5d1b3de1fa30f27cd9447485456a7c1466bd3cfaa70a072420544ec49b3f1f"
+    },
+    {
+      "path": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/concurrent-reconciliation/all-final-parsed-rows.json",
+      "bytes": 737672,
+      "sha256": "b33af47d0e272d015538fc041d8942a3142a9264deb7ef254065db0b491ed137"
+    }
+  ],
+  "lizard_recovery_receipt": "docs/evidence/boston-nightlife-additional-lizard-recovery-20261115.json",
+  "production_recovery_verified": false,
+  "combined_focused_tests_receipt": "docs/evidence/boston-additional-integration-20261115.json",
+  "historical_expected_rows": {
+    "path": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/concurrent-reconciliation/all-final-parsed-rows.json",
+    "sha256": "b33af47d0e272d015538fc041d8942a3142a9264deb7ef254065db0b491ed137",
+    "records": 338,
+    "counts": {
+      "lizard_lounge_ma": 30,
+      "improv_asylum_ma": 85,
+      "laugh_boston_ma": 37,
+      "club_passim_ma": 60,
+      "burren_ma": 123,
+      "long_live_roxbury_ma": 3
+    },
+    "scope": "Anchored captured expectation, not a current-future or production-public count. One original Improv event expired during the later wall-clock comparison, yielding 84 equally retained old/new records there; frozen historical input retains all 85.",
+    "updated_fields": "Only lat, lng, location_provenance and location_evidence_url on the three Long Live rows changed from the preceding frozen artifact. All identities, clocks, narratives, streets and all other rows are unchanged."
+  },
+  "historical_comedy_equality": {
+    "anchor": "2026-11-15T01:05:48.842206+00:00",
+    "source_key": "improv_asylum_ma",
+    "remote_records": 85,
+    "reconciled_records": 85,
+    "exact_equal": true,
+    "sha256": "d853a299a2896f38e1ee0fa195d4a442c3b9857e48587eb55e92f42134fcae24",
+    "scope": "Original captured publisher payloads and immutable snapshot clock; no live requests. The later 84/84 comparison reflects one occurrence expiring under the shared helper wall clock.",
+    "baseline": "893ab34db65ab7d10697ecae598419cd19650ddb"
+  },
+  "previous_deployed_main": "7798bd5886a7de4ac0635ab8c3bca79d4b3f9105",
+  "reconciled_at": "2026-11-15T01:39:06.558892+00:00",
+  "previous_comparisons": [
+    {
+      "source_key": "lizard_lounge_ma",
+      "remote_records": 30,
+      "reconciled_records": 30,
+      "exact_equal": false,
+      "changed_fields": {
+        "reason": 30,
+        "location_evidence_url": 30,
+        "lat": 30,
+        "lng": 30,
+        "location_provenance": 30
+      },
+      "remote_only": [],
+      "local_only": [],
+      "remote_sha256": "a084ce6649f9aa67e714748a92bc72670ce456472c6ed8cc0ece376e712f0e02",
+      "reconciled_sha256": "37df0287e69c716bef602f5410a0e143c42ad417ff93e7b4b09fe41e82eeb4bd"
+    },
+    {
+      "source_key": "improv_asylum_ma",
+      "remote_records": 84,
+      "reconciled_records": 84,
+      "exact_equal": true,
+      "changed_fields": {},
+      "remote_only": [],
+      "local_only": [],
+      "remote_sha256": "5201db9fba464629556dd717fd32b50c180ae10f4b896bfe1f29b0fdbe7719fc",
+      "reconciled_sha256": "5201db9fba464629556dd717fd32b50c180ae10f4b896bfe1f29b0fdbe7719fc"
+    },
+    {
+      "source_key": "laugh_boston_ma",
+      "remote_records": 37,
+      "reconciled_records": 37,
+      "exact_equal": true,
+      "changed_fields": {},
+      "remote_only": [],
+      "local_only": [],
+      "remote_sha256": "3e8b08213d7e07e5f1ef5a3fee1f307edadaa89ae2c31865d963631205368e67",
+      "reconciled_sha256": "3e8b08213d7e07e5f1ef5a3fee1f307edadaa89ae2c31865d963631205368e67"
+    },
+    {
+      "source_key": "club_passim_ma",
+      "remote_records": 61,
+      "reconciled_records": 60,
+      "exact_equal": false,
+      "changed_fields": {},
+      "remote_only": [
+        "boston:4fd0e214fdbbb9e2fd35de23b948c6a01ef688f1e2f3b54abbec5af919527273"
+      ],
+      "local_only": [],
+      "remote_sha256": "c72e4c5f47b9bad353f871c9602e318c003ef8da6f02dd3d6449d492c2e6146c",
+      "reconciled_sha256": "a807e34354e2d315743af0cdae46909553c72f886e5cebc9ca9099da8f4a8f83"
+    },
+    {
+      "source_key": "burren_ma",
+      "remote_records": 105,
+      "reconciled_records": 105,
+      "exact_equal": false,
+      "changed_fields": {
+        "reason": 105,
+        "location_evidence_url": 105,
+        "lat": 105,
+        "lng": 105,
+        "location_provenance": 105
+      },
+      "remote_only": [],
+      "local_only": [],
+      "remote_sha256": "c5058e4b447e8b44d62e754d8804aed343028946c8cc16bed0bb7ad09763e2ae",
+      "reconciled_sha256": "5fe68fe7c822ae948afb792fdf8c40251d0d538abe8adc60137dab5c88721260"
+    },
+    {
+      "source_key": "long_live_roxbury_ma",
+      "remote_records": 3,
+      "reconciled_records": 3,
+      "exact_equal": false,
+      "changed_fields": {
+        "location_evidence_url": 3,
+        "lat": 3,
+        "lng": 3,
+        "reason": 3,
+        "location_provenance": 3
+      },
+      "remote_only": [],
+      "local_only": [],
+      "remote_sha256": "bff263c2fab8f44079e4477fa68240b8b89859e2e31552881a7b8792a76d8676",
+      "reconciled_sha256": "ecd7abbc7227617dfdf6506e2ed8f61429fa03b451a1e9d886853ddb2b6e6b3a"
+    }
+  ],
+  "long_live_matches_current_deployed_output": true,
+  "superseded_municipal_research": {
+    "source_key": "long_live_roxbury_ma",
+    "venue": [
+      "Long Live Roxbury",
+      "152 Hampden Street, Boston, MA 02119",
+      "Boston"
+    ],
+    "point": [
+      42.327799,
+      -71.074921
+    ],
+    "provenance": "reviewed_municipal_exact_address_point",
+    "evidence_url": "https://gis.boston.gov/arcgis/rest/services/SAM/Live_SAM_Address/MapServer/1/query?f=json&where=SAM_ADDRESS_ID%3D68561&outFields=*&outSR=4326&returnGeometry=true",
+    "sam_objectid": 241272,
+    "sam_address_id": 68561,
+    "exact_range": false,
+    "unresolved_records": 3,
+    "disposition": "Research-only corroboration; not applied. Preserve the verified publisher point already deployed by concurrent PR 232."
+  },
+  "burren_live_checkpoint_compatibility": {
+    "deployed_base": "893ab34db65ab7d10697ecae598419cd19650ddb",
+    "checked_at": "2026-11-15 01:39:24.021502+00",
+    "source_key": "burren_ma",
+    "source_id": 5637,
+    "revision": 1,
+    "started_at": "2026-11-15T01:39:07.270809+00:00",
+    "pending_cursor": 27,
+    "saved_rows": 78,
+    "resumed_records": 123,
+    "resumed_claims": 3,
+    "captured_requests": 32,
+    "network_requests": 0,
+    "retained_prefix_row_field_mismatches": 0,
+    "retained_null_geometry_rows": 78,
+    "new_reviewed_point_rows": 45,
+    "body_street_identity_clock_mismatches_against_frozen_capture": 0,
+    "input_checkpoint_unchanged": true,
+    "normal_geocoder_or_scoped_unpublished_refresh_required": true,
+    "scope": "Captured worker replay of the actual new production checkpoint; existing hashed null-geometry prefix preserved exactly, including immutable start and cursor. No production writes, publication claim or publisher requests. A successful geocoder may produce a different valid point than the future municipal marker; public working copies remain untouched.",
+    "raw_checkpoint": {
+      "path": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/concurrent-reconciliation/burren-live-checkpoint-893ab.json",
+      "bytes": 183948,
+      "sha256": "b7d2964fe0775d027b6b04fed2692ac244cc2c87fd67ea5be69e49d5dcd11684"
+    },
+    "tracked_receipt": "docs/evidence/boston-nightlife-additional-burren-checkpoint-20261115.json"
+  },
+  "latest_combined_test_result": {
+    "tests": 122,
+    "subtests": 92,
+    "receipt": "docs/evidence/boston-additional-integration-20261115.json",
+    "deployed_base": "893ab34db65ab7d10697ecae598419cd19650ddb"
+  }
+}

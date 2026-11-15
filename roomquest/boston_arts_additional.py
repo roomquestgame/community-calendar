@@ -45,19 +45,21 @@ LABELS = {MOS: 'Museum of Science, Boston', COOLIDGE: 'Coolidge Corner Theatre',
           HMSC: 'Harvard Museums of Science & Culture', PEM: 'Peabody Essex Museum',
           DECORDOVA: 'deCordova Sculpture Park and Museum', AQUARIUM: 'New England Aquarium'}
 SOURCE_NOTES = {
-    MOS: 'Native Drupal event-listing API discovered in permitted HTML; complete pagination and full detail bodies, rolling60days.',
-    COOLIDGE: 'Native cinema listings and individual ticketed showtimes; full program/film descriptions, rolling60days.',
+    MOS: 'Native Drupal event-listing API discovered in permitted HTML; complete pagination and full detail bodies, rolling 60 days.',
+    COOLIDGE: 'Native cinema listings and individual ticketed showtimes; full program/film descriptions, rolling 60 days.',
     BAC: 'Native workshop content blocks with complete program text and explicit session dates; conflicting weekday/date held.',
     ELIOT: 'Complete month calendars plus every native overflow-day link; exact ISO occurrences and class details. Native ten-record ICS export is not used.',
     HMSC: 'Complete Calendar Plus program listing and full detail bodies; exact per-event museum/venue street mapping.',
     PEM: 'Complete native CollectionPage Event manifest, all explicit detail occurrences and full prose; Salem within Boston metro scope.',
-    DECORDOVA: 'Property1730-only native FacetWP listing, verified total and full detail pages; Lincoln within Boston metro scope.',
+    DECORDOVA: 'Native FacetWP listing scoped to property 1730, verified total and full detail pages; Lincoln within Boston metro scope.',
     AQUARIUM: 'Native TEC REST with complete descriptions and structured venue; public calendar availability excludes sold-out and member-only events.',
 }
 ALLOWED_HOSTS = {key: (urlsplit(v[0]).hostname,) for key, v in SOURCES.items()}
 CHECKPOINT_KEYS = set(SOURCES) - {BAC, AQUARIUM}
 CHECKPOINT_MANIFEST_LIMITS = {}
-CHECKPOINT_EVENT_LIMITS = {}
+# Current capture has 179 showtimes; retain room for the cinema's next native
+# release while preserving the global 500-record and 900KB checkpoint bounds.
+CHECKPOINT_EVENT_LIMITS = {COOLIDGE: 500}
 DAYS = 60
 MAX_DESCRIPTION = 12000
 MAX_CHECKPOINT_BYTES = 900000
@@ -71,7 +73,7 @@ HOLD_REASONS = shared.HOLD_REASONS | {PREFIX + s for s in ('not_public', 'not_cu
 ERROR_CODES = shared.ERROR_CODES | HOLD_REASONS | {PREFIX + s for s in ('source_unregistered', 'identity_changed', 'listing_changed', 'pagination_changed', 'manifest_changed', 'manifest_limit', 'record_limit', 'checkpoint_invalid', 'checkpoint_size_limit', 'payload_changed')}
 
 # Primary publisher address evidence is recorded with the capture receipt. PEM's
-# point is the exact native LocalBusiness.geo bound to161EssexSt, not a viewport.
+# point is the exact native LocalBusiness.geo bound to 161 Essex St, not a viewport.
 VENUES = {
     MOS: [('Museum of Science', '1 Science Park, Boston, MA 02114', 'Boston', None)],
     COOLIDGE: [('Coolidge Corner Theatre', '290 Harvard Street, Brookline, MA 02446', 'Brookline', None)],
@@ -99,6 +101,13 @@ def _source(source):
 
 def _hash(value):
     return sha256(json.dumps(value, sort_keys=True, separators=(',', ':'), ensure_ascii=False).encode()).hexdigest()
+
+
+def _outcome(item, rows, reason):
+    return dict(event_url=item['url'], reason=reason, rows=[dict(
+        id=row['id'], starts_at=row['starts_at'], ends_at=row.get('ends_at'),
+        description_sha256=sha256(row['description'].encode()).hexdigest(), row_sha256=_hash(row))
+        for row in rows])
 
 
 def event_url(key, value):
@@ -278,10 +287,15 @@ def _pem_listing(payload, now):
     items = []
     for wrapper in native:
         event = wrapper.get('item', {})
-        start = timestamp(event.get('startDate'))
-        if not start or start.tzinfo is None:
+        start, end = timestamp(event.get('startDate')), timestamp(event.get('endDate'))
+        if not start or start.tzinfo is None or not end or end.tzinfo is None or end <= start:
             raise ValueError(PREFIX + 'schedule_unresolved')
         if start >= now + timedelta(days=DAYS) or UNAVAILABLE.search(plain(event.get('name'))):
+            continue
+        if ((event.get('location') or {}).get('address', {}).get('streetAddress') != VENUES[PEM][0][1]
+                or (event.get('offers') or {}).get('url') != event.get('url')):
+            raise ValueError(PREFIX + 'identity_changed')
+        if event.get('eventStatus') != 'https://schema.org/EventScheduled' or (event.get('offers') or {}).get('availability') in {'https://schema.org/SoldOut', 'https://schema.org/Discontinued'}:
             continue
         items.append(_item(PEM, event.get('url'), event.get('name'), sessions=[dict(start=event['startDate'], end=event.get('endDate'))]))
     # Keep ended siblings for native series-envelope detection and Markdown ICS
@@ -343,7 +357,7 @@ def _pem_markdown(item, payload, now):
     body = re.sub(r'!\[[^]]*\]\([^)]*\)', '', body)
     body = re.sub(r'\[([^]]+)\]\([^)]*\)', r'\1', body)
     body = shared._body(re.sub(r'(?m)^#{1,6}\s*', '', body))
-    if UNAVAILABLE.search(item['title']) or REMOTE.search(body[:300]):
+    if UNAVAILABLE.search(item['title']) or REMOTE.search(body[:300]) or re.search(r'\bSOLD OUT\b', body, re.I):
         raise ValueError(PREFIX + 'not_public')
     return _unique([_row(PEM, item, body, start, end) for start, end in occurrences
                     if shared._within(start, end, now, DAYS)])
@@ -424,7 +438,6 @@ def _native_page(key, payload, url):
     return None
 
 
-
 def _record_native_page(state, key, payload, url):
     native = _native_page(key, payload, url)
     if native is None:
@@ -438,7 +451,6 @@ def _record_native_page(state, key, payload, url):
     state['native_total'] = native['total']
     state['native_seen'].extend(native['ids'])
     state['native_pages'].append(url)
-
 
 
 def _trust_detail(item, payload, now):
@@ -627,7 +639,7 @@ def _coolidge_detail(item, payload, now):
             raise ValueError(PREFIX + 'schedule_unresolved')
         month, day = map(int, day_text.get_text(strip=True).split('/'))
         possible = []
-        for year in {now.year, (now+timedelta(days=DAYS)).year}:
+        for year in {now.astimezone(ZoneInfo(ZONE)).year, (now+timedelta(days=DAYS)).astimezone(ZoneInfo(ZONE)).year}:
             try:
                 d = date(year, month, day)
             except ValueError:
@@ -647,7 +659,8 @@ def _coolidge_detail(item, payload, now):
             query = parse_qs(parsed.query)
             native = (query.get('evtinfo') or query.get('evtInfo') or [''])[0].split('~')[0]
             bundle = query.get('guid', [''])[0]
-            is_bundle = bool(re.fullmatch(r'[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}', bundle))
+            is_bundle = (parsed.path.lower() == '/websales/pages/entrypoint.aspx' and 'availability--all' in classes
+                         and bool(re.fullmatch(r'[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}', bundle)))
             if (parsed.scheme != 'https' or parsed.netloc != 'store.coolidge.org' or not time_node
                     or not (native.isdigit() and parsed.path.lower() == '/websales/pages/ticketsearchcriteria.aspx'
                             or is_bundle and parsed.path.lower() == '/websales/pages/entrypoint.aspx')):
@@ -857,6 +870,14 @@ def _aquarium(fetch, now, deadline):
 def _checkpoint(value, key, now):
     if value is None:
         return None
+    # The concurrent release used this same manifest/pagination schema before
+    # result proofs existed. An unprocessed checkpoint has nothing to re-attest:
+    # preserve its native listing progress, then run every normal validation.
+    # Processed legacy rows must be cleared through the targeted deployment fix.
+    if (isinstance(value, dict) and 'outcomes' not in value and 'outcome_hash' not in value
+            and type(value.get('cursor')) is int and value['cursor'] == 0
+            and value.get('events') == [] and value.get('diagnostics') == []):
+        value = dict(deepcopy(value), outcomes=[], outcome_hash=_hash([]))
     try:
         started = timestamp(value['started_at'])
         queue = value['queue']
@@ -876,6 +897,8 @@ def _checkpoint(value, key, now):
                  and (value['listing_complete'] or value['cursor'] == 0 and not value['events'])
                  and isinstance(value['events'], list) and len(value['events']) <= CHECKPOINT_EVENT_LIMITS.get(key, 201)
                  and isinstance(value['diagnostics'], list) and len(value['diagnostics']) <= 400
+                 and isinstance(value['outcomes'], list) and len(value['outcomes']) == value['cursor']
+                 and value['outcome_hash'] == _hash(value['outcomes'])
                  and len(json.dumps(value, ensure_ascii=False).encode()) <= MAX_CHECKPOINT_BYTES)
         if key in {MOS, DECORDOVA}:
             native_pages = [u for u in value['listed_pages'] if key == DECORDOVA or '/api/' in u]
@@ -895,8 +918,20 @@ def _checkpoint(value, key, now):
             for session in item['sessions']:
                 a, b = timestamp(session['start']), timestamp(session.get('end'))
                 valid = (valid and a.tzinfo is not None and (b is None or b.tzinfo is not None and b > a)
-                         and (a < started + timedelta(days=DAYS) if key == PEM else shared._within(a, b, started, DAYS)))
+                         and (a < started+timedelta(days=DAYS) if key == PEM else shared._within(a, b, started, DAYS)))
         processed = {v['url']: v for v in queue[:value['cursor']]}
+        proofs, expected_diagnostics = {}, []
+        for item, outcome in zip(queue[:value['cursor']], value['outcomes']):
+            valid = (valid and outcome['event_url'] == item['url'] and isinstance(outcome['rows'], list)
+                     and (outcome['rows'] and outcome['reason'] is None
+                          or not outcome['rows'] and outcome['reason'] in HOLD_REASONS))
+            if outcome['reason'] is not None:
+                expected_diagnostics.append(dict(event_url=item['url'], disposition='held', reason=outcome['reason']))
+            for proof in outcome['rows']:
+                identity = (proof['id'], proof['starts_at'])
+                valid = valid and identity not in proofs
+                proofs[identity] = (item['url'], proof)
+        valid = valid and len(proofs) == len(value['events']) and expected_diagnostics == value['diagnostics']
         identities = set()
         for row in value['events']:
             item = processed.get(row['event_url'])
@@ -905,7 +940,12 @@ def _checkpoint(value, key, now):
             venues = [v for v in VENUES[key] if row['venue_address'] == v[1] and
                       (row['venue_name'] == v[0] or key == COOLIDGE and row['venue_name'].startswith(v[0] + ' — '))]
             expected_point = venues[0][3] if len(venues) == 1 else None
+            bound = proofs.get(identity)
             valid = (valid and item is not None and row['id'].startswith(item['id'] + ':') and identity not in identities
+                     and bound is not None and bound[0] == row['event_url']
+                     and bound[1]['ends_at'] == row.get('ends_at')
+                     and bound[1]['description_sha256'] == sha256(row['description'].encode()).hexdigest()
+                     and bound[1]['row_sha256'] == _hash(row)
                      and isinstance(row['description'], str) and 0 < len(row['description']) <= MAX_DESCRIPTION
                      and len(venues) == 1 and row.get('timezone') == ZONE and row.get('attendance_mode') == 'in_person'
                      and (row.get('lat'), row.get('lng')) == (expected_point or (None, None))
@@ -913,12 +953,23 @@ def _checkpoint(value, key, now):
                          'publisher_class_street_neighborhood_zip_resolution' if key == ELIOT and venues[0][2] == 'Jamaica Plain' else 'publisher_venue_street_pending_geocode')
                      and a.tzinfo is not None and (b is None or b.tzinfo is not None and b > a)
                      and shared._within(a, b, started, DAYS))
+            if item is not None:
+                suffix = row['id'][len(item['id'])+1:]
+                clocks = {a.isoformat(), a.astimezone(ZoneInfo(ZONE)).isoformat()}
+                if key == COOLIDGE:
+                    valid = valid and (suffix.isdigit() or any(re.fullmatch(
+                        r'[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}:' + re.escape(clock), suffix)
+                        for clock in clocks))
+                else:
+                    valid = valid and suffix in clocks
+                if key in {HMSC, ELIOT}:
+                    valid = valid and row['title'] == item['title']
             if key == ELIOT:
                 valid = valid and any(timestamp(v['start']) == a and timestamp(v.get('end')) == b for v in item['sessions'])
             identities.add(identity)
         for d in value['diagnostics']:
             valid = valid and d['event_url'] in processed and d['disposition'] == 'held' and d['reason'] in HOLD_REASONS
-    except (KeyError, TypeError, ValueError, AttributeError, OverflowError):
+    except (KeyError, TypeError, ValueError, AttributeError, OverflowError, IndexError):
         valid = False
     if not valid:
         raise ValueError(PREFIX + 'checkpoint_invalid')
@@ -958,7 +1009,7 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
                      window_start=current.astimezone(ZoneInfo(ZONE)).date().isoformat(),
                      manifest_hash=_hash([]), manifest_count=0, cursor=0, queue=[], events=[], diagnostics=[],
                      pending_pages=[SOURCES[key][0]], listed_pages=[], listing_complete=False,
-                     native_total=None, native_seen=[], native_pages=[])
+                     native_total=None, native_seen=[], native_pages=[], outcomes=[], outcome_hash=_hash([]))
     if not state['listing_complete']:
         before = len(state['listed_pages'])
         for _ in range(PAGES_PER_CHUNK):
@@ -997,17 +1048,22 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
             break
         item = state['queue'][state['cursor']]
         payload = fetch(item['url'], 'text/html')
+        rows, reason = [], None
         try:
             rows = _detail(key, item, payload, timestamp(state['started_at']))
             state['events'] = _unique(state['events'] + rows)
             if len(state['events']) > CHECKPOINT_EVENT_LIMITS.get(key, 201):
                 raise ValueError(PREFIX + 'record_limit')
             if not rows:
-                state['diagnostics'].append(dict(event_url=item['url'], disposition='held', reason=PREFIX + 'not_current'))
+                reason = PREFIX + 'not_current'
         except ValueError as exc:
             if str(exc) not in HOLD_REASONS:
                 raise
-            state['diagnostics'].append(dict(event_url=item['url'], disposition='held', reason=str(exc)))
+            reason = str(exc)
+        if reason is not None:
+            state['diagnostics'].append(dict(event_url=item['url'], disposition='held', reason=reason))
+        state['outcomes'].append(_outcome(item, rows, reason))
+        state['outcome_hash'] = _hash(state['outcomes'])
         state['cursor'] += 1
     if before == state['cursor']:
         raise ValueError('collection_deadline')

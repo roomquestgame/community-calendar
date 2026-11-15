@@ -42,7 +42,7 @@ SOURCE_NOTES = {
     LIZARD: "Official WordPress TEC REST; explicit local/UTC clock agreement, complete native descriptions, closures excluded, 60-day window.",
     IMPROV: "Official calendar's anonymous public JSON, complete description rather than 300-character JSON-LD teaser; event-specific street and clocks corroborated against the calendar schema.",
     LAUGH: "Official calendar's anonymous public JSON, complete description rather than 300-character JSON-LD teaser; event-specific street and clocks corroborated against the calendar schema.",
-    PASSIM: "All explicit dated occurrences in inert calendar literals; visible show clocks are local despite the publisher's erroneous +0000 suffix. Full detail prose, nullable unprovided end, and event-specific off-site venue overrides.",
+    PASSIM: "All explicit dated occurrences in inert calendar literals; visible show clocks are local despite the publisher's erroneous +0000 suffix. Full detail prose, nullable unprovided end, and event-specific off-site venue overrides. One exact already-published Armory occurrence is excluded without altering its existing record.",
     BURREN: "Publisher's dated front/back room schedule; chronology and weekdays bind omitted years to explicit year headers. Linked 24HourMusic descriptions hydrate completely. Native closed sessions excluded; unprovided ends remain null.",
     LONG_LIVE: "Named dates only within the publisher-declared Thursday 6-9 PM jazz schedule and a 28-day window. Omitted holiday Thursdays are not generated. Complete native series prose; Boston address overrides unrelated Providence organization metadata.",
 }
@@ -72,16 +72,24 @@ VENUES = {
 VENUE_KEYS = {LIZARD: {"lizard"}, IMPROV: {"improv"}, LAUGH: {"laugh"},
               PASSIM: {"passim", "armory", "arrow"}, BURREN: {"burren_front", "burren_back"},
               LONG_LIVE: {"long_live"}}
-# The publisher's Directions & Parking page binds this explicit ACF venue
-# marker to Club Passim at 47 Palmer Street. Off-site events never inherit it.
-# No unrelated map viewport, organization default, or guessed point is imported.
-POINTS = {
-    "passim": (42.3741826, -71.11964540000002),
-    # The Boston page links its verified Untappd venue 11948597. Its native
-    # hosted-event location binds this point to 152 Hampden St, Boston; its venue
-    # map agrees. This is not the brewery's Providence organization location.
-    "long_live": (42.3278, -71.0748),
+# Preserve the already-deployed publisher ACF marker at the actual Club Passim
+# address. Off-site events never inherit this point.
+POINTS = {"passim": (42.3741826, -71.11964540000002), "long_live": (42.3278, -71.0748),
+          "lizard": (42.382129, -71.119494), "burren_front": (42.39539, -71.121737),
+          "burren_back": (42.39539, -71.121737)}
+# Preserve the deployed Long Live publisher point: the Boston page links its
+# verified Untappd venue 11948597, whose hosted-event location and venue map bind
+# this point to 152 Hampden St. It is not the Providence organization location.
+POINT_EVIDENCE = {
+    "lizard": "https://data.cambridgema.gov/resource/vup6-kpwv.json?%24where=street_number%3D%271667%27+AND+upper%28stname%29+like+%27MASSACHUSETTS%25%27&%24select=address_id%2Cfull_addr%2Cstreet_number%2Cstname%2Cbuilding_id%2Cmaplot%2Clatitude%2Clongitude%2Czip_code&%24limit=10",
+    "burren_front": "https://www.somervillema.gov/buildings/burren-pub-back-room",
+    "burren_back": "https://www.somervillema.gov/buildings/burren-pub-back-room",
 }
+# The city identifies the Burren building at247ElmStreet. Both room labels share
+# that building point; no room-level or doorway precision is claimed.
+POINT_PROVENANCE = {"lizard": "reviewed_municipal_exact_address_point",
+                    "burren_front": "reviewed_municipal_named_building_point",
+                    "burren_back": "reviewed_municipal_named_building_point"}
 VENUE_EVIDENCE = {
     "lizard": "https://lizardloungeclub.com/venue/lizard-lounge/",
     "improv": SOURCES[IMPROV][0], "laugh": SOURCES[LAUGH][0],
@@ -96,7 +104,16 @@ HOLD_CODES = {"boston_nightlife_description_missing", "boston_nightlife_descript
               "boston_additional_schema_missing", "boston_additional_outside_window"}
 ERROR_CODES = HOLD_CODES | {"unregistered_boston_additional_source", "boston_additional_calendar_changed",
     "boston_additional_detail_changed", "boston_additional_record_limit", "boston_additional_checkpoint_invalid",
-    "boston_additional_checkpoint_size_limit", "boston_additional_checkpoint_required", "collection_deadline"}
+    "boston_additional_checkpoint_size_limit", "boston_additional_checkpoint_required", "boston_additional_already_published", "collection_deadline"}
+# Exact production readback reviewed during this batch. The venue feed uses
+# 18:00 (doors) while Passim uses 19:00 (show); the working production event is
+# intentionally left unchanged. This is not a general venue/title dedup rule.
+EXISTING_PUBLISHED_OVERLAPS = {
+    (PASSIM, "https://www.passim.org/live-music/events/boston-fiddle-funk-folk-festival-at-the-armory/",
+     "18601", "2026-11-21T00:00:00+00:00"):
+        {"published_source_key": "arts_at_the_armory_ma", "published_external_event_id": "20320@artsatthearmory.org",
+         "published_starts_at": "2026-11-20T23:00:00+00:00"},
+}
 MONTHS = {name.casefold(): n for n, name in enumerate(
     ("", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")) if n}
 MONTHS.update({k[:3]: v for k, v in list(MONTHS.items())})
@@ -159,7 +176,47 @@ def _identity(key, native):
     return "boston:" + sha256(f'{key}:{native["native_id"]}:{native["start"]}'.encode()).hexdigest()
 
 
+def _existing_overlap(key, item, occurrence):
+    return EXISTING_PUBLISHED_OVERLAPS.get((key, item["url"], item["native_id"],
+        timestamp(occurrence["start"]).astimezone(timezone.utc).isoformat()))
+
+
+def _exclude_saved_overlaps(state, key):
+    """Preserve an in-flight snapshot while removing only a reviewed duplicate.
+
+    The initial deployment may already have hydrated this exact occurrence.
+    Keep all other rows, native proofs, cursors and the immutable snapshot clock.
+    """
+    if key != PASSIM:
+        return state
+    excluded = {}
+    for item in state["seed"]:
+        for occurrence in item["occurrences"]:
+            proof = _existing_overlap(key, item, occurrence)
+            identity = _identity(key, dict(item, **occurrence))
+            if proof and identity in state["row_hashes"]:
+                excluded[identity] = dict(id=identity, event_url=item["url"], title=item["title"],
+                    starts_at=occurrence["start"], reason="boston_additional_already_published",
+                    disposition="already_published", **proof)
+    for row in state["events"]:
+        if row["id"] in excluded:
+            proof = excluded[row["id"]]
+            if (row["event_url"] != proof["event_url"]
+                    or timestamp(row["starts_at"]) != timestamp(proof["starts_at"])):
+                raise ValueError("boston_additional_checkpoint_invalid")
+    state["events"] = [row for row in state["events"] if row["id"] not in excluded]
+    for identity, diagnostic in excluded.items():
+        state["row_hashes"].pop(identity)
+        if diagnostic not in state["diagnostics"]:
+            state["diagnostics"].append(diagnostic)
+    if len(state["diagnostics"]) > 400:
+        raise ValueError("boston_additional_checkpoint_invalid")
+    return state
+
+
 def _packet(key, url, title, identity, occurrences, *, venue=None, body=_NO_BODY, **extra):
+    if not isinstance(title, str):
+        raise ValueError("boston_additional_calendar_changed")
     title = plain(title)
     if (not event_url(key, url) or not 1 <= len(title) <= 180 or not isinstance(identity, str)
             or not 1 <= len(identity) <= 250 or not isinstance(occurrences, list)
@@ -196,8 +253,9 @@ def _row(key, item):
     if row is None:
         raise ValueError("boston_additional_outside_window")
     row.update(description=_validated_body(item["body"]), timezone=ZONE, attendance_mode="in_person",
-               location_provenance="reviewed_publisher_street_point" if point[0] is not None else "reviewed_publisher_street_pending_geocode",
-               location_evidence_url=VENUE_EVIDENCE[item["venue_key"]])
+               location_provenance=POINT_PROVENANCE.get(item["venue_key"],
+                   "reviewed_publisher_street_point" if point[0] is not None else "reviewed_publisher_street_pending_geocode"),
+               location_evidence_url=POINT_EVIDENCE.get(item["venue_key"], VENUE_EVIDENCE[item["venue_key"]]))
     if item.get("published_schedule"):
         row.update(schedule_provenance="publisher_declared_named_weekly_schedule",
                    published_schedule=item["published_schedule"], schedule_window_days=28)
@@ -220,7 +278,10 @@ def _jsonld(soup):
 
 def _tec_url(now, page=1):
     day = now.astimezone(ZoneInfo(ZONE)).date()
-    return TEC_API + "?" + urlencode(dict(per_page=50, start_date=f"{day} 00:00:00",
+    # Include the preceding local date so a late show that crosses midnight
+    # remains visible. The publisher applies its own 02:00 start-of-day setting;
+    # the explicit event instants, not those expanded query boundaries, filter.
+    return TEC_API + "?" + urlencode(dict(per_page=50, start_date=f"{day - timedelta(days=1)} 00:00:00",
         end_date=f"{day + timedelta(days=61)} 00:00:00", status="publish", page=page))
 
 
@@ -239,6 +300,8 @@ def _lizard_listing(payload, now):
                 or NONPUBLIC.search(title) or re.search(r"\bno event tonight\b", title, re.I)):
             continue
         if type(e.get("id")) is not int or e.get("timezone") != ZONE:
+            raise ValueError("boston_additional_calendar_changed")
+        if e.get("description") is not None and not isinstance(e["description"], str):
             raise ValueError("boston_additional_calendar_changed")
         start, end = timestamp(e.get("start_date"), ZONE), timestamp(e.get("end_date"), ZONE)
         if start != timestamp(e.get("utc_start_date"), "UTC") or end != timestamp(e.get("utc_end_date"), "UTC"):
@@ -274,6 +337,8 @@ def _comedy_listing(key, calendar, payload, now):
         if e.get("status") not in {"available", "coming_soon", "soldout"} or e.get("timezone") != ZONE:
             raise ValueError("boston_additional_calendar_changed")
         if not re.fullmatch(r"[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}", str(e.get("id", ""))):
+            raise ValueError("boston_additional_calendar_changed")
+        if e.get("description") is not None and not isinstance(e["description"], str):
             raise ValueError("boston_additional_calendar_changed")
         start, end = timestamp(e.get("start")), timestamp(e.get("end"))
         if not _within(start, end, now):
@@ -393,6 +458,7 @@ def _passim_manifest(payload, now):
 
 def _passim_header_dates(text):
     text = plain(text)
+    weekdays = re.findall(r"\b(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)\b", text, re.I)
     day_words = r"(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday),?\s*"
     text = re.sub(day_words, "", text, flags=re.I)
     match = re.fullmatch(r"([A-Za-z]+)\s+([\d\s,&-]+(?:and[\d\s,&-]+)?)\s*,\s*(20\d{2})", text)
@@ -413,7 +479,10 @@ def _passim_header_dates(text):
             days.append(int(part))
         else:
             raise ValueError("boston_additional_schedule_conflict")
-    return {date(int(match[3]), MONTHS[match[1].casefold()], day) for day in days}
+    result = {date(int(match[3]), MONTHS[match[1].casefold()], day) for day in days}
+    if len(result) == 1 and weekdays and (len(weekdays) != 1 or next(iter(result)).weekday() != WEEKDAYS[weekdays[0].casefold()]):
+        raise ValueError("boston_additional_schedule_conflict")
+    return result
 
 
 def _passim_venue(article, schema):
@@ -427,7 +496,7 @@ def _passim_venue(article, schema):
         return "armory"
     if title.endswith(" at Arrow Street Arts") or (re.search(r"event takes place at\s+Arrow Street Arts", prose, re.I) and ("arrowstarts.org" in links or "www.arrowstarts.org" in links)):
         return "arrow"
-    if re.search(r"event takes place at|\bat (?:the )?(?:armory|arrow street|[A-Z][a-z]+ (?:theatre|theater|hall|church))", title + " " + prose, re.I):
+    if re.search(r"event takes place at|\b(?:venue|location)\s*:|\bat (?:the )?(?:armory|arrow street|[A-Z][a-z]+ (?:theatre|theater|hall|church))", title + " " + prose, re.I):
         raise ValueError("boston_additional_venue_unresolved")
     loc = schema.get("location") or {}
     a = loc.get("address") or {}
@@ -445,6 +514,8 @@ def _passim_detail(item, payload):
     if (not article or article.get("id") != "post-" + item["native_id"] or not heading or not header_date
             or _title_key(heading.get_text()) != _title_key(item["title"]) or len(schemas) != 1):
         raise ValueError("boston_additional_detail_changed")
+    if schemas[0].get("eventStatus") in {"https://schema.org/EventCancelled", "https://schema.org/EventPostponed"}:
+        raise ValueError("boston_additional_schedule_conflict")
     days = _passim_header_dates(header_date.get_text(" "))
     starts = [timestamp(x["start"]) for x in item["occurrences"]]
     if any(start.astimezone(ZoneInfo(ZONE)).date() not in days for start in starts):
@@ -531,9 +602,13 @@ def _burren_dates(soup, now):
 def _burren_clocks(day, raw):
     text = plain(raw).rstrip(":").strip().lower().replace(" ", "").replace("–", "-")
     if "," in text or "&" in text:
-        # Native showcase listings enumerate individual shows with commas and
-        # an optional final ampersand; each clock still has to parse strictly.
-        return [_occurrence(_clock(day, x)) for x in re.split(r",?&|,", text)]
+        clock = r"(?:[1-9]|1[0-2])(?::[0-5]\d)?[ap]m"
+        if not re.fullmatch(clock + r"(?:," + clock + r")*(?:,?&" + clock + r")?", text):
+            raise ValueError("boston_additional_schedule_conflict")
+        values = re.split(r",?&|,", text)
+        if len(values) < 2 or len(set(values)) != len(values):
+            raise ValueError("boston_additional_schedule_conflict")
+        return [_occurrence(_clock(day, value)) for value in values]
     if "-" in text:
         first, last = text.split("-", 1)
         if not re.search(r"[ap]m$", first):
@@ -735,22 +810,42 @@ def _checkpoint(value, key, now):
         seen = set()
         for row in value["events"]:
             place = (row["venue_name"], row["venue_address"], row["venue_city"])
+            # Concurrent main 893ab may already have collected this exact
+            # Burren prefix before the municipal point is deployed. Preserve
+            # its fully hashed rows and normal geocoding path; new rows use the
+            # reviewed point. No other source, street or location state qualifies.
+            legacy_burren_point = (key == BURREN and place in places
+                and row.get("lat") is None and row.get("lng") is None
+                and row.get("location_evidence_url") == SOURCES[BURREN][0]
+                and row.get("location_provenance") == "reviewed_publisher_street_pending_geocode"
+                and row.get("reason") == "missing_verified_venue_geo")
             if (row["id"] in seen or value["row_hashes"].get(row["id"]) != _hash(row)
                     or not re.fullmatch(r"boston:[a-f0-9]{64}", row["id"])
                     or not event_url(key, row["event_url"]) or place not in places
                     or _validated_body(row["description"]) != row["description"]
                     or row.get("timezone") != ZONE or row.get("attendance_mode") != "in_person"
-                    or row.get("location_evidence_url") not in {VENUE_EVIDENCE[k] for k in VENUE_KEYS[key] if VENUES[k] == place}
-                    or (row.get("lat"), row.get("lng")) != (reviewed_venue_location(key, *place[:2]) or (None, None))):
+                    or not legacy_burren_point and (
+                        row.get("location_evidence_url") not in {POINT_EVIDENCE.get(k, VENUE_EVIDENCE[k]) for k in VENUE_KEYS[key] if VENUES[k] == place}
+                        or (row.get("lat"), row.get("lng")) != (reviewed_venue_location(key, *place[:2]) or (None, None)))):
                 raise ValueError
             seen.add(row["id"])
-        if any(x.get("reason") not in HOLD_CODES or x.get("disposition") != "held" or not event_url(key, x.get("event_url")) for x in value["diagnostics"]):
-            raise ValueError
+        for diagnostic in value["diagnostics"]:
+            if not event_url(key, diagnostic.get("event_url")):
+                raise ValueError
+            if diagnostic.get("reason") == "boston_additional_already_published":
+                matches = [proof for (source_key, url, _, starts_at), proof in EXISTING_PUBLISHED_OVERLAPS.items()
+                           if source_key == key and url == diagnostic["event_url"]
+                           and starts_at == timestamp(diagnostic["starts_at"]).astimezone(timezone.utc).isoformat()]
+                if (len(matches) != 1 or diagnostic.get("disposition") != "already_published"
+                        or any(diagnostic.get(k) != v for k, v in matches[0].items())):
+                    raise ValueError
+            elif diagnostic.get("reason") not in HOLD_CODES or diagnostic.get("disposition") != "held":
+                raise ValueError
         if len(json.dumps(value, ensure_ascii=False).encode()) > MAX_BYTES:
             raise ValueError
     except (ValueError, KeyError, TypeError, AttributeError, OverflowError):
         raise ValueError("boston_additional_checkpoint_invalid") from None
-    return deepcopy(value)
+    return _exclude_saved_overlaps(deepcopy(value), key)
 
 
 def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None, max_details=MAX_FETCHES):
@@ -801,9 +896,24 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
             state.update(cursor=state["cursor"] + 1, pending=[], pending_hash=_hash([]), pending_cursor=0, loaded_page=None)
             continue
         item = deepcopy(queue[state["pending_cursor"]])
+        remaining, excluded = [], []
+        for occurrence in item["occurrences"]:
+            overlap = _existing_overlap(key, item, occurrence)
+            if overlap:
+                excluded.append(dict(id=_identity(key, dict(item, **occurrence)), event_url=item["url"],
+                    title=item["title"], starts_at=occurrence["start"], reason="boston_additional_already_published",
+                    disposition="already_published", **overlap))
+            else:
+                remaining.append(occurrence)
+        if not remaining:
+            state["diagnostics"].extend(excluded)
+            state["pending_cursor"] += 1
+            continue
+        item["occurrences"] = remaining
         needs_detail = not item.get("held") and (key == PASSIM or key == BURREN and item.get("needs_detail"))
         if needs_detail and not can_fetch():
             break
+        state["diagnostics"].extend(excluded)
         try:
             if item.get("held"):
                 raise ValueError(item["held"])

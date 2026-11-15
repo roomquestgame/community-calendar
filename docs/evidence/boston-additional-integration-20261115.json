@@ -1,0 +1,54 @@
+{
+  "checked_at": "2026-11-15T01:41:18.055007+00:00",
+  "deployed_base_sha": "893ab34db65ab7d10697ecae598419cd19650ddb",
+  "release_scope": "Remaining fixes for 21 already-enrolled Boston profiles after concurrent PR 232, preserving its working Burren parsing/hydration and Long Live/Central/Rock Spot points; no reenrollment.",
+  "command": "python -m pytest tests/test_boston_nightlife_additional.py tests/test_boston_nightlife_additional_worker.py tests/test_boston_community_additional.py tests/test_boston_arts_additional.py tests/test_boston_worker.py -q",
+  "tests_passed": 122,
+  "subtests_passed": 92,
+  "elapsed_seconds_reported_by_pytest": 3.06,
+  "warnings": "One pre-existing anyio/pytest CallSpec2 deprecation warning.",
+  "code_sha256": {
+    "roomquest/boston_sources.py": "b4ac89fed6d0ff46487ee3e4e86b48a202e46430131f4eed64a9ae1a9eadf004",
+    "roomquest/boston_nightlife_additional.py": "742ad38b25d3d57def9abf67581234ec3188056a16c5bde55638e029b5f50192",
+    "roomquest/boston_arts_additional.py": "37a524ebc78a49f42572c9acec6757939531c232617b6fb231a23635242cf1e8",
+    "roomquest/boston_community_additional.py": "9cfbb2c6dffae59e370e8e871fb83ceb7a56e7463791460504f9a651f95c8c31",
+    "roomquest/preview_worker.py": "5cfea0efa31bc71473594d78bdfd8d1762b5acb481feb2389de23e1aeecd2bc3",
+    "roomquest/category_worker.py": "11b23c79d5f8061312fc8b6b595d91efcb2ca7fe0d8c84e823304be483c8e72a"
+  },
+  "test_sha256": {
+    "tests/test_boston_nightlife_additional.py": "6db47ea1dbe6359e6f003c0c1b8281f17acf5cb28fb711d7cbd4c95d4c1a6e04",
+    "tests/test_boston_nightlife_additional_worker.py": "084ed582152cef89041b4e63d270b1fbd43582db20cba9d77240cfefbd5974f8",
+    "tests/test_boston_community_additional.py": "2e943ff66f168eefdd247f5f6e5c6a2f540d88e1e91b37744ef18d07770bef60",
+    "tests/test_boston_arts_additional.py": "18c2717da9fb8e29eed22f7fd4601587478326ee6dca46863b752819dfd01fb3",
+    "tests/test_boston_worker.py": "5da48fcb38aeb5e0c1ca1544bba3b74d747d458673da5ed754a07ef36d831d4e"
+  },
+  "dependency_context": "The invocation used the synchronized current worker and NYC dependencies supplied by the coordinating agent. Hashes above pin the tested local modules, not an undeployed commit claim.",
+  "test_live_publisher_requests": false,
+  "production_writes": false,
+  "github_workflow_runs": false,
+  "scope": "Single combined focused additional-source and shared Boston worker invocation. Tests use mocked or captured publisher data. Actual category-worker captured replays are recorded separately in each source-group receipt. This receipt does not establish production access, successful deployment, or live publication.",
+  "capture_receipts": [
+    "docs/evidence/boston-nightlife-additional-reconciliation-20261115.json",
+    "docs/evidence/boston-arts-additional-reconciliation-20261115.json",
+    "docs/evidence/boston-community-additional-reconciliation-20261115.json",
+    "docs/evidence/boston-nightlife-additional-burren-checkpoint-20261115.json"
+  ],
+  "historical_capture_note": "Nightlife frozen comparisons use the recorded anchor; current-window expiry is separate. Final six-source 338-row expected data has file SHA256 b33af47d0e272d015538fc041d8942a3142a9264deb7ef254065db0b491ed137. The separate bounded Lizard recovery observation and read-only production Burren checkpoint capture are not live publisher requests in this offline pytest run.",
+  "review": {
+    "compared_against": "Current deployed main 893ab34db65ab7d10697ecae598419cd19650ddb; changed modules saved in boston-additional/concurrent-893ab. The unchanged common source module is pinned by its deployed 7798bd saved snapshot.",
+    "result": "No concrete release blocker found. Preserve the latest deployed publisher points and native Burren hydration; exact legacy Burren location compatibility preserves its new 78-row prefix and completes all 123 native occurrences without body/street/identity/clock changes.",
+    "scope": [
+      "Nightlife: preserve deployed Long Live publisher point/provenance and Burren hydration; strict clock-list validation; exact Passim duplicate exclusion; municipal Burren/Lizard points; tightly bound legacy null-geometry Burren checkpoint compatibility; native shape/date/venue checks and overnight Lizard query coverage.",
+      "Arts: durable processed-row outcomes and empty-checkpoint-only compatibility; local-year cinema clocks; native bundle/status/address checks; explicit Coolidge checkpoint record bound.",
+      "Community: preserve current deployed Central/Rock Spot location metadata; exact publisher-linked Parkour sessions, official points and old-checkpoint guards; complete native narratives; closed later-course-part exclusion; canonical/time validation."
+    ],
+    "limitations": "Read-only code review plus the recorded offline combined tests. Required conditional checkpoint repairs and publication reconciliation are owned by the coordinating migration; this is not production verification."
+  },
+  "prior_focused_run": {
+    "deployed_base_sha": "7798bd5886a7de4ac0635ab8c3bca79d4b3f9105",
+    "checked_at": "2026-11-15T01:34:50.591123+00:00",
+    "tests_passed": 120,
+    "subtests_passed": 92,
+    "scope": "Superseded by this final combined run after concurrent PR 232 and exact Burren checkpoint compatibility."
+  }
+}
