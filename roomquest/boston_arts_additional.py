@@ -91,6 +91,18 @@ VENUES = {
     AQUARIUM: [('New England Aquarium', '1 Central Wharf, Boston, MA 02110', 'Boston', None)],
 }
 
+# The actual Eliot publication hold at this exact venue was verified against
+# City of Boston SAM_ADDRESS_ID134497, a unitless address point (not a range).
+ELIOT_BBR_EVIDENCE = ('https://gis.boston.gov/arcgis/rest/services/SAM/Live_SAM_Address/MapServer/1/query'
+                      '?f=json&where=SAM_ADDRESS_ID%3D134497&outFields=*&outSR=4326&returnGeometry=true')
+
+
+def _reviewed_municipal_point(key, venue, address):
+    if (key, venue, address) == (ELIOT, 'Boston Building Resources',
+                                  '100 Terrace Street, Boston, MA 02120'):
+        return (42.328649, -71.097821)
+    return None
+
 
 def _source(source):
     key = source.get('source_key')
@@ -166,6 +178,8 @@ def _row(key, item, body, start, end, *, venue_index=0, identity=None, title=Non
     venue, address, city, point = VENUES[key][venue_index]
     if room:
         venue += ' — ' + room
+    municipal_point = _reviewed_municipal_point(key, venue, address)
+    point = municipal_point or point
     body = shared._body(body)
     rid = item['id'] + ':' + str(identity or start.isoformat())
     row = record(title or item['title'], start.isoformat(), end.isoformat() if end else None,
@@ -176,6 +190,9 @@ def _row(key, item, body, start, end, *, venue_index=0, identity=None, title=Non
                    location_provenance='publisher_venue_coordinates' if point else 'publisher_venue_street_pending_geocode')
         if key == ELIOT and venue_index in (0, 1):
             row['location_provenance'] = 'publisher_class_street_neighborhood_zip_resolution'
+        if municipal_point:
+            row.update(location_provenance='reviewed_municipal_exact_address_point',
+                       location_evidence_url=ELIOT_BBR_EVIDENCE)
     return row
 
 
@@ -939,7 +956,8 @@ def _checkpoint(value, key, now):
             a, b = timestamp(row['starts_at']), timestamp(row.get('ends_at'))
             venues = [v for v in VENUES[key] if row['venue_address'] == v[1] and
                       (row['venue_name'] == v[0] or key == COOLIDGE and row['venue_name'].startswith(v[0] + ' — '))]
-            expected_point = venues[0][3] if len(venues) == 1 else None
+            municipal_point = _reviewed_municipal_point(key, row['venue_name'], row['venue_address'])
+            expected_point = municipal_point or (venues[0][3] if len(venues) == 1 else None)
             bound = proofs.get(identity)
             valid = (valid and item is not None and row['id'].startswith(item['id'] + ':') and identity not in identities
                      and bound is not None and bound[0] == row['event_url']
@@ -949,8 +967,10 @@ def _checkpoint(value, key, now):
                      and isinstance(row['description'], str) and 0 < len(row['description']) <= MAX_DESCRIPTION
                      and len(venues) == 1 and row.get('timezone') == ZONE and row.get('attendance_mode') == 'in_person'
                      and (row.get('lat'), row.get('lng')) == (expected_point or (None, None))
-                     and row.get('location_provenance') == ('publisher_venue_coordinates' if expected_point else
+                     and row.get('location_provenance') == ('reviewed_municipal_exact_address_point' if municipal_point else
+                         'publisher_venue_coordinates' if expected_point else
                          'publisher_class_street_neighborhood_zip_resolution' if key == ELIOT and venues[0][2] == 'Jamaica Plain' else 'publisher_venue_street_pending_geocode')
+                     and (not municipal_point or row.get('location_evidence_url') == ELIOT_BBR_EVIDENCE)
                      and a.tzinfo is not None and (b is None or b.tzinfo is not None and b > a)
                      and shared._within(a, b, started, DAYS))
             if item is not None:
