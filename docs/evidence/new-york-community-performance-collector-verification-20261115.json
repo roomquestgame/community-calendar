@@ -60,5 +60,11 @@
   },
   "durable_normalized_records": "roomquestgame/RoomQuestGame:docs/evidence/new-york-community-performance-records-20261115.json",
   "upstream_base_sha": "893ab34db65ab7d10697ecae598419cd19650ddb",
-  "concurrent_changes_preserved": "Boston completion source/tests/doc changes have no overlap with this batch; two current Boston modules and their tests were hydrated before the final shared verification."
+  "concurrent_changes_preserved": "Boston completion source/tests/doc changes have no overlap with this batch; two current Boston modules and their tests were hydrated before the final shared verification.",
+  "additional_upstream_verification": {
+    "checked_at": "2026-11-15T01:45:24.850935+00:00",
+    "base_sha": "3b58be1a2c5232b87242d07402ec8b86078dc1e7",
+    "result": "172 passed;66 subtests passed",
+    "scope": "Hydrated all three subsequently changed Boston runtime modules; the complete focused shared/NYC suite still passes. No batch path overlaps concurrent changes."
+  }
 }
