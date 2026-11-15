@@ -1,0 +1,1146 @@
+{
+  "mode": "ordinary HTTP capture replay only; production unverified",
+  "reports": [
+    {
+      "source_key": "prospect_park_alliance_brooklyn_ny",
+      "observed_at": "2026-11-15T01:24:27.724002+00:00",
+      "native_total": 72,
+      "manifest_count": 67,
+      "accepted": 62,
+      "chunks": 11,
+      "fetch_count": 68,
+      "description_min": 413,
+      "description_max": 2062,
+      "held": {
+        "already_published_partner_occurrence": 3,
+        "venue_unreviewed": 2
+      },
+      "diagnostics": [
+        {
+          "event_url": "https://www.prospectpark.org/event/pre-thanksgiving-birding-in-prospect-park/",
+          "disposition": "held",
+          "reason": "already_published_partner_occurrence"
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/sunday-greenmarket-at-bartel-pritchard-square-4/2026-11-15/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/the-shirley-chisholm-way-brooklyns-blueprint-for-change-4/2026-11-15/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/carousel-rides-9/2026-11-15/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/junior-volunteer-corps-7/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/sexual-health-mobile-medical-unit-2/2026-11-16/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/wednesday-greenmarket-at-bartel-pritchard-square/2026-11-18/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/fall-fix-up-5/2026-11-18/",
+          "disposition": "held",
+          "reason": "venue_unreviewed"
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/sexual-health-mobile-medical-unit/2026-11-19/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/carousel-rides-9/2026-11-19/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/carousel-rides-9/2026-11-20/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/greenmarket-at-grand-army-plaza-2/2026-11-21/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/introduction-to-birdwatching-outings-3-2/2026-11-21/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/park-pitch-in-fall-leaf-raking/2026-11-21/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/carousel-rides-9/2026-11-21/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/sunday-greenmarket-at-bartel-pritchard-square-4/2026-11-22/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/park-pitch-in-fall-leaf-raking/2026-11-22/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/carousel-rides-9/2026-11-22/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/urban-park-rangers-freedom-seekers-stories-by-the-fire/",
+          "disposition": "held",
+          "reason": "already_published_partner_occurrence"
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/sexual-health-mobile-medical-unit-2/2026-11-23/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/wednesday-greenmarket-at-bartel-pritchard-square/2026-11-25/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/fall-fix-up-5/2026-11-25/",
+          "disposition": "held",
+          "reason": "venue_unreviewed"
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/sexual-health-mobile-medical-unit/2026-11-26/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/urban-park-rangers-post-thanksgiving-day-super-hike/",
+          "disposition": "held",
+          "reason": "already_published_partner_occurrence"
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/greenmarket-at-grand-army-plaza-2/2026-11-28/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/introduction-to-birdwatching-outings-3-2/2026-11-28/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/sunday-greenmarket-at-bartel-pritchard-square-4/2026-11-29/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/sexual-health-mobile-medical-unit-2/2026-11-30/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/wednesday-greenmarket-at-bartel-pritchard-square/2026-12-02/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/sexual-health-mobile-medical-unit/2026-12-03/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/fido-coffee-bark-3/2026-12-05/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/greenmarket-at-grand-army-plaza-2/2026-12-05/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/introduction-to-birdwatching-outings-3-2/2026-12-05/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/junior-volunteer-corps-8/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/sunday-greenmarket-at-bartel-pritchard-square-4/2026-12-06/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/birdwatching-first-sunday-outings-6/2026-12-06/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/sexual-health-mobile-medical-unit-2/2026-12-07/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/wednesday-greenmarket-at-bartel-pritchard-square/2026-12-09/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/sexual-health-mobile-medical-unit/2026-12-10/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/greenmarket-at-grand-army-plaza-2/2026-12-12/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/introduction-to-birdwatching-outings-3-2/2026-12-12/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/sunday-greenmarket-at-bartel-pritchard-square-4/2026-12-13/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/sexual-health-mobile-medical-unit-2/2026-12-14/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/wednesday-greenmarket-at-bartel-pritchard-square/2026-12-16/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/sexual-health-mobile-medical-unit/2026-12-17/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/greenmarket-at-grand-army-plaza-2/2026-12-19/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/introduction-to-birdwatching-outings-3-2/2026-12-19/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/sunday-greenmarket-at-bartel-pritchard-square-4/2026-12-20/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/sexual-health-mobile-medical-unit-2/2026-12-21/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/wednesday-greenmarket-at-bartel-pritchard-square/2026-12-23/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/sexual-health-mobile-medical-unit/2026-12-24/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/greenmarket-at-grand-army-plaza-2/2026-12-26/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/sunday-greenmarket-at-bartel-pritchard-square-4/2026-12-27/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/sexual-health-mobile-medical-unit-2/2026-12-28/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/wednesday-greenmarket-at-bartel-pritchard-square/2026-12-30/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/sexual-health-mobile-medical-unit/2026-12-31/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/new-years-eve-fireworks-in-prospect-park-3/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/greenmarket-at-grand-army-plaza-2/2027-01-02/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/introduction-to-birdwatching-outings-3-2/2027-01-02/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/birdwatching-first-sunday-outings-6/2027-01-03/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/sexual-health-mobile-medical-unit-2/2027-01-04/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/wednesday-greenmarket-at-bartel-pritchard-square/2027-01-06/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/sexual-health-mobile-medical-unit/2027-01-07/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/greenmarket-at-grand-army-plaza-2/2027-01-09/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/introduction-to-birdwatching-outings-3-2/2027-01-09/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/sexual-health-mobile-medical-unit-2/2027-01-11/",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://www.prospectpark.org/event/wednesday-greenmarket-at-bartel-pritchard-square/2027-01-13/",
+          "disposition": "accepted",
+          "reason": null
+        }
+      ],
+      "venues": [
+        {
+          "venue_name": "Prospect Park — 3rd Street Entrance",
+          "venue_address": "Prospect Park West and 3rd Street, Brooklyn, NY 11215",
+          "lat": 40.668239100851,
+          "lng": -73.973854482247,
+          "location_provenance": "publisher_dated_volunteer_registration_and_native_entrance_map_point"
+        },
+        {
+          "venue_name": "Prospect Park — Audubon Center",
+          "venue_address": "101 East Drive, Brooklyn, NY 11225",
+          "lat": 40.660822263911,
+          "lng": -73.965244889259,
+          "location_provenance": "publisher_named_venue_native_map_point_and_linked_street"
+        },
+        {
+          "venue_name": "Prospect Park — Bartel-Pritchard Square",
+          "venue_address": "Prospect Park West and 15th Street, Brooklyn, NY 11215",
+          "lat": 40.660939003015,
+          "lng": -73.979789838195,
+          "location_provenance": "publisher_named_market_entrance_and_native_map_point"
+        },
+        {
+          "venue_name": "Prospect Park — Carousel",
+          "venue_address": "452 Flatbush Avenue, Brooklyn, NY 11225",
+          "lat": 40.663831727656,
+          "lng": -73.964218273759,
+          "location_provenance": "publisher_named_venue_native_map_point_and_reviewed_entrance_street"
+        },
+        {
+          "venue_name": "Prospect Park — Concert Grove (approximate street reference)",
+          "venue_address": "East Drive near Lincoln Road, Brooklyn, NY 11225",
+          "lat": 40.658993324617,
+          "lng": -73.964452967048,
+          "location_provenance": "publisher_named_venue_native_map_point_with_estimated_park_street_reference"
+        },
+        {
+          "venue_name": "Prospect Park — Grand Army Plaza",
+          "venue_address": "Grand Army Plaza, Brooklyn, NY 11238",
+          "lat": 40.67387886364,
+          "lng": -73.970105051994,
+          "location_provenance": "publisher_named_plaza_and_native_map_point_with_reviewed_postal_context"
+        },
+        {
+          "venue_name": "Prospect Park — Lefferts Historic House (approximate street reference)",
+          "venue_address": "452 Flatbush Avenue, Brooklyn, NY 11225",
+          "lat": 40.664370125806,
+          "lng": -73.963795825839,
+          "location_provenance": "publisher_named_venue_native_map_point_with_estimated_shared_entrance_street"
+        },
+        {
+          "venue_name": "Prospect Park — Lena Horne Bandshell (approximate street reference)",
+          "venue_address": "Prospect Park West and 9th Street, Brooklyn, NY 11215",
+          "lat": 40.66383325359,
+          "lng": -73.976445794106,
+          "location_provenance": "publisher_named_venue_native_map_point_with_estimated_entrance_street"
+        },
+        {
+          "venue_name": "Prospect Park — Parkside and Ocean Avenue Entrance",
+          "venue_address": "Parkside Avenue and Ocean Avenue, Brooklyn, NY 11226",
+          "lat": 40.654873286887,
+          "lng": -73.961908742822,
+          "location_provenance": "publisher_named_intersection_and_native_map_point_with_estimated_zip"
+        },
+        {
+          "venue_name": "Prospect Park — Willink Plaza Entrance",
+          "venue_address": "Flatbush Avenue and Ocean Avenue, Brooklyn, NY 11225",
+          "lat": 40.663767412146,
+          "lng": -73.962858766226,
+          "location_provenance": "publisher_dated_volunteer_registration_and_native_entrance_map_point"
+        },
+        {
+          "venue_name": "Prospect Park — lawn south of Picnic House (approximate meeting point)",
+          "venue_address": "West Drive near 5th Street, Brooklyn, NY 11215",
+          "lat": 40.6651,
+          "lng": -73.97232,
+          "location_provenance": "publisher_body_named_south_lawn_with_estimated_point_south_of_native_picnic_house_anchor"
+        }
+      ]
+    },
+    {
+      "source_key": "snug_harbor_staten_island_ny",
+      "observed_at": "2026-11-15T01:24:27.724002+00:00",
+      "native_total": 132,
+      "manifest_count": 125,
+      "accepted": 89,
+      "chunks": 16,
+      "fetch_count": 97,
+      "description_min": 564,
+      "description_max": 4100,
+      "held": {
+        "already_published_partner_occurrence": 20,
+        "remote_event": 10,
+        "venue_unreviewed": 2,
+        "schedule_unresolved": 4
+      },
+      "diagnostics": [
+        {
+          "event_url": "https://snug-harbor.org/event/compost-processing-workday/?slot_id=23842",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/class/vermicomposting-worm-bins-101/?slot_id=17841",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/exhibition/proximity-exhibition/?slot_id=24360",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/class/environmental-and-tree-stewardship/?slot_id=23787",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/class/master-composter-certification-course-6-designing-and-managing-community-composting-spaces/?slot_id=22998",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/staten-island-childrens-museum-crazy-science-dry-ice-discovery/?slot_id=25578",
+          "disposition": "held",
+          "reason": "already_published_partner_occurrence"
+        },
+        {
+          "event_url": "https://snug-harbor.org/class/master-composter-certification-course-5-composting-systems-tools-and-scales/?slot_id=22992",
+          "disposition": "held",
+          "reason": "remote_event"
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/emmas-place-national-childrens-grief-awareness-day/?slot_id=25582",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25353",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/exhibition/proximity-exhibition/?slot_id=24346",
+          "disposition": "held",
+          "reason": "already_published_partner_occurrence"
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25301",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/class/farm-stewardship/?slot_id=24451",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/exhibition/proximity-exhibition/?slot_id=24347",
+          "disposition": "held",
+          "reason": "already_published_partner_occurrence"
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/staten-island-childrens-museum-dj-got-me-fit-dance-party/?slot_id=25579",
+          "disposition": "held",
+          "reason": "already_published_partner_occurrence"
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25302",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/blue-and-green-spaces-by-justin-wood/?slot_id=24561",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/exhibition/proximity-exhibition/?slot_id=24361",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/class/environmental-and-tree-stewardship/?slot_id=23788",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/staten-island-childrens-museum-dj-got-me-fit-dance-party/?slot_id=25580",
+          "disposition": "held",
+          "reason": "already_published_partner_occurrence"
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/staten-island-childrens-museum-dj-got-me-fit-dance-party-2/?slot_id=25584",
+          "disposition": "held",
+          "reason": "already_published_partner_occurrence"
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25303",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25304",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/class/master-composter-certification-course-6-designing-and-managing-community-composting-spaces/?slot_id=22999",
+          "disposition": "held",
+          "reason": "remote_event"
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25305",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25306",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25307",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/exhibition/proximity-exhibition/?slot_id=24348",
+          "disposition": "held",
+          "reason": "already_published_partner_occurrence"
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25308",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/exhibition/proximity-exhibition/?slot_id=24349",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/class/cultivating-balance-workshop-series/?slot_id=19998",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/staten-island-childrens-museum-bilingual-birdies/?slot_id=25581",
+          "disposition": "held",
+          "reason": "already_published_partner_occurrence"
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25309",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/exhibition/proximity-exhibition/?slot_id=24362",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/glass-house-tour/?slot_id=19181",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/class/tiny-gardens-workshop/?slot_id=24553",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/staten-island-childrens-museum-silly-billy/?slot_id=25583",
+          "disposition": "held",
+          "reason": "already_published_partner_occurrence"
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25310",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25311",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/class/master-composter-certification-course-7-compost-advocacy-and-community-building/?slot_id=24527",
+          "disposition": "held",
+          "reason": "remote_event"
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25312",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25313",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/class/master-composter-certification-course-1compost-in-context/?slot_id=22961",
+          "disposition": "held",
+          "reason": "remote_event"
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25314",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/exhibition/proximity-exhibition/?slot_id=24350",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25315",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/compost-processing-workday/?slot_id=23843",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/holiday-hop-2026/?slot_id=25594",
+          "disposition": "held",
+          "reason": "venue_unreviewed"
+        },
+        {
+          "event_url": "https://snug-harbor.org/exhibition/proximity-exhibition/?slot_id=24351",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/class/staten-island-childrens-museum-museum-movers-and-shakers/?slot_id=25585",
+          "disposition": "held",
+          "reason": "already_published_partner_occurrence"
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/glass-house-tour/?slot_id=19182",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/class/master-composter-certification-course-7-compost-advocacy-and-community-building/?slot_id=24528",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/class/tiny-gardens-workshop/?slot_id=24554",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/class/water-stewardship/?slot_id=23818",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25316",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/sailors-snug-harbor-art-architecture-tour/?slot_id=16549",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/exhibition/proximity-exhibition/?slot_id=24363",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/holiday-hop-2026/?slot_id=25595",
+          "disposition": "held",
+          "reason": "venue_unreviewed"
+        },
+        {
+          "event_url": "https://snug-harbor.org/class/staten-island-childrens-museum-shoprite-kidz-cook-holiday-cookies/?slot_id=25586",
+          "disposition": "held",
+          "reason": "already_published_partner_occurrence"
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/glass-house-tour/?slot_id=19183",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/class/tiny-gardens-workshop/?slot_id=24555",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25317",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25318",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/class/master-composter-certification-course-2-introduction-to-composting-2/?slot_id=22969",
+          "disposition": "held",
+          "reason": "remote_event"
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25319",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25320",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25321",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/exhibition/proximity-exhibition/?slot_id=24352",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25322",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/chinese-scholars-garden-tour-3/?slot_id=25482",
+          "disposition": "held",
+          "reason": "schedule_unresolved"
+        },
+        {
+          "event_url": "https://snug-harbor.org/exhibition/proximity-exhibition/?slot_id=24353",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/pass-anodiphony-voltage-into-color-and-sound-by-sestra-kuya/?slot_id=25139",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/staten-island-childrens-museum-crazy-science-liquid-nitrogen/?slot_id=25600",
+          "disposition": "held",
+          "reason": "already_published_partner_occurrence"
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25323",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/exhibition/proximity-exhibition/?slot_id=24364",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/chinese-scholars-garden-tour-3/?slot_id=25483",
+          "disposition": "held",
+          "reason": "schedule_unresolved"
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/staten-island-childrens-museum-crazy-science-liquid-nitrogen/?slot_id=25601",
+          "disposition": "held",
+          "reason": "already_published_partner_occurrence"
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25324",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25325",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/class/master-composter-certification-course-3-soil-health-and-soil-science/?slot_id=25558",
+          "disposition": "held",
+          "reason": "remote_event"
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25326",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25327",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25328",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25329",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/chinese-scholars-garden-tour-3/?slot_id=25484",
+          "disposition": "held",
+          "reason": "schedule_unresolved"
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/glass-house-tour/?slot_id=19184",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/class/cultivating-balance-workshop-series/?slot_id=20000",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/class/tiny-gardens-workshop/?slot_id=24556",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/staten-island-childrens-museum-zumba-kids-2/?slot_id=25599",
+          "disposition": "held",
+          "reason": "already_published_partner_occurrence"
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25330",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/chinese-scholars-garden-tour-3/?slot_id=25485",
+          "disposition": "held",
+          "reason": "schedule_unresolved"
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/glass-house-tour/?slot_id=19185",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/class/tiny-gardens-workshop/?slot_id=24557",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/staten-island-childrens-museum-mighty-string-demons/?slot_id=25597",
+          "disposition": "held",
+          "reason": "already_published_partner_occurrence"
+        },
+        {
+          "event_url": "https://snug-harbor.org/class/cultivating-balance-workshop-series/?slot_id=19999",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/staten-island-childrens-museum-zumba-kids-2/?slot_id=25598",
+          "disposition": "held",
+          "reason": "already_published_partner_occurrence"
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25331",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25332",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/class/master-composter-certification-course-4-caring-for-soils/?slot_id=25570",
+          "disposition": "held",
+          "reason": "remote_event"
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25333",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25334",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25335",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25336",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/staten-island-childrens-museum-silly-billy-2/?slot_id=25603",
+          "disposition": "held",
+          "reason": "already_published_partner_occurrence"
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25337",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/staten-island-childrens-museum-a-very-grace-ful-winters-tale/?slot_id=25604",
+          "disposition": "held",
+          "reason": "already_published_partner_occurrence"
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25338",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/staten-island-childrens-museum-bilingual-birdies-2/?slot_id=25602",
+          "disposition": "held",
+          "reason": "already_published_partner_occurrence"
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25339",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/class/master-composter-certification-course-5-composting-systems-tools-and-scales/?slot_id=22993",
+          "disposition": "held",
+          "reason": "remote_event"
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/staten-island-childrens-museum-binx-the-reptile-guy-dino-scales-tails/?slot_id=25605",
+          "disposition": "held",
+          "reason": "already_published_partner_occurrence"
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25340",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25341",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25342",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25343",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25344",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25345",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25346",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/class/master-composter-certification-course-6-designing-and-managing-community-composting-spaces-virtual-session/?slot_id=25534",
+          "disposition": "held",
+          "reason": "remote_event"
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25347",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25348",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25349",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25350",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25351",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/event/winter-lantern-festival/?slot_id=25352",
+          "disposition": "accepted",
+          "reason": null
+        },
+        {
+          "event_url": "https://snug-harbor.org/class/master-composter-certification-course-7-compost-advocacy-and-community-building-virtual-session/?slot_id=25540",
+          "disposition": "held",
+          "reason": "remote_event"
+        }
+      ],
+      "venues": [
+        {
+          "venue_name": "Snug Harbor — Carpenter’s Shop, Building Y (approximate meeting point)",
+          "venue_address": "1000 Richmond Terrace Building Y, Staten Island, NY 10301",
+          "lat": 40.6437,
+          "lng": -74.1024,
+          "location_provenance": "publisher_body_named_location_with_estimated_point_from_current_official_site_map_and_city_building_anchors"
+        },
+        {
+          "venue_name": "Snug Harbor — Community Hall, Building P",
+          "venue_address": "1000 Richmond Terrace Building P, Staten Island, NY 10301",
+          "lat": 40.641892080018,
+          "lng": -74.101928515261,
+          "location_provenance": "publisher_named_building_current_site_map_and_city_suffix_bin_building_point_zip_discrepancy_disclosed"
+        },
+        {
+          "venue_name": "Snug Harbor — Emma’s Place, Cottage D (approximate meeting point)",
+          "venue_address": "1000 Richmond Terrace Cottage D, Staten Island, NY 10301",
+          "lat": 40.6432,
+          "lng": -74.1048,
+          "location_provenance": "publisher_body_named_location_with_estimated_point_from_current_official_site_map_and_city_building_anchors"
+        },
+        {
+          "venue_name": "Snug Harbor — Heritage Farm (approximate meeting point)",
+          "venue_address": "1000 Richmond Terrace Heritage Farm, Staten Island, NY 10301",
+          "lat": 40.6414,
+          "lng": -74.102,
+          "location_provenance": "publisher_body_named_location_with_estimated_point_from_current_official_site_map_and_city_building_anchors"
+        },
+        {
+          "venue_name": "Snug Harbor — Newhouse Gallery 1, Building G",
+          "venue_address": "1000 Richmond Terrace Building G, Staten Island, NY 10301",
+          "lat": 40.643922942671,
+          "lng": -74.102296149201,
+          "location_provenance": "publisher_named_gallery_current_site_map_and_city_suffix_bin_building_point_zip_discrepancy_disclosed"
+        },
+        {
+          "venue_name": "Snug Harbor — Newhouse Main Hall Gallery, Building C",
+          "venue_address": "1000 Richmond Terrace Building C, Staten Island, NY 10301",
+          "lat": 40.644406529139,
+          "lng": -74.102115103537,
+          "location_provenance": "publisher_named_gallery_with_official_nyc_lpc_bin_and_oti_building_point"
+        },
+        {
+          "venue_name": "Snug Harbor — Sustainability Center, former Compost Demonstration Site (approximate meeting point)",
+          "venue_address": "1000 Richmond Terrace Sustainability Center, Staten Island, NY 10301",
+          "lat": 40.6417,
+          "lng": -74.1011,
+          "location_provenance": "publisher_body_named_location_with_estimated_point_from_current_official_site_map_and_city_building_anchors"
+        },
+        {
+          "venue_name": "Snug Harbor — Visitor Info Booth at Chapel Road and Gazebo Road (approximate meeting point)",
+          "venue_address": "1000 Richmond Terrace at Chapel Road and Gazebo Road, Staten Island, NY 10301",
+          "lat": 40.6436,
+          "lng": -74.1033,
+          "location_provenance": "publisher_body_named_location_with_estimated_point_from_current_official_site_map_and_city_building_anchors"
+        },
+        {
+          "venue_name": "Snug Harbor — Winter Lantern Festival entrance at Cottage Row and Chapel Road (approximate meeting point)",
+          "venue_address": "1000 Richmond Terrace at Cottage Row and Chapel Road, Staten Island, NY 10301",
+          "lat": 40.6437,
+          "lng": -74.1044,
+          "location_provenance": "publisher_body_named_location_with_estimated_point_from_current_official_site_map_and_city_building_anchors"
+        }
+      ]
+    }
+  ],
+  "durable_normalized_records": "roomquestgame/RoomQuestGame:docs/evidence/new-york-community-performance-records-20261115.json"
+}

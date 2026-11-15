@@ -1,0 +1,15 @@
+{
+  "robots": {
+    "url": "https://calendar.google.com/robots.txt",
+    "status": 200,
+    "final_url": "https://calendar.google.com/robots.txt",
+    "bytes": 36,
+    "sha256": "58c711dc6ae00ad0a6a82199bf0256d6ab9ed0bce140e53f2b8aaa33d09de926",
+    "content_type": "text/plain",
+    "observed_at": "2026-11-15T01:30:38.981831+00:00",
+    "seconds": 4.521
+  },
+  "feed_url": "https://calendar.google.com/calendar/ical/c_466cacd680899b6e45791cfacb762598d5d9761d2107579d93e64e6f6571d202%40group.calendar.google.com/public/basic.ics",
+  "provenance": "Public calendar ID embedded on https://gamestoria.com/monthlycalendar; canonical public ICS endpoint; no private calendar token.",
+  "robots_allowed": false
+}

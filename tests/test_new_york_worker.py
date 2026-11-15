@@ -12,6 +12,9 @@ from roomquest import new_york_social_remaining as social_remaining
 from roomquest import new_york_outdoors_remaining as outdoors_remaining
 from roomquest import new_york_arts_final as arts_final, new_york_social_final as social_final
 from roomquest import new_york_outdoors_final as outdoors_final, new_york_family_final as family_final
+from roomquest import new_york_local_expansion as local_expansion, new_york_other_half as other_half
+from roomquest import new_york_food_expansion as food_expansion, new_york_culture_expansion as culture_expansion
+from roomquest import new_york_community_expansion as community_expansion, new_york_performance_expansion as performance_expansion
 from roomquest import new_york_sources as profiles, preview_worker as worker
 
 
@@ -41,7 +44,9 @@ def checkpoint(key, *, cursor=1, manifest_count=1, events=None):
 class NewYorkWorkerTests(unittest.TestCase):
     def test_remaining_profiles_use_the_same_full_description_boundary(self):
         for module in (arts_remaining,social_remaining,outdoors_remaining,
-                       arts_final,social_final,outdoors_final,family_final):
+                       arts_final,social_final,outdoors_final,family_final,
+                       local_expansion,other_half,food_expansion,culture_expansion,
+                       community_expansion,performance_expansion):
             for key in module.SOURCES:
                 with self.subTest(source_key=key):
                     self.assertIs(profiles.validate_source(source(module,key)),module)

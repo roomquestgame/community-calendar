@@ -1,0 +1,70 @@
+{
+  "verified_at": "2026-11-15T01:43:08.122656+00:00",
+  "scope": "Focused local verification and captured-response validation; production not claimed.",
+  "focused_suite": {
+    "command": "python -m pytest -q tests/test_new_york_community_expansion.py tests/test_new_york_performance_expansion.py tests/test_new_york_worker.py tests/test_category_worker.py",
+    "passed": 172,
+    "subtests_passed": 66,
+    "note": "Final source files, including the narrow Snug alias correction, passed with the exact current Boston dependency modules. All202 captures also passed the integrated profile and record boundary."
+  },
+  "sources": [
+    {
+      "source_key": "brooklyn_art_haus_brooklyn_ny",
+      "accepted": 14,
+      "description_min": 400,
+      "description_max": 2458,
+      "blank_descriptions": 0,
+      "invalid_addresses": 0,
+      "missing_coordinates": 0,
+      "approximate_locations": 0
+    },
+    {
+      "source_key": "jalopy_theatre_brooklyn_ny",
+      "accepted": 37,
+      "description_min": 230,
+      "description_max": 3424,
+      "blank_descriptions": 0,
+      "invalid_addresses": 0,
+      "missing_coordinates": 0,
+      "approximate_locations": 10
+    },
+    {
+      "source_key": "prospect_park_alliance_brooklyn_ny",
+      "accepted": 62,
+      "description_min": 413,
+      "description_max": 2062,
+      "blank_descriptions": 0,
+      "invalid_addresses": 0,
+      "missing_coordinates": 0,
+      "approximate_locations": 13
+    },
+    {
+      "source_key": "snug_harbor_staten_island_ny",
+      "accepted": 89,
+      "description_min": 564,
+      "description_max": 4100,
+      "blank_descriptions": 0,
+      "invalid_addresses": 0,
+      "missing_coordinates": 0,
+      "approximate_locations": 73
+    }
+  ],
+  "accepted_total": 202,
+  "file_sha256": {
+    "roomquest/new_york_sources.py": "34cd96d5be78c89c031e2128933c1539a3e58f8ccc91b11a60381e70cea2b729",
+    "tests/test_new_york_worker.py": "bba914de06b4dbdbc0111d4488fb7c6fbc4fca5081361fb244e93614d3b90fc2",
+    "roomquest/new_york_community_expansion.py": "081a0361d01da20ce1d1e235984ead6a2026e2c9ac5765e5f5b7861cd5266b4a",
+    "tests/test_new_york_community_expansion.py": "75f404e47262ffe4854128f7b41e68019ae639d698de0ab196aa0a4a78a412c8",
+    "roomquest/new_york_performance_expansion.py": "bd760f83b95cd037e7da945273e88cba780f63f7d5ae25f60ed2583d3a1a7308",
+    "tests/test_new_york_performance_expansion.py": "e234359054e44b2569f921e6a07a16f78023f9a2f2fdcf2016743ae4918f0b8d"
+  },
+  "durable_normalized_records": "roomquestgame/RoomQuestGame:docs/evidence/new-york-community-performance-records-20261115.json",
+  "upstream_base_sha": "893ab34db65ab7d10697ecae598419cd19650ddb",
+  "concurrent_changes_preserved": "Boston completion source/tests/doc changes have no overlap with this batch; two current Boston modules and their tests were hydrated before the final shared verification.",
+  "additional_upstream_verification": {
+    "checked_at": "2026-11-15T01:45:24.850935+00:00",
+    "base_sha": "3b58be1a2c5232b87242d07402ec8b86078dc1e7",
+    "result": "172 passed;66 subtests passed",
+    "scope": "Hydrated all three subsequently changed Boston runtime modules; the complete focused shared/NYC suite still passes. No batch path overlaps concurrent changes."
+  }
+}

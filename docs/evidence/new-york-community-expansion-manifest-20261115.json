@@ -1,0 +1,283 @@
+{
+  "observed_utc": "2026-11-15T01:24:27.724002+00:00",
+  "verification": "ordinary publisher HTTP response capture replay; production verification remains required",
+  "profiles": [
+    {
+      "source_key": "prospect_park_alliance_brooklyn_ny",
+      "feed_url": "https://www.prospectpark.org/events/",
+      "kind": "html",
+      "platform_adapter": "html",
+      "timezone": "America/New_York",
+      "checkpoint_manifest_limit": 200,
+      "checkpoint_event_limit": 200,
+      "accepted": 62,
+      "description_min": 413,
+      "description_max": 2062,
+      "held": {
+        "already_published_partner_occurrence": 3,
+        "venue_unreviewed": 2
+      },
+      "venues": [
+        {
+          "venue_name": "Prospect Park — 3rd Street Entrance",
+          "venue_address": "Prospect Park West and 3rd Street, Brooklyn, NY 11215",
+          "lat": 40.668239100851,
+          "lng": -73.973854482247,
+          "location_provenance": "publisher_dated_volunteer_registration_and_native_entrance_map_point"
+        },
+        {
+          "venue_name": "Prospect Park — Audubon Center",
+          "venue_address": "101 East Drive, Brooklyn, NY 11225",
+          "lat": 40.660822263911,
+          "lng": -73.965244889259,
+          "location_provenance": "publisher_named_venue_native_map_point_and_linked_street"
+        },
+        {
+          "venue_name": "Prospect Park — Bartel-Pritchard Square",
+          "venue_address": "Prospect Park West and 15th Street, Brooklyn, NY 11215",
+          "lat": 40.660939003015,
+          "lng": -73.979789838195,
+          "location_provenance": "publisher_named_market_entrance_and_native_map_point"
+        },
+        {
+          "venue_name": "Prospect Park — Carousel",
+          "venue_address": "452 Flatbush Avenue, Brooklyn, NY 11225",
+          "lat": 40.663831727656,
+          "lng": -73.964218273759,
+          "location_provenance": "publisher_named_venue_native_map_point_and_reviewed_entrance_street"
+        },
+        {
+          "venue_name": "Prospect Park — Concert Grove (approximate street reference)",
+          "venue_address": "East Drive near Lincoln Road, Brooklyn, NY 11225",
+          "lat": 40.658993324617,
+          "lng": -73.964452967048,
+          "location_provenance": "publisher_named_venue_native_map_point_with_estimated_park_street_reference"
+        },
+        {
+          "venue_name": "Prospect Park — Grand Army Plaza",
+          "venue_address": "Grand Army Plaza, Brooklyn, NY 11238",
+          "lat": 40.67387886364,
+          "lng": -73.970105051994,
+          "location_provenance": "publisher_named_plaza_and_native_map_point_with_reviewed_postal_context"
+        },
+        {
+          "venue_name": "Prospect Park — Lefferts Historic House (approximate street reference)",
+          "venue_address": "452 Flatbush Avenue, Brooklyn, NY 11225",
+          "lat": 40.664370125806,
+          "lng": -73.963795825839,
+          "location_provenance": "publisher_named_venue_native_map_point_with_estimated_shared_entrance_street"
+        },
+        {
+          "venue_name": "Prospect Park — Lena Horne Bandshell (approximate street reference)",
+          "venue_address": "Prospect Park West and 9th Street, Brooklyn, NY 11215",
+          "lat": 40.66383325359,
+          "lng": -73.976445794106,
+          "location_provenance": "publisher_named_venue_native_map_point_with_estimated_entrance_street"
+        },
+        {
+          "venue_name": "Prospect Park — Parkside and Ocean Avenue Entrance",
+          "venue_address": "Parkside Avenue and Ocean Avenue, Brooklyn, NY 11226",
+          "lat": 40.654873286887,
+          "lng": -73.961908742822,
+          "location_provenance": "publisher_named_intersection_and_native_map_point_with_estimated_zip"
+        },
+        {
+          "venue_name": "Prospect Park — Willink Plaza Entrance",
+          "venue_address": "Flatbush Avenue and Ocean Avenue, Brooklyn, NY 11225",
+          "lat": 40.663767412146,
+          "lng": -73.962858766226,
+          "location_provenance": "publisher_dated_volunteer_registration_and_native_entrance_map_point"
+        },
+        {
+          "venue_name": "Prospect Park — lawn south of Picnic House (approximate meeting point)",
+          "venue_address": "West Drive near 5th Street, Brooklyn, NY 11215",
+          "lat": 40.6651,
+          "lng": -73.97232,
+          "location_provenance": "publisher_body_named_south_lawn_with_estimated_point_south_of_native_picnic_house_anchor"
+        }
+      ],
+      "reviewed_intersections": [
+        {
+          "source_key": "prospect_park_alliance_brooklyn_ny",
+          "venue_name": "Prospect Park — Bartel-Pritchard Square",
+          "venue_address": "Prospect Park West and 15th Street, Brooklyn, NY 11215",
+          "lat": 40.660939003015,
+          "lng": -73.979789838195
+        },
+        {
+          "source_key": "prospect_park_alliance_brooklyn_ny",
+          "venue_name": "Prospect Park — Concert Grove (approximate street reference)",
+          "venue_address": "East Drive near Lincoln Road, Brooklyn, NY 11225",
+          "lat": 40.658993324617,
+          "lng": -73.964452967048
+        },
+        {
+          "source_key": "prospect_park_alliance_brooklyn_ny",
+          "venue_name": "Prospect Park — Parkside and Ocean Avenue Entrance",
+          "venue_address": "Parkside Avenue and Ocean Avenue, Brooklyn, NY 11226",
+          "lat": 40.654873286887,
+          "lng": -73.961908742822
+        },
+        {
+          "source_key": "prospect_park_alliance_brooklyn_ny",
+          "venue_name": "Prospect Park — Grand Army Plaza",
+          "venue_address": "Grand Army Plaza, Brooklyn, NY 11238",
+          "lat": 40.67387886364,
+          "lng": -73.970105051994
+        },
+        {
+          "source_key": "prospect_park_alliance_brooklyn_ny",
+          "venue_name": "Prospect Park — Lena Horne Bandshell (approximate street reference)",
+          "venue_address": "Prospect Park West and 9th Street, Brooklyn, NY 11215",
+          "lat": 40.66383325359,
+          "lng": -73.976445794106
+        },
+        {
+          "source_key": "prospect_park_alliance_brooklyn_ny",
+          "venue_name": "Prospect Park — Picnic House (approximate street reference)",
+          "venue_address": "West Drive near 5th Street, Brooklyn, NY 11215",
+          "lat": 40.665404183941,
+          "lng": -73.972320556641
+        },
+        {
+          "source_key": "prospect_park_alliance_brooklyn_ny",
+          "venue_name": "Prospect Park — Vanderbilt Playground",
+          "venue_address": "Prospect Park Southwest and Vanderbilt Street, Brooklyn, NY 11218",
+          "lat": 40.655103323702,
+          "lng": -73.973048776388
+        },
+        {
+          "source_key": "prospect_park_alliance_brooklyn_ny",
+          "venue_name": "Prospect Park — 3rd Street Entrance",
+          "venue_address": "Prospect Park West and 3rd Street, Brooklyn, NY 11215",
+          "lat": 40.668239100851,
+          "lng": -73.973854482247
+        },
+        {
+          "source_key": "prospect_park_alliance_brooklyn_ny",
+          "venue_name": "Prospect Park — Willink Plaza Entrance",
+          "venue_address": "Flatbush Avenue and Ocean Avenue, Brooklyn, NY 11225",
+          "lat": 40.663767412146,
+          "lng": -73.962858766226
+        },
+        {
+          "source_key": "prospect_park_alliance_brooklyn_ny",
+          "venue_name": "Prospect Park — lawn south of Picnic House (approximate meeting point)",
+          "venue_address": "West Drive near 5th Street, Brooklyn, NY 11215",
+          "lat": 40.6651,
+          "lng": -73.97232
+        }
+      ]
+    },
+    {
+      "source_key": "snug_harbor_staten_island_ny",
+      "feed_url": "https://snug-harbor.org/events-calendar/",
+      "kind": "html",
+      "platform_adapter": "html",
+      "timezone": "America/New_York",
+      "checkpoint_manifest_limit": 200,
+      "checkpoint_event_limit": 200,
+      "accepted": 89,
+      "description_min": 564,
+      "description_max": 4100,
+      "held": {
+        "already_published_partner_occurrence": 20,
+        "remote_event": 10,
+        "venue_unreviewed": 2,
+        "schedule_unresolved": 4
+      },
+      "venues": [
+        {
+          "venue_name": "Snug Harbor — Carpenter’s Shop, Building Y (approximate meeting point)",
+          "venue_address": "1000 Richmond Terrace Building Y, Staten Island, NY 10301",
+          "lat": 40.6437,
+          "lng": -74.1024,
+          "location_provenance": "publisher_body_named_location_with_estimated_point_from_current_official_site_map_and_city_building_anchors"
+        },
+        {
+          "venue_name": "Snug Harbor — Community Hall, Building P",
+          "venue_address": "1000 Richmond Terrace Building P, Staten Island, NY 10301",
+          "lat": 40.641892080018,
+          "lng": -74.101928515261,
+          "location_provenance": "publisher_named_building_current_site_map_and_city_suffix_bin_building_point_zip_discrepancy_disclosed"
+        },
+        {
+          "venue_name": "Snug Harbor — Emma’s Place, Cottage D (approximate meeting point)",
+          "venue_address": "1000 Richmond Terrace Cottage D, Staten Island, NY 10301",
+          "lat": 40.6432,
+          "lng": -74.1048,
+          "location_provenance": "publisher_body_named_location_with_estimated_point_from_current_official_site_map_and_city_building_anchors"
+        },
+        {
+          "venue_name": "Snug Harbor — Heritage Farm (approximate meeting point)",
+          "venue_address": "1000 Richmond Terrace Heritage Farm, Staten Island, NY 10301",
+          "lat": 40.6414,
+          "lng": -74.102,
+          "location_provenance": "publisher_body_named_location_with_estimated_point_from_current_official_site_map_and_city_building_anchors"
+        },
+        {
+          "venue_name": "Snug Harbor — Newhouse Gallery 1, Building G",
+          "venue_address": "1000 Richmond Terrace Building G, Staten Island, NY 10301",
+          "lat": 40.643922942671,
+          "lng": -74.102296149201,
+          "location_provenance": "publisher_named_gallery_current_site_map_and_city_suffix_bin_building_point_zip_discrepancy_disclosed"
+        },
+        {
+          "venue_name": "Snug Harbor — Newhouse Main Hall Gallery, Building C",
+          "venue_address": "1000 Richmond Terrace Building C, Staten Island, NY 10301",
+          "lat": 40.644406529139,
+          "lng": -74.102115103537,
+          "location_provenance": "publisher_named_gallery_with_official_nyc_lpc_bin_and_oti_building_point"
+        },
+        {
+          "venue_name": "Snug Harbor — Sustainability Center, former Compost Demonstration Site (approximate meeting point)",
+          "venue_address": "1000 Richmond Terrace Sustainability Center, Staten Island, NY 10301",
+          "lat": 40.6417,
+          "lng": -74.1011,
+          "location_provenance": "publisher_body_named_location_with_estimated_point_from_current_official_site_map_and_city_building_anchors"
+        },
+        {
+          "venue_name": "Snug Harbor — Visitor Info Booth at Chapel Road and Gazebo Road (approximate meeting point)",
+          "venue_address": "1000 Richmond Terrace at Chapel Road and Gazebo Road, Staten Island, NY 10301",
+          "lat": 40.6436,
+          "lng": -74.1033,
+          "location_provenance": "publisher_body_named_location_with_estimated_point_from_current_official_site_map_and_city_building_anchors"
+        },
+        {
+          "venue_name": "Snug Harbor — Winter Lantern Festival entrance at Cottage Row and Chapel Road (approximate meeting point)",
+          "venue_address": "1000 Richmond Terrace at Cottage Row and Chapel Road, Staten Island, NY 10301",
+          "lat": 40.6437,
+          "lng": -74.1044,
+          "location_provenance": "publisher_body_named_location_with_estimated_point_from_current_official_site_map_and_city_building_anchors"
+        }
+      ],
+      "reviewed_intersections": []
+    }
+  ],
+  "artifact_sha256": {
+    "nyc-community-expansion-records-20261115.json": "2b8c0eb8a438c1e78f9265440995ef870b1ff9855e224975729b1166d5b8559f",
+    "nyc-community-expansion-replay-20261115.json": "1c04417b39dd6873fcecc93de0398ecae7ce2edd2b2dd3f1dad5fdcec35487d8",
+    "nyc-prospect-reviewed-locations-20261115.json": "bceb89255a132b0886ce72359c4c372771f040cd52b24e8e21de0bf2b1b968e7",
+    "nyc-snug-reviewed-locations-20261115.json": "5a528919ecd5e78de10293ba5cbd949ca736290ea32f96df95eec9e64865e89b",
+    "nyc-community-duplicate-matches-20261115.json": "5974930e5130b6bd902cf0ff4142cdddcc62a06f15935299c730d9ec78736c5d",
+    "nyc-community-existing-public-20261115.json": "f5957c3163b7757b58a89c060468a3932c824771bf46fe1f94410ff8b797de41"
+  },
+  "collector_sha256": "081a0361d01da20ce1d1e235984ead6a2026e2c9ac5765e5f5b7861cd5266b4a",
+  "focused_tests": {
+    "count": 15,
+    "status": "passed",
+    "file": "tests/test_new_york_community_expansion.py"
+  },
+  "notes": [
+    "No production mutations or manual retries by discovery implementer.",
+    "Complete-only publication; every accepted occurrence has full native description, explicit street reference and actual venue feature or visibly marked educated feature-point estimate.",
+    "Healthy direct SICM source is excluded by native publisher identity, including future mirror dates.",
+    "Held4ChineseScholarGarden API envelopes are two sessions in full body; held2HolidayHop are multi-venue; held2FallFixUp are unresolved dated meeting locations."
+  ],
+  "independent_review": {
+    "reviewer": "nyc_review",
+    "result": "no blocking body, schedule, pagination, checkpoint or actual map-feature issue",
+    "fix": "Removed unobserved Harbor Room/Dance Center aliases to avoid future Gallery1 mislabeling; focused regression assertions passed."
+  },
+  "durable_normalized_records": "roomquestgame/RoomQuestGame:docs/evidence/new-york-community-performance-records-20261115.json"
+}
