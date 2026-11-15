@@ -2,6 +2,21 @@
 
 This release completes remaining defects in the 21profiles already enrolled by the concurrent Boston release (collector PR #229, database migration 20261115010603). It preserves the NYC additions in PR #230 and the subsequent four-source completion in PR #232 (main 893ab34db65ab7d10697ecae598419cd19650ddb). Source enrollment and working published data are preserved.
 
+## Production verification and final venue completion
+
+The 21-profile batch is enrolled. Collector PR #231 and successful [database run #316](https://github.com/roomquestgame/RoomQuestGame/actions/runs/43664812246) shipped the integrity fixes described below. The shared City Natives follow-up is also live through collector [PR #234](https://github.com/roomquestgame/community-calendar/pull/234), backend PR #944 and successful database run #317. The released City Natives mapping and its original provenance are preserved; the redundant local candidate was not released.
+
+Independent production checks confirm all 101 eligible outdoor/community records and all 216 reviewed Burren, Passim, Lizard and Long Live records. The two City Natives workshops are public with exact publisher destination coordinates and unchanged native descriptions, clocks and streets. The 64 exact obsolete representations remain excluded/hidden, with native facts, manual overrides and the original Arts at the Armory event retained.
+
+Eliot School recovered from transient database RPC timeouts through normal checkpoint continuation, completed all 24 full native records and cleared its checkpoint. The 02:03:37 UTC whole-cohort readback contains 721 active public events with zero blank descriptions, description mismatches, missing postal streets or missing coordinates. Exactly one included occurrence remains held at that snapshot: Introduction to Sharpening at Boston Building Resources, 100 Terrace Street, Boston, MA 02120. The other 23 Eliot occurrences are public.
+
+The final point correction binds only that exact Eliot source/venue/street to City of Boston SAM address ID 134497, OBJECTID 215912, point `42.328649,-71.097821`. It preserves the complete 2,644-character native description and all event identity/time fields. Schoolhouse and Annex keep their already working resolution. The paired backend correction uses the established source-specific reviewed-venue mechanism and ordinary publication from the complete snapshot; no publisher refetch, global geocoder-cache write or source-preview reset is required.
+
+The [coordinating backend completion report](https://github.com/roomquestgame/RoomQuestGame/blob/main/docs/boston-additional-integrity-completion-20261115.md) contains final deployment IDs, current active-public counts and post-publication acceptance. The counts above identify the reviewed pre-correction snapshot.
+
+- [Final community production verification](../../docs/evidence/boston-community-additional-integrity-fae-production-20261115.json)
+- [Nightlife production verification](../../docs/evidence/boston-nightlife-additional-integrity-production-20261115.json)
+
 ## Remaining changes
 
 - Burren: retain the newly deployed explicit comma-separated showtime parsing and full linked-detail hydration, with stricter malformed/duplicate clock validation. Fresh capture:123 complete occurrences. Fresh rows use Somerville's exact named-building point; a fully validated in-flight legacy prefix retains its existing fields and progress.

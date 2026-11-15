@@ -1,0 +1,175 @@
+{
+  "verified_at": "2026-11-15T02:07:28.823825+00:00",
+  "status": "Verified collector-only correction ready for the release owner; no deployment, refresh, production write or current-publication claim by this agent.",
+  "scope": {
+    "source_key": "eliot_school_ma",
+    "venue_name": "Boston Building Resources",
+    "venue_address": "100 Terrace Street, Boston, MA 02120",
+    "point": [
+      42.328649,
+      -71.097821
+    ],
+    "exact_source_venue_street_guard": true,
+    "working_eliot_venues_unchanged": [
+      "Eliot Schoolhouse / 24 Eliot Street, Jamaica Plain, MA 02130",
+      "Eliot School Annex / 253 Amory Street, Jamaica Plain, MA 02130"
+    ],
+    "transport_global_normalizer_unchanged": true
+  },
+  "actual_publication_hold": {
+    "read_at": "2026-11-15 02:02:23.545436+00",
+    "staged_id": 289115,
+    "source_id": 5642,
+    "external_event_id": "eliot_school_ma:classes:introduction-sharpening-2f26:2026-12-05T11:00:00-05:00",
+    "title": "Introduction to Sharpening 2F26",
+    "starts_at": "2026-12-05 16:00:00+00",
+    "ends_at": "2026-12-05 19:00:00+00",
+    "venue_name": "Boston Building Resources",
+    "venue_address": "100 Terrace Street, Boston, MA 02120",
+    "description_md5": "6ab873e3c5f7f8b3cd41aa9c6162df37",
+    "description_length": 2644,
+    "venue_key": "28814deba31292f5c8e4eef838504369",
+    "query_text": "100 ter st,boston,ma",
+    "status": "ambiguous",
+    "attempts": 1,
+    "checked_at": "2026-11-15 02:01:44.575147+00"
+  },
+  "primary_address_evidence": {
+    "source_key": "eliot_school_ma",
+    "venue_name": "Boston Building Resources",
+    "native_street": "100 Terrace Street, Boston, MA 02120",
+    "captured_occurrences": 1,
+    "native_publisher_url": "https://www.bostonbuildingresources.com/pages/visit",
+    "web_reference": "turn167view1",
+    "municipal_geometry_lat": 42.32864866596453,
+    "municipal_geometry_lng": -71.0978206022523,
+    "proposed_six_decimal_point": [
+      42.328649,
+      -71.097821
+    ],
+    "municipal_identity": {
+      "OBJECTID": 215912,
+      "SAM_ADDRESS_ID": 134497,
+      "BUILDING_ID": 164470,
+      "FULL_ADDRESS": "100 Terrace St",
+      "STREET_NUMBER": "100",
+      "FULL_STREET_NAME": "Terrace St",
+      "IS_RANGE": 0,
+      "UNIT": null,
+      "MAILING_NEIGHBORHOOD": "Mission Hill",
+      "CITY": "BOSTON",
+      "STATE": "MA",
+      "ZIP_CODE": "02120",
+      "MAP_PAR_ID": "1000373000",
+      "PRIMARY_ADDRESS": "100 Terrace St, Boston, MA 02120"
+    },
+    "evidence_type": "City of Boston SAM exact non-range, unitless street-address geometry in WGS84; publisher confirms event venue street. Native neighborhood and ZIP retained.",
+    "used_in_code_or_production": false
+  },
+  "primary_proof": {
+    "file": "boston-additional/nightlife/eliot-venue-evidence/eliot-bbr-actual-hold-primary-proof-20261115.json",
+    "sha256": "d5ab9a8c2f3e90c5bd53d63ed4ce2aa556a784d2efbdfe0ee3f0651a0e747a4e"
+  },
+  "baseline_module_sha256": "37a524ebc78a49f42572c9acec6757939531c232617b6fb231a23635242cf1e8",
+  "module": {
+    "file": "community-calendar/roomquest/boston_arts_additional.py",
+    "sha256": "61057939a0aac62209728c925d824932d0350942e412f62a4a0e80cd3195419c"
+  },
+  "new_tests": {
+    "file": "community-calendar/tests/test_boston_arts_additional_bbr.py",
+    "sha256": "a98893ca0c8ea956633f2753599ffa95b15109a32652784d3fb75089b9080f2e"
+  },
+  "validation": {
+    "focused_test_command": "python -m pytest -q tests/test_boston_arts_additional.py tests/test_boston_arts_additional_bbr.py",
+    "tests_passed": 31,
+    "subtests_passed": 37,
+    "warning": "One pre-existing anyio pytest CallSpec2 deprecation warning.",
+    "full_body_and_identity_fixture": true,
+    "wrong_source_venue_street_rejection": true,
+    "other_eliot_venue_behavior_preserved": true,
+    "checkpoint_point_and_evidence_binding_with_rehashed_outcome": true
+  },
+  "captured_delta": {
+    "verified_at": "2026-11-15T02:07:03.468488+00:00",
+    "baseline_file": "/workspace/scratch/3aa56d09ac0a/boston-additional/arts/concurrent-reconciliation/accepted-rows-reconciled.json",
+    "baseline_sha256": "7e9c0767fcbcdc5feb778ba3064f5e40418cd2e0584b70f9349445f0b53b17b8",
+    "baseline_preserved": true,
+    "derived_file": "/workspace/scratch/3aa56d09ac0a/boston-additional/arts/integrity-production/bbr-point-fix/accepted-rows-derived.json",
+    "derived_sha256": "2cd5245a2d4d17f86744ee2d8109836e3121cd1044d8ea4965ab648e3f0f0f0e",
+    "captured_occurrences": 285,
+    "unchanged_rows": 284,
+    "location_only_changed_rows": 1,
+    "full_native_descriptions_unchanged": 285,
+    "changed_fields": [
+      "lat",
+      "lng",
+      "location_evidence_url",
+      "location_provenance",
+      "reason"
+    ],
+    "delta": {
+      "source_key": "eliot_school_ma",
+      "event_id": "eliot_school_ma:classes:introduction-sharpening-2f26:2026-12-05T11:00:00-05:00",
+      "starts_at": "2026-12-05T16:00:00+00:00",
+      "changes": {
+        "location_evidence_url": {
+          "before": null,
+          "after": "https://gis.boston.gov/arcgis/rest/services/SAM/Live_SAM_Address/MapServer/1/query?f=json&where=SAM_ADDRESS_ID%3D134497&outFields=*&outSR=4326&returnGeometry=true"
+        },
+        "lng": {
+          "before": null,
+          "after": -71.097821
+        },
+        "reason": {
+          "before": "missing_verified_venue_geo",
+          "after": null
+        },
+        "location_provenance": {
+          "before": "publisher_venue_street_pending_geocode",
+          "after": "reviewed_municipal_exact_address_point"
+        },
+        "lat": {
+          "before": null,
+          "after": 42.328649
+        }
+      }
+    },
+    "actual_worker_replay": {
+      "profiles": 8,
+      "rows": 285,
+      "publisher_requests": 169,
+      "checkpoint_writes": 28,
+      "maximum_checkpoint_bytes": 305728,
+      "complete_only_staging": true,
+      "unchanged_publisher_pacing": true,
+      "preserved_started_at": true
+    },
+    "network_requests": 0,
+    "production_mutations": 0
+  },
+  "geometry_reason_note": "Providing the verified point also clears the parser-only missing_verified_venue_geo reason to null. This is explicitly included with lat/lng/provenance/evidence in the one-row location delta; no native event fact changes.",
+  "checkpoint_scope": "The live Eliot source completed at2026-11-15T02:01:32.030934Z and had no remaining fetch checkpoint before this edit. New BBR checkpoints must carry the exact reviewed point/evidence and existing outcome proofs. No manual checkpoint mutation or re-attestation was performed.",
+  "independent_review": {
+    "reviewer": "Boston nightlife agent",
+    "deployed_code_comparison": "fae78491 arts baseline",
+    "code_and_tests": "PASS; no blocker; no edits or repeated test run",
+    "full_capture_comparison": "Same285 identities; exactly one BBR location delta; all284 other rows identical, including23 Eliot rows.",
+    "derived_sha256": "2cd5245a2d4d17f86744ee2d8109836e3121cd1044d8ea4965ab648e3f0f0f0e"
+  },
+  "evidence_files": [
+    {
+      "file": "boston-additional/arts/integrity-production/bbr-point-fix/capture-delta-receipt.json",
+      "sha256": "52aadcef705f6ce686bd02e99934c7efb40217c54bdc6310930fd7b5270cf512"
+    },
+    {
+      "file": "boston-additional/arts/integrity-production/bbr-point-fix/one-row-location-delta.json",
+      "sha256": "1a68c758ab22392f8d68f65c34237bb4ab33c791dc2259e7de02d22afae921e1"
+    },
+    {
+      "file": "boston-additional/arts/integrity-production/bbr-point-fix/actual-worker-replay.json",
+      "sha256": "971871cd8e7ac963667f8ac6cdfba275f49fd4cd9959c5cd233dc9b1e6091f5c"
+    }
+  ],
+  "production_mutations": 0,
+  "network_requests_for_fix_validation": 0
+}

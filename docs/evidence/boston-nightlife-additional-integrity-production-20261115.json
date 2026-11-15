@@ -1,0 +1,296 @@
+{
+  "checked_at": "2026-11-15T01:51:03.591146+00:00",
+  "scope": "Four additional nightlife profiles affected by the integrity completion; 216 eligible captured occurrences. This is not a whole-Boston coverage claim.",
+  "release": {
+    "collector_pr": 231,
+    "collector_merge": "3b58be1a2c5232b87242d07402ec8b86078dc1e7",
+    "collector_deployment": "dpl_51LaMuGUMF2oLFVi2R1fsGsnpTD6",
+    "collector_ready": true,
+    "backend_pr": 943,
+    "backend_merge": "986347ec9142feaa7e05fca01f48504cd3bef041",
+    "database_run": 316,
+    "database_run_id": 43664812246,
+    "database_job_id": 132661727916,
+    "database_run_url": "https://github.com/roomquestgame/RoomQuestGame/actions/runs/43664812246",
+    "migration": "20261115014025",
+    "migration_observed_applied": true,
+    "first_attempt": "Run 315 stopped at its contract guard before mutation; this receipt verifies the corrected whole-batch run 316."
+  },
+  "outcome": {
+    "expected_eligible": 216,
+    "active_public": 216,
+    "complete_sources": 4,
+    "fetch_checkpoints": 0,
+    "publication_requests": 0,
+    "native_staged_public_description_mismatches": 0,
+    "native_staged_public_street_mismatches": 0,
+    "native_staged_public_identity_clock_title_url_mismatches": 0,
+    "blank_or_truncated_descriptions": 0,
+    "missing_expected_public": 0,
+    "actual_unpublished_address_waits": 0
+  },
+  "sources": [
+    {
+      "source_key": "burren_ma",
+      "source_id": 5637,
+      "expected_eligible": 123,
+      "staged_total": 123,
+      "included_staged": 123,
+      "excluded_staged": 0,
+      "active_public": 123,
+      "preview_status": "complete",
+      "preview_error": null,
+      "preview_checked_at": "2026-11-15T01:42:17.467843+00:00",
+      "enabled": true,
+      "health": "ok",
+      "publication_request_pending": false,
+      "full_description_length_range": [
+        9,
+        4526
+      ],
+      "native_staged_public_field_mismatches": 0,
+      "missing_expected_staging": 0,
+      "missing_expected_public": 0,
+      "blank_or_oversized_descriptions": 0,
+      "missing_street_or_public_point": 0,
+      "public_point_groups": [
+        {
+          "lat": 42.395453,
+          "lng": -71.121503,
+          "location_quality": "resolved_address",
+          "records": 123
+        }
+      ],
+      "proof_manifest_sha256": "f2268947d54a9eb8b263c2e7fc25cd5db7f6ca8480fb78f0deca03818a522d52"
+    },
+    {
+      "source_key": "club_passim_ma",
+      "source_id": 5639,
+      "expected_eligible": 60,
+      "staged_total": 61,
+      "included_staged": 60,
+      "excluded_staged": 1,
+      "active_public": 60,
+      "preview_status": "complete",
+      "preview_error": null,
+      "preview_checked_at": "2026-11-15T01:26:26.165108+00:00",
+      "enabled": true,
+      "health": "ok",
+      "publication_request_pending": false,
+      "full_description_length_range": [
+        258,
+        7725
+      ],
+      "native_staged_public_field_mismatches": 0,
+      "missing_expected_staging": 0,
+      "missing_expected_public": 0,
+      "blank_or_oversized_descriptions": 0,
+      "missing_street_or_public_point": 0,
+      "public_point_groups": [
+        {
+          "lat": 42.3741826,
+          "lng": -71.1196454,
+          "location_quality": "reviewed_street_location",
+          "records": 60
+        }
+      ],
+      "proof_manifest_sha256": "4094c0996f8648b87ca263f66b3770af1d3097847a128057e691462e5f09d040"
+    },
+    {
+      "source_key": "lizard_lounge_ma",
+      "source_id": 5646,
+      "expected_eligible": 30,
+      "staged_total": 30,
+      "included_staged": 30,
+      "excluded_staged": 0,
+      "active_public": 30,
+      "preview_status": "complete",
+      "preview_error": null,
+      "preview_checked_at": "2026-11-15T01:49:25.708782+00:00",
+      "enabled": true,
+      "health": "ok",
+      "publication_request_pending": false,
+      "full_description_length_range": [
+        332,
+        4803
+      ],
+      "native_staged_public_field_mismatches": 0,
+      "missing_expected_staging": 0,
+      "missing_expected_public": 0,
+      "blank_or_oversized_descriptions": 0,
+      "missing_street_or_public_point": 0,
+      "public_point_groups": [
+        {
+          "lat": 42.382129,
+          "lng": -71.119494,
+          "location_quality": "reviewed_street_location",
+          "records": 30
+        }
+      ],
+      "proof_manifest_sha256": "ed91a3fbec6248a9bec0d25a0fa423991426b9e5395f21f90c5b9a819d6c3c7c"
+    },
+    {
+      "source_key": "long_live_roxbury_ma",
+      "source_id": 5647,
+      "expected_eligible": 3,
+      "staged_total": 3,
+      "included_staged": 3,
+      "excluded_staged": 0,
+      "active_public": 3,
+      "preview_status": "complete",
+      "preview_error": null,
+      "preview_checked_at": "2026-11-15T01:39:26.51034+00:00",
+      "enabled": true,
+      "health": "ok",
+      "publication_request_pending": false,
+      "full_description_length_range": [
+        362,
+        362
+      ],
+      "native_staged_public_field_mismatches": 0,
+      "missing_expected_staging": 0,
+      "missing_expected_public": 0,
+      "blank_or_oversized_descriptions": 0,
+      "missing_street_or_public_point": 0,
+      "public_point_groups": [
+        {
+          "lat": 42.3278,
+          "lng": -71.0748,
+          "location_quality": "reviewed_street_location",
+          "records": 3
+        }
+      ],
+      "proof_manifest_sha256": "1f95ead87286b6eb1584592053656a5d66cb63fd502127f6ff8313204a9d1854"
+    }
+  ],
+  "passim_duplicate": {
+    "source_key": "club_passim_ma",
+    "native_id": "boston:4fd0e214fdbbb9e2fd35de23b948c6a01ef688f1e2f3b54abbec5af919527273",
+    "staged_id": 288271,
+    "decision": "exclude",
+    "decision_reason": "boston_additional_superseded_occurrence",
+    "public_id": "a98ad012-2dc4-41cb-8b1d-78d2c1182dae",
+    "hidden_for_review": true,
+    "active": false,
+    "starts_at": "2026-11-21T00:00:00+00:00",
+    "description_length": 4395,
+    "description_md5": "a57b491672c3a1a75f21d43e641885e8",
+    "original_visible": {
+      "source_key": "arts_at_the_armory_ma",
+      "native_id": "20320@artsatthearmory.org",
+      "public_id": "45922394-4f72-41fe-80c6-635884b254bd",
+      "title": "Passim Presents Fiddle Funk Folk Festival",
+      "starts_at": "2026-11-20T23:00:00+00:00",
+      "ends_at": "2026-11-21T03:00:00+00:00",
+      "street": "191 Highland Avenue, Somerville, MA 02143",
+      "active": true,
+      "hidden_for_review": false,
+      "description_sha256": "5bd0a206cf1b7a968152c6e5507c5e25162c26b3e4cfd2f89b6ca3920c00b92f"
+    }
+  },
+  "burren_location": {
+    "records": 123,
+    "all_native_staged_coordinates_null": true,
+    "observed_public_point": [
+      42.395453,
+      -71.121503
+    ],
+    "observed_location_quality": "resolved_address",
+    "future_reviewed_municipal_point": [
+      42.39539,
+      -71.121737
+    ],
+    "interpretation": "All 123 public records have a valid geocoder-resolved venue point and exactly matching full native street/body/identity/clock. The municipal marker is for future collector rows, not a required replacement for working public copies.",
+    "protection": "The completion migration guards point refreshes to still-unpublished exact venue/street tuples; it does not replace working public copies.",
+    "limitation": "No reliable pre-migration public-coordinate capture was available, so this receipt does not assert measured before/after coordinate equality."
+  },
+  "lizard_retry": {
+    "previous_state": "Paused/disabled publisher_http_504 with html_retry_exhausted.",
+    "retry_scope": "One conditional ordinary retry authorized by original-route robots-permitted 200 recovery.",
+    "complete_at": "2026-11-15T01:49:25.708782+00:00",
+    "staged": 30,
+    "active_public": 30,
+    "preview_error": null,
+    "publication_pending": false,
+    "recovery_reference": "community-calendar/docs/evidence/boston-nightlife-additional-lizard-recovery-20261115.json",
+    "new_publisher_requests_by_verifier": 0
+  },
+  "long_live_location": {
+    "records": 3,
+    "exact_deployed_publisher_point": [
+      42.3278,
+      -71.0748
+    ],
+    "exact_street": "152 Hampden Street, Boston, MA 02119",
+    "all_published_point_matches": true,
+    "evidence_url": "https://untappd.com/v/long-live-roxbury/11948597",
+    "municipal_research_point_not_substituted": true
+  },
+  "stale_address_wait_bookkeeping": {
+    "count": 3,
+    "actual_unpublished_records": 0,
+    "records": [
+      {
+        "source_key": "long_live_roxbury_ma",
+        "staged_id": 288036,
+        "native_id": "boston:c86d39feeec1ee5d9a2c40a04ba23de141af3dd53aaf1a081b2144d8c6ad3d6b",
+        "stored_status": "ambiguous",
+        "actual_active_public_id": "118bdd17-3942-47dc-ba9c-353a6966cba4"
+      },
+      {
+        "source_key": "long_live_roxbury_ma",
+        "staged_id": 288037,
+        "native_id": "boston:f865dbf644ea3c8fe8ffad9025514418cddd7030d63521e0af19daae5afca9b3",
+        "stored_status": "ambiguous",
+        "actual_active_public_id": "78e4c9fb-4127-4a03-b00a-e9fb9bd59275"
+      },
+      {
+        "source_key": "long_live_roxbury_ma",
+        "staged_id": 288038,
+        "native_id": "boston:e70225ca2c486617298dca2fd470b16145ae990c5fcd2ee8b2baf82602e9a083",
+        "stored_status": "ambiguous",
+        "actual_active_public_id": "b8c21302-9263-4615-9008-19ad431e94d3"
+      }
+    ],
+    "explanation": "These old Long Live ambiguity waits remain stored, but every corresponding staged identity is public at the verified publisher point. They are not current publication failures."
+  },
+  "proof": {
+    "method": "Read-only full-field production snapshot compared in memory to frozen parsed native rows. Descriptions, titles, URLs, streets, starts and ends use direct equality after timestamp normalization; stage/public equality is also checked in SQL. Full-text data stays in scratch; this receipt stores counts and hashes.",
+    "expected_capture": {
+      "path": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/concurrent-reconciliation/all-final-parsed-rows.json",
+      "bytes": 737672,
+      "sha256": "b33af47d0e272d015538fc041d8942a3142a9264deb7ef254065db0b491ed137"
+    },
+    "production_snapshot": {
+      "path": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/integrity-production-final.json",
+      "bytes": 1048260,
+      "sha256": "f66eb3da1e2c36ad7eb2001bbab8c7c6237d7eb3fd5327edd1466b2c7121ccc4"
+    },
+    "row_proofs": {
+      "path": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/integrity-production-row-proofs.json",
+      "bytes": 149349,
+      "sha256": "40bb96bf93c224c541b4209263f1cb22dbf55dc77b7c6211585e9813648f727f"
+    },
+    "query": {
+      "path": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/integrity-production-readback.sql",
+      "bytes": 4092,
+      "sha256": "3e3a76cb3f6c0c628231d3040f378849833c7aa9c52fc9e2134da3dba4acfb66"
+    },
+    "builder": {
+      "path": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/verify_integrity_production.py",
+      "bytes": 10666,
+      "sha256": "ab0298eddac3fdbe7beb57ca1bdfc3b32e9cc920423d04d7fc92f28a8e30090e"
+    },
+    "generic_reproduction_queries": [
+      "docs/evidence/boston-additional-integrity-reconciliation.sql",
+      "docs/evidence/boston-additional-integrity-capture-verification.sql"
+    ]
+  },
+  "verifier_actions": {
+    "database_reads_only": true,
+    "production_writes": 0,
+    "publisher_requests": 0,
+    "retries": 0,
+    "code_changes": 0
+  }
+}
