@@ -6,12 +6,15 @@ from api.geocode import handler as GeocoderHandler
 from api.preview import handler as PreviewHandler
 from api.chambermaster import handler as ChamberMasterHandler
 from api.provider_pilot import handler as PilotHandler
+from api.things_to_do import handler as ThingsToDoHandler
 
 
 class handler(PreviewHandler, GeocoderHandler, ChamberMasterHandler, PilotHandler):
     """Reuse both handlers' authentication without introducing public inputs."""
 
     def do_GET(self):
+        if self.path == "/api/things-to-do-pilot":
+            return ThingsToDoHandler.do_GET(self)
         if self.path == "/api/media-demand":
             return MediaHandler.do_GET(self)
         if self.path == "/api/html-demand":
@@ -27,6 +30,8 @@ class handler(PreviewHandler, GeocoderHandler, ChamberMasterHandler, PilotHandle
         return PreviewHandler.do_GET(self)
 
     def do_POST(self):
+        if self.path == "/api/things-to-do-pilot":
+            return ThingsToDoHandler.do_POST(self)
         if self.path == "/api/media-demand":
             return MediaHandler.do_POST(self)
         if self.path == "/api/html-demand":
@@ -42,7 +47,7 @@ class handler(PreviewHandler, GeocoderHandler, ChamberMasterHandler, PilotHandle
         return PreviewHandler.do_POST(self)
 
     def log_message(self, *args):
-        if self.path in ("/api/geocode", "/api/media-demand"):
+        if self.path in ("/api/geocode", "/api/media-demand", "/api/things-to-do-pilot"):
             return
         return PreviewHandler.log_message(self, *args)
 
