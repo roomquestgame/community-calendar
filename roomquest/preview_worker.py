@@ -580,12 +580,25 @@ def read_raleigh_followup_events(*, request_kind, page=None, offset=None,
     raise PreviewError('unregistered_raleigh_followup_source')
 
 
+def read_raleigh_brewing_occurrences(*, event_id, offset, public_instance, deadline_at=None):
+    """Use the public calendar's exact dated-occurrences operation."""
+    from roomquest import raleigh_next_social as calendars
+    try:
+        url = calendars.brewing_occurrences_url(event_id, offset)
+    except ValueError as exc:
+        raise PreviewError('invalid_raleigh_brewing_request') from exc
+    if not calendars.valid_brewing_occurrences_request(url, public_instance):
+        raise PreviewError('invalid_raleigh_brewing_request')
+    return _fetch_publisher_request(url, 'application/json', respect_robots=True,
+        deadline_at=deadline_at, allowed_hosts=('www.raleighbrewing.com',), brewing_instance=public_instance)
+
+
 def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = False,
                              deadline_at: float | None = None, allowed_hosts=None,
                              calendar_form=None, calendar_json=None, localhop_app_id=None,
                              cardboard_arena_calendar=False, visit_raleigh_api=False,
                              game_theory_key=None, chapel_calendar_body=None,
-                             comedyworx_instance=None) -> str | bytes:
+                             comedyworx_instance=None, brewing_instance=None) -> str | bytes:
     """Use the shared bounded transport for approved HTTPS publisher content.
 
     Keep URL/DNS validation and bounded downloads. As in upstream Udell,
@@ -593,6 +606,14 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
     destination URLs still pass public-network checks before each GET redirect.
     Reviewed display-only POSTs are source scoped and never redirected.
     """
+    if brewing_instance is not None:
+        from roomquest import raleigh_next_social as calendars
+        if (not respect_robots or accept != 'application/json' or allowed_hosts != ('www.raleighbrewing.com',)
+                or calendar_form is not None or calendar_json is not None or localhop_app_id is not None
+                or cardboard_arena_calendar is not False or visit_raleigh_api is not False
+                or game_theory_key is not None or chapel_calendar_body is not None or comedyworx_instance is not None
+                or not calendars.valid_brewing_occurrences_request(url, brewing_instance)):
+            raise PreviewError('invalid_raleigh_brewing_request')
     if chapel_calendar_body is not None or comedyworx_instance is not None:
         from roomquest import raleigh_followup_performance as calendars
         exclusive = (respect_robots and accept == 'application/json'
@@ -754,6 +775,8 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
         headers['Content-Type'] = 'application/json'
     if comedyworx_instance is not None:
         headers['Authorization'] = comedyworx_instance
+    if brewing_instance is not None:
+        headers['Authorization'] = brewing_instance
     if cardboard_arena_calendar:
         # Public GenericEvents routing identity published in the store's SSR.
         # This is neither a credential nor an arbitrary caller-supplied header.
@@ -811,7 +834,7 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
                         response.close()
                         raise
                 if response.status_code in (301, 302, 303, 307, 308):
-                    if calendar_form is not None or calendar_json is not None or localhop_app_id is not None or cardboard_arena_calendar or visit_raleigh_api or game_theory_key is not None or chapel_calendar_body is not None or comedyworx_instance is not None:
+                    if calendar_form is not None or calendar_json is not None or localhop_app_id is not None or cardboard_arena_calendar or visit_raleigh_api or game_theory_key is not None or chapel_calendar_body is not None or comedyworx_instance is not None or brewing_instance is not None:
                         response.close()
                         raise PreviewError('calendar_render_redirect_blocked')
                     from urllib.parse import urljoin
@@ -836,7 +859,7 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
                         != render_content_type):
                     response.close()
                     raise PreviewError('invalid_calendar_render_content_type')
-                if ((cardboard_arena_calendar or game_theory_key is not None or chapel_calendar_body is not None or comedyworx_instance is not None) and response.headers.get('Content-Type', '').split(';', 1)[0].strip().lower()
+                if ((cardboard_arena_calendar or game_theory_key is not None or chapel_calendar_body is not None or comedyworx_instance is not None or brewing_instance is not None) and response.headers.get('Content-Type', '').split(';', 1)[0].strip().lower()
                         != 'application/json'):
                     response.close()
                     raise PreviewError('invalid_calendar_render_content_type')
@@ -2388,6 +2411,10 @@ def _preview_fetch_chunk(source, pacing, *, adapter, allowed_hosts, collection_c
             from roomquest import raleigh_followup_performance
             if adapter is raleigh_followup_performance:
                 adapter_args['read_public_events'] = lambda **request: read_raleigh_followup_events(
+                    **request, deadline_at=deadline)
+            from roomquest import raleigh_next_social
+            if adapter is raleigh_next_social and source['source_key'] == raleigh_next_social.BREWING:
+                adapter_args['read_public_events'] = lambda **request: read_raleigh_brewing_occurrences(
                     **request, deadline_at=deadline)
             chunk = adapter.collect_chunk(
                 source, lambda url, accept: fetch_publisher(
