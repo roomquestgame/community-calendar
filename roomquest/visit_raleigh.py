@@ -212,12 +212,20 @@ def schedule_hours(value, day):
     if pending:
         return []
     chosen = []
+    has_weekday_schedule = any(_DAY.search(clause) for clause in clauses)
+    previous_early_show_days = None
     for clause in clauses:
         clause = clause.strip()
         if not clause:
             continue
         if re.match(r"(?:closed\b|sign\s*ups?\b|doors?\b|seating\s+starts\b)", clause, re.I):
             continue
+        # An explicitly paired late show shares the preceding early show's
+        # weekday. Bare later clocks do not establish their own day.
+        paired_show_days = (previous_early_show_days
+            if re.match(r"late\s+show\s*[:,]", clause, re.I) else None)
+        is_early_show = bool(re.search(r"\bearly\s+show\b", clause, re.I))
+        previous_early_show_days = None
         clause = re.sub(r"^(?:singing|show|performance|departure\s+times|late\s+show|early\s+show)\s*[:,]\s*", "", clause, flags=re.I)
         clause = re.sub(r"\b(?:early|late)\s+show\s*,\s*", "", clause, flags=re.I)
         month_names = "January|February|March|April|May|June|July|August|September|October|November|December"
@@ -237,6 +245,8 @@ def schedule_hours(value, day):
             if len(matches) == 2 and re.search(r"[-–—]|\bthrough\b|\bto\b", prefix[matches[0].end():matches[1].start()], re.I):
                 a, b = (_DAYS[m[1][:3].lower()] for m in matches)
                 weekdays = {(a + n) % 7 for n in range((b - a) % 7 + 1)}
+            if is_early_show:
+                previous_early_show_days = weekdays
             if day.weekday() not in weekdays:
                 continue
             prefix_without_days = _DAY.sub("", prefix)
@@ -246,6 +256,9 @@ def schedule_hours(value, day):
         else:
             if prefix and not re.fullmatch(r"\s*(?:daily|every day|from|at)?[\s,:.]*", prefix, re.I):
                 return []
+            if has_weekday_schedule and not re.search(r"\b(?:daily|every day)\b", prefix, re.I):
+                if paired_show_days is None or day.weekday() not in paired_show_days:
+                    continue
             clocks = clause[first_clock.start():]
         hours = _hours(clocks)
         if not hours:

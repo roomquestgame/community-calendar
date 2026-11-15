@@ -67,6 +67,17 @@ class RaleighParserTests(unittest.TestCase):
         self.assertEqual(r.schedule_hours("October-March 9am-noon; April-September 8am-nopn", FIRST), [(time(9), time(12))])
         self.assertEqual(r.schedule_hours("Fri., 11-1pm", date(2026, 11, 20)), [(time(11), time(13))])
 
+    def test_unlabelled_clocks_do_not_become_daily_after_a_weekday_clause(self):
+        saturday, sunday = date(2026, 12, 26), date(2026, 12, 27)
+        ambiguous = "Sat., 7 and 9:30pm; 6 and 8:30pm"
+        self.assertEqual(r.schedule_hours(ambiguous, saturday), [(time(19), None), (time(21, 30), None)])
+        self.assertEqual(r.schedule_hours(ambiguous, sunday), [])
+        paired = "Sat., early show, 6:30-8pm; late show, 9:30-11pm"
+        self.assertEqual(r.schedule_hours(paired, saturday), [(time(18, 30), time(20)), (time(21, 30), time(23))])
+        self.assertEqual(r.schedule_hours(paired, sunday), [])
+        self.assertEqual(r.schedule_hours("Sat., 7pm; Daily, 6pm", sunday), [(time(18), None)])
+        self.assertEqual(r.schedule_hours("6pm; 8:30pm", sunday), [(time(18), None), (time(20, 30), None)])
+
     def test_doors_signup_and_seating_are_not_performances(self):
         for clock in ("Fri., 7pm, doors open 1 hour prior", "Fri., 7pm (Doors open 6pm)"):
             self.assertEqual(r.schedule_hours(clock, date(2026, 11, 20)), [(time(19), None)])

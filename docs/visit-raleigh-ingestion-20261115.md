@@ -47,15 +47,15 @@ or publisher consent.
 
 ## Focused verification
 
-The complete 37-page native capture replay produced 3,506 unique normalized
-`(id, starts_at)` records. It held 379 native rows with missing or ambiguous
+The complete 37-page native capture replay produced 3,502 unique normalized
+`(id, starts_at)` records. It held 378 native rows with missing or ambiguous
 times and one closed/cancelled occurrence. Multiple definite showtimes can
 produce several normalized records from one native occurrence day.
 
-The final canonical checkpoint is 614,143 bytes, below the unchanged 850,000-byte
-adapter ceiling; its decoded payload is 4,478,303 bytes, below 24 MiB. Grouping
+The final canonical checkpoint is 614,367 bytes, below the unchanged 850,000-byte
+adapter ceiling; its decoded payload is 4,471,545 bytes, below 24 MiB. Grouping
 records by event ID keeps repeated full descriptions adjacent for compression.
-Staging follows that immutable decoded order. The capture contains 3,488 records
+Staging follows that immutable decoded order. The capture contains 3,484 records
 with event coordinates and 18 with explicitly linked venue coordinates whose
 listing identity and complete address match the event. No city-center coordinates
 were introduced. Partial native addresses retain their actual publisher point.
@@ -66,6 +66,13 @@ staging, acknowledged progress, replay after a lost checkpoint, short-write
 rejection, no publisher requests during staging, and no partial staging after
 a publisher HTTP 403. Full descriptions and native image URLs were independently
 compared with the complete source corpus. `git diff --check` passed.
+
+A final independent schedule review found that bare unlabelled clock clauses
+following weekday-labelled schedules could imply unsupported showtimes. Those
+clauses are now withheld; explicit daily schedules and paired early/late shows
+retain their stated scope. The correction passed 20 focused parser/worker tests
+and nine subtests, plus another complete 37-page checkpoint replay. The totals
+above reflect that correction. No Raleigh source was enrolled before this fix.
 
 ## Release status
 
