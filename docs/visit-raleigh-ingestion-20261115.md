@@ -76,7 +76,25 @@ above reflect that correction. No Raleigh source was enrolled before this fix.
 
 ## Release status
 
-Implementation and focused verification are complete. Production collector
-readiness, committed database deployment, complete staging and actual public rows
-must be verified separately before reporting the source as live. Visit Atlantic
-City's existing disabled source is outside this change.
+The corrected collector was production READY and backend migration
+`20261115112419` deployed successfully through Database deploy #322. The first
+normal live collection of source 5666 at 11:38:25 UTC received
+`publisher_http_403` during its initial calendar fetch. The source automatically
+paused with zero staged/public rows and no checkpoint or completion receipt.
+Research HTTP 200 access did not establish production access. The source remains
+paused; no repeated publisher requests, alternate egress or identity changes
+were used to work around the denial.
+
+Read-only diagnosis also identified a separate request compatibility issue:
+the documented API query is 3,418 characters, exceeding the generic 1,000-character
+URL limit. The source-specific GET helper now validates the exact canonical
+query under an 8,000-character bound, while retaining the actual full URL for
+robots, DNS/pacing checks and HTTP transport. API redirects are rejected. Generic
+URL limits, user agent, body limits and HTTP denial handling are unchanged.
+This compatibility fix does not resolve the observed calendar 403.
+
+The transport correction passed 196 focused/neighbor tests and nine subtests,
+all offline or mocked. Root repeated the 52 Raleigh parser/worker/transport
+tests and nine subtests successfully. Visit Atlantic City's existing disabled
+source remains outside this change. Production ingestion requires resolution
+of publisher access before the normal source can be resumed.
