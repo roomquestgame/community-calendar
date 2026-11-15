@@ -1,0 +1,1041 @@
+{
+  "observed_at": "2026-11-15T01:07:09.771432+00:00",
+  "scope": "Six previously unregistered additional Boston nightlife calendars; existing deployed profiles unchanged.",
+  "status": "Collector implementation and offline native-capture worker replay verified; production transport and publication are separate root deployment work.",
+  "capture_anchor": "2026-11-15T01:00:00+00:00",
+  "eligible_rows": 321,
+  "missing_descriptions": 0,
+  "missing_street_addresses": 0,
+  "missing_coordinates": 261,
+  "profiles": [
+    {
+      "source_key": "lizard_lounge_ma",
+      "events": 30,
+      "claims": 1,
+      "holds": [],
+      "calls": 2,
+      "unique_calls": 2,
+      "max_description": 4803,
+      "min_description": 332,
+      "venues": [
+        [
+          "Lizard Lounge",
+          "1667 Massachusetts Avenue, Cambridge, MA 02138"
+        ]
+      ],
+      "checkpoint_bytes": 123432,
+      "missing_description": 0,
+      "missing_street_address": 0,
+      "missing_coordinates": 30,
+      "descriptions_over_2000": 5,
+      "source_url": "https://lizardloungeclub.com/calendar/",
+      "label": "Lizard Lounge",
+      "rows_sha256": "a084ce6649f9aa67e714748a92bc72670ce456472c6ed8cc0ece376e712f0e02"
+    },
+    {
+      "source_key": "improv_asylum_ma",
+      "events": 85,
+      "claims": 1,
+      "holds": [],
+      "calls": 2,
+      "unique_calls": 2,
+      "max_description": 2085,
+      "min_description": 639,
+      "venues": [
+        [
+          "Improv Asylum",
+          "216 Hanover Street, Boston, MA 02113"
+        ]
+      ],
+      "checkpoint_bytes": 366740,
+      "missing_description": 0,
+      "missing_street_address": 0,
+      "missing_coordinates": 85,
+      "descriptions_over_2000": 23,
+      "source_url": "https://calendar.improvasylum.com/",
+      "label": "Improv Asylum",
+      "rows_sha256": "d853a299a2896f38e1ee0fa195d4a442c3b9857e48587eb55e92f42134fcae24"
+    },
+    {
+      "source_key": "laugh_boston_ma",
+      "events": 37,
+      "claims": 1,
+      "holds": [],
+      "calls": 2,
+      "unique_calls": 2,
+      "max_description": 2180,
+      "min_description": 723,
+      "venues": [
+        [
+          "Laugh Boston",
+          "425 Summer Street, Boston, MA 02210"
+        ]
+      ],
+      "checkpoint_bytes": 144554,
+      "missing_description": 0,
+      "missing_street_address": 0,
+      "missing_coordinates": 37,
+      "descriptions_over_2000": 1,
+      "source_url": "https://calendar.laughboston.com/",
+      "label": "Laugh Boston",
+      "rows_sha256": "3e8b08213d7e07e5f1ef5a3fee1f307edadaa89ae2c31865d963631205368e67"
+    },
+    {
+      "source_key": "club_passim_ma",
+      "events": 61,
+      "claims": 4,
+      "holds": [
+        {
+          "id": "boston:257394d7feccf86fb100b5ceed2e4acaf7987072b6c0534623b55b02e1682cf3",
+          "event_url": "https://www.passim.org/live-music/events/tall-heights/",
+          "title": "Tall Heights at Arrow Street Arts",
+          "starts_at": "2026-12-05T19:00:00-05:00",
+          "reason": "boston_nightlife_description_missing",
+          "disposition": "held"
+        }
+      ],
+      "calls": 44,
+      "unique_calls": 41,
+      "max_description": 7725,
+      "min_description": 258,
+      "venues": [
+        [
+          "Arts at the Armory",
+          "191 Highland Avenue, Somerville, MA 02143"
+        ],
+        [
+          "Club Passim",
+          "47 Palmer Street, Cambridge, MA 02138"
+        ]
+      ],
+      "checkpoint_bytes": 231181,
+      "missing_description": 0,
+      "missing_street_address": 0,
+      "missing_coordinates": 1,
+      "descriptions_over_2000": 36,
+      "source_url": "https://www.passim.org/live-music/",
+      "label": "Club Passim",
+      "rows_sha256": "c72e4c5f47b9bad353f871c9602e318c003ef8da6f02dd3d6449d492c2e6146c"
+    },
+    {
+      "source_key": "burren_ma",
+      "events": 105,
+      "claims": 3,
+      "holds": [],
+      "calls": 39,
+      "unique_calls": 36,
+      "max_description": 4526,
+      "min_description": 9,
+      "venues": [
+        [
+          "The Burren — Back Room",
+          "247 Elm Street, Somerville, MA 02144"
+        ],
+        [
+          "The Burren — Front Room",
+          "247 Elm Street, Somerville, MA 02144"
+        ]
+      ],
+      "checkpoint_bytes": 168385,
+      "missing_description": 0,
+      "missing_street_address": 0,
+      "missing_coordinates": 105,
+      "descriptions_over_2000": 7,
+      "source_url": "https://www.burren.com/music.html",
+      "label": "The Burren",
+      "rows_sha256": "c5058e4b447e8b44d62e754d8804aed343028946c8cc16bed0bb7ad09763e2ae"
+    },
+    {
+      "source_key": "long_live_roxbury_ma",
+      "events": 3,
+      "claims": 1,
+      "holds": [],
+      "calls": 1,
+      "unique_calls": 1,
+      "max_description": 362,
+      "min_description": 362,
+      "venues": [
+        [
+          "Long Live Roxbury",
+          "152 Hampden Street, Boston, MA 02119"
+        ]
+      ],
+      "checkpoint_bytes": 6934,
+      "missing_description": 0,
+      "missing_street_address": 0,
+      "missing_coordinates": 3,
+      "descriptions_over_2000": 0,
+      "source_url": "https://www.longlivebeerworks.com/boston",
+      "label": "Long Live Roxbury",
+      "rows_sha256": "bff263c2fab8f44079e4477fa68240b8b89859e2e31552881a7b8792a76d8676"
+    }
+  ],
+  "worker_replay": [
+    {
+      "source_key": "lizard_lounge_ma",
+      "claims": 1,
+      "staged": 30,
+      "checkpoint_writes": 1,
+      "publication_calls": 1,
+      "full_native_row_equality": true,
+      "partial_stage_calls": 0,
+      "max_stage_size": 20
+    },
+    {
+      "source_key": "improv_asylum_ma",
+      "claims": 1,
+      "staged": 85,
+      "checkpoint_writes": 1,
+      "publication_calls": 1,
+      "full_native_row_equality": true,
+      "partial_stage_calls": 0,
+      "max_stage_size": 20
+    },
+    {
+      "source_key": "laugh_boston_ma",
+      "claims": 1,
+      "staged": 37,
+      "checkpoint_writes": 1,
+      "publication_calls": 1,
+      "full_native_row_equality": true,
+      "partial_stage_calls": 0,
+      "max_stage_size": 20
+    },
+    {
+      "source_key": "club_passim_ma",
+      "claims": 4,
+      "staged": 61,
+      "checkpoint_writes": 4,
+      "publication_calls": 1,
+      "full_native_row_equality": true,
+      "partial_stage_calls": 0,
+      "max_stage_size": 20
+    },
+    {
+      "source_key": "burren_ma",
+      "claims": 3,
+      "staged": 105,
+      "checkpoint_writes": 3,
+      "publication_calls": 1,
+      "full_native_row_equality": true,
+      "partial_stage_calls": 0,
+      "max_stage_size": 20
+    },
+    {
+      "source_key": "long_live_roxbury_ma",
+      "claims": 1,
+      "staged": 3,
+      "checkpoint_writes": 1,
+      "publication_calls": 1,
+      "full_native_row_equality": true,
+      "partial_stage_calls": 0,
+      "max_stage_size": 3
+    }
+  ],
+  "venues": [
+    {
+      "venue_key": "lizard",
+      "venue_name": "Lizard Lounge",
+      "venue_address": "1667 Massachusetts Avenue, Cambridge, MA 02138",
+      "city": "Cambridge",
+      "lat": null,
+      "lng": null,
+      "evidence_url": "https://lizardloungeclub.com/venue/lizard-lounge/",
+      "eligible_occurrences": 30
+    },
+    {
+      "venue_key": "improv",
+      "venue_name": "Improv Asylum",
+      "venue_address": "216 Hanover Street, Boston, MA 02113",
+      "city": "Boston",
+      "lat": null,
+      "lng": null,
+      "evidence_url": "https://calendar.improvasylum.com/",
+      "eligible_occurrences": 85
+    },
+    {
+      "venue_key": "laugh",
+      "venue_name": "Laugh Boston",
+      "venue_address": "425 Summer Street, Boston, MA 02210",
+      "city": "Boston",
+      "lat": null,
+      "lng": null,
+      "evidence_url": "https://calendar.laughboston.com/",
+      "eligible_occurrences": 37
+    },
+    {
+      "venue_key": "passim",
+      "venue_name": "Club Passim",
+      "venue_address": "47 Palmer Street, Cambridge, MA 02138",
+      "city": "Cambridge",
+      "lat": 42.3741826,
+      "lng": -71.11964540000002,
+      "evidence_url": "https://www.passim.org/live-music/directions-parking/",
+      "eligible_occurrences": 60
+    },
+    {
+      "venue_key": "armory",
+      "venue_name": "Arts at the Armory",
+      "venue_address": "191 Highland Avenue, Somerville, MA 02143",
+      "city": "Somerville",
+      "lat": null,
+      "lng": null,
+      "evidence_url": "https://artsatthearmory.org/contact-us/getting-here/",
+      "eligible_occurrences": 1
+    },
+    {
+      "venue_key": "arrow",
+      "venue_name": "Arrow Street Arts",
+      "venue_address": "2 Arrow Street, Cambridge, MA 02138",
+      "city": "Cambridge",
+      "lat": null,
+      "lng": null,
+      "evidence_url": "https://www.arrowstarts.org/faq",
+      "eligible_occurrences": 0
+    },
+    {
+      "venue_key": "burren_front",
+      "venue_name": "The Burren — Front Room",
+      "venue_address": "247 Elm Street, Somerville, MA 02144",
+      "city": "Somerville",
+      "lat": null,
+      "lng": null,
+      "evidence_url": "https://www.burren.com/music.html",
+      "eligible_occurrences": 43
+    },
+    {
+      "venue_key": "burren_back",
+      "venue_name": "The Burren — Back Room",
+      "venue_address": "247 Elm Street, Somerville, MA 02144",
+      "city": "Somerville",
+      "lat": null,
+      "lng": null,
+      "evidence_url": "https://www.burren.com/music.html",
+      "eligible_occurrences": 62
+    },
+    {
+      "venue_key": "long_live",
+      "venue_name": "Long Live Roxbury",
+      "venue_address": "152 Hampden Street, Boston, MA 02119",
+      "city": "Boston",
+      "lat": null,
+      "lng": null,
+      "evidence_url": "https://www.longlivebeerworks.com/boston",
+      "eligible_occurrences": 3
+    }
+  ],
+  "tests": {
+    "command": "python -m pytest tests/test_boston_nightlife_additional.py -q",
+    "passed": 28,
+    "failed": 0
+  },
+  "code_sha256": "23725238ab62b3e7daac625915326713eea802f47afcb8215b704d6cf7a8c865",
+  "tests_sha256": "e077775c7225221cdb83d42f28b3bea7169a85ea4abe7b4e7f7ebb652b42d699",
+  "contracts": {
+    "SOURCES": {
+      "lizard_lounge_ma": [
+        "https://lizardloungeclub.com/calendar/",
+        "html",
+        "html"
+      ],
+      "improv_asylum_ma": [
+        "https://calendar.improvasylum.com/",
+        "html",
+        "html"
+      ],
+      "laugh_boston_ma": [
+        "https://calendar.laughboston.com/",
+        "html",
+        "html"
+      ],
+      "club_passim_ma": [
+        "https://www.passim.org/live-music/",
+        "html",
+        "html"
+      ],
+      "burren_ma": [
+        "https://www.burren.com/music.html",
+        "html",
+        "html"
+      ],
+      "long_live_roxbury_ma": [
+        "https://www.longlivebeerworks.com/boston",
+        "html",
+        "html"
+      ]
+    },
+    "LABELS": {
+      "lizard_lounge_ma": "Lizard Lounge",
+      "improv_asylum_ma": "Improv Asylum",
+      "laugh_boston_ma": "Laugh Boston",
+      "club_passim_ma": "Club Passim",
+      "burren_ma": "The Burren",
+      "long_live_roxbury_ma": "Long Live Roxbury"
+    },
+    "SOURCE_NOTES": {
+      "lizard_lounge_ma": "Official WordPress TEC REST; explicit local/UTC clock agreement, complete native descriptions, closures excluded, 60-day window.",
+      "improv_asylum_ma": "Official calendar's anonymous public JSON, complete description rather than 300-character JSON-LD teaser; event-specific street and clocks corroborated against the calendar schema.",
+      "laugh_boston_ma": "Official calendar's anonymous public JSON, complete description rather than 300-character JSON-LD teaser; event-specific street and clocks corroborated against the calendar schema.",
+      "club_passim_ma": "All explicit dated occurrences in inert calendar literals; visible show clocks are local despite the publisher's erroneous +0000 suffix. Full detail prose, nullable unprovided end, and event-specific off-site venue overrides.",
+      "burren_ma": "Publisher's dated front/back room schedule; chronology and weekdays bind omitted years to explicit year headers. Linked 24HourMusic descriptions hydrate completely. Native closed sessions excluded; unprovided ends remain null.",
+      "long_live_roxbury_ma": "Named dates only within the publisher-declared Thursday 6-9 PM jazz schedule and a 28-day window. Omitted holiday Thursdays are not generated. Complete native series prose; Boston address overrides unrelated Providence organization metadata."
+    },
+    "CHECKPOINT_KEYS": [
+      "burren_ma",
+      "club_passim_ma",
+      "improv_asylum_ma",
+      "laugh_boston_ma",
+      "lizard_lounge_ma",
+      "long_live_roxbury_ma"
+    ],
+    "ALLOWED_HOSTS": {
+      "lizard_lounge_ma": [
+        "lizardloungeclub.com"
+      ],
+      "improv_asylum_ma": [
+        "calendar.improvasylum.com"
+      ],
+      "laugh_boston_ma": [
+        "calendar.laughboston.com"
+      ],
+      "club_passim_ma": [
+        "www.passim.org"
+      ],
+      "burren_ma": [
+        "www.burren.com",
+        "tickets.24hourmusic.com"
+      ],
+      "long_live_roxbury_ma": [
+        "www.longlivebeerworks.com"
+      ]
+    }
+  },
+  "notes": [
+    "Public publisher captures were ordinary unauthenticated requests following robots checks and host pacing. Local production guarded transport fails DNS; captures do not claim production access.",
+    "Passim local show clocks are preserved despite incorrect publisher +0000 suffix. Off-site Armory and Arrow Street venues override generic club schema; performer biography venue mentions do not change the current venue.",
+    "The publisher Directions & Parking ACF marker is scoped exactly to Club Passim 47 Palmer Street; other venues remain for normal geocoding.",
+    "Long Live publishes only named, weekday-consistent dates within 28 days; omitted Thanksgiving dates are not generated. No generic weekly extrapolation.",
+    "The Burren preserves complete native descriptions even when its entire description is a concise genre label (minimum nine characters); text is not padded.",
+    "One Passim Tall Heights item is held for a fee-only native body. It links Ticketmaster 01006536E71D122A; no invented narrative is substituted."
+  ],
+  "captures": [
+    {
+      "url": "https://lizardloungeclub.com/calendar/",
+      "status": 200,
+      "sha256": "2afb60f1c7c445e6fbee8c4dcef8e2952f470f14d1cf4b1e946917dece93e76b",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "url": "https://www.passim.org/live-music/",
+      "status": 200,
+      "sha256": "0e15226411a55d9fd04e670d92edcb91b7f887dedbbb53df0953decae07cad14",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "url": "https://www.burren.com/music.html",
+      "status": 200,
+      "sha256": "db3b3931d48a5706d9ff57ac8404c46d92b718f7d2d8144ed0897f827c61ce09",
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://www.sinclaircambridge.com/events/all",
+      "status": 200,
+      "sha256": "06221ec0bceee4264ece84aee8d93677ad51eb682e528a25880aab177ab94ccd",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "url": "https://therockwell.org/calendar/",
+      "status": 200,
+      "sha256": "f8c9d5b89a7fa9ad28b46e4bee21dce59f5920f56fa5f6d2f718a4e6181c52c9",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "url": "https://www.mideastoffers.com/all-shows/",
+      "status": 200,
+      "sha256": "0435af473726c9c88ee696db96f15945b487b9779dd703c46dd62a4dbfdf0dbd",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "url": "https://www.thejunglemusicclub.com/events-calendar",
+      "status": 200,
+      "sha256": "d74d39b15447eb16a2146118eebef31dd05f5a70cb8efc6733fd5055e3352e66",
+      "content_type": "text/html;charset=utf-8"
+    },
+    {
+      "url": "https://www.deepcuts.rocks/",
+      "status": 200,
+      "sha256": "d510d6781e5c8bc330f58aa141adbdf3d2defcf55e07e248a58e644e6c3b95fc",
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://www.longlivebeerworks.com/boston",
+      "status": 200,
+      "sha256": "535c1ecd550fc686f37f7a6c8646f39dec3056c2bb7f010f223b470e1f7717e4",
+      "content_type": "text/html;charset=utf-8"
+    },
+    {
+      "url": "https://distractionbrewingco.com/calendar-distraction-brewery-events",
+      "status": 200,
+      "sha256": "219578de8c8424f643a36fceb41da6dc54789269f9a87c4b34280f6f7a78df76",
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://calendar.improvasylum.com/",
+      "status": 200,
+      "sha256": "96c9b3653a01b208f914e5cd3df0026a154925f441f7c803110e1715ed9628d6",
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://calendar.laughboston.com/",
+      "status": 200,
+      "sha256": "b6bd619d7a8147a0034a8781eca2e3f7194ba10cffce2c82c558840d9b39c65b",
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://www.comicazi.com/events",
+      "status": 200,
+      "sha256": "a92b97c9b2279c683fa6352c46e32c49ec5ba63d30db5bb85bc9f8dc33efca38",
+      "content_type": "text/html;charset=utf-8"
+    },
+    {
+      "url": "https://www.knightmovescafe.com/",
+      "status": 200,
+      "sha256": "f945ca5cf7f0863391fe2609d13715daa7d19be4f41963d499351f86ec51d5e3",
+      "content_type": "text/html;charset=utf-8"
+    },
+    {
+      "url": "https://lizardloungeclub.com/event/lizard-lounge-poetry-jam-rohan-nijhawan/",
+      "status": 200,
+      "sha256": "1df6503b4f910ef182cc5885edb5cacf15a40e5585f267a52f3d930feeaf9f1a",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "url": "https://lizardloungeclub.com/wp-json/tribe/events/v1/events?per_page=20&start_date=2026-11-15",
+      "status": 200,
+      "sha256": "7b750fbbd4b65ca2827254d53dbea00fd038198eeef9fe0b98c9e1b60a50ea5a",
+      "content_type": "application/json; charset=UTF-8"
+    },
+    {
+      "url": "https://www.passim.org/live-music/events/jenna-moynihan-owen-marshall/",
+      "status": 200,
+      "sha256": "b298c170405d8ccffd95db1ace280cc12f21f1f42997480a0470cc9464b03820",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "url": "https://www.passim.org/live-music/directions-parking/",
+      "status": 200,
+      "sha256": "11114e77889ad6983f2767410ee0eb3519fcef0d7abddc232622d34c4ac84109",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "url": "https://www.deepcuts.rocks/events",
+      "status": 200,
+      "sha256": "0ad46dc7b79e604ad61eabab41e6e7d47857c684bc5f93c0d110e0b8678da8fa",
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://distractionbrewingco.com/Events",
+      "status": 200,
+      "sha256": "36253537814287c9244a6bcfb22f7bd54a3b592be6b97f15b4614d6f345e29f8",
+      "content_type": "text/html; charset=utf-8"
+    },
+    {
+      "url": "https://calendar.improvasylum.com/_next/static/chunks/app/%5Bclient%5D/page-d67a85fb62289bf7.js?dpl=dpl_FFvYk1vWE7i3JncoDemhfKsipwzq",
+      "status": 200,
+      "sha256": "e845f8268c4af9a78c80a45269ac26e1325addf8074b7af6ac3a392d90083ad3",
+      "content_type": "application/javascript; charset=utf-8"
+    },
+    {
+      "url": "https://calendar.improvasylum.com/api/events/improv-asylum",
+      "status": 200,
+      "sha256": "a71383c9b8a355a0e3370816ff6dbe1272ecf9b84d7a1e84f3413e78abd4534c",
+      "content_type": "application/json"
+    },
+    {
+      "url": "https://calendar.laughboston.com/api/events/laugh-boston",
+      "status": 200,
+      "sha256": "f6a069ba904f1379d8b8639a0e6d52ad3bce6e81c18d8e93e1adb4b56ae820c0",
+      "content_type": "application/json"
+    },
+    {
+      "url": "https://www.passim.org/live-music/events/aine-minogue/",
+      "status": 200,
+      "sha256": "892e5f06f9eeb5eed5b19c7b102a5ec5a8ae077f3c7cc0248beb2bf145370353",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "url": "https://www.passim.org/live-music/events/alisa-amador/",
+      "status": 200,
+      "sha256": "257a72842e3d9f03fb49b05b917cb052e886ee0c959a22bb51a01feec125acc8",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "url": "https://www.passim.org/live-music/events/bigfoot-research-organization/",
+      "status": 200,
+      "sha256": "d1d2d1ab2c984287ce63dd813c43b0a8bd055db49e7ae92cb4d4105b318d080c",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "url": "https://www.passim.org/live-music/events/boston-fiddle-funk-folk-festival-at-the-armory/",
+      "status": 200,
+      "sha256": "26cdb2bfdd6799f1422bfa1128ca00cc200996a02d43e4bf8dbd3f83ea81dc12",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "url": "https://www.passim.org/live-music/events/bruce-molsky/",
+      "status": 200,
+      "sha256": "703a7540289b53342b2f198051ba25ab7058d3d92516f3f1a8c70b1a612d34b3",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "url": "https://www.passim.org/live-music/events/chris-smither/",
+      "status": 200,
+      "sha256": "5ec02afe301d0e4005c565d1ecdb4efc7ff8af4ec13151b3244b514bb1f1a55e",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "url": "https://www.passim.org/live-music/events/connie-kaldor/",
+      "status": 200,
+      "sha256": "b1bf66da3e6d635ed55abf9e85c2691e9190b2a21a291e938b335ef5dced0041",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "url": "https://www.passim.org/live-music/events/dinty-child-mark-erelli/",
+      "status": 200,
+      "sha256": "05b685279ad2118000aab8eec66b40e3ba237b88cf33a8fac5500e0c46e6ffb0",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "url": "https://www.passim.org/live-music/events/dwight-nicole/",
+      "status": 200,
+      "sha256": "a4f8902cad2d919a2c6f5d0694b8df84fd999519d6eeb3e802432443079d9657",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "url": "https://www.passim.org/live-music/events/edie-carey/",
+      "status": 200,
+      "sha256": "94cdb053a79d4c5dec32a8c76f081d053abfee304295a2a667827393da6c373a",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "url": "https://www.passim.org/live-music/events/ellis-paul-friends/",
+      "status": 200,
+      "sha256": "c2fa97a1524034dfe3f05dc342fb588f9954ea2183fc631a866eea99cbea5f21",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "url": "https://www.passim.org/live-music/events/girlyman/",
+      "status": 200,
+      "sha256": "da877ce88952d51c3731aa362460353a32b2fe79f5edfd810efd44293b82152a",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "url": "https://www.passim.org/live-music/events/jason-myles-goss/",
+      "status": 200,
+      "sha256": "5bd0dcded96efbfbe39b62d113aba0640ca7064509079f49f778b750d3cf7ee6",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "url": "https://www.passim.org/live-music/events/jeffrey-foucault-2/",
+      "status": 200,
+      "sha256": "543fd382435a028972d79ace460b3d4047119af8abbe567cc1c0d99010a23dcf",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "url": "https://www.passim.org/live-music/events/jeffrey-martin/",
+      "status": 200,
+      "sha256": "fc892b292718aa67ac011104b9349f7cb44910f7b1cbd38be8468c576548663d",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "url": "https://www.passim.org/live-music/events/jenna-moynihan-owen-marshall/",
+      "status": 200,
+      "sha256": "b298c170405d8ccffd95db1ace280cc12f21f1f42997480a0470cc9464b03820",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "url": "https://www.passim.org/live-music/events/kat-wallace-steven-manwaring-perform-time-the-revelator/",
+      "status": 200,
+      "sha256": "266afbba041a87dbd7b8979630aaf5d52cb12839160bc3ad1ea823778fb76c4a",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "url": "https://www.passim.org/live-music/events/kemp-harris-band/",
+      "status": 200,
+      "sha256": "bb2305968ffefed367ac675763d4336362b24f9fbc69aeee26b99d8595c4ff82",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "url": "https://www.passim.org/live-music/events/laurie-macallister-seth-glier/",
+      "status": 200,
+      "sha256": "11b57e1b1790871b254580e70df0d2e28034ab4310b16a75a9d767e92c5e21ba",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "url": "https://www.passim.org/live-music/events/lori-mckenna-band/",
+      "status": 200,
+      "sha256": "3f257ce01da08ed8675d64eda67d2b0da271d86e27974c744e0f709053109612",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "url": "https://www.passim.org/live-music/events/love-has-come-a-holiday-variety-show/",
+      "status": 200,
+      "sha256": "cab5ef5d05c77fa52ffd3fe2f364560ed330b6ffc46c1fa1698924b5d9804ad8",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "url": "https://www.passim.org/live-music/events/lucy-kaplansky/",
+      "status": 200,
+      "sha256": "f077ce9683cd95390f1f6c398f8a1789d9a2381d8e64e167e7d286ab7dd11489",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "url": "https://www.passim.org/live-music/events/mark-lipman/",
+      "status": 200,
+      "sha256": "da41583e5165c43748ceabd6ad4825e130403dae4dedd896e86e819ba2748da0",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "url": "https://www.passim.org/live-music/events/mike-block-yacouba-sissoko/",
+      "status": 200,
+      "sha256": "047da8b0a31fdf1223f9a7fb9b0205f1831863ddd658efac6f0ea6af73624ac0",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "url": "https://www.passim.org/live-music/events/nate-sabat-morgan-harris/",
+      "status": 200,
+      "sha256": "33f5034d79a13a081c18ab7460c7ad170c54cd2663004acd454d1815b90764db",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "url": "https://www.passim.org/live-music/events/niall-connolly-and-band/",
+      "status": 200,
+      "sha256": "52efeaf558da6d1b861fe25a93aaf75e25f3a671f7af6fbb7e457a0707bcd288",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "url": "https://www.passim.org/live-music/events/open-mic/",
+      "status": 200,
+      "sha256": "430f644060d4aa0d834f1abd5a983c00f793b04fc58541baa82aa20d36bb5df6",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "url": "https://www.passim.org/live-music/events/passim-monday-discovery-series/",
+      "status": 200,
+      "sha256": "b819e4de5d2951d525bfa286d9bb0e550cb8fb3087798cb4a2ec4be6f931514a",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "url": "https://www.passim.org/live-music/events/red-mcadam/",
+      "status": 200,
+      "sha256": "36ad860565789becef810f6053e2078ed8acfa09f4ddc6a490f808820a2f67af",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "url": "https://www.passim.org/live-music/events/scottish-fish/",
+      "status": 200,
+      "sha256": "c351f724395aae1036913a606bff493e04874f2f6a56d4a01b68059cad84c976",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "url": "https://www.passim.org/live-music/events/sol-y-canto/",
+      "status": 200,
+      "sha256": "eaee4353f34037388aefd0adf04153b57f9b483cd5c74a64f7e469f25cba7844",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "url": "https://www.passim.org/live-music/events/sweet-petunia/",
+      "status": 200,
+      "sha256": "3516348184c62ab0e57cbf92153d8789235f97e11b7bc5bd1241eed9a35b0eab",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "url": "https://www.passim.org/live-music/events/tall-heights/",
+      "status": 200,
+      "sha256": "254dda94459acda7c1cdee38a3aec3ccacab1a42bf0d4481bc0892175ebd3608",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "url": "https://www.passim.org/live-music/events/the-ruth-ben-string-band/",
+      "status": 200,
+      "sha256": "c6239a873ba7b953ac530af8c6c56a908ed4b87f3877ed85393fed3acdf41bac",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "url": "https://www.passim.org/live-music/events/the-secret-sauce/",
+      "status": 200,
+      "sha256": "7bc74ca3bfd9ce5355d6e757aa16d5fc0b0f9617fdb35f3d93bd72d50ddd6600",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "url": "https://www.passim.org/live-music/events/tony-trischkas-holiday-show-of-a-winters-night/",
+      "status": 200,
+      "sha256": "f64d33b71f65bd59df43e9bb2f042dd2dc1693ce8ba098b817a9fadfada0dd50",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "url": "https://www.passim.org/live-music/events/under-the-covers/",
+      "status": 200,
+      "sha256": "d8d03bd3d99486aa092516d7b0b426ae7aad52c802a1fc736b428ec1448ba6ef",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "url": "https://www.passim.org/live-music/events/wintery-songs-in-eleventy-part-harmony/",
+      "status": 200,
+      "sha256": "37aec0567d7d16b77c155823db8b3a1334fbe6faaf1fc92ad91109e1a198ac4f",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "url": "https://www.passim.org/live-music/events/zachariah-hickmans-power-outage-party/",
+      "status": 200,
+      "sha256": "b382f09dd2bbe70c3830900af612e62f03744a2132407f853a6ae157b3d0285e",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "url": "https://www.passim.org/live-music/events/zachariah-hickmans-power-outage-pre-party-jam-session/",
+      "status": 200,
+      "sha256": "776c17610ebeed9d2b8f42d76af83af4b4f264a99a321db5a214eac0c7fcf9d0",
+      "content_type": "text/html; charset=UTF-8"
+    },
+    {
+      "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=100",
+      "status": 200,
+      "sha256": "b12f1bcc458eaff5de95b53f0accf573fb1a48581a044facda42bffdabf18e8f",
+      "content_type": "text/html"
+    },
+    {
+      "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1000",
+      "status": 200,
+      "sha256": "a152141f37431bbb27e65c99cfa329f4bb1bef4843542da26a0014f7132729bc",
+      "content_type": "text/html"
+    },
+    {
+      "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1053",
+      "status": 200,
+      "sha256": "6d739723de7d919c20b4a2a4b1f69c2c5282686a62cee1b3c28b62541d750153",
+      "content_type": "text/html"
+    },
+    {
+      "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1066",
+      "status": 200,
+      "sha256": "cc4390ccad45890812ae7776ac992f0e92498d286fe280fc18965fe3d7ee36a4",
+      "content_type": "text/html"
+    },
+    {
+      "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1129",
+      "status": 200,
+      "sha256": "b772b4bd6cc02be7c467bceadf247d50e33967833cf1b5b2bb57fd0d68fb298c",
+      "content_type": "text/html"
+    },
+    {
+      "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1176",
+      "status": 200,
+      "sha256": "dabd5f302d49c0e292308debe925eb64a82ee77484c884176a02c06a68231e60",
+      "content_type": "text/html"
+    },
+    {
+      "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1235",
+      "status": 200,
+      "sha256": "b7e6f99781ff754ca22a3ba2f6c38c35b350a2e5b07c7a6ba4698df55d1ce49b",
+      "content_type": "text/html"
+    },
+    {
+      "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1252",
+      "status": 200,
+      "sha256": "6543ac3b2843b761f305baa85ac9e689536c7fe63852e10bbd5e0eb359f84fdc",
+      "content_type": "text/html"
+    },
+    {
+      "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1295",
+      "status": 200,
+      "sha256": "e5c9275841c01be01aa044f4f2df4357190e1d910bd1e83b79ac67239eeef0ba",
+      "content_type": "text/html"
+    },
+    {
+      "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1460",
+      "status": 200,
+      "sha256": "b1c039cc228691ff0b232c0086e0e93edfcc2105eb5e3a096c174a87ca540ef2",
+      "content_type": "text/html"
+    },
+    {
+      "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1557",
+      "status": 200,
+      "sha256": "3eeb318a0f1e31ee95ae27981bdf36423f414b60c7f5bed3ce874ae0d649544d",
+      "content_type": "text/html"
+    },
+    {
+      "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1583",
+      "status": 200,
+      "sha256": "e8babe5ddca2877d1c61d95d84e5890ff0c4613c6afa0525c7ba2df3da6656a7",
+      "content_type": "text/html"
+    },
+    {
+      "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1702",
+      "status": 200,
+      "sha256": "c5c95f2ffe1dbfdfc0bf7ee3340b4fd07de9c5984471a66ae94bb173d14736d5",
+      "content_type": "text/html"
+    },
+    {
+      "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1719",
+      "status": 200,
+      "sha256": "7f95c08bcee977af624b974d9ab239840b569eae620a4c9717e14fb835210a5d",
+      "content_type": "text/html"
+    },
+    {
+      "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1743",
+      "status": 200,
+      "sha256": "1558cdfaefe02b11e53b65f0f38a28945a726cf82148964cf5bf72168e2347c9",
+      "content_type": "text/html"
+    },
+    {
+      "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1779",
+      "status": 200,
+      "sha256": "a5582f38a7d0dfa9c8508ec5cb3e9ed2c758d27a28a7f649f186fcb57101dd6b",
+      "content_type": "text/html"
+    },
+    {
+      "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1889",
+      "status": 200,
+      "sha256": "da40a8b20723056acc188989cf96177fc550c3498c6651554c48f6af1576aae7",
+      "content_type": "text/html"
+    },
+    {
+      "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1890",
+      "status": 200,
+      "sha256": "8f4d61008ae2501d055917c4418ad0cbb131e4cdba6880c0faab0a380b3952e6",
+      "content_type": "text/html"
+    },
+    {
+      "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1902",
+      "status": 200,
+      "sha256": "21660e2197b80edd2cccf8816abb8c6922adabe635e8c23c13fa870c89973388",
+      "content_type": "text/html"
+    },
+    {
+      "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1907",
+      "status": 200,
+      "sha256": "d0581a001805a2cdcc6b4d1be83efbc7fd97785108159a0cb575b3a2e869ad44",
+      "content_type": "text/html"
+    },
+    {
+      "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1911",
+      "status": 200,
+      "sha256": "ad755bca9b9495c3a842d627248bb99d0807424d6f32157a762dea10f5ea3e1f",
+      "content_type": "text/html"
+    },
+    {
+      "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1919",
+      "status": 200,
+      "sha256": "ad279aad06d0f94c9208b2f09b18e1b909261269d8748facb8982e57da5ef119",
+      "content_type": "text/html"
+    },
+    {
+      "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1922",
+      "status": 200,
+      "sha256": "ff0b33a6ff96de32c4630a567cda34a7928cfd2fbe7d6a73b76c6d8c7e83ef8e",
+      "content_type": "text/html"
+    },
+    {
+      "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1923",
+      "status": 200,
+      "sha256": "0178f03f54e1222c358e7b444a4972d720aa80422c0b66aedd170d8787a4f804",
+      "content_type": "text/html"
+    },
+    {
+      "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1924",
+      "status": 200,
+      "sha256": "48a16a72c477007b53bf95704d1f185a6f7084f5ee49b5e8f90d930673ecc732",
+      "content_type": "text/html"
+    },
+    {
+      "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1926",
+      "status": 200,
+      "sha256": "c4da3f57a4f371297efc5f236b489d4d6e37c549c4c4830de37d36e974420bd1",
+      "content_type": "text/html"
+    },
+    {
+      "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1928",
+      "status": 200,
+      "sha256": "6ce9737e8ef72c50d49bfe14bc69e1677771065719fa4263932785f0477a19f1",
+      "content_type": "text/html"
+    },
+    {
+      "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1929",
+      "status": 200,
+      "sha256": "9d87e001af67bb4387c6aa0c93ac5a50b0c99742f971d6bf6bfff17dec4517ed",
+      "content_type": "text/html"
+    },
+    {
+      "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=1931",
+      "status": 200,
+      "sha256": "52d37d9d6f3f56b41d962e5a21a3c668be6370932ea63b6f783241672ec6092d",
+      "content_type": "text/html"
+    },
+    {
+      "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=61",
+      "status": 200,
+      "sha256": "fa95c67de647eb8affcba2448b7573645cbd41324e704570ae7241883e4a7a4b",
+      "content_type": "text/html"
+    },
+    {
+      "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=746",
+      "status": 200,
+      "sha256": "035c06ed37b29e7c37e41eea188409b2f4cfac21e5b69a5a5703df5ac8fe6cb9",
+      "content_type": "text/html"
+    },
+    {
+      "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=774",
+      "status": 200,
+      "sha256": "b9dabfa96a3f2bbe909a0e8c8c1672e26fe0642471c27609f02844f5d5371f3d",
+      "content_type": "text/html"
+    },
+    {
+      "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=779",
+      "status": 200,
+      "sha256": "898a54bdd46819d05d951fcf9e66806ebfb35ae036ac8aff15c25ea339257a1d",
+      "content_type": "text/html"
+    },
+    {
+      "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=780",
+      "status": 200,
+      "sha256": "655201cf0edb85ae2b1a03efc52216ed1a751f521ed08140119ab8da4781a331",
+      "content_type": "text/html"
+    },
+    {
+      "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=794",
+      "status": 200,
+      "sha256": "49bdf68225448bd1b83b2c4a9dfec1c9186e96aedd94c3e03b648f2380febb30",
+      "content_type": "text/html"
+    },
+    {
+      "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=822",
+      "status": 200,
+      "sha256": "142eb686ee288312901f740c49f9d65ce58c85e18722669ba2c35a7849bf5a8d",
+      "content_type": "text/html"
+    },
+    {
+      "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=862",
+      "status": 200,
+      "sha256": "90e6b48c8064e7695719bffe95b2b6eb8248b199d52d6f9a38f1c013159a30a6",
+      "content_type": "text/html"
+    },
+    {
+      "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=899",
+      "status": 200,
+      "sha256": "6bfdb1bfa5d192302d2f58e10ee04230ade0daa82373639fbf32b509be3e5d3b",
+      "content_type": "text/html"
+    },
+    {
+      "url": "https://tickets.24hourmusic.com/eventperformances.asp?evt=970",
+      "status": 200,
+      "sha256": "9f6a4ebb63a437c1e6ddd2582c4334c31d5d0c37d4d35ba9930c7a82a60ac122",
+      "content_type": "text/html"
+    },
+    {
+      "url": "https://lizardloungeclub.com/wp-json/tribe/events/v1/events?per_page=50&start_date=2026-11-14+00%3A00%3A00&end_date=2027-01-14+00%3A00%3A00&status=publish",
+      "status": 200,
+      "sha256": "400025aa753bc908b4cc737da3ab638f9346ca890cfee2f04a8d637d000cf13b",
+      "content_type": "application/json; charset=UTF-8"
+    }
+  ]
+}
