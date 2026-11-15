@@ -60,6 +60,7 @@ ALLOWED_HOSTS[BPL] += ('gateway.bibliocommons.com',)
 BOOKS = {TRIDENT, BROOKLINE, HARVARD, PORTER}
 CHECKPOINT_KEYS = BOOKS | {PAO, BPL}
 CHECKPOINT_EVENT_LIMITS = {BPL: 500}
+BPL_PAGES_PER_CHUNK = 6
 MAX_DESCRIPTION = 12000
 MAX_RECORDS = 500
 MAX_MANIFEST = 200
@@ -390,7 +391,9 @@ def _bpl_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None):
                      manifest_hash=_hash([]), manifest_count=0, cursor=0, queue=[], events=[], diagnostics=[],
                      native_count=None, seen_ids=[])
     prior = state['cursor']
-    for _ in range(2):
+    # A source-specific ceiling, within the existing transport deadline and
+    # twelve-second reserve. Native cardinality still gates the final snapshot.
+    for _ in range(BPL_PAGES_PER_CHUNK):
         if monotonic() + 12 >= deadline:
             break
         page = state['cursor'] + 1

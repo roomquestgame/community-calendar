@@ -52,7 +52,8 @@ CHECKPOINT_EVENT_LIMITS = {MFA: 500}
 # These are ceilings, not a reason to overrun the worker's deadline or publisher
 # pacing. MFA has one request per occurrence, ICA has two, and BCA declares a
 # ten-second crawl delay. Stop before the next detail when the reserve is spent.
-DETAILS_PER_CHUNK = {MFA: 10, ICA: 4, BCA: 2}
+DETAILS_PER_CHUNK = {MFA: 20, ICA: 4, BCA: 2}
+LISTING_PAGES_PER_CHUNK = {MFA: 4, ICA: 1, BCA: 1}
 # Exact Museum.geo in the museum's Google Arts & Culture partner profile at
 # https://artsandculture.google.com/partner/museum-of-fine-arts-boston , naming
 # the same 465 Huntington Ave / Boston / MA02115. The MassGIS/MHC building point
@@ -492,7 +493,7 @@ def _listing(key, payload, url, now):
     return _bca_listing(payload)
 
 
-def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None, max_details=10):
+def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None, max_details=20):
     key = _source(source)
     if key not in CHECKPOINT_KEYS:
         raise ValueError('publisher_checkpoint_required')
@@ -505,24 +506,34 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
                      manifest_hash=_hash([]), manifest_count=0, cursor=0, queue=[], events=[], diagnostics=[],
                      listed_pages=[], next_page=SOURCES[key][0], listing_complete=False)
     if not state['listing_complete']:
-        shared._check(deadline)
-        url = state['next_page']
-        if url in state['listed_pages'] or len(state['listed_pages']) >= 40:
-            raise ValueError('boston_arts_remaining_pagination_changed')
-        added, next_page = _listing(key, fetch(url, 'text/html'), url, timestamp(state['started_at']))
-        existing = {item['url']: item for item in state['queue']}
-        for item in added:
-            if item['url'] in existing and existing[item['url']] != item:
-                raise ValueError('boston_arts_remaining_manifest_changed')
-            existing[item['url']] = item
-        state['queue'] = sorted(existing.values(), key=lambda item: item['url'])
-        if len(state['queue']) > CHECKPOINT_MANIFEST_LIMITS.get(key, 200):
-            raise ValueError('boston_arts_remaining_manifest_limit')
-        state['listed_pages'].append(url)
-        state['manifest_count'], state['manifest_hash'] = len(state['queue']), _hash(state['queue'])
-        state['next_page'], state['listing_complete'] = next_page, next_page is None
-        if len(json.dumps(state, ensure_ascii=False).encode()) > MAX_CHECKPOINT_BYTES:
-            raise ValueError('boston_arts_remaining_checkpoint_size_limit')
+        prior_pages = len(state['listed_pages'])
+        # MFA's complete calendar spans many pages. Reuse the same bounded
+        # transport for a few consecutive pages while retaining the durable
+        # listing phase and the detail phase's twelve-second reserve. Existing
+        # version-one checkpoints resume at their exact saved next_page.
+        for _ in range(LISTING_PAGES_PER_CHUNK[key]):
+            if state['listing_complete'] or key == MFA and monotonic() + 12 >= deadline:
+                break
+            shared._check(deadline)
+            url = state['next_page']
+            if url in state['listed_pages'] or len(state['listed_pages']) >= 40:
+                raise ValueError('boston_arts_remaining_pagination_changed')
+            added, next_page = _listing(key, fetch(url, 'text/html'), url, timestamp(state['started_at']))
+            existing = {item['url']: item for item in state['queue']}
+            for item in added:
+                if item['url'] in existing and existing[item['url']] != item:
+                    raise ValueError('boston_arts_remaining_manifest_changed')
+                existing[item['url']] = item
+            state['queue'] = sorted(existing.values(), key=lambda item: item['url'])
+            if len(state['queue']) > CHECKPOINT_MANIFEST_LIMITS.get(key, 200):
+                raise ValueError('boston_arts_remaining_manifest_limit')
+            state['listed_pages'].append(url)
+            state['manifest_count'], state['manifest_hash'] = len(state['queue']), _hash(state['queue'])
+            state['next_page'], state['listing_complete'] = next_page, next_page is None
+            if len(json.dumps(state, ensure_ascii=False).encode()) > MAX_CHECKPOINT_BYTES:
+                raise ValueError('boston_arts_remaining_checkpoint_size_limit')
+        if len(state['listed_pages']) == prior_pages:
+            raise ValueError('collection_deadline')
         return dict(complete=state['listing_complete'] and not state['queue'], events=[], checkpoint=state)
     if state['cursor'] == state['manifest_count']:
         return dict(complete=True, events=shared._unique(deepcopy(state['events'])), checkpoint=state)

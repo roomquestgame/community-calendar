@@ -109,6 +109,9 @@ REVIEWED_EVENT_POINTS = {
     (TITUS, "Museum of Fine Arts, Boston (MFA)", "465 Huntington Avenue, Boston, MA 02115"): (
         (42.339381, -71.094048), "https://artsandculture.google.com/partner/museum-of-fine-arts-boston",
         "Museum partner profile's exact address and Museum.geo, corroborated by MassGIS/MHC building BOS.7493; native street retained."),
+    (TITUS, "Titus Sparrow Park", "75 West Rutland Square, Boston, MA 02118"): (
+        (42.343569, -71.0797897), "https://www.titussparrowpark.org/",
+        "Friends of Titus Sparrow Park's explicit map marker is tied to 75 West Rutland Square and ZIP 02118, corroborated by Boston SAM address 342665; native street retained."),
 }
 CITY_EXACT_LOCATION_REPAIRS = {
     ("Union Church", "485 Columbus Avenue, South End, MA 02118"): (

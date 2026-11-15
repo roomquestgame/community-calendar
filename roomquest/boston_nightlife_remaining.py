@@ -52,6 +52,10 @@ MAX_RECORDS = 200
 MAX_PAGES = 12
 MAX_BYTES = 900000
 MAX_FETCHES = 5
+# These two detail-heavy calendars can use more of the existing worker window.
+# The pre-fetch reserve and guarded transport still stop a slow publisher early;
+# no budget value is serialized, so in-flight version-1 checkpoints remain valid.
+SOURCE_FETCH_CAPS = {EATALY: 12, WAVERLEY: 12}
 MIN_SECONDS = 10
 VENUES = {
     "eataly": ("Eataly Boston", "800 Boylston Street, Boston, MA 02199", "Boston"),
@@ -521,7 +525,7 @@ def _checkpoint(value, key, now):
     return deepcopy(value)
 
 
-def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None, max_details=MAX_FETCHES):
+def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None, max_details=None):
     key = _source(source)
     current = now or datetime.now(timezone.utc)
     if current.tzinfo is None:
@@ -545,7 +549,8 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
                      events=[], row_hashes={}, diagnostics=[], seen_urls=[])
     prior = (state["cursor"], state["pending_cursor"], len(state["events"]), len(state["diagnostics"]))
     calls = 0
-    budget = min(MAX_FETCHES, max(1, int(max_details)))
+    cap = SOURCE_FETCH_CAPS.get(key, MAX_FETCHES)
+    budget = cap if max_details is None else min(cap, max(1, int(max_details)))
     def can_fetch():
         return calls < budget and (deadline_at is None or monotonic() + MIN_SECONDS < deadline_at)
     while state["cursor"] < len(pages):
