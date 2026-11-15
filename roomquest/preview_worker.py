@@ -1047,6 +1047,14 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
     from roomquest.rockhouse import SOURCES as ROCKHOUSE_SOURCES
     from roomquest import civic_local_calendars, civic_schedule, legistar, municipal_notices, virginia_civic
     source_key = source.get('source_key')
+    if source_key == 'visit_raleigh_nc':
+        from roomquest.visit_raleigh import validate_source
+        try:
+            validate_source(source)
+        except ValueError as exc:
+            raise PreviewError('unregistered_visit_raleigh') from exc
+        # Thousands of dated occurrences require a durable complete snapshot.
+        raise PreviewError('publisher_checkpoint_required')
     from roomquest import boston_sources
     if boston_sources.adapter_for(source_key) is not None:
         try:
@@ -1949,6 +1957,140 @@ def _process_claimed_source(source: dict, *, deadline_at=None, publisher_handoff
             observe_phase=observe_phase, collection_context=collection_context)
 
 
+def _process_visit_raleigh(source, pacing, *, collection_context, deadline_at,
+                          publisher_handoff=None, observe_phase=None):
+    """Fetch completely, then stage acknowledged bounded batches across leases.
+
+    Raleigh alone uses a compressed source-specific checkpoint and staging cursor.
+    Other providers retain their existing complete-manifest processing behavior.
+    """
+    from roomquest import visit_raleigh as adapter
+
+    deadline = min(monotonic() + 43, deadline_at or float('inf'))
+    phase, operation, staged = 'collection', None, 0
+    try:
+        adapter.validate_source(source)
+        if (not isinstance(collection_context, dict)
+                or collection_context.get('p_category') != 'html'
+                or not isinstance(collection_context.get('p_ticket'), str)
+                or not collection_context['p_ticket']
+                or type(source.get('fetch_checkpoint_version')) is not int
+                or source['fetch_checkpoint_version'] != 1):
+            raise PreviewError('fetch_checkpoint_context_missing')
+        args = {'p_category': 'html', 'p_ticket': collection_context['p_ticket'],
+                'p_source_key': adapter.SOURCE_KEY}
+        operation = 'community_collector_read_fetch_checkpoint'
+        _observe_collection_phase(observe_phase, 'fetch', operation=operation)
+        saved = supabase_rpc(operation, args)
+        if (not isinstance(saved, dict) or type(saved.get('revision')) is not int
+                or saved['revision'] < 0 or 'checkpoint' not in saved
+                or (saved['checkpoint'] is not None and not isinstance(saved['checkpoint'], dict))
+                or (saved['checkpoint'] is None and saved['revision'] != 0)):
+            raise PreviewError('fetch_checkpoint_invalid_response')
+        revision = saved['revision']
+        checkpoint, snapshot = robots_checkpoint.detach(saved['checkpoint'])
+        _restore_checkpoint_robots(source, snapshot)
+        operation = None
+
+        def save_checkpoint(value):
+            nonlocal revision, operation
+            if pacing['wait_unbounded']:
+                raise PreviewError('publisher_wait_requires_review')
+            with_transport = robots_checkpoint.attach(value, _checkpoint_robots_snapshot(source))
+            operation = 'community_collector_write_fetch_checkpoint'
+            _observe_collection_phase(observe_phase, 'fetch' if phase == 'collection' else 'stage',
+                                      operation=operation)
+            acknowledged = supabase_rpc(operation, {
+                **args, 'p_expected_revision': revision, 'p_checkpoint': with_transport,
+                **pacing_rpc_fields(pacing)})
+            if (not isinstance(acknowledged, dict) or acknowledged.get('checkpoint_saved') is not True
+                    or type(acknowledged.get('revision')) is not int
+                    or acknowledged['revision'] != revision + 1):
+                raise PreviewError('fetch_checkpoint_invalid_response')
+            revision = acknowledged['revision']
+            if publisher_handoff is not None:
+                publisher_handoff['ready_at'] = monotonic() + max(
+                    1, pacing['crawl_delay_seconds'], pacing['retry_after_seconds'])
+            operation = None
+
+        already_complete = checkpoint is not None and checkpoint.get('phase') == 'stage'
+        if not already_complete:
+            operation = None
+            _observe_collection_phase(observe_phase, 'fetch')
+            fetch_deadline = min(monotonic() + 32, deadline - 9)
+            chunk = adapter.collect_chunk(source, lambda url, accept: fetch_publisher(
+                url, accept, respect_robots=True, deadline_at=fetch_deadline,
+                allowed_hosts=(adapter.HOST,)), checkpoint=checkpoint, deadline_at=fetch_deadline)
+            checkpoint = chunk['checkpoint']
+            # Commit the complete fetched prefix before staging even one row.
+            save_checkpoint(checkpoint)
+            if not chunk['complete']:
+                return {'complete': 0, 'failed': 0, 'staged': 0, 'fetch_pending': True}
+        header, state = adapter.decode_checkpoint(checkpoint, now=datetime.now(timezone.utc))
+        if header['phase'] != 'stage' or header['cursor'] != header['manifest_count']:
+            raise PreviewError('visit_raleigh_checkpoint_invalid')
+        phase = 'staging'
+        records = state['events']
+        batches = 0
+        while header['stage_cursor'] < header['record_count']:
+            # Reserve a stage RPC, checkpoint RPC, finish callback and overhead.
+            # Checkpoint bytes are unchanged while this header cursor advances.
+            if monotonic() > deadline - 12 or batches >= 12:
+                return {'complete': 0, 'failed': 0, 'staged': staged, 'fetch_pending': True}
+            batch, size = [], 2
+            for event in records[header['stage_cursor']:header['stage_cursor'] + STAGING_BATCH_SIZE]:
+                event_size = len(json.dumps(event, ensure_ascii=False)) + 2
+                if batch and size + event_size > 150_000:
+                    break
+                batch.append(event)
+                size += event_size
+            if not batch or size > 150_000:
+                raise PreviewError('visit_raleigh_incomplete_event')
+            operation = 'community_collector_record_staged_events'
+            _observe_collection_phase(observe_phase, 'stage', operation=operation)
+            written = supabase_rpc(operation, {'p_source_key': adapter.SOURCE_KEY, 'p_events': batch})
+            if type(written) is not int or written != len(batch):
+                # Never advance across an unacknowledged record. The ordinary
+                # idempotent upsert makes replay safe after a lost checkpoint.
+                raise PreviewError('database_unavailable')
+            header['stage_cursor'] += written
+            checkpoint = dict(checkpoint, stage_cursor=header['stage_cursor'])
+            save_checkpoint(checkpoint)
+            staged += written
+            batches += 1
+        if monotonic() > deadline - 6:
+            return {'complete': 0, 'failed': 0, 'staged': staged, 'fetch_pending': True}
+        samples = records[:MAX_PREVIEWS]
+        while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
+            samples.pop()
+        operation = 'community_collector_record_preview_v2'
+        _observe_collection_phase(observe_phase, 'record', operation=operation)
+        supabase_rpc(operation, {'p_source_key': adapter.SOURCE_KEY,
+            'p_samples': samples, 'p_future_count': header['record_count'],
+            'p_venue_count': sum(row.get('lat') is not None for row in records),
+            'p_error': None, **pacing_rpc_fields(pacing)})
+        if publisher_handoff is not None:
+            publisher_handoff['ready_at'] = monotonic() + max(
+                1, pacing['crawl_delay_seconds'], pacing['retry_after_seconds'])
+        return {'complete': 1, 'failed': 0, 'staged': staged}
+    except (PreviewError, OSError, ValueError, TypeError, KeyError, OverflowError) as exc:
+        # Infrastructure failures retain the checkpoint and acknowledged cursor
+        # for the existing lease retry. They must not certify or erase a snapshot.
+        if operation is not None or (isinstance(exc, PreviewError) and str(exc) in (
+                'database_unavailable', 'fetch_checkpoint_context_missing', 'fetch_checkpoint_invalid_response')):
+            _observe_collection_phase(observe_phase, 'stage' if phase == 'staging' else 'fetch',
+                                      operation=operation, error=exc)
+            raise
+        code = str(exc) if isinstance(exc, PreviewError) or str(exc) in adapter.DIAGNOSTIC_CODES else 'invalid_visit_raleigh_payload'
+        error = PreviewError(code)
+        _observe_collection_phase(observe_phase, 'fetch', error=error)
+        supabase_rpc('community_collector_record_preview_v2', {
+            'p_source_key': source.get('source_key'), 'p_samples': [], 'p_future_count': 0,
+            'p_venue_count': 0, 'p_error': code, **pacing_rpc_fields(pacing)})
+        failure = failure_details(code, expected_source_error=True, phase=phase)
+        return {'complete': 0, 'failed': 1, 'staged': 0, **failure}
+
+
 def _preview_halifax_chunk(source, pacing, *, collection_context, deadline_at,
                            publisher_handoff=None, observe_phase=None):
     from roomquest import discover_halifax
@@ -2294,6 +2436,9 @@ def _preview_fetch_chunk(source, pacing, *, adapter, allowed_hosts, collection_c
 
 def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, publisher_handoff=None,
                                        observe_phase=None, collection_context=None):
+    if source.get('source_key') == 'visit_raleigh_nc':
+        return _process_visit_raleigh(source, pacing, collection_context=collection_context,
+            deadline_at=deadline_at, publisher_handoff=publisher_handoff, observe_phase=observe_phase)
     from roomquest.linked_event_descriptions import PROFILES as linked_description_profiles
     from roomquest import new_york_sources
     new_york_checkpoint_keys = new_york_sources.checkpoint_keys()

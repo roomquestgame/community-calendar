@@ -9,7 +9,7 @@ from unittest.mock import MagicMock, Mock
 import pytest
 
 from roomquest import new_york_arts_final as arts, new_york_social_final as social
-from roomquest import new_york_sources, preview_worker as worker
+from roomquest import new_york_sources, preview_worker as worker, visit_raleigh as raleigh
 from roomquest import publisher_robots_checkpoint as cache
 from roomquest.publisher_pacing import capture_publisher_pacing
 
@@ -95,12 +95,16 @@ def signed_snapshot(src=None, *, raw=b"User-agent: *\nDisallow: /private/\nCrawl
         retry_after_until=now + timedelta(seconds=retry) if retry else None)
 
 
-def test_three_profiles_are_exact_and_match_existing_adapters():
-    assert set(cache.PROFILES) == {social.RADEGAST, arts.TRANSIT, arts.FLUSHING}
+def test_selected_profiles_are_exact_and_match_existing_adapters():
+    assert set(cache.PROFILES) == {social.RADEGAST, arts.TRANSIT, arts.FLUSHING, raleigh.SOURCE_KEY}
     for key, (url, host) in cache.PROFILES.items():
-        module = social if key == social.RADEGAST else arts
-        assert module.SOURCES[key] == (url, "html", "html")
-        assert module.ALLOWED_HOSTS[key] == (host,)
+        if key == raleigh.SOURCE_KEY:
+            assert (url, host) == (raleigh.CALENDAR, raleigh.HOST)
+            raleigh.validate_source(source(key))
+        else:
+            module = social if key == social.RADEGAST else arts
+            assert module.SOURCES[key] == (url, "html", "html")
+            assert module.ALLOWED_HOSTS[key] == (host,)
         assert cache.profile(source(key), (host,)) == host
         for change in ({"feed_url": url + "?other=1"}, {"kind": "json"},
                        {"timezone": "UTC"}, {"source_key": "another_source"}):

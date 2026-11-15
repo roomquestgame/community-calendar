@@ -1,4 +1,4 @@
-"""Authenticated, short-lived transport cache for three leased HTML sources.
+"""Authenticated, short-lived transport cache for selected leased HTML sources.
 
 This is a cache of the complete robots response, never a cached path decision.
 Only the publisher transport may create it. The existing private collector token
@@ -27,6 +27,7 @@ PROFILES = {
     "radegast_hall_brooklyn_ny": ("https://radegasthall.com/", "radegasthall.com"),
     "ny_transit_museum_ny": ("https://www.nytransitmuseum.org/programs/", "www.nytransitmuseum.org"),
     "flushing_town_hall_ny": ("https://www.flushingtownhall.org/events", "www.flushingtownhall.org"),
+    "visit_raleigh_nc": ("https://www.visitraleigh.com/events/", "www.visitraleigh.com"),
 }
 HOSTS = frozenset(value[1] for value in PROFILES.values())
 _DOMAIN = b"RoomQuest/transport-robots-checkpoint/v1\x00"

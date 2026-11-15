@@ -592,7 +592,7 @@ def collect_category(category, ticket):
                                 'observe_phase': diagnostics.observe}
                 if category == 'html':
                     process_args['publisher_handoff'] = publisher_handoff
-                    if ((source.get('source_key') in ('discover_halifax_va', 'visit_atlantic_city_nj', 'noyes_arts_atlantic_city_nj', 'atlantic_city_municipal_nj', 'greatday_atlantic_city_nj')
+                    if ((source.get('source_key') in ('discover_halifax_va', 'visit_atlantic_city_nj', 'noyes_arts_atlantic_city_nj', 'atlantic_city_municipal_nj', 'greatday_atlantic_city_nj', 'visit_raleigh_nc')
                             or source.get('source_key') in LINKED_DESCRIPTION_PROFILES
                             or source.get('source_key') in ATLANTIC_LIBRARY_CHECKPOINT_KEYS
                             or source.get('source_key') in ATLANTIC_NIGHTLIFE_CHECKPOINT_KEYS
