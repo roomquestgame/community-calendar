@@ -24,7 +24,7 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import urlparse
 from urllib.parse import urljoin
 from urllib.request import HTTPRedirectHandler, Request, build_opener
-from zoneinfo import ZoneInfo
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from roomquest.collector_errors import failure_details
 from roomquest import publisher_robots_checkpoint as robots_checkpoint
@@ -972,6 +972,16 @@ def parse_ics_preview(payload: str, *, allow_ongoing=False, include_images=True,
                               calendar_categories(item), image=calendar_image(item) if include_images else None,
                               allow_ongoing=allow_ongoing)
             if record:
+                tzid = item["DTSTART"].params.get("TZID")
+                if isinstance(tzid, str):
+                    try:
+                        zone = ZoneInfo(tzid)
+                    except (ValueError, ZoneInfoNotFoundError):
+                        # A feed may define a custom VTIMEZONE with no IANA key.
+                        pass
+                    else:
+                        if started.astimezone(zone).replace(tzinfo=None) == started.replace(tzinfo=None):
+                            record["timezone"] = zone.key
                 # Retain the occurrence's own narrative after recurrence expansion.
                 # Do not look up by UID: recurrence overrides can have different text.
                 if include_description:
