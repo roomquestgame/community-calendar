@@ -390,6 +390,13 @@ def fetch_publisher(url: str, accept: str, *, respect_robots: bool = False,
                                     deadline_at=deadline_at, allowed_hosts=allowed_hosts)
 
 
+def fetch_visit_raleigh_page(url: str, *, deadline_at=None) -> str:
+    """Read the exact public Raleigh query, retaining ordinary access guards."""
+    from roomquest.visit_raleigh import HOST
+    return _fetch_publisher_request(url, 'application/json', respect_robots=True,
+        deadline_at=deadline_at, allowed_hosts=(HOST,), visit_raleigh_api=True)
+
+
 def render_cfengage_calendar(*, deadline_at: float | None = None) -> str:
     """Read the anonymous display endpoint used by CFengage's public calendar."""
     from roomquest.richmond_public_calendars import CF_API, CF_HOST, calendar_form
@@ -516,7 +523,7 @@ def render_cardboard_arena_calendar(*, starts_at, ends_at, deadline_at=None):
 def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = False,
                              deadline_at: float | None = None, allowed_hosts=None,
                              calendar_form=None, calendar_json=None, localhop_app_id=None,
-                             cardboard_arena_calendar=False) -> str | bytes:
+                             cardboard_arena_calendar=False, visit_raleigh_api=False) -> str | bytes:
     """Use the shared bounded transport for approved HTTPS publisher content.
 
     Keep URL/DNS validation and bounded downloads. As in upstream Udell,
@@ -524,6 +531,13 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
     destination URLs still pass public-network checks before each GET redirect.
     Reviewed display-only POSTs are source scoped and never redirected.
     """
+    if visit_raleigh_api is not False:
+        from roomquest import visit_raleigh
+        if (visit_raleigh_api is not True or not respect_robots or accept != 'application/json'
+                or allowed_hosts != (visit_raleigh.HOST,) or not visit_raleigh.valid_api_url(url)
+                or calendar_form is not None or calendar_json is not None
+                or localhop_app_id is not None or cardboard_arena_calendar is not False):
+            raise PreviewError('invalid_visit_raleigh_request')
     if cardboard_arena_calendar is not False:
         from urllib.parse import parse_qs
         parsed = urlparse(url)
@@ -607,7 +621,12 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
                 or not re.fullmatch(r'[0-9a-f]{10}', str(calendar_form.get('r34ics_nonce', '')))
                 or not re.fullmatch(r'[0-9a-f]{40}', str(calendar_form.get('args', '')))):
             raise PreviewError('invalid_calendar_render_parameters')
-    if localhop_app_id is not None:
+    if visit_raleigh_api:
+        # The exact bounded query is validated above. The real URL still goes
+        # through robots, pacing and the GET; only the generic length check
+        # uses this fixed public endpoint, as for other reviewed API queries.
+        safe_url = visit_raleigh.API
+    elif localhop_app_id is not None:
         from roomquest.nebraska_final import LOCALHOP_API, LOCALHOP_HOST
         if (not url.startswith(LOCALHOP_API + "?") or len(url) > 2400 or not respect_robots
                 or allowed_hosts != (LOCALHOP_HOST,) or accept != "application/json"
@@ -651,7 +670,7 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
             parsed = urlparse(current)
             if allowed_hosts is not None and parsed.hostname not in allowed_hosts:
                 raise PreviewError("redirect_host_not_approved")
-            if not public_source_url(safe_url if localhop_app_id is not None else current):
+            if not public_source_url(safe_url if localhop_app_id is not None or visit_raleigh_api else current):
                 raise PreviewError("invalid_redirect_url")
             current_deadline = deadline if network_started else admission_deadline
             if respect_robots and monotonic() >= current_deadline:
@@ -692,7 +711,7 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
                         response.close()
                         raise
                 if response.status_code in (301, 302, 303, 307, 308):
-                    if calendar_form is not None or calendar_json is not None or localhop_app_id is not None or cardboard_arena_calendar:
+                    if calendar_form is not None or calendar_json is not None or localhop_app_id is not None or cardboard_arena_calendar or visit_raleigh_api:
                         response.close()
                         raise PreviewError('calendar_render_redirect_blocked')
                     from urllib.parse import urljoin
@@ -2018,9 +2037,12 @@ def _process_visit_raleigh(source, pacing, *, collection_context, deadline_at,
             operation = None
             _observe_collection_phase(observe_phase, 'fetch')
             fetch_deadline = min(monotonic() + 32, deadline - 9)
-            chunk = adapter.collect_chunk(source, lambda url, accept: fetch_publisher(
-                url, accept, respect_robots=True, deadline_at=fetch_deadline,
-                allowed_hosts=(adapter.HOST,)), checkpoint=checkpoint, deadline_at=fetch_deadline)
+            def fetch(url, accept):
+                if accept == 'application/json':
+                    return fetch_visit_raleigh_page(url, deadline_at=fetch_deadline)
+                return fetch_publisher(url, accept, respect_robots=True,
+                    deadline_at=fetch_deadline, allowed_hosts=(adapter.HOST,))
+            chunk = adapter.collect_chunk(source, fetch, checkpoint=checkpoint, deadline_at=fetch_deadline)
             checkpoint = chunk['checkpoint']
             # Commit the complete fetched prefix before staging even one row.
             save_checkpoint(checkpoint)

@@ -40,6 +40,8 @@ class Harness:
             (worker, "datetime", FixedDatetime), (r, "datetime", FixedDatetime),
             (worker, "supabase_rpc", self.rpc), (category, "supabase_rpc", self.rpc),
             (worker, "fetch_publisher", self.fetch),
+            (worker, "fetch_visit_raleigh_page", lambda url, **kwargs: self.fetch(
+                url, "application/json", respect_robots=True, allowed_hosts=(r.HOST,), **kwargs)),
             (worker, "_future_datetime", lambda value: value.astimezone(timezone.utc)),
             (worker, "_checkpoint_robots_snapshot", lambda source: None),
             (worker, "_restore_checkpoint_robots", lambda source, snapshot: None),
