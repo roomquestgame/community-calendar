@@ -105,11 +105,13 @@ totals and visible overflow. No routine GitHub Actions workflow is dispatched.
 The replay anchor was 2026-11-15 12:00 UTC. These are offline validation counts,
 not a claim of production publication.
 
-| Calendar | Complete normalized occurrences | Held | Checkpoint size | Capture requests/chunks |
+| Calendar | Complete normalized occurrences | Held | Final checkpoint size | Capture requests/chunks |
 | --- | ---: | ---: | ---: | --- |
 | Neptunes | 26 | 0 | 25,616 bytes | 1 / 1 |
 | Sports & Social Cary | 63 | 3 without usable clocks | 125,005 bytes | 2 / 1 |
 | Cannonball Music Hall | 18 | 1 with a genuinely blank detail description | 25,699 bytes | 13 / 2 |
+| Slim's Dive Bar | 9 | 35 with genuinely blank detail descriptions | 18,846 bytes | 36 / 9 |
+| Hone-Sharpen | 1 | 34 tours without a native detail description | 12,755 bytes | 35 / 9 |
 
 The Cannonball replay included every current host-manifest detail page and all
 native dates of Open Mic and Hijack Comedy. The held page was Death in the
@@ -117,12 +119,31 @@ Mountains Tour: its description container was empty, despite a listing teaser.
 All accepted records retained complete cleaned native descriptions and the
 verified full street address; no capture exceeded the checkpoint limit.
 
-The Slim's API supplied 44 in-window rows: nine already had full descriptions
-and 35 require actual detail hydration. Hone-Sharpen supplied one public class
-with a full description and 34 tours requiring detail hydration after private
-events were excluded. Real missing-description detail samples from both sites
-were checked and genuinely blank; the remaining detail disposition counts are
-determined by the production capture, not guessed from those samples.
+The final exact Slim's and Hone-Sharpen API queries each returned 47 native
+rows. Slim's had 44 eligible in-window events: nine with full native prose and
+35 requiring actual detail hydration. Hone-Sharpen had one eligible public
+class with full prose and 34 tours requiring detail hydration; private and
+out-of-window entries were excluded. All 69 missing-prose detail pages were
+read through the ordinary robots-aware path and returned HTTP 200. Every
+Slim's detail had an empty event-description block; every Hone tour detail
+lacked a native event-description block. The final held counts therefore
+reflect the actual complete detail capture, not an extrapolation from samples.
+
+The Slim's Newspaper Taxis detail exposes the artist's Bandcamp website in
+its Event JSON-LD `url`. A source-specific fallback proves the official page
+through its exact canonical permalink, matching native WordPress post ID,
+single matching schema title, visible title and occurrence start. The artist
+website is never fetched. A regression rejects a changed canonical URL,
+native ID, schema title or clock; the real empty description remains a hold.
+
+These two replays used a four-fetch ticket budget, verified every resumed
+checkpoint and never reread a completed prefix. Peak checkpoint sizes were
+30,339 bytes for Slim's and 20,860 bytes for Hone, safely under the existing
+850,000-byte limit. Slim's capture needed one bounded same-route resume after
+an ordinary network timeout; no HTTP or robots denial occurred. All five
+nightlife/cooking sources now have complete offline replay artifacts. The
+focused nightlife, performance and neighboring Boston regression run passed
+89 tests. Production access and publication remain separate checks.
 
 The exact Sports overlap query was verified after correcting two legitimate
 query details: WordPress rejects `1970-01-01 00:00:00` as a falsey epoch value,
@@ -138,10 +159,10 @@ future horizon. Both final exact query URLs returned HTTP 200.
 | Bond Brothers Eastside | Automatic approval review rejected the proposed Elfsight robots-parser adjustment as an access-control bypass. No endpoint content was fetched after rejection. | Keep disabled; do not retry with parser changes or alternate routing. This is an approval-review hold, not a reported HTTP 403. |
 | Wolfe & Porter | Official page 200; the exposed Google calendar's public ICS route was robots-denied. The ICS body was not requested. | Keep feed disabled. |
 | Crank Arm Brewing | Robots endpoint returned HTTP 202, preventing a valid allowed decision. | Keep source disabled pending an ordinary valid robots response. |
-| Tin Roof Raleigh | Official calendar 200 with custom WordPress display cards; complete public feed/pagination not established in this batch. | Separate adapter investigation. |
+| Tin Roof Raleigh | Official calendar, public Gigwell scripts/settings/API and robots returned 200. The complete native result contained 82 rows, of which 80 were in the window and had full descriptions. | Implemented separately as `tin_roof_raleigh_nc` in `raleigh_direct_additional.py`, with the verified 300 Glenwood Ave, Raleigh, NC 27603 street and a complete replay. See the arts evidence document for the public query contract. |
 | Chapel of Bones | Official calendar and TickPick widget script 200. The official organizer key is `chapel-of-bones`. | Inspect its exposed anonymous widget data contract before enabling. |
 | Crooked Hammock Raleigh | Official calendar 200, but captured Popmenu HTML/Apollo state contains a calendar shell rather than event payloads. | Inspect its published calendar query; do not treat the shell as an empty complete calendar. |
-| Fortnight Brewing | Official calendar 200; WordPress ICS Calendar exposes `r34ics_ajax` display containers and public display arguments, with separate Cary/Wake Forest calendars. | Implement and bind the Cary calendar/address before enabling. |
+| Fortnight Brewing | Official calendar, robots and both native R34ICS calendar displays returned 200. The complete Cary/Wake Forest displays contained 129 in-window entries, but event descriptions were absent or only runner emoji/a street address. | Keep `fortnight_brewing_nc` disabled with `publisher_event_narrative_unavailable`; no adapter or transport extension is enabled. This is a narrative-quality hold, not an HTTP denial. |
 
 Visit Raleigh's production `publisher_http_403` hold remains unchanged. None
 of these primary-source checks retries or bypasses that denied calendar.

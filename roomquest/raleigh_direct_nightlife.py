@@ -387,7 +387,18 @@ def _tec_detail(key, item, payload):
     names = soup.select("h1.tribe-events-single-event-title")
     if not names and key == HONE:
         names = soup.select("h1.entry-title")
-    schemas = [x for x in _schema_events(soup) if x.get("url") == item["url"]]
+    all_schemas = _schema_events(soup)
+    schemas = [x for x in all_schemas if x.get("url") == item["url"]]
+    if not schemas and key == SLIMS:
+        # TEC can put the artist's website in Event.url. The exact canonical
+        # permalink and WordPress post ID independently bind this fetched page
+        # to the API item; its sole matching event name and clock still apply.
+        canonical = [x.get("href") for x in soup.select('link[rel="canonical"]')]
+        post_id = "postid-" + item["native_id"]
+        if canonical == [item["url"]] and soup.body and post_id in (soup.body.get("class") or []):
+            matching = [x for x in all_schemas if plain(x.get("name")) == item["title"]]
+            if len(matching) == 1:
+                schemas = matching
     if len(names) != 1 or plain(names[0].get_text(" ")) != item["title"] or not schemas:
         raise ValueError("raleigh_direct_detail_changed")
     starts = {timestamp(x.get("startDate")) for x in schemas}
