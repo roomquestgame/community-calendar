@@ -1,7 +1,10 @@
 """Independent demand lanes. Credentials and one-use tickets stay server-side."""
+import errno
 import json
 import logging
 import re
+import socket
+import ssl
 from time import monotonic, sleep
 from urllib.error import HTTPError, URLError
 from roomquest.collector_errors import failure_details
@@ -452,6 +455,59 @@ def _error_type(error):
     return 'Exception'
 
 
+# Only established numeric network/verification codes may enter diagnostics.
+# These are not ranges: an arbitrary integer on a custom exception is omitted.
+_NETWORK_ERRNOS = frozenset(getattr(errno, name) for name in (
+    'EACCES', 'EPERM', 'ECONNABORTED', 'ECONNREFUSED', 'ECONNRESET', 'EHOSTUNREACH',
+    'ENETDOWN', 'ENETRESET', 'ENETUNREACH', 'EPIPE', 'ETIMEDOUT'))
+_DNS_ERRNOS = frozenset(getattr(socket, name) for name in (
+    'EAI_AGAIN', 'EAI_FAIL', 'EAI_NONAME', 'EAI_SYSTEM'))
+# OpenSSL X509 verification codes: issuer, validity, trust chain, revocation,
+# hostname/IP mismatch and weak key/signature failures. No messages are logged.
+_TLS_VERIFY_CODES = frozenset((2, 9, 10, 18, 19, 20, 21, 23, 62, 64, 66, 67, 68))
+
+
+def _url_error_details(error):
+    """Describe one urllib reason using closed labels and allowlisted integers.
+
+    Never stringify a reason, read its message/URL, inspect arbitrary exception
+    attributes or follow an unbounded cause chain. This observes the existing
+    failure; it does not retry a request or alter any transport/security setting.
+    """
+    try:
+        transport = error.__cause__ if isinstance(error.__cause__, URLError) else error
+        if not isinstance(transport, URLError) or isinstance(transport, HTTPError):
+            return {}
+        reason = transport.reason
+        labels = ((ssl.SSLCertVerificationError, 'SSLCertVerificationError'),
+                  (ssl.SSLEOFError, 'SSLEOFError'), (ssl.SSLError, 'SSLError'),
+                  (socket.gaierror, 'gaierror'), (TimeoutError, 'TimeoutError'),
+                  (ConnectionRefusedError, 'ConnectionRefusedError'),
+                  (ConnectionResetError, 'ConnectionResetError'),
+                  (ConnectionAbortedError, 'ConnectionAbortedError'),
+                  (BrokenPipeError, 'BrokenPipeError'), (ConnectionError, 'ConnectionError'),
+                  (PermissionError, 'PermissionError'), (OSError, 'OSError'))
+        label = next((label for family, label in labels if isinstance(reason, family)),
+                     'string' if type(reason) is str else 'unknown')
+        result = {'url_reason_type': label}
+        if isinstance(reason, ssl.SSLCertVerificationError):
+            value = getattr(reason, 'verify_code', None)
+            if type(value) is int and value in _TLS_VERIFY_CODES:
+                result['tls_verify_code'] = value
+        elif isinstance(reason, socket.gaierror):
+            value = reason.errno
+            if type(value) is int and value in _DNS_ERRNOS:
+                result['dns_errno'] = value
+        elif isinstance(reason, OSError) and not isinstance(reason, ssl.SSLError):
+            value = reason.errno
+            if type(value) is int and value in _NETWORK_ERRNOS:
+                result['network_errno'] = value
+        return result
+    except Exception:
+        # A malformed diagnostic attribute must not suppress the base record.
+        return {}
+
+
 class _Diagnostics:
     """At most three safe failure records for one invocation, with no I/O retry."""
     def __init__(self, category):
@@ -492,6 +548,7 @@ class _Diagnostics:
             transport = cause if isinstance(cause, HTTPError) else error
             if isinstance(transport, HTTPError) and type(transport.code) is int and 100 <= transport.code <= 599:
                 record['upstream_http_status'] = transport.code
+            record.update(_url_error_details(error))
             _LOGGER.warning(json.dumps(record, separators=(',', ':'), sort_keys=True))
             # The HTTP fallback avoids repeating a worker record. Exception
             # identity, arguments, traceback and response semantics stay intact.

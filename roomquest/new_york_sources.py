@@ -20,9 +20,11 @@ def adapters():
     from roomquest import new_york_arts, new_york_nightlife, new_york_outdoors
     from roomquest import new_york_arts_remaining, new_york_social_remaining, new_york_outdoors_remaining
     from roomquest import new_york_arts_final, new_york_social_final, new_york_outdoors_final, new_york_family_final
+    from roomquest import new_york_local_expansion, new_york_other_half, new_york_food_expansion, new_york_culture_expansion
     return (new_york_arts, new_york_nightlife, new_york_outdoors,
             new_york_arts_remaining, new_york_social_remaining, new_york_outdoors_remaining,
-            new_york_arts_final, new_york_social_final, new_york_outdoors_final, new_york_family_final)
+            new_york_arts_final, new_york_social_final, new_york_outdoors_final, new_york_family_final,
+            new_york_local_expansion, new_york_other_half, new_york_food_expansion, new_york_culture_expansion)
 
 
 def adapter_for(key):

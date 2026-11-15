@@ -1,0 +1,546 @@
+{
+  "schema_version": 1,
+  "checked_at": "2026-11-15T01:19:07.096000+00:00",
+  "status": "local_acceptance_complete_production_pending",
+  "base_sha": "11ab7334b361c679b7b2e42fa300190278178377",
+  "existing_profiles_preserved": 62,
+  "new_profiles": 7,
+  "accepted_occurrences": 260,
+  "blank_descriptions": 0,
+  "missing_postal_streets": 0,
+  "missing_coordinates": 0,
+  "sources": [
+    {
+      "source": {
+        "source_key": "freddys_bar_brooklyn_ny",
+        "feed_url": "https://www.freddysbar.com/events",
+        "kind": "html",
+        "platform_adapter": "html",
+        "timezone": "America/New_York"
+      },
+      "accepted_occurrences": 22,
+      "manifest_count": 73,
+      "held_reasons": {
+        "new_york_local_description_missing": 51
+      },
+      "description_min": 26,
+      "description_max": 766,
+      "venue_tuples": [
+        [
+          "Freddy’s Bar",
+          "627 5th Avenue, Brooklyn, NY 11215",
+          40.663246,
+          -73.991124
+        ]
+      ],
+      "capture_hashes": [
+        {
+          "url": "https://www.freddysbar.com/events",
+          "sha256": "01ec2935cb33910aec142ae62437a84b6a581784fddf126356b427af45a76f2f"
+        }
+      ]
+    },
+    {
+      "source": {
+        "source_key": "strong_rope_brooklyn_ny",
+        "feed_url": "https://www.strongropebrewery.com/events-calendar",
+        "kind": "html",
+        "platform_adapter": "html",
+        "timezone": "America/New_York"
+      },
+      "accepted_occurrences": 6,
+      "manifest_count": 6,
+      "held_reasons": {},
+      "description_min": 121,
+      "description_max": 315,
+      "venue_tuples": [
+        [
+          "Strong Rope Brewery",
+          "185 Van Dyke Street, Brooklyn, NY 11231",
+          40.677561,
+          -74.018397
+        ]
+      ],
+      "capture_hashes": [
+        {
+          "url": "https://www.strongropebrewery.com/events-calendar",
+          "sha256": "140cdf90c7f8bb450e79bbb59ccc1a2a409d672173f7430b34637950c29d4186"
+        },
+        {
+          "url": "https://www.strongropebrewery.com/events-calendar/food-chaat-dog-2026-nov-21",
+          "sha256": "4c125de4cd98acccf33ffe1aab44cec6c39022cb362163ad533b00e83df0e130"
+        },
+        {
+          "url": "https://www.strongropebrewery.com/events-calendar/food-el-toro-rojo-2026-nov-29",
+          "sha256": "20ed708fe9d72fa09d3dc80fc11937748aeb50536067d1e73a6eb8a8926e4902"
+        },
+        {
+          "url": "https://www.strongropebrewery.com/events-calendar/food-jerry-peppers-2026-nov-15",
+          "sha256": "b1bba0fed2e3fb4a6f0887a587f597893c1d530c0f6bd1b631bbae622059eecc"
+        },
+        {
+          "url": "https://www.strongropebrewery.com/events-calendar/food-jerry-peppers-2026-nov-22",
+          "sha256": "7cda864b25627f56acb97e7881b05791a8b3c5fa1931856fe561c334bad2508e"
+        },
+        {
+          "url": "https://www.strongropebrewery.com/events-calendar/food-meat-asia-2026-nov-20",
+          "sha256": "e60736a79239aa991a0a450c87b84b5b1a25a90d7325ebb9c2cefbfb5dd42385"
+        },
+        {
+          "url": "https://www.strongropebrewery.com/events-calendar/food-meat-asia-2026-nov-28",
+          "sha256": "62961b7a39a94fb6d270d385ebf62731a0f80b6f8a7987c2c8d5c6632b1ec5a3"
+        }
+      ]
+    },
+    {
+      "source": {
+        "source_key": "fad_market_brooklyn_ny",
+        "feed_url": "https://fadmarket.co/",
+        "kind": "html",
+        "platform_adapter": "html",
+        "timezone": "America/New_York"
+      },
+      "accepted_occurrences": 27,
+      "manifest_count": 2,
+      "held_reasons": {},
+      "description_min": 1586,
+      "description_max": 1884,
+      "venue_tuples": [
+        [
+          "FAD Market at Empire Stores",
+          "55 Water Street, Brooklyn, NY 11201",
+          40.703638,
+          -73.991651
+        ],
+        [
+          "FAD Market at St. Paul",
+          "190 Court Street, Brooklyn, NY 11201",
+          40.687565,
+          -73.993855
+        ]
+      ],
+      "capture_hashes": [
+        {
+          "url": "https://fadmarket.co/",
+          "sha256": "514184b323dda8f38122139864bc79a782b31254ff37310454a3bcf9a1c8695b"
+        },
+        {
+          "url": "https://fadmarket.co/cobble-hill-holiday-market",
+          "sha256": "9aeda91919f112e0301c7ae7ae56ad5ea2c307baee8cc9da2634266e63da80ab"
+        },
+        {
+          "url": "https://fadmarket.co/empirestores-holiday-market",
+          "sha256": "e36ec9b21f8c9858d69ccd61e86e44c6681ec24a7f0fd011538f0d0c9de4a05b"
+        }
+      ]
+    },
+    {
+      "source": {
+        "source_key": "other_half_nyc_ny",
+        "feed_url": "https://otherhalfbrewing.com/events/",
+        "kind": "html",
+        "platform_adapter": "html",
+        "timezone": "America/New_York"
+      },
+      "accepted_occurrences": 1,
+      "manifest_count": 4,
+      "held_reasons": {
+        "new_york_other_half_description_missing": 3
+      },
+      "description_min": 1622,
+      "description_max": 1622,
+      "venue_tuples": [
+        [
+          "Other Half Brewing – Centre Street",
+          "195 Centre Street, Brooklyn, NY 11231",
+          40.673887,
+          -73.999079
+        ]
+      ],
+      "capture_hashes": [
+        {
+          "url": "https://otherhalfbrewing.com/event/clone-centre-street-trivia-2026-11-19/",
+          "sha256": "f460132ab70f2b9e6382b217f090ce20f9751bed706da9a032e9d2d02e9b484d"
+        },
+        {
+          "url": "https://otherhalfbrewing.com/event/clone-domino-park-trivia-2026-11-18/",
+          "sha256": "6adcf3446790e4cbc984cec1beeb43fa35fa14f9ea285df20226b14b8478333b"
+        },
+        {
+          "url": "https://otherhalfbrewing.com/event/clone-domino-park-trivia-2026-11-25/",
+          "sha256": "18659373159153d67be46bcdcab7008de3376e09a779a79c1a831ceff91dcbe6"
+        },
+        {
+          "url": "https://otherhalfbrewing.com/event/stout-season-2026-2026-12-05/",
+          "sha256": "205887525243f6ebcd2d9e39b4e3dde347b2fc76cdc736c9dc3b9bafcf103903"
+        },
+        {
+          "url": "https://otherhalfbrewing.com/events/",
+          "sha256": "5da599648b1cd3aa325645885f899a4129f6dcb1de74e5133e3623c36e71ea40"
+        }
+      ]
+    },
+    {
+      "source": {
+        "source_key": "eataly_new_york_ny",
+        "feed_url": "https://www.eataly.com/c/classes-new-york",
+        "kind": "html",
+        "platform_adapter": "html",
+        "timezone": "America/New_York"
+      },
+      "accepted_occurrences": 156,
+      "manifest_count": 11,
+      "unique_product_parents": 186,
+      "held_reasons": {
+        "new_york_food_outside_window": 36
+      },
+      "description_min": 127,
+      "description_max": 3916,
+      "checkpoint_bytes": 644686,
+      "checkpoint_claims": 17,
+      "native_venues": {
+        "Eataly NYC Flatiron": 92,
+        "Eataly NYC Downtown": 53,
+        "Eataly Soho": 11
+      },
+      "canonical_points": {
+        "ENY 1": [
+          40.742045,
+          -73.9900845
+        ],
+        "USDT-US00_88": [
+          40.7103713,
+          -74.0117875
+        ],
+        "ELF 1": [
+          40.7213863,
+          -73.9981026
+        ]
+      },
+      "detail_refetches": 0,
+      "source_urls": [
+        "https://www.eataly.com/c/classes-new-york",
+        "https://www.eataly.com/p/hands-on%3A-tagliatelle-with-fall-ragu-2002761713197.html",
+        "https://www.eataly.com/p/hands-on%3A-tiramisu-2004447737140.html",
+        "https://www.eataly.com/p/hands-on%3A-pizza-napoletana-with-rossopomodoro-2002834908125.html",
+        "https://www.eataly.com/p/hands-on%3A-focaccia-2002353029814.html",
+        "https://www.eataly.com/p/hands-on%3A-mozzarella-2002761596849.html",
+        "https://www.eataly.com/p/hands-on%3A-sicilian-cannoli-2002834362493.html",
+        "https://www.eataly.com/p/hands-on%3A-tagliatelle-alla-bolognese-2004399568065.html",
+        "https://www.eataly.com/p/wine-e-bites--holiday-edition--2003414259982.html",
+        "https://www.eataly.com/p/hands-on%3A-pasta-making-at-il-pastaio--restaurant-edition--2003683849331.html",
+        "https://www.eataly.com/p/hands-on%3A-farfalle-2002757362183.html",
+        "https://www.eataly.com/p/hands-on%3A-tiramisu-classico-2004089314087.html",
+        "https://www.eataly.com/p/hands-on%3A-tagliatelle-alla-bolognese-2002834082656.html",
+        "https://www.eataly.com/p/hands-on%3A-ravioli-%7C-butternut-squash-2002761750308.html",
+        "https://www.eataly.com/p/hands-on%3A-pasta-making-at-il-pastaio--restaurant-edition--2003683880424.html",
+        "https://www.eataly.com/p/hands-on%3A-spaghetti-alla-chitarra-2003379566212.html",
+        "https://www.eataly.com/p/hands-on%3A-tortelli-2004502765732.html",
+        "https://www.eataly.com/p/hands-on%3A-tiramisu-2004448178460.html",
+        "https://www.eataly.com/p/eataly-pane%3A-hands-on-baking-class-2002902907513.html",
+        "https://www.eataly.com/p/hands-on%3A-cavatelli-2002757555762.html",
+        "https://www.eataly.com/p/hands-on%3A-ravioli-%7C-cacio-e-pepe-2004502545072.html",
+        "https://www.eataly.com/c/classes-new-york?page=2",
+        "https://www.eataly.com/p/hands-on%3A-pasta-making-at-il-pastaio--restaurant-edition--2003683927565.html",
+        "https://www.eataly.com/p/hands-on%3A-mozzarella-2003475185211.html",
+        "https://www.eataly.com/p/hands-on%3A-pizza-al-padellino-2002759574801.html",
+        "https://www.eataly.com/p/hands-on%3A-fettuccine--alfredo%E2%80%9D-burro-e-parmigiano-2002902943621.html",
+        "https://www.eataly.com/p/hands-on%3A-ravioli-%7C-butternut-squash-2002761780398.html",
+        "https://www.eataly.com/p/hands-on%3A-pasta-making-at-il-pastaio--restaurant-edition--2003683979721.html",
+        "https://www.eataly.com/p/hands-on%3A-gnocchi-e-pesto-making-2004502618291.html",
+        "https://www.eataly.com/p/hands-on%3A-cannoli-2004502654399.html",
+        "https://www.eataly.com/p/hands-on%3A-focaccia-2002761422327.html",
+        "https://www.eataly.com/p/hands-on%3A-agnolotti-2002761402267.html",
+        "https://www.eataly.com/p/hands-on%3A-cavatelli-2004829201109.html",
+        "https://www.eataly.com/p/hands-on%3A-spaghetti-alla-chitarra-al-pomodoro-2003550847519.html",
+        "https://www.eataly.com/p/hands-on%3A-ravioli-2004828304427.html",
+        "https://www.eataly.com/p/hands-on%3A-spaghetti-alla-chitarra-2003687796136.html",
+        "https://www.eataly.com/p/hands-on%3A-pizza-napoletana-with-rossopomodoro-2003792338826.html",
+        "https://www.eataly.com/p/hands-on%3A-pasta-allamatariciana-2004440969899.html",
+        "https://www.eataly.com/p/hands-on%3A-tagliolini-al-caviale--holiday-edition--2003415605005.html",
+        "https://www.eataly.com/p/hands-on%3A-tagliatelle-2003688076976.html",
+        "https://www.eataly.com/p/eataly-pane%3A-hands-on-baking-class-2003486931344.html",
+        "https://www.eataly.com/p/hands-on%3A-lasagna-alla-bolognese-2003475554315.html",
+        "https://www.eataly.com/c/classes-new-york?page=3",
+        "https://www.eataly.com/p/wine-e-bites--holiday-edition--2003467080971.html",
+        "https://www.eataly.com/p/family-fun%3A-pasta-making-class-2003465918494.html",
+        "https://www.eataly.com/p/hands-on%3A-pasta-making-at-il-pastaio--restaurant-edition--2003684004796.html",
+        "https://www.eataly.com/p/family-fun%3A-holiday-cookies--holiday-edition--2003476523213.html",
+        "https://www.eataly.com/p/hands-on%3A-gnocchi-al-burro-e-tartufo--holiday-edition--2003479913353.html",
+        "https://www.eataly.com/p/hands-on%3A-pasta-making-at-il-pastaio--restaurant-edition--2003684058958.html",
+        "https://www.eataly.com/p/hands-on%3A-gnocchi-al-burro-e-tartufo-2003688413984.html",
+        "https://www.eataly.com/p/hands-on%3A-tiramisu-classico-2003480621471.html",
+        "https://www.eataly.com/p/hands-on%3A-lasagna-alla-bolognese-2003688579479.html",
+        "https://www.eataly.com/p/hands-on%3A-farfalle-2003688708866.html",
+        "https://www.eataly.com/p/hands-on%3A-pizza-napoletana-with-rossopomodoro--restaurant-edition--2004327100312.html",
+        "https://www.eataly.com/p/hands-on%3A-pasta-cacio-e-pepe-2003483936386.html",
+        "https://www.eataly.com/p/hands-on%3A-cavatelli-2004501608270.html",
+        "https://www.eataly.com/p/hands-on%3A-ravioli-alla-zucca-2003554739159.html",
+        "https://www.eataly.com/p/hands-on%3A-pizza-al-padellino-2003479693696.html",
+        "https://www.eataly.com/p/hands-on%3A-pizza-al-padellino-2004494273331.html",
+        "https://www.eataly.com/p/hands-on%3A-gnocchi-al-pesto-2003554779279.html",
+        "https://www.eataly.com/p/hands-on%3A-mozzarella-2003486402763.html",
+        "https://www.eataly.com/p/hands-on%3A-tagliolini-al-caviale--holiday-edition--2003486540174.html",
+        "https://www.eataly.com/p/hands-on%3A-pasta-making-at-il-pastaio--restaurant-edition--2003684119138.html",
+        "https://www.eataly.com/c/classes-new-york?page=4",
+        "https://www.eataly.com/p/family-fun-class%3A-pasta-making-class--parent-child--2003484108902.html",
+        "https://www.eataly.com/p/hands-on%3A-pastas-of-puglia-%7C-3-course-dinner-e-workshop-2003688859316.html",
+        "https://www.eataly.com/p/hands-on%3A-tagliatelle-alla-bolognese-2003486353616.html",
+        "https://www.eataly.com/p/hands-on%3A-pasta-making-at-il-pastaio--restaurant-edition--2003684150231.html",
+        "https://www.eataly.com/p/hands-on%3A-ravioli-%7C-butternut-squash-2003688302651.html",
+        "https://www.eataly.com/p/hands-on%3A-ravioli-%7C-black-truffle-2003687565446.html",
+        "https://www.eataly.com/p/hands-on%3A-pizza-napoletana-with-rossopomodoro--restaurant-edition--2003683019850.html",
+        "https://www.eataly.com/p/hands-on%3A-focaccia-2004450692981.html",
+        "https://www.eataly.com/p/hands-on%3A-lasagna-alla-bolognese-2003556090200.html",
+        "https://www.eataly.com/p/hands-on%3A-gnocchi-al-burro-e-tartufo--holiday-edition--2003479739834.html",
+        "https://www.eataly.com/p/kids-kitchen%3A-hands-on-pizza-alla-pala-2003549559667.html",
+        "https://www.eataly.com/p/hands-on%3A-pizza-al-padellino-2003688961622.html",
+        "https://www.eataly.com/p/hands-on-pasta-making%3A-tortellini-2003555616784.html",
+        "https://www.eataly.com/p/family-fun%3A-holiday-cookie-decorating--holiday-edition--2003487733744.html",
+        "https://www.eataly.com/p/hands-on%3A-mozzarella-2004501427730.html",
+        "https://www.eataly.com/p/hands-on%3A-pasta-alla-carbonara--date-night-edition--2003486979488.html",
+        "https://www.eataly.com/p/wine-e-bites--holiday-edition--2003467999719.html",
+        "https://www.eataly.com/p/hands-on%3A-pasta-disco-2004494098809.html",
+        "https://www.eataly.com/p/hands-on%3A-pasta-making-at-il-pastaio--restaurant-edition--2003684214423.html",
+        "https://www.eataly.com/p/hands-on%3A-lasagna-alla-bolognese-2003688600542.html",
+        "https://www.eataly.com/c/classes-new-york?page=5",
+        "https://www.eataly.com/p/hands-on%3A-fettuccine--alfredo%E2%80%9D-burro-e-parmigiano-2003487244280.html",
+        "https://www.eataly.com/p/hands-on%3A-pasta-making-at-il-pastaio--restaurant-edition--2003684274603.html",
+        "https://www.eataly.com/p/hands-on%3A-farfalle-2003688811172.html",
+        "https://www.eataly.com/p/hands-on%3A-cavatelli-2003686873376.html",
+        "https://www.eataly.com/p/hands-on%3A-focaccia-2004494249259.html",
+        "https://www.eataly.com/p/hands-on%3A-pastas-of-piemonte-%7C-3-course-dinner-e-workshop-2004451881536.html",
+        "https://www.eataly.com/p/hands-on%3A-gnocchi-al-burro-e-tartufo-2003688510272.html",
+        "https://www.eataly.com/p/hands-on%3A-pizza-napoletana-with-rossopomodoro--restaurant-edition--2003683045928.html",
+        "https://www.eataly.com/p/hands-on%3A-pizza-al-padellino-2004494290382.html",
+        "https://www.eataly.com/p/hands-on%3A-pastas-of-sicily-%7C-3-course-dinner-e-workshop-2004452011926.html",
+        "https://www.eataly.com/p/hands-on%3A-ravioli-%7C-cacio-e-pepe-2004496948332.html",
+        "https://www.eataly.com/p/hands-on%3A-pasta-making-at-il-pastaio--restaurant-edition--2003684369888.html",
+        "https://www.eataly.com/p/hands-on%3A-cannoli-2004501833945.html",
+        "https://www.eataly.com/p/hands-on%3A-ravioli-%7C-butternut-squash-2003688325720.html",
+        "https://www.eataly.com/p/hands-on%3A-pasta-making-at-il-pastaio--restaurant-edition--2003684383930.html",
+        "https://www.eataly.com/p/hands-on%3A-tagliatelle-2003688103054.html",
+        "https://www.eataly.com/p/hands-on%3A-tiramisu-2004496652447.html",
+        "https://www.eataly.com/p/hands-on%3A-focaccia-2004494464904.html",
+        "https://www.eataly.com/p/hands-on%3A-gnocchi-e-pesto-making-2004492494009.html",
+        "https://www.eataly.com/p/hands-on%3A-cavatelli-2003686935562.html",
+        "https://www.eataly.com/c/classes-new-york?page=6",
+        "https://www.eataly.com/p/hands-on%3A-pizza-napoletana-with-rossopomodoro--restaurant-edition--2003683094072.html",
+        "https://www.eataly.com/p/hands-on%3A-pasta-agnolotti-al-tartufo--new-years-eve-edition--2004131598561.html",
+        "https://www.eataly.com/p/chefs-dinner%3A-milan-2004496588255.html",
+        "https://www.eataly.com/p/hands-on%3A-mozzarella-2004496891161.html",
+        "https://www.eataly.com/p/hands-on%3A-pizza-al-padellino-2004494410742.html",
+        "https://www.eataly.com/p/hands-on%3A--tagliatelle-al-burro-e-tartufo--new-years-eve-edition--2004138153166.html",
+        "https://www.eataly.com/p/hands-on%3A-ravioli-%7C-cacio-e-pepe-2004500955317.html",
+        "https://www.eataly.com/p/hands-on%3A-pastas-of-emilia-romagna-%7C-3-course-dinner-e-workshop-2004494605324.html",
+        "https://www.eataly.com/p/hands-on%3A-tagliatelle-2004504259199.html",
+        "https://www.eataly.com/p/hands-on%3A-tortelli-2004504290292.html",
+        "https://www.eataly.com/p/family-fun%3A-pasta-making-class-2004025995700.html",
+        "https://www.eataly.com/p/hands-on%3A-pasta-making-at-il-pastaio--restaurant-edition--2003684459155.html",
+        "https://www.eataly.com/p/hands-on%3A-mozzarella-2003857928005.html",
+        "https://www.eataly.com/p/hands-on%3A-pizza-al-padellino-2004504350472.html",
+        "https://www.eataly.com/p/hands-on%3A-lasagna-alla-bolognese-2003858017272.html",
+        "https://www.eataly.com/p/hands-on%3A-pastas-of-puglia-%7C-3-course-dinner-e-workshop-2004504474844.html",
+        "https://www.eataly.com/p/hands-on%3A-pasta-making-at-il-pastaio--restaurant-edition--2004170982359.html",
+        "https://www.eataly.com/p/hands-on%3A-focaccia-2004504534021.html",
+        "https://www.eataly.com/p/hands-on%3A-agnolotti-2004504693498.html",
+        "https://www.eataly.com/p/hands-on%3A-cavatelli-2004505137827.html",
+        "https://www.eataly.com/c/classes-new-york?page=7",
+        "https://www.eataly.com/p/hands-on%3A-tiramisu-2004505320373.html",
+        "https://www.eataly.com/p/hands-on%3A-cannoli-2004505435718.html",
+        "https://www.eataly.com/p/hands-on%3A-pizza-napoletana-with-rossopomodoro--restaurant-edition--2003683150240.html",
+        "https://www.eataly.com/p/demo-e-dine%3A--risotto-alla-milanese-2003858153680.html",
+        "https://www.eataly.com/p/hands-on%3A-pizza-al-padellino-2004026090985.html",
+        "https://www.eataly.com/p/hands-on%3A-ravioli-cacio-e-pepe-2004093447450.html",
+        "https://www.eataly.com/p/hands-on%3A-tortelli-2004504429709.html",
+        "https://www.eataly.com/p/eataly-pane%3A-hands-on-baking-class-2003858321181.html",
+        "https://www.eataly.com/p/hands-on%3A-pasta-making-at-il-pastaio--restaurant-edition--2004170992389.html",
+        "https://www.eataly.com/p/hands-on%3A-tiramisu-2004505354475.html",
+        "https://www.eataly.com/p/hands-on%3A-pasta-making-at-il-pastaio--restaurant-edition--2004171110743.html",
+        "https://www.eataly.com/p/hands-on%3A-agnolotti-2004504740639.html",
+        "https://www.eataly.com/p/hands-on%3A-pizza-napoletana-with-rossopomodoro--restaurant-edition--2003683220450.html",
+        "https://www.eataly.com/p/hands-on%3A-focaccia-2004504597210.html",
+        "https://www.eataly.com/p/hands-on%3A-tagliatelle-2004026351765.html",
+        "https://www.eataly.com/p/hands-on%3A-cannoli-2004505487874.html",
+        "https://www.eataly.com/p/hands-on%3A-pizza-al-padellino-2004504387583.html",
+        "https://www.eataly.com/p/hands-on%3A-pasta-making-at-il-pastaio--restaurant-edition--2004171116761.html",
+        "https://www.eataly.com/p/hands-on%3A-cavatelli-2004505273232.html",
+        "https://www.eataly.com/p/hands-on%3A-sicilian-cannoli-2003858529805.html",
+        "https://www.eataly.com/c/classes-new-york?page=8",
+        "https://www.eataly.com/p/hands-on%3A-pizza-al-padellino-2004504407643.html",
+        "https://www.eataly.com/p/hands-on%3A-agnolotti-2004504926194.html",
+        "https://www.eataly.com/p/hands-on%3A-pizza-napoletana-with-rossopomodoro--restaurant-edition--2003683254552.html",
+        "https://www.eataly.com/p/hands-on%3A-ravioli-ricotta-e-spinaci-2004044574269.html",
+        "https://www.eataly.com/p/hands-on%3A-tortelli-2004504459799.html",
+        "https://www.eataly.com/p/hands-on%3A-tiramisu-2004505384565.html",
+        "https://www.eataly.com/p/hands-on%3A-focaccia-2004026502215.html",
+        "https://www.eataly.com/p/hands-on%3A-pizza-alla-pala--date-night-edition--2003862143614.html",
+        "https://www.eataly.com/p/hands-on%3A-pasta-making-at-il-pastaio--restaurant-edition--2004171242136.html",
+        "https://www.eataly.com/p/hands-on%3A-focaccia-2004043969460.html",
+        "https://www.eataly.com/p/hands-on%3A-pasta-making-at-il-pastaio--restaurant-edition--2004171453769.html",
+        "https://www.eataly.com/p/hands-on%3A-focaccia-2004504661402.html",
+        "https://www.eataly.com/p/hands-on%3A-pizza-napoletana-with-rossopomodoro--restaurant-edition--2003683308714.html",
+        "https://www.eataly.com/p/hands-on%3A-cannoli-2004505506931.html",
+        "https://www.eataly.com/p/hands-on%3A-cavatelli-2004029751935.html",
+        "https://www.eataly.com/p/hands-on%3A-cavatelli-2004505290283.html",
+        "https://www.eataly.com/p/hands-on%3A-agnolotti-2004504981359.html",
+        "https://www.eataly.com/p/hands-on%3A-pasta-making-at-il-pastaio--restaurant-edition--2004171464802.html",
+        "https://www.eataly.com/p/hands-on%3A-tiramisu-2004505419670.html",
+        "https://www.eataly.com/p/hands-on%3A-pasta-alla-carbonara--date-night-edition--2002670363969.html",
+        "https://www.eataly.com/c/classes-new-york?page=9",
+        "https://www.eataly.com/p/hands-on%3A-pizza-napoletana-with-rossopomodoro--restaurant-edition--2004326752271.html",
+        "https://www.eataly.com/p/hands-on%3A-focaccia-2003555424208.html",
+        "https://www.eataly.com/c/events-new-york",
+        "https://www.eataly.com/p/live-in-la-piazza%3A-bossa-nova-nights-2003473225349.html",
+        "https://www.eataly.com/p/vino-days-wine-around-2003167765711.html",
+        "https://www.eataly.com/p/panettone-taste-around-2004242729958.html",
+        "https://www.eataly.com/p/fall-fridays-2000039819941.html",
+        "https://www.eataly.com/p/holiday-market-experience-2004035793004.html",
+        "https://www.eataly.com/p/chefs-dinner%3A-rome-2004451483345.html",
+        "https://www.eataly.com/p/hands-on%3A-spaghetti-alla-chitarra-al-pomodoro-2003858069428.html",
+        "https://www.eataly.com/p/hands-on%3A-tagliatelle-alla-bolognese-2003858343247.html",
+        "https://www.eataly.com/p/hands-on%3A-tiramisu-classico-2004082855770.html",
+        "https://www.eataly.com/p/hands-on%3A-gnocchi-al-burro-e-tartufo--holiday-edition--2003858399415.html",
+        "https://www.eataly.com/p/hands-on%3A-tagliolini-al-caviale--holiday-edition--2003858448562.html",
+        "https://www.eataly.com/p/hands-on%3A-fettuccine--alfredo%E2%80%9D-burro-e-parmigiano-2003858482664.html",
+        "https://www.eataly.com/p/hands-on%3A-gnocchi-amatriciana-2004093873725.html",
+        "https://www.eataly.com/c/events-new-york?page=2",
+        "https://www.eataly.com/p/hands-on%3A-pasta-alla-carbonara--date-night-edition--2003862057356.html",
+        "https://www.eataly.com/p/hands-on%3A-cavatelli-al-pomodoro-2004094763386.html",
+        "https://www.eataly.com/p/hands-on%3A--arancini-di-riso-siciliani-2004040764875.html",
+        "https://www.eataly.com/p/hands-on%3A-gnocchi-al-pesto-2004044374672.html",
+        "https://www.eataly.com/p/hands-on-pasta-making%3A-tortellini-2004044908268.html",
+        "https://www.eataly.com/p/hands-on%3A-ravioli-alla-zucca-2004045027625.html",
+        "https://www.eataly.com/p/hands-on%3A-gnocchi-al-burro-e-tartufo-2003554695027.html",
+        "https://www.eataly.com/p/hands-on%3A--pistachio-tiramisu-2004083431492.html",
+        "https://www.eataly.com/p/hands-on%3A-agnolotti-del-plin-2004046025610.html",
+        "https://www.eataly.com/p/hands-on%3A-tiramisu-al-gianduja-2004046775854.html",
+        "https://www.eataly.com/p/hands-on%3A-filled-pasta---sardinian-culurgiones-2004089703251.html"
+      ]
+    },
+    {
+      "source": {
+        "source_key": "astor_center_new_york_ny",
+        "feed_url": "https://www.astorcenternyc.com/calendar.aspx",
+        "kind": "html",
+        "platform_adapter": "html",
+        "timezone": "America/New_York"
+      },
+      "accepted_occurrences": 15,
+      "manifest_count": 23,
+      "held_reasons": {
+        "event_not_current": 9
+      },
+      "description_summary": {
+        "blank": 0,
+        "over_2000_chars": 1,
+        "maximum_chars": 2065
+      },
+      "checkpoint_bytes": 41229,
+      "checkpoint_claims": 8,
+      "approximate_meeting_points": 0,
+      "venue_tuples": [
+        {
+          "venue_name": "Astor Center",
+          "venue_address": "23 East 4th Street, New York, NY 10003",
+          "venue_city": "New York",
+          "lat": 40.727811,
+          "lng": -73.992568
+        }
+      ],
+      "record_sha256": "b50d968fa6fe17d654d5104c5b6d6cbaee1c2c4c8f45bd6e098f8b0d13d60189"
+    },
+    {
+      "source": {
+        "source_key": "green_wood_cemetery_brooklyn_ny",
+        "feed_url": "https://www.green-wood.com/calendar/month/",
+        "kind": "html",
+        "platform_adapter": "html",
+        "timezone": "America/New_York"
+      },
+      "accepted_occurrences": 33,
+      "manifest_count": 34,
+      "held_reasons": {
+        "event_not_public": 1
+      },
+      "description_summary": {
+        "blank": 0,
+        "over_2000_chars": 13,
+        "maximum_chars": 3933
+      },
+      "checkpoint_bytes": 108812,
+      "checkpoint_claims": 12,
+      "approximate_meeting_points": 19,
+      "venue_tuples": [
+        {
+          "venue_name": "Green-Wood Cemetery — Gothic Arch (approximate meeting point)",
+          "venue_address": "500 25th Street, Brooklyn, NY 11232",
+          "venue_city": "Brooklyn",
+          "lat": 40.658098,
+          "lng": -73.994843
+        },
+        {
+          "venue_name": "Green-Wood Cemetery — Historic Chapel (approximate meeting point)",
+          "venue_address": "500 25th Street, Brooklyn, NY 11232",
+          "venue_city": "Brooklyn",
+          "lat": 40.656346,
+          "lng": -73.995307
+        },
+        {
+          "venue_name": "Green-Wood Cemetery — Main Entrance",
+          "venue_address": "500 25th Street, Brooklyn, NY 11232",
+          "venue_city": "Brooklyn",
+          "lat": 40.658098,
+          "lng": -73.994843
+        },
+        {
+          "venue_name": "Green-Wood Cemetery — Modern Chapel (approximate meeting point)",
+          "venue_address": "500 25th Street, Brooklyn, NY 11232",
+          "venue_city": "Brooklyn",
+          "lat": 40.658098,
+          "lng": -73.994843
+        },
+        {
+          "venue_name": "Green-Wood — The Green-House",
+          "venue_address": "750 Fifth Avenue, Brooklyn, NY 11232",
+          "venue_city": "Brooklyn",
+          "lat": 40.659118,
+          "lng": -73.996097
+        }
+      ],
+      "record_sha256": "81ff0c42a76362eecce10b8ae11fd201707f430f9cf90a33d3b58f85e7d93ff5"
+    }
+  ],
+  "module_sha256": {
+    "roomquest/new_york_sources.py": "ffe431a19a2ff6800a81b42af4377cb7ab6710c8b309964281aa4737d48c53d7",
+    "roomquest/category_worker.py": "11b23c79d5f8061312fc8b6b595d91efcb2ca7fe0d8c84e823304be483c8e72a",
+    "roomquest/new_york_local_expansion.py": "968773df7d69ec640a556bb96145404c213c382445c561d5799d5c7722183d0c",
+    "roomquest/new_york_other_half.py": "1eaed9a0b947532086bea90a89e8fffd3c0b65c6bb72b7d8d7a98b6f82eed3b6",
+    "roomquest/new_york_food_expansion.py": "2bd239fdb7f7a608cf6d262ac065ea5141b325752ae112d934861376347311fd",
+    "roomquest/new_york_culture_expansion.py": "f68e2950c50c60dcc0b603c857fc285e799da47189f1b29a537f8be9224aa40e"
+  },
+  "scope": [
+    "Only seven previously unregistered New York calendars; existing 62 profiles preserved.",
+    "All new profiles use existing html lane and unchanged guarded publisher transport.",
+    "Full native narratives, fixed 60-day window, exact source/URL/venue identity, bounded durable checkpoints.",
+    "No publication before complete manifest/detail validation. Blank or link-only publisher narratives withheld.",
+    "Eataly repeats are native occurrences, not generated recurrence; each carries its full native product body and instance URL.",
+    "FAD holiday series explicitly finite in 2026; no annual rollover.",
+    "Green-Wood named interior/entrance positions visibly approximate and provenance preserved.",
+    "Fordham diagnostic patch adds closed-enum reason and allowlisted numeric code only; no messages, URLs, credentials, transport changes or added retries."
+  ],
+  "local_transport_limitation": "The local sandbox direct DNS guard returned dns_unavailable; ordinary proxy-backed publisher captures passed. Production guarded reachability remains a deployment acceptance gate.",
+  "deployment_order": "Merge collector; verify exact production deployment READY; merge paired backend migration; run one normal current-main database deployment; verify staged/public descriptions and street addresses.",
+  "deferred_original_sources": [
+    "Greenlight Bookstore: existing403hold preserved; latestrobotschecktimedout.",
+    "BronxAlehouse: existing403hold preserved; latestrobotschecktimedout.",
+    "TransportationAlternatives: pairedbackend exactreviewedretry aftersameactualMobilizeAPIrobots404/API200; productionrecheckmandatory.",
+    "Fordham: ordinary retry cycle exhausted at2026-11-15T01:17:01.181584Z withfailure_count4. Oneexactrevieweddiagnosticretry inpairedbatch onlyafternewcollectorREADY;ordinaryguardsunchanged."
+  ],
+  "verification": {
+    "focused_tests_passed": 223,
+    "subtests_passed": 44,
+    "command": "python -m pytest -q tests/test_new_york_worker.py tests/test_new_york_local_expansion.py tests/test_new_york_other_half.py tests/test_new_york_food_expansion.py tests/test_new_york_culture_expansion.py tests/test_category_network_diagnostics.py tests/test_category_worker.py",
+    "routine_ci_dispatched": false
+  }
+}
