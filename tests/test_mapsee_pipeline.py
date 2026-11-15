@@ -108,6 +108,31 @@ class MapseeTests(unittest.TestCase):
             {"map":{"title":"name","start":"start","address":"street","url":"link"}})
         self.assertEqual(len(rows),1);self.assertIsNone(rows[0]["lat"])
 
+    def test_wordpress_compatibility_preserves_explicit_iana_timezone(self):
+        begin = self.start.replace(microsecond=0)
+        end = begin + timedelta(hours=8)
+        event = {
+            "id": 87234, "title": "Study Hall", "timezone": "America/New_York",
+            "utc_start_date": begin.isoformat(), "utc_end_date": end.isoformat(),
+            "url": "https://publisher.example.org/event/study-hall",
+        }
+        row = parse_tribe({"events": [event]})[0]
+        self.assertEqual(row["timezone"], "America/New_York")
+        self.assertEqual(row["starts_at"], begin.isoformat())
+        self.assertEqual(row["ends_at"], end.isoformat())
+        self.assertEqual(row["id"], "87234")
+
+        for value in (None, "UTC-5"):
+            with self.subTest(value=value):
+                row = parse_tribe({"events": [{**event, "timezone": value}]})[0]
+                self.assertNotIn("timezone", row)
+
+        conflict = {**event, "start_date": begin.replace(tzinfo=None).isoformat()}
+        with self.assertLogs("roomquest.mapsee_adapter", level="WARNING"):
+            row = parse_tribe({"events": [conflict]})[0]
+        self.assertNotIn("timezone", row)
+        self.assertEqual(row["starts_at"], begin.isoformat())
+
     def test_unregistered_or_changed_urls_fail_before_fetch(self):
         p=next(iter(profiles().values()))
         with patch("roomquest.preview_worker.fetch_publisher") as fetch:

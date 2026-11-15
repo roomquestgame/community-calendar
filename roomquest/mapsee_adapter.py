@@ -152,6 +152,23 @@ def tribe_timezone(value):
     return timezone(timedelta(minutes=offset)), name
 
 
+def _tribe_times_agree(event, zone):
+    for field in ("start_date", "end_date"):
+        local, utc = event.get(field), event.get("utc_" + field)
+        if not local or not utc:
+            continue
+        try:
+            published = datetime.fromisoformat(local)
+            expected = timestamp(utc, "UTC").astimezone(zone)
+        except (TypeError, ValueError, OverflowError):
+            return False
+        if published.tzinfo and published.utcoffset() != expected.utcoffset():
+            return False
+        if published.replace(tzinfo=None) != expected.replace(tzinfo=None):
+            return False
+    return True
+
+
 def parse_tribe(data, *, strict_public=False, retain_description=False, utc_default_zone=None):
     # The same upstream Tribe parser used by Udell, with UTC dates and complete
     # event addresses retained rather than inferred from the publisher's city.
@@ -207,8 +224,13 @@ def parse_tribe(data, *, strict_public=False, retain_description=False, utc_defa
                 # Existing JSON publication contract is 2,000 characters.
                 # Missing publisher prose stays empty; never copy title/category.
                 r["description"] = description(value)
-            if strict_public and tz:
+            if strict_public and tz_name:
                 r["timezone"] = tz_name
+            elif isinstance(zone, ZoneInfo):
+                if reinterpret or _tribe_times_agree(e, zone):
+                    r["timezone"] = tz_name
+                else:
+                    logger.warning("tribe_timezone_conflict id=%s", str(e.get("id", ""))[:180])
             out.append(r)
     return out
 

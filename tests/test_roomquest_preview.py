@@ -3,7 +3,7 @@ import importlib.util
 import json
 import unittest
 from unittest.mock import patch, MagicMock
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 
 from roomquest.preview_worker import _preview, public_source_url, SUPPORTED
 from scripts.roomquest_catalog import catalog
@@ -127,6 +127,44 @@ class PreviewSafetyTests(unittest.TestCase):
         records = parse_ics_preview(raw)
         self.assertGreaterEqual(len(records), 2)
         self.assertEqual(records[0]["lat"], 35.77)
+
+    @unittest.skipUnless(importlib.util.find_spec("icalendar"), "upstream icalendar dependency not installed")
+    def test_ics_named_zones_survive_recurrence_and_daylight_saving(self):
+        from roomquest.preview_worker import parse_ics_preview
+
+        def event(uid, start, recurring=False):
+            rule = "RRULE:FREQ=WEEKLY;COUNT=2\r\n" if recurring else ""
+            return (f"BEGIN:VEVENT\r\nUID:{uid}\r\nSUMMARY:Fixture\r\n"
+                    f"DTSTART{start}\r\n{rule}URL:https://example.org/festival\r\nEND:VEVENT\r\n")
+
+        raw = ("BEGIN:VCALENDAR\r\nVERSION:2.0\r\n"
+               "BEGIN:VTIMEZONE\r\nTZID:Fixture/Custom\r\n"
+               "BEGIN:STANDARD\r\nDTSTART:19700101T000000\r\n"
+               "TZOFFSETFROM:+0130\r\nTZOFFSETTO:+0130\r\n"
+               "END:STANDARD\r\nEND:VTIMEZONE\r\n"
+               + event("eastern", ";TZID=America/New_York:20261030T190000", True)
+               + event("arizona", ";TZID=America/Phoenix:20261106T190000")
+               + event("utc", ":20261107T020000Z")
+               + event("custom", ";TZID=Fixture/Custom:20261106T190000")
+               + event("all-day", ";VALUE=DATE:20261106")
+               + "END:VCALENDAR\r\n")
+        with patch("scripts.combine_ics.date", wraps=date) as clock, patch(
+            "roomquest.preview_worker._future_datetime",
+            side_effect=lambda value: value.astimezone(timezone.utc)
+            if isinstance(value, datetime) and value.tzinfo else None,
+        ):
+            clock.today.return_value = date(2026, 10, 29)
+            rows = {row["id"]: row for row in parse_ics_preview(raw)}
+        self.assertEqual(set(rows), {"eastern__20261030", "eastern__20261106", "arizona", "utc", "custom"})
+        for identity, instant in (("eastern__20261030", "2026-10-30T23:00:00+00:00"),
+                                  ("eastern__20261106", "2026-11-07T00:00:00+00:00")):
+            self.assertEqual(rows[identity]["timezone"], "America/New_York")
+            self.assertEqual(rows[identity]["starts_at"], instant)
+        self.assertEqual(rows["arizona"]["timezone"], "America/Phoenix")
+        self.assertEqual(rows["arizona"]["starts_at"], "2026-11-07T02:00:00+00:00")
+        self.assertNotIn("timezone", rows["utc"])
+        self.assertEqual(rows["custom"]["starts_at"], "2026-11-06T17:30:00+00:00")
+        self.assertNotIn("timezone", rows["custom"])
 
     @unittest.skipUnless(importlib.util.find_spec("icalendar"), "upstream Python dependencies not installed")
     def test_jsonld_venue_not_fabricated(self):
