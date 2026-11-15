@@ -546,11 +546,46 @@ def read_game_theory_events(*, public_key, window_start, window_end, deadline_at
         deadline_at=deadline_at, allowed_hosts=(GAME_API_HOST,), game_theory_key=public_key)
 
 
+def read_raleigh_followup_events(*, request_kind, page=None, offset=None,
+                                 public_instance=None, deadline_at=None):
+    """Read the two reviewed publishers' exact anonymous display operations.
+
+    Caller input cannot select an arbitrary endpoint, JSON body or header.
+    Wix's public frontend instance remains local to this request and is never
+    persisted in a checkpoint. Both transports retain the ordinary robots,
+    DNS, pacing, deadline, response-type and body-size controls.
+    """
+    from roomquest import raleigh_followup_performance as calendars
+    if request_kind in {'chapel_bootstrap', 'chapel_page'}:
+        if offset is not None or public_instance is not None:
+            raise PreviewError('invalid_chapel_calendar_request')
+        try:
+            url, body = calendars.chapel_calendar_request(page=page,
+                bootstrap=request_kind == 'chapel_bootstrap')
+        except ValueError as exc:
+            raise PreviewError('invalid_chapel_calendar_request') from exc
+        return _fetch_publisher_request(url, 'application/json', respect_robots=True,
+            deadline_at=deadline_at, allowed_hosts=('www.tickpick.com',), chapel_calendar_body=body)
+    if request_kind == 'comedyworx_page':
+        if page is not None:
+            raise PreviewError('invalid_comedyworx_calendar_request')
+        try:
+            url = calendars.comedyworx_calendar_url(offset)
+        except ValueError as exc:
+            raise PreviewError('invalid_comedyworx_calendar_request') from exc
+        if not calendars.valid_comedyworx_calendar_request(url, public_instance):
+            raise PreviewError('invalid_comedyworx_calendar_request')
+        return _fetch_publisher_request(url, 'application/json', respect_robots=True,
+            deadline_at=deadline_at, allowed_hosts=('www.comedyworx.com',), comedyworx_instance=public_instance)
+    raise PreviewError('unregistered_raleigh_followup_source')
+
+
 def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = False,
                              deadline_at: float | None = None, allowed_hosts=None,
                              calendar_form=None, calendar_json=None, localhop_app_id=None,
                              cardboard_arena_calendar=False, visit_raleigh_api=False,
-                             game_theory_key=None) -> str | bytes:
+                             game_theory_key=None, chapel_calendar_body=None,
+                             comedyworx_instance=None) -> str | bytes:
     """Use the shared bounded transport for approved HTTPS publisher content.
 
     Keep URL/DNS validation and bounded downloads. As in upstream Udell,
@@ -558,6 +593,18 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
     destination URLs still pass public-network checks before each GET redirect.
     Reviewed display-only POSTs are source scoped and never redirected.
     """
+    if chapel_calendar_body is not None or comedyworx_instance is not None:
+        from roomquest import raleigh_followup_performance as calendars
+        exclusive = (respect_robots and accept == 'application/json'
+            and calendar_form is None and calendar_json is None and localhop_app_id is None
+            and cardboard_arena_calendar is False and visit_raleigh_api is False and game_theory_key is None)
+        if chapel_calendar_body is not None:
+            if (not exclusive or comedyworx_instance is not None or allowed_hosts != ('www.tickpick.com',)
+                    or not calendars.valid_chapel_calendar_request(url, chapel_calendar_body)):
+                raise PreviewError('invalid_chapel_calendar_request')
+        elif (not exclusive or allowed_hosts != ('www.comedyworx.com',)
+                or not calendars.valid_comedyworx_calendar_request(url, comedyworx_instance)):
+            raise PreviewError('invalid_comedyworx_calendar_request')
     if game_theory_key is not None:
         from roomquest.raleigh_direct_community import GAME_API_HOST, valid_game_theory_request
         if (not respect_robots or accept != 'application/json'
@@ -703,6 +750,10 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
     if game_theory_key is not None:
         headers['apikey'] = game_theory_key
         headers['Authorization'] = 'Bearer ' + game_theory_key
+    if chapel_calendar_body is not None:
+        headers['Content-Type'] = 'application/json'
+    if comedyworx_instance is not None:
+        headers['Authorization'] = comedyworx_instance
     if cardboard_arena_calendar:
         # Public GenericEvents routing identity published in the store's SSR.
         # This is neither a credential nor an arbitrary caller-supplied header.
@@ -741,7 +792,10 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
             try:
                 remaining = max(0.1, deadline - monotonic())
                 timeout = (min(3,remaining/2), min(7,remaining/2)) if respect_robots else (5,12)
-                if calendar_form is None and calendar_json is None:
+                if chapel_calendar_body is not None:
+                    response = session.post(current, data=chapel_calendar_body, headers=headers,
+                                            timeout=timeout, stream=True, allow_redirects=False)
+                elif calendar_form is None and calendar_json is None:
                     response = session.get(current, headers=headers, timeout=timeout,
                                            stream=True, allow_redirects=False)
                 elif calendar_json is not None:
@@ -757,7 +811,7 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
                         response.close()
                         raise
                 if response.status_code in (301, 302, 303, 307, 308):
-                    if calendar_form is not None or calendar_json is not None or localhop_app_id is not None or cardboard_arena_calendar or visit_raleigh_api or game_theory_key is not None:
+                    if calendar_form is not None or calendar_json is not None or localhop_app_id is not None or cardboard_arena_calendar or visit_raleigh_api or game_theory_key is not None or chapel_calendar_body is not None or comedyworx_instance is not None:
                         response.close()
                         raise PreviewError('calendar_render_redirect_blocked')
                     from urllib.parse import urljoin
@@ -782,7 +836,7 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
                         != render_content_type):
                     response.close()
                     raise PreviewError('invalid_calendar_render_content_type')
-                if ((cardboard_arena_calendar or game_theory_key is not None) and response.headers.get('Content-Type', '').split(';', 1)[0].strip().lower()
+                if ((cardboard_arena_calendar or game_theory_key is not None or chapel_calendar_body is not None or comedyworx_instance is not None) and response.headers.get('Content-Type', '').split(';', 1)[0].strip().lower()
                         != 'application/json'):
                     response.close()
                     raise PreviewError('invalid_calendar_render_content_type')
@@ -2321,6 +2375,10 @@ def _preview_fetch_chunk(source, pacing, *, adapter, allowed_hosts, collection_c
             if adapter is raleigh_direct_community and source['source_key'] == raleigh_direct_community.GAME:
                 adapter_args['read_public_events'] = lambda **window: read_game_theory_events(
                     **window, deadline_at=deadline)
+            from roomquest import raleigh_followup_performance
+            if adapter is raleigh_followup_performance:
+                adapter_args['read_public_events'] = lambda **request: read_raleigh_followup_events(
+                    **request, deadline_at=deadline)
             chunk = adapter.collect_chunk(
                 source, lambda url, accept: fetch_publisher(
                     url, accept, respect_robots=True, deadline_at=deadline,

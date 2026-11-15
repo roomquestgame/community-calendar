@@ -420,6 +420,68 @@ def _fair_times(day, body):
     return selected[0]
 
 
+def _fair_weekdays(label):
+    match = re.fullmatch(r'Every\s+(.+)', label, re.I)
+    if not match:
+        return None
+    names = re.split(r'\s*(?:,\s*(?:and\b|&)?|\band\b|&)\s*', match[1], flags=re.I)
+    full_names = {name: number for name, number in WEEKDAYS.items() if len(name) > 3}
+    if not names or any(name.lower() not in full_names for name in names):
+        raise ValueError('raleigh_direct_schedule_missing')
+    return {full_names[name.lower()] for name in names}
+
+
+def _fair_closed_dates(cell, year):
+    """Only explicit CLOSED date lists; other closure language needs review."""
+    months = {**MONTHS, **{name[:3]: number for name, number in MONTHS.items()}}
+    month_names = '|'.join(sorted(months, key=len, reverse=True))
+    weekday_names = '|'.join(sorted(WEEKDAYS, key=len, reverse=True))
+    token = re.compile(
+        r'(?:(?P<weekday>' + weekday_names + r')\.?\s*,?\s+)?'
+        r'(?:(?P<month>' + month_names + r')\.?\s+(?P<day>\d{1,2})(?:st|nd|rd|th)?'
+        r'(?:(?:\s*,\s*|\s+)(?P<year>20\d{2}))?'
+        r'|(?P<nmonth>\d{1,2})/(?P<nday>\d{1,2})(?:/(?P<nyear>20\d{2}))?)', re.I)
+    dates, notes = set(), []
+    blocks = cell.find_all(['p', 'li']) or [cell]
+    texts = [plain(block.get_text(' ')) for block in blocks]
+    marker = re.compile(r'\b(?:closed|closures?|cancell?ed|postponed|except|excluding|not\s+open)\b', re.I)
+    if sum(len(marker.findall(text)) for text in texts) != len(marker.findall(plain(cell.get_text(' ')))):
+        raise ValueError('raleigh_direct_schedule_conflict')
+    for text in texts:
+        markers = list(marker.finditer(text))
+        if not markers:
+            continue
+        if (len(markers) != 1 or markers[0][0].lower() != 'closed'
+                or re.search(r'\b(?:if|unless|may|might|could|not|never|maybe)\b', text[:markers[0].start()], re.I)):
+            raise ValueError('raleigh_direct_schedule_conflict')
+        tail = re.sub(r'^\s*on\s+', '', text[markers[0].end():], flags=re.I).strip(' \t.:;+*!()')
+        if not tail:
+            raise ValueError('raleigh_direct_schedule_conflict')
+        while tail:
+            match = token.match(tail)
+            if not match:
+                raise ValueError('raleigh_direct_schedule_conflict')
+            named_year = match['year'] or match['nyear']
+            if named_year and int(named_year) != year:
+                raise ValueError('raleigh_direct_schedule_conflict')
+            try:
+                day = date(year, months[match['month'].lower()] if match['month'] else int(match['nmonth']),
+                           int(match['day'] or match['nday']))
+            except (ValueError, KeyError):
+                raise ValueError('raleigh_direct_schedule_conflict') from None
+            if match['weekday'] and WEEKDAYS[match['weekday'].lower()] != day.weekday():
+                raise ValueError('raleigh_direct_schedule_conflict')
+            dates.add(day)
+            tail = tail[match.end():]
+            if tail:
+                separator = re.match(r'\s*(?:/|,\s*(?:and\b|&)?|&|\band\b)\s*', tail, re.I)
+                if not separator or separator.end() == len(tail):
+                    raise ValueError('raleigh_direct_schedule_conflict')
+                tail = tail[separator.end():]
+        notes.append(text[markers[0].start():])
+    return dates, notes
+
+
 def _fair(payload, now, diagnostics):
     soup = BeautifulSoup(payload, 'html.parser')
     years = {int(m[1]) for heading in soup.find_all(['h1', 'h2'])
@@ -430,11 +492,31 @@ def _fair(payload, now, diagnostics):
     result = []
     window_start = now.astimezone(ZoneInfo(ZONE)).date()
     window_end = (now + timedelta(days=60)).astimezone(ZoneInfo(ZONE)).date()
+    monthly_tables, closed, unresolved = [], {}, set()
+    # A January row can announce a February closure. Read the same-year
+    # recurring series before filtering months, without widening its venue key.
     for table in soup.find_all('table'):
         heading = table.find_previous(['h2', 'h3', 'h4'])
         month = MONTHS.get(plain(heading.get_text()).lower()) if heading else None
         if not month:
             raise ValueError('raleigh_direct_calendar_changed')
+        monthly_tables.append((month, table))
+        for tr in table.find_all('tr'):
+            cells = tr.find_all('td')
+            if len(cells) < 3:
+                continue
+            if not re.match(r'^Every\b', plain(cells[0].get_text()), re.I):
+                continue
+            flat = plain(cells[1].get_text(' '))
+            strong = cells[1].find(['b', 'strong'])
+            title = plain(strong.get_text()) if strong else 'The Raleigh Market' if flat.startswith('The Raleigh Market') else ''
+            series = (title.lower(), plain(cells[2].get_text(' ')).lower())
+            try:
+                dates, _ = _fair_closed_dates(cells[1], year)
+                closed.setdefault(series, set()).update(dates)
+            except ValueError:
+                unresolved.add(series)
+    for month, table in monthly_tables:
         if date(year, month, monthrange(year, month)[1]) < window_start or date(year, month, 1) > window_end:
             continue
         for tr in table.find_all('tr'):
@@ -452,15 +534,23 @@ def _fair(payload, now, diagnostics):
                     raise ValueError('raleigh_direct_description_missing')
                 if NONPUBLIC.search(title) or re.search(r'\b(?:THIS EVENT (?:IS|HAS BEEN) (?:CLOSED|MOVED|RESCHEDULED)|CLOSED.*WEATHER)\b', flat, re.I):
                     raise ValueError('raleigh_direct_nonpublic')
-                if re.fullmatch(r'Every Saturday and Sunday', day_label, re.I):
+                weekdays = _fair_weekdays(day_label)
+                venue_label = plain(cells[2].get_text(' '))
+                series = (title.lower(), venue_label.lower())
+                clock_body = flat
+                if weekdays is not None:
+                    if series in unresolved:
+                        raise ValueError('raleigh_direct_schedule_conflict')
+                    _, notes = _fair_closed_dates(cells[1], year)
+                    for note in notes:
+                        clock_body = plain(clock_body.replace(note, ' '))
                     days = [date(year, month, d) for d in range(1, monthrange(year, month)[1]+1)
-                            if date(year, month, d).weekday() in (5, 6)]
+                            if date(year, month, d).weekday() in weekdays]
                 elif match := re.fullmatch(r'(\d{1,2})(?:\s*[-–]\s*(\d{1,2}))?', day_label):
                     first, last = int(match[1]), int(match[2] or match[1])
                     days = [date(year, month, d) for d in range(first, last+1)]
                 else:
                     raise ValueError('raleigh_direct_schedule_missing')
-                venue_label = plain(cells[2].get_text(' '))
                 if not re.fullmatch(r'(?:Outside Grounds|Jim Graham Building|Kerr Scott Building|Martin Building(?: Gate 9)?|(?:J\.S\. )?Dorton Arena|Agri[- ]?\s*Supply Exposition Center)', venue_label, re.I):
                     raise ValueError('raleigh_direct_venue_unresolved')
                 place = (venue_label + ' at N.C. State Fairgrounds', *VENUES[FAIR][1:])
@@ -468,7 +558,9 @@ def _fair(payload, now, diagnostics):
                     if not window_start <= day <= window_end:
                         continue
                     try:
-                        start, end = _fair_times(day, flat)
+                        if weekdays is not None and day in closed.get(series, set()):
+                            raise ValueError('raleigh_direct_nonpublic')
+                        start, end = _fair_times(day, clock_body)
                         if not _within(start, end, now):
                             continue
                         row = _row(FAIR, title, start, end, SOURCES[FAIR][0],

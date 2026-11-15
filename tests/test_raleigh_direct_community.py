@@ -119,6 +119,131 @@ def test_fair_ambiguous_times_are_held_and_weekdays_select_their_own_clocks():
         c._fair(fair().replace('2026 NC State Fair', 'Unknown State Fair'), NOW, [])
 
 
+def fair_months(rows, year=2026):
+    html = '<h1>' + str(year) + ' NC State Fair Event Calendar</h1>'
+    for month, number in c.MONTHS.items():
+        html += '<h2>' + month.title() + '</h2><table>'
+        for days, title, body, venue in rows.get(number, []):
+            html += ('<tr><td>' + days + '</td><td><strong>' + title + '</strong><p>'
+                     + body + '</p></td><td>' + venue + '</td></tr>')
+        html += '</table>'
+    return html
+
+
+@pytest.mark.parametrize('label,expected', [
+    ('Every Saturday', [21, 28]),
+    ('Every Monday, Wednesday and Friday', [16, 18, 20, 23, 25, 27, 30]),
+    ('Every Tuesday & Thursday', [17, 19, 24, 26]),
+    ('Every Saturday, and Sunday', [15, 21, 22, 28, 29]),
+])
+@patch.object(c, 'record', side_effect=preview)
+def test_fair_explicit_weekdays_remain_inside_the_published_month(_, label, expected):
+    rows = c._fair(fair(days=label), NOW, [])
+    assert [datetime.fromisoformat(r['starts_at']).day for r in rows] == expected
+    assert all(r['starts_at'].startswith('2026-11-') for r in rows)
+    assert all(datetime.fromisoformat(r['starts_at']).hour == 9 for r in rows)
+
+
+@pytest.mark.parametrize('label', ['Every first and third Saturday', 'Every other Saturday',
+    'Every Saturday-Sunday', 'Every weekday', 'Every Sat', 'Every Saturday or Sunday'])
+def test_fair_relative_ordinal_and_nonlisted_recurrence_is_held(label):
+    diagnostics = []
+    assert c._fair(fair(days=label), NOW, diagnostics) == []
+    assert diagnostics[0]['reason'] == 'raleigh_direct_schedule_missing'
+
+
+@pytest.mark.parametrize('closed', [
+    'CLOSED November 21st and November 22nd',
+    'CLOSED 11/21, 11/22',
+    'CLOSED on Saturday Nov. 21, 2026, and Sunday Nov. 22, 2026',
+])
+@patch.object(c, 'record', side_effect=preview)
+def test_fair_explicit_closures_remove_dates_without_changing_open_hours(_, closed):
+    diagnostics = []
+    rows = c._fair(fair(body='The Raleigh Market is open 9am-5pm. ' + closed), NOW, diagnostics)
+    assert [datetime.fromisoformat(r['starts_at']).day for r in rows] == [15, 28, 29]
+    assert all(datetime.fromisoformat(r['starts_at']).hour == 9 for r in rows)
+    assert all(datetime.fromisoformat(r['ends_at']).hour == 17 for r in rows)
+    assert len(diagnostics) == 2
+    assert {d['reason'] for d in diagnostics} == {'raleigh_direct_nonpublic'}
+    assert all(closed in r['description'] for r in rows)
+
+
+@patch.object(c, 'record', side_effect=preview)
+def test_fair_previous_month_closure_applies_to_same_series_in_later_month(_):
+    markup = fair_months({
+        1: [('Every Saturday and Sunday', 'The Raleigh Market',
+             'The Raleigh Market is open 9am-5pm.</p><p>+++THE RALEIGH MARKET WILL BE CLOSED JAN 31ST /FEB 1ST+++', 'Outside Grounds')],
+        2: [('Every Saturday and Sunday', 'The Raleigh Market', 'The Raleigh Market is open 9am-5pm.', 'Outside Grounds')],
+    })
+    diagnostics = []
+    rows = c._fair(markup, datetime(2026, 2, 1, 12, tzinfo=timezone.utc), diagnostics)
+    assert [datetime.fromisoformat(r['starts_at']).date() for r in rows] == [
+        date(2026, 2, d) for d in (7, 8, 14, 15, 21, 22, 28)]
+    assert len(diagnostics) == 1 and diagnostics[0]['reason'] == 'raleigh_direct_nonpublic'
+
+
+@patch.object(c, 'record', side_effect=preview)
+def test_fair_exact_closure_remains_evidence_when_earlier_recurrence_is_unsupported(_):
+    markup = fair_months({
+        1: [('Every first and third Saturday', 'The Raleigh Market',
+             'The Raleigh Market is open 9am-5pm. CLOSED February 1', 'Outside Grounds')],
+        2: [('Every Sunday', 'The Raleigh Market', 'The Raleigh Market is open 9am-5pm.', 'Outside Grounds')],
+    })
+    rows = c._fair(markup, datetime(2026, 2, 1, 12, tzinfo=timezone.utc), [])
+    assert [datetime.fromisoformat(r['starts_at']).date() for r in rows] == [date(2026, 2, d) for d in (8, 15, 22)]
+
+
+@patch.object(c, 'record', side_effect=preview)
+def test_fair_closures_do_not_cross_native_title_or_venue_keys(_):
+    rows = c._fair(fair_months({11: [
+        ('Every Saturday', 'The Raleigh Market', 'The Raleigh Market is open 9am-5pm. CLOSED November 21', 'Outside Grounds'),
+        ('Every Saturday', 'A Different Market', 'Event Time 9am-5pm.', 'Outside Grounds'),
+        ('Every Saturday', 'The Raleigh Market', 'The Raleigh Market is open 9am-5pm.', 'Jim Graham Building'),
+    ]}), NOW, [])
+    assert len(rows) == 5
+    on_closed_day = [r for r in rows if datetime.fromisoformat(r['starts_at']).day == 21]
+    assert len(on_closed_day) == 2
+    assert not any(r['title'] == 'The Raleigh Market' and r['venue_name'].startswith('Outside Grounds') for r in on_closed_day)
+
+
+@pytest.mark.parametrize('note', ['CLOSED for the holiday', 'MAY BE CLOSED November 21',
+    'NOT CLOSED November 21', 'CLOSED November 21-22', 'CLOSED 11/31',
+    'CLOSED Saturday November 22', 'CLOSED November 21, 2027', 'Except the first Saturday'])
+def test_fair_unresolved_closure_note_holds_the_same_series_even_from_an_earlier_month(note):
+    markup = fair_months({
+        1: [('Every Saturday', 'The Raleigh Market', 'The Raleigh Market is open 9am-5pm. ' + note, 'Outside Grounds')],
+        11: [('Every Saturday', 'The Raleigh Market', 'The Raleigh Market is open 9am-5pm.', 'Outside Grounds')],
+    })
+    diagnostics = []
+    assert c._fair(markup, NOW, diagnostics) == []
+    assert diagnostics[0]['reason'] == 'raleigh_direct_schedule_conflict'
+
+
+@patch.object(c, 'record', side_effect=preview)
+def test_fair_closure_note_before_the_clock_does_not_become_a_clock_selector(_):
+    rows = c._fair(fair(body='CLOSED November 21.</p><p>The Raleigh Market is open 9am-5pm.'), NOW, [])
+    assert [datetime.fromisoformat(r['starts_at']).day for r in rows] == [15, 22, 28, 29]
+
+
+@patch.object(c, 'record', side_effect=preview)
+def test_fair_published_year_is_not_rolled_forward_at_the_window_boundary(_):
+    markup = fair_months({12: [('Every Saturday', 'The Raleigh Market',
+        'The Raleigh Market is open 9am-5pm. CLOSED January 31 / February 1', 'Outside Grounds')]})
+    rows = c._fair(markup, datetime(2026, 12, 1, 12, tzinfo=timezone.utc), [])
+    assert [datetime.fromisoformat(r['starts_at']).date() for r in rows] == [date(2026, 12, d) for d in (5, 12, 19, 26)]
+    assert c._fair(markup, datetime(2027, 1, 1, 12, tzinfo=timezone.utc), []) == []
+
+
+def test_fair_recurrence_keeps_existing_clock_and_venue_gates():
+    diagnostics = []
+    assert c._fair(fair(body='The Raleigh Market is open 9-5.', days='Every Saturday'), NOW, diagnostics) == []
+    assert {d['reason'] for d in diagnostics} == {'raleigh_direct_schedule_missing'}
+    diagnostics = []
+    assert c._fair(fair().replace('Outside Grounds', 'Outside Grounds, South and East of Dorton Arena'), NOW, diagnostics) == []
+    assert {d['reason'] for d in diagnostics} == {'raleigh_direct_venue_unresolved'}
+
+
 @patch.object(c, 'record', side_effect=preview)
 def test_square_details_resume_without_partial_staging_or_truncated_prose(_):
     triples = [square_card(i) for i in range(1, 6)]
