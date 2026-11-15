@@ -26,13 +26,20 @@ The companion RoomQuestGame migration owns a finite, private inventory:
 | Per page | At most 40 candidate records and 40 discovered links |
 | Runtime | 45-second worker deadline inside the 60-second function |
 | Lease | Two minutes, with stale-worker fencing |
-| Refresh | Successful pages become eligible again after 24 hours |
+| Refresh | Successful pages become eligible again after 21 days |
 | Failure | Bounded retries; access/structure errors held for review |
 
 The scheduler can run without an app visitor or this chat. The database rejects
 new admissions after the lifetime/budget limit; the endpoint subsequently returns
 a cheap expired/budget status. The cron definition itself remains configured
 until this experiment is reviewed or superseded.
+
+Ben set the evergreen recheck interval to **21 days** on November 15. A successful
+page is scheduled from its last successful verification; a later existing wait
+is preserved. Rescheduling does not change activity facts or observation dates.
+New pages and failed-page retries keep their existing admission/retry rules.
+The 72-hour trial still ends on November 18, before the first 21-day refresh is
+due. The existing staged activities remain stored after collection stops.
 
 The database checks current query/connection pressure, active event collectors,
 provider work and eligible publication requests. It pauses on load or unavailable
@@ -71,13 +78,16 @@ Unexpected markup is an explicit failure, not successful empty coverage.
 Outputs are private candidate records and run receipts in
 `rq_curator_private.things_to_do_pilot_*`. There is no public-card publication,
 event insertion, search change, saved-item change, itinerary change or mobile
-release. This experiment measures extraction and autonomous repeat operation
-before the new card type is integrated with those product flows.
+release. Ben explicitly kept this workstream focused on crawling, storage and
+refresh; he will start a separate chat for display mock-ups and integration.
+This experiment measures initial extraction, detail enrichment and autonomous
+operation. Its configured 21-day routine recheck lies beyond the finite trial.
 
 The token-checked `community_collector_things_to_do` RPC supports `claim`,
 `finish` and read-only `status`. Public database roles cannot read the private
-tables. Status reports attempts, counts, expiry, health and run outcomes; it
-does not expose the collector token or a worker lease token.
+tables. Status reports attempts, counts, expiry, the 21-day refresh interval,
+health and run outcomes. It does not expose the collector token or a worker
+lease token.
 
 ## Validation evidence
 
@@ -100,5 +110,8 @@ deployed run receipts; source HTML was separately available for parser research.
 
 Production state and exact release evidence belong in the companion
 RoomQuestGame journal `docs/journal/2026-11-15-things-to-do-pilot.md` and its
-release receipt. Until those receipts exist, this document describes the
-implemented behavior rather than claiming a running deployment.
+release receipt. Consult those dated receipts for the observed production
+inventory and scheduler results.
+
+The current refresh decision and its release evidence are tracked in
+`docs/journal/2026-11-15-things-to-do-refresh-21-days.md` in RoomQuestGame.
