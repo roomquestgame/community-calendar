@@ -599,18 +599,21 @@ def _radegast_event(event, now):
     return rows, diagnostics
 
 
-def _radegast_digest(count, started_at):
+def _radegast_digest(count, started_at, *, bootstrap=False):
     manifest = dict(source_key=RADEGAST, feed_url=SOURCES[RADEGAST][0], range="future",
                     publisher_count=count, page_size=RADEGAST_PAGE_SIZE, started_at=started_at)
+    if bootstrap:
+        manifest["phase"] = "robots"
     return sha256(json.dumps(manifest, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
 
 
-def _new_radegast_state(count, current, restarts=0):
+def _new_radegast_state(count, current, restarts=0, *, bootstrap=False):
     started = current.astimezone(timezone.utc).isoformat()
     return dict(version=1, source_key=RADEGAST, started_at=started,
                 window_start=current.astimezone(ZoneInfo(ZONE)).date().isoformat(),
-                manifest_hash=_radegast_digest(count, started), manifest_count=count,
-                cursor=0, next_page=1, restarts=restarts, seen_ids=[], events=[], diagnostics=[])
+                manifest_hash=_radegast_digest(count, started, bootstrap=bootstrap), manifest_count=count,
+                cursor=0, next_page=1, restarts=restarts, seen_ids=[], events=[], diagnostics=[],
+                phase="robots" if bootstrap else "events")
 
 
 def _radegast_checkpoint(value, current):
@@ -619,6 +622,7 @@ def _radegast_checkpoint(value, current):
     try:
         started = timestamp(value["started_at"])
         count, cursor, page = value["manifest_count"], value["cursor"], value["next_page"]
+        phase = value.get("phase", "events")
         valid = (isinstance(value, dict) and type(value["version"]) is int and value["version"] == 1
             and value["source_key"] == RADEGAST and type(count) is int and 0 <= count <= MAX_RECORDS
             and type(cursor) is int and 0 <= cursor <= count and type(page) is int and page >= 1
@@ -632,7 +636,10 @@ def _radegast_checkpoint(value, current):
             and re.fullmatch(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z|\+00:00)", value["started_at"])
             and -60 <= (current - started).total_seconds() <= 4 * 60 * 60
             and value["window_start"] == started.astimezone(ZoneInfo(ZONE)).date().isoformat()
-            and value["manifest_hash"] == _radegast_digest(count, value["started_at"]))
+            and phase in {"robots", "events"}
+            and (phase != "robots" or (count == cursor == value["restarts"] == 0 and page == 1
+                                      and value["events"] == value["diagnostics"] == value["seen_ids"] == []))
+            and value["manifest_hash"] == _radegast_digest(count, value["started_at"], bootstrap=phase == "robots"))
         if not valid:
             raise ValueError
         covered, row_ids = set(), set()
@@ -669,7 +676,7 @@ def _radegast_checkpoint(value, current):
 
 
 def _radegast_result(state, current):
-    complete = state["cursor"] == state["manifest_count"]
+    complete = state.get("phase", "events") != "robots" and state["cursor"] == state["manifest_count"]
     if complete:
         active = []
         for row in state["events"]:
@@ -919,7 +926,8 @@ def _greenbelt_chunk(fetch, checkpoint, deadline_at, current, max_details):
     return _greenbelt_result(state, current)
 
 
-def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None, max_details=2):
+def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None, max_details=2,
+                  prepare_publisher=None):
     key = _source(source)
     current = now or datetime.now(timezone.utc)
     if key not in CHECKPOINT_KEYS or current.tzinfo is None:
@@ -927,14 +935,22 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
     if key == GREENBELT:
         return _greenbelt_chunk(fetch, checkpoint, deadline_at, current, max_details)
     state = _radegast_checkpoint(checkpoint, current)
-    if state is not None and state["cursor"] == state["manifest_count"]:
+    if state is not None and state.get("phase", "events") != "robots" and state["cursor"] == state["manifest_count"]:
         return _radegast_result(state, current)
     if deadline_at is not None and monotonic() + 12 >= deadline_at:
         raise ValueError("collection_deadline")
     page = state["next_page"] if state else 1
-    count, native_events = _radegast_page(fetch(RADEGAST_API + str(page), "application/json"), page)
-    if state is None:
-        state = _new_radegast_state(count, current)
+    url = RADEGAST_API + str(page)
+    if prepare_publisher is not None and not prepare_publisher(url):
+        # No event manifest has been requested. This explicit zero-event phase
+        # is pending, never an empty successful calendar. The normal transport
+        # attaches its authenticated, expiring robots cache at the RPC boundary.
+        return _radegast_result(state or _new_radegast_state(0, current, bootstrap=True), current)
+    count, native_events = _radegast_page(fetch(url, "application/json"), page)
+    if state is None or state.get("phase") == "robots":
+        # Policy bootstrap is part of this generation: retain its original
+        # started_at/window anchor when the real manifest first becomes known.
+        state = _new_radegast_state(count, timestamp(state["started_at"]) if state else current)
     elif count != state["manifest_count"] or set(state["seen_ids"]) & {event["id"] for event in native_events}:
         # A live pagination change invalidates the partial generation. Persist
         # a new empty generation; the next paced turn restarts with page one.

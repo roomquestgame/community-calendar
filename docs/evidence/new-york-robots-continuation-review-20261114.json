@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "reviewed_at": "2026-11-15T00:00:29.520899+00:00",
+  "base_commit": "6e1a44b",
+  "scope": {
+    "radegast_hall_brooklyn_ny": "radegasthall.com",
+    "ny_transit_museum_ny": "www.nytransitmuseum.org",
+    "flushing_town_hall_ny": "www.flushingtownhall.org"
+  },
+  "problem": "Cold workers refetched robots and reserved the complete native delay, losing Radegast’s budget before any calendar request. Slow arts continuations also repeated avoidable policy fetches and could lose valid detail progress when robots expired at the final manifest check.",
+  "changes": [
+    "Persist only complete transport-created robots responses through the existing source/lease/revision-fenced checkpoint. HMAC uses the existing private collector token with a separate domain; no new secret or configuration.",
+    "Authenticate exact source/feed/host/robots URL/request user agents. Reparse full rules and evaluate every requested path. No boolean path approval is persisted.",
+    "Keep original fetched_at plus exactly 300-second expiry. Invalid, expired, unsigned, tampered, cross-source or rotated-key snapshots return to ordinary guarded policy lookup. A new copy never extends the policy TTL.",
+    "Choose the newer of authenticated snapshot and timestamped local policy. Retain maximum observed crawl/retry waits. DNS, redirect, HTTPS, network caps, source budget and DB not_before admission remain unchanged.",
+    "Radegast adds an explicit zero-event robots bootstrap that remains incomplete. Existing populated checkpoints without metadata preserve their full native prefix and original started_at.",
+    "Transit/Flushing preserve private native progress on guarded pacing or deadline interruptions after a valid manifest exists; failed items remain pending and final manifest verification is still required. HTTP 403/429, robots denial, and unrelated sources retain existing failure behavior."
+  ],
+  "tests": {
+    "new_suite_passed": 55,
+    "combined_regression_passed": 292,
+    "additional_unittest_subtests_passed": 50,
+    "command": "PYTHONDONTWRITEBYTECODE=1 python -m pytest -q -p no:cacheprovider tests/test_publisher_robots_checkpoint.py tests/test_publisher_robots_cache.py tests/test_publisher_admission.py tests/test_new_york_social_final.py tests/test_new_york_arts_final.py tests/test_new_york_worker.py tests/test_category_worker.py",
+    "result": "passed",
+    "diff_check": "passed",
+    "warning": "Existing anyio pytest plugin deprecation warning; no failed tests."
+  },
+  "native_replay": {
+    "path": "docs/evidence/new-york-robots-continuation-replay-20261114.json",
+    "result": "41 distinct complete native events match original full body/title/start/end/venue/street/URL/point projections exactly: 12 Radegast, 17 Transit, and 12 Flushing. The existing 9-event Radegast prefix was separately preserved through a robots-only deferral and completed to 12.",
+    "cold_process_every_chunk": true,
+    "minimum_request_gap_seconds": {
+      "radegast": 62,
+      "transit": 10,
+      "flushing": 10
+    },
+    "maximum_effective_chunk_seconds": 22,
+    "effective_chunk_cap_seconds": 30,
+    "native_network_or_production_mutations": false
+  },
+  "deployment_status": "Code and offline validation only. Parent owns independent review, consolidated collector PR and production deployment; no source reset or DB migration is required.",
+  "files": {
+    "roomquest/publisher_robots_checkpoint.py": {
+      "sha256": "525d48acfce2df50cba45ddf740396bd39b85cc12c9daaefc645ced97d0b2048",
+      "bytes": 8249
+    },
+    "roomquest/preview_worker.py": {
+      "sha256": "dee6a8e0590fe90da3329d4612f184b6424b59e622bd4c365e9a9f7eb42a9666",
+      "bytes": 144011
+    },
+    "roomquest/new_york_social_final.py": {
+      "sha256": "bed13ce50d17817a0099d1d0b4306144ed351c5f62159d6bcae1958e01f0c77c",
+      "bytes": 55292
+    },
+    "roomquest/new_york_arts_final.py": {
+      "sha256": "aab01638d168b753cb7a6cfe99e26838e8ce8b3b6afc9d5eaceefa4c1d71424e",
+      "bytes": 43986
+    },
+    "roomquest/publisher_pacing.py": {
+      "sha256": "889881ce1fcc00b3c5bd447bc36895e880ac2ace21f8bcca911389644f012841",
+      "bytes": 4046
+    },
+    "tests/test_publisher_robots_checkpoint.py": {
+      "sha256": "5cec229f0e613b7bf9503e4dad2dc4f0baf376885cc5dd3aa66256c158193eba",
+      "bytes": 25230
+    },
+    "docs/evidence/new-york-robots-continuation-replay-20261114.json": {
+      "sha256": "615509d46961818e744c93b045efe64bfcb85f0c6ff20b836a63a0809f62b320",
+      "bytes": 33411
+    }
+  }
+}

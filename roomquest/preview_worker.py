@@ -27,6 +27,7 @@ from urllib.request import HTTPRedirectHandler, Request, build_opener
 from zoneinfo import ZoneInfo
 
 from roomquest.collector_errors import failure_details
+from roomquest import publisher_robots_checkpoint as robots_checkpoint
 from roomquest.publisher_pacing import (capture_publisher_pacing, observe_crawl_delay,
                                        observe_retry_after, pacing_rpc_fields, robots_crawl_delay)
 
@@ -50,7 +51,7 @@ VIRGINIA_CIVIC_ICS = {
     "halifax_county_main_va": "https://www.halifaxcountyva.gov/common/modules/iCalendar/iCalendar.aspx?catID=14&feed=calendar",
 }
 _robots_delays = {}
-ROBOTS_CACHE_SECONDS = 300
+ROBOTS_CACHE_SECONDS = robots_checkpoint.TTL_SECONDS
 MAX_ROBOTS_HOSTS = 128
 _robots_cache = OrderedDict()
 _robots_cache_lock = Lock()
@@ -166,16 +167,117 @@ def validate_public_dns(host: str) -> None:
         raise PreviewError("dns_unavailable") from exc
 
 
-def _cache_robots(host, parser):
+def _robots_utc_now():
+    return datetime.now(timezone.utc)
+
+
+def _cache_robots(host, parser, *, raw=None, status=200):
     # Age a policy from its completed response, not a shared wall-clock bucket.
     # A policy fetched just before a five-minute boundary must not expire a
     # moment later while that same publisher's crawl delay is still running.
+    evidence = robots_checkpoint.response_evidence(
+        host, raw, status, now=_robots_utc_now()) if raw is not None else None
     with _robots_cache_lock:
-        _robots_cache[host] = (monotonic() + ROBOTS_CACHE_SECONDS, parser)
+        _robots_cache[host] = (monotonic() + ROBOTS_CACHE_SECONDS, parser, evidence)
         _robots_cache.move_to_end(host)
         while len(_robots_cache) > MAX_ROBOTS_HOSTS:
             _robots_cache.popitem(last=False)
     return parser
+
+
+def _parse_robots_policy(host, raw):
+    """One policy parser for fetched responses and authenticated fresh caches."""
+    parser = RobotFileParser()
+    lines = raw.decode("utf-8-sig", errors="replace").splitlines()
+    if host == "core.service.elfsight.com":
+        # A trailing wildcard is a prefix match. RobotFileParser treats it literally.
+        lines = ["Allow: /p/" if line.strip() == "Allow: /p/*" else line for line in lines]
+    parser.parse(lines)
+    delay = robots_crawl_delay(lines, robots_checkpoint.PERMISSION_USER_AGENT)
+    if host in ("nytransitmuseum.org", "www.nytransitmuseum.org"):
+        # The reviewed orphan directive remains a pacing floor on cache restore.
+        delay = max(10, delay)
+    return parser, delay
+
+
+def _restore_checkpoint_robots(source, snapshot):
+    restored = robots_checkpoint.restore(source, snapshot,
+        secret=os.environ.get("ROOMQUEST_COLLECTOR_TOKEN", ""), now=_robots_utc_now())
+    if restored is None:
+        return False
+    host = robots_checkpoint.profile(source)
+    now, clock = _robots_utc_now(), monotonic()
+    remaining = (restored["expires_at"] - now).total_seconds()
+    if remaining <= 0:
+        return False
+    parser, delay = (_parse_robots_policy(host, restored["raw"])
+                     if restored["status"] == 200 else (None, 1))
+    if delay > 86400:
+        return False
+    with _publisher_lock:
+        # Never shorten a stronger wait already observed in this process.
+        _publisher_next[host] = max(_publisher_next.get(host, 0),
+            clock + max(0, (restored["not_before"] - now).total_seconds()))
+        retry = restored["retry_after_until"]
+        if retry is not None:
+            _publisher_retry_after[host] = max(_publisher_retry_after.get(host, 0),
+                clock + max(0, (retry - now).total_seconds()))
+    with _robots_cache_lock:
+        cached = _robots_cache.get(host)
+        # Never knowingly prefer an older allow over a newer deny, in either
+        # direction. Legacy cache entries have no portable age evidence.
+        if cached is not None and cached[0] > clock:
+            local_fetched = robots_checkpoint.evidence_fetched_at(cached[2] if len(cached) > 2 else None)
+            if local_fetched is None or local_fetched >= restored["fetched_at"]:
+                return True
+        _robots_delays[host] = delay
+        evidence = robots_checkpoint.response_evidence(host, restored["raw"], restored["status"],
+                                                      now=restored["fetched_at"])
+        _robots_cache[host] = (clock + remaining, parser, evidence)
+        _robots_cache.move_to_end(host)
+        while len(_robots_cache) > MAX_ROBOTS_HOSTS:
+            _robots_cache.popitem(last=False)
+    return True
+
+
+def _checkpoint_robots_snapshot(source):
+    host = robots_checkpoint.profile(source)
+    if host is None:
+        return None
+    now, clock = _robots_utc_now(), monotonic()
+    with _robots_cache_lock:
+        cached = _robots_cache.get(host)
+        if cached is None or cached[0] <= clock or len(cached) < 3 or cached[2] is None:
+            return None
+        evidence = cached[2]
+    with _publisher_lock:
+        wait = max(0, _publisher_next.get(host, clock) - clock,
+                   _publisher_retry_after.get(host, clock) - clock)
+        retry = max(0, _publisher_retry_after.get(host, clock) - clock)
+    return robots_checkpoint.seal(source, evidence,
+        not_before=now + timedelta(seconds=wait),
+        retry_after_until=now + timedelta(seconds=retry) if retry else None,
+        secret=os.environ.get("ROOMQUEST_COLLECTOR_TOKEN", ""), now=now)
+
+
+def _checkpoint_publisher_ready(source, url, deadline):
+    """Radegast may persist a robots-only phase instead of losing cold progress."""
+    host, parsed = robots_checkpoint.profile(source), urlparse(url)
+    if not public_source_url(url) or parsed.netloc != host:
+        raise PreviewError("redirect_host_not_approved")
+    validate_public_dns(host)
+    path = parsed.path + ("?" + parsed.query if parsed.query else "")
+    if not robots_allowed(host, path, deadline_at=deadline):
+        raise PreviewError("robots_denied")
+    try:
+        # Leave the existing twelve-second adapter guard for the calendar GET.
+        # This admission does not reserve a request that has not occurred.
+        pace_publisher(host, deadline - 12, reserve=False)
+    except PreviewError as exc:
+        if str(exc) == "publisher_pacing_deferred":
+            return False
+        raise
+    return True
 
 
 def _robots_rules(host: str, *, deadline_at: float | None = None):
@@ -208,7 +310,7 @@ def _robots_rules(host: str, *, deadline_at: float | None = None):
         pace_publisher(host, deadline, reserve=False)
         opener = build_opener(ReviewedRobotsRedirects())
         request = Request(robots_url, headers={
-            "User-Agent": "RoomQuestCommunityCalendar/0.1 (community-event research)"
+            "User-Agent": robots_checkpoint.ROBOTS_USER_AGENT
         })
         remaining = deadline - monotonic()
         if remaining <= 0:
@@ -223,7 +325,7 @@ def _robots_rules(host: str, *, deadline_at: float | None = None):
         _observe_retry_after(host, exc.headers)
         if exc.code in (404, 410):
             _robots_delays[host] = 1
-            return _cache_robots(host, None)
+            return _cache_robots(host, None, raw=b"", status=exc.code)
         if exc.code in (401, 403):
             raise PreviewError("robots_denied") from exc
         if exc.code == 429:
@@ -234,23 +336,11 @@ def _robots_rules(host: str, *, deadline_at: float | None = None):
     finally:
         if attempted:
             _reserve_known_crawl_delay(host)
-    parser = RobotFileParser()
-    lines = raw.decode("utf-8-sig", errors="replace").splitlines()
-    if host == "core.service.elfsight.com":
-        # A trailing wildcard is a prefix match. RobotFileParser treats it literally.
-        lines = ["Allow: /p/" if line.strip() == "Allow: /p/*" else line for line in lines]
-    parser.parse(lines)
-    _robots_delays[host] = robots_crawl_delay(lines, "RoomQuestCommunityCalendar")
-    if host in ("nytransitmuseum.org", "www.nytransitmuseum.org"):
-        # The reviewed publisher places its 10-second Crawl-delay before the
-        # first User-agent group. Honor that stated wait even though the
-        # standard parser ignores the orphan directive. Path permissions and
-        # any stronger selected delay remain unchanged.
-        _robots_delays[host] = max(10, _robots_delays[host])
+    parser, _robots_delays[host] = _parse_robots_policy(host, raw)
     # The newly learned delay also separates this robots response from the
     # first calendar request. An oversized value is held before that request.
     _reserve_known_crawl_delay(host)
-    return _cache_robots(host, parser)
+    return _cache_robots(host, parser, raw=raw, status=200)
 
 
 def robots_allowed(host: str, path: str, *, deadline_at: float | None = None) -> bool:
@@ -259,7 +349,7 @@ def robots_allowed(host: str, path: str, *, deadline_at: float | None = None) ->
     _, unbounded = observe_crawl_delay(_robots_delays.get(host, 1))
     if unbounded:
         raise PreviewError("publisher_wait_requires_review")
-    return parser is None or parser.can_fetch("RoomQuestCommunityCalendar", "https://" + host + path)
+    return parser is None or parser.can_fetch(robots_checkpoint.PERMISSION_USER_AGENT, "https://" + host + path)
 
 
 def pace_publisher(host: str, deadline: float, *, reserve=True) -> None:
@@ -520,7 +610,7 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
     if not public_source_url(safe_url):
         raise PreviewError("invalid_source_url")
     headers = {
-        "User-Agent": ("RoomQuestCommunityCalendar/0.2 (+https://roomquestapp.vercel.app/)" if respect_robots
+        "User-Agent": (robots_checkpoint.PUBLISHER_USER_AGENT if respect_robots
                        else "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"),
         "Accept": accept,
     }
@@ -1966,6 +2056,14 @@ def _preview_fetch_chunk(source, pacing, *, adapter, allowed_hosts, collection_c
         deadline = min(monotonic() + 36, deadline_at - 9)
         try:
             adapter_args = {}
+            checkpoint = saved["checkpoint"]
+            robots_host = robots_checkpoint.profile(source, allowed_hosts)
+            if robots_host is not None:
+                checkpoint, snapshot = robots_checkpoint.detach(checkpoint)
+                _restore_checkpoint_robots(source, snapshot)
+                if source["source_key"] == "radegast_hall_brooklyn_ny":
+                    adapter_args['prepare_publisher'] = lambda url: _checkpoint_publisher_ready(
+                        source, url, deadline)
             if source.get('source_key') == 'boston_cares_ma':
                 adapter_args['render_calendar'] = lambda **window: render_boston_cares_calendar(
                     **window, deadline_at=deadline)
@@ -1977,7 +2075,12 @@ def _preview_fetch_chunk(source, pacing, *, adapter, allowed_hosts, collection_c
                 source, lambda url, accept: fetch_publisher(
                     url, accept, respect_robots=True, deadline_at=deadline,
                     allowed_hosts=allowed_hosts),
-                checkpoint=saved["checkpoint"], deadline_at=deadline, **adapter_args)
+                checkpoint=checkpoint, deadline_at=deadline, **adapter_args)
+            if robots_host is not None:
+                # A publisher/adapter-supplied field can never become authority.
+                # Only our complete guarded response cache is signed and stored.
+                chunk = dict(chunk, checkpoint=robots_checkpoint.attach(
+                    chunk["checkpoint"], _checkpoint_robots_snapshot(source)))
         except PreviewError:
             raise
         except (ValueError, TypeError, KeyError, OverflowError) as exc:
