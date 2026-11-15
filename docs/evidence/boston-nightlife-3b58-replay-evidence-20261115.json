@@ -1,0 +1,2275 @@
+{
+  "commit": "3b58be1a2c5232b87242d07402ec8b86078dc1e7",
+  "module_sha256": "742ad38b25d3d57def9abf67581234ec3188056a16c5bde55638e029b5f50192",
+  "anchor": "2026-11-15T01:00:00+00:00",
+  "network_requests": 0,
+  "profiles": [
+    {
+      "source_key": "lizard_lounge_ma",
+      "records": 30,
+      "baseline_records": 30,
+      "claims": 1,
+      "requests": 2,
+      "exact_captured_urls": [
+        "https://lizardloungeclub.com/calendar/",
+        "https://lizardloungeclub.com/wp-json/tribe/events/v1/events?per_page=50&start_date=2026-11-13+00%3A00%3A00&end_date=2027-01-14+00%3A00%3A00&status=publish&page=1"
+      ],
+      "missing_descriptions": 0,
+      "missing_streets": 0,
+      "null_points": 0,
+      "added": [],
+      "removed": [],
+      "geometry_changed": [
+        {
+          "id": "boston:139de6b26e17616fb794edb19d15a31ec8e71d58fca002a1ec88598451b2302f",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:228ba7b6657c366ae73875a4fad0881ccf06f54a8e6298ea240109f38aa7a19f",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:2501c5c70ead357f980033a453b2a4945820cc096d809f50fef7ba6ad1b149fe",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:33cfd2541c4705943c8f7da7ea31771546b4d2ddf376efbc5e1ec4427558e606",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:34e076bca5585cb2ce51b5c9158e7faafdc5eb5e54eacf2534a6aefc6a0f8519",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:4c541b93bbf9e1e20915f3569be41a22213a0053a7f114d657501d37f0eaed9a",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:56599d4cf53f9b8d4b0cac7229b6ce2cc734d53988e8a7cd3377bde347765d77",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:5961e40cd0b135fddf2c17c7ef6a9897684d50d587d48b9d08ee7fb758b687d3",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:5ad35dd9ed3a37420532b54748827b6101a9f8454ad292762f0a6ccf0f8fb111",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:5c8b45a982580eb466602dadc09f3779ebe8eba9779cdc68cb543d4704c3f4fd",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:5cba46b30a79ba1b859af9fc1b653aa8f5bafbadde5350986bd0819d5ea13e9f",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:5e5be04e141c2c68c4b75cba0c2278511c37026f496b788d120520f5be9c843e",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:66b124c41521003c407ace3d280889b2fe47bbc4759470de41b7ee11a2984555",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:6c0ca75809cccbcaa7c638d4fd19a84ad275ade7f068ea01f9a91d4e4ebd4039",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:6dad4a1c8bf777a07f9d81d7c6dce25cb019511a34990a41e29e0d46591a3146",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:77a89a0fc609c3bec683bc278b92c3efaba8a612abb2e2e670d15cfae09cdee7",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:7e28fbb3281eb97d937a9ae96742626e24939ba303b1c6f1d368dba77b0ce97a",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:8dbe90b4f550747c510a6fca49a596946c0bdfc8216ac08a9169d73fcd9f5ce3",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:9c53884f7aefda244c2c7581605cf0de01dec13498dfba2ab41f10feedcacd8e",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:a20da1acddb5fd0c546825129e37cba2fbd50483675dda05ecd9e1ae6ddd3508",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:a8ae977c6986e19f3e87c09141b9e4739f23cd6530f8b92e38f8c8d9a4a6af81",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:bdbfd948eee2c27cad6205915e204edc8688574e7c5c19cd87850f7d504a4a17",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:c447fe42528e3f5b88d1db173416689025e178580a61d38b9f4738880326714b",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:dd23f1bf99c500a6695bd114aad3c52e9cafc484721a0aa7d60389d9c7fe554e",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:e1e2215a76fa30b7ccffebfc341e067a522ecc0ed44ca1b06207a1de63bdf748",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:e584863fc772a285b1b72805cda7481ee0dd18ddb3c3c859413f3869732cad89",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:e9e7cdfa33c267fd1c658b544ef76b692d73d02efec257fc3a212cee899e7109",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:f0911243bdd7b82fdcf223328433f69dad0f04c474a5c5596814a67883c4ed15",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:fa715089653e6fed0f8a44560580340a3cb915a8060257c33df07a3197174096",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:fee33e49e16c31b3b7b0a5089fe10f9acaea29f56742dc996c8dda55a2194674",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        }
+      ],
+      "diagnostics": [],
+      "native_fields_preserved": true,
+      "baseline_file": "/workspace/scratch/6c174d945c50/nightlife-work/lizard_lounge_ma-rows.json",
+      "baseline_sha256": "519d1b08f76ad294fa18f2844e4d1b57a27f7efd3abd7b5909887dd5abd63cc0",
+      "rows_file": "/workspace/scratch/6c174d945c50/nightlife-work/concurrent-3b58/lizard_lounge_ma-rows.json",
+      "rows_sha256": "1205d411a75580843355694e0eb3404b431ed87d112ed303877256f0e29bb9f8",
+      "checkpoint_bytes": 129432
+    },
+    {
+      "source_key": "improv_asylum_ma",
+      "records": 85,
+      "baseline_records": 85,
+      "claims": 1,
+      "requests": 2,
+      "exact_captured_urls": [
+        "https://calendar.improvasylum.com/",
+        "https://calendar.improvasylum.com/api/events/improv-asylum"
+      ],
+      "missing_descriptions": 0,
+      "missing_streets": 0,
+      "null_points": 85,
+      "added": [],
+      "removed": [],
+      "geometry_changed": [],
+      "diagnostics": [],
+      "native_fields_preserved": true,
+      "baseline_file": "/workspace/scratch/6c174d945c50/nightlife-work/improv_asylum_ma-rows.json",
+      "baseline_sha256": "644fa313bfaa43cb299d62cb2f821d21e4ec73219581de245205a83200692f57",
+      "rows_file": "/workspace/scratch/6c174d945c50/nightlife-work/concurrent-3b58/improv_asylum_ma-rows.json",
+      "rows_sha256": "644fa313bfaa43cb299d62cb2f821d21e4ec73219581de245205a83200692f57",
+      "checkpoint_bytes": 366740
+    },
+    {
+      "source_key": "laugh_boston_ma",
+      "records": 37,
+      "baseline_records": 37,
+      "claims": 1,
+      "requests": 2,
+      "exact_captured_urls": [
+        "https://calendar.laughboston.com/",
+        "https://calendar.laughboston.com/api/events/laugh-boston"
+      ],
+      "missing_descriptions": 0,
+      "missing_streets": 0,
+      "null_points": 37,
+      "added": [],
+      "removed": [],
+      "geometry_changed": [],
+      "diagnostics": [],
+      "native_fields_preserved": true,
+      "baseline_file": "/workspace/scratch/6c174d945c50/nightlife-work/laugh_boston_ma-rows.json",
+      "baseline_sha256": "f360c92f361c5cfc9cc81af1554ee07688d931aba0cbc6843712f86af929a590",
+      "rows_file": "/workspace/scratch/6c174d945c50/nightlife-work/concurrent-3b58/laugh_boston_ma-rows.json",
+      "rows_sha256": "f360c92f361c5cfc9cc81af1554ee07688d931aba0cbc6843712f86af929a590",
+      "checkpoint_bytes": 144554
+    },
+    {
+      "source_key": "club_passim_ma",
+      "records": 60,
+      "baseline_records": 61,
+      "claims": 4,
+      "requests": 43,
+      "exact_captured_urls": [
+        "https://www.passim.org/live-music/",
+        "https://www.passim.org/live-music/events/aine-minogue/",
+        "https://www.passim.org/live-music/events/alisa-amador/",
+        "https://www.passim.org/live-music/events/bigfoot-research-organization/",
+        "https://www.passim.org/live-music/events/bruce-molsky/",
+        "https://www.passim.org/live-music/events/chris-smither/",
+        "https://www.passim.org/live-music/events/connie-kaldor/",
+        "https://www.passim.org/live-music/events/dinty-child-mark-erelli/",
+        "https://www.passim.org/live-music/events/dwight-nicole/",
+        "https://www.passim.org/live-music/events/edie-carey/",
+        "https://www.passim.org/live-music/events/ellis-paul-friends/",
+        "https://www.passim.org/live-music/events/girlyman/",
+        "https://www.passim.org/live-music/events/jason-myles-goss/",
+        "https://www.passim.org/live-music/events/jeffrey-foucault-2/",
+        "https://www.passim.org/live-music/events/jeffrey-martin/",
+        "https://www.passim.org/live-music/events/jenna-moynihan-owen-marshall/",
+        "https://www.passim.org/live-music/events/kat-wallace-steven-manwaring-perform-time-the-revelator/",
+        "https://www.passim.org/live-music/events/kemp-harris-band/",
+        "https://www.passim.org/live-music/events/laurie-macallister-seth-glier/",
+        "https://www.passim.org/live-music/events/lori-mckenna-band/",
+        "https://www.passim.org/live-music/events/love-has-come-a-holiday-variety-show/",
+        "https://www.passim.org/live-music/events/lucy-kaplansky/",
+        "https://www.passim.org/live-music/events/mark-lipman/",
+        "https://www.passim.org/live-music/events/mike-block-yacouba-sissoko/",
+        "https://www.passim.org/live-music/events/nate-sabat-morgan-harris/",
+        "https://www.passim.org/live-music/events/niall-connolly-and-band/",
+        "https://www.passim.org/live-music/events/open-mic/",
+        "https://www.passim.org/live-music/events/passim-monday-discovery-series/",
+        "https://www.passim.org/live-music/events/red-mcadam/",
+        "https://www.passim.org/live-music/events/scottish-fish/",
+        "https://www.passim.org/live-music/events/sol-y-canto/",
+        "https://www.passim.org/live-music/events/sweet-petunia/",
+        "https://www.passim.org/live-music/events/tall-heights/",
+        "https://www.passim.org/live-music/events/the-ruth-ben-string-band/",
+        "https://www.passim.org/live-music/events/the-secret-sauce/",
+        "https://www.passim.org/live-music/events/tony-trischkas-holiday-show-of-a-winters-night/",
+        "https://www.passim.org/live-music/events/under-the-covers/",
+        "https://www.passim.org/live-music/events/wintery-songs-in-eleventy-part-harmony/",
+        "https://www.passim.org/live-music/events/zachariah-hickmans-power-outage-party/",
+        "https://www.passim.org/live-music/events/zachariah-hickmans-power-outage-pre-party-jam-session/"
+      ],
+      "missing_descriptions": 0,
+      "missing_streets": 0,
+      "null_points": 0,
+      "added": [],
+      "removed": [
+        {
+          "id": "boston:4fd0e214fdbbb9e2fd35de23b948c6a01ef688f1e2f3b54abbec5af919527273",
+          "title": "Boston Fiddle Funk Folk Festival at The Armory",
+          "starts_at": "2026-11-21T00:00:00+00:00",
+          "event_url": "https://www.passim.org/live-music/events/boston-fiddle-funk-folk-festival-at-the-armory/",
+          "venue_name": "Arts at the Armory",
+          "venue_address": "191 Highland Avenue, Somerville, MA 02143"
+        }
+      ],
+      "geometry_changed": [],
+      "diagnostics": [
+        {
+          "id": "boston:4fd0e214fdbbb9e2fd35de23b948c6a01ef688f1e2f3b54abbec5af919527273",
+          "event_url": "https://www.passim.org/live-music/events/boston-fiddle-funk-folk-festival-at-the-armory/",
+          "title": "Boston Fiddle Funk Folk Festival at The Armory",
+          "starts_at": "2026-11-20T19:00:00-05:00",
+          "reason": "boston_additional_already_published",
+          "disposition": "already_published",
+          "published_source_key": "arts_at_the_armory_ma",
+          "published_external_event_id": "20320@artsatthearmory.org",
+          "published_starts_at": "2026-11-20T23:00:00+00:00"
+        },
+        {
+          "id": "boston:257394d7feccf86fb100b5ceed2e4acaf7987072b6c0534623b55b02e1682cf3",
+          "event_url": "https://www.passim.org/live-music/events/tall-heights/",
+          "title": "Tall Heights at Arrow Street Arts",
+          "starts_at": "2026-12-05T19:00:00-05:00",
+          "reason": "boston_nightlife_description_missing",
+          "disposition": "held"
+        }
+      ],
+      "native_fields_preserved": true,
+      "baseline_file": "/workspace/scratch/6c174d945c50/nightlife-work/club_passim_ma-rows.json",
+      "baseline_sha256": "e31b917a56fee6ca1d75e119e015333cf71ec31fa82f7ce8511eeb10399d4260",
+      "rows_file": "/workspace/scratch/6c174d945c50/nightlife-work/concurrent-3b58/club_passim_ma-rows.json",
+      "rows_sha256": "3a7bfbfeb014fb187e983bbe332f9666ccd34cb131e474bdc98bd4bb55955fc6",
+      "checkpoint_bytes": 226337
+    },
+    {
+      "source_key": "burren_ma",
+      "records": 123,
+      "baseline_records": 123,
+      "claims": 4,
+      "requests": 45,
+      "exact_captured_urls": [
+        "https://tickets.24hourmusic.com/eventperformances.asp?evt=1",
+        "https://tickets.24hourmusic.com/eventperformances.asp?evt=100",
+        "https://tickets.24hourmusic.com/eventperformances.asp?evt=1000",
+        "https://tickets.24hourmusic.com/eventperformances.asp?evt=1053",
+        "https://tickets.24hourmusic.com/eventperformances.asp?evt=1066",
+        "https://tickets.24hourmusic.com/eventperformances.asp?evt=1077",
+        "https://tickets.24hourmusic.com/eventperformances.asp?evt=1129",
+        "https://tickets.24hourmusic.com/eventperformances.asp?evt=1176",
+        "https://tickets.24hourmusic.com/eventperformances.asp?evt=1235",
+        "https://tickets.24hourmusic.com/eventperformances.asp?evt=1295",
+        "https://tickets.24hourmusic.com/eventperformances.asp?evt=1460",
+        "https://tickets.24hourmusic.com/eventperformances.asp?evt=1557",
+        "https://tickets.24hourmusic.com/eventperformances.asp?evt=1583",
+        "https://tickets.24hourmusic.com/eventperformances.asp?evt=1697",
+        "https://tickets.24hourmusic.com/eventperformances.asp?evt=1702",
+        "https://tickets.24hourmusic.com/eventperformances.asp?evt=1719",
+        "https://tickets.24hourmusic.com/eventperformances.asp?evt=1779",
+        "https://tickets.24hourmusic.com/eventperformances.asp?evt=1889",
+        "https://tickets.24hourmusic.com/eventperformances.asp?evt=1890",
+        "https://tickets.24hourmusic.com/eventperformances.asp?evt=1902",
+        "https://tickets.24hourmusic.com/eventperformances.asp?evt=1907",
+        "https://tickets.24hourmusic.com/eventperformances.asp?evt=1911",
+        "https://tickets.24hourmusic.com/eventperformances.asp?evt=1922",
+        "https://tickets.24hourmusic.com/eventperformances.asp?evt=1923",
+        "https://tickets.24hourmusic.com/eventperformances.asp?evt=1924",
+        "https://tickets.24hourmusic.com/eventperformances.asp?evt=1926",
+        "https://tickets.24hourmusic.com/eventperformances.asp?evt=1928",
+        "https://tickets.24hourmusic.com/eventperformances.asp?evt=1929",
+        "https://tickets.24hourmusic.com/eventperformances.asp?evt=1930",
+        "https://tickets.24hourmusic.com/eventperformances.asp?evt=1931",
+        "https://tickets.24hourmusic.com/eventperformances.asp?evt=61",
+        "https://tickets.24hourmusic.com/eventperformances.asp?evt=746",
+        "https://tickets.24hourmusic.com/eventperformances.asp?evt=774",
+        "https://tickets.24hourmusic.com/eventperformances.asp?evt=779",
+        "https://tickets.24hourmusic.com/eventperformances.asp?evt=780",
+        "https://tickets.24hourmusic.com/eventperformances.asp?evt=788",
+        "https://tickets.24hourmusic.com/eventperformances.asp?evt=794",
+        "https://tickets.24hourmusic.com/eventperformances.asp?evt=822",
+        "https://tickets.24hourmusic.com/eventperformances.asp?evt=862",
+        "https://tickets.24hourmusic.com/eventperformances.asp?evt=970",
+        "https://www.burren.com/music.html"
+      ],
+      "missing_descriptions": 0,
+      "missing_streets": 0,
+      "null_points": 0,
+      "added": [],
+      "removed": [],
+      "geometry_changed": [
+        {
+          "id": "boston:00590d755ef37fc5f18ce079ccc5f68eb331e67eacedac2c5d92ca40c34ed873",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:0153a5b0df000c6a028f16d99a1a113536b1c95dc48d0267ffe113e721d7bb4a",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:027cb7e1dd6b2cdedac53eae6761c94a7320e718f9b72fb4c4df92c60628cea6",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:0452099725ef167d0029c6d3007b3156cda831c2c310d4920cf852042ac6731f",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:04cffb36cb506025b60514ab95562d1a3f4d8735ac4992a0b576e013b7c31823",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:05e553290116604f51e4d9150544f5ce05e206e7e5c993c0ad3c612d8b302092",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:05f702e8dadcc2d5d9319757ea2c7adc19e97d5638a9e6264894cfbdd21657a2",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:081ac6922a135602c7dfa94355ffdf4fc1e0c4fb3cc4d1ee21f6d15c2a54f88b",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:0ba1faca30d1d8cc87793fd230812b7dc4b3e46607d3e380fa344b81d8b0b5c3",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:0c86cb68361b3f204d3651f45a1aa60a2faf100bdf6efa1800eed3e660cddcd1",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:0e821158543a5909c61a0f928c0301ae8a0ce87d1bdf2acab9c37e08c0ad35d4",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:1168fa219f885560aca1cb984cce3fc82a4c8728d091a2f49ca7aa8a5da7c7b6",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:146fb5281bd7b255c6825800d5a7f54d7c9767962184f0b202982a5ec53a439c",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:1539dc1a337ab7b118ad752135edc92d31b83050309ffb66a081cc932b355c96",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:15ae1797e017e56150cee60335c97793db9fd87e20bbc7365990abf1310b08c3",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:16dc1b9eb15fb6641dc72d37b2a3248d2203dd7efb0ef8599813eed60cb1fe06",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:1a636fb7b34578298d76db7c1569daba94b17a71c7f0ecb50cdf4010c1983085",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:1b4caf545c72bd641afad959546255fdc96607504fbf44630c9e9c75472d5cee",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:219261fc493a43bd73742f29ef2119c3dff94769ff19b839b322bb2a70069944",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:226c2adb5a27716f53308653dcc8e00523ba6e9bc5981340cb7dfa10e39d5b2e",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:22776d21ce0601ef3cb49208243b7a2a02a266d37d67692e9efa08c86f941ee1",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:268a3281bdd17ddcede10b3a9b25b533285a5cd4faba10ad098a7fa7e25c4fe9",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:272b975a7d6b2aaf9c9112771ab1d57c76d8124540e976660a925a2467ac0bb8",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:298747e8b52c24754d31fe4395d50d9b5dcd7022be58df5c0dc31bf9a129ae0c",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:2b21bc3abcd33838371156823e4f6a81563ceb449d65266390d99c704fe6ac32",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:2da7567874bb07d0671449c7d02311df10b206463f70b32d2752e92d2fda66f5",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:32b8a10b85ff3cb059187e8fd7607a96f3a401e1937d5e661cbd25b3236ad0b4",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:34b89b61664ba801d43e798cd69f09ff7d01dc20a95a9072e1d95a71056a6f31",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:368dddef298a15488f2f8c3109e18736e282cb7e643043c940e3cdef55f0784b",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:3728dad1805f6e2962960ea915d336dd73544a548cedef01c357e0c89a6b545b",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:38cee27297629a91bc129841a7f6f8af88b9c0d2df8baef94ec8a0798fe3273c",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:3a9055a0b5f75bc775c9be3c66b6612b4c0eb0c9a6deec41dd6005f6ae0f62f9",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:3be380693a82dae62a2035420817f32daf552f483cd0861b27f4d25ea39b0e16",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:3bfc7530b0dc12c926b873b5d40cf185413c4bc348f5bcc56dd7e226057f1b7f",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:3d5408da8f9f155c4b5586774b145485a21df7e6861a164b4b64a1615a52cdb8",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:3e902e23edf44fa3afa3ccf61b0b33ba3f6e921562e353ae7307d173c23918b6",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:40463d0b5af46f1e1ec12efc051db0163188c988f4251d640b2a315573641240",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:4060959b8ab9788e25cd92f71a05ca4c5191f2e8111ba0996a8e1392c395d746",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:423f957361f1999ce0eb94e2da472a966c14410f55f4500d2de8255b9990ffb1",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:4318079c965dc52513af87c52698c5d00e58a3ca3bac7b918a8593c7a587723f",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:436b81f48dba9b9d167582366cef30d506b055900cd7d0d3c597647f5f4173ca",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:4d103e0dcb9ed3ed805a84d2e7738dc5e265ee284398bc039631ecae5e066bf5",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:4d91aeecb8014319c8a6d6b7a8af60666919191b0af71fdd5b218c219fb7fec4",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:4e0f5918b1d9e019a3dd0fe82d1c23a40ca442fc5bea915bfcab1a7c8a2d2171",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:5091f81d207de0c8f7abe77513b4c47552722dccff53a9af684dc1251347c386",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:527e3a1895da6f9ac9d3d3b2e52ec655e28cc690476cab8596aac3a068ae4968",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:57dc757ba54f5e373e3f383bc08a012f0e413aed188cd3fa215c1f1183e21b4c",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:591911ed3ce2259f5208ec6c3a98fc2c1d3c01992ba8eadd8fb02ab9d3af245c",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:5fa1f99aca70b7d5acadf6bc8d92569fcb4fe660595d76710d948eaf4e58849c",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:60a52670633e9f555bc78f9dce840bcb4745ca913f437c5478324a7222bf29de",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:618f01e2999c93b37923823746f3b0213019e79f4b72f545e2cc6b5da2662f4a",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:61b872ac03b138497e470a29cbed91d80978774b19d95b0c4db3abef31938bab",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:658a8048e55f056de7b9b30279e3157646370db89cf60dc8646ab14380a9d29f",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:6836ac34d04cc21c99af196fae5a31fa80928cdabcf5782a44cde7bf83218fcf",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:6b7ccacdbbed97c409e2a88845d8c08b96fb0641a3236a19bdea6576f11820b2",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:70df0d82bd52c2d32e81806591be9bea465290c85449e404e708f1b8dac5424b",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:71e7b2517780ed979892e8aaf9c926e717ddb5e77472907f9feb02908e1ffdfc",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:756f513ab366eab35ec903191871c8b7f89dea58625fa37d52d6cdedaac8e9ed",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:75b00e9dbab9c11f74ca9ce2ae29a668d94c5e3ee55ed8129d2be856f36dd0f1",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:77c142bde3c5a9988bcef7a2fb93feb0601ed6cec0d0e35928513af2d50f2da1",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:7848ff362e4d6de07d75285bb9399a17f17c0ebc69d637242ffe9009f05334b3",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:794eaad145c112a138e5cc3259d78cddce338b54dd1e9c2e7850075cbd6bbdf7",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:7990eefdc77b6cedc33bf961f36ca38d4e53d23113daa0dc08787e0ba6eec151",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:79fac7a8238eccd8c72584667147ec0a7b854f902f834baf7310a90d62b46e5b",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:7d55978fd9d864e38fa736307558745668c362f4ffd5649150c1ac6d82c72783",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:7e0e1f50faf2b5cf9e68689fc34e4a3fa2ae7349260b987c700b34aa9c1e8c17",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:8000de5ffc799c2ec49305835e60cbbd250648d5224f553e22ba065ad92e76be",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:80212f87668d7ede7a715b5592f3be1607ade8e2735e13caa50e87f258fa6346",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:82d8c40da1a915db1c487c18fc201231d13ff6cc4c02ba1179e5b30813a69c7b",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:891bd02495f4bf4021bb49443004a667b6d26031b2ae0eb88657416ede0c3573",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:8ae460398a3483c4404b9bd8c8d39e0c685a9fb3c16b26f430523a2fe907da43",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:8ba5054ff657776fa07f772b9d2e396082a5770e3022ad9db2065b035cdf57c8",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:925c987fe7f4f116dbe5953c90f98d3cae87d8c1e554501772d68c12dd951039",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:929712f84ad3c64fab25ef01080fe3946e1d475186230deab081ef7e3a2ca6fb",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:99adaf03e239f784fd634c0c32d4208356dafa4825cb621bb26f283fe3286433",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:9e5293847747c090851408bbc6ef72c3a4ac601f963141ce91970d2a2b0c2bde",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:9eeee948cee75bff27c9ef4fda73c9ad46061b49a7631629096f06b90164906d",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:a1b0f244501b3705bc7d9fd1495c4253349414462789381c64a1897914fce628",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:a44ebe711af8a1078ebb0a76f18af8db8a125d053022662443b49082bc22c732",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:a4e7ab997be01a9aa25e21fb85c4b08460696546da90c0327ddff36a3cd667f1",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:a610f0660264afde8364bf21ed6b0b314e2d63750c40450d8a2e0d9a0290e040",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:ab22dad65739caed86130d5eee8f58a49b0b7df469886eb7426b70c78115b938",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:ae09870a589c52a6d3c4353d751809784c55e62879cb3ff5557b9758131bf76d",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:ae62e4e70b34e5d0b7a3b91bacb49c81bdde86bf90cdcda19af0926ea58576a4",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:af6ec7f506bcfad3812fe954968a92794a1d7191b94392d4b5af30aef1e01a94",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:b29b054bea4153613124243abd719f44336ba298bcfbb2352743027e230db6a5",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:b4d21f68050d38d3da85036dcf5af9e10c59eec98cd4334d1a9810dafb72093f",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:bc02cff2ea548d9f4e69af03c0ba68ce3faae10edcdd47a27dba960ed427e403",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:bdb2613d64d47159d0f6e10c3017c4ab2c5d4da966f790924df9868fbdde7c65",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:be01d24cd9ee1a4b40900eea6a2a9eac88a2994c2a050c6165fe1402b23f6f9f",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:bf61a9165e6231abc886757136418c42a2022933302c956a8e05e2a7b7efe0f5",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:c0673ca37a7f5ad1e551689c5526319949dd1d18d1cf88ad3c4c09cc8a1393d8",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:c34597dcb581514e69f51ab4a39f626a17fcc8043a9d057611e1bfdd557b373b",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:c7e1cce5f33d3afd227834b813e3d6ebe1c5174b32f2125c10de70009e4900c1",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:c95eab4be592188e5800f8b4d7296510298f166ac4b2a958ed2354cf7bdc1c2e",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:cae24c9c80eba3362b446515f324968b6293a77e1ed5c4588de58e924cd34f24",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:cbd05c484d0bd248bfabb5b7e6ee86fd30d47ffb2790d1aee6e01074d6087925",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:d29ad0d2d8316cc76491abe4ce77f9ee107d6fe30ce60094632de9ce0e8a7e95",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:d4a68cbd68e814843471e97a94d86ea2de12cfd1521eddd69e7ac6976ac496b6",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:d500fdae0fc1015f297812ac181eab91a956847dc17bac18c2e76dbbc16e6872",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:d782cc05e67472531ba4d1257e9b5d203d7f349ad892706cb56055e5ca2eb0b2",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:d7aebf51bdf8faa8df2483591d9ed418ba4435c10a94ef3dc2b3228741c85544",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:e140938008cdf957877c71ebe115292a7c11b5f5698ba5ee0a215d58556789e3",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:e21a8b5421c34225511907ee9c95f799333d1e0747b32d4cb8aa0967b1546490",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:e3f0059388ed7f325cbeee9557de631dd41865af2a508003f46383f48b499ec8",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:e47d91a7c6b7733cda075ecf27f8b7ea5d45365735c61a6c6e3b0873f59d83f5",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:e740e0ef0cd5d7fbcc20bec456981933f24b6a7ebfe3fdd43f930af4b79fb8a3",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:e7fcb743b9ea48487e606a40eb7258d81e2805e905f3502221a102fea2fcabe7",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:e8f1e6343ee731766eeed41383f4b0152de17b815dd1e7c67c67036964a1bc16",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:ea4efbbf164a2a5700e8c8a847fc20163a3b2b9e381554875b738052d564702c",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:eb4d9c71c9531dbd66166a72d432cc53db9230422c217c87eb3283f42a78f29a",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:eba924681dac8733c7ce01791cba61d5a2b547b3c439d45f019681213ec9a366",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:ed47fbc5b5f46d4081ed55a0b4c4e6ccd74eb31366af9ff41e853ddf8009ca4d",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:edaf7467e320eafce0324681d8257edad0b7fd55cccd85fb0a362b6d6b5c8c43",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:ee230abc4d7e1707b8a486a5b939f9193935ed0d55925a8307190d9a4e5f2651",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:f0a7b4e09e0623eb3d2ecb4e684b07057617a6166c633f80a4e56b05a81b982d",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:f229cf2074a8698ae3e7aeb2d6a0c06bf1cf8b6da5da220866a636f5d058b57a",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:f46a09e14ff5cce4a591ec8c45ccc87ec1a4b059210a11ce5eb62af549642037",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:f953b6fc2e37385c4fbd469089df0d6ae49a9be3f8c93725891a0cd14fbbd470",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:fbe2b5de011d800612fb76dcc7d5a9ae0c29722f5188ce43a6a18defef2311f6",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:fd4c36a510fef6199b876101deec0bf57adebc19feae3fb1dbfbe32c402f2a5c",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:ff5196b2c34772f5884dea5f147a24f514457b69e784cc33dfc7fa280c9486a2",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        },
+        {
+          "id": "boston:ffc48ffd2ab766f0530600935bf868623d237e75cd80b2a356a798343dcf7acd",
+          "fields": [
+            "lat",
+            "lng",
+            "location_evidence_url",
+            "location_provenance",
+            "reason"
+          ]
+        }
+      ],
+      "diagnostics": [],
+      "native_fields_preserved": true,
+      "baseline_file": "/workspace/scratch/6c174d945c50/nightlife-work/completion/burren_ma-rows.json",
+      "baseline_sha256": "7f34f734f173b7fba797233e4698e15385c35b1b0b3b10aabda03e00b3c0c49b",
+      "rows_file": "/workspace/scratch/6c174d945c50/nightlife-work/concurrent-3b58/burren_ma-rows.json",
+      "rows_sha256": "65d58760581d715f13ea9a30a5e334c9590f3432d2580d5b3ef28f7b4f6b2c69",
+      "checkpoint_bytes": 193118
+    },
+    {
+      "source_key": "long_live_roxbury_ma",
+      "records": 3,
+      "baseline_records": 3,
+      "claims": 1,
+      "requests": 1,
+      "exact_captured_urls": [
+        "https://www.longlivebeerworks.com/boston"
+      ],
+      "missing_descriptions": 0,
+      "missing_streets": 0,
+      "null_points": 0,
+      "added": [],
+      "removed": [],
+      "geometry_changed": [],
+      "diagnostics": [],
+      "native_fields_preserved": true,
+      "baseline_file": "/workspace/scratch/6c174d945c50/nightlife-work/completion/long_live_roxbury_ma-rows.json",
+      "baseline_sha256": "faafaf37268f9a158e91f8e4b67287ed8a707763e8539860d264bb2350775f7a",
+      "rows_file": "/workspace/scratch/6c174d945c50/nightlife-work/concurrent-3b58/long_live_roxbury_ma-rows.json",
+      "rows_sha256": "e4639fa1667ddd7444866cb3204683afbd25111a2809ea64e1bcad84c99f7193",
+      "checkpoint_bytes": 6877
+    }
+  ],
+  "total_rows": 338,
+  "request_evidence": {
+    "https://lizardloungeclub.com/calendar/": {
+      "capture_group": "lizard_recovery",
+      "observed_at": "2026-11-15T01:34:21.371156+00:00",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/concurrent-reconciliation/lizard-recovery-check/raw-724f10ef7c53555eb0782537.html",
+      "sha256": "4da90163cdfed61bfaad12fd05278230a17878262cd935e90f7f843ba604f1a1"
+    },
+    "https://lizardloungeclub.com/wp-json/tribe/events/v1/events?per_page=50&start_date=2026-11-13+00%3A00%3A00&end_date=2027-01-14+00%3A00%3A00&status=publish&page=1": {
+      "capture_group": "lizard_recovery",
+      "observed_at": "2026-11-15T01:09:49.768988+00:00",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/raw-0a46c4f660758027a0746d2e.html",
+      "sha256": "7f57b8345797cf1c4323eaede6b4ae2f6496de9729658753b182e8e739b55e8d"
+    },
+    "https://calendar.improvasylum.com/": {
+      "capture_group": "original_release",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-further/nightlife/improv-calendar.html",
+      "sha256": "96c9b3653a01b208f914e5cd3df0026a154925f441f7c803110e1715ed9628d6"
+    },
+    "https://calendar.improvasylum.com/api/events/improv-asylum": {
+      "capture_group": "original_release",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-further/nightlife/improv-api.html",
+      "sha256": "a71383c9b8a355a0e3370816ff6dbe1272ecf9b84d7a1e84f3413e78abd4534c"
+    },
+    "https://calendar.laughboston.com/": {
+      "capture_group": "original_release",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-further/nightlife/laugh-calendar.html",
+      "sha256": "b6bd619d7a8147a0034a8781eca2e3f7194ba10cffce2c82c558840d9b39c65b"
+    },
+    "https://calendar.laughboston.com/api/events/laugh-boston": {
+      "capture_group": "original_release",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-further/nightlife/laugh-api.html",
+      "sha256": "f6a069ba904f1379d8b8639a0e6d52ad3bce6e81c18d8e93e1adb4b56ae820c0"
+    },
+    "https://www.passim.org/live-music/": {
+      "capture_group": "original_release",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-further/nightlife/passim-calendar.html",
+      "sha256": "0e15226411a55d9fd04e670d92edcb91b7f887dedbbb53df0953decae07cad14"
+    },
+    "https://www.passim.org/live-music/events/edie-carey/": {
+      "capture_group": "original_release",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/raw-81d3a541c7fc479ba287d61f.html",
+      "sha256": "94cdb053a79d4c5dec32a8c76f081d053abfee304295a2a667827393da6c373a"
+    },
+    "https://www.passim.org/live-music/events/jenna-moynihan-owen-marshall/": {
+      "capture_group": "original_release",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/raw-9c5f1b3f97febb2d59e76509.html",
+      "sha256": "b298c170405d8ccffd95db1ace280cc12f21f1f42997480a0470cc9464b03820"
+    },
+    "https://www.passim.org/live-music/events/lucy-kaplansky/": {
+      "capture_group": "original_release",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/raw-051ee2c7c357d54840d282f0.html",
+      "sha256": "f077ce9683cd95390f1f6c398f8a1789d9a2381d8e64e167e7d286ab7dd11489"
+    },
+    "https://www.passim.org/live-music/events/zachariah-hickmans-power-outage-pre-party-jam-session/": {
+      "capture_group": "original_release",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/raw-e41ca5fd634eaaa46d10eb40.html",
+      "sha256": "776c17610ebeed9d2b8f42d76af83af4b4f264a99a321db5a214eac0c7fcf9d0"
+    },
+    "https://www.passim.org/live-music/events/zachariah-hickmans-power-outage-party/": {
+      "capture_group": "original_release",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/raw-7e5595233705609737a41528.html",
+      "sha256": "b382f09dd2bbe70c3830900af612e62f03744a2132407f853a6ae157b3d0285e"
+    },
+    "https://www.passim.org/live-music/events/laurie-macallister-seth-glier/": {
+      "capture_group": "original_release",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/raw-80ba19994c7c0d105c1a6f04.html",
+      "sha256": "11b57e1b1790871b254580e70df0d2e28034ab4310b16a75a9d767e92c5e21ba"
+    },
+    "https://www.passim.org/live-music/events/bruce-molsky/": {
+      "capture_group": "original_release",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/raw-dbae47c55e767e497f8460cd.html",
+      "sha256": "703a7540289b53342b2f198051ba25ab7058d3d92516f3f1a8c70b1a612d34b3"
+    },
+    "https://www.passim.org/live-music/events/nate-sabat-morgan-harris/": {
+      "capture_group": "original_release",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/raw-8c51e0ae5a7fc0493c645f7d.html",
+      "sha256": "33f5034d79a13a081c18ab7460c7ad170c54cd2663004acd454d1815b90764db"
+    },
+    "https://www.passim.org/live-music/events/open-mic/": {
+      "capture_group": "original_release",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/raw-f6f30822d2f589c1c27ea679.html",
+      "sha256": "430f644060d4aa0d834f1abd5a983c00f793b04fc58541baa82aa20d36bb5df6"
+    },
+    "https://www.passim.org/live-music/events/red-mcadam/": {
+      "capture_group": "original_release",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/raw-c6e2b2d7cfe7aa160018b4ea.html",
+      "sha256": "36ad860565789becef810f6053e2078ed8acfa09f4ddc6a490f808820a2f67af"
+    },
+    "https://www.passim.org/live-music/events/jason-myles-goss/": {
+      "capture_group": "original_release",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/raw-f07e52615d3be27d484bc420.html",
+      "sha256": "5bd0dcded96efbfbe39b62d113aba0640ca7064509079f49f778b750d3cf7ee6"
+    },
+    "https://www.passim.org/live-music/events/dinty-child-mark-erelli/": {
+      "capture_group": "original_release",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/raw-093cabd99c5738385daf0e9d.html",
+      "sha256": "05b685279ad2118000aab8eec66b40e3ba237b88cf33a8fac5500e0c46e6ffb0"
+    },
+    "https://www.passim.org/live-music/events/bigfoot-research-organization/": {
+      "capture_group": "original_release",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/raw-cb241f5760fa2ecbab94731a.html",
+      "sha256": "d1d2d1ab2c984287ce63dd813c43b0a8bd055db49e7ae92cb4d4105b318d080c"
+    },
+    "https://www.passim.org/live-music/events/the-secret-sauce/": {
+      "capture_group": "original_release",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/raw-e1ea8ee891ab3e4f85f91910.html",
+      "sha256": "7bc74ca3bfd9ce5355d6e757aa16d5fc0b0f9617fdb35f3d93bd72d50ddd6600"
+    },
+    "https://www.passim.org/live-music/events/the-ruth-ben-string-band/": {
+      "capture_group": "original_release",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/raw-ce8ba41c33608d7cfdede0ef.html",
+      "sha256": "c6239a873ba7b953ac530af8c6c56a908ed4b87f3877ed85393fed3acdf41bac"
+    },
+    "https://www.passim.org/live-music/events/love-has-come-a-holiday-variety-show/": {
+      "capture_group": "original_release",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/raw-984ec75c77fb6bab88122d3b.html",
+      "sha256": "cab5ef5d05c77fa52ffd3fe2f364560ed330b6ffc46c1fa1698924b5d9804ad8"
+    },
+    "https://www.passim.org/live-music/events/kat-wallace-steven-manwaring-perform-time-the-revelator/": {
+      "capture_group": "original_release",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/raw-eb0c68b7002453e6e2b6c6f9.html",
+      "sha256": "266afbba041a87dbd7b8979630aaf5d52cb12839160bc3ad1ea823778fb76c4a"
+    },
+    "https://www.passim.org/live-music/events/connie-kaldor/": {
+      "capture_group": "original_release",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/raw-5adf1e2775a4f0d6a826f9ac.html",
+      "sha256": "b1bf66da3e6d635ed55abf9e85c2691e9190b2a21a291e938b335ef5dced0041"
+    },
+    "https://www.passim.org/live-music/events/kemp-harris-band/": {
+      "capture_group": "original_release",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/raw-aaccf17e15f4fbeaaf70b1b4.html",
+      "sha256": "bb2305968ffefed367ac675763d4336362b24f9fbc69aeee26b99d8595c4ff82"
+    },
+    "https://www.passim.org/live-music/events/tall-heights/": {
+      "capture_group": "original_release",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/raw-aac7a11877eaae2c74282a6f.html",
+      "sha256": "254dda94459acda7c1cdee38a3aec3ccacab1a42bf0d4481bc0892175ebd3608"
+    },
+    "https://www.passim.org/live-music/events/sol-y-canto/": {
+      "capture_group": "original_release",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/raw-8b6520eb74faee80a79eff35.html",
+      "sha256": "eaee4353f34037388aefd0adf04153b57f9b483cd5c74a64f7e469f25cba7844"
+    },
+    "https://www.passim.org/live-music/events/jeffrey-martin/": {
+      "capture_group": "original_release",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/raw-86075915cd0f91717642f213.html",
+      "sha256": "fc892b292718aa67ac011104b9349f7cb44910f7b1cbd38be8468c576548663d"
+    },
+    "https://www.passim.org/live-music/events/passim-monday-discovery-series/": {
+      "capture_group": "original_release",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/raw-2e20aa57f56dbf544703e9a7.html",
+      "sha256": "b819e4de5d2951d525bfa286d9bb0e550cb8fb3087798cb4a2ec4be6f931514a"
+    },
+    "https://www.passim.org/live-music/events/mark-lipman/": {
+      "capture_group": "original_release",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/raw-343931034ebad2fba7d369b5.html",
+      "sha256": "da41583e5165c43748ceabd6ad4825e130403dae4dedd896e86e819ba2748da0"
+    },
+    "https://www.passim.org/live-music/events/tony-trischkas-holiday-show-of-a-winters-night/": {
+      "capture_group": "original_release",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/raw-35bc2ca2694c4e50c90e41be.html",
+      "sha256": "f64d33b71f65bd59df43e9bb2f042dd2dc1693ce8ba098b817a9fadfada0dd50"
+    },
+    "https://www.passim.org/live-music/events/under-the-covers/": {
+      "capture_group": "original_release",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/raw-a1d7e40535bed1b719834e6a.html",
+      "sha256": "d8d03bd3d99486aa092516d7b0b426ae7aad52c802a1fc736b428ec1448ba6ef"
+    },
+    "https://www.passim.org/live-music/events/mike-block-yacouba-sissoko/": {
+      "capture_group": "original_release",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/raw-dd827223299e76b18c296e24.html",
+      "sha256": "047da8b0a31fdf1223f9a7fb9b0205f1831863ddd658efac6f0ea6af73624ac0"
+    },
+    "https://www.passim.org/live-music/events/wintery-songs-in-eleventy-part-harmony/": {
+      "capture_group": "original_release",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/raw-4d572c3b7dcd74c57c38db3e.html",
+      "sha256": "37aec0567d7d16b77c155823db8b3a1334fbe6faaf1fc92ad91109e1a198ac4f"
+    },
+    "https://www.passim.org/live-music/events/scottish-fish/": {
+      "capture_group": "original_release",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/raw-825731f36017dc3ea69d157a.html",
+      "sha256": "c351f724395aae1036913a606bff493e04874f2f6a56d4a01b68059cad84c976"
+    },
+    "https://www.passim.org/live-music/events/lori-mckenna-band/": {
+      "capture_group": "original_release",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/raw-14aba863afda9a355680bda8.html",
+      "sha256": "3f257ce01da08ed8675d64eda67d2b0da271d86e27974c744e0f709053109612"
+    },
+    "https://www.passim.org/live-music/events/sweet-petunia/": {
+      "capture_group": "original_release",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/raw-314388b8359499119ea8bb20.html",
+      "sha256": "3516348184c62ab0e57cbf92153d8789235f97e11b7bc5bd1241eed9a35b0eab"
+    },
+    "https://www.passim.org/live-music/events/alisa-amador/": {
+      "capture_group": "original_release",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/raw-affa430233a9e9578e76b374.html",
+      "sha256": "257a72842e3d9f03fb49b05b917cb052e886ee0c959a22bb51a01feec125acc8"
+    },
+    "https://www.passim.org/live-music/events/aine-minogue/": {
+      "capture_group": "original_release",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/raw-13d295616cd18b316aa04738.html",
+      "sha256": "892e5f06f9eeb5eed5b19c7b102a5ec5a8ae077f3c7cc0248beb2bf145370353"
+    },
+    "https://www.passim.org/live-music/events/chris-smither/": {
+      "capture_group": "original_release",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/raw-8d97bb4b9d7a0a070005155c.html",
+      "sha256": "5ec02afe301d0e4005c565d1ecdb4efc7ff8af4ec13151b3244b514bb1f1a55e"
+    },
+    "https://www.passim.org/live-music/events/ellis-paul-friends/": {
+      "capture_group": "original_release",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/raw-fad0b46f8bb0469f58a8414f.html",
+      "sha256": "c2fa97a1524034dfe3f05dc342fb588f9954ea2183fc631a866eea99cbea5f21"
+    },
+    "https://www.passim.org/live-music/events/girlyman/": {
+      "capture_group": "original_release",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/raw-df6e4feeeb884804d64ad3ea.html",
+      "sha256": "da877ce88952d51c3731aa362460353a32b2fe79f5edfd810efd44293b82152a"
+    },
+    "https://www.passim.org/live-music/events/niall-connolly-and-band/": {
+      "capture_group": "original_release",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/raw-5136b23b65611c4d859cba7c.html",
+      "sha256": "52efeaf558da6d1b861fe25a93aaf75e25f3a671f7af6fbb7e457a0707bcd288"
+    },
+    "https://www.passim.org/live-music/events/dwight-nicole/": {
+      "capture_group": "original_release",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/raw-a4bb4a2edd1ca2350489ba5c.html",
+      "sha256": "a4f8902cad2d919a2c6f5d0694b8df84fd999519d6eeb3e802432443079d9657"
+    },
+    "https://www.passim.org/live-music/events/jeffrey-foucault-2/": {
+      "capture_group": "original_release",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-additional/nightlife/raw-1f6fb47756f7f539ade2b96c.html",
+      "sha256": "543fd382435a028972d79ace460b3d4047119af8abbe567cc1c0d99010a23dcf"
+    },
+    "https://www.burren.com/music.html": {
+      "capture_group": "burren_completion",
+      "observed_at": "2026-11-15T01:23:45.294825+00:00",
+      "file": "/workspace/scratch/6c174d945c50/boston-collector/../nightlife-work/completion/burren-production-ordinary.html",
+      "sha256": "4937ed89182311bd7921eb25298d2357b19ce6660e79c02d558e6f51212c4e2f"
+    },
+    "https://tickets.24hourmusic.com/eventperformances.asp?evt=774": {
+      "capture_group": "burren_completion",
+      "observed_at": "2026-11-15T01:24:49.608292+00:00",
+      "file": "/workspace/scratch/6c174d945c50/nightlife-work/completion/4e1e353272d60cc99fba4aed80783c549b954633ded6f918717ea22db5d4304a.html",
+      "sha256": "74029fa41f67dcccd210af2e3f022a2dbf4d12525daa24043921366576018c18"
+    },
+    "https://tickets.24hourmusic.com/eventperformances.asp?evt=1557": {
+      "capture_group": "burren_completion",
+      "observed_at": "2026-11-15T01:24:50.780836+00:00",
+      "file": "/workspace/scratch/6c174d945c50/nightlife-work/completion/8d02e03b97877d1f11f3caeb3b505333ae4b4695165e0893239bb1169656720d.html",
+      "sha256": "bcec9d04756ce5e555581563917caf2b161f5ff129bc0fcd2f89cb90b7259c99"
+    },
+    "https://tickets.24hourmusic.com/eventperformances.asp?evt=1907": {
+      "capture_group": "burren_completion",
+      "observed_at": "2026-11-15T01:24:51.952865+00:00",
+      "file": "/workspace/scratch/6c174d945c50/nightlife-work/completion/0699ee93259a87db0e61398a2ec349e2834a8d3b36ab67c678661365e059360a.html",
+      "sha256": "5d16bc0004523120ddaf9d24d2e3fd823f24875feda9af0569ab1bb59c1b2785"
+    },
+    "https://tickets.24hourmusic.com/eventperformances.asp?evt=1779": {
+      "capture_group": "burren_completion",
+      "observed_at": "2026-11-15T01:24:53.181656+00:00",
+      "file": "/workspace/scratch/6c174d945c50/nightlife-work/completion/02ac6a9b5ba3c670d4c5c7f636a1876bc2323921b2a031e24e187b18725274ad.html",
+      "sha256": "d952f8740c964dcfed772d57382ead51f7804b0ef99f2397aab98f37150300f1"
+    },
+    "https://tickets.24hourmusic.com/eventperformances.asp?evt=862": {
+      "capture_group": "burren_completion",
+      "observed_at": "2026-11-15T01:24:54.410591+00:00",
+      "file": "/workspace/scratch/6c174d945c50/nightlife-work/completion/2f711f92a19ec92542522304ff2cf9daf5ff93e7265a6d54dbdb27891cbbf3d4.html",
+      "sha256": "e2777021714d402c5c4c4958401fbec660c55d42a8a04c3661a24590621b518d"
+    },
+    "https://tickets.24hourmusic.com/eventperformances.asp?evt=1889": {
+      "capture_group": "burren_completion",
+      "observed_at": "2026-11-15T01:24:55.603846+00:00",
+      "file": "/workspace/scratch/6c174d945c50/nightlife-work/completion/1638a24334b84fc1070a7f2c2a2a77e9d1f0202ea3f4582317b9bf48fd5357fe.html",
+      "sha256": "68388531cea7050e612e5e361af504386a152e0e6a2d6890f2aef56d6033d0b7"
+    },
+    "https://tickets.24hourmusic.com/eventperformances.asp?evt=1911": {
+      "capture_group": "burren_completion",
+      "observed_at": "2026-11-15T01:24:56.831300+00:00",
+      "file": "/workspace/scratch/6c174d945c50/nightlife-work/completion/5f2e8bce901514d40971a5588f2173e749ea4e65a4b3a0481b8ee230f90fb3be.html",
+      "sha256": "a8b36f1e571e54963d6b80b821a243b8caff7692c2e6092078dda98041726f9f"
+    },
+    "https://tickets.24hourmusic.com/eventperformances.asp?evt=1583": {
+      "capture_group": "burren_completion",
+      "observed_at": "2026-11-15T01:24:58.032191+00:00",
+      "file": "/workspace/scratch/6c174d945c50/nightlife-work/completion/e29e99fab22ca2e95bfd1b834a0737544e1949007a19dd5f5205d10b21815687.html",
+      "sha256": "f1bcabc3b163851eab9b43d8dde2e535adcc35eec20af38c190a2aa65c2b6eb3"
+    },
+    "https://tickets.24hourmusic.com/eventperformances.asp?evt=1902": {
+      "capture_group": "burren_completion",
+      "observed_at": "2026-11-15T01:25:17.824116+00:00",
+      "file": "/workspace/scratch/6c174d945c50/nightlife-work/completion/101f73ff1c355ea16f3e723aeed80f74b39723e1160363344ccded2956c0767c.html",
+      "sha256": "2e113036381c5cf68ca114847fab40a1883e04480312ced9253412250e5f6061"
+    },
+    "https://tickets.24hourmusic.com/eventperformances.asp?evt=1890": {
+      "capture_group": "burren_completion",
+      "observed_at": "2026-11-15T01:25:19.043908+00:00",
+      "file": "/workspace/scratch/6c174d945c50/nightlife-work/completion/ffa39be1e433c218d6b5e116e3e62dae465d4dd6740b6b5b289541fc9458b2f7.html",
+      "sha256": "9e45e29fd0c19b4171820ca967268ffa82861c2fc0bca1fb04442fc20677b244"
+    },
+    "https://tickets.24hourmusic.com/eventperformances.asp?evt=1066": {
+      "capture_group": "burren_completion",
+      "observed_at": "2026-11-15T01:25:20.225728+00:00",
+      "file": "/workspace/scratch/6c174d945c50/nightlife-work/completion/bf1a808d1afec957e8fb93adc3b771738f0490bcb555e274965109dfd6fb671f.html",
+      "sha256": "73dfd945d63dcd7d78c2d8f8ad1eeebe848ae86ba1cb1937345c67f93403a990"
+    },
+    "https://tickets.24hourmusic.com/eventperformances.asp?evt=1923": {
+      "capture_group": "burren_completion",
+      "observed_at": "2026-11-15T01:25:21.438627+00:00",
+      "file": "/workspace/scratch/6c174d945c50/nightlife-work/completion/595486d4ba1270c74949ac956a719512013dd79eabe4109d5b04f066b3cbf4b8.html",
+      "sha256": "9e3ae8ccf9f5c7650271a747d68015d6d98607a59177117f0648b0fa997c9cfa"
+    },
+    "https://tickets.24hourmusic.com/eventperformances.asp?evt=1000": {
+      "capture_group": "burren_completion",
+      "observed_at": "2026-11-15T01:25:22.619352+00:00",
+      "file": "/workspace/scratch/6c174d945c50/nightlife-work/completion/91691b97e2d25bd4f9370f68016f064875333b2f1a75522336d3b248f12e2887.html",
+      "sha256": "cffeb13b2aaf338acac4e0c3a38f8362a099c0efee0caac4860f7518daeb3513"
+    },
+    "https://tickets.24hourmusic.com/eventperformances.asp?evt=61": {
+      "capture_group": "burren_completion",
+      "observed_at": "2026-11-15T01:25:23.810760+00:00",
+      "file": "/workspace/scratch/6c174d945c50/nightlife-work/completion/99d3dfbcf51aca53142d0919f78f205ebe77f0dc3ed94a347615856d9f5a74ba.html",
+      "sha256": "ceaa0e16e199dda7d0e8f60fe3af556eab21f7d1f2564df1b61fcf83cf50ba73"
+    },
+    "https://tickets.24hourmusic.com/eventperformances.asp?evt=1129": {
+      "capture_group": "burren_completion",
+      "observed_at": "2026-11-15T01:25:24.991854+00:00",
+      "file": "/workspace/scratch/6c174d945c50/nightlife-work/completion/3fe6d62857fe98a3225d23619de3a2b2cdacf99fca583a405b1e301f2c3a3e16.html",
+      "sha256": "10506e736d8ab6d376d8435ecfb690e933ed7e9760d48b641a494ef5a641da33"
+    },
+    "https://tickets.24hourmusic.com/eventperformances.asp?evt=970": {
+      "capture_group": "burren_completion",
+      "observed_at": "2026-11-15T01:25:26.186209+00:00",
+      "file": "/workspace/scratch/6c174d945c50/nightlife-work/completion/e39efc38d7a71d8e26ff04e1011a64ed8f0a75068605f989414924e4a445c9b9.html",
+      "sha256": "f66915955ded0126a3fa20322c594ba7951f517a181a4975d9b94aa2bf0d152f"
+    },
+    "https://tickets.24hourmusic.com/eventperformances.asp?evt=1926": {
+      "capture_group": "burren_completion",
+      "observed_at": "2026-11-15T01:25:27.382147+00:00",
+      "file": "/workspace/scratch/6c174d945c50/nightlife-work/completion/4d98b0613bcda9f78f4059dead4dd6d56715f3599d39fd3c16f5efb7aa9b174f.html",
+      "sha256": "4759e0691102ae3abc678421ff5a4e962c615d2140fb3845b83f40d8df4e8fc7"
+    },
+    "https://tickets.24hourmusic.com/eventperformances.asp?evt=1931": {
+      "capture_group": "burren_completion",
+      "observed_at": "2026-11-15T01:25:28.563203+00:00",
+      "file": "/workspace/scratch/6c174d945c50/nightlife-work/completion/8049bc6e4bb76abdf074ccd789873b9dbd9e0765a104dd58438e4ff604b6304b.html",
+      "sha256": "41fa236030aa2eb182a819c8b526f82c5f34e55aa56f5e0e6166a360141a6826"
+    },
+    "https://tickets.24hourmusic.com/eventperformances.asp?evt=1928": {
+      "capture_group": "burren_completion",
+      "observed_at": "2026-11-15T01:25:29.811220+00:00",
+      "file": "/workspace/scratch/6c174d945c50/nightlife-work/completion/ff7e45fcc61451a06c1a0536ea739aa1b581a478bb02283f562592e7c4dd3383.html",
+      "sha256": "7cbf955aaf92a915a375fdd2b9e795778be5c44717728b142ef9bbd52dcda355"
+    },
+    "https://tickets.24hourmusic.com/eventperformances.asp?evt=1460": {
+      "capture_group": "burren_completion",
+      "observed_at": "2026-11-15T01:25:31.005287+00:00",
+      "file": "/workspace/scratch/6c174d945c50/nightlife-work/completion/7182f6514b4f61ab01adf3afb6e4536faee2637f8c6423e037a5f29046163cfe.html",
+      "sha256": "a724eac029be10b668c6a4d5dae05b15038fae41ac17de6f26cc7cf2ea7c7377"
+    },
+    "https://tickets.24hourmusic.com/eventperformances.asp?evt=1295": {
+      "capture_group": "burren_completion",
+      "observed_at": "2026-11-15T01:25:32.189274+00:00",
+      "file": "/workspace/scratch/6c174d945c50/nightlife-work/completion/2e963fcb721777bceac4aaccc5538602d4075e7e053c8939ad388a0ce1221e2e.html",
+      "sha256": "a06754ff50c14a471f13ddaa89889ce7a0479ae169b6fdac00bb7ffa09161a50"
+    },
+    "https://tickets.24hourmusic.com/eventperformances.asp?evt=1922": {
+      "capture_group": "burren_completion",
+      "observed_at": "2026-11-15T01:25:33.404516+00:00",
+      "file": "/workspace/scratch/6c174d945c50/nightlife-work/completion/32b5ef1f1ff5aa1f01af209daf7f16f49b16a9c189513a65c12fea8a107a9aef.html",
+      "sha256": "9ac81004206482257512f3d12d971c5933d8f26bf96b0a1385bd63048ac8cace"
+    },
+    "https://tickets.24hourmusic.com/eventperformances.asp?evt=1176": {
+      "capture_group": "burren_completion",
+      "observed_at": "2026-11-15T01:25:34.580724+00:00",
+      "file": "/workspace/scratch/6c174d945c50/nightlife-work/completion/6b8cdd2e59168090d06bac455b9740a7b390f112c783e70ce2e0344460a9ee69.html",
+      "sha256": "2b2f606774ef6659f33d697f29f1a9dcce016915bccb974ac3001ca987606646"
+    },
+    "https://tickets.24hourmusic.com/eventperformances.asp?evt=788": {
+      "capture_group": "burren_completion",
+      "observed_at": "2026-11-15T01:25:35.779500+00:00",
+      "file": "/workspace/scratch/6c174d945c50/nightlife-work/completion/b5b89e1b2607a4b7ff07a47a2828cdde71443569928ee1d047e562c57bc394f5.html",
+      "sha256": "a2d664272da51f1fac7ed7884fdc1b336986ae150d9659d07a52aa52fb57bfab"
+    },
+    "https://tickets.24hourmusic.com/eventperformances.asp?evt=1235": {
+      "capture_group": "burren_completion",
+      "observed_at": "2026-11-15T01:25:36.962557+00:00",
+      "file": "/workspace/scratch/6c174d945c50/nightlife-work/completion/0b926f4002eff6d08bb6a0886a1c7795bb0d9fb2d752b90653a23ac82a149a93.html",
+      "sha256": "9ff71525bfe05883d6839a487118e57fd0dc3f039b8804ebe5f284f545aa45c6"
+    },
+    "https://tickets.24hourmusic.com/eventperformances.asp?evt=746": {
+      "capture_group": "burren_completion",
+      "observed_at": "2026-11-15T01:25:38.144968+00:00",
+      "file": "/workspace/scratch/6c174d945c50/nightlife-work/completion/9e079d5c7cc4f39bf5dfe69e0b6ee38fa1620b7aa5a707c1ca7f58209b4c1a09.html",
+      "sha256": "97ec9a694e3aead5ab4a4fdb91a7f63464f37e5fd4ad40c54d1fe8151e17c574"
+    },
+    "https://tickets.24hourmusic.com/eventperformances.asp?evt=780": {
+      "capture_group": "burren_completion",
+      "observed_at": "2026-11-15T01:25:39.328156+00:00",
+      "file": "/workspace/scratch/6c174d945c50/nightlife-work/completion/4d51a0a7e4fd4e4c8e83f8ee37729a658a77eccde96e096f21c6e05ed8ca7d3e.html",
+      "sha256": "9c899cbf9ea3fdd8a7671e6f0ec8d397e0336bdda572403058a0a4714f524e6e"
+    },
+    "https://tickets.24hourmusic.com/eventperformances.asp?evt=1053": {
+      "capture_group": "burren_completion",
+      "observed_at": "2026-11-15T01:25:40.536568+00:00",
+      "file": "/workspace/scratch/6c174d945c50/nightlife-work/completion/3048b128c58ccb21ade911d79e9a9c89e564eb6d5d0868b45fa80e9d8d995b2e.html",
+      "sha256": "90a4a665fb9aadd95431e808f23e041a9159dcc0779095d4eb5432a23267487c"
+    },
+    "https://tickets.24hourmusic.com/eventperformances.asp?evt=100": {
+      "capture_group": "burren_completion",
+      "observed_at": "2026-11-15T01:25:41.712201+00:00",
+      "file": "/workspace/scratch/6c174d945c50/nightlife-work/completion/dfb9229a0fea72e6622b56d52c7c5e01adfe7d61093e761913e1dd01568d93e1.html",
+      "sha256": "28c363485d2633f6382e2b34103ad72d8376cca0c9501a3c0cc4c16a44932989"
+    },
+    "https://tickets.24hourmusic.com/eventperformances.asp?evt=1077": {
+      "capture_group": "burren_completion",
+      "observed_at": "2026-11-15T01:25:42.931330+00:00",
+      "file": "/workspace/scratch/6c174d945c50/nightlife-work/completion/d55daafd864f5c37318243d63eed2f686ba51e620c5cb8a126d7601767283c4e.html",
+      "sha256": "ec76c33b3832ba46bdecb3a7ec85cb6741e983eaf7589ea320e06f9a457e6cf3"
+    },
+    "https://tickets.24hourmusic.com/eventperformances.asp?evt=822": {
+      "capture_group": "burren_completion",
+      "observed_at": "2026-11-15T01:25:44.125534+00:00",
+      "file": "/workspace/scratch/6c174d945c50/nightlife-work/completion/a671c771faceee34869bc8406bee851e486f32717b51ccd1e087286cd1e8c9c7.html",
+      "sha256": "23830ae07c0d73aed7c566399905b0aa7ebdacba0df4b8bb0268f51b2ffc5c38"
+    },
+    "https://tickets.24hourmusic.com/eventperformances.asp?evt=779": {
+      "capture_group": "burren_completion",
+      "observed_at": "2026-11-15T01:25:45.352979+00:00",
+      "file": "/workspace/scratch/6c174d945c50/nightlife-work/completion/abc1e5e5768cc90131587d58a54229459382f229ba776582b1797c6167b9e271.html",
+      "sha256": "9a4c85df7765de0eac8468a2a0c9cb13e7c05dea1ebb3a1dac0fb8e107be500b"
+    },
+    "https://tickets.24hourmusic.com/eventperformances.asp?evt=1924": {
+      "capture_group": "burren_completion",
+      "observed_at": "2026-11-15T01:25:46.542837+00:00",
+      "file": "/workspace/scratch/6c174d945c50/nightlife-work/completion/8e9c82c5947dc74e7439b19f49a9960444e5f6b6a868cd36181eba7c564aa692.html",
+      "sha256": "88f74704e8dbaf9651b038abe66442b41f186643c96424a1579584b2c7905687"
+    },
+    "https://tickets.24hourmusic.com/eventperformances.asp?evt=1": {
+      "capture_group": "burren_completion",
+      "observed_at": "2026-11-15T01:25:47.727899+00:00",
+      "file": "/workspace/scratch/6c174d945c50/nightlife-work/completion/cec52f2770c570990e3d6ea481fc18839377b9d3f14678da64225baadaa2f8ba.html",
+      "sha256": "e5d6607919f559ae1ac20b0d4c0202abcd8b30251e94b7bd139b8989edb5166e"
+    },
+    "https://tickets.24hourmusic.com/eventperformances.asp?evt=794": {
+      "capture_group": "burren_completion",
+      "observed_at": "2026-11-15T01:25:48.923954+00:00",
+      "file": "/workspace/scratch/6c174d945c50/nightlife-work/completion/8c456f6d25f21132f2e160ded62fb310780f36c93c11fe268ff18be3a0b1530d.html",
+      "sha256": "b46cb489b4cfabf39caafd4465f81de470cf7c709cd581674d5d4ed557dc57d0"
+    },
+    "https://tickets.24hourmusic.com/eventperformances.asp?evt=1719": {
+      "capture_group": "burren_completion",
+      "observed_at": "2026-11-15T01:25:50.112255+00:00",
+      "file": "/workspace/scratch/6c174d945c50/nightlife-work/completion/57931cd6b43b8f23f092e5f0a4346bb77249f12c95061762955ab31e776072d1.html",
+      "sha256": "5dac65fc32a212c909082f3a1adc133cdd2f2b20a6a9ba130164c9f81ece1835"
+    },
+    "https://tickets.24hourmusic.com/eventperformances.asp?evt=1702": {
+      "capture_group": "burren_completion",
+      "observed_at": "2026-11-15T01:25:51.293355+00:00",
+      "file": "/workspace/scratch/6c174d945c50/nightlife-work/completion/d8a079d1cc5c965c572862a6d791d0fd2664a1a1e5a8f48a00287b51a0905cc1.html",
+      "sha256": "2a15f030df04c23f8829f6f17d4e0ddad3507744558d32cc1d118407204089ed"
+    },
+    "https://tickets.24hourmusic.com/eventperformances.asp?evt=1930": {
+      "capture_group": "burren_completion",
+      "observed_at": "2026-11-15T01:26:28.885248+00:00",
+      "file": "/workspace/scratch/6c174d945c50/boston-collector/../nightlife-work/completion/df9ea684c7aea48cc17f9a0ce0e2c491ca86173058bc2005168b730c4ed5f258.html",
+      "sha256": "5991994d910294ccb2126dfbdbbeab10678286ef75ed3c72a1725e520ed80a2b"
+    },
+    "https://tickets.24hourmusic.com/eventperformances.asp?evt=1697": {
+      "capture_group": "burren_completion",
+      "observed_at": "2026-11-15T01:25:52.493231+00:00",
+      "file": "/workspace/scratch/6c174d945c50/nightlife-work/completion/e2caf26e298ec8550493c8c616cd1ff0e46ab85181cf2f6db0faab131738e2d4.html",
+      "sha256": "aaedd7d7d6885bc92a513f1d572f2173a0095b0789146075cab03e00b71b0a1f"
+    },
+    "https://tickets.24hourmusic.com/eventperformances.asp?evt=1929": {
+      "capture_group": "burren_completion",
+      "observed_at": "2026-11-15T01:25:53.687159+00:00",
+      "file": "/workspace/scratch/6c174d945c50/nightlife-work/completion/83f9ec297bcd77286fcfde79338447b04959c25e6100950e5ad558868a740959.html",
+      "sha256": "6abdd526128eed5145a2667093948525e2964e83c84931a8d69c6af733ed8dff"
+    },
+    "https://www.longlivebeerworks.com/boston": {
+      "capture_group": "original_release",
+      "file": "/workspace/scratch/3aa56d09ac0a/boston-further/nightlife/long_live-calendar.html",
+      "sha256": "535c1ecd550fc686f37f7a6c8646f39dec3056c2bb7f010f223b470e1f7717e4"
+    }
+  }
+}

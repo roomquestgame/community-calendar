@@ -220,6 +220,9 @@ def test_trustees_full_body_and_exact_already_public_overlap():
     row = b._trustees_detail(card, html, NOW, [])[0]
     assert row['description'] == 'Grow healthy seedlings through the complete hands-on workshop.'
     assert 'Share' not in row['description']
+    assert (row['lat'], row['lng']) == (42.2660524, -71.0955048)
+    assert row['location_evidence_url'] == 'https://thetrustees.org/place/city-natives/'
+    assert b._row_valid(b.TRUSTEES, row, card, NOW)
     fixed = datetime(2026, 12, 19, 14, 30, tzinfo=ZoneInfo(b.ZONE))
     card, html = trustees(url='https://thetrustees.org/event/450287/', start=fixed)
     holds = []
@@ -278,10 +281,13 @@ def test_rock_spot_keeps_full_bookable_first_session_and_exact_location():
 
 @pytest.mark.parametrize('key,venue,street', list(b.REVIEWED_VENUE_POINTS))
 def test_reviewed_gym_points_do_not_transfer_to_nearby_or_other_source_venues(key, venue, street):
-    url = b.SOURCES[key][0] if key == b.CENTRAL else 'https://climber.hellocapitan.com/rockspot/schedule/event/42/select-num-participants/'
+    url = {b.CENTRAL: b.SOURCES[b.CENTRAL][0],
+           b.ROCKSPOT: 'https://climber.hellocapitan.com/rockspot/schedule/event/42/select-num-participants/',
+           b.TRUSTEES: 'https://thetrustees.org/event/123456/'}[key]
+    city = {b.CENTRAL: 'Cambridge', b.ROCKSPOT: 'South Boston', b.TRUSTEES: 'Mattapan'}[key]
     def make(k=key, v=venue, address=street, link=url):
         return b._row(k, 'Community activity', START, START + timedelta(hours=1), link, 'native-42',
-                      'The complete native activity description and participant instructions.', v, address, 'Cambridge' if key == b.CENTRAL else 'South Boston')
+                      'The complete native activity description and participant instructions.', v, address, city)
     row = make();reviewed = b.REVIEWED_VENUE_POINTS[key, venue, street]
     assert (row['lat'], row['lng']) == reviewed['point'] and row['location_provenance'] == reviewed['provenance']
     for near in (make(v=venue + ' Annex'), make(address='9 Different Street, Boston, MA 02127'),
@@ -465,3 +471,34 @@ def test_actual_worker_slow_fetch_reserve_and_complete_only_staging(monkeypatch,
         else:
             assert result['complete'] == 1 and claim + 1 == expected_claims
     assert staged == expected and len(previews) == 1 and len(set(reads)) == len(reads) == 9
+
+
+def test_city_natives_reviewed_destination_precedes_conflicting_event_pin():
+    card, html = trustees()
+    row = b._row(b.TRUSTEES, card['title'], START, START + timedelta(hours=1, minutes=30),
+        card['url'], 'trustees:123456', 'Learn native seed propagation with the community gardeners.',
+        'City Natives', '30 Edgewater Drive, Mattapan, MA 02126', 'Mattapan',
+        point=(42.2660524, -71.096052), evidence=card['url'], provenance='Conflicting event pin.')
+    assert (row['lat'], row['lng']) == (42.2660524, -71.0955048)
+    assert row['location_evidence_url'] == 'https://thetrustees.org/place/city-natives/'
+    assert b._row_valid(b.TRUSTEES, row, card, NOW)
+    for changes in ({'lng': -71.096052}, {'location_evidence_url': card['url']},
+                    {'location_provenance': 'Unreviewed replacement'}):
+        assert not b._row_valid(b.TRUSTEES, {**row, **changes}, card, NOW)
+
+
+def test_city_natives_checkpoint_rejects_rehashed_destination_change(monkeypatch):
+    card, html = trustees()
+    monkeypatch.setattr(b, '_manifest', lambda *args: [card])
+    result = b.collect_chunk(source(b.TRUSTEES), lambda *args: html, now=NOW)
+    assert result['complete'] and len(result['events']) == 1
+    state = result['checkpoint']
+    resumed = b.collect_chunk(source(b.TRUSTEES), lambda *args: pytest.fail('complete checkpoint must not refetch'),
+                              checkpoint=state, now=NOW)
+    assert resumed['events'] == result['events']
+    poison = deepcopy(state)
+    poison['events'][0]['lng'] = -71.096052
+    poison['outcomes'][0]['rows_hash'] = b._digest(poison['events'])
+    with pytest.raises(ValueError, match='checkpoint_invalid'):
+        b.collect_chunk(source(b.TRUSTEES), lambda *args: pytest.fail('invalid checkpoint must not refetch'),
+                        checkpoint=poison, now=NOW)

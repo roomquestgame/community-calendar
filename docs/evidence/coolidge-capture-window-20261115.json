@@ -1,0 +1,468 @@
+{
+  "checked_at": "2026-11-15T01:36:42.823609+00:00",
+  "source_key": "coolidge_corner_theatre_ma",
+  "source_id": 5640,
+  "baseline": {
+    "path": "/workspace/scratch/6c174d945c50/arts-work/coolidge_corner_theatre_ma-rows.json",
+    "records": 179,
+    "sha256": "530936c2fcefd7c1612644f7368855ebad94f374daaf1d834b789a9106144d09",
+    "preserved": true
+  },
+  "production": {
+    "source_id": 5640,
+    "source_key": "coolidge_corner_theatre_ma",
+    "preview_error": null,
+    "preview_status": "complete",
+    "preview_checked_at": "2026-11-15T01:34:57.258059+00:00",
+    "stage_future_count": 178,
+    "preview_future_count": 178,
+    "preview_requested_at": "2026-11-15T01:21:15.672546+00:00",
+    "collection_runs": [
+      {
+        "id": 6850,
+        "outcome": "success",
+        "source_id": 5640,
+        "error_code": null,
+        "completed_at": "2026-11-15T01:34:57.258059+00:00",
+        "future_count": 178,
+        "staged_count": 178
+      }
+    ],
+    "staged_identity_count": 178,
+    "staged_identity_sha256": "b46a306c486131c77a5abdc7cc02401a59768b6cb361a194266f2765028ed23f"
+  },
+  "reconciliation": {
+    "matched_identity_count": 178,
+    "unexpected_staged_ids": [],
+    "missing_identity_count": 1,
+    "missing": [
+      {
+        "id": "coolidge_corner_theatre_ma:films:you-can-see-everything:1046773",
+        "title": "You Can See Everything",
+        "starts_at": "2026-11-15T01:15:00+00:00",
+        "ends_at": null,
+        "event_url": "https://coolidge.org/films/you-can-see-everything",
+        "description_sha256": "023b4b6f871e72b1d1066ee4901b170ceceaa797dfb8c2aaccbe154def52e2f2",
+        "disposition": "started_before_production_collection",
+        "started_before_production_request": true,
+        "seconds_before_production_request": 375.672546
+      }
+    ]
+  },
+  "collection_timing": {
+    "requested_at": "2026-11-15T01:21:15.672546+00:00",
+    "first_observed_checkpoint_at": "2026-11-15T01:23:06.157079+00:00",
+    "collection_started_at": null,
+    "collection_start_note": "The compact monitoring snapshots did not retain payload.started_at. Collection began after source enrollment/request and no later than the first observed durable checkpoint; an exact start is not inferred.",
+    "completed_at": "2026-11-15T01:34:57.258059+00:00",
+    "checkpoint_progress": [
+      {
+        "observed_at": "2026-11-15T01:23:06.157079+00:00",
+        "cursor": 12,
+        "events": 16,
+        "diagnostics": [],
+        "listed_pages": 3,
+        "pending_pages": 0,
+        "manifest_count": 74,
+        "listing_complete": true
+      },
+      {
+        "observed_at": "2026-11-15T01:23:29.366706+00:00",
+        "cursor": 12,
+        "events": 16,
+        "diagnostics": [],
+        "listed_pages": 3,
+        "pending_pages": 0,
+        "manifest_count": 74,
+        "listing_complete": true
+      },
+      {
+        "observed_at": "2026-11-15T01:24:13.89621+00:00",
+        "cursor": 12,
+        "events": 16,
+        "diagnostics": [],
+        "listed_pages": 3,
+        "pending_pages": 0,
+        "manifest_count": 74,
+        "listing_complete": true
+      },
+      {
+        "observed_at": "2026-11-15T01:25:46.67317+00:00",
+        "cursor": 20,
+        "events": 31,
+        "diagnostics": [
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/amma-ariyan",
+            "disposition": "held"
+          },
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/artificial",
+            "disposition": "held"
+          }
+        ],
+        "listed_pages": 3,
+        "pending_pages": 0,
+        "manifest_count": 74,
+        "listing_complete": true
+      },
+      {
+        "observed_at": "2026-11-15T01:26:58.504388+00:00",
+        "cursor": 28,
+        "events": 66,
+        "diagnostics": [
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/amma-ariyan",
+            "disposition": "held"
+          },
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/artificial",
+            "disposition": "held"
+          }
+        ],
+        "listed_pages": 3,
+        "pending_pages": 0,
+        "manifest_count": 74,
+        "listing_complete": true
+      },
+      {
+        "observed_at": "2026-11-15T01:28:26.736853+00:00",
+        "cursor": 36,
+        "events": 79,
+        "diagnostics": [
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/amma-ariyan",
+            "disposition": "held"
+          },
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/artificial",
+            "disposition": "held"
+          },
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/debut-2026",
+            "disposition": "held"
+          },
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/elsinore",
+            "disposition": "held"
+          },
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/fantastic-mr-fox",
+            "disposition": "held"
+          }
+        ],
+        "listed_pages": 3,
+        "pending_pages": 0,
+        "manifest_count": 74,
+        "listing_complete": true
+      },
+      {
+        "observed_at": "2026-11-15T01:29:40.421189+00:00",
+        "cursor": 44,
+        "events": 102,
+        "diagnostics": [
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/amma-ariyan",
+            "disposition": "held"
+          },
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/artificial",
+            "disposition": "held"
+          },
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/debut-2026",
+            "disposition": "held"
+          },
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/elsinore",
+            "disposition": "held"
+          },
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/fantastic-mr-fox",
+            "disposition": "held"
+          },
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/hay-fever",
+            "disposition": "held"
+          },
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/hum-aapke-hain-koun",
+            "disposition": "held"
+          },
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/josephine",
+            "disposition": "held"
+          }
+        ],
+        "listed_pages": 3,
+        "pending_pages": 0,
+        "manifest_count": 74,
+        "listing_complete": true
+      },
+      {
+        "observed_at": "2026-11-15T01:30:35.774298+00:00",
+        "cursor": 50,
+        "events": 114,
+        "diagnostics": [
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/amma-ariyan",
+            "disposition": "held"
+          },
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/artificial",
+            "disposition": "held"
+          },
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/debut-2026",
+            "disposition": "held"
+          },
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/elsinore",
+            "disposition": "held"
+          },
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/fantastic-mr-fox",
+            "disposition": "held"
+          },
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/hay-fever",
+            "disposition": "held"
+          },
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/hum-aapke-hain-koun",
+            "disposition": "held"
+          },
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/josephine",
+            "disposition": "held"
+          }
+        ],
+        "listed_pages": 3,
+        "pending_pages": 0,
+        "manifest_count": 74,
+        "listing_complete": true
+      },
+      {
+        "observed_at": "2026-11-15T01:31:46.629883+00:00",
+        "cursor": 50,
+        "events": 114,
+        "diagnostics": [
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/amma-ariyan",
+            "disposition": "held"
+          },
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/artificial",
+            "disposition": "held"
+          },
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/debut-2026",
+            "disposition": "held"
+          },
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/elsinore",
+            "disposition": "held"
+          },
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/fantastic-mr-fox",
+            "disposition": "held"
+          },
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/hay-fever",
+            "disposition": "held"
+          },
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/hum-aapke-hain-koun",
+            "disposition": "held"
+          },
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/josephine",
+            "disposition": "held"
+          }
+        ],
+        "listed_pages": 3,
+        "pending_pages": 0,
+        "manifest_count": 74,
+        "listing_complete": true
+      },
+      {
+        "observed_at": "2026-11-15T01:32:57.798394+00:00",
+        "cursor": 58,
+        "events": 128,
+        "diagnostics": [
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/amma-ariyan",
+            "disposition": "held"
+          },
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/artificial",
+            "disposition": "held"
+          },
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/debut-2026",
+            "disposition": "held"
+          },
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/elsinore",
+            "disposition": "held"
+          },
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/fantastic-mr-fox",
+            "disposition": "held"
+          },
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/hay-fever",
+            "disposition": "held"
+          },
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/hum-aapke-hain-koun",
+            "disposition": "held"
+          },
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/josephine",
+            "disposition": "held"
+          },
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/minotaur-2026",
+            "disposition": "held"
+          },
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/motive-and-cue",
+            "disposition": "held"
+          }
+        ],
+        "listed_pages": 3,
+        "pending_pages": 0,
+        "manifest_count": 74,
+        "listing_complete": true
+      },
+      {
+        "observed_at": "2026-11-15T01:34:06.649432+00:00",
+        "cursor": 66,
+        "events": 136,
+        "diagnostics": [
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/amma-ariyan",
+            "disposition": "held"
+          },
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/artificial",
+            "disposition": "held"
+          },
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/debut-2026",
+            "disposition": "held"
+          },
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/elsinore",
+            "disposition": "held"
+          },
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/fantastic-mr-fox",
+            "disposition": "held"
+          },
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/hay-fever",
+            "disposition": "held"
+          },
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/hum-aapke-hain-koun",
+            "disposition": "held"
+          },
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/josephine",
+            "disposition": "held"
+          },
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/minotaur-2026",
+            "disposition": "held"
+          },
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/motive-and-cue",
+            "disposition": "held"
+          },
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/paper-tiger-2026",
+            "disposition": "held"
+          },
+          {
+            "reason": "boston_arts_additional_not_current",
+            "event_url": "https://coolidge.org/films/selma",
+            "disposition": "held"
+          }
+        ],
+        "listed_pages": 3,
+        "pending_pages": 0,
+        "manifest_count": 74,
+        "listing_complete": true
+      }
+    ]
+  },
+  "native_capture": {
+    "event_url": "https://coolidge.org/films/you-can-see-everything",
+    "raw_sha256": "f033256eb0f9aef55d2677a1e02075babadc7ca0db066d4a804b9d1c57aa4636",
+    "raw_bytes": 157047
+  },
+  "conclusion": "The sole missing baseline identity had already started before production enrollment and collection. All other 178 baseline identities are staged. This is explicitly accounted as a capture-window difference; no parser or coverage code change is indicated.",
+  "limitation": "The precise publisher availability transition during the production detail request is not retained; no new end time or ticket status is asserted.",
+  "actions": {
+    "parser_changes": false,
+    "coverage_changes": false,
+    "baseline_changes": false,
+    "publisher_refetches": false,
+    "production_writes": false
+  }
+}

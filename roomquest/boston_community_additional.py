@@ -107,6 +107,13 @@ REVIEWED_VENUE_POINTS = {
             'at 30 Old Colony Avenue, Boston MA 02127 and supplies 42.3372967,-71.0561203. '
             'Reviewed 2026-11-15; exact source, venue name and street only. Separate parking marker 1 is excluded.'),
     },
+    (TRUSTEES, 'City Natives', '30 Edgewater Drive, Mattapan, MA 02126'): {
+        'point': (42.2660524, -71.0955048),
+        'evidence': 'https://thetrustees.org/place/city-natives/',
+        'provenance': ('Publisher City Natives location page pairs 30 Edgewater Drive, Mattapan MA 02126 '
+            'with a Google directions destination !1d-71.0955048!2d42.2660524. '
+            'Reviewed 2026-11-15; exact source, venue name and street only. The map viewport longitude is excluded.'),
+    },
 }
 ERROR_CODES = {'unregistered_boston_additional_source', 'boston_additional_calendar_changed',
     'boston_additional_detail_changed', 'boston_additional_description_missing',
