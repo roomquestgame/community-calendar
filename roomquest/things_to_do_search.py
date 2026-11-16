@@ -113,7 +113,7 @@ def _request(key, endpoint, payload=None):
         with session.request("POST" if payload is not None else "GET",
                              "https://api.tavily.com/" + endpoint,
                              headers={"Authorization": "Bearer " + key},
-                             json=payload, timeout=(3, 12), stream=True,
+                             json=payload, timeout=(3, 40 if payload and payload.get("include_raw_content") else 12), stream=True,
                              allow_redirects=False) as response:
             if response.status_code != 200:
                 raise ValueError("search_http_failure")
@@ -161,10 +161,11 @@ def run_search(*, key, job, database, request=None):
     receipt = {"reservation_id": admission["reservation_id"],
                "lease_token": admission["lease_token"], "outcome": "uncertain"}
     try:
+        content_probe = admission.get("content_probe") is True
         response = request(key, "search", {
             "query": query, "topic": "general", "search_depth": "basic",
             "auto_parameters": False, "include_answer": False,
-            "include_raw_content": False, "max_results": 10, "include_usage": True,
+            "include_raw_content": content_probe, "max_results": 5 if content_probe else 10, "include_usage": True,
             "exclude_domains": admission.get("exclude_domains", []),
         })
         usage = response.get("usage", {}).get("credits")
@@ -186,6 +187,17 @@ def run_search(*, key, job, database, request=None):
             candidates.append({"url": url, "rank": rank,
                                "title": str(item.get("title", ""))[:300],
                                "score": score if type(score) in (int, float) and math.isfinite(score) else None})
+        if content_probe:
+            by_url = {canonical_url(i.get("url")): i for i in results if isinstance(i, dict)}
+            for candidate in candidates[:5]:
+                item = by_url[candidate["url"]]
+                for field, limit in (("content", 1000), ("raw_content", 6000)):
+                    value = item.get(field)
+                    raw = value.encode("utf-8") if isinstance(value, str) else b""
+                    candidate[field] = raw[:limit].decode("utf-8", errors="ignore")
+                    candidate[field + "_bytes"] = len(raw)
+                    candidate[field + "_truncated"] = len(raw) > limit
+            candidates = candidates[:5]
         receipt.update(outcome="success", candidates=candidates)
     except Exception:
         # Request may have been charged. Keep its reservation, including if the
