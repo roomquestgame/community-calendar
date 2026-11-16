@@ -38,6 +38,11 @@ class handler(BaseHTTPRequestHandler):
             if not isinstance(status, str) or not re.fullmatch(r"[a-z_]{1,64}", status):
                 status = "unknown"
             print("activity_pilot_status=" + status, flush=True)
+            reason = result.get("reason") if isinstance(result, dict) else None
+            if reason in {"account_schema_unknown", "free_plan_unconfirmed", "account_limits_unconfirmed",
+                          "zero_paid_overage_unconfirmed", "free_plan_limit_unconfirmed",
+                          "free_allowance_exhausted", "usage_request_failed"}:
+                print("activity_search_fence=" + reason, flush=True)
             return self.reply(200, result)
         except Exception:
             return self.reply(503, {"error": "pilot_unavailable"})
