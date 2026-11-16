@@ -12,12 +12,12 @@ class CoordinatorTests(unittest.TestCase):
         database.assert_not_called()
         search.assert_not_called()
 
-    def test_admitted_page_waits_for_next_ordinary_tick(self):
+    def test_admitted_page_fetches_in_same_tick(self):
         database = Mock(side_effect=[{'status': 'planned'}, {'status': 'admitted'}])
         search = Mock()
         result = run_tick(database=database, search=search,
-                          page_worker=lambda: {'status': 'idle'})
-        self.assertEqual(result['status'], 'planned_page')
+                          page_worker=Mock(side_effect=[{'status': 'idle'}, {'status': 'finished'}]))
+        self.assertEqual(result['status'], 'finished')
         search.assert_not_called()
 
     def test_disabled_foundation_preserves_legacy_idle_result(self):

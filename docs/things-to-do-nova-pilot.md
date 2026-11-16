@@ -1,3 +1,7 @@
+## 2026-11-16 — Event-driven queue delivery
+
+Approved EVE-66 update: POST accepts only a database-issued, single-use dispatch ticket validated by the existing authenticated RPC. No arbitrary URL, source or client work request. Queue admission immediately invokes the bounded page worker; completion releases the dispatch ticket and wakes eligible work. Existing GET cron is recovery. Backend migration20261116110024 removes global pacing but retains per-publisher holds, health checks, leases, quotas and the original canary cutoff. Deploy this collector before the backend migration.32 focused coordinator/worker tests passed. Live trigger verification pending.
+
 # Limited autonomous Things to Do pilot
 
 Ben approved starting on a limited basis on November 15, 2026. This is the first
