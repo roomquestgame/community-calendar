@@ -23,11 +23,17 @@ class SearchTests(unittest.TestCase):
 
     def test_account_fence_fails_closed(self):
         self.assertEqual(free_allowance(usage()), 930)
+        self.assertEqual(free_allowance(usage(current_plan='Researcher')), 930)
         for change in ({'paygo_limit': 1}, {'paygo_usage': 1},
                        {'current_plan': 'Bootstrap'}, {'plan_usage': float('nan')},
-                       {'plan_limit': 15000}, {'plan_usage': None}):
+                       {'plan_limit': 15000}, {'plan_usage': None}, {'paygo_limit': None}):
             self.assertIsNone(free_allowance(usage(**change)))
         self.assertIsNone(free_allowance({'key': {'limit': 950}}))
+
+    def test_null_overage_is_not_assumed_to_be_zero(self):
+        result, calls = self.run_search(allowance=usage(current_plan='Researcher', paygo_limit=None))
+        self.assertEqual(result['reason'], 'account_limits_unconfirmed')
+        self.assertEqual(calls, ['usage', 'record_search_preflight'])
 
     def test_urls_are_untrusted_and_fragments_coalesce(self):
         self.assertEqual(canonical_url('https://PARKS.gov/trails#walk'), 'https://parks.gov/trails')

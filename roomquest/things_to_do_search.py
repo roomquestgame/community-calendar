@@ -63,7 +63,7 @@ def free_allowance(usage):
     Unknown schemas and paid accounts fail closed; never alter account settings.
     """
     a = usage.get("account") if isinstance(usage, dict) else None
-    if not isinstance(a, dict) or str(a.get("current_plan", "")).lower() != "free":
+    if not isinstance(a, dict) or str(a.get("current_plan", "")).strip().lower() not in {"free", "researcher"}:
         return None
     if any(type(a.get(k)) not in (int, float) or not math.isfinite(a[k]) or a[k] < 0
            for k in ("plan_usage", "plan_limit", "paygo_usage", "paygo_limit")):
@@ -71,6 +71,23 @@ def free_allowance(usage):
     if a["paygo_limit"] != 0 or a["paygo_usage"] != 0 or a["plan_limit"] > 1000:
         return None
     return max(0, int(min(950, a["plan_limit"]) - a["plan_usage"]))
+
+
+def account_fence_reason(usage):
+    """Diagnostic codes only; never return provider content or account details."""
+    a = usage.get('account') if isinstance(usage, dict) else None
+    if not isinstance(a, dict):
+        return 'account_schema_unknown'
+    if str(a.get('current_plan', '')).strip().lower() not in {'free', 'researcher'}:
+        return 'free_plan_unconfirmed'
+    if any(type(a.get(k)) not in (int, float) or not math.isfinite(a[k]) or a[k] < 0
+           for k in ('plan_usage', 'plan_limit', 'paygo_usage', 'paygo_limit')):
+        return 'account_limits_unconfirmed'
+    if a['paygo_limit'] != 0 or a['paygo_usage'] != 0:
+        return 'zero_paid_overage_unconfirmed'
+    if a['plan_limit'] > 1000:
+        return 'free_plan_limit_unconfirmed'
+    return 'free_allowance_exhausted'
 
 
 def _request(key, endpoint, payload=None):
@@ -104,8 +121,11 @@ def run_search(*, key, job, database, request=None):
     if not isinstance(query, str) or not 1 <= len(query) <= 400:
         return {"status": "invalid_query"}
     allowance = None
+    reason = 'usage_request_failed'
     try:
-        allowance = free_allowance(request(key, "usage"))
+        usage = request(key, "usage")
+        allowance = free_allowance(usage)
+        reason = account_fence_reason(usage)
         status = "free_only_verified" if allowance is not None and allowance >= 1 else "account_free_only_blocked"
     except Exception:
         status = "account_allowance_unavailable"
@@ -115,7 +135,7 @@ def run_search(*, key, job, database, request=None):
     except Exception:
         return {'status': 'preflight_receipt_unavailable'}
     if status != 'free_only_verified':
-        return {'status': status}
+        return {'status': status, 'reason': reason}
     admission = database("reserve_search", {"query_id": job["id"],
                                              "free_allowance": allowance})
     if not isinstance(admission, dict) or admission.get("status") != "reserved":
