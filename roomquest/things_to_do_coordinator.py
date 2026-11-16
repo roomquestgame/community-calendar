@@ -21,7 +21,7 @@ def run_tick(*, database=None, page_worker=None, search=None, clock=None, key=No
     # A finite owner-approved probe uses the same durable search admission.
     # Older databases do not expose this action; normal work remains compatible.
     try:
-        probe = database('next_content_probe', {})
+        probe = database('next_content_probe', {'content_protocol': 2})
         if probe.get('status') == 'ready':
             return (search or run_search)(key=key if key is not None else os.environ.get('TAVILY_API_KEY', ''),
                                           job=probe, database=database)

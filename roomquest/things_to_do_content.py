@@ -21,6 +21,8 @@ def plain(value):
 
 
 def extract_retained(metadata, url, source_key):
+    if metadata.get('raw_content_truncated') is True:
+        return []  # Partial pages can hide a second facility or conflicting address.
     raw = metadata.get('raw_content')
     if not canonical_url(url) or not isinstance(raw, str) or not raw or len(raw.encode()) > 100_000:
         return []
