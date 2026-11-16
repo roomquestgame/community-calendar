@@ -151,6 +151,28 @@ def run_batch(*, database=None, fetch=None, parse=None, discover=None, clock=Non
                 return fetch_publisher(url, 'text/html', respect_robots=True,
                                        allowed_hosts=(urlsplit(claim['page_url']).hostname,),
                                        follow_redirects=False, deadline_at=deadline_at)
+    # Read retained content only through a live, fenced page lease. The database
+    # binds the URL; HTTP callers cannot supply text or select another source.
+    if autonomous and claim['scope']['parser'] == 'general' and supplied_fetch is None:
+        try:
+            payload = {'job_id': claim['job_id'], 'lease_token': claim['lease_token']}
+            retained = (request_database('retained_content', payload) if request_database else
+                        supabase_rpc('community_collector_activity_discovery',
+                                     {'p_action': 'retained_content', 'p_payload': payload}, timeout=4))
+        except Exception:
+            return _finish(database, claim, 'paused', error_code='retained_content_unavailable')
+        if retained.get('status') == 'ready':
+            from roomquest.things_to_do_content import extract_retained
+            metadata = retained['metadata']
+            activities = extract_retained(metadata, claim['page_url'], claim['source_key'])
+            if clock() >= deadline:
+                return _finish(database, claim, 'paused', error_code='collection_deadline')
+            return _finish(database, claim, 'success' if activities else 'held',
+                           activities=activities, links=[],
+                           content_hash=sha256(metadata['raw_content'].encode('utf-8')).hexdigest(),
+                           error_code=None if activities else 'retained_content_insufficient')
+        if retained.get('status') != 'missing':
+            return _finish(database, claim, 'paused', error_code='retained_content_not_admitted')
     def reserve(kind, url):
         payload = {'job_id': claim['job_id'], 'lease_token': claim['lease_token'],
                    'kind': kind, 'url': url}
