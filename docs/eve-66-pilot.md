@@ -1,3 +1,9 @@
+## 2026-11-16 — finite canary billing-evidence contract
+
+The search-only benchmark is running on PR251: fourteen successful one-credit receipts, zero uncertain at09:34 UTC. Demand delivery backend/app PR1033 merged f278ef3; Database deploy345 succeeded, web READY dpl_Ed6f5P2T8cRZWSXLEyrhFfbmek6N. iOS Preview141 succeeded; Android publication follows. Publisher policy remains disabled.
+
+This collector change accepts a fixed, expiring owner-billing evidence timestamp supplied only by the authenticated job gateway. It never extends that timestamp at runtime; expired, malformed, timezone-less or >72h evidence is refused. Explicit nonzero PAYG limit/usage still blocks, and current account-wide remaining allowance plus durable search reservations still apply. No billing or key changes. This supplies the finite-canary contract; it does not activate the canary or declare a future deployment complete. Focused search/coordinator/extraction/admission/worker suite:54 tests passed. Required external convention files remain absent in upstream; existing AGENTS and approved limited-pilot rules apply.
+
 # EVE-66 limited pilot implementation — 2026-11-16
 
 ## Release preparation update

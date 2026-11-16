@@ -56,7 +56,7 @@ def benchmark_queries():
             for place in BENCHMARK_LOCATIONS for family in FAMILIES]
 
 
-def free_allowance(usage, *, reviewed_benchmark=False):
+def free_allowance(usage, *, reviewed_benchmark=False, reviewed_until=None):
     """Require an account-wide free plan AND a zero paid-overage limit.
 
     A key-specific quota or one-time remaining balance is not a billing fence.
@@ -67,9 +67,20 @@ def free_allowance(usage, *, reviewed_benchmark=False):
         return None
     # Owner billing screenshots, 2026-11-16: Researcher, PAYG Off,
     # requests stop at plan limit. Narrow, expiring benchmark-only evidence.
-    if reviewed_benchmark and a.get('paygo_limit', 'missing') is None:
+    if a.get('paygo_limit', 'missing') is None:
         from datetime import datetime, timezone
-        if datetime.now(timezone.utc) < datetime(2026, 11, 17, 8, 15, tzinfo=timezone.utc):
+        from datetime import timedelta
+        now = datetime.now(timezone.utc)
+        reviewed = reviewed_benchmark and now < datetime(2026, 11, 17, 8, 15, tzinfo=timezone.utc)
+        # Only the authenticated job gateway supplies this fixed owner-evidence
+        # expiry. Never extend it on each run or accept an unbounded timestamp.
+        if isinstance(reviewed_until, str):
+            try:
+                expiry = datetime.fromisoformat(reviewed_until.replace('Z', '+00:00'))
+                reviewed = reviewed or now < expiry <= now + timedelta(hours=72)
+            except (ValueError, TypeError):
+                pass
+        if reviewed:
             a = {**a, 'paygo_limit': 0}
     if any(type(a.get(k)) not in (int, float) or not math.isfinite(a[k]) or a[k] < 0
            for k in ("plan_usage", "plan_limit", "paygo_usage", "paygo_limit")):
@@ -130,7 +141,8 @@ def run_search(*, key, job, database, request=None):
     reason = 'usage_request_failed'
     try:
         usage = request(key, "usage")
-        allowance = free_allowance(usage, reviewed_benchmark=job.get("planner") == "benchmark")
+        allowance = free_allowance(usage, reviewed_benchmark=job.get("planner") == "benchmark",
+                                   reviewed_until=job.get("billing_review_until"))
         reason = account_fence_reason(usage)
         status = "free_only_verified" if allowance is not None and allowance >= 1 else "account_free_only_blocked"
     except Exception:
