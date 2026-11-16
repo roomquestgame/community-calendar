@@ -3,6 +3,8 @@ name = "roomquest-community-calendar"
 version = "0.1.0"
 requires-python = ">=3.12,<3.15"
 dependencies = [
+  "timezonefinder==9.2.0",
+  "timezonefinder-data==4.2026.6",
   "beautifulsoup4==4.15.0",
   "lxml==6.1.3",
   "lzstring==1.0.4",

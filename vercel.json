@@ -48,9 +48,17 @@
     "api/category_demand.py": {
       "maxDuration": 60,
       "excludeFiles": "{roomquest/catalogs/**,cities/**,docs/**,reports/**,supabase/**,xmlui/**,tests/**,website/**,node_modules/**,**/*.webm,**/*.png,**/*.jpg,**/*.jpeg}"
+    },
+    "api/timezones.py": {
+      "maxDuration": 60,
+      "excludeFiles": "{roomquest/catalogs/**,cities/**,docs/**,reports/**,supabase/**,xmlui/**,tests/**,website/**,node_modules/**,**/*.webm,**/*.png,**/*.jpg,**/*.jpeg}"
     }
   },
   "routes": [
+    {
+      "src": "/api/timezones",
+      "dest": "/api/timezones.py"
+    },
     {
       "src": "/api/things-to-do-pilot",
       "dest": "/api/things_to_do.py"
@@ -124,6 +132,10 @@
     {
       "path": "/api/geocode",
       "schedule": "* * * * *"
+    },
+    {
+      "path": "/api/timezones",
+      "schedule": "*/5 * * * *"
     }
   ],
   "ignoreCommand": "node scripts/vercel-ignore.mjs collector"
