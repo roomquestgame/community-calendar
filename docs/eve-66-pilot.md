@@ -1,5 +1,15 @@
 # EVE-66 limited pilot implementation — 2026-11-16
 
+## Release preparation update
+
+Ben configured `TAVILY_API_KEY` as a production-only sensitive variable and redeployed the old collector. Verified READY deployment `dpl_3squmCsNfRHzdv411xerEyQEz3wt` still serves `b5160221`; the key value was not retrieved. The missing-configuration blocker below is historical, not current. Authentication/free-only allowance remains to be verified by the deployed runtime.
+
+A fifth migration seeds exactly twenty durable benchmark queries and enables search only. Publisher/feed/metro/gap/expansion/demand switches stay off and the canary clock remains unset. The coordinator can run that bounded benchmark while publishers are disabled; each query reserves once, with no retries of ambiguous outcomes. A non-secret preflight receipt records account-fence outcome and allowance. This is the first release stage; it does not activate publisher crawling.
+
+Added a disposable native PostgreSQL multi-session fixture (`scripts/test-activity-concurrency.py`) for one active claim, budget admission, 100-view demand coalescing and expired-worker refusal. The local run is blocked by workspace socket permission (`PermissionError`); no native concurrency pass is claimed yet. A manual-only, secret-free GitHub diagnostic is included to run this specific fixture. No production load test is implied. Current focused collector result: 180 tests plus 49 subtests.
+
+
+
 ## State and scope
 
 This batch implements an **inactive backend/collector foundation**, not an activated or completed canary. All discovery switches default false. No public activities, GUI files, mobile releases, production data, billing settings, or old pilot counters were changed by this implementation session. EVE-66's attached handoff and all nine children EVE-67–75 were read before implementation.

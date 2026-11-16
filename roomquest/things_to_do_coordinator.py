@@ -20,20 +20,23 @@ def run_tick(*, database=None, page_worker=None, search=None, clock=None, key=No
     result = (page_worker or run_batch)()
     # The last known good route remains authoritative while the additive backend
     # is unavailable, disabled, under pressure, or servicing requested evidence.
-    if result.get('status') != 'idle' or clock()-started > 3:
+    if result.get('status') not in ('idle', 'expired', 'disabled') or clock()-started > 3:
         return result
     database = database or discovery_rpc
     try:
         plan = database('plan', {})
-        if plan.get('status') in ('disabled', 'expired', 'paused_load', 'busy', 'backpressure'):
+        if plan.get('status') in ('paused_load', 'paused_telemetry', 'busy', 'backpressure'):
             return result
-        admission = database('admit', {})
+        benchmark_only = plan.get('status') in ('disabled', 'expired')
+        admission = {'status': 'disabled'} if benchmark_only else database('admit', {})
         if admission.get('status') == 'admitted':
             return {'status': 'planned_page'}  # ordinary next tick owns fetching
         if clock()-started > 8:
             return {'status': 'planning_deadline'}
-        job = database('next_search', {})
+        job = database('next_search', {'planner': 'benchmark'} if benchmark_only else {})
         if job.get('status') != 'ready':
+            if benchmark_only:
+                return result
             return {'status': 'planned', 'search': job.get('status', 'unavailable')}
         return (search or run_search)(key=key if key is not None else os.environ.get('TAVILY_API_KEY', ''),
                                       job=job, database=database)

@@ -60,7 +60,7 @@ class SearchTests(unittest.TestCase):
 
     def test_reservation_precedes_spend_and_receipt_reconciles(self):
         result, calls = self.run_search()
-        self.assertEqual(calls, ['usage', 'reserve_search', 'search', 'finish_search'])
+        self.assertEqual(calls, ['usage', 'record_search_preflight', 'reserve_search', 'search', 'finish_search'])
         self.assertEqual(result['outcome'], 'success')
         self.assertEqual(result['credits'], 1)
 
@@ -73,9 +73,9 @@ class SearchTests(unittest.TestCase):
     def test_no_spend_without_account_fence_or_database_reservation(self):
         result, calls = self.run_search(allowance=usage(paygo_limit=100))
         self.assertEqual(result['status'], 'account_free_only_blocked')
-        self.assertEqual(calls, ['usage'])
+        self.assertEqual(calls, ['usage', 'record_search_preflight'])
         result, calls = self.run_search(admission={'status': 'budget_exhausted'})
-        self.assertEqual(calls, ['usage', 'reserve_search'])
+        self.assertEqual(calls, ['usage', 'record_search_preflight', 'reserve_search'])
 
     def test_ambiguous_failure_keeps_charge_and_never_retries(self):
         result, calls = self.run_search(response=TimeoutError('sensitive provider content'))

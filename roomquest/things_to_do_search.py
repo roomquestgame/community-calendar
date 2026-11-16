@@ -103,12 +103,19 @@ def run_search(*, key, job, database, request=None):
     query = job.get("query")
     if not isinstance(query, str) or not 1 <= len(query) <= 400:
         return {"status": "invalid_query"}
+    allowance = None
     try:
         allowance = free_allowance(request(key, "usage"))
+        status = "free_only_verified" if allowance is not None and allowance >= 1 else "account_free_only_blocked"
     except Exception:
-        return {"status": "account_allowance_unavailable"}
-    if allowance is None or allowance < 1:
-        return {"status": "account_free_only_blocked"}
+        status = "account_allowance_unavailable"
+    # Only a non-secret outcome and bounded allowance enter operational receipts.
+    try:
+        database('record_search_preflight', {'status': status, 'free_allowance': allowance})
+    except Exception:
+        return {'status': 'preflight_receipt_unavailable'}
+    if status != 'free_only_verified':
+        return {'status': status}
     admission = database("reserve_search", {"query_id": job["id"],
                                              "free_allowance": allowance})
     if not isinstance(admission, dict) or admission.get("status") != "reserved":

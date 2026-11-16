@@ -35,3 +35,12 @@ class CoordinatorTests(unittest.TestCase):
         result = run_tick(database=database, key='', page_worker=lambda: {'status': 'idle'})
         self.assertEqual(result['status'], 'search_credentials_missing')
         self.assertEqual(database.call_count, 3)
+
+    def test_search_only_benchmark_does_not_admit_publishers(self):
+        database = Mock(side_effect=[{'status': 'disabled'}, {'status': 'ready', 'planner': 'benchmark', 'id': 'q', 'query': 'parks Arlington'}])
+        search = Mock(return_value={'status': 'finished'})
+        result = run_tick(database=database, search=search, key='fixture', page_worker=lambda: {'status': 'idle'})
+        self.assertEqual(result['status'], 'finished')
+        self.assertEqual([c.args[0] for c in database.call_args_list], ['plan', 'next_search'])
+        self.assertEqual(database.call_args_list[-1].args[1], {'planner': 'benchmark'})
+        search.assert_called_once()
