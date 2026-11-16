@@ -74,3 +74,24 @@ The token-protected discovery `status` action exposes flags, request counts, pen
 Independent switches control feed, metro, gap, expansion, demand and search. Disable new-policy work without deleting cached public catalog/saves or clearing reservations. Do not extend `ends_at`, reset counters, refund ambiguous attempts, or reopen closures because a notice expired. Keep the old cutoff/history intact. Any corrective production flag changes must follow the committed release process.
 
 The required external collector guidance paths `.claude/bram-conventions.md` and `app/__shell/conventions.md` were absent at the observed repository state; no replacement conventions were invented.
+
+## November 16 retained-content conversion
+
+Adds a leased retained-content read before publisher fetching for general pages.
+The bounded markdown parser takes facility identity and postal address from the
+publisher text, never the discovery query. Site contact footers and multi-facility
+pages are excluded. Complete descriptive paragraphs retain their wording; uncertain
+hours/prices are omitted. No LLM/provider request or new search is made. Existing
+claim/finish, budgets, categorization and private staging remain authoritative.
+
+Local replay of the ten saved responses yields two candidates: Arlington Park
+Playground, Hopewell; Fairlington Community Center & Park, Arlington. These are
+local parser outputs, not live inserts. Eight responses remain insufficient for
+this parser (missing body, directory, unsupported layout). The Hopewell URL still
+requires source admission under the finite scope. No automatic nationwide scope
+expansion, counter reset, publication or rearming is included.
+
+48 focused collector tests passed. Paired backend migration adds a token- and
+lease-bound read action; isolated PostgreSQL checks cover invalid credentials,
+wrong/finished/expired leases, policy expiry and delegation. Deployment and live
+staging verification remain pending until both PRs are integrated and deployed.
