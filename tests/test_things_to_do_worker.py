@@ -1,5 +1,6 @@
 """Pilot admission, bounded transport and authenticated scheduler checks."""
 from http.server import HTTPServer
+from hashlib import sha256
 import json
 import os
 from threading import Thread
@@ -175,6 +176,46 @@ class WorkerTests(unittest.TestCase):
                 "respect_robots": True, "allowed_hosts": ("www.novaparks.com",),
                 "deadline_at": 45, "follow_redirects": False,
             })
+
+    def test_only_the_reviewed_meadowlark_parent_url_is_admitted(self):
+        parent = claim()
+        parent["source_key"] = worker.PARENT_EVIDENCE_PARK
+        parent["page_url"] = worker.PARENT_EVIDENCE_URL
+        parent["park_context"] = {**parent["park_context"], "park_slug": worker.PARENT_EVIDENCE_PARK}
+        self.assertTrue(worker._valid_claim(parent))
+        for url in (worker.PARENT_EVIDENCE_URL + '/', worker.PARENT_EVIDENCE_URL + '?page=1',
+                    worker.PARENT_EVIDENCE_URL + '#node-293', claim()["park_context"]["location_source_url"]):
+            with self.subTest(url=url):
+                self.assertFalse(worker._valid_claim({**parent, "page_url": url}))
+        self.assertFalse(worker._valid_claim({**claim(), "page_url": worker.PARENT_EVIDENCE_URL}))
+
+    def test_unchanged_html_is_reparsed_and_submits_newly_extracted_narrative(self):
+        from tests.test_things_to_do_nova import detail
+        admitted = claim()
+        admitted["page_url"] += '/garden'
+        raw = detail(body='An introductory description.',
+                     extra='<div class="field--name-field-additional-content">Additional cultural exhibits.</div>')
+        admitted["content_hash"] = sha256(raw.encode()).hexdigest()
+        database = MagicMock(side_effect=[admitted, {"status": "finished", "outcome": "success"}])
+        result = worker.run_batch(database=database, fetch=MagicMock(return_value=raw))
+        self.assertEqual(result["outcome"], 'success')
+        payload = database.call_args.args[1]
+        self.assertEqual(payload['content_hash'], admitted['content_hash'])
+        self.assertEqual(payload['activities'][0]['description'],
+                         'An introductory description.\nAdditional cultural exhibits.')
+
+    def test_parent_page_uses_the_real_parser_without_discovering_more_pages(self):
+        from tests.test_things_to_do_nova import MEADOW, parent_page
+        admitted = {**claim(), "source_key": MEADOW['park_slug'],
+                    "page_url": MEADOW['location_source_url'], "park_context": MEADOW}
+        database = MagicMock(side_effect=[admitted, {"status": "finished", "outcome": "success"}])
+        fetch = MagicMock(return_value=parent_page('A rotating art display in the lobby.'))
+        result = worker.run_batch(database=database, fetch=fetch)
+        self.assertEqual(result['outcome'], 'success')
+        self.assertEqual(fetch.call_count, 1)
+        payload = database.call_args.args[1]
+        self.assertEqual([row['external_id'] for row in payload['activities']], ['novaparks:node:293'])
+        self.assertEqual(payload['discovered_urls'], [])
 
 
 class EndpointTests(unittest.TestCase):
