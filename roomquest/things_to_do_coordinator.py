@@ -17,6 +17,16 @@ def run_tick(*, database=None, page_worker=None, search=None, clock=None, key=No
         return {'status': 'disabled_environment'}
     clock = clock or monotonic
     started = clock()
+    database = database or discovery_rpc
+    # A finite owner-approved probe uses the same durable search admission.
+    # Older databases do not expose this action; normal work remains compatible.
+    try:
+        probe = database('next_content_probe', {})
+        if probe.get('status') == 'ready':
+            return (search or run_search)(key=key if key is not None else os.environ.get('TAVILY_API_KEY', ''),
+                                          job=probe, database=database)
+    except Exception:
+        pass
     result = (page_worker or run_batch)()
     # The last known good route remains authoritative while the additive backend
     # is unavailable, disabled, under pressure, or servicing requested evidence.

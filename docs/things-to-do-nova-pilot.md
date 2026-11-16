@@ -1,3 +1,9 @@
+## 2026-11-16 — EVE-66 two-request Tavily content probe
+
+Ben approved two Basic searches with include_raw_content enabled. Reuse durable reserve/reconcile accounting, fixed billing-review expiry, no retries or paid overage. Only two immutable content-probe-v1 jobs are admitted; other search jobs wait for review. Collector prioritizes these two jobs, requests five results, and stores bounded UTF-8 page content/snippets with original byte counts and truncation flags in private discovery-origin metadata. Search results remain unvalidated leads, not activity facts or public cards. Existing publisher scope, canary cutoff and counters remain unchanged. Restores token-validated gateway execute grants for the existing publishable-key facade after the pending dispatch wrapper.
+
+45 focused Python tests and integrated isolated PostgreSQL dispatch/probe fixture passed, including two-request stop, duplicate reservation denial, immutable evidence replay, caller-role facade access and no publication. Production run/results pending; deploy collector first, then current-main Database deploy for both pending migrations. No GUI/native changes.
+
 ## 2026-11-16 — Event-driven queue delivery
 
 Approved EVE-66 update: POST accepts only a database-issued, single-use dispatch ticket validated by the existing authenticated RPC. No arbitrary URL, source or client work request. Queue admission immediately invokes the bounded page worker; completion releases the dispatch ticket and wakes eligible work. Existing GET cron is recovery. Backend migration20261116110024 removes global pacing but retains per-publisher holds, health checks, leases, quotas and the original canary cutoff. Deploy this collector before the backend migration.32 focused coordinator/worker tests passed. Live trigger verification pending.

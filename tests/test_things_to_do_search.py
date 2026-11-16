@@ -124,3 +124,24 @@ class SearchTests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+class ContentProbeTests(unittest.TestCase):
+    def test_only_reserved_probe_enables_content_and_preserves_bounded_text(self):
+        received = {}
+        def database(action, payload):
+            if action == 'reserve_search':
+                return {'status': 'reserved', 'reservation_id': 'r', 'lease_token': 't', 'content_probe': True}
+            return payload
+        def request(key, endpoint, payload=None):
+            if endpoint == 'usage': return usage()
+            received.update(payload)
+            return {'usage': {'credits': 1}, 'results': [{'url': 'https://parks.gov/a', 'title': 'Park', 'raw_content': 'é' * 4000, 'content': 'Address and hours'}]}
+        result = run_search(key='fixture', job={'id':'q','query':'parks'},database=database,request=request)
+        self.assertTrue(received['include_raw_content'])
+        self.assertEqual(received['max_results'], 5)
+        self.assertEqual(received['search_depth'], 'basic')
+        self.assertEqual(result['credits'], 1)
+        row=result['candidates'][0]
+        self.assertEqual(row['raw_content_bytes'],8000)
+        self.assertEqual(len(row['raw_content'].encode()),6000)
+        self.assertTrue(row['raw_content_truncated'])
