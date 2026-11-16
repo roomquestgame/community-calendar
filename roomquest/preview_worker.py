@@ -2085,7 +2085,8 @@ def supabase_rpc(path: str, payload: dict, *, timeout: float = 4):
                "community_collector_read_fetch_checkpoint", "community_collector_write_fetch_checkpoint",
                "community_collector_record_staged_events", "community_collector_geocoder", "community_collector_geocoder_claim",
                "community_collector_venues", "community_collector_media", "community_collector_media_demand",
-               "community_collector_things_to_do", "community_collector_activity_discovery"}
+               "community_collector_things_to_do", "community_collector_activity_discovery",
+               "community_collector_timezones"}
     if path not in allowed:
         raise PreviewError("unsupported_collector_rpc")
     root = os.environ.get("SUPABASE_URL", "")

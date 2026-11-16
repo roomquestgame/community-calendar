@@ -14,3 +14,7 @@ Jinja2==3.1.6
 # AI is optional/off by default; core collection and previews never import it.
 anthropic>=0.18.0
 pypdf==6.21.4
+
+# Offline coordinate timezone lookup and reproducible boundary dataset.
+timezonefinder==9.2.0
+timezonefinder-data==4.2026.6
