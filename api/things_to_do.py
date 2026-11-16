@@ -3,6 +3,7 @@ from http.server import BaseHTTPRequestHandler
 import hmac
 import json
 import os
+import re
 
 from roomquest.things_to_do_coordinator import run_tick as run_batch
 
@@ -30,7 +31,14 @@ class handler(BaseHTTPRequestHandler):
         if self.headers.get("Content-Length", "0") not in ("", "0"):
             return self.reply(400, {"error": "unexpected_body"})
         try:
-            return self.reply(200, run_batch())
+            result = run_batch()
+            # Only a constrained status code enters logs, never payloads, URLs,
+            # credentials, provider responses, or exception text.
+            status = result.get("status", "unknown") if isinstance(result, dict) else "unknown"
+            if not isinstance(status, str) or not re.fullmatch(r"[a-z_]{1,64}", status):
+                status = "unknown"
+            print("activity_pilot_status=" + status, flush=True)
+            return self.reply(200, result)
         except Exception:
             return self.reply(503, {"error": "pilot_unavailable"})
 
