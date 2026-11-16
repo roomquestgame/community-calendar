@@ -56,3 +56,13 @@ def test_entrypoint_authorization(secret,header,status):
   h.do_GET()
   assert h.reply.call_args.args[0]==status
   assert run.call_count==(1 if status==200 else 0)
+
+def test_unified_entrypoint_routes_with_timezone_auth_not_geocoder_auth():
+ from api import index,timezones
+ from unittest.mock import Mock
+ h=object.__new__(index.handler)
+ h.path='/api/timezones';h.headers={'Authorization':'Bearer test'};h.reply=Mock()
+ with patch.dict('os.environ',{'CRON_SECRET':'test'}),patch.object(timezones,'run_batch',return_value={'applied':1}) as run:
+  h.do_GET()
+  run.assert_called_once_with()
+  h.reply.assert_called_once_with(200,{'applied':1})

@@ -35,7 +35,7 @@ class handler(BaseHTTPRequestHandler):
             return self.reply(503, {"error": "timezone_worker_unavailable"})
 
     def do_GET(self):
-        self.invoke("CRON_SECRET")
+        handler.invoke(self, "CRON_SECRET")
 
     def do_POST(self):
-        self.invoke("ROOMQUEST_PREVIEW_SECRET")
+        handler.invoke(self, "ROOMQUEST_PREVIEW_SECRET")
