@@ -38,10 +38,8 @@ class RetainedContentTests(unittest.TestCase):
     def test_no_footer_only_location(self):
         self.assertEqual(self.extract(BODY.replace('2700 Courthouse Road\nHopewell, VA 23860', '')), [])
 
-    def test_truncation_does_not_invent_optional_fields(self):
-        record, = self.extract(raw_content_truncated=True)
-        self.assertTrue(record['content_evidence']['truncated'])
-        self.assertNotIn('price_text', record)
+    def test_truncated_page_is_held_even_with_apparent_required_facts(self):
+        self.assertEqual(self.extract(raw_content_truncated=True), [])
 
     def test_stable_identity(self):
         self.assertEqual(self.extract()[0]['external_id'], self.extract(BODY + '\n')[0]['external_id'])

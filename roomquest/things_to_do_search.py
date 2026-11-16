@@ -191,7 +191,7 @@ def run_search(*, key, job, database, request=None):
             by_url = {canonical_url(i.get("url")): i for i in results if isinstance(i, dict)}
             for candidate in candidates[:5]:
                 item = by_url[candidate["url"]]
-                for field, limit in (("content", 1000), ("raw_content", 6000)):
+                for field, limit in (("content", 1000), ("raw_content", 100_000 if admission.get("content_protocol") == 2 else 6000)):
                     value = item.get(field)
                     raw = value.encode("utf-8") if isinstance(value, str) else b""
                     candidate[field] = raw[:limit].decode("utf-8", errors="ignore")

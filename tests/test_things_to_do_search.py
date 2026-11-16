@@ -145,3 +145,23 @@ class ContentProbeTests(unittest.TestCase):
         self.assertEqual(row['raw_content_bytes'],8000)
         self.assertEqual(len(row['raw_content'].encode()),6000)
         self.assertTrue(row['raw_content_truncated'])
+
+class WiderContentTests(unittest.TestCase):
+    def test_protocol_two_retains_full_bodies_and_marks_the_safety_limit(self):
+        for size in (8000, 99000, 100002):
+            def database(action, payload):
+                if action == 'reserve_search':
+                    return {'status':'reserved','reservation_id':'r','lease_token':'t',
+                            'content_probe':True,'content_protocol':2}
+                return payload
+            def request(key, endpoint, payload=None):
+                if endpoint == 'usage': return usage()
+                self.assertEqual(payload['search_depth'], 'basic')
+                self.assertEqual(payload['max_results'], 5)
+                return {'usage':{'credits':1},'results':[{'url':'https://parks.gov/a',
+                    'raw_content':'é' * (size // 2)}]}
+            result=run_search(key='fixture',job={'id':'q','query':'parks'},database=database,request=request)
+            row=result['candidates'][0]
+            self.assertEqual(row['raw_content_bytes'], size)
+            self.assertEqual(len(row['raw_content'].encode()), min(size,100000))
+            self.assertEqual(row['raw_content_truncated'], size>100000)
