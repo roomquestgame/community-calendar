@@ -73,6 +73,40 @@ do not become activity facts. Donations are excluded; seasonal activities,
 bookable experiences and records with sparse optional details remain candidates.
 Unexpected markup is an explicit failure, not successful empty coverage.
 
+## Reviewed category-intake evidence repair
+
+The November 15 shared-category intake found three evidence gaps in the existing
+32-record pilot. Detail extraction now retains the activity's bounded main and
+additional narrative. For Field Trips, it also reads the explicitly named
+**PROGRAM OFFERINGS** section in the single-column copy component. Booking,
+fees, forms, separate grant sections and sitewide promotions remain excluded.
+The Korean Bell Garden description therefore includes its garden and cultural
+features instead of ending after the opening rental paragraph.
+
+One exact parent-page job is additionally supported:
+`https://www.novaparks.com/parks/meadowlark-botanical-gardens`. It reads only the
+named **Visitor Center** accordion and supplies a description for the existing
+`novaparks:node:293` identity. It discovers no links and does not create other
+park activities. The companion database migration separately restricts this
+job to a description-only enrichment with parent-section provenance; it keeps
+the existing title, source URL, location and other optional facts.
+
+Deploy this collector before the companion migration makes the two reviewed
+detail pages and the one parent page due. The normal five-minute worker handles
+those jobs under the same global lease, pressure checks, robots/DNS/redirect
+guards, host pacing, budgets and fixed pilot cutoff. Every successfully fetched
+page is parsed before completion even when its HTML hash is unchanged, allowing
+an extraction fix to reach storage. Routine successful-page refresh remains
+21 days. No general web discovery or manual worker invocation is introduced.
+
+The focused parser/worker suite passes 49 checks, including both heading forms,
+exact parent scope, unchanged-HTML reparsing, discarded administration and
+retained sparse records. Replays of three inspected rendered DOM captures
+support the reviewed descriptions; they do not prove live HTTP extraction.
+The companion backend journal
+`docs/journal/2026-11-15-shared-activity-category-intake.md` records the actual
+deployment, scheduled run receipts and stored category verification separately.
+
 ## Review and release boundary
 
 Outputs are private candidate records and run receipts in

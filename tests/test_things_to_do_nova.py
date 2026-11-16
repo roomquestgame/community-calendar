@@ -15,6 +15,11 @@ PARK = {
     "location_source_url": "https://www.novaparks.com/parks/potomac-overlook-regional-park",
 }
 LISTING = PARK["location_source_url"] + "/things-to-do"
+MEADOW = {
+    "park_slug": "meadowlark-botanical-gardens", "park_name": "Meadowlark Botanical Gardens",
+    "city": "Vienna", "state": "VA", "location_text": "Meadowlark Botanical Gardens, Vienna, VA",
+    "location_source_url": "https://www.novaparks.com/parks/meadowlark-botanical-gardens",
+}
 
 
 def card(identity="101", title="Woodland Trail", body="", href=None, extra="",
@@ -48,6 +53,19 @@ def detail(identity="101", title="Woodland Trail", body="", extra="", outside=""
         f'<h1>{PARK["park_name"]}</h1><nav><h2>Tertiary Menu</h2></nav>'
         f'<div class="content-container t-align-center"><h2>{title}</h2></div>'
         f'<div class="field--name-body">{body}</div>{extra}</article>{outside}</main></html>'
+    )
+
+
+def parent_page(section="", extra=""):
+    return (
+        '<main id="main-content"><article class="node--type-park node--view-mode-full">'
+        f'<h1>{MEADOW["park_name"]}</h1>'
+        '<div class="paragraph--type--item paragraph--view-mode--accordion">'
+        '<button class="field--name-field-title">Garden Fees</button>'
+        '<div class="field--name-field-intro">Unrelated admission charges.</div></div>'
+        '<div class="paragraph--type--item paragraph--view-mode--accordion">'
+        '<button class="field--name-field-title">Visitor Center</button>'
+        f'<div class="field--name-field-intro">{section}</div></div>{extra}</article></main>'
     )
 
 
@@ -213,6 +231,79 @@ class NovaThingsToDoParserTests(unittest.TestCase):
         self.assertEqual(row["location_text"], "Potomac Overlook Regional Park, Arlington, VA")
         self.assertNotIn("lat", row)
         self.assertNotIn("lng", row)
+
+    def test_detail_narrative_includes_additional_content_without_fees_or_foreign_articles(self):
+        extra = ('<div class="field--name-field-additional-content"><p>A hand-built pavilion displays cultural art.</p>'
+                 '<a class="button" href="/rental-form">Request a reservation</a>'
+                 '<p><a href="/files/garden-rental.pdf">Garden Rental Form</a></p></div>'
+                 '<div class="field--name-field-fees">An unrelated rental price.</div>'
+                 '<article class="node--type-promo"><div class="field--name-field-additional-content">'
+                 'A different ropes course.</div></article>')
+        row = nova.parse_page(detail(body="The garden introduction.", extra=extra), LISTING + "/garden", PARK)[0]
+        self.assertEqual(row["description"], "The garden introduction.\nA hand-built pavilion displays cultural art.")
+
+    def test_hours_additional_content_does_not_enter_activity_description(self):
+        extra = ('<div><h2 class="field--name-field-additional-content-heading">Hours of Operation</h2>'
+                 '<div class="field--name-field-additional-content">Weekends, noon to dusk.</div></div>')
+        row = nova.parse_page(detail(body="Activity narrative.", extra=extra), LISTING + "/program", PARK)[0]
+        self.assertEqual(row["description"], "Activity narrative.")
+        self.assertEqual(row["availability_text"], "Weekends, noon to dusk.")
+
+    def test_rendered_program_offerings_exclude_booking_fees_grants_and_promotions(self):
+        extra = ('<div class="paragraph--type--single-column-copy"><div class="field--name-field-copy">'
+                 '<p>Contact staff to book a school visit.</p>'
+                 '<div class="accordion-heading"><button>PROGRAM OFFERINGS</button></div>'
+                 '<div class="accordion-content"><p>Hands-on science programs include guided nature hikes.</p>'
+                 '<article class="node--type-promo">A different music festival.</article></div>'
+                 '<div class="accordion-heading"><button>KNOW BEFORE YOU BOOK</button></div>'
+                 '<div class="accordion-content">Group booking policy.</div>'
+                 '<div class="accordion-heading"><button>FEES</button></div>'
+                 '<div class="accordion-content">Conditional school pricing.</div></div></div>'
+                 '<div class="paragraph--type--single-column-copy"><h2>Outdoor Kids Grants</h2>'
+                 '<div class="field--name-field-copy">Funding for other park programs.</div></div>')
+        row = nova.parse_page(detail(title="Field Trips", extra=extra), LISTING + "/field-trips", PARK)[0]
+        self.assertEqual(row["description"], "Hands-on science programs include guided nature hikes.")
+
+    def test_program_source_heading_boundary_retains_only_the_named_section(self):
+        extra = ('<div class="paragraph--type--single-column-copy"><div class="field--name-field-copy">'
+                 '<h3>Program Offerings</h3><p>Explore habitats.</p><ul><li>Guided investigation hike.</li></ul>'
+                 '<h3>Fees</h3><p>Do not inherit this pricing.</p></div></div>')
+        row = nova.parse_page(detail(extra=extra), LISTING + "/field-trips", PARK)[0]
+        self.assertEqual(row["description"], "Explore habitats. Guided investigation hike.")
+
+    def test_expanded_narrative_remains_bounded_and_optional(self):
+        extra = '<div class="field--name-field-additional-content">' + 'x' * (nova.MAX_TEXT_CHARS + 50) + '</div>'
+        row = nova.parse_page(detail(extra=extra), LISTING + "/program", PARK)[0]
+        self.assertEqual(len(row["description"]), nova.MAX_TEXT_CHARS)
+        self.assertIsNone(nova.parse_page(detail(), LISTING + "/program", PARK)[0]["description"])
+
+    def test_reviewed_parent_section_enriches_only_the_existing_visitor_center(self):
+        markup = parent_page('<p>The lobby hosts rotating art displays.</p>'
+                             '<a href="/parks/meadowlark-botanical-gardens/things-to-do/unreviewed">Other attraction</a>')
+        rows = nova.parse_page(markup, MEADOW["location_source_url"], MEADOW)
+        self.assertEqual(len(rows), 1)
+        row = rows[0]
+        self.assertEqual(row["external_id"], "novaparks:node:293")
+        self.assertEqual(row["title"], "Visitor Center")
+        self.assertEqual(row["source_url"], MEADOW["location_source_url"] + "/things-to-do#node-293")
+        self.assertEqual(row["extracted_from_url"], MEADOW["location_source_url"])
+        self.assertNotIn("admission", row["description"])
+        for key in ("image_url", "source_categories", "availability_text", "price_text", "booking_url"):
+            self.assertIsNone(row[key], key)
+        self.assertEqual(nova.discover_links(markup, MEADOW["location_source_url"], MEADOW), [])
+
+    def test_parent_section_is_exact_unambiguous_and_not_a_generic_parent_crawler(self):
+        duplicate = ('<div class="paragraph--type--item paragraph--view-mode--accordion">'
+                     '<button class="field--name-field-title">Visitor Center</button>'
+                     '<div class="field--name-field-intro">Another entry.</div></div>')
+        for markup in (parent_page(), parent_page('A lobby art show.', duplicate),
+                       parent_page('A lobby art show.').replace('>Visitor Center<', '>Visitor Center Rentals<')):
+            with self.subTest(markup=markup), self.assertRaisesRegex(ValueError, 'parent_section_changed'):
+                nova.parse_page(markup, MEADOW["location_source_url"], MEADOW)
+        with self.assertRaisesRegex(ValueError, 'source_url_out_of_scope'):
+            nova.parse_page(parent_page('A lobby art show.'), PARK["location_source_url"], PARK)
+        with self.assertRaisesRegex(ValueError, 'source_url_out_of_scope'):
+            nova.parse_page(parent_page('A lobby art show.'), MEADOW["location_source_url"], PARK)
 
 
 if __name__ == "__main__":

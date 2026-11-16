@@ -23,6 +23,9 @@ from bs4 import BeautifulSoup, Tag
 
 HOST = "www.novaparks.com"
 ORIGIN = "https://" + HOST
+PARENT_EVIDENCE_PARK = "meadowlark-botanical-gardens"
+PARENT_EVIDENCE_URL = ORIGIN + "/parks/" + PARENT_EVIDENCE_PARK
+PARENT_EVIDENCE_ID = "novaparks:node:293"
 PARK_SLUGS = frozenset({
     "potomac-overlook-regional-park",
     "upton-hill-regional-park",
@@ -56,6 +59,77 @@ def _text(node: Tag | None, limit: int = MAX_TEXT_CHARS) -> str | None:
         unwanted.decompose()
     value = " ".join(copy.get_text(" ", strip=True).split())
     return value[:limit] or None
+
+
+def _narrative_text(node: Tag | None) -> str | None:
+    """Keep the selected activity narrative, excluding embedded UI/promotions."""
+    if node is None:
+        return None
+    copy = BeautifulSoup(str(node), "html.parser")
+    for unwanted in copy.select(
+        "article, aside, footer, header, nav, form, .node--type-promo, "
+        ".node--type-notification, .field--name-field-fees, a.button"
+    ):
+        unwanted.decompose()
+    for link in copy.select("a"):
+        if re.search(r"\b(?:rental|reservation|booking)\s+form\b", link.get_text(" ", strip=True), re.I):
+            link.decompose()
+    return _text(copy)
+
+
+def _program_offerings(copy: Tag) -> list[str]:
+    """Read only NOVA's named program section, not booking, fees or grants.
+
+    The inspected Drupal copy component has accordion headings/panels after
+    rendering. The same semantic heading boundary also handles the source
+    heading form without requiring client-side expansion.
+    """
+    sections = []
+    for heading in copy.select(".accordion-heading, h2, h3, h4"):
+        if (_text(heading) or "").casefold() != "program offerings":
+            continue
+        level = int(heading.name[1]) if re.fullmatch(r"h[1-6]", heading.name) else 2
+        parts = []
+        for sibling in heading.next_siblings:
+            if not isinstance(sibling, Tag):
+                continue
+            if "accordion-heading" in sibling.get("class", []):
+                break
+            if re.fullmatch(r"h[1-6]", sibling.name) and int(sibling.name[1]) <= level:
+                break
+            if sibling.name in {"article", "aside", "footer", "header", "nav", "form"}:
+                break
+            text = _narrative_text(sibling)
+            if text:
+                parts.append(text)
+            if "accordion-content" in sibling.get("class", []):
+                break
+        if parts:
+            sections.append(" ".join(parts))
+    return sections
+
+
+def _description(node: Tag, listing: bool) -> str | None:
+    if listing:
+        return _text(node.select_one(".field--name-body, .field--name-field-listing-description"))
+    parts = []
+    for field in node.select(".field--name-body, .field--name-field-additional-content"):
+        if field.find_parent("article") is not node:
+            continue
+        heading = field.find_previous_sibling()
+        if heading is not None and re.fullmatch(r"h[1-6]", heading.name) and re.fullmatch(
+            r"(?:opening\s+)?hours(?:\s+of\s+operation)?|season(?:al\s+hours)?|"
+            r"fees|admission(?:\s+fees)?|prices?|booking|reservations?|know before you book",
+            _text(heading) or "", re.I,
+        ):
+            continue
+        text = _narrative_text(field)
+        if text:
+            parts.append(text)
+    for copy in node.select(".paragraph--type--single-column-copy .field--name-field-copy"):
+        if copy.find_parent("article") is node:
+            parts.extend(_program_offerings(copy))
+    return "\n".join(dict.fromkeys(parts))[:MAX_TEXT_CHARS] or None
 
 
 def _string(value: object) -> str:
@@ -247,6 +321,51 @@ def _booking_link(node: Tag, base: str, slug: str) -> str | None:
     return None
 
 
+def _parent_evidence(html: str, source_url: str, park_context: Mapping[str, object]) -> dict:
+    """One reviewed parent section enriches one existing activity identity.
+
+    Parent navigation and other park sections never create candidates or links.
+    The database separately fences this page to a description-only update of
+    the already collected Visitor Center record.
+    """
+    park = _context(park_context)
+    if park["park_slug"] != PARENT_EVIDENCE_PARK or source_url != PARENT_EVIDENCE_URL:
+        raise ValueError("nova_source_url_out_of_scope")
+    if not isinstance(html, str) or len(html.encode("utf-8")) > MAX_HTML_BYTES:
+        raise ValueError("nova_html_limit")
+    soup = BeautifulSoup(html, "html.parser")
+    main = soup.select_one("main#main-content")
+    if main is None or (_text(main.select_one("h1")) or "").casefold() != park["park_name"].casefold():
+        raise ValueError("nova_page_shape_changed")
+    canonical = soup.select_one('link[rel="canonical"]')
+    if canonical and _park_url(canonical.get("href"), source_url, park["park_slug"]) != source_url:
+        raise ValueError("nova_canonical_out_of_scope")
+    parks = main.select("article.node--type-park.node--view-mode-full")
+    if len(parks) != 1:
+        raise ValueError("nova_parent_shape_changed")
+    sections = [section for section in parks[0].select(".paragraph--type--item.paragraph--view-mode--accordion")
+                if section.find_parent("article") is parks[0]
+                and (_text(section.select_one(".field--name-field-title")) or "").casefold() == "visitor center"]
+    if len(sections) != 1:
+        raise ValueError("nova_parent_section_changed")
+    description = _narrative_text(sections[0].select_one(".field--name-field-intro"))
+    if not description:
+        raise ValueError("nova_parent_section_changed")
+    return {
+        "external_id": PARENT_EVIDENCE_ID,
+        "title": "Visitor Center",
+        "source_url": PARENT_EVIDENCE_URL + "/things-to-do#node-293",
+        "extracted_from_url": source_url,
+        **park,
+        "description": description,
+        "image_url": None,
+        "source_categories": None,
+        "availability_text": None,
+        "price_text": None,
+        "booking_url": None,
+    }
+
+
 def parse_page(html: str, source_url: str, park_context: Mapping[str, object]) -> list[dict]:
     """Extract sparse activity candidates from one approved park listing/detail.
 
@@ -255,6 +374,8 @@ def parse_page(html: str, source_url: str, park_context: Mapping[str, object]) -
     source_url is the activity link; extracted_from_url records the page actually
     supplied.  Unknown optional facts remain None, never zero/free/all-ages.
     """
+    if source_url == PARENT_EVIDENCE_URL:
+        return [_parent_evidence(html, source_url, park_context)]
     park, url, nodes, listing = _page(html, source_url, park_context)
     fragment = urlsplit(url).fragment
     page_url = url.split("#", 1)[0]
@@ -276,7 +397,6 @@ def parse_page(html: str, source_url: str, park_context: Mapping[str, object]) -
         seen.add(external_id)
         detail = _detail_link(node, heading, page_url, park["park_slug"]) if listing else page_url
         evidence_url = page_url + "#node-" + identity if listing else page_url
-        body = node.select_one(".field--name-body, .field--name-field-listing-description")
         categories = [_text(item, 160) for item in node.select(".field--name-field-categories > .field__item")]
         categories = list(dict.fromkeys(value for value in categories if value))
         fees = node.select_one(".field--name-field-fees")
@@ -286,7 +406,7 @@ def parse_page(html: str, source_url: str, park_context: Mapping[str, object]) -
             "source_url": detail or evidence_url,
             "extracted_from_url": page_url,
             **park,
-            "description": _text(body),
+            "description": _description(node, listing),
             "image_url": _image(node, page_url),
             "source_categories": categories or None,
             "availability_text": _labelled_text(node, r"(?:opening\s+)?hours(?:\s+of\s+operation)?|season(?:al\s+hours)?"),
@@ -303,6 +423,9 @@ def discover_links(html: str, source_url: str, park_context: Mapping[str, object
     Cross-park attractions, PDF maps, booking hosts, events, donations, and
     sitewide menus/promotions do not expand this pilot's crawl scope.
     """
+    if source_url == PARENT_EVIDENCE_URL:
+        _parent_evidence(html, source_url, park_context)
+        return []
     park, url, nodes, listing = _page(html, source_url, park_context)
     page_url = url.split("#", 1)[0]
     found = []

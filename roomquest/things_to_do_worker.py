@@ -21,6 +21,8 @@ PARKS = frozenset({
     "meadowlark-botanical-gardens",
 })
 HOST = "www.novaparks.com"
+PARENT_EVIDENCE_PARK = "meadowlark-botanical-gardens"
+PARENT_EVIDENCE_URL = "https://" + HOST + "/parks/" + PARENT_EVIDENCE_PARK
 MAX_RECORDS = 40
 MAX_CLAIM_SECONDS = 1.5
 IDLE_STATUSES = frozenset({
@@ -45,9 +47,10 @@ def _valid_claim(claim):
     if key not in PARKS:
         return False
     url = claim.get("page_url")
-    if not isinstance(url, str) or not re.fullmatch(
-            r"https://www\.novaparks\.com/parks/" + re.escape(key)
-            + r"/things-to-do(?:/[a-z0-9-]+)?", url):
+    if not isinstance(url, str) or not (
+            re.fullmatch(r"https://www\.novaparks\.com/parks/" + re.escape(key)
+                         + r"/things-to-do(?:/[a-z0-9-]+)?", url)
+            or key == PARENT_EVIDENCE_PARK and url == PARENT_EVIDENCE_URL):
         return False
     context = claim.get("park_context")
     return (isinstance(context, dict) and context.get("park_slug") == key
