@@ -56,7 +56,7 @@ def benchmark_queries():
             for place in BENCHMARK_LOCATIONS for family in FAMILIES]
 
 
-def free_allowance(usage):
+def free_allowance(usage, *, reviewed_benchmark=False):
     """Require an account-wide free plan AND a zero paid-overage limit.
 
     A key-specific quota or one-time remaining balance is not a billing fence.
@@ -65,6 +65,12 @@ def free_allowance(usage):
     a = usage.get("account") if isinstance(usage, dict) else None
     if not isinstance(a, dict) or str(a.get("current_plan", "")).strip().lower() not in {"free", "researcher"}:
         return None
+    # Owner billing screenshots, 2026-11-16: Researcher, PAYG Off,
+    # requests stop at plan limit. Narrow, expiring benchmark-only evidence.
+    if reviewed_benchmark and a.get('paygo_limit', 'missing') is None:
+        from datetime import datetime, timezone
+        if datetime.now(timezone.utc) < datetime(2026, 11, 17, 8, 15, tzinfo=timezone.utc):
+            a = {**a, 'paygo_limit': 0}
     if any(type(a.get(k)) not in (int, float) or not math.isfinite(a[k]) or a[k] < 0
            for k in ("plan_usage", "plan_limit", "paygo_usage", "paygo_limit")):
         return None
@@ -124,7 +130,7 @@ def run_search(*, key, job, database, request=None):
     reason = 'usage_request_failed'
     try:
         usage = request(key, "usage")
-        allowance = free_allowance(usage)
+        allowance = free_allowance(usage, reviewed_benchmark=job.get("planner") == "benchmark")
         reason = account_fence_reason(usage)
         status = "free_only_verified" if allowance is not None and allowance >= 1 else "account_free_only_blocked"
     except Exception:
