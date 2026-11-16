@@ -248,7 +248,7 @@ class EndpointTests(unittest.TestCase):
             request.do_GET()
             self.assertEqual(request.reply.call_args.args[0], 404)
             request.do_POST()
-            self.assertEqual(request.reply.call_args.args[0], 405)
+            self.assertEqual(request.reply.call_args.args[0], 404)
             run.assert_not_called()
 
 
@@ -296,11 +296,11 @@ class EntrypointRouteTests(unittest.TestCase):
             self.assertEqual(headers["Cache-Control"], "no-store")
             run.assert_called_once_with()
 
-    def test_post_is_405_without_starting_work(self):
+    def test_post_without_ticket_does_not_start_work(self):
         with patch.dict(os.environ, {"CRON_SECRET": "cron-fixture"}), \
                 patch("api.things_to_do.run_batch") as run:
             status, body, _ = self.request(token="cron-fixture", method="POST")
-            self.assertEqual((status, body), (405, {"error": "method_not_allowed"}))
+            self.assertEqual((status, body), (400, {"error": "invalid_dispatch"}))
             run.assert_not_called()
 
     def test_query_path_is_404_without_falling_into_any_worker(self):

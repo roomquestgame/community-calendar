@@ -30,7 +30,7 @@ def run_tick(*, database=None, page_worker=None, search=None, clock=None, key=No
         benchmark_only = plan.get('status') in ('disabled', 'expired')
         admission = {'status': 'disabled'} if benchmark_only else database('admit', {})
         if admission.get('status') == 'admitted':
-            return {'status': 'planned_page'}  # ordinary next tick owns fetching
+            return (page_worker or run_batch)()  # admission already committed; fetch now
         if clock()-started > 8:
             return {'status': 'planning_deadline'}
         job = database('next_search', {'planner': 'benchmark'} if benchmark_only else {})
