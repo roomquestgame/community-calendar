@@ -7,12 +7,15 @@ from api.preview import handler as PreviewHandler
 from api.chambermaster import handler as ChamberMasterHandler
 from api.provider_pilot import handler as PilotHandler
 from api.things_to_do import handler as ThingsToDoHandler
+from api.timezones import handler as TimezoneHandler
 
 
 class handler(PreviewHandler, GeocoderHandler, ChamberMasterHandler, PilotHandler):
     """Reuse both handlers' authentication without introducing public inputs."""
 
     def do_GET(self):
+        if self.path == "/api/timezones":
+            return TimezoneHandler.do_GET(self)
         if self.path == "/api/things-to-do-pilot":
             return ThingsToDoHandler.do_GET(self)
         if self.path == "/api/media-demand":
@@ -30,6 +33,8 @@ class handler(PreviewHandler, GeocoderHandler, ChamberMasterHandler, PilotHandle
         return PreviewHandler.do_GET(self)
 
     def do_POST(self):
+        if self.path == "/api/timezones":
+            return TimezoneHandler.do_POST(self)
         if self.path == "/api/things-to-do-pilot":
             return ThingsToDoHandler.do_POST(self)
         if self.path == "/api/media-demand":
