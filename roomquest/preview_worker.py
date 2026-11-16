@@ -20,6 +20,7 @@ import os
 import re
 import socket
 import requests
+from roomquest.activity_request_admission import before_request as activity_before_request
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlparse
 from urllib.parse import urljoin
@@ -89,6 +90,7 @@ class ReviewedRobotsRedirects(RejectRedirects):
                 and newurl == 'https://algolia.net/1/404'
                 and code in (301, 302, 307, 308)):
             validate_public_dns('algolia.net')
+            activity_before_request(newurl, auxiliary=True, redirect=True)
             return Request(newurl, headers={
                 'User-Agent': 'RoomQuestCommunityCalendar/0.1 (community-event research)'
             }, method='GET')
@@ -97,6 +99,7 @@ class ReviewedRobotsRedirects(RejectRedirects):
                 and newurl == 'https://omaharun.org/?robots=1'
                 and code in (301, 302, 303, 307, 308)):
             validate_public_dns('omaharun.org')
+            activity_before_request(newurl, auxiliary=True, redirect=True)
             return Request(newurl, headers={
                 'User-Agent': 'RoomQuestCommunityCalendar/0.1 (community-event research)'
             }, method='GET')
@@ -106,6 +109,7 @@ class ReviewedRobotsRedirects(RejectRedirects):
                 and newurl == 'https://nightshiftbrewing.com/?robots=1'
                 and code == 301 and request.get_method() == 'GET'):
             validate_public_dns('nightshiftbrewing.com')
+            activity_before_request(newurl, auxiliary=True, redirect=True)
             return Request(newurl, headers={
                 'User-Agent': 'RoomQuestCommunityCalendar/0.1 (community-event research)'
             }, method='GET')
@@ -324,6 +328,7 @@ def _robots_rules(host: str, *, deadline_at: float | None = None):
         remaining = deadline - monotonic()
         if remaining <= 0:
             raise PreviewError("source_fetch_deadline")
+        activity_before_request(robots_url, auxiliary=True)
         attempted = True
         with opener.open(request, timeout=min(5, remaining)) as response:
             _observe_retry_after(host, getattr(response, "headers", {}))
@@ -818,6 +823,7 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
             try:
                 remaining = max(0.1, deadline - monotonic())
                 timeout = (min(3,remaining/2), min(7,remaining/2)) if respect_robots else (5,12)
+                activity_before_request(current, redirect=current != url)
                 if chapel_calendar_body is not None:
                     response = session.post(current, data=chapel_calendar_body, headers=headers,
                                             timeout=timeout, stream=True, allow_redirects=False)
@@ -2079,7 +2085,7 @@ def supabase_rpc(path: str, payload: dict, *, timeout: float = 4):
                "community_collector_read_fetch_checkpoint", "community_collector_write_fetch_checkpoint",
                "community_collector_record_staged_events", "community_collector_geocoder", "community_collector_geocoder_claim",
                "community_collector_venues", "community_collector_media", "community_collector_media_demand",
-               "community_collector_things_to_do"}
+               "community_collector_things_to_do", "community_collector_activity_discovery"}
     if path not in allowed:
         raise PreviewError("unsupported_collector_rpc")
     root = os.environ.get("SUPABASE_URL", "")

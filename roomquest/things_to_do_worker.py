@@ -10,10 +10,13 @@ import os
 import re
 from time import monotonic
 from uuid import UUID
+from urllib.parse import urlsplit
+from contextlib import nullcontext
 
 from roomquest.collector_errors import failure_details, safe_error_code
 from roomquest.preview_worker import PreviewError, fetch_publisher, supabase_rpc
 from roomquest.publisher_pacing import capture_publisher_pacing
+from roomquest.activity_request_admission import admitted_requests
 
 RPC = "community_collector_things_to_do"
 PARKS = frozenset({
@@ -43,6 +46,17 @@ def _valid_claim(claim):
         UUID(claim["lease_token"])
     except (KeyError, ValueError, TypeError, AttributeError):
         return False
+    if claim.get('policy_version') == 'evergreen-v1':
+        scope = claim.get('scope')
+        if not isinstance(scope, dict) or scope.get('source_key') != claim.get('source_key'):
+            return False
+        if scope.get('parser') == 'general':
+            from roomquest.things_to_do_extract import in_scope
+            return (bool(re.fullmatch(r'web:[a-f0-9]{64}', claim.get('source_key', '')))
+                    and all(isinstance(scope.get(k), str) and scope[k].strip() for k in ('city', 'state'))
+                    and in_scope(claim.get('page_url', ''), scope))
+        if scope.get('parser') != 'nova':
+            return False
     key = claim.get("source_key")
     if key not in PARKS:
         return False
@@ -101,11 +115,12 @@ def _finish(database, claim, outcome, *, pacing=None, activities=None, links=Non
     return response
 
 
-def run_batch(*, database=None, fetch=None, parse=None, discover=None, clock=None):
+def run_batch(*, database=None, fetch=None, parse=None, discover=None, clock=None, request_database=None):
     """Claim/fetch/finish once. Injected dependencies support offline checks."""
     if database is None and os.environ.get("VERCEL_ENV") != "production":
         return {"status": "disabled_environment"}
     database = database or _rpc
+    supplied_fetch = fetch
     fetch = fetch or _fetch
     clock = clock or monotonic
     started = clock()
@@ -124,17 +139,39 @@ def run_batch(*, database=None, fetch=None, parse=None, discover=None, clock=Non
     if elapsed > MAX_CLAIM_SECONDS:
         return _finish(database, claim, "paused", error_code="slow_database_admission")
 
+    autonomous = claim.get('policy_version') == 'evergreen-v1'
+    context = claim['park_context']
+    if autonomous and claim['scope']['parser'] == 'general':
+        from roomquest.things_to_do_extract import parse_page, discover_links
+        parse = parse or parse_page
+        discover = discover or discover_links
+        context = claim['scope']
+        if supplied_fetch is None:
+            def fetch(url, *, deadline_at):
+                return fetch_publisher(url, 'text/html', respect_robots=True,
+                                       allowed_hosts=(urlsplit(claim['page_url']).hostname,),
+                                       follow_redirects=False, deadline_at=deadline_at)
+    def reserve(kind, url):
+        payload = {'job_id': claim['job_id'], 'lease_token': claim['lease_token'],
+                   'kind': kind, 'url': url}
+        if request_database is not None:
+            return request_database('reserve_publisher', payload)
+        return supabase_rpc('community_collector_activity_discovery',
+                            {'p_action': 'reserve_publisher', 'p_payload': payload}, timeout=4)
+
     if parse is None or discover is None:
         from roomquest.things_to_do_nova import parse_page, discover_links
         parse = parse or parse_page
         discover = discover or discover_links
-    with capture_publisher_pacing() as pacing:
+    with capture_publisher_pacing() as pacing, (admitted_requests(reserve) if autonomous else nullcontext()):
         try:
             raw = fetch(claim["page_url"], deadline_at=deadline)
             if not isinstance(raw, str) or not raw or len(raw.encode("utf-8")) > 3_000_000:
                 raise PreviewError("invalid_things_to_do_page")
-            activities = parse(raw, claim["page_url"], claim["park_context"])
-            links = discover(raw, claim["page_url"], claim["park_context"])
+            activities = parse(raw, claim["page_url"], context)
+            links = discover(raw, claim["page_url"], context)
+            if autonomous and not activities and not links:
+                raise PreviewError('unusable_activity_page')
             if (not isinstance(activities, list) or len(activities) > MAX_RECORDS
                     or any(not isinstance(x, dict) for x in activities)
                     or not isinstance(links, list) or len(links) > MAX_RECORDS
@@ -148,6 +185,8 @@ def run_batch(*, database=None, fetch=None, parse=None, discover=None, clock=Non
             code = safe_error_code(exc)
             details = failure_details(code, expected_source_error=True, phase="collection")
             outcome = "retry" if details["error_kind"] == "transient" else "held"
+            if code == 'activity_request_not_admitted':
+                outcome = 'paused'
             if details["error_kind"] == "pacing":
                 outcome = "paused"
             return _finish(database, claim, outcome, pacing=pacing, error_code=code)

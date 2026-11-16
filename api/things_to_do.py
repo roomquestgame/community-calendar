@@ -4,7 +4,7 @@ import hmac
 import json
 import os
 
-from roomquest.things_to_do_worker import run_batch
+from roomquest.things_to_do_coordinator import run_tick as run_batch
 
 
 class handler(BaseHTTPRequestHandler):
