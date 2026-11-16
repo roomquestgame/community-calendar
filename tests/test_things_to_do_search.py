@@ -13,6 +13,18 @@ def usage(**changes):
 
 
 class SearchTests(unittest.TestCase):
+    def test_fixed_canary_billing_review_expires_without_relaxing_usage(self):
+        from datetime import datetime, timezone, timedelta
+        now = datetime.now(timezone.utc)
+        future = (now + timedelta(hours=48)).isoformat()
+        self.assertEqual(free_allowance(usage(paygo_limit=None), reviewed_until=future), 930)
+        for expiry in [(now-timedelta(seconds=1)).isoformat(), (now+timedelta(hours=73)).isoformat(),
+                       'not-a-date', '2026-11-18', None]:
+            self.assertIsNone(free_allowance(usage(paygo_limit=None), reviewed_until=expiry))
+        self.assertIsNone(free_allowance(usage(paygo_limit=1), reviewed_until=future))
+        self.assertIsNone(free_allowance(usage(paygo_limit=None, paygo_usage=1), reviewed_until=future))
+        self.assertEqual(free_allowance(usage(paygo_limit=None, plan_usage=950), reviewed_until=future), 0)
+
     def test_benchmark_is_exactly_twenty_distinct_queries(self):
         jobs = benchmark_queries()
         self.assertEqual(len(jobs), 20)
