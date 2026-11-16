@@ -35,6 +35,18 @@ class SearchTests(unittest.TestCase):
         self.assertEqual(result['reason'], 'account_limits_unconfirmed')
         self.assertEqual(calls, ['usage', 'record_search_preflight'])
 
+    def test_reviewed_benchmark_retains_all_other_limits(self):
+        from unittest.mock import patch
+        from datetime import datetime, timezone
+        with patch('datetime.datetime') as clock:
+            clock.now.return_value = datetime(2026,11,16,9,tzinfo=timezone.utc)
+            clock.side_effect = datetime
+            self.assertEqual(free_allowance(usage(paygo_limit=None), reviewed_benchmark=True),930)
+            self.assertIsNone(free_allowance(usage(paygo_limit=None, paygo_usage=1), reviewed_benchmark=True))
+            self.assertIsNone(free_allowance(usage(paygo_limit=None, plan_usage=None), reviewed_benchmark=True))
+            clock.now.return_value = datetime(2026,11,18,tzinfo=timezone.utc)
+            self.assertIsNone(free_allowance(usage(paygo_limit=None), reviewed_benchmark=True))
+
     def test_urls_are_untrusted_and_fragments_coalesce(self):
         self.assertEqual(canonical_url('https://PARKS.gov/trails#walk'), 'https://parks.gov/trails')
         for url in ('http://parks.gov', 'https://127.0.0.1/x', 'https://[::1]/',
