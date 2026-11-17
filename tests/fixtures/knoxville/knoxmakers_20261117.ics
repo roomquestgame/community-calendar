@@ -1,0 +1,27 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//HaxDB//Events Calendar//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Knox Makers Events
+BEGIN:VEVENT
+UID:event-8168-session-0@haxdb
+DTSTAMP:20261117T232006Z
+DTSTART:20261118T150000Z
+DTEND:20261118T170000Z
+SUMMARY:Make Wood Conditioner (Paste Wax / Board Butter)
+DESCRIPTION:In this class\, Bill will demonstrate his recipe and technique for making paste wax/conditioner for woodworking\, and students will then make their own.\n\nThis conditioner is used on cutting boards\, wood knife handles\, wooden kid’s toys\, and all items which need a food safe finish. Many people use paste wax on drawer slides and other woodworking items.  This will work instead of purchasing paste wax at a big box store.\n\nAll materials will be supplied by Knoxmakers and all attendees will go home with a quantity of their very own paste wax.\n\n<br>\n<br>\nThe cost is $19.96 for Knox Makers members\, $29.96 for General Public. There will be a maximum of 8 spots of this class\, and a minimum of 3 tickets must be sold. If the class minimum is not met 48 hours prior to class start time\, the class we be canceled and all tickets will be refunded.\n\n<strong>Directions- Knox Makers parking and entrance is located around the back of the SPARK building in the fenced in area.</strong>\n\nKnox Makers is a place for the Knoxville area’s engineers\, artists\, hobbyists\, innovators\, educators and entrepreneurs to work and play. We are a technology and art collective dedicated to the promotion of creativity enabled and informed by science. Our lectures\, workshops\, and outreach programs inspire and educate both members and the general public. Our workshop provides members with both the space for large projects and the tools to complete them. We are a non-profit educational organization supported by member dues and staffed by volunteers.
+LOCATION:Woodworking Zone\, Knox Makers - 116 Childress St SW\, Knoxville\, TN
+URL:https://events.knoxmakers.org/event/make-wood-conditioner-paste-wax-board-butter-4
+END:VEVENT
+BEGIN:VEVENT
+UID:event-8115-session-0@haxdb
+DTSTAMP:20261117T232006Z
+DTSTART:20261117T233000Z
+DTEND:20261118T023000Z
+SUMMARY:Show and Share – Public Welcome
+DESCRIPTION:Open nights are a chance for people to come out to Knox Makers and see all the cool tools we have. You can come out to practice a new programming language\, get help working on your personal projects\, or try your hand at a craft afterwards. You might just come out to see what other folks are working on and lend a hand. If you know anyone who has been curious to come out to Knox Makers\, please invite them along!\nLike all other Tuesday nights\, this event is free and open to the public. Our night will begin with a Show and Share where attendees are encouraged to bring out the projects they have been working on. This is a great time to request feedback for the future direction of your project\, or you can just bring out something you want to show off. We hope to see you there!\n\n**Directions-  Knox Makers parking and entrance is located around the back of the SPARK building in the fenced in area.**\n\nKnox Makers is a place for the Knoxville area’s engineers\, artists\, hobbyists\, innovators\, educators and entrepreneurs to work and play. We are a technology and art collective dedicated to the promotion of creativity enabled and informed by science. Our lectures\, workshops\, and outreach programs inspire and educate both members and the general public. Our workshop provides members with both the space for large projects and the tools to complete them. We are a non-profit educational organization supported by member dues and staffed by volunteers.
+LOCATION:Classroom\, Knox Makers - 116 Childress St SW\, Knoxville\, TN
+URL:https://events.knoxmakers.org/event/show-and-share-public-welcome-32
+END:VEVENT
+END:VCALENDAR

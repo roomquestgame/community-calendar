@@ -1360,6 +1360,40 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                 'p_future_count': len(records),
                 'p_venue_count': sum(row.get('lat') is not None for row in records),
                 'p_error': None, 'p_events': records}
+    from roomquest import knoxville_sources
+    if source_key in knoxville_sources.SOURCES:
+        # Exact registered Knoxville publishers: complete narratives and each
+        # event's own street, or the record is held by the adapter.
+        deadline = min(monotonic() + 36,
+                       deadline_at - 8 if deadline_at is not None else float('inf'))
+        hosts = knoxville_sources.ALLOWED_HOSTS[source_key]
+        try:
+            records = knoxville_sources.collect(
+                source, lambda url, accept: fetch_publisher(
+                    url, accept, respect_robots=True, deadline_at=deadline,
+                    allowed_hosts=hosts), deadline_at=deadline)
+            if len(records) > knoxville_sources.MAX_RECORDS:
+                raise ValueError('source_record_limit')
+            if any(not isinstance(row.get('description'), str) or not row['description'].strip()
+                   or len(row['description']) > knoxville_sources.MAX_DESCRIPTION
+                   or not isinstance(row.get('venue_address'), str)
+                   or not row['venue_address'].strip() for row in records):
+                raise ValueError('knoxville_incomplete_event')
+        except PreviewError:
+            raise
+        except (ValueError, TypeError, KeyError, OverflowError) as exc:
+            reason = str(exc)
+            raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}', reason)
+                               else 'invalid_knoxville_payload') from exc
+        samples = records[:MAX_PREVIEWS]
+        while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
+            samples.pop()
+        return {**({'p_parser_capability': 'publisher_event_candidates_v1'}
+                   if source.get('platform_adapter') == 'wordpress' else {}),
+                'p_source_key': source_key, 'p_samples': samples,
+                'p_future_count': len(records),
+                'p_venue_count': sum(row.get('lat') is not None for row in records),
+                'p_error': None, 'p_events': records}
     from roomquest import chesapeake_library, visit_norfolk
     if source_key in (chesapeake_library.KEY, visit_norfolk.KEY):
         adapter = chesapeake_library if source_key == chesapeake_library.KEY else visit_norfolk

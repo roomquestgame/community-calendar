@@ -1,0 +1,160 @@
+{
+ "events": [
+  {
+   "id": 10000272,
+   "status": "publish",
+   "url": "https://www.easttnhistory.org/event/thanksgiving-holiday/2026-11-26/",
+   "rest_url": "https://www.easttnhistory.org/wp-json/tribe/events/v1/events/10000272",
+   "title": "Thanksgiving Holiday",
+   "description": "<p>The Museum of East Tennessee History is closed in observation of Thanksgiving.  .</p>",
+   "image": {
+    "url": "https://www.easttnhistory.org/wp-content/uploads/2024/02/ETHC-Closed-for-Holiday-1.png",
+    "width": 1199,
+    "height": 628
+   },
+   "all_day": true,
+   "start_date": "2026-11-26 00:00:00",
+   "end_date": "2026-11-27 23:59:59",
+   "utc_start_date": "2026-11-26 05:00:00",
+   "utc_start_date_details": {
+    "year": "2026",
+    "month": "11",
+    "day": "26",
+    "hour": "05",
+    "minutes": "00",
+    "seconds": "00"
+   },
+   "utc_end_date": "2026-11-28 04:59:59",
+   "utc_end_date_details": {
+    "year": "2026",
+    "month": "11",
+    "day": "28",
+    "hour": "04",
+    "minutes": "59",
+    "seconds": "59"
+   },
+   "timezone": "America/New_York",
+   "timezone_abbr": "EST",
+   "cost": "",
+   "cost_details": {
+    "currency_symbol": "",
+    "currency_code": "",
+    "currency_position": "",
+    "values": []
+   },
+   "hide_from_listings": false,
+   "sticky": false,
+   "categories": [
+    {
+     "name": "Museum Closures",
+     "slug": "museum-closures",
+     "term_group": 0,
+     "term_taxonomy_id": 89,
+     "taxonomy": "tribe_events_cat",
+     "description": "",
+     "parent": 0,
+     "count": 19,
+     "filter": "raw",
+     "id": 89,
+     "urls": {
+      "self": "https://www.easttnhistory.org/wp-json/tribe/events/v1/categories/89",
+      "collection": "https://www.easttnhistory.org/wp-json/tribe/events/v1/categories"
+     }
+    }
+   ],
+   "venue": {
+    "id": 1118,
+    "venue": "East Tennessee History Center",
+    "address": "601 S Gay St",
+    "city": "Knoxville",
+    "state": "TN",
+    "stateprovince": "TN",
+    "zip": "37902"
+   },
+   "custom_fields": [],
+   "ticketed": false,
+   "is_virtual": false,
+   "virtual_url": null,
+   "virtual_video_source": ""
+  },
+  {
+   "id": 25307,
+   "status": "publish",
+   "url": "https://www.easttnhistory.org/event/lines-were-drawn-a-conversation-with-dr-warren-dockter-dr-lucas-kelley-and-dr-casey-price/",
+   "rest_url": "https://www.easttnhistory.org/wp-json/tribe/events/v1/events/25307",
+   "title": "Lines Were Drawn: A Conversation with Dr. Warren Dockter, Dr. Lucas Kelley, and Dr. Casey Price",
+   "description": "<p>Join Dr. Warren Dockter, Dr. Lucas Kelley, and Dr. Casey Price for a conversation inspired by <em>Lines Were Drawn: The Treaty of Holston and Its Legacy</em>, the feature exhibition at the Museum of East Tennessee History. Together, they will explore the 1791 Treaty of Holston, its impact on the Cherokee Nation and the early United States, and the lasting consequences of the agreements that shaped East Tennessee.</p>\n<h3>About our speakers</h3>\n<p>Born and raised in East Tennessee, <strong>Dr. Lucas Kelley</strong> is currently an Assistant Professor of History at Valparaiso University in Valparaiso, Indiana, where he teaches courses on early American history, Native American history, and public history. He received his PhD in history from the University of North Carolina and his MA in history from Virginia Tech. While an undergraduate at Centre College, he worked for one summer as an intern for the East Tennessee Historical Society.</p>\n<p><strong>Dr. Casey Price</strong> recently obtained his Ph.D. in American History from the University of Tennessee and is serving as the Barbara Jaffe Silvers Post-Doctoral Fellow at East Tennessee State University for the 2026-2027 academic year. His research blends critical cartography, ethnohistory, and linguistics to recover the voices of Indigenous peoples with few written records. His current book project,<em> Cartographic Colonialism</em>, reveals the relationship between cartography and settler colonialism in the Cherokees’ ancestral homelands during the seventeenth and eighteenth centuries.</p>",
+   "image": {
+    "url": "https://www.easttnhistory.org/wp-content/uploads/2026/10/11-22-Lines-were-drawn.png",
+    "width": 1280,
+    "height": 720
+   },
+   "all_day": false,
+   "start_date": "2026-11-22 14:00:00",
+   "end_date": "2026-11-22 15:00:00",
+   "utc_start_date": "2026-11-22 19:00:00",
+   "utc_start_date_details": {
+    "year": "2026",
+    "month": "11",
+    "day": "22",
+    "hour": "19",
+    "minutes": "00",
+    "seconds": "00"
+   },
+   "utc_end_date": "2026-11-22 20:00:00",
+   "utc_end_date_details": {
+    "year": "2026",
+    "month": "11",
+    "day": "22",
+    "hour": "20",
+    "minutes": "00",
+    "seconds": "00"
+   },
+   "timezone": "America/New_York",
+   "timezone_abbr": "EST",
+   "cost": "",
+   "cost_details": {
+    "currency_symbol": "",
+    "currency_code": "",
+    "currency_position": "",
+    "values": []
+   },
+   "hide_from_listings": false,
+   "sticky": false,
+   "categories": [
+    {
+     "name": "Lectures",
+     "slug": "lectures",
+     "term_group": 0,
+     "term_taxonomy_id": 59,
+     "taxonomy": "tribe_events_cat",
+     "description": "",
+     "parent": 0,
+     "count": 60,
+     "filter": "raw",
+     "id": 59,
+     "urls": {
+      "self": "https://www.easttnhistory.org/wp-json/tribe/events/v1/categories/59",
+      "collection": "https://www.easttnhistory.org/wp-json/tribe/events/v1/categories"
+     }
+    }
+   ],
+   "venue": {
+    "id": 1118,
+    "venue": "East Tennessee History Center",
+    "address": "601 S Gay St",
+    "city": "Knoxville",
+    "state": "TN",
+    "stateprovince": "TN",
+    "zip": "37902"
+   },
+   "custom_fields": [],
+   "ticketed": false,
+   "is_virtual": true,
+   "virtual_url": "https://facebook.com/eastTNhistory",
+   "virtual_video_source": "facebook"
+  }
+ ],
+ "total": 2,
+ "total_pages": 1
+}

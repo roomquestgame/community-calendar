@@ -1,0 +1,242 @@
+{
+ "events": [
+  {
+   "id": 71183,
+   "status": "publish",
+   "url": "https://www.knoxvillechamber.com/community-calendar/shrm-bootcamp/",
+   "rest_url": "https://www.knoxvillechamber.com/wp-json/tribe/events/v1/events/71183",
+   "title": "SHRM Bootcamp",
+   "description": "<p>This course combines expert instruction with the most comprehensive and effective way to prepare for success on your SHRM-CP® or SHRM-SCP® exam. The interactive SHRM Certification Prep System creates a personalized roadmap to help you master the SHRM Body of Applied Skills and Knowledge® (SHRM BASK®) and prepare you for the SHRM certification exams.</p>\n<p>SHRM Certification Prep System is included in the price of this course.</p>\n<p>*This is an instructor led course and is being offered virtually via zoom. </p>",
+   "image": {
+    "url": "https://www.knoxvillechamber.com/wp-content/uploads/2026/11/Screenshot-2026-09-29-125543.png",
+    "width": 728,
+    "height": 946
+   },
+   "all_day": false,
+   "start_date": "2026-12-04 08:00:00",
+   "end_date": "2026-12-06 16:30:00",
+   "utc_start_date": "2026-12-04 13:00:00",
+   "utc_start_date_details": {
+    "year": "2026",
+    "month": "12",
+    "day": "04",
+    "hour": "13",
+    "minutes": "00",
+    "seconds": "00"
+   },
+   "utc_end_date": "2026-12-06 21:30:00",
+   "utc_end_date_details": {
+    "year": "2026",
+    "month": "12",
+    "day": "06",
+    "hour": "21",
+    "minutes": "30",
+    "seconds": "00"
+   },
+   "timezone": "America/New_York",
+   "timezone_abbr": "EST",
+   "cost": "&#x24;1395.00",
+   "cost_details": {
+    "currency_symbol": "",
+    "currency_code": "",
+    "currency_position": "",
+    "values": [
+     "1395.00"
+    ]
+   },
+   "hide_from_listings": false,
+   "sticky": false,
+   "categories": [],
+   "venue": {
+    "id": 68655,
+    "venue": "Online"
+   },
+   "custom_fields": [],
+   "ticketed": false,
+   "is_virtual": false,
+   "virtual_url": null,
+   "virtual_video_source": ""
+  },
+  {
+   "id": 63046,
+   "status": "publish",
+   "url": "https://www.knoxvillechamber.com/community-calendar/americas-largest-nutcracker-tour-returns-nutcracker-magical-christmas-ballet-on-sale-now/",
+   "rest_url": "https://www.knoxvillechamber.com/wp-json/tribe/events/v1/events/63046",
+   "title": "AMERICA’S LARGEST NUTCRACKER TOUR RETURNS — NUTCRACKER! MAGICAL CHRISTMAS BALLET ON SALE NOW",
+   "description": "<p>Celebrate the season with NUTCRACKER! Magical Christmas Ballet, the largest touring production of its kind in North America. Coming to Tennessee Theatre. Knoxville, TN on December 22, 2026, this unforgettable performance features an international cast of dancers, dazzling acrobatics, elaborate costumes, and larger-than-life puppetry.<br />\nSet to the timeless music of Pyotr Ilyich Tchaikovsky, the production transforms the stage into a magical holiday experience. A highlight of the show is the “Dove of Peace” adagio, a powerful and visually stunning moment that captivates audiences of all ages.<br />\nNow in its 34th year, the production continues to delight families across more than 80 cities annually.</p>",
+   "image": {
+    "url": "https://www.knoxvillechamber.com/wp-content/uploads/2026/06/1080x1350.jpg",
+    "width": 1080,
+    "height": 1350
+   },
+   "all_day": false,
+   "start_date": "2026-12-22 12:00:00",
+   "end_date": "2026-12-22 14:00:00",
+   "utc_start_date": "2026-12-22 17:00:00",
+   "utc_start_date_details": {
+    "year": "2026",
+    "month": "12",
+    "day": "22",
+    "hour": "17",
+    "minutes": "00",
+    "seconds": "00"
+   },
+   "utc_end_date": "2026-12-22 19:00:00",
+   "utc_end_date_details": {
+    "year": "2026",
+    "month": "12",
+    "day": "22",
+    "hour": "19",
+    "minutes": "00",
+    "seconds": "00"
+   },
+   "timezone": "America/New_York",
+   "timezone_abbr": "EST",
+   "cost": "",
+   "cost_details": {
+    "currency_symbol": "$",
+    "currency_code": "USD",
+    "currency_position": "prefix",
+    "values": []
+   },
+   "hide_from_listings": false,
+   "sticky": false,
+   "categories": [],
+   "venue": {
+    "id": 27183,
+    "venue": "Tennessee Theatre"
+   },
+   "custom_fields": [],
+   "ticketed": false,
+   "is_virtual": false,
+   "virtual_url": null,
+   "virtual_video_source": ""
+  },
+  {
+   "id": 68198,
+   "status": "publish",
+   "url": "https://www.knoxvillechamber.com/community-calendar/candlelight-coldplay-imagine-dragons-4/",
+   "rest_url": "https://www.knoxvillechamber.com/wp-json/tribe/events/v1/events/68198",
+   "title": "Candlelight: Coldplay &amp; Imagine Dragons",
+   "description": "<p> Candlelight concerts bring the magic of a live, multi-sensory musical experience to awe-inspiring locations like never seen before in Knoxville</p>",
+   "image": {
+    "url": "https://www.knoxvillechamber.com/wp-content/uploads/2026/09/161887.jpg",
+    "width": 550,
+    "height": 275
+   },
+   "all_day": false,
+   "start_date": "2026-11-20 18:30:00",
+   "end_date": "2026-11-20 19:30:00",
+   "utc_start_date": "2026-11-20 23:30:00",
+   "utc_start_date_details": {
+    "year": "2026",
+    "month": "11",
+    "day": "20",
+    "hour": "23",
+    "minutes": "30",
+    "seconds": "00"
+   },
+   "utc_end_date": "2026-11-21 00:30:00",
+   "utc_end_date_details": {
+    "year": "2026",
+    "month": "11",
+    "day": "21",
+    "hour": "00",
+    "minutes": "30",
+    "seconds": "00"
+   },
+   "timezone": "America/New_York",
+   "timezone_abbr": "EST",
+   "cost": "&#x24;41.52",
+   "cost_details": {
+    "currency_symbol": "",
+    "currency_code": "",
+    "currency_position": "",
+    "values": [
+     "41.52"
+    ]
+   },
+   "hide_from_listings": false,
+   "sticky": false,
+   "categories": [],
+   "venue": {
+    "id": 33099,
+    "venue": "Knoxville Museum Of Art",
+    "address": "1050 Worlds Fair Park, DR",
+    "city": "Knoxville",
+    "state": "TN",
+    "stateprovince": "TN",
+    "zip": "37916"
+   },
+   "custom_fields": [],
+   "ticketed": false,
+   "is_virtual": false,
+   "virtual_url": null,
+   "virtual_video_source": ""
+  },
+  {
+   "id": 70235,
+   "status": "publish",
+   "url": "https://www.knoxvillechamber.com/community-calendar/the-village-business-collective-7/",
+   "rest_url": "https://www.knoxvillechamber.com/wp-json/tribe/events/v1/events/70235",
+   "title": "The Village Business Collective",
+   "description": "<p>Date: November 18, 2026<br />\nTime: 8:30 AM to 10:30 AM<br />\nTicket Price: $12 per guest</p>\n<p>Start your morning with meaningful conversation, fresh perspective, and a little Village magic at the Village Business Collective at Ancient Lore Village, our monthly networking experience created to bring Knoxville’s business community together through genuine connection and engaging discussion.</p>\n<p>Set against the storybook beauty of the Village Gardens, this refreshing approach to business networking in Knoxville offers guided conversation, intentional introductions, and opportunities to build relationships beyond the usual exchange of business cards.</p>\n<p>This month, we are excited to welcome Erika Biddix, entrepreneurial strategist, speaker, and creator of the Aught Model of Success, for her session, Who Is Your Client? And Who Isn&#8217;t?</p>\n<p>In this hands-on session, Erika will guide guests through a focused exercise designed to help them better understand the person their business is truly built to serve, including their needs, pressures, and priorities, as well as who may fall outside that picture. The goal is simple: leave with a clearer understanding of your ideal client and how that clarity can shape your business.</p>\n<p>With more than two decades of leadership and operational experience, Erika helps founders and leaders build businesses that align with their values, goals, and real lives. Her approach to strategy is practical, thoughtful, and centered on defining success on your own terms.</p>\n<p>Whether you are an entrepreneur, business owner, creative, corporate professional, nonprofit leader, or simply looking to become more connected within the Knoxville business community, the Village Business Collective offers a welcoming place to grow your network, gain fresh perspective, and enjoy one of the most unique things to do in Knoxville.</p>\n<p>Refreshments<br />\nCoffee and pastries included with admission</p>\n<p>What’s Included<br />\n• Guided networking experience<br />\n• Interactive session with Erika Biddix<br />\n• Opportunities for meaningful professional connections and conversation<br />\n• Giveaway entry for brunch or lunch for two plus an archery or axe throwing experience at Ancient Lore Village<br />\n• Optional opportunity to explore the property following the event</p>\n<p>Space is limited for this month’s Village Business Collective. Reserve your seat today and join us for a meaningful morning at the Village.</p>",
+   "image": {
+    "url": "https://www.knoxvillechamber.com/wp-content/uploads/2026/10/2026-flybook-list-view-banner-3-1.png",
+    "width": 700,
+    "height": 700
+   },
+   "all_day": false,
+   "start_date": "2026-11-18 08:30:00",
+   "end_date": "2026-11-18 10:30:00",
+   "utc_start_date": "2026-11-18 13:30:00",
+   "utc_start_date_details": {
+    "year": "2026",
+    "month": "11",
+    "day": "18",
+    "hour": "13",
+    "minutes": "30",
+    "seconds": "00"
+   },
+   "utc_end_date": "2026-11-18 15:30:00",
+   "utc_end_date_details": {
+    "year": "2026",
+    "month": "11",
+    "day": "18",
+    "hour": "15",
+    "minutes": "30",
+    "seconds": "00"
+   },
+   "timezone": "America/New_York",
+   "timezone_abbr": "EST",
+   "cost": "&#x24;12.00",
+   "cost_details": {
+    "currency_symbol": "",
+    "currency_code": "",
+    "currency_position": "",
+    "values": [
+     "12.00"
+    ]
+   },
+   "hide_from_listings": false,
+   "sticky": false,
+   "categories": [],
+   "venue": {
+    "id": 26532,
+    "venue": "Ancient Lore Village",
+    "address": "7107 Sevierville Pike",
+    "city": "Knoxville",
+    "state": "TN",
+    "stateprovince": "TN",
+    "zip": "37920"
+   },
+   "custom_fields": [],
+   "ticketed": false,
+   "is_virtual": false,
+   "virtual_url": null,
+   "virtual_video_source": ""
+  }
+ ],
+ "total": 4,
+ "total_pages": 1
+}
