@@ -28,6 +28,9 @@ ROSEMONT_REVIEWED_FEATURED_IMAGE = (
 def family(source_key, event_url):
     """Bind an enrolled publisher family to its own canonical event link."""
     try:
+        from roomquest import knoxville_sources
+        if source_key in knoxville_sources.SOURCES:
+            return 'knoxville:' + source_key if knoxville_sources.event_url(source_key, event_url) else None
         from roomquest import gulf_recurring, gulf_seasonal, gulf_venues
         for module, prefix in ((gulf_recurring, 'gulf_recurring:'),
                                (gulf_seasonal, 'gulf_seasonal:'),
@@ -179,6 +182,9 @@ def family(source_key, event_url):
 def image_url(value, publisher):
     if not isinstance(value, str) or len(value) > 2000:
         return None
+    if isinstance(publisher, str) and publisher.startswith('knoxville:'):
+        from roomquest.knoxville_sources import photo_url as knoxville_photo_url
+        return knoxville_photo_url(publisher.removeprefix('knoxville:'), value)
     if isinstance(publisher, str) and publisher.startswith('gulf_'):
         from roomquest import gulf_recurring, gulf_seasonal, gulf_venues
         for module, prefix in ((gulf_recurring, 'gulf_recurring:'),
