@@ -28,6 +28,9 @@ ROSEMONT_REVIEWED_FEATURED_IMAGE = (
 def family(source_key, event_url):
     """Bind an enrolled publisher family to its own canonical event link."""
     try:
+        from roomquest import anchorage_sources
+        if source_key in anchorage_sources.SOURCES:
+            return 'anchorage:' + source_key if anchorage_sources.event_url(source_key, event_url) else None
         from roomquest import gainesville_sources
         if source_key in gainesville_sources.SOURCES:
             return 'gainesville:' + source_key if gainesville_sources.event_url(source_key, event_url) else None
@@ -185,6 +188,9 @@ def family(source_key, event_url):
 def image_url(value, publisher):
     if not isinstance(value, str) or len(value) > 2000:
         return None
+    if isinstance(publisher, str) and publisher.startswith('anchorage:'):
+        from roomquest.anchorage_sources import photo_url as anchorage_photo_url
+        return anchorage_photo_url(publisher.removeprefix('anchorage:'), value)
     if isinstance(publisher, str) and publisher.startswith('gainesville:'):
         from roomquest.gainesville_sources import photo_url as gainesville_photo_url
         return gainesville_photo_url(publisher.removeprefix('gainesville:'), value)
