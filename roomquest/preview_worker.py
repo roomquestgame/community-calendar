@@ -1387,8 +1387,7 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         return {'p_source_key': source_key, 'p_samples': samples,
                 'p_future_count': len(records),
                 'p_venue_count': sum(row.get('lat') is not None for row in records),
-                'p_error': None, 'p_events': records,
-                'p_parser_capability': 'publisher_event_candidates_v1'}
+                'p_error': None, 'p_events': records}
     from roomquest import gainesville_sources
     if source_key in gainesville_sources.SOURCES:
         deadline = min(monotonic() + 40,
