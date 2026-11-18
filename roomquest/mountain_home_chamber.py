@@ -117,7 +117,8 @@ def parse_calendar(calendar_html, print_html, *, now=None):
         badge = card.select_one("div.f300")
         tile = card.select_one("h3.main")
         if (not badge or not tile or _key(badge.get_text(" ", strip=True)) != day.strftime("%b").casefold()
-                or tile.get_text(" ", strip=True).strip() != str(day.day)):
+                or not tile.get_text(" ", strip=True).strip().isdigit()
+                or int(tile.get_text(" ", strip=True).strip()) != day.day):
             raise ValueError("mountain_home_card_date_mismatch")
         if day < today:
             continue
