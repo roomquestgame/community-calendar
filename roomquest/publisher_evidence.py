@@ -34,6 +34,10 @@ def family(source_key, event_url):
         from roomquest import anchorage_sources
         if source_key in anchorage_sources.SOURCES:
             return 'anchorage:' + source_key if anchorage_sources.event_url(source_key, event_url) else None
+        from roomquest import hilton_head_sources
+        if source_key in hilton_head_sources.SOURCES:
+            return ('hilton_head:' + source_key
+                    if hilton_head_sources.event_url(source_key, event_url) else None)
         from roomquest import gainesville_direct_feeds
         if source_key in gainesville_direct_feeds.SOURCES:
             return ('gainesville_direct:' + source_key
@@ -210,6 +214,9 @@ def image_url(value, publisher):
     if isinstance(publisher, str) and publisher.startswith('anchorage:'):
         from roomquest.anchorage_sources import photo_url as anchorage_photo_url
         return anchorage_photo_url(publisher.removeprefix('anchorage:'), value)
+    if isinstance(publisher, str) and publisher.startswith('hilton_head:'):
+        from roomquest.hilton_head_sources import photo_url as hilton_photo_url
+        return hilton_photo_url(publisher.removeprefix('hilton_head:'), value)
     if isinstance(publisher, str) and publisher.startswith('gainesville_direct:'):
         from roomquest.gainesville_direct_feeds import photo_url as direct_photo_url
         return direct_photo_url(publisher.removeprefix('gainesville_direct:'), value)
