@@ -1500,6 +1500,33 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         return {'p_source_key':source_key,'p_samples':samples,
                 'p_future_count':len(records),'p_venue_count':0,
                 'p_error':None,'p_events':records}
+    from roomquest import santa_cruz_square_venues
+    if source_key in santa_cruz_square_venues.SOURCES:
+        deadline=min(monotonic()+37,deadline_at-6 if deadline_at is not None else float('inf'))
+        try:
+            records=santa_cruz_square_venues.collect(
+                source,lambda url,accept:fetch_publisher(
+                    url,accept,respect_robots=True,deadline_at=deadline,
+                    allowed_hosts=santa_cruz_square_venues.ALLOWED_HOSTS[source_key]),
+                deadline_at=deadline)
+            if len(records)>santa_cruz_square_venues.MAX_RECORDS or any(
+                not isinstance(r.get('description'),str) or not r['description'].strip()
+                or len(r['description'])>santa_cruz_square_venues.MAX_DESCRIPTION
+                or not isinstance(r.get('venue_address'),str) or not r['venue_address'].strip()
+                for r in records):
+                raise ValueError('santa_cruz_square_incomplete_event')
+        except PreviewError:raise
+        except (ValueError,TypeError,KeyError,OverflowError) as exc:
+            reason=str(exc)
+            raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}',reason)
+                               else 'invalid_santa_cruz_square_payload') from exc
+        samples=records[:MAX_PREVIEWS]
+        while len(json.dumps(samples,ensure_ascii=False))>18_000:samples.pop()
+        return {'p_parser_capability':'publisher_event_candidates_v1',
+                'p_source_key':source_key,'p_samples':samples,
+                'p_future_count':len(records),
+                'p_venue_count':sum(r.get('lat') is not None for r in records),
+                'p_error':None,'p_events':records}
     from roomquest import santa_cruz_rio
     if source_key == santa_cruz_rio.KEY:
         deadline=min(monotonic()+36,deadline_at-8 if deadline_at is not None else float('inf'))
@@ -3033,6 +3060,12 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
         'victoria_town_calendar_va', 'vance_county_arts_council_nc'))
     from roomquest.holly_hill_sources import publisher_media as holly_hill_media
     publisher_media = publisher_media or holly_hill_media(source)
+    from roomquest import santa_cruz_square_venues
+    publisher_media = publisher_media or (
+        source_key in santa_cruz_square_venues.SOURCES
+        and (source.get('feed_url'),source.get('kind'),source.get('platform_adapter'))
+            == santa_cruz_square_venues.SOURCES[source_key]
+        and source.get('timezone') == santa_cruz_square_venues.ZONE)
     from roomquest import santa_cruz_rio, santa_cruz_local_venues
     publisher_media = publisher_media or (
         (source_key == santa_cruz_rio.KEY
