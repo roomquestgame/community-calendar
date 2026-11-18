@@ -2230,6 +2230,12 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
             from roomquest.firespring import collect as collect_html
             allowed_hosts = (urlparse(FIRESPRING_SOURCES[source_key][0]).hostname,)
             html_budget = 36
+        elif source_key == 'oc_parks_verified_partial_ca':
+            from roomquest.oc_parks_partial import HOST, collect as collect_html
+            allowed_hosts = (HOST,)
+            # Reviews at most 32 individual publisher detail pages. This is an
+            # explicitly partial calendar scope, not 500 complete events.
+            html_budget = 36
         elif source_key == 'omaha_public_library_biblioevents_ne':
             from roomquest.biblioevents import GATEWAY, collect as collect_html
             allowed_hosts = (GATEWAY,)
