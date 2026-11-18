@@ -23,17 +23,21 @@ HTTP **200** and XML RSS confirmed for all three publishers. Page=N advances exa
 | Central Rappahannock | 75 / 75 | 56 / 19 | 72 | 72 | 0 | 8 |
 | Palm Beach | 75 / 75 | 71 / 4 | 69 | 73 | 0 | 75 |
 
-The tested **full bounded candidate pull** used 21 upcoming days and the real shared EventQuest record normalizer, not generated example cards.
+### Read-only bounded collection and final cancellation guard
 
-| Publisher | Pages | Runtime | Fully parsed timed physical candidates | Source coordinates | Accepted photos |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| Central Rappahannock | 14 | 9.15 seconds | **230** | 230 | 0 |
-| Palm Beach | 23 | 19.26 seconds | **425** | 425 | 0 |
-| King County | 23 | 18.71 seconds | **HOLD — 500-record cap** | Not certified | 0 |
+The first parser pass, before cancellation handling was tightened, counted 230 timed physical Central Rappahannock records (14 pages / 9.15 s), 425 Palm Beach candidates (23 pages / 19.26 s), and exceeded the 500-event cap for King County (page 23). **Those exploratory Palm Beach numbers must not be presented as a successful final feed** because the publisher explicitly marks some events cancelled.
 
-King County raised an explicit source-volume error, **not** an accepted partial import. Its density requires a separate durable continuation/window strategy without lifting global source limits or losing events.
+Final 2026-11-18 cancellation-safe parser results:
 
-The two successful counts represent **eligible timed physical records**, not the publisher's complete programmes. All-day, virtual and unlocatable records are not converted into fabricated timed physical events; they are outstanding coverage cases. Feeds can promote older listings out of order. The two-page post-horizon stop is a bounded collector convention, not proof of full publisher inventory beyond the window.
+| Publisher | RSS pages | Time | Final status | New public cards |
+| --- | ---: | ---: | --- | ---: |
+| Central Rappahannock | 14 | 9.80 s | **230** fully parsed source-owned, timed physical candidates, including **230 original venue coordinates** | 0 |
+| Palm Beach | 1 | 0.79 s | **HOLD — explicit publisher cancellation needs safe tombstone propagation** | 0 |
+| King County | 1 | 0.89 s | **HOLD — cancellation propagation**, plus previously measured >500 volume | 0 |
+
+A cancelled entry is now an **explicit error**, not a skipped row that could accidentally leave a stale live card behind. To unlock Palm Beach and King County, the existing backend must safely ingest source-specific cancellation tombstones while keeping source completion honest and bounded. King County also needs a durable pagination/window strategy; never silently increase its maximum or accept a truncated snapshot.
+
+The Central Rappahannock count is an **eligible timed physical subset**, not full library coverage: publisher feeds also contain date-only/all-day, virtual, and non-mappable entries. Publisher RSS may promote older highlights out of order and does not supply a proven finite-window record total. The two-post-horizon-page limit is a bounded collector convention, not proof of total inventory.
 
 ## Description, venue, image and overlay contract
 
@@ -49,10 +53,10 @@ The two successful counts represent **eligible timed physical records**, not the
 - roomquest/preview_worker.py — source-scoped branch before generic library parsing, using existing bounded publisher HTTPS/robots and exact gateway-host allowlist. It does not publish itself.
 - tests/test_bibliocommons_rss.py and tests/test_bibliocommons_rss_integration.py — source, dates, description, geo, XML/identity, volume limits and protected dispatch.
 
-**55 tests passed** in the isolated Python runner, including 16 new parser tests, 2 protected-dispatch integration tests, and existing BiblioEvents and community-formats tests. No routine GitHub CI was triggered.
+**56 tests passed** in the isolated Python runner, including 16 new parser tests, 2 protected-dispatch integration tests, and existing BiblioEvents and community-formats tests. No routine GitHub CI was triggered.
 
 ## Release boundary: closed
 
-Do not register or approve any of these sources until publisher rights are established, pagination/all-day handling is assessed, backend description/media and provider contracts are coordinated, and source-specific stage/publication canaries pass. No Supabase migrations, historical PG17 squash files, production source rows, event records, running category/overlay jobs, or native clients were changed.
+Do not register or approve any of these sources until publisher rights are established, explicit cancellation/tombstone propagation and pagination/all-day handling are reviewed, backend description/media and provider contracts are coordinated, and source-specific stage/publication canaries pass. No Supabase migrations, historical PG17 squash files, production source rows, event records, running category/overlay jobs, or native clients were changed.
 
 The next work remains within the original **ten-source batch**, not another batch of ten.
