@@ -4,7 +4,7 @@ This owner-approved discovery batch surveys GitHub/GitLab and original publisher
 
 ## Production read-only overlap
 - `municipal_event_sources`: 3,881 sources; 2,968 with approved source-status (not necessarily public visible); 993 with a nonzero staged-future count; 816 successful checks in the prior seven days.
-- Dedicated Localist registry: **85** registrations. All **58** hosts in public Mapsee `localist_sources.json` already exist in it. UC Santa Barbara is registered as `localist_66fbc80a958a89e3` but latest request failed, with zero successful pulls. Repair rather than duplicate.
+- Dedicated Localist registry: **85** registrations (**55 enabled/OK, 14 enabled/request_failed, 11 enabled/store_failed, 5 disabled** at readback). All **58** hosts in public Mapsee `localist_sources.json` already exist in it. UC Santa Barbara is registered as `localist_66fbc80a958a89e3` but latest request failed, with zero successful pulls. Repair rather than duplicate.
 - Three direct BiblioEvents integrations already exist: Boston Public Library, Ocean City Free Public Library and Omaha Public Library. The publicly available Mapsee BiblioCommons catalog contains 67 tenants, many unregistered.
 - Clarksville ChamberMate already stages five future occurrences; four physically located future events are held for missing verified coordinates, and one virtual future event is held as remote. Its staged descriptions and photo **candidates** do not prove public photo licensing or readiness.
 - Dallas Parks includes the already-registered catID=14 ICS feed plus distinct category feeds; preserve exact query selectors.
