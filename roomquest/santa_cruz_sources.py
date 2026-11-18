@@ -27,7 +27,7 @@ SOURCES = {
     KUUMBWA: ('https://www.kuumbwajazz.org' + API, 'json', 'wordpress'),
 }
 ALLOWED_HOSTS = {key: (urlsplit(value[0]).hostname,) for key, value in SOURCES.items()}
-MAX_PAGES = {UCSC: 2, KUUMBWA: 1}
+MAX_PAGES = {UCSC: 3, KUUMBWA: 1}
 PAGE_SIZE = 100
 MAX_RECORDS = 200
 MAX_DESCRIPTION = 12000
