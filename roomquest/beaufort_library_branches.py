@@ -138,7 +138,9 @@ CREATIVE = re.compile(
 MUSIC = re.compile(
     r"\b(concert|harp ensemble|choir|music performance|community jam|"
     r"strummers|recital|live music)\b", re.I)
-PARTY = re.compile(r"\b(new year'?s eve fun|holiday festival|holiday party)\b", re.I)
+PARTY = re.compile(r"\b(new year'?s eve fun|holiday party)\b", re.I)
+FESTIVAL = re.compile(r"\b(festival|festivals|carnival|street fair)\b",re.I)
+MARKET = re.compile(r"\b(farmers? market|makers? market|holiday market)\b",re.I)
 LEARN = re.compile(r"\b(storytime|book club|read to a dog|writing workshop|book talk)\b", re.I)
 SOCIAL = re.compile(r"\b(teen takeover|puzzle swap|mahjong|minecraft day|game club|dungeons)\b", re.I)
 
@@ -147,7 +149,8 @@ def category_for(title, labels):
     """Use per-event publisher evidence; no Other or catch-all library default."""
     if PRIVATE.search(title):
         return None
-    for pattern, value in ((CIVIC,"civic"),(CREATIVE,"create"),(MUSIC,"music"),
+    for pattern, value in ((CIVIC,"civic"),(FESTIVAL,"festival"),
+                           (MARKET,"food_drink"),(CREATIVE,"create"),(MUSIC,"music"),
                            (PARTY,"party"),(LEARN,"learn"),(SOCIAL,"hang_out")):
         if pattern.search(title):
             return value
