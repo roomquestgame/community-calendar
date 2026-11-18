@@ -157,11 +157,23 @@ class BiblioRssCanaryTest(unittest.TestCase):
         def fetch(url, _):
             count[0] += 1
             start = count[0] * rss.PAGE_SIZE
-            return document([make_item(i+start) for i in range(rss.PAGE_SIZE)])
+            return document([make_item(i+start, canceled=True) for i in range(rss.PAGE_SIZE)])
         with patch.object(rss, "record", side_effect=sample_record):
             with self.assertRaisesRegex(ValueError, "bibliocommons_rss_pagination_incomplete"):
                 rss.collect(PROFILE, fetch, now=NOW)
         self.assertEqual(count[0], rss.MAX_PAGES)
+
+
+    def test_record_cap_fails_before_unbounded_pagination(self):
+        count = [0]
+        def fetch(url, _):
+            count[0] += 1
+            start = count[0] * rss.PAGE_SIZE
+            return document([make_item(i+start) for i in range(rss.PAGE_SIZE)])
+        with patch.object(rss, "record", side_effect=sample_record):
+            with self.assertRaisesRegex(ValueError, "bibliocommons_rss_record_limit"):
+                rss.collect(PROFILE, fetch, now=NOW)
+        self.assertLess(count[0], rss.MAX_PAGES)
 
     def test_source_key_cannot_use_another_library_tenant(self):
         bad = {**PROFILE, "source_key": "king_county_library_rss_wa"}
