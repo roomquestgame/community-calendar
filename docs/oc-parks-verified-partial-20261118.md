@@ -34,7 +34,7 @@ The EventQuest owner explicitly approved **pulling the OC Parks events that can 
 | Publisher image links approved or imported | **0** |
 | Production source registrations/events | **0** |
 
-Actual bounded read: **20.4 seconds** for 33 publisher GETs. Important examples include [Introduction to Archery for Adults](https://parks.oc.gov/events/introduction-archery-adults-10), [Wild Tales](https://parks.oc.gov/events/wild-tales-13), [Santiago Oaks Bird Walk](https://parks.oc.gov/events/oak-woodland-bird-walk-2) and [OC Parks events](https://parks.oc.gov/events). These links are evidence references; event URLs/occurrences must always be confirmed at collection time.
+Actual bounded read: **20.4 seconds** for 33 publisher GETs. Observed event titles include *Introduction to Archery for Adults*, *Wild Tales*, and *Saturday Restoration: Habitat Adventure Trail*. The verified [official OC Parks calendar](https://parks.oc.gov/events) and [Oak Woodland Bird Walk detail page](https://parks.oc.gov/events/oak-woodland-bird-walk-2) are publisher references; no unverified event-detail URL is asserted here. Each original event URL remains bound to its own source row at collection time.
 
 The initial dry run found **two publisher titles beginning with “CANCELED”**. The revised parser explicitly excludes canceled/postponed titles and also catches a detail page updated between list and fetch. A new registration must not be promoted to production **until there is an approved exact-source cancellation/tombstone propagation path** for cards that were published before the publisher cancels the event.
 
