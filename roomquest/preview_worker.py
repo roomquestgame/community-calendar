@@ -1570,6 +1570,37 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                 'p_future_count': len(records),
                 'p_venue_count': sum(row.get('lat') is not None for row in records),
                 'p_error': None, 'p_events': records}
+    from roomquest import beaufort_library_branches
+    if source_key in beaufort_library_branches.SOURCES:
+        deadline = min(monotonic() + 43,
+                       deadline_at - 8 if deadline_at is not None else float('inf'))
+        try:
+            records = beaufort_library_branches.collect(
+                source, lambda url, accept: fetch_publisher(
+                    url, accept, respect_robots=True, deadline_at=deadline,
+                    allowed_hosts=beaufort_library_branches.ALLOWED_HOSTS[source_key]),
+                deadline_at=deadline)
+            if len(records) > beaufort_library_branches.MAX_ITEMS or any(
+                not isinstance(row.get('description'),str) or not row['description'].strip()
+                or len(row['description']) > beaufort_library_branches.MAX_DESCRIPTION
+                or not isinstance(row.get('venue_address'),str) or not row['venue_address'].strip()
+                or row.get('category') not in beaufort_library_branches.CORE_CATEGORIES
+                or row.get('lat') is None or row.get('lng') is None for row in records):
+                raise ValueError('beaufort_library_incomplete_event')
+        except PreviewError:
+            raise
+        except (ValueError,TypeError,KeyError,OverflowError) as exc:
+            reason = str(exc)
+            raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}',reason)
+                               else 'invalid_beaufort_library_payload') from exc
+        samples=records[:MAX_PREVIEWS]
+        while len(json.dumps(samples,ensure_ascii=False))>18_000:
+            samples.pop()
+        return {'p_source_key':source_key,'p_samples':samples,
+                'p_future_count':len(records),
+                'p_venue_count':sum(row.get('lat') is not None for row in records),
+                'p_error':None,'p_events':records,
+                'p_parser_capability':'publisher_event_candidates_v1'}
     from roomquest import hilton_head_sources
     if source_key in hilton_head_sources.SOURCES:
         deadline = min(monotonic() + 43,

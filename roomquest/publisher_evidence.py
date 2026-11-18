@@ -49,6 +49,10 @@ def family(source_key, event_url):
         from roomquest import anchorage_sources
         if source_key in anchorage_sources.SOURCES:
             return 'anchorage:' + source_key if anchorage_sources.event_url(source_key, event_url) else None
+        from roomquest import beaufort_library_branches
+        if source_key in beaufort_library_branches.SOURCES:
+            return ('beaufort_library:' + source_key
+                    if beaufort_library_branches.event_url(source_key,event_url) else None)
         from roomquest import hilton_head_sources
         if source_key in hilton_head_sources.SOURCES:
             return ('hilton_head:' + source_key
@@ -242,6 +246,9 @@ def image_url(value, publisher):
     if isinstance(publisher, str) and publisher.startswith('anchorage:'):
         from roomquest.anchorage_sources import photo_url as anchorage_photo_url
         return anchorage_photo_url(publisher.removeprefix('anchorage:'), value)
+    if isinstance(publisher,str) and publisher.startswith('beaufort_library:'):
+        from roomquest.beaufort_library_branches import photo_url as beaufort_photo
+        return beaufort_photo(publisher.removeprefix('beaufort_library:'),value)
     if isinstance(publisher, str) and publisher.startswith('hilton_head:'):
         from roomquest.hilton_head_sources import photo_url as hilton_photo_url
         return hilton_photo_url(publisher.removeprefix('hilton_head:'), value)
