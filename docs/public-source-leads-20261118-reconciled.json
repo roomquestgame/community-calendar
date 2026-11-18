@@ -1,0 +1,252 @@
+{
+  "run_date": "2026-11-18",
+  "scope": "read-only production source key / URL reconciliation",
+  "summary": {
+    "lead_count": 12,
+    "municipal_registry_rows": 3881,
+    "dedicated_localist_registry_rows": 85,
+    "already_registered": 4,
+    "publisher_probe_required": 4,
+    "exact_publisher_endpoint_unverified": 2,
+    "adapter_or_schema_review": 2
+  },
+  "leads": [
+    {
+      "name": "UC Santa Barbara",
+      "platform": "localist",
+      "source_url": "https://campuscalendar.ucsb.edu/api/2/events",
+      "source_identity": "localist:campuscalendar.ucsb.edu",
+      "registered_source_keys": [
+        "localist_66fbc80a958a89e3"
+      ],
+      "status": "already_registered",
+      "outstanding_checks": [
+        "publisher_endpoint_and_robots",
+        "future_events_and_timezone",
+        "complete_event_descriptions",
+        "actual_venue_street_and_coordinates",
+        "publisher_categories_and_overlays",
+        "image_candidacy_bytes_and_rights",
+        "cross_source_duplicates_and_attribution"
+      ],
+      "auto_approved": false,
+      "auto_published": false
+    },
+    {
+      "name": "Currituck Chamber of Commerce NC",
+      "platform": "chambermate",
+      "source_url": "https://currituckchamberofcommerce.chambermate.com",
+      "source_identity": "chambermate:currituckchamberofcommerce",
+      "registered_source_keys": [],
+      "status": "publisher_probe_required",
+      "outstanding_checks": [
+        "publisher_endpoint_and_robots",
+        "future_events_and_timezone",
+        "complete_event_descriptions",
+        "actual_venue_street_and_coordinates",
+        "publisher_categories_and_overlays",
+        "image_candidacy_bytes_and_rights",
+        "cross_source_duplicates_and_attribution"
+      ],
+      "auto_approved": false,
+      "auto_published": false
+    },
+    {
+      "name": "Grants Pass and Josephine County Chamber OR",
+      "platform": "chambermate",
+      "source_url": "https://www.grantspasschamber.org/",
+      "source_identity": null,
+      "registered_source_keys": [],
+      "status": "exact_publisher_endpoint_unverified",
+      "outstanding_checks": [
+        "publisher_endpoint_and_robots",
+        "future_events_and_timezone",
+        "complete_event_descriptions",
+        "actual_venue_street_and_coordinates",
+        "publisher_categories_and_overlays",
+        "image_candidacy_bytes_and_rights",
+        "cross_source_duplicates_and_attribution"
+      ],
+      "auto_approved": false,
+      "auto_published": false
+    },
+    {
+      "name": "Mountain Home Area Chamber AR",
+      "platform": "chambermate",
+      "source_url": "https://enjoymountainhome.com/events",
+      "source_identity": null,
+      "registered_source_keys": [],
+      "status": "exact_publisher_endpoint_unverified",
+      "outstanding_checks": [
+        "publisher_endpoint_and_robots",
+        "future_events_and_timezone",
+        "complete_event_descriptions",
+        "actual_venue_street_and_coordinates",
+        "publisher_categories_and_overlays",
+        "image_candidacy_bytes_and_rights",
+        "cross_source_duplicates_and_attribution"
+      ],
+      "auto_approved": false,
+      "auto_published": false
+    },
+    {
+      "name": "Charlotte Mecklenburg Library NC",
+      "platform": "bibliocommons",
+      "source_url": "https://cmlibrary.bibliocommons.com/v2/events",
+      "source_identity": "bibliocommons:cmlibrary",
+      "registered_source_keys": [],
+      "status": "publisher_probe_required",
+      "outstanding_checks": [
+        "publisher_endpoint_and_robots",
+        "future_events_and_timezone",
+        "complete_event_descriptions",
+        "actual_venue_street_and_coordinates",
+        "publisher_categories_and_overlays",
+        "image_candidacy_bytes_and_rights",
+        "cross_source_duplicates_and_attribution"
+      ],
+      "auto_approved": false,
+      "auto_published": false
+    },
+    {
+      "name": "King County Library System WA",
+      "platform": "bibliocommons",
+      "source_url": "https://kcls.bibliocommons.com/v2/events",
+      "source_identity": "bibliocommons:kcls",
+      "registered_source_keys": [],
+      "status": "publisher_probe_required",
+      "outstanding_checks": [
+        "publisher_endpoint_and_robots",
+        "future_events_and_timezone",
+        "complete_event_descriptions",
+        "actual_venue_street_and_coordinates",
+        "publisher_categories_and_overlays",
+        "image_candidacy_bytes_and_rights",
+        "cross_source_duplicates_and_attribution"
+      ],
+      "auto_approved": false,
+      "auto_published": false
+    },
+    {
+      "name": "Central Rappahannock Regional Library VA",
+      "platform": "bibliocommons",
+      "source_url": "https://librarypoint.bibliocommons.com/v2/events",
+      "source_identity": "bibliocommons:librarypoint",
+      "registered_source_keys": [],
+      "status": "publisher_probe_required",
+      "outstanding_checks": [
+        "publisher_endpoint_and_robots",
+        "future_events_and_timezone",
+        "complete_event_descriptions",
+        "actual_venue_street_and_coordinates",
+        "publisher_categories_and_overlays",
+        "image_candidacy_bytes_and_rights",
+        "cross_source_duplicates_and_attribution"
+      ],
+      "auto_approved": false,
+      "auto_published": false
+    },
+    {
+      "name": "Boston Public Library MA",
+      "platform": "bibliocommons",
+      "source_url": "https://bpl.bibliocommons.com/v2/events",
+      "source_identity": "bibliocommons:bpl",
+      "registered_source_keys": [
+        "boston_public_library_biblioevents_ma"
+      ],
+      "status": "already_registered",
+      "outstanding_checks": [
+        "publisher_endpoint_and_robots",
+        "future_events_and_timezone",
+        "complete_event_descriptions",
+        "actual_venue_street_and_coordinates",
+        "publisher_categories_and_overlays",
+        "image_candidacy_bytes_and_rights",
+        "cross_source_duplicates_and_attribution"
+      ],
+      "auto_approved": false,
+      "auto_published": false
+    },
+    {
+      "name": "Fairfax County VA Events",
+      "platform": "drupal_html",
+      "source_url": "https://www.fairfaxcounty.gov/events/",
+      "source_identity": "drupal_html:https://fairfaxcounty.gov/events",
+      "registered_source_keys": [],
+      "status": "adapter_or_schema_review",
+      "outstanding_checks": [
+        "publisher_endpoint_and_robots",
+        "future_events_and_timezone",
+        "complete_event_descriptions",
+        "actual_venue_street_and_coordinates",
+        "publisher_categories_and_overlays",
+        "image_candidacy_bytes_and_rights",
+        "cross_source_duplicates_and_attribution"
+      ],
+      "auto_approved": false,
+      "auto_published": false
+    },
+    {
+      "name": "Orange County Parks CA",
+      "platform": "drupal_html",
+      "source_url": "https://parks.oc.gov/events",
+      "source_identity": "drupal_html:https://parks.oc.gov/events",
+      "registered_source_keys": [],
+      "status": "adapter_or_schema_review",
+      "outstanding_checks": [
+        "publisher_endpoint_and_robots",
+        "future_events_and_timezone",
+        "complete_event_descriptions",
+        "actual_venue_street_and_coordinates",
+        "publisher_categories_and_overlays",
+        "image_candidacy_bytes_and_rights",
+        "cross_source_duplicates_and_attribution"
+      ],
+      "auto_approved": false,
+      "auto_published": false
+    },
+    {
+      "name": "NYC Permitted Events Socrata",
+      "platform": "socrata",
+      "source_url": "https://data.cityofnewyork.us/resource/tvpp-9vvx.json",
+      "source_identity": "socrata:https://data.cityofnewyork.us/resource/tvpp-9vvx.json",
+      "registered_source_keys": [
+        "municipal_mapsee_844b6c0e0aca1771e1a1646f"
+      ],
+      "status": "already_registered",
+      "outstanding_checks": [
+        "publisher_endpoint_and_robots",
+        "future_events_and_timezone",
+        "complete_event_descriptions",
+        "actual_venue_street_and_coordinates",
+        "publisher_categories_and_overlays",
+        "image_candidacy_bytes_and_rights",
+        "cross_source_duplicates_and_attribution"
+      ],
+      "auto_approved": false,
+      "auto_published": false
+    },
+    {
+      "name": "Dallas Parks Calendar TX",
+      "platform": "ical",
+      "source_url": "https://www.dallasparks.org/common/modules/iCalendar/iCalendar.aspx?catID=14&feed=calendar",
+      "source_identity": "ical:https://dallasparks.org/common/modules/iCalendar/iCalendar.aspx?catID=14&feed=calendar",
+      "registered_source_keys": [
+        "municipal_mapsee_58a7b2aaf9ac4acbba023cbb"
+      ],
+      "status": "already_registered",
+      "outstanding_checks": [
+        "publisher_endpoint_and_robots",
+        "future_events_and_timezone",
+        "complete_event_descriptions",
+        "actual_venue_street_and_coordinates",
+        "publisher_categories_and_overlays",
+        "image_candidacy_bytes_and_rights",
+        "cross_source_duplicates_and_attribution"
+      ],
+      "auto_approved": false,
+      "auto_published": false
+    }
+  ],
+  "rights_note": "No candidate has been approved to publish from this report. Missing photographs do not invalidate factual events; use image fallback. Media URLs require byte and publisher rights checks."
+}
