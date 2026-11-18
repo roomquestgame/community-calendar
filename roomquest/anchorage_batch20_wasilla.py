@@ -7,7 +7,7 @@ featured events, other venues, closures and unknown categories are excluded.
 """
 from __future__ import annotations
 
-from calendar import monthrange
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
 from time import monotonic
 from urllib.parse import parse_qs, urljoin, urlsplit
@@ -187,14 +187,23 @@ def collect(source,fetch,*,deadline_at=None,now=None):
         ids.update(_ids(fetch(url,"text/html")))
         if len(ids)>MAX_EIDS:
             raise ValueError("wasilla_source_record_limit")
+    # CivicPlus event detail pages carry complete descriptions that the month
+    # view's truncated microdata does not. Use three modest concurrent requests
+    # (rather than ~35 serial network round trips) within V2 worker deadline.
+    # This is only a fetch fan-out; no background pagination or missing-record
+    # acceptance. Any failed request invalidates the complete snapshot.
     results={}
-    for eid in sorted(ids,key=int):
+    def load(eid):
         if monotonic()>=deadline:
             raise ValueError("collection_deadline")
-        row=_event(eid,fetch(ROOT+"/Calendar.aspx?EID="+eid,"text/html"),now)
-        if row:
-            key=(row["id"],row["starts_at"])
-            if key in results and results[key]!=row:
-                raise ValueError("conflicting_wasilla_event_occurrence")
-            results[key]=row
+        return _event(eid,fetch(ROOT+"/Calendar.aspx?EID="+eid,"text/html"),now)
+    with ThreadPoolExecutor(max_workers=3) as pool:
+        for row in pool.map(load,sorted(ids,key=int)):
+            if row:
+                key=(row["id"],row["starts_at"])
+                if key in results and results[key]!=row:
+                    raise ValueError("conflicting_wasilla_event_occurrence")
+                results[key]=row
+    if monotonic()>=deadline:
+        raise ValueError("collection_deadline")
     return sorted(results.values(),key=lambda x:(x["starts_at"],x["id"]))
