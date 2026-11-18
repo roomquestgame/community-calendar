@@ -38,7 +38,7 @@ CITY_WHITELIST = {
     'bonny doon', 'davenport', 'la selva beach', 'freedom',
 }
 STREET = re.compile(
-    r'\b[0-9]{1,6}[a-z]?\s+(?:[a-z0-9.#\x27-]+\s+){1,9}'
+    r'\b[0-9]{1,6}[a-z]?\s+(?![0-9]{1,6}\s)(?:[a-z0-9.#\x27-]+\s+){1,9}'
     r'(?:street|st|road|rd|avenue|ave|boulevard|blvd|drive|dr|lane|ln|'
     r'court|ct|way|parkway|pkwy|place|pl|plaza|circle|cir|highway|hwy|'
     r'terrace|ter|trail|trl)\b\.?', re.I)
