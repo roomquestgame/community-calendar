@@ -146,6 +146,17 @@ class OCParksPartialTests(unittest.TestCase):
         self.assertEqual(calls, [(oc.CALENDAR,"text/html"),
                                  ("https://parks.oc.gov/events/oak-woodland-bird-walk-2","text/html")])
 
+    def test_explicit_cancelled_title_never_generates_active_event(self):
+        canceled = event(n=3, title="CANCELED: Preschool Paleontology",
+                         path="/events/canceled-preschool-paleontology")
+        matches = oc.parse_calendar(listing([event(),canceled]),now=NOW)
+        self.assertEqual(len(matches),1)
+        self.assertEqual(matches[0]["eid"],"1")
+
+    def test_updated_detail_page_cancellation_is_held(self):
+        rows,_ = self.collect(second=detail(title="CANCELED: Oak Woodland Bird Walk"))
+        self.assertEqual(rows, [])
+
     def test_date_without_verified_start_fails_closed(self):
         with self.assertRaisesRegex(ValueError, "oc_parks_calendar_time_invalid"):
             oc.parse_calendar(listing([event(start="TBD")]), now=NOW)
