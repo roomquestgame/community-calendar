@@ -35,7 +35,8 @@ HISTORY_POINT = (61.215893, -149.8846999)
 MAX_RECORDS = 500
 MAX_DESCRIPTION = 12000
 LOOKAHEAD = 60
-ZOO_URL = re.compile(r"/event-calendar/20[0-9]{2}/[a-z0-9-]+/[a-z0-9]+(?:-[a-z0-9]+)*/?")
+# Squarespace Zoo slugs are /year/slug, /year/season/slug, OR /year/mm/dd/slug.
+ZOO_URL = re.compile(r"/event-calendar/20[0-9]{2}/(?:[a-z0-9-]+/){0,2}[a-z0-9]+(?:-[a-z0-9]+)*/?")
 HISTORY_URL = re.compile(r"/lecture-series/[a-z0-9]+(?:-[a-z0-9]+)*/?")
 PHOTO_PATH = re.compile(r"/content/v1/[A-Za-z0-9]+/[A-Za-z0-9_-]+/[^?#]+\.(?:jpe?g|png|webp)", re.I)
 NOT_PHOTO = re.compile(r"(?:^|[-_/])(?:favicon|logo|icon|avatar|pixel|placeholder)(?:[-_.]|$)", re.I)
