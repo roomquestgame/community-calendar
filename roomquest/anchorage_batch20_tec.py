@@ -82,7 +82,7 @@ def photo_url(key, value):
                 and "/wp-content/uploads/" in p.path and
                 re.search(r"\.(?:jpe?g|png|webp)$",p.path,re.I)
                 and not p.query and not p.fragment
-                and not re.search(r"[/_-](?:logo|avatar|pixel|favicon|icon)[/_-]",p.path,re.I)
+                and not re.search(r"(?:^|[/_-])(?:logo|avatar|pixel|favicon|icon)(?:$|[/_.-])",p.path,re.I)
                 else None)
     except ValueError:
         return None
