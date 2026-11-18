@@ -70,7 +70,7 @@ def _detail(url,title,fetch,deadline):
  copied=BeautifulSoup(str(wrapper),'html.parser')
  for x in copied.select('h3,.event-info'):x.decompose()
  narrative=description(str(copied),limit=max(len(str(copied)),MAX_DESCRIPTION+1))
- if not narrative or len(narrative)>MAX_DESCRIPTION:raise ValueError('jack_description_missing')
+ if not narrative or len(narrative)>MAX_DESCRIPTION:return None
  return narrative
 
 def collect(source,fetch,*,deadline_at=None,now=None):
@@ -102,7 +102,7 @@ def collect(source,fetch,*,deadline_at=None,now=None):
    if stated_date!=st.astimezone(ZoneInfo(ZONE)).date():continue
   except (TypeError,ValueError):continue
   narrative=_detail(u,title,fetch,deadline_at)
-  if OFFSITE.search(narrative):continue
+  if not narrative or OFFSITE.search(narrative):continue
   uid=hashlib.sha256((u+'|'+st.isoformat()).encode('utf8')).hexdigest()[:24]
   row=record(title,st.isoformat(),en.isoformat(),VENUE,STREET,'Santa Cruz',u,uid,
              'Live Music',None,None,ZONE,retain_until_end=True)
