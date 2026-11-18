@@ -20,12 +20,18 @@ MAGNETIC = "magnetic_north_brewing_ak"
 WINERY = "61_degrees_north_winery_ak"
 ACEH = "anchorage_coalition_homelessness_ak"
 AWAKEN = "awaken_church_anchorage_ak"
+MAKING = "making_space_art_therapy_ak"
+ART = "the_art_lounge_anchorage_ak"
+JOULE = "joule_wellness_sound_bath_ak"
 
 SOURCES = {
     MAGNETIC: ("https://magneticnorthbrewingco.com/events", "json", "squarespace"),
     WINERY: ("https://www.61degreesnorthwinery.com/calendar", "json", "squarespace"),
     ACEH: ("https://aceh.squarespace.com/events", "json", "squarespace"),
     AWAKEN: ("https://www.awakenalaska.com/events", "json", "squarespace"),
+    MAKING: ("https://www.makingspacetogether.com/events", "json", "squarespace"),
+    ART: ("https://www.theartloungeak.com/classes-events", "json", "squarespace"),
+    JOULE: ("https://www.joulewellness.co/events", "json", "squarespace"),
 }
 ALLOWED_HOSTS = {key: (urlsplit(tup[0]).hostname,) for key, tup in SOURCES.items()}
 VENUES = {
@@ -41,6 +47,15 @@ VENUES = {
     AWAKEN: ("Awaken Church",
              "5295 Juneau Street, Anchorage, AK 99518", "Anchorage",
              (61.1723554, -149.862599)),
+    MAKING: ("Making Space | Art Therapy & Community",
+             "1441 West Northern Lights Boulevard, Anchorage, AK 99503", "Anchorage",
+             (61.1956075, -149.9109034)),
+    ART: ("The Art Lounge AK",
+          "300 East Dimond Boulevard, Anchorage, AK 99515", "Anchorage",
+          (61.1443709, -149.8757727)),
+    JOULE: ("Thrive Integrative Medicine",
+            "3835 Spenard Road, Anchorage, AK", "Anchorage",
+            (61.1857685, -149.9185543)),
 }
 logger = logging.getLogger(__name__)
 MAX_DESCRIPTION = 12000
@@ -51,6 +66,9 @@ URL_BY_KEY = {
     WINERY: re.compile(r"/calendar/[a-z0-9]+(?:-[a-z0-9]+)*/?"),
     ACEH: re.compile(r"/events/[a-z0-9]+(?:-[a-z0-9]+)*/?"),
     AWAKEN: re.compile(r"/events/(?:20[0-9]{2}/[0-9]{1,2}/[0-9]{1,2}/)?[a-z0-9]+(?:-[a-z0-9]+)*/?"),
+    MAKING: re.compile(r"/events/[a-z0-9]+(?:-[a-z0-9]+)*/?"),
+    ART: re.compile(r"/classes-events/[a-z0-9]+(?:-[a-z0-9]+)*/?"),
+    JOULE: re.compile(r"/events/[a-z0-9]+(?:-[a-z0-9]+)*/?"),
 }
 PHOTO_PATH = re.compile(r"/content/v1/[A-Za-z0-9]+/[A-Za-z0-9_-]+/[^?#]+\.(?:jpe?g|png|webp)", re.I)
 PHOTO_BAD = re.compile(r"(?:^|[-_/])(?:favicon|logo|icon|avatar|pixel|placeholder)(?:[-_.]|$)", re.I)
@@ -116,6 +134,23 @@ def _official_site_venue(key, title, desc, location):
     loc_street = plain(location.get("addressLine1"))
     loc_city = plain(location.get("addressLine2"))
     point = _publisher_point(location)
+    if key in (MAKING, ART, JOULE):
+        expected = {
+            MAKING: (r"1441 West Northern Lights Boulevard", r"Anchorage,\s*AK,\s*99503",
+                     {"making space | art therapy & community"}),
+            ART: (r"300 East Dimond Boulevard", r"Anchorage,\s*AK,\s*99515",
+                  {"the art lounge ak - suite 3", "the art lounge ak - suite 300"}),
+            JOULE: (r"3835 Spenard Road", r"Anchorage,\s*AK",
+                    {"thrive integrative medicine"}),
+        }[key]
+        if (not re.fullmatch(expected[0], loc_street, re.I)
+                or not re.fullmatch(expected[1], loc_city, re.I)
+                or plain(location.get("addressTitle")).casefold() not in expected[2]
+                or point is None
+                or abs(point[0] - reviewed_point[0]) > 0.004
+                or abs(point[1] - reviewed_point[1]) > 0.004):
+            return None
+        return venue, street, city, point
     if key == MAGNETIC:
         if (not re.fullmatch(r"8861 Golovin Street", loc_street, re.I)
                 or not re.fullmatch(r"Anchorage,\s*AK,\s*99507", loc_city, re.I)
@@ -161,6 +196,27 @@ def _category(key, title):
             return "food_drink"
         if "christmas party" in t:
             return "party"
+    elif key == MAKING:
+        if "studio art sale" in t:
+            return "arts_culture"
+        if "art therapy" in t or "open studio" in t:
+            return "create"
+    elif key == ART:
+        if re.search(r"book club|lecture|creative writing", t):
+            return "learn"
+        if re.search(r"market|bazaar|fair", t):
+            return "festival"
+        if re.search(r"moon gathering|solstice gathering|blessing ball|social hour", t):
+            return "hang_out"
+        if re.search(
+            r"paint|watercolor|felt|sew|stitch|macrame|bead|craft|candle|cyanotype|"
+            r"embroid|bow|workshop|class|ornament|clay|crochet|hat|charcuterie|"
+            r"wood|wool|needle|slipper|pour|lantern|trucker|mushroom", t
+        ):
+            return "create"
+    elif key == JOULE:
+        if "sound bath" in t or "meditation" in t:
+            return "health"
     return None
 
 
