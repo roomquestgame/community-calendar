@@ -22,11 +22,13 @@ from roomquest.mapsee_adapter import plain, record
 VISIT_PALMER = "visit_palmer_community_calendar_ak"
 AWCC = "alaska_wildlife_conservation_center_ak"
 APU = "alaska_pacific_university_events_ak"
+SEW = "winter_solstice_sewing_crafts_ak"
 
 SOURCES = {
     VISIT_PALMER: ("https://visitpalmer.com/wp-json/tribe/events/v1/events", "json", "wordpress"),
     AWCC: ("https://alaskawildlife.org/wp-json/tribe/events/v1/events", "json", "wordpress"),
     APU: ("https://www.alaskapacific.edu/wp-json/tribe/events/v1/events", "json", "wordpress"),
+    SEW: ("https://wintersolsticecrafts.com/wp-json/tribe/events/v1/events", "json", "wordpress"),
 }
 ALLOWED_HOSTS = {k: (urlsplit(v[0]).hostname,) for k, v in SOURCES.items()}
 MAX_DESCRIPTION = 12000
@@ -132,6 +134,15 @@ def _venue(source_key, e):
     city=plain(value.get("city"))
     state=plain(value.get("state"))
     zipcode=plain(value.get("zip"))
+    if source_key==SEW:
+        if (name.casefold() not in {"winter solstice sewing & crafts", "winter solstice sewing and crafts"}
+                or street.casefold() != "400 w potter drive"
+                or city != "Anchorage" or state not in ("AK", "Alaska")
+                or zipcode != "99518"):
+            return None
+        # Verified exact event street, never a generic point. Geocode before
+        # publication, just like Visit Palmer and the Winery.
+        return "Winter Solstice Sewing & Crafts", "400 W Potter Drive, Anchorage, AK 99518", city, None
     if source_key==AWCC:
         if (name.casefold()!="alaska wildlife conservation center"
                 or street.casefold()!="mile 79 seward highway" or city!="Portage"
@@ -156,6 +167,10 @@ def _venue(source_key, e):
 
 
 def _category(source_key, title, e, desc):
+    if source_key==SEW:
+        if re.search(r"sew|serg|quilt|embroider|yarn|knit|crochet|mittens?|project|maker space|fabric|fleece|tote|finishing|sewing machine|dress",title,re.I):
+            return "create"
+        return None
     if source_key==AWCC:
         if re.search(r"\b(?:christmas bird count|birdwatching|nature walk|guided hike)\b",title,re.I):
             return "gardens_nature"
