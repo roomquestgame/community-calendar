@@ -23,15 +23,17 @@ UCSC = 'uc_santa_cruz_primary_ca'
 KUUMBWA = 'kuumbwa_jazz_santa_cruz_ca'
 NATURAL_HISTORY = 'santa_cruz_museum_natural_history_ca'
 VISIT_SANTA_CRUZ = 'visit_santa_cruz_county_ca'
+FIRST_FRIDAY = 'first_friday_santa_cruz_ca'
 API = '/wp-json/tribe/events/v1/events'
 SOURCES = {
     UCSC: ('https://events.ucsc.edu' + API, 'json', 'wordpress'),
     KUUMBWA: ('https://www.kuumbwajazz.org' + API, 'json', 'wordpress'),
     NATURAL_HISTORY: ('https://santacruzmuseum.org' + API, 'json', 'wordpress'),
     VISIT_SANTA_CRUZ: ('https://www.santacruz.org' + API, 'json', 'wordpress'),
+    FIRST_FRIDAY: ('https://firstfridaysantacruz.com' + API, 'json', 'wordpress'),
 }
 ALLOWED_HOSTS = {key: (urlsplit(value[0]).hostname,) for key, value in SOURCES.items()}
-MAX_PAGES = {UCSC: 3, KUUMBWA: 1, NATURAL_HISTORY: 1, VISIT_SANTA_CRUZ: 4}
+MAX_PAGES = {UCSC: 3, KUUMBWA: 1, NATURAL_HISTORY: 1, VISIT_SANTA_CRUZ: 4, FIRST_FRIDAY: 1}
 PAGE_SIZE = 100
 MAX_RECORDS = 200
 MAX_DESCRIPTION = 12000
@@ -48,7 +50,8 @@ STREET = re.compile(
     r'court|ct|way|parkway|pkwy|place|pl|plaza|circle|cir|highway|hwy|'
     r'terrace|ter|trail|trl)\b\.?', re.I)
 IMAGE_HOST = {UCSC: 'events.ucsc.edu', KUUMBWA: 'www.kuumbwajazz.org',
-              NATURAL_HISTORY: 'santacruzmuseum.org', VISIT_SANTA_CRUZ: 'www.santacruz.org'}
+              NATURAL_HISTORY: 'santacruzmuseum.org', VISIT_SANTA_CRUZ: 'www.santacruz.org',
+              FIRST_FRIDAY: 'firstfridaysantacruz.com'}
 NO_IMAGE = re.compile(r'(?:^|[-_/])(?:logo|favicon|icon|avatar|placeholder|pixel)(?:[-_.]|$)', re.I)
 SMALL_IMAGE = re.compile(r'-[1-5][0-9]{1,2}x[1-5][0-9]{1,2}\.(?:png|jpe?g|webp)$', re.I)
 NONPUBLIC = re.compile(r'\b(?:cancelled|canceled|postponed|private event|members[- ]only|invite[- ]only)\b', re.I)
