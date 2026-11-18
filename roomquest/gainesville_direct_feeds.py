@@ -23,17 +23,34 @@ ZONE = "America/New_York"
 BRENAU = "brenau_public_events_ga"
 MEEPLE = "meeple_madness_flowery_branch_ga"
 LIBRARY = "hall_library_gainesville_ga"
+# Exact publisher calendar IDs and official facility addresses, not guessed
+# event locations or a default point for off-site events.
+LIBRARY_VENUE = "Gainesville Library on the Square"
+LIBRARY_STREET = "127 Main St NW, Gainesville, GA 30501"
+LIBRARY_PROFILES = {
+    LIBRARY: (18963, LIBRARY_VENUE, LIBRARY_STREET, "Gainesville"),
+    "hall_library_blackshear_place_ga": (
+        18964, "Blackshear Place Library", "2927 Atlanta Highway, Gainesville, GA 30507", "Gainesville"),
+    "hall_library_east_hall_ga": (
+        19167, "East Hall Library", "3911 P Davidson Road, Gainesville, GA 30507", "Gainesville"),
+    "hall_library_murrayville_ga": (
+        18965, "Murrayville Library", "4796 Thompson Bridge Road, Gainesville, GA 30506", "Gainesville"),
+    "hall_library_north_hall_tech_ga": (
+        18966, "North Hall Tech Center", "4175 Nopone Road Suite B, Gainesville, GA 30506", "Gainesville"),
+    "hall_library_spout_springs_ga": (
+        18955, "Spout Springs Library", "6488 Spout Springs Road, Flowery Branch, GA 30542", "Flowery Branch"),
+}
 SOURCES = {
     BRENAU: ("https://www.brenau.edu/wp-json/tribe/events/v1/events", "json", "wordpress"),
     MEEPLE: ("https://tockify.com/api/feeds/ics/meeplemadness", "ical", "ical"),
-    LIBRARY: ("https://hallcountylibrary.libcal.com/rss.php?iid=6354&m=month&cid=18963", "rss", "library"),
+    **{key: (
+        f"https://hallcountylibrary.libcal.com/rss.php?iid=6354&m=month&cid={profile[0]}",
+        "rss", "library") for key, profile in LIBRARY_PROFILES.items()},
 }
 ALLOWED_HOSTS = {key: (urlsplit(spec[0]).hostname,) for key, spec in SOURCES.items()}
 MAX_RECORDS = 500
 WINDOW_DAYS = 60
 MAX_DESCRIPTION = 12000
-LIBRARY_VENUE = "Gainesville Library on the Square"
-LIBRARY_STREET = "127 Main St NW, Gainesville, GA 30501"
 MEEPLE_STREET = "7400 Spout Springs Rd Suite 205, Flowery Branch, GA 30542"
 MEEPLE_LOCATION = re.compile(
     r"^(?P<name>Meeple Madness(?:\s*-\s*[^,]{1,80})?),\s*"
@@ -204,7 +221,9 @@ def _meeple(source, fetch):
 
 def _libcal(source, fetch):
     from roomquest.event_description import description
-    raw = fetch(SOURCES[LIBRARY][0], "application/rss+xml,application/xml")
+    key = source["source_key"]
+    profile = LIBRARY_PROFILES[key]
+    raw = fetch(SOURCES[key][0], "application/rss+xml,application/xml")
     if isinstance(raw, bytes):
         raw = raw.decode("utf-8", "replace")
     if re.search(r"<!\s*(DOCTYPE|ENTITY)", raw, re.I):
@@ -227,41 +246,41 @@ def _libcal(source, fetch):
         title = plain(values.get("title"))
         if not identity or not identity.isdigit() or not title or CANCEL.search(title):
             continue
-        if values.get("campus") != LIBRARY_VENUE:
-            _hold(LIBRARY, identity, "branch_unverified")
+        if values.get("campus") != profile[1]:
+            _hold(key, identity, "branch_unverified")
             continue
         day = values.get("date", "")
         start_text, end_text = values.get("start", ""), values.get("end", "")
         if not (re.fullmatch(r"20\d{2}-\d{2}-\d{2}", day) and
                 re.fullmatch(r"\d{2}:\d{2}:\d{2}", start_text)):
-            _hold(LIBRARY, identity, "start_time_unverified")
+            _hold(key, identity, "start_time_unverified")
             continue
         # An all-day calendar placeholder does not mean the library is open 24h.
         if start_text == "00:00:00" and end_text == "23:59:59":
-            _hold(LIBRARY, identity, "date_only_without_open_hours")
+            _hold(key, identity, "date_only_without_open_hours")
             continue
         try:
             start = timestamp(day+"T"+start_text, ZONE)
             end = timestamp(day+"T"+end_text, ZONE) if end_text else None
         except ValueError:
-            _hold(LIBRARY, identity, "timezone_ambiguous")
+            _hold(key, identity, "timezone_ambiguous")
             continue
         if not start or end and end < start or start > now+timedelta(days=WINDOW_DAYS):
             continue
         url = values.get("link")
-        if not event_url(LIBRARY, url):
-            _hold(LIBRARY, identity, "event_url_unverified")
+        if not event_url(key, url):
+            _hold(key, identity, "event_url_unverified")
             continue
         html = values.get("description", "")
         narrative = description(html, limit=max(len(html), MAX_DESCRIPTION+1))
         if len(narrative) > MAX_DESCRIPTION:
-            _hold(LIBRARY, identity, "publisher_description_limit")
+            _hold(key, identity, "publisher_description_limit")
             continue
         labels = [plain(x.text) for x in item.findall("category") if x.text]
         room = plain(values.get("location"))
-        venue = LIBRARY_VENUE + (" — " + room if room else "")
+        venue = profile[1] + (" — " + room if room else "")
         row = record(title, start.isoformat(), end.isoformat() if end else None,
-                     venue, LIBRARY_STREET, "Gainesville", url, identity,
+                     venue, profile[2], profile[3], url, identity,
                      ", ".join(labels), None, None, ZONE, retain_until_end=True)
         if row is None:
             continue
@@ -284,7 +303,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
     deadline = min(monotonic() + 42, deadline_at or float("inf"))
     if key == MEEPLE:
         return _meeple(source, fetch)
-    if key == LIBRARY:
+    if key in LIBRARY_PROFILES:
         return _libcal(source, fetch)
     url = SOURCES[BRENAU][0]
     current = now.astimezone(ZoneInfo(ZONE))
