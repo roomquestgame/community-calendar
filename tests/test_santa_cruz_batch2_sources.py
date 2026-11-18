@@ -122,3 +122,47 @@ def test_game_preview_never_bypasses_approved_host(monkeypatch):
     result=preview_worker.preview_source(source(game.KEY,game.SOURCES,game.ZONE))
     assert result['p_future_count']==1
     assert calls==[(game.FEED,'text/calendar',('vpvkznkdczmtsmizxkbl.supabase.co',),True)]
+
+
+def test_rio_is_recorded_with_publisher_photo_v3(monkeypatch):
+    profile=source(rio.KEY,rio.SOURCES,rio.ZONE)
+    profile['id']=90001
+    payload=json.dumps({'upcoming':[rio_item()],'website':{'timeZone':rio.ZONE},
+                        'pagination':{'nextPage':False}})
+    monkeypatch.setattr(preview_worker,'fetch_publisher',
+                        lambda url,accept,**kw:payload)
+    rpc_calls=[]
+    def rpc(name,args):
+        rpc_calls.append((name,args))
+        if name=='community_collector_record_staged_events':
+            return len(args.get('p_events') or [])
+        return None
+    monkeypatch.setattr(preview_worker,'supabase_rpc',rpc)
+    result=preview_worker._process_claimed_source(profile)
+    assert result['complete']==1 and result['staged']==1
+    assert rpc_calls[-1][0]=='community_collector_record_preview_v3'
+    assert rpc_calls[-1][1]['p_parser_capability']=='publisher_event_candidates_v1'
+
+
+def test_discretion_uses_v3_only_for_exact_registered_feed(monkeypatch):
+    from roomquest import santa_cruz_local_venues as local
+    profile=source(local.DISCRETION,local.SOURCES,local.ZONE)
+    profile['id']=90002
+    payload=(
+      '<div class="event-detail" id="loop-item-detail-9314"><h3>Neil Bradley</h3>'
+      '<p class="event-date">Thurs. 11/19/26</p>'
+      '<div class="detail-description"><p>5:30-7:30pm</p>'
+      '<p>Live country band performance with original songs.</p></div></div>')
+    monkeypatch.setattr(preview_worker,'fetch_publisher',
+                        lambda url,accept,**kw:payload)
+    rpc_calls=[]
+    def rpc(name,args):
+        rpc_calls.append((name,args))
+        if name=='community_collector_record_staged_events':
+            return len(args.get('p_events') or [])
+        return None
+    monkeypatch.setattr(preview_worker,'supabase_rpc',rpc)
+    result=preview_worker._process_claimed_source(profile)
+    assert result['complete']==1 and result['staged']==1
+    assert rpc_calls[-1][0]=='community_collector_record_preview_v3'
+    assert rpc_calls[-1][1]['p_parser_capability']=='publisher_event_candidates_v1'
