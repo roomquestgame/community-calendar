@@ -1360,6 +1360,35 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                 'p_future_count': len(records),
                 'p_venue_count': sum(row.get('lat') is not None for row in records),
                 'p_error': None, 'p_events': records}
+    from roomquest import gainesville_sources
+    if source_key in gainesville_sources.SOURCES:
+        deadline = min(monotonic() + 40,
+                       deadline_at - 8 if deadline_at is not None else float('inf'))
+        try:
+            records = gainesville_sources.collect(
+                source, lambda url, accept: fetch_publisher(
+                    url, accept, respect_robots=True, deadline_at=deadline,
+                    allowed_hosts=gainesville_sources.ALLOWED_HOSTS[source_key]),
+                deadline_at=deadline)
+            if any(not isinstance(row.get('description'), str) or not row['description'].strip()
+                   or len(row['description']) > gainesville_sources.MAX_DESCRIPTION
+                   or not isinstance(row.get('venue_address'), str)
+                   or not row['venue_address'].strip() for row in records):
+                raise ValueError('gainesville_incomplete_event')
+        except PreviewError:
+            raise
+        except (ValueError, TypeError, KeyError, OverflowError) as exc:
+            reason = str(exc)
+            raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}', reason)
+                               else 'invalid_gainesville_payload') from exc
+        samples = records[:MAX_PREVIEWS]
+        while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
+            samples.pop()
+        return {'p_source_key': source_key, 'p_samples': samples,
+                'p_future_count': len(records),
+                'p_venue_count': sum(row.get('lat') is not None for row in records),
+                'p_error': None, 'p_events': records,
+                'p_parser_capability': 'publisher_event_candidates_v1'}
     from roomquest import knoxville_sources
     if source_key in knoxville_sources.SOURCES:
         # Exact registered Knoxville publishers: complete narratives and each
