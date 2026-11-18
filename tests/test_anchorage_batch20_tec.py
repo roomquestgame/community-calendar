@@ -141,7 +141,7 @@ def test_winter_solstice_sewing_exact_studio_full_description_and_held_notices()
                    url="https://wintersolsticecrafts.com/event/getting-started-with-a-sewing-machine/",
                    venue=venue,categories=[{"name":"Classes"}],
                    description="<p>Spend the afternoon practicing sewing basics with a teacher. "
-                               + "Bring your own materials for a hands-on course. "*30 + "</p>")
+                               + "Bring your own materials for a hands-on course. "*38 + "</p>")
         base.update(changes)
         return base
     accepted=sew("Getting Started With A Sewing Machine")
