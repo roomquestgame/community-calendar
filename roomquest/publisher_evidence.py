@@ -28,6 +28,9 @@ ROSEMONT_REVIEWED_FEATURED_IMAGE = (
 def family(source_key, event_url):
     """Bind an enrolled publisher family to its own canonical event link."""
     try:
+        from roomquest import anchorage_batch20_wasilla
+        if source_key in anchorage_batch20_wasilla.SOURCES:
+            return 'anchorage_batch20_wasilla:' + source_key if anchorage_batch20_wasilla.event_url(source_key, event_url) else None
         from roomquest import anchorage_batch20_aiga
         if source_key in anchorage_batch20_aiga.SOURCES:
             return 'anchorage_batch20_aiga:' + source_key if anchorage_batch20_aiga.event_url(source_key, event_url) else None
@@ -206,6 +209,8 @@ def family(source_key, event_url):
 def image_url(value, publisher):
     if not isinstance(value, str) or len(value) > 2000:
         return None
+    if isinstance(publisher, str) and publisher.startswith('anchorage_batch20_wasilla:'):
+        return None  # City public event facts only, no image reuse rights implied.
     if isinstance(publisher, str) and publisher.startswith('anchorage_batch20_aiga:'):
         return None  # AIGA does not supply an approved original image.
     if isinstance(publisher, str) and publisher.startswith('anchorage_batch20_multi:'):
