@@ -28,6 +28,12 @@ ROSEMONT_REVIEWED_FEATURED_IMAGE = (
 def family(source_key, event_url):
     """Bind an enrolled publisher family to its own canonical event link."""
     try:
+        from roomquest import anchorage_expansion
+        if source_key in anchorage_expansion.SOURCES:
+            return 'anchorage_expansion:' + source_key if anchorage_expansion.event_url(source_key, event_url) else None
+        from roomquest import anchorage_sources
+        if source_key in anchorage_sources.SOURCES:
+            return 'anchorage:' + source_key if anchorage_sources.event_url(source_key, event_url) else None
         from roomquest import gainesville_direct_feeds
         if source_key in gainesville_direct_feeds.SOURCES:
             return ('gainesville_direct:' + source_key
@@ -35,6 +41,15 @@ def family(source_key, event_url):
         from roomquest import gainesville_sources
         if source_key in gainesville_sources.SOURCES:
             return 'gainesville:' + source_key if gainesville_sources.event_url(source_key, event_url) else None
+        from roomquest import santa_cruz_rio
+        if source_key == santa_cruz_rio.KEY:
+            return 'santa_cruz_rio' if santa_cruz_rio.event_url(event_url) else None
+        from roomquest import santa_cruz_local_venues
+        if source_key in santa_cruz_local_venues.SOURCES:
+            return 'santa_cruz_local:' + source_key if santa_cruz_local_venues.event_url(source_key,event_url) else None
+        from roomquest import santa_cruz_sources
+        if source_key in santa_cruz_sources.SOURCES:
+            return 'santa_cruz:' + source_key if santa_cruz_sources.event_url(source_key, event_url) else None
         from roomquest import knoxville_sources
         if source_key in knoxville_sources.SOURCES:
             return 'knoxville:' + source_key if knoxville_sources.event_url(source_key, event_url) else None
@@ -189,12 +204,27 @@ def family(source_key, event_url):
 def image_url(value, publisher):
     if not isinstance(value, str) or len(value) > 2000:
         return None
+    if isinstance(publisher, str) and publisher.startswith('anchorage_expansion:'):
+        from roomquest.anchorage_expansion import photo_url as expansion_photo_url
+        return expansion_photo_url(publisher.removeprefix('anchorage_expansion:'), value)
+    if isinstance(publisher, str) and publisher.startswith('anchorage:'):
+        from roomquest.anchorage_sources import photo_url as anchorage_photo_url
+        return anchorage_photo_url(publisher.removeprefix('anchorage:'), value)
     if isinstance(publisher, str) and publisher.startswith('gainesville_direct:'):
         from roomquest.gainesville_direct_feeds import photo_url as direct_photo_url
         return direct_photo_url(publisher.removeprefix('gainesville_direct:'), value)
     if isinstance(publisher, str) and publisher.startswith('gainesville:'):
         from roomquest.gainesville_sources import photo_url as gainesville_photo_url
         return gainesville_photo_url(publisher.removeprefix('gainesville:'), value)
+    if publisher == 'santa_cruz_rio':
+        from roomquest.santa_cruz_rio import photo_url as rio_photo_url
+        return rio_photo_url(value)
+    if isinstance(publisher,str) and publisher.startswith('santa_cruz_local:'):
+        from roomquest.santa_cruz_local_venues import photo_url
+        return photo_url(publisher.removeprefix('santa_cruz_local:'),value)
+    if isinstance(publisher, str) and publisher.startswith('santa_cruz:'):
+        from roomquest.santa_cruz_sources import photo_url as santa_cruz_photo_url
+        return santa_cruz_photo_url(publisher.removeprefix('santa_cruz:'), value)
     if isinstance(publisher, str) and publisher.startswith('knoxville:'):
         from roomquest.knoxville_sources import photo_url as knoxville_photo_url
         return knoxville_photo_url(publisher.removeprefix('knoxville:'), value)
