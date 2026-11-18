@@ -34,7 +34,7 @@ SOURCES = {
     MAKING: ("https://www.makingspacetogether.com/events", "json", "squarespace"),
     ART: ("https://www.theartloungeak.com/classes-events", "json", "squarespace"),
     JOULE: ("https://www.joulewellness.co/events", "json", "squarespace"),
-    DANCE: ("https://alaskadancepromotions.com/events", "json", "squarespace"),
+    DANCE: ("https://www.alaskadancepromotions.com/events", "json", "squarespace"),
     MATSU_SOCIAL: ("https://www.matsudems.org/events", "json", "squarespace"),
 }
 ALLOWED_HOSTS = {key: (urlsplit(tup[0]).hostname,) for key, tup in SOURCES.items()}

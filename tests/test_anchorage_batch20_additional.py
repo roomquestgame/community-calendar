@@ -130,3 +130,10 @@ def test_dance_two_public_upcoming_shows_with_exact_studio():
     assert not ak.collect(source(ak.DANCE),
                           fetch(dict(thanksgiving,location=dict(location,addressLine1="1 Wrong St"))),
                           now=NOW)
+
+
+def test_dance_publisher_canonical_www_host_no_unsafe_redirect():
+    assert ak.SOURCES[ak.DANCE][0] == "https://www.alaskadancepromotions.com/events"
+    assert ak.ALLOWED_HOSTS[ak.DANCE] == ("www.alaskadancepromotions.com",)
+    assert ak.event_url(ak.DANCE, "https://www.alaskadancepromotions.com/events/christmas")
+    assert not ak.event_url(ak.DANCE, "https://alaskadancepromotions.com/events/christmas")
