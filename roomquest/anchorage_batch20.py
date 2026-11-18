@@ -24,6 +24,7 @@ MAKING = "making_space_art_therapy_ak"
 ART = "the_art_lounge_anchorage_ak"
 JOULE = "joule_wellness_sound_bath_ak"
 DANCE = "alaska_dance_promotions_ak"
+MATSU_SOCIAL = "matsu_community_social_ak"
 
 SOURCES = {
     MAGNETIC: ("https://magneticnorthbrewingco.com/events", "json", "squarespace"),
@@ -34,6 +35,7 @@ SOURCES = {
     ART: ("https://www.theartloungeak.com/classes-events", "json", "squarespace"),
     JOULE: ("https://www.joulewellness.co/events", "json", "squarespace"),
     DANCE: ("https://alaskadancepromotions.com/events", "json", "squarespace"),
+    MATSU_SOCIAL: ("https://www.matsudems.org/events", "json", "squarespace"),
 }
 ALLOWED_HOSTS = {key: (urlsplit(tup[0]).hostname,) for key, tup in SOURCES.items()}
 VENUES = {
@@ -61,6 +63,8 @@ VENUES = {
     DANCE: ("Alaska Dance Promotions",
             "300 East Dimond Boulevard, Suite 11A, Anchorage, AK 99515", "Anchorage",
             (61.1444086, -149.875721)),
+    MATSU_SOCIAL: ("Chepo's", "3001 Sun Mountain Avenue, Wasilla, AK 99654", "Wasilla",
+                   (61.5723678, -149.3880472)),
 }
 logger = logging.getLogger(__name__)
 MAX_DESCRIPTION = 12000
@@ -75,6 +79,7 @@ URL_BY_KEY = {
     ART: re.compile(r"/classes-events/[a-z0-9]+(?:-[a-z0-9]+)*/?"),
     JOULE: re.compile(r"/events/[a-z0-9]+(?:-[a-z0-9]+)*/?"),
     DANCE: re.compile(r"/events/[a-z0-9]+(?:-[a-z0-9]+)*/?"),
+    MATSU_SOCIAL: re.compile(r"/events/[a-z0-9]+(?:-[a-z0-9]+)*/?"),
 }
 PHOTO_PATH = re.compile(r"/content/v1/[A-Za-z0-9]+/[A-Za-z0-9_-]+/[^?#]+\.(?:jpe?g|png|webp)", re.I)
 PHOTO_BAD = re.compile(r"(?:^|[-_/])(?:favicon|logo|icon|avatar|pixel|placeholder)(?:[-_.]|$)", re.I)
@@ -140,6 +145,15 @@ def _official_site_venue(key, title, desc, location):
     loc_street = plain(location.get("addressLine1"))
     loc_city = plain(location.get("addressLine2"))
     point = _publisher_point(location)
+    if key == MATSU_SOCIAL:
+        if (plain(location.get("addressTitle")).strip().casefold() not in {"chepo's", "chepo’s"}
+                or not re.fullmatch(r"3001 Sun Mountain Avenue", loc_street, re.I)
+                or not re.fullmatch(r"Wasilla,\s*(?:AK|Alaska),\s*99654", loc_city, re.I)
+                or point is None
+                or abs(point[0] - reviewed_point[0]) > 0.004
+                or abs(point[1] - reviewed_point[1]) > 0.004):
+            return None
+        return venue, street, city, point
     if key == DANCE:
         if (plain(location.get("addressTitle")).casefold() != "alaska dance promotions"
                 or loc_street.casefold() not in {
@@ -235,6 +249,9 @@ def _category(key, title):
     elif key == JOULE:
         if "sound bath" in t or "meditation" in t:
             return "health"
+    elif key == MATSU_SOCIAL:
+        if t == "mat-su dems northern lights social":
+            return "hang_out"  # Neutral public social gathering, no political categorization or advocacy.
     elif key == DANCE:
         if "festival" in t:
             return "festival"
