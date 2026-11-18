@@ -2,7 +2,7 @@
 
 **Date of source checks:** November 18, 2026. This is a **new 20-source collector branch** and does not duplicate the preceding UCSC/Kuumbwa two-feed release or the six-source production batch (#266/#267). User instruction: pull **20 actual working feeds in each branch**, not twenty websites researched. This branch is **not merged or published**, and there is no new database migration.
 
-## Verified live collector previews (9 / 20)
+## Verified live collector previews (10 / 20)
 
 | # | New direct publisher and source key | Exact primary feed | Eligible future publisher events | Event location evidence | Full descriptions | Publisher photo candidates |
 |---:|---|---|---:|---|---|---:|
@@ -15,17 +15,29 @@
 | 7 | Madson Wines — `madson_wines_santa_cruz_ca` | `https://www.madsonwines.com/events-2?format=json` | **12** | **Only** publisher-native `328 Ingalls Street, Suite G` occurrences; offsite arena, generic numbered street and closed notices excluded | 12 | 12 |
 | 8 | Jack O'Neill Restaurant — `jack_oneill_live_music_santa_cruz_ca` | `https://www.jackoneillrestaurant.com/live-music/` plus own dated artist detail pages | **9** | Official 175 W Cliff Drive. Event card's date and show times cross-checked against publisher details; one empty artist description held | 9 | 9 |
 | 9 | Stockwell Cellars — `stockwell_cellars_santa_cruz_ca` | `https://www.stockwellcellars.com/events?format=json` | **2** | Each Squarespace event independently confirms 1100 Fair Avenue, Santa Cruz; genuine publisher venue GPS accepted, fake NYC point rejected | 2 | 2 |
-| | **Total publisher dry-run occurrences** | | **138** | All nine sources have complete native street evidence | **138** | **97** |
+| 10 | The Diversity Center — `diversity_center_santa_cruz_ca` | `https://www.diversitycenter.org/upcoming-events?format=json` | **17** | Verified physical-event venue `1117 Soquel Avenue, Santa Cruz CA`. Zoom-only and offsite listings withheld; no fake NYC default pin | 17 | 17 |
+| | **Total publisher dry-run occurrences** | | **155** | All nine sources have complete native street evidence | **155** | **114** |
 
 Source dry-run counts are **not** unique, deduped or public EventQuest cards. Images are **unlicensed candidates** until downstream rights and bytes check. The same event may appear in First Friday and another organizer. Source keys, original event URL hosts, complete descriptions and real wall-time occurrences are source-bound. No invented map pins, times, recurrence or generic Other categories.
 
 ## Verification and rollout safeguards
 
-- Existing baseline targeted collector regression suite: **30 focused tests passed** in isolated Vercel sandbox, including new Madson/Jack/Stockwell fixtures; nine publisher modules exercised using the real guarded `preview_worker.preview_source` against primary sites (not test fixtures alone). All 138 accepted dry-run records have original full descriptions and event-specific streets.
+- Existing baseline targeted collector regression suite: **34 focused tests passed** in isolated Vercel sandbox, including new Madson/Jack/Stockwell fixtures; ten publisher sources exercised using the real guarded `preview_worker.preview_source` against primary sites (not test fixtures alone). All 138 accepted dry-run records have original full descriptions and event-specific streets.
 - `roomquest/preview_worker.py` uses the original guarded fetch, robots+SSRF host allowlist and bounded deadlines. The Events Calendar sources, Squarespace sources, and HTML event-detail sources have separate reviewed identities.
 - Current branch is **in development**. No PR merge, production Vercel deployment, source registration or fresh PG17 migration is claimed for these nine.
 - When the 20 **independent working and new** publishers are verified, group the collector adapters in a small number of coherent PRs, merge/test, deploy the Vercel production collector, then use **only** GitHub's protected `db-deploy.yml` to run a minimal forward-only source-enrollment migration. Never touch the 2026-11-17 PostgreSQL 17 history-only baseline or existing production users/events.
 - Live post-deployment checks must cover source uniqueness, complete preview receipts, downstream category evidence, street-level geocoding, rights/size image checks, duplicate suppression and public Home/Events/Map cards. Do not publish a source whose own feed is empty or blocked.
+
+## November 18 research receipts and hard holds (not counted)
+
+- **The Diversity Center:** the first-party Squarespace JSON feed returned 23 future listings; the production-style guarded preview admitted **17** real, event-specific physically located occurrences, each with complete source prose and 1117 Soquel Avenue street evidence. The four virtual Zoom entries and two events at other venues were correctly held rather than assigned an invented Diversity Center pin. All 17 images are publisher candidates only, not licensed assets. Source identity is pinned to the exact URL, host, site ID and verified address. Four new isolation regression tests pass alongside the original 30.
+- **Santa Cruz Hostel:** publisher TEC JSON exposed 15 future occurrences to an exploratory HTTP request, but the approved production-style guarded fetch stopped on **HTTP 403 for robots.txt**. Experimental local enrollment was reverted; **not verified and not counted**. Also audit whether Sunday S'mores events are for registered overnight guests only.
+- **Santa Cruz Beach Boardwalk:** the publisher's main page exposes 23 upcoming JSON-LD Event records, but descriptions and locations are blank and sampled direct event URLs returned 404. **Not counted**; do not manufacture event narratives or venue streets.
+- **Moe's Alley:** declared 10-second robots delay. Keep bounded/paced event-specific detail work on hold instead of issuing an unbounded crawl.
+- **Life Lab:** a single upcoming event had a generic NYC map pin instead of event street evidence. **Bike Santa Cruz County:** a few future publisher events, but publisher calendar timezone `America/Tijuana` and mixed offsite venues require explicit timezone/location review.
+- **Explicit non-Santa-Cruz exclusion:** Santa Cruz Brewing Co (`santacruzbrews.com`) belongs to Santa Clarita, CA and must never be counted for this region.
+
+**Release contract:** the branch is 10/20 independently guarded event sources, **not** 20 publisher feeds, and remains undeployed until 20 distinct new sources are tested. Counts above are publisher previews, not unique or public EventQuest cards. Prior six batch-2 and UCSC/Kuumbwa are already separate deployed work.
 
 ## Candidate sources still not credited toward the 20
 
