@@ -15,19 +15,22 @@ ZONE='America/Los_Angeles'
 ABBOTT='abbott_square_market_santa_cruz_ca'
 CREPE='the_crepe_place_santa_cruz_ca'
 MADSON='madson_wines_santa_cruz_ca'
+STOCKWELL='stockwell_cellars_santa_cruz_ca'
 SOURCES={
  ABBOTT:('https://www.abbottsquaremarket.com/events?format=json','json','squarespace'),
  CREPE:('https://www.thecrepeplace.com/shows-list?format=json','json','squarespace'),
- MADSON:('https://www.madsonwines.com/events-2?format=json','json','squarespace')
+ MADSON:('https://www.madsonwines.com/events-2?format=json','json','squarespace'),
+ STOCKWELL:('https://www.stockwellcellars.com/events?format=json','json','squarespace')
 }
-OWN_HOSTS={ABBOTT:'www.abbottsquaremarket.com',CREPE:'www.thecrepeplace.com',MADSON:'www.madsonwines.com'}
+OWN_HOSTS={ABBOTT:'www.abbottsquaremarket.com',CREPE:'www.thecrepeplace.com',MADSON:'www.madsonwines.com',STOCKWELL:'www.stockwellcellars.com'}
 ALLOWED_HOSTS={k:(OWN_HOSTS[k],) for k in SOURCES}
 VENUES={
  ABBOTT:('Abbott Square Market','725 Front Street, Santa Cruz, CA 95060','Santa Cruz'),
  CREPE:('The Crepe Place','1134 Soquel Avenue, Santa Cruz, CA 95062','Santa Cruz'),
- MADSON:('Madson Wines Tasting Room','328 Ingalls Street, Suite G, Santa Cruz, CA 95060','Santa Cruz')
+ MADSON:('Madson Wines Tasting Room','328 Ingalls Street, Suite G, Santa Cruz, CA 95060','Santa Cruz'),
+ STOCKWELL:('Stockwell Cellars','1100 Fair Avenue, Santa Cruz, CA 95060','Santa Cruz')
 }
-SQUARESPACE_SITE_IDS={ABBOTT:'63fea813188ad81e69c290b6',CREPE:'5f371a0781c3fe6a3e650a90',MADSON:'60627269ce92a3553c16edf1'}
+SQUARESPACE_SITE_IDS={ABBOTT:'63fea813188ad81e69c290b6',CREPE:'5f371a0781c3fe6a3e650a90',MADSON:'60627269ce92a3553c16edf1',STOCKWELL:'5acbe1b5b27e3910337dbee9'}
 MAX_RECORDS=160
 MAX_DESCRIPTION=12000
 NO_IMAGE=re.compile(r'(?:^|[-_/])(?:logo|favicon|avatar|icon|placeholder|pixel)(?:[-_.]|$)',re.I)
@@ -38,10 +41,10 @@ STREET_OTHER=re.compile(r'\b\d{3,6}\s+(?:[a-z0-9.#-]+\s+){1,7}(?:street|st|road|
 def event_url(key,value):
  if key not in SOURCES or not isinstance(value,str) or len(value)>1200:return False
  u=urlsplit(value)
- path='/events/' if key==ABBOTT else '/shows-list/' if key==CREPE else '/events-2/'
+ path='/events/' if key==ABBOTT else '/shows-list/' if key==CREPE else '/events-2/' if key==MADSON else '/events/'
  return bool(u.scheme=='https' and u.hostname==OWN_HOSTS[key] and not u.query
   and not u.fragment and not u.username and not u.password and u.port in (None,443)
-  and re.fullmatch(path+r'[a-z0-9]+(?:-[a-z0-9]+)*/?',u.path))
+  and re.fullmatch(path+(r'20\d{2}/\d{1,2}/\d{1,2}/' if key==STOCKWELL else '')+r'[a-z0-9]+(?:-[a-z0-9]+)*/?',u.path))
 
 def photo_url(key,value):
  if key not in SOURCES or not isinstance(value,str) or len(value)>2200:return None
@@ -75,15 +78,29 @@ def _row(key,e,now):
  prose=_narrative(e.get('body'))
  if not prose or OFFSITE.search(prose):return None
  if key==MADSON and (e.get('location') or {}).get('addressLine1')!='328 Ingalls Street, Suite G':return None
+ if key==STOCKWELL:
+  native=e.get('location') or {}
+  if (native.get('addressTitle')!='Stockwell Cellars' or
+      native.get('addressLine1')!='1100 Fair Avenue' or
+      native.get('addressLine2')!='Santa Cruz, CA, 95060'):
+   return None
  other=STREET_OTHER.search(prose)
- if other and not re.search(r'725\s+Front|118\s+Cooper|1134\s+Soquel|328\s+Ingalls',other.group(0),re.I):
+ if other and not re.search(r'725\s+Front|118\s+Cooper|1134\s+Soquel|328\s+Ingalls|1100\s+Fair',other.group(0),re.I):
   return None
  url=urljoin('https://'+OWN_HOSTS[key],e.get('fullUrl') or '')
  if not event_url(key,url):return None
  name,street,city=VENUES[key]
  labels=[plain(x) for x in (e.get('categories') or []) if isinstance(x,str)][:15]
+ lat,lng=None,None
+ if key==STOCKWELL:
+  native=e.get('location') or {}
+  try:
+   lt,ln=float(native.get('markerLat')),float(native.get('markerLng'))
+   if math.isfinite(lt) and math.isfinite(ln) and 36.85<=lt<=37.2 and -122.2<=ln<=-121.8:
+    lat,lng=lt,ln
+  except (TypeError,ValueError,OverflowError):pass
  row=record(title,start.isoformat(),end.isoformat(),name,street,city,url,e['id'],
-            ', '.join(labels),None,None,ZONE,retain_until_end=True)
+            ', '.join(labels),lat,lng,ZONE,retain_until_end=True)
  if row is None:return None
  row.update(description=prose,timezone=ZONE,publisher_categories=labels,
             location_provenance='official_publisher_venue_street')
