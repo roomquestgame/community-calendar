@@ -276,18 +276,18 @@
       "platform_candidate": "publisher_html",
       "calendar_url": "https://enjoymountainhome.com/events",
       "publisher_page": "https://enjoymountainhome.com/events",
-      "stage": "publisher_event_detail_verified",
+      "stage": "live_first_party_parser_four_events_location_hold",
       "source_registered": false,
       "publication_verified": false,
       "evidence": [
         "https://enjoymountainhome.com/events",
         "https://enjoymountainhome.com/events/20261120-a-sherlock-carol/"
       ],
-      "blocker": "Website credits VisionAmp; do not assume ChamberMate. Direct detail supports title/date/time/venue/full prose; venue street+timezone and independent publisher rights need downstream checks. Only sponsor logos seen; no verified event photo",
+      "blocker": "Official calendar+print event content both verified. Parser returned 4 future distinct occurrences with full original descriptions (416/583 chars), exact publisher event streets and correct timezone. All are held for missing verified coordinates; source rights, registration and media-stage evidence remain unverified.",
       "gates": {
-        "exact_feed_access": "pending",
-        "future_occurrence_sample": "pending",
-        "source_description_parity": "pending",
+        "exact_feed_access": "passed",
+        "future_occurrence_sample": "passed",
+        "source_description_parity": "passed",
         "venue_address_evidence": "pending",
         "timezone_and_recurrence": "pending",
         "categories_and_audience": "pending",
@@ -309,7 +309,19 @@
         "description_visible": true,
         "photo_rights_confirmed": false
       },
-      "image_note": "No verified event-owned image; use normal fallback"
+      "image_note": "No verified event-owned image; use normal fallback",
+      "actual_live_canary": {
+        "on": "2026-11-18",
+        "source_pages": 2,
+        "listing_cards": 35,
+        "print_descriptions": 114,
+        "parsed_complete_future_records": 4,
+        "geocoded_records": 0,
+        "image_candidates": 0,
+        "public_verified_records": 0,
+        "unit_tests_passed": 8,
+        "report": "docs/mountain-home-batch01-live-canary-20261118.md"
+      }
     },
     {
       "number": 9,
