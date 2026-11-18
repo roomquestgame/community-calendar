@@ -401,14 +401,14 @@
       "platform_candidate": "drupal_fullcalendar",
       "calendar_url": "https://www.fairfaxcounty.gov/events/",
       "publisher_page": "https://www.fairfaxcounty.gov/",
-      "stage": "drupal_adapter_pending",
+      "stage": "fairfax_firstparty_drupal_venue_hold",
       "source_registered": false,
       "publication_verified": false,
       "evidence": [
         "https://www.fairfaxcounty.gov/events/",
         "https://github.com/tophe112-source/mapsee-aggregator/blob/main/drupal_fullcalendar_sources.json"
       ],
-      "blocker": "Publisher site and Mapsee Drupal calendar research identified but no source-specific safe collector or future-event validation yet.",
+      "blocker": "Official embedded Drupal calendar HTTP 200 with 311 unique event entries, 263 Community Event, 40 Public Meeting, full descriptions for 310/311 records. Event array does not expose an event-owned venue/address/coordinates; sample event detail hides Directory Location. Historical Mapsee park prefixes cannot be treated as physical event venue. Alternative today-only county-meeting RSS has no explicit event date. Do not publish with county HQ pin.",
       "gates": {
         "exact_feed_access": "pending",
         "future_occurrence_sample": "pending",
@@ -426,7 +426,19 @@
         "publication_rights_verified": false,
         "use_fallback_until_approved": true
       },
-      "batch_disposition": "hold"
+      "batch_disposition": "hold",
+      "drupal_live_audit": {
+        "calendar_status": 200,
+        "embedded_entries": 311,
+        "community_events": 263,
+        "public_meetings": 40,
+        "descriptions_nonempty": 310,
+        "description_max_raw_length": 561,
+        "real_venue_contract": "unverified",
+        "alternative_county_meetings_rss": "https://www.fairfaxcounty.gov/calendar/RssFeed.aspx?cal=1",
+        "rss_limit": "today only; no event date",
+        "report": "docs/batch01-fairfax-ocparks-drupal-audit-20261118.md"
+      }
     },
     {
       "number": 10,
@@ -434,14 +446,14 @@
       "platform_candidate": "drupal_fullcalendar",
       "calendar_url": "https://parks.oc.gov/events",
       "publisher_page": "https://parks.oc.gov/events",
-      "stage": "drupal_adapter_pending",
+      "stage": "oc_parks_drupal_500_cap_hold",
       "source_registered": false,
       "publication_verified": false,
       "evidence": [
         "https://parks.oc.gov/events",
         "https://github.com/tophe112-source/mapsee-aggregator/blob/main/drupal_fullcalendar_sources.json"
       ],
-      "blocker": "Publisher site and Mapsee Drupal config identified but no source-specific safe collector or first-party image rights checks yet.",
+      "blocker": "Official OC Parks Drupal FullCalendar responds HTTP 200 and returns exactly 500 embedded calendar event rows. Calendar option's 500-row limit is recognized; detail/venue/description content is not complete in calendar JSON. Need bounded complete pagination and first-party event detail validation before enabling.",
       "gates": {
         "exact_feed_access": "pending",
         "future_occurrence_sample": "pending",
@@ -459,7 +471,15 @@
         "publication_rights_verified": false,
         "use_fallback_until_approved": true
       },
-      "batch_disposition": "hold"
+      "batch_disposition": "hold",
+      "drupal_live_audit": {
+        "calendar_status": 200,
+        "embedded_entries": 500,
+        "completeness": "unverified_500_entry_cap",
+        "list_description_sample": "empty",
+        "venue_contract": "per_detail_page_unverified",
+        "report": "docs/batch01-fairfax-ocparks-drupal-audit-20261118.md"
+      }
     }
   ],
   "batch_01_summary": {
