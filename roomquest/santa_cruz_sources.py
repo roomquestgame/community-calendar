@@ -156,7 +156,10 @@ def _row(key, event):
         log.info('santa_cruz_hold source=%s id=%s reason=description', key, identity[:80])
         return None
     link = event.get('url')
-    if key == VISIT_SANTA_CRUZ and not re.search(r'/20\d{2}-\d{2}-\d{2}/
+    if key == VISIT_SANTA_CRUZ and not re.fullmatch(r'.*/20[0-9]{2}-[0-9]{2}-[0-9]{2}/', str(link)):
+        log.info('santa_cruz_hold source=%s id=%s reason=dated_occurrence',key,identity[:80])
+        return None
+    if not event_url(key, link):
         log.info('santa_cruz_hold source=%s id=%s reason=event_url', key, identity[:80])
         return None
     labels = _labels(event)
