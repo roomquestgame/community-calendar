@@ -16,10 +16,10 @@ The read-only comparison across all **3,881** municipal rows and **85** dedicate
 A newly identified existing record is `municipal_mapsee_844b6c0e0aca1771e1a1646f` (NYC Permitted Events Socrata): **paused**, `preview_error=timezone_unresolved`, zero future staged; it needs a reviewed mapping/timezone repair, not a duplicate registration. The 4 existing rows include UCSB, Boston Public Library and Dallas Parks as above.
 
 ## Reproducible offline reconciliation
-`scripts/reconcile-public-source-leads.mjs` reads a manually researched lead manifest and current read-only registry JSON exports. It never opens network connections, queries a database, creates source records, executes collectors, modifies the PG17 schema, changes worker scheduling, or publishes images/events.
+`docs/tools/reconcile-public-source-leads.mjs` reads a manually researched lead manifest and current read-only registry JSON exports. It never opens network connections, queries a database, creates source records, executes collectors, modifies the PG17 schema, changes worker scheduling, or publishes images/events.
 
 ```sh
-node scripts/reconcile-public-source-leads.mjs \
+node docs/tools/reconcile-public-source-leads.mjs \
   --leads docs/public-source-leads-20261118.json \
   --registry /tmp/municipal-source-export.json \
   --registry /tmp/localist-source-export.json \
