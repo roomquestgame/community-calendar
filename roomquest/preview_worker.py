@@ -1360,6 +1360,38 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                 'p_future_count': len(records),
                 'p_venue_count': sum(row.get('lat') is not None for row in records),
                 'p_error': None, 'p_events': records}
+    from roomquest import anchorage_batch20_multi
+    if source_key in anchorage_batch20_multi.SOURCES:
+        deadline = min(monotonic() + 38,
+                       deadline_at - 8 if deadline_at is not None else float('inf'))
+        try:
+            records = anchorage_batch20_multi.collect(
+                source, lambda url, accept: fetch_publisher(
+                    url, accept, respect_robots=True, deadline_at=deadline,
+                    allowed_hosts=anchorage_batch20_multi.ALLOWED_HOSTS[source_key]),
+                deadline_at=deadline)
+            if any(not isinstance(row.get('description'), str) or not row['description'].strip()
+                   or len(row['description']) > anchorage_batch20_multi.MAX_DESCRIPTION
+                   or not isinstance(row.get('venue_address'), str)
+                   or not row['venue_address'].strip()
+                   or not isinstance(row.get('category'), str)
+                   or row['category'].lower() in ('other', '')
+                   or row.get('lat') is None or row.get('lng') is None
+                   for row in records):
+                raise ValueError('anchorage_batch20_multi_incomplete_event')
+        except PreviewError:
+            raise
+        except (ValueError, TypeError, KeyError, OverflowError) as exc:
+            reason = str(exc)
+            raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}', reason)
+                               else 'invalid_anchorage_batch20_multi_payload') from exc
+        samples = records[:MAX_PREVIEWS]
+        while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
+            samples.pop()
+        return {'p_source_key': source_key, 'p_samples': samples,
+                'p_future_count': len(records),
+                'p_venue_count': sum(row.get('lat') is not None for row in records),
+                'p_error': None, 'p_events': records}
     from roomquest import anchorage_batch20_tec
     if source_key in anchorage_batch20_tec.SOURCES:
         deadline = min(monotonic() + 38,
