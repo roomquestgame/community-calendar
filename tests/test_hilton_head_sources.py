@@ -85,6 +85,17 @@ class DirectHiltonHeadTests(unittest.TestCase):
         p=h._complete_ics_location(
             'First Presbyterian Church, 540 William Parkway, Hilton Head Island, SC, 29928')
         self.assertEqual(p[1],'540 William Hilton Pkwy, Hilton Head Island, SC')
+        hall=h._complete_ics_location(
+            'St. Gregory the Great Parish Life Center, 31 Saint Gregory Drive, Bluffton, SC, 29910')
+        self.assertEqual(hall[1],'32 Saint Gregory Dr, Bluffton, SC')
+        self.assertEqual(hall[0],'St. Gregory the Great Parish Life Center')
+        # Never silently rewrite the church office at 31 or an unrelated hall.
+        church=h._complete_ics_location(
+            'St. Gregory the Great Catholic Church, 31 Saint Gregory Drive, Bluffton, SC, 29909')
+        self.assertEqual(church[1],'31 Saint Gregory Drive, Bluffton, SC')
+        other=h._complete_ics_location(
+            'Another Parish Life Center, 31 Saint Gregory Drive, Bluffton, SC')
+        self.assertEqual(other[1],'31 Saint Gregory Drive, Bluffton, SC')
         self.assertIsNone(h._complete_ics_location('The Cultural Arts Center, Hilton Head Island'))
         self.assertIsNone(h._complete_ics_location('Other Church, 540 William Parkway, Fake City, SC'))
 
