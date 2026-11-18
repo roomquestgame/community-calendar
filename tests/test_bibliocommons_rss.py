@@ -107,10 +107,13 @@ class BiblioRssCanaryTest(unittest.TestCase):
                         begin="2026-11-19T05:00:00Z")]))
         self.assertEqual(rows, [])
 
-    def test_online_and_cancelled_are_not_physical_map_events(self):
-        _, rows, _ = self.parse(document([
-            make_item(virtual=True), make_item(2, canceled=True)]))
+    def test_online_is_not_given_a_physical_map_location(self):
+        _, rows, _ = self.parse(document([make_item(virtual=True)]))
         self.assertEqual(rows, [])
+
+    def test_cancelled_event_requires_explicit_tombstone_support(self):
+        with self.assertRaisesRegex(ValueError, "bibliocommons_rss_cancellation_requires_review"):
+            self.parse(document([make_item(canceled=True)]))
 
     def test_wrong_local_timezone_fails_closed(self):
         with self.assertRaisesRegex(ValueError, "bibliocommons_rss_timezone_mismatch"):
@@ -157,7 +160,7 @@ class BiblioRssCanaryTest(unittest.TestCase):
         def fetch(url, _):
             count[0] += 1
             start = count[0] * rss.PAGE_SIZE
-            return document([make_item(i+start, canceled=True) for i in range(rss.PAGE_SIZE)])
+            return document([make_item(i+start, virtual=True) for i in range(rss.PAGE_SIZE)])
         with patch.object(rss, "record", side_effect=sample_record):
             with self.assertRaisesRegex(ValueError, "bibliocommons_rss_pagination_incomplete"):
                 rss.collect(PROFILE, fetch, now=NOW)
