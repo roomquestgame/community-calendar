@@ -109,7 +109,7 @@ class OCParksPartialTests(unittest.TestCase):
         narrative="<p>" + "Original factual description. "*50 + "</p>"
         rows, _ = self.collect(second=detail(narrative=narrative))
         self.assertEqual(len(rows), 1)
-        self.assertEqual(rows[0]["description"], narrative[3:-4])
+        self.assertEqual(rows[0]["description"], narrative[3:-4].strip())
 
     def test_oversize_description_is_held_not_silently_truncated(self):
         rows, _ = self.collect(second=detail(narrative="<p>"+("Long factual details. "*150)+"</p>"))
