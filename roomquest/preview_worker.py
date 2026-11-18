@@ -2003,6 +2003,32 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         return {"p_source_key": source["source_key"], "p_samples": samples,
                 "p_future_count": len(records), "p_venue_count": sum(r["lat"] is not None for r in records),
                 "p_error": None, "p_events": records}
+    # Exact reviewed BiblioCommons RSS profiles, not the proprietary JSON gateway.
+    # A source is not activated by this dispatch; DB registration and publisher
+    # rights remain independent and mandatory before any live collection.
+    from roomquest.bibliocommons_rss import (
+        SOURCES as BIBLIO_RSS_SOURCES, GATEWAY as BIBLIO_RSS_HOST,
+        collect as collect_bibliocommons_rss)
+    if source.get("source_key") in BIBLIO_RSS_SOURCES:
+        deadline = min(monotonic() + 30, deadline_at - 7 if deadline_at is not None else float("inf"))
+        try:
+            records = collect_bibliocommons_rss(
+                source, lambda url, accept: fetch_publisher(
+                    url, accept, respect_robots=True, deadline_at=deadline,
+                    allowed_hosts=(BIBLIO_RSS_HOST,)), deadline_at=deadline)
+        except PreviewError:
+            raise
+        except (ValueError, TypeError, KeyError, OverflowError) as exc:
+            reason = str(exc)
+            raise PreviewError(reason if re.fullmatch(r"[a-z_]{3,100}", reason)
+                               else "invalid_bibliocommons_rss_payload") from exc
+        samples = records[:MAX_PREVIEWS]
+        while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
+            samples.pop()
+        return {"p_source_key": source["source_key"], "p_samples": samples,
+                "p_future_count": len(records),
+                "p_venue_count": sum(row.get("lat") is not None for row in records),
+                "p_error": None, "p_events": records}
     from roomquest.community_formats import SOURCES as format_sources
     if (source.get("source_key") in format_sources or source.get("platform_adapter") == "library" or
             (source.get("platform_adapter") == "wordpress" and source.get("kind") == "rss")):

@@ -6,6 +6,9 @@ Date: **2026-11-18**. Approved scope: **at most ten independent candidate publis
 
 **This is a verified research/sample checkpoint, not an import or deployment receipt.** We have not activated any of the ten publishers, approved photos, or written events. All ten require source-specific worker/rights/venue tests before activation. No extra Postgres migration, PG17 squash work, cron or category backfill reset.
 
+
+**RSS pilot executed:** [three BiblioCommons RSS source verification receipts](bibliocommons-rss-batch01-canary-20261118.md) — the final cancellation-safe parser completed Central Rappahannock's 230 timed physical events; King County and Palm Beach both detected explicit publisher cancellations and are held until tombstone handling is verified. King County also exceeds the 500-record cap. Earlier exploratory Palm Beach 425-event parses must not be treated as an accepted final snapshot. Publisher content rights and all-day coverage remain on hold; 0 new sources enabled or published.
+
 ## Source-by-source research checkpoint
 
 | # | Candidate | What was actually observed | Status / next test |
