@@ -68,22 +68,55 @@ def expected_address_parts(address: str) -> tuple[str, str, str, str]:
     return street, city, state, postal
 
 
+# Only a county/state centroid is too broad to represent a physical event.
+# Geocodio's other documented tiers are its coordinates, not fabricated pins.
+ACCEPTED_ACCURACY_TYPES = frozenset({
+    "rooftop", "point", "range_interpolation", "nearest_rooftop_match",
+    "intersection", "street_center", "place",
+})
+
+
+def _street_without_number_and_unit(value: str) -> str:
+    """Compare the publisher and Geocodio street even when a suite is absent."""
+    main = re.sub(r"^[0-9][a-z0-9-]*\\s+", "", canonical(value))
+    return re.sub(
+        r"\\s+(?:ste|suite|unit|apt|apartment|#)\\s+[a-z0-9-]+$", "", main
+    )
+
+
 def address_matches(item: dict, address: str) -> bool:
-    """Allow postal locality/municipality differences while preserving street/state checks."""
+    """Trust provider-ranked coordinates while preventing wrong-state/area pins.
+
+    Exact addresses remain valid across postal-city names. For approximate
+    street matches, the city must agree, but house number/unit detail may be
+    absent or interpolated. Geocodio's 'place' means an approximate city pin.
+    """
     result_street, result_city, result_state, result_postal = result_address_parts(item)
     expected_street, expected_city, expected_state, expected_postal = expected_address_parts(address)
+    if not expected_street or not expected_city or not expected_state:
+        return False
+    if not result_state or result_state != expected_state:
+        return False
 
-    if not expected_street or not expected_state:
+    # Preserve the old exact-address path and its caller-supplied ZIP check.
+    if result_street == expected_street:
+        return not (expected_postal and result_postal and expected_postal != result_postal)
+
+    kind = item.get("accuracy_type")
+    if kind in {"place", "intersection"}:
+        return bool(result_city and result_city == expected_city)
+    if kind not in ACCEPTED_ACCURACY_TYPES:
         return False
-    if result_street != expected_street or result_state != expected_state:
+    if not result_city or result_city != expected_city:
         return False
 
-    # If both sides provide ZIP codes, require them to agree. The current queue
-    # normally stores normalized addresses without ZIP, so city is supporting
-    # context rather than an absolute equality gate.
-    if expected_postal and result_postal and expected_postal != result_postal:
-        return False
-    return bool(result_city or expected_city)
+    return bool(
+        _street_without_number_and_unit(result_street)
+        and _street_without_number_and_unit(result_street)
+        == _street_without_number_and_unit(expected_street)
+        and (kind not in {"rooftop", "point"}
+             or result_street.split(" ", 1)[0] == expected_street.split(" ", 1)[0])
+    )
 
 
 def coordinates(item: dict) -> tuple[float, float]:
@@ -104,27 +137,31 @@ def distance_m(a: dict, b: dict) -> float:
 
 
 def verify(payload: dict, address: str) -> dict | None:
-    """Compare exact street/city/state, not substrings or publisher geography."""
+    """Accept Geocodio's ranked usable point, retaining its precision label.
+
+    We no longer require 0.9+ rooftop/point accuracy or reject the top result
+    because a second, lower-ranked candidate exists. Country/state and street
+    or city evidence still stop obviously misplaced coordinates. Never treat
+    county/state centroids as a local venue.
+    """
     try:
         rows = payload.get("results")
         if not isinstance(rows, list) or not 1 <= len(rows) <= 2:
             return None
         first = rows[0]
         coordinates(first)
-        score = float(first.get("accuracy") or 0)
-        if (not math.isfinite(score) or not 0.9 <= score <= 1
-                or first.get("accuracy_type") not in {"rooftop", "point"}
+        score = float(first.get("accuracy"))
+        if (not math.isfinite(score) or not 0 <= score <= 1
+                or first.get("accuracy_type") not in ACCEPTED_ACCURACY_TYPES
                 or first.get("address_components", {}).get("country") not in {"US", "USA"}
                 or not address_matches(first, address)):
             return None
-        for other in rows[1:]:
-            if float(other.get("accuracy") or 0) > score - 0.2:
-                if not address_matches(other, address) or distance_m(first, other) > 50:
-                    return None
-        # Only provider evidence needed for verification is retained.
+
+        # Geocodio orders these by confidence. Keep the first valid coordinate,
+        # not a fabricated midpoint or a different, lower-ranked address.
         fields = {"address_components", "location", "accuracy", "accuracy_type",
                   "formatted_address", "source", "stable_address_key", "match_type"}
-        return {"results": [{k: v for k, v in row.items() if k in fields} for row in rows]}
+        return {"results": [{k: v for k, v in first.items() if k in fields}]}
     except (TypeError, ValueError, AttributeError, GeocodeFailure, OverflowError):
         return None
 
@@ -192,7 +229,7 @@ def _submit_failure_diagnostic(identity: dict, address: str, match: dict,
     expected_street, expected_city, expected_state, _ = expected_address_parts(address)
     try:
         score = float(first.get("accuracy") or 0)
-        score_valid = math.isfinite(score) and 0.9 <= score <= 1
+        score_valid = math.isfinite(score) and 0 <= score <= 1
     except (TypeError, ValueError, OverflowError):
         score_valid = False
 
@@ -222,7 +259,7 @@ def _submit_failure_diagnostic(identity: dict, address: str, match: dict,
         "empty_predirectional_component": empty_component("predirectional"),
         "empty_postdirectional_component": empty_component("postdirectional"),
         "score_valid": score_valid,
-        "accuracy_type_valid": first.get("accuracy_type") in ("rooftop", "point"),
+        "accuracy_type_valid": first.get("accuracy_type") in ACCEPTED_ACCURACY_TYPES,
         "country_valid": components.get("country") in ("US", "USA"),
     }
 
