@@ -137,3 +137,23 @@ def test_dance_publisher_canonical_www_host_no_unsafe_redirect():
     assert ak.ALLOWED_HOSTS[ak.DANCE] == ("www.alaskadancepromotions.com",)
     assert ak.event_url(ak.DANCE, "https://www.alaskadancepromotions.com/events/christmas")
     assert not ak.event_url(ak.DANCE, "https://alaskadancepromotions.com/events/christmas")
+
+
+def test_dance_multi_month_program_is_not_a_single_future_party():
+    """Official FNDL listing is one Oct-to-June span, not 32 dated Fridays."""
+    venue=dict(addressTitle="Alaska Dance Promotions",
+               addressLine1="300 E. Dimond Blvd, Ste 11A",
+               addressLine2="Anchorage, AK, 99515",
+               mapLat=61.1439843, mapLng=-149.8759416)
+    undated_series=event(ak.DANCE, "FNDL Friday Night Dance Lounge",
+                         "/events/fndl",venue,
+                         startDate=ms("2026-10-31T05:00:00Z"),
+                         endDate=ms("2027-06-12T09:00:00Z"))
+    actual_party=event(ak.DANCE,"Thanksgiving Dance Party",
+                       "/events/thanksgiving-dance-party",venue,
+                       startDate=ms("2026-11-28T06:00:00Z"),
+                       endDate=ms("2026-11-28T10:00:00Z"))
+    rows=ak.collect(source(ak.DANCE),fetch(undated_series,actual_party),now=NOW)
+    assert len(rows)==1
+    assert rows[0]["title"]=="Thanksgiving Dance Party"
+    assert rows[0]["ends_at"].startswith("2026-11-28")
