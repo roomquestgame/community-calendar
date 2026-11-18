@@ -28,6 +28,9 @@ ROSEMONT_REVIEWED_FEATURED_IMAGE = (
 def family(source_key, event_url):
     """Bind an enrolled publisher family to its own canonical event link."""
     try:
+        from roomquest import anchorage_batch20_tec
+        if source_key in anchorage_batch20_tec.SOURCES:
+            return 'anchorage_batch20_tec:' + source_key if anchorage_batch20_tec.event_url(source_key, event_url) else None
         from roomquest import anchorage_batch20
         if source_key in anchorage_batch20.SOURCES:
             return 'anchorage_batch20:' + source_key if anchorage_batch20.event_url(source_key, event_url) else None
@@ -197,6 +200,9 @@ def family(source_key, event_url):
 def image_url(value, publisher):
     if not isinstance(value, str) or len(value) > 2000:
         return None
+    if isinstance(publisher, str) and publisher.startswith('anchorage_batch20_tec:'):
+        from roomquest.anchorage_batch20_tec import photo_url as ak_batch_tec_photo_url
+        return ak_batch_tec_photo_url(publisher.removeprefix('anchorage_batch20_tec:'), value)
     if isinstance(publisher, str) and publisher.startswith('anchorage_batch20:'):
         from roomquest.anchorage_batch20 import photo_url as batch20_photo_url
         return batch20_photo_url(publisher.removeprefix('anchorage_batch20:'), value)
