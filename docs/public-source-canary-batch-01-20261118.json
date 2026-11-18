@@ -23,14 +23,14 @@
       "platform_candidate": "bibliocommons",
       "calendar_url": "https://kcls.bibliocommons.com/v2/events",
       "publisher_page": "https://kcls.org/",
-      "stage": "publisher_html_verified",
+      "stage": "reachable_json_rights_hold",
       "source_registered": false,
       "publication_verified": false,
       "evidence": [
         "https://kcls.bibliocommons.com/v2/events",
         "https://kcls.bibliocommons.com/v2/events/6ad65b51e06996003a848f28"
       ],
-      "blocker": "Gateway JSON / real worker access unconfirmed; source-owned offsite venue and recurrence must be validated",
+      "blocker": "Publisher gateway HTTP 200, 497 events in a 7-day request with complete structured IDs, descriptions and locations. High density needs bounded pagination. BiblioCommons platform content terms require specific allowed use; no JSON ingestion approval.",
       "gates": {
         "exact_feed_access": "pending",
         "future_occurrence_sample": "pending",
@@ -57,7 +57,10 @@
         "description_visible": true,
         "photo_rights_confirmed": false,
         "full_description_comparison": "source detail inspected; collector output not yet available"
-      }
+      },
+      "batch_disposition": "hold",
+      "raw_api_transport_status": 200,
+      "platform_content_rights": "unverified_or_restricted"
     },
     {
       "number": 2,
@@ -65,14 +68,14 @@
       "platform_candidate": "bibliocommons",
       "calendar_url": "https://librarypoint.bibliocommons.com/v2/events",
       "publisher_page": "https://www.librarypoint.org/",
-      "stage": "publisher_html_verified",
+      "stage": "reachable_json_rights_hold",
       "source_registered": false,
       "publication_verified": false,
       "evidence": [
         "https://librarypoint.bibliocommons.com/v2/events",
         "https://librarypoint.bibliocommons.com/v2/events/6a60f5ffc7e02e3d006ae958"
       ],
-      "blocker": "Gateway JSON / collector fields not verified; library branch and hybrid attendance evidence required",
+      "blocker": "Publisher gateway HTTP 200, 307 events over a 21-day window, complete structured branch addresses and source text. Terms prohibit automated harvesting/republication absent permission, so source remains held.",
       "gates": {
         "exact_feed_access": "pending",
         "future_occurrence_sample": "pending",
@@ -98,7 +101,10 @@
         "venue_evidence": "Porter Branch (specific address still unverified)",
         "description_visible": true,
         "photo_rights_confirmed": false
-      }
+      },
+      "batch_disposition": "hold",
+      "raw_api_transport_status": 200,
+      "platform_content_rights": "unverified_or_restricted"
     },
     {
       "number": 3,
@@ -106,14 +112,14 @@
       "platform_candidate": "bibliocommons",
       "calendar_url": "https://pbclibrary.bibliocommons.com/v2/events",
       "publisher_page": "https://www.pbclibrary.org/",
-      "stage": "publisher_html_verified",
+      "stage": "reachable_json_rights_hold",
       "source_registered": false,
       "publication_verified": false,
       "evidence": [
         "https://pbclibrary.bibliocommons.com/v2/events/",
         "https://pbclibrary.bibliocommons.com/v2/events/6aa2b004d96927005534573a"
       ],
-      "blocker": "Gateway JSON and branch/online status not verified",
+      "blocker": "Publisher gateway HTTP 200, actual sample JSON with named branch and descriptions. Source rights and 21-day pagination not verified, no production activation.",
       "gates": {
         "exact_feed_access": "pending",
         "future_occurrence_sample": "pending",
@@ -139,7 +145,10 @@
         "venue_evidence": "Glades Road Branch (address to verify)",
         "description_visible": true,
         "photo_rights_confirmed": false
-      }
+      },
+      "batch_disposition": "hold",
+      "raw_api_transport_status": 200,
+      "platform_content_rights": "unverified_or_restricted"
     },
     {
       "number": 4,
@@ -147,13 +156,13 @@
       "platform_candidate": "bibliocommons",
       "calendar_url": "https://fulcolibrary.bibliocommons.com/v2/events",
       "publisher_page": "https://www.fulcolibrary.org/",
-      "stage": "publisher_access_interrupted",
+      "stage": "publisher_access_blocked",
       "source_registered": false,
       "publication_verified": false,
       "evidence": [
         "https://fulcolibrary.bibliocommons.com/v2/events"
       ],
-      "blocker": "Direct access returned JavaScript/bot verification despite search-index event excerpts; do not bypass; try permitted first-party feed or request publisher access",
+      "blocker": "Direct publisher event page showed JavaScript/bot verification; no bypass attempted. Alternative permitted publisher feed required.",
       "gates": {
         "exact_feed_access": "pending",
         "future_occurrence_sample": "pending",
@@ -171,7 +180,8 @@
         "publication_rights_verified": false,
         "use_fallback_until_approved": true
       },
-      "source_http_observation": "bot_verification_screen"
+      "source_http_observation": "bot_verification_screen",
+      "batch_disposition": "hold"
     },
     {
       "number": 5,
@@ -179,13 +189,13 @@
       "platform_candidate": "communico_transition",
       "calendar_url": "https://www.cmlibrary.org/blog/coming-soon-new-online-calendar-room-reservations-and-more",
       "publisher_page": "https://www.cmlibrary.org/",
-      "stage": "platform_transition_hold",
+      "stage": "publisher_platform_cutover_hold",
       "source_registered": false,
       "publication_verified": false,
       "evidence": [
         "https://www.cmlibrary.org/blog/coming-soon-new-online-calendar-room-reservations-and-more"
       ],
-      "blocker": "Publisher announces event calendar moves from BiblioCommons to Communico November 19, 2026. Locate exact new publisher endpoint after switch; never register stale Biblio events",
+      "blocker": "Official Charlotte Mecklenburg Library plans calendar move to Communico on Nov. 19, 2026; avoid registering old Biblio endpoint before switch.",
       "gates": {
         "exact_feed_access": "pending",
         "future_occurrence_sample": "pending",
@@ -204,7 +214,8 @@
         "use_fallback_until_approved": true
       },
       "cutover_announced": "2026-11-19",
-      "old_event_calendar": "https://cmlibrary.bibliocommons.com/v2/events"
+      "old_event_calendar": "https://cmlibrary.bibliocommons.com/v2/events",
+      "batch_disposition": "hold"
     },
     {
       "number": 6,
@@ -212,13 +223,13 @@
       "platform_candidate": "chambermate",
       "calendar_url": "https://currituckchamberofcommerce.chambermate.com",
       "publisher_page": "https://www.currituckchamber.org/",
-      "stage": "publisher_platform_confirmed",
+      "stage": "valid_empty_chambermate_60day",
       "source_registered": false,
       "publication_verified": false,
       "evidence": [
         "https://www.currituckchamber.org/"
       ],
-      "blocker": "Official public site refers to live ChamberMate calendar; exact uncredentialed getEventsInfo payload, events, descriptions and rights untested",
+      "blocker": "Exact Currituck public ChamberMate tenant endpoint returned HTTP 200 and valid result wrapper with data.eventsCount=0 and events=[] in the 60-day window. Zero is not working upcoming coverage; keep on hold.",
       "gates": {
         "exact_feed_access": "pending",
         "future_occurrence_sample": "pending",
@@ -236,7 +247,10 @@
         "publication_rights_verified": false,
         "use_fallback_until_approved": true
       },
-      "api_tenant_identity_unconfirmed": true
+      "api_tenant_identity_unconfirmed": true,
+      "batch_disposition": "hold",
+      "raw_api_transport_status": 200,
+      "future_event_count_in_test_window": 0
     },
     {
       "number": 7,
@@ -244,14 +258,14 @@
       "platform_candidate": "chambermate_unresolved",
       "calendar_url": "https://www.grantspasschamber.org/",
       "publisher_page": "https://www.grantspasschamber.org/",
-      "stage": "exact_endpoint_hold",
+      "stage": "exact_tenant_unconfirmed",
       "source_registered": false,
       "publication_verified": false,
       "evidence": [
         "https://www.grantspasstribune.com/grants-pass-chamber-expands-digital-access-for-local-businesses-with-new-member-platform/",
         "https://www.grantspasschamber.org/"
       ],
-      "blocker": "Publisher announced ChamberMate conversion; no confirmed event-tenant name or API endpoint; do not derive a query from its domain",
+      "blocker": "ChamberMate conversion reported but exact public getEventsInfo tenant identity was not independently verified; no fabricated query or source registration.",
       "gates": {
         "exact_feed_access": "pending",
         "future_occurrence_sample": "pending",
@@ -268,7 +282,8 @@
         "byte_and_mime_verified": false,
         "publication_rights_verified": false,
         "use_fallback_until_approved": true
-      }
+      },
+      "batch_disposition": "hold"
     },
     {
       "number": 8,
@@ -283,7 +298,7 @@
         "https://enjoymountainhome.com/events",
         "https://enjoymountainhome.com/events/20261120-a-sherlock-carol/"
       ],
-      "blocker": "Official calendar+print event content both verified. Parser returned 4 future distinct occurrences with full original descriptions (416/583 chars), exact publisher event streets and correct timezone. All are held for missing verified coordinates; source rights, registration and media-stage evidence remain unverified.",
+      "blocker": "First-party parser verified real four future events, full publisher descriptions (416/583 characters) and exact local starts; all held missing verified geocodes; no image rights or published cards.",
       "gates": {
         "exact_feed_access": "passed",
         "future_occurrence_sample": "passed",
@@ -321,7 +336,8 @@
         "public_verified_records": 0,
         "unit_tests_passed": 8,
         "report": "docs/mountain-home-batch01-live-canary-20261118.md"
-      }
+      },
+      "batch_disposition": "hold"
     },
     {
       "number": 9,
@@ -329,14 +345,14 @@
       "platform_candidate": "drupal_fullcalendar",
       "calendar_url": "https://www.fairfaxcounty.gov/events/",
       "publisher_page": "https://www.fairfaxcounty.gov/",
-      "stage": "publisher_page_verified_parser_hold",
+      "stage": "drupal_adapter_pending",
       "source_registered": false,
       "publication_verified": false,
       "evidence": [
         "https://www.fairfaxcounty.gov/events/",
         "https://github.com/tophe112-source/mapsee-aggregator/blob/main/drupal_fullcalendar_sources.json"
       ],
-      "blocker": "Dynamic public events view lacks event records in static fetch; requires reviewed Drupal fullcalendar extractor and exact event street not county HQ",
+      "blocker": "Publisher site and Mapsee Drupal calendar research identified but no source-specific safe collector or future-event validation yet.",
       "gates": {
         "exact_feed_access": "pending",
         "future_occurrence_sample": "pending",
@@ -353,7 +369,8 @@
         "byte_and_mime_verified": false,
         "publication_rights_verified": false,
         "use_fallback_until_approved": true
-      }
+      },
+      "batch_disposition": "hold"
     },
     {
       "number": 10,
@@ -361,14 +378,14 @@
       "platform_candidate": "drupal_fullcalendar",
       "calendar_url": "https://parks.oc.gov/events",
       "publisher_page": "https://parks.oc.gov/events",
-      "stage": "publisher_calendar_verified_parser_hold",
+      "stage": "drupal_adapter_pending",
       "source_registered": false,
       "publication_verified": false,
       "evidence": [
         "https://parks.oc.gov/events",
         "https://github.com/tophe112-source/mapsee-aggregator/blob/main/drupal_fullcalendar_sources.json"
       ],
-      "blocker": "Live parks event calendar and source-specific Mapsee venue mappings exist; backend Drupal parser and location/sample parity untested",
+      "blocker": "Publisher site and Mapsee Drupal config identified but no source-specific safe collector or first-party image rights checks yet.",
       "gates": {
         "exact_feed_access": "pending",
         "future_occurrence_sample": "pending",
@@ -385,7 +402,15 @@
         "byte_and_mime_verified": false,
         "publication_rights_verified": false,
         "use_fallback_until_approved": true
-      }
+      },
+      "batch_disposition": "hold"
     }
-  ]
+  ],
+  "batch_01_summary": {
+    "evaluated": 10,
+    "approved_for_new_source_registration": 0,
+    "publicly_verified_new_sources": 0,
+    "reason": "Publisher rights, empty provider windows, transition, missing adapter, or event-specific geocodes; source eight has verified parser but remains venue-geo held.",
+    "next": "Complete source-specific fixes and geocoder/rights/media approval before permitting expansion beyond these ten."
+  }
 }
