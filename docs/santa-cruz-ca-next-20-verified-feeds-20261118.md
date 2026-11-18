@@ -2,7 +2,7 @@
 
 **Date of source checks:** November 18, 2026. This is a **new 20-source collector branch** and does not duplicate the preceding UCSC/Kuumbwa two-feed release or the six-source production batch (#266/#267). User instruction: pull **20 actual working feeds in each branch**, not twenty websites researched. This branch is **not merged or published**, and there is no new database migration.
 
-## Verified live collector previews (14 / 20)
+## Verified live collector previews (15 / 20)
 
 | # | New direct publisher and source key | Exact primary feed | Eligible future publisher events | Event location evidence | Full descriptions | Publisher photo candidates |
 |---:|---|---|---:|---|---|---:|
@@ -20,7 +20,8 @@
 | 12 | Santa Cruz Public Libraries — `santa_cruz_public_libraries_libnet_ca` | Official `santacruzpl.libnet.info/feeds?data=...` native ICS, then bounded original `/event/{id}` detail | **20** | Exact named public-library branches, first-party branch streets and 20 native, geographically validated library `GEO` points | 20 | 0 |
 | 13 | Capitola Village — capitola_village_events_ca | https://capitolavillage.com/wp-json/tribe/events/v1/events | **13** | All 13 native events use Cocoa Vino at 312 Capitola Avenue, Capitola CA 95010; missing-street offsite events excluded; no coordinates invented | 13 | 13 |
 | 14 | Santa Cruz Symphony — `santa_cruz_symphony_season_ca` | `https://santacruzsymphony.org/2026-27-concert-season-overview` and official Civic/Mello venue pages | **2** | Jan 16, 2027 Civic Auditorium (307 Church St., Santa Cruz) and Jan 17 Henry J. Mello Center (250 E. Beach St., Watsonville); original published times and 1h45 duration | 2 | 0 |
-| | **Total publisher dry-run occurrences** | | **191** | All fourteen sources have complete publisher event street evidence | **191** | **127** |
+| 15 | Santa Cruz Beach Boardwalk — `santa_cruz_beach_boardwalk_events_ca` | `https://beachboardwalk.com/events-and-entertainment/` with direct `https://beachboardwalk.com/brunch-with-santa/` detail and first-party Grove venue page | **1** | Brunch with Santa on Dec 13, 2026 9–11:30 a.m. at The Grove, **400 Beach Street, Santa Cruz**; sold-out movie and generic winter promotion excluded | 1 | 0 |
+| | **Total publisher dry-run occurrences** | | **192** | All fifteen sources have complete publisher event street evidence | **192** | **127** |
 
 Source dry-run counts are **not** unique, deduped or public EventQuest cards. Images are **unlicensed candidates** until downstream rights and bytes check. The same event may appear in First Friday and another organizer. Source keys, original event URL hosts, complete descriptions and real wall-time occurrences are source-bound. No invented map pins, times, recurrence or generic Other categories.
 
@@ -28,7 +29,7 @@ Source dry-run counts are **not** unique, deduped or public EventQuest cards. Im
 
 - Existing baseline targeted collector regression suite: **38 focused tests passed** in isolated Vercel sandbox, including new Madson/Jack/Stockwell fixtures; ten publisher sources exercised using the real guarded `preview_worker.preview_source` against primary sites (not test fixtures alone). All 138 accepted dry-run records have original full descriptions and event-specific streets.
 - `roomquest/preview_worker.py` uses the original guarded fetch, robots+SSRF host allowlist and bounded deadlines. The Events Calendar sources, Squarespace sources, and HTML event-detail sources have separate reviewed identities.
-- Current branch is **in development**. No PR merge, production Vercel deployment, source registration or fresh PG17 migration is claimed for these fourteen.
+- Current branch is **in development**. No PR merge, production Vercel deployment, source registration or fresh PG17 migration is claimed for these fifteen.
 - When the 20 **independent working and new** publishers are verified, group the collector adapters in a small number of coherent PRs, merge/test, deploy the Vercel production collector, then use **only** GitHub's protected `db-deploy.yml` to run a minimal forward-only source-enrollment migration. Never touch the 2026-11-17 PostgreSQL 17 history-only baseline or existing production users/events.
 - Live post-deployment checks must cover source uniqueness, complete preview receipts, downstream category evidence, street-level geocoding, rights/size image checks, duplicate suppression and public Home/Events/Map cards. Do not publish a source whose own feed is empty or blocked.
 
@@ -44,7 +45,7 @@ Source dry-run counts are **not** unique, deduped or public EventQuest cards. Im
 - **Life Lab:** a single upcoming event had a generic NYC map pin instead of event street evidence. **Bike Santa Cruz County:** a few future publisher events, but publisher calendar timezone `America/Tijuana` and mixed offsite venues require explicit timezone/location review.
 - **Explicit non-Santa-Cruz exclusion:** Santa Cruz Brewing Co (`santacruzbrews.com`) belongs to Santa Clarita, CA and must never be counted for this region.
 
-**Release contract:** the branch is 14/20 independently guarded event sources, **not** 20 publisher feeds, and remains undeployed until 20 distinct new sources are tested. Counts above are publisher previews, not unique or public EventQuest cards. Prior six batch-2 and UCSC/Kuumbwa are already separate deployed work.
+**Release contract:** the branch is 15/20 independently guarded event sources, **not** 20 publisher feeds, and remains undeployed until 20 distinct new sources are tested. Counts above are publisher previews, not unique or public EventQuest cards. Prior six batch-2 and UCSC/Kuumbwa are already separate deployed work.
 
 ## Candidate sources still not credited toward the 20
 
@@ -84,3 +85,7 @@ Next release gate: 13 of 20 independent verified new publisher feeds; seven rema
 ### November 18 — Verified fourteenth publisher: Santa Cruz Symphony
 
 Guarded `preview_worker.preview_source` in an isolated Vercel sandbox returned **2 future January 2027 concert occurrences** with original program prose (407 characters), exact first-party 7:30 p.m. / 2:00 p.m. `America/Los_Angeles` show times and explicitly published **1 hour 45 minutes** duration. The official venue pages independently confirmed **307 Church St., Santa Cruz CA 95060** and **250 E. Beach St., Watsonville CA 95076**. Both occurrences link to the same official season schedule with distinct publisher date/venue identities; dedicated per-occurrence pages are not claimed. Coordinates remain blank pending normal Geocodio; 0 image candidates. Four new focused tests and **30** targeted Santa Cruz regression tests passed in isolated sandbox. Unmerged development only—not a new Supabase source, Vercel deployment or public card.
+
+### November 18 — Verified fifteenth publisher: Santa Cruz Beach Boardwalk
+
+The first-party Boardwalk events listing, individual Brunch with Santa detail and original Grove venue page passed protected robots/hostname/deadline fetch. Live guarded collector preview admitted **1** future timed occurrence (Dec 13, 9–11:30 a.m. Pacific) with **945 characters** of complete first-party program narrative (schedule and menu) and **400 Beach Street, Santa Cruz, CA 95060** supported by official Grove venue evidence. No fake GPS or image rights; coordinates await Geocodio. The other December movie is **SOLD OUT** in its live detail and excluded; the December 4 group Holiday Bash is past its reservation deadline and not admitted. Year-round offers, winter date ranges and unreliable location-empty JSON-LD are not manufactured as dated cards. Four new source tests and **34 targeted Santa Cruz tests** passed. This is a development-only source, not new public cards, source enrollment or a Vercel production deploy.

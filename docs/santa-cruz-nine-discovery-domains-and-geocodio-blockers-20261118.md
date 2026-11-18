@@ -49,3 +49,7 @@ Both have `community_address_waits` (6 + 24), their `community_address_demand_ac
 ### November 18 Symphony verification update
 
 Publisher's original 2026–27 season calendar and its two official venue pages passed the guarded collector in an isolated Vercel sandbox. Two dated January 2027 shows have original clock times, durations, narrative and specific numbered addresses, with **no invented coordinates**. One newly verified source added to branch (14/20), with two dry-run event occurrences—not two sources or public cards. The two occurrences share the official calendar URL; no invented event-specific URLs. No production database or collector mutations.
+
+### November 18 Boardwalk guarded collector result
+
+Official Santa Cruz Beach Boardwalk source is now directly verified for **one** future eligible Brunch with Santa event; original organizer listing has exact local 9–11:30 clock, own detailed event page has full narrative, and own The Grove venue page confirms 400 Beach Street. The independently stored address is for this named venue only, not all Boardwalk locations. The Movie with Santa detail displays **SOLD OUT** and Winter Wonderland has select dates, so neither is fabricated as public dated cards. This single new publisher increases verified branch coverage to **15/20**; there are 192 aggregate dry-run occurrences and zero claims about newly public cards. The Boardwalk JSON-LD feed alone was insufficient; the bounded HTML source was used without bypassing robots. Still no production mutation or coordinate invention.
