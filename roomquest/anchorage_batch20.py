@@ -23,6 +23,7 @@ AWAKEN = "awaken_church_anchorage_ak"
 MAKING = "making_space_art_therapy_ak"
 ART = "the_art_lounge_anchorage_ak"
 JOULE = "joule_wellness_sound_bath_ak"
+DANCE = "alaska_dance_promotions_ak"
 
 SOURCES = {
     MAGNETIC: ("https://magneticnorthbrewingco.com/events", "json", "squarespace"),
@@ -32,6 +33,7 @@ SOURCES = {
     MAKING: ("https://www.makingspacetogether.com/events", "json", "squarespace"),
     ART: ("https://www.theartloungeak.com/classes-events", "json", "squarespace"),
     JOULE: ("https://www.joulewellness.co/events", "json", "squarespace"),
+    DANCE: ("https://alaskadancepromotions.com/events", "json", "squarespace"),
 }
 ALLOWED_HOSTS = {key: (urlsplit(tup[0]).hostname,) for key, tup in SOURCES.items()}
 VENUES = {
@@ -56,6 +58,9 @@ VENUES = {
     JOULE: ("Thrive Integrative Medicine",
             "3835 Spenard Road, Anchorage, AK", "Anchorage",
             (61.1857685, -149.9185543)),
+    DANCE: ("Alaska Dance Promotions",
+            "300 East Dimond Boulevard, Suite 11A, Anchorage, AK 99515", "Anchorage",
+            (61.1444086, -149.875721)),
 }
 logger = logging.getLogger(__name__)
 MAX_DESCRIPTION = 12000
@@ -69,6 +74,7 @@ URL_BY_KEY = {
     MAKING: re.compile(r"/events/[a-z0-9]+(?:-[a-z0-9]+)*/?"),
     ART: re.compile(r"/classes-events/[a-z0-9]+(?:-[a-z0-9]+)*/?"),
     JOULE: re.compile(r"/events/[a-z0-9]+(?:-[a-z0-9]+)*/?"),
+    DANCE: re.compile(r"/events/[a-z0-9]+(?:-[a-z0-9]+)*/?"),
 }
 PHOTO_PATH = re.compile(r"/content/v1/[A-Za-z0-9]+/[A-Za-z0-9_-]+/[^?#]+\.(?:jpe?g|png|webp)", re.I)
 PHOTO_BAD = re.compile(r"(?:^|[-_/])(?:favicon|logo|icon|avatar|pixel|placeholder)(?:[-_.]|$)", re.I)
@@ -134,6 +140,18 @@ def _official_site_venue(key, title, desc, location):
     loc_street = plain(location.get("addressLine1"))
     loc_city = plain(location.get("addressLine2"))
     point = _publisher_point(location)
+    if key == DANCE:
+        if (plain(location.get("addressTitle")).casefold() != "alaska dance promotions"
+                or loc_street.casefold() not in {
+                    "300 east dimond boulevard",
+                    "300 e. dimond blvd, ste 11a",
+                    "300 east dimond blvd, ste 11a"}
+                or loc_city.casefold() not in {
+                    "anchorage, ak, 99515", "anch, ak, 99515", "anchorage"}
+                or point is None or abs(point[0] - reviewed_point[0]) > 0.004
+                or abs(point[1] - reviewed_point[1]) > 0.008):
+            return None
+        return venue, street, city, point
     if key in (MAKING, ART, JOULE):
         expected = {
             MAKING: (r"1441 West Northern Lights Boulevard", r"Anchorage,\s*AK,\s*99503",
@@ -217,6 +235,13 @@ def _category(key, title):
     elif key == JOULE:
         if "sound bath" in t or "meditation" in t:
             return "health"
+    elif key == DANCE:
+        if "festival" in t:
+            return "festival"
+        if "christmas collection" in t:
+            return "movies_theater"
+        if "dance party" in t or "friday night dance lounge" in t:
+            return "party"
     return None
 
 
