@@ -104,7 +104,7 @@ def parse_calendar(html, *, now=None):
             raise ValueError("oc_parks_calendar_url_invalid")
         eid = e.get("eid")
         title = plain(e.get("title"))
-        if not re.fullmatch(r"[1-9]\d{1,10}", str(eid or "")) or not title:
+        if not re.fullmatch(r"[1-9]\d{0,10}", str(eid or "")) or not title:
             raise ValueError("oc_parks_calendar_identity_invalid")
         start, end = _date(e.get("start")), _date(e.get("end"))
         if end <= start:
