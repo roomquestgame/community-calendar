@@ -1447,6 +1447,30 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                 'p_venue_count': sum(row.get('lat') is not None for row in records),
                 'p_error': None, 'p_events': records,
                 'p_parser_capability': 'publisher_event_candidates_v1'}
+    from roomquest import santa_cruz_rio
+    if source_key == santa_cruz_rio.KEY:
+        deadline=min(monotonic()+36,deadline_at-8 if deadline_at is not None else float('inf'))
+        try:
+            records=santa_cruz_rio.collect(
+                source,lambda url,accept:fetch_publisher(
+                    url,accept,respect_robots=True,deadline_at=deadline,
+                    allowed_hosts=santa_cruz_rio.ALLOWED_HOSTS[source_key]),
+                deadline_at=deadline)
+            if len(records)>santa_cruz_rio.MAX_RECORDS or any(
+                not isinstance(r.get('description'),str) or not r['description'].strip()
+                or not isinstance(r.get('venue_address'),str)
+                or not r['venue_address'].strip() for r in records):
+                raise ValueError('rio_incomplete_event')
+        except PreviewError:raise
+        except (ValueError,TypeError,KeyError,OverflowError) as exc:
+            code=str(exc)
+            raise PreviewError(code if re.fullmatch(r'[a-z_]{3,100}',code)
+                               else 'invalid_rio_payload') from exc
+        samples=records[:MAX_PREVIEWS]
+        while len(json.dumps(samples,ensure_ascii=False))>18_000:samples.pop()
+        return {'p_source_key':source_key,'p_samples':samples,
+                'p_future_count':len(records),'p_venue_count':sum(r.get('lat') is not None for r in records),
+                'p_error':None,'p_events':records}
     from roomquest import santa_cruz_local_venues
     if source_key in santa_cruz_local_venues.SOURCES:
         deadline=min(monotonic()+36,deadline_at-8 if deadline_at is not None else float('inf'))
