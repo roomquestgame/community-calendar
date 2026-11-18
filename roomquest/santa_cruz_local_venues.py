@@ -56,7 +56,7 @@ def photo_url(key,value):
  if p.scheme!='https' or p.username or p.password or p.fragment or NO_IMAGE.search(p.path):return None
  if re.search(r'-\d{2,3}x\d{2,3}\.(?:jpe?g|png|webp)$',p.path,re.I):return None
  if key==WOODHOUSE and p.hostname=='images.squarespace-cdn.com' and re.fullmatch(
-   r'/content/v1/[a-zA-Z0-9]+/[^/?#]+\.(?:jpe?g|png|webp)',p.path,re.I):
+   r'/content/v1/[a-zA-Z0-9]+/[^/?#]+/[^/?#]+\.(?:jpe?g|png|webp)',p.path,re.I):
   return urlunsplit((p.scheme,p.netloc,p.path,'',''))
  if key==DISCRETION and p.hostname=='www.discretionbrewing.com' and not p.query and re.fullmatch(
    r'/wp-content/uploads/20\d{2}/(?:0?[1-9]|1[0-2])/[^/?#]+\.(?:jpe?g|png|webp)',p.path,re.I):
