@@ -21,17 +21,22 @@ log = logging.getLogger(__name__)
 ZONE = 'America/Los_Angeles'
 UCSC = 'uc_santa_cruz_primary_ca'
 KUUMBWA = 'kuumbwa_jazz_santa_cruz_ca'
+NATURAL_HISTORY = 'santa_cruz_museum_natural_history_ca'
+VISIT_SANTA_CRUZ = 'visit_santa_cruz_county_ca'
 API = '/wp-json/tribe/events/v1/events'
 SOURCES = {
     UCSC: ('https://events.ucsc.edu' + API, 'json', 'wordpress'),
     KUUMBWA: ('https://www.kuumbwajazz.org' + API, 'json', 'wordpress'),
+    NATURAL_HISTORY: ('https://santacruzmuseum.org' + API, 'json', 'wordpress'),
+    VISIT_SANTA_CRUZ: ('https://www.santacruz.org' + API, 'json', 'wordpress'),
 }
 ALLOWED_HOSTS = {key: (urlsplit(value[0]).hostname,) for key, value in SOURCES.items()}
-MAX_PAGES = {UCSC: 3, KUUMBWA: 1}
+MAX_PAGES = {UCSC: 3, KUUMBWA: 1, NATURAL_HISTORY: 1, VISIT_SANTA_CRUZ: 4}
 PAGE_SIZE = 100
 MAX_RECORDS = 200
 MAX_DESCRIPTION = 12000
 WINDOW_DAYS = 30
+SOURCE_WINDOW_DAYS = {VISIT_SANTA_CRUZ: 17}
 CITY_WHITELIST = {
     'santa cruz', 'aptos', 'capitola', 'watsonville', 'scotts valley',
     'felton', 'soquel', 'ben lomond', 'boulder creek', 'live oak',
@@ -42,7 +47,8 @@ STREET = re.compile(
     r'(?:street|st|road|rd|avenue|ave|boulevard|blvd|drive|dr|lane|ln|'
     r'court|ct|way|parkway|pkwy|place|pl|plaza|circle|cir|highway|hwy|'
     r'terrace|ter|trail|trl)\b\.?', re.I)
-IMAGE_HOST = {UCSC: 'events.ucsc.edu', KUUMBWA: 'www.kuumbwajazz.org'}
+IMAGE_HOST = {UCSC: 'events.ucsc.edu', KUUMBWA: 'www.kuumbwajazz.org',
+              NATURAL_HISTORY: 'santacruzmuseum.org', VISIT_SANTA_CRUZ: 'www.santacruz.org'}
 NO_IMAGE = re.compile(r'(?:^|[-_/])(?:logo|favicon|icon|avatar|placeholder|pixel)(?:[-_.]|$)', re.I)
 SMALL_IMAGE = re.compile(r'-[1-5][0-9]{1,2}x[1-5][0-9]{1,2}\.(?:png|jpe?g|webp)$', re.I)
 NONPUBLIC = re.compile(r'\b(?:cancelled|canceled|postponed|private event|members[- ]only|invite[- ]only)\b', re.I)
@@ -52,11 +58,14 @@ def event_url(key, value):
     if key not in SOURCES or not isinstance(value, str):
         return False
     url = urlsplit(value)
-    path = '/event/' if key == UCSC else '/calendar/'
+    path = ('/calendar/' if key == KUUMBWA else
+            '/upcoming-event/' if key == VISIT_SANTA_CRUZ else '/event/')
+    date_suffix = r'(?:20\d{2}-\d{2}-\d{2}/)?' if key in (NATURAL_HISTORY, VISIT_SANTA_CRUZ) else ''
     return bool(url.scheme == 'https' and url.hostname == ALLOWED_HOSTS[key][0]
                 and not url.username and not url.password and url.port in (None, 443)
                 and not url.query and not url.fragment
-                and re.fullmatch(path + r'[a-z0-9]+(?:-[a-z0-9]+)*/?', url.path))
+                and re.fullmatch(path + r'[a-z0-9]+(?:-[a-z0-9]+)*/' + date_suffix,
+                                 url.path))
 
 
 def photo_url(key, value):
@@ -147,6 +156,9 @@ def _row(key, event):
         log.info('santa_cruz_hold source=%s id=%s reason=description', key, identity[:80])
         return None
     link = event.get('url')
+    if key == VISIT_SANTA_CRUZ and not re.fullmatch(r'.*/20[0-9]{2}-[0-9]{2}-[0-9]{2}/', str(link)):
+        log.info('santa_cruz_hold source=%s id=%s reason=dated_occurrence',key,identity[:80])
+        return None
     if not event_url(key, link):
         log.info('santa_cruz_hold source=%s id=%s reason=event_url', key, identity[:80])
         return None
@@ -162,6 +174,8 @@ def _row(key, event):
     from roomquest.publisher_evidence import attach
     picture = event.get('image') if isinstance(event.get('image'), dict) else {}
     candidate = picture.get('url')
+    if key == VISIT_SANTA_CRUZ and re.search(r'(?:[_-]\d{2,4}x\d{2,4})\.',str(candidate),re.I):
+        candidate = None
     try:
         if picture.get('width') is not None and float(picture['width']) < 600:
             candidate = None
@@ -180,7 +194,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
     now = (now or datetime.now(timezone.utc)).astimezone(ZoneInfo(ZONE))
     deadline = min(monotonic() + 39, deadline_at or float('inf'))
     params = {'per_page': PAGE_SIZE, 'start_date': now.date().isoformat(),
-              'end_date': (now + timedelta(days=WINDOW_DAYS)).date().isoformat()}
+              'end_date': (now + timedelta(days=SOURCE_WINDOW_DAYS.get(key, WINDOW_DAYS))).date().isoformat()}
     rows = {}
     for page in range(1, MAX_PAGES[key] + 1):
         if monotonic() >= deadline:
