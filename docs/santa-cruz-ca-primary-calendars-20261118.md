@@ -13,6 +13,18 @@ Counts are publisher API records observed with a bounded read-only Vercel sandbo
 
 Santa Cruz 20-mile production discovery currently has no upcoming external event location records (read-only November 18 snapshot). Existing three Santa Cruz Public Libraries Mapsee iCalendar registrations remain enabled and approved but last showed zero future staged rows after October 28 checks; they are **not** re-registered. Existing nearby Ticketmaster, San Jose State Localist and other providers are untouched.
 
+## Real collector dry run (2026-11-18)
+
+After fixing UCSC's effective 50-record server-side pagination, the exact branch was executed in the isolated Vercel sandbox with the fork's guarded `preview_source` (robots, SSRF and host checks). All 7 focused adapter tests passed. The result, before any Supabase staging or publication:
+
+| Source | Accepted records | Nonblank sanitized descriptions | Event-specific streets | Publisher coordinates | Full-sized image candidates |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| UC Santa Cruz | **34** | **34** (488–6,040 characters) | **34** | **33** | **21** |
+| Kuumbwa Jazz | **18** | **18** (281–1,739 characters) | **18** | **0** (existing geocoder needed) | **18** |
+| **Total** | **52** | **52** | **52** | **33** | **39** |
+
+The 117 other publisher API rows were withheld or excluded (not necessarily all defective): event time already passed, all-day/undated, missing street, unsupported identity/venue, source-incompatible or other eligibility gates. The publisher API returned 169 rows total. The staging/publication result may differ and must be independently checked after enrollment. No image publication rights are granted by these candidate counts.
+
 ## Discovered but not newly enrolled
 
 - Santa Cruz Museum of Natural History, Santa Cruz Museum of Art & History, and Bookshop Santa Cruz have official live calendars but their tested WordPress routes or robots requests returned HTTP 403 in the isolated collector test. Do not bypass protections. Investigate approved first-party JSON/ICS or site-specific access only in later batches.
