@@ -39,6 +39,9 @@ DETAIL_TIME = re.compile(
     r"^(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun),?\s+([A-Za-z]+)\s+(\d{1,2}),\s*(\d{4})\s+"
     r"(\d{1,2}:\d{2}\s*[ap]m)\s*-\s*(\d{1,2}:\d{2}\s*[ap]m)\s*(PST|PDT)$", re.I)
 EXCLUDED_AREA_ADDRESS = "13333 Black Star Canyon Rd"
+CANCELLATION_TITLE = re.compile(
+    r"^\s*(?:(?:cancelled|canceled|postponed|rescheduled)\b|"
+    r"(?:this|the)\s+(?:event|program)\s+(?:has\s+been|is)\s+(?:cancelled|canceled)\b)", re.I)
 # Reviewed direct OC Parks location-node GPS (via 2026-10-11 public Mapsee
 # configuration); keys must match ALL official event-detail address fields.
 # Never use generic Black Star Canyon gateway or Mapsee's distant OSM centroids.
@@ -104,6 +107,11 @@ def parse_calendar(html, *, now=None):
             raise ValueError("oc_parks_calendar_url_invalid")
         eid = e.get("eid")
         title = plain(e.get("title"))
+        if CANCELLATION_TITLE.search(title):
+            # A cancelled row never becomes a newly scheduled event. Source
+            # release additionally requires a reviewed cancellation tombstone
+            # path for already-published occurrences.
+            continue
         if not re.fullmatch(r"[1-9]\d{0,10}", str(eid or "")) or not title:
             raise ValueError("oc_parks_calendar_identity_invalid")
         start, end = _date(e.get("start")), _date(e.get("end"))
@@ -146,6 +154,8 @@ def parse_detail(entry, html):
     soup = BeautifulSoup(html, "html.parser")
     title_node = soup.title
     page_title = plain(title_node.get_text(" ", strip=True)) if title_node else ""
+    if CANCELLATION_TITLE.search(page_title):
+        raise ValueError("oc_parks_detail_cancelled")
     if not page_title.endswith(" | OC Parks") or _norm(page_title[:-11]) != _norm(entry["title"]):
         raise ValueError("oc_parks_detail_title_mismatch")
     timing = soup.select_one(".info-date-time__body")
@@ -179,6 +189,8 @@ def parse_detail(entry, html):
     text = description(str(body), limit=DESCRIPTION_LIMIT + 1)
     if len(text) > DESCRIPTION_LIMIT:
         raise ValueError("oc_parks_description_requires_long_text_review")
+    if CANCELLATION_TITLE.search(text):
+        raise ValueError("oc_parks_detail_cancelled")
     if not text:
         raise ValueError("oc_parks_detail_description_missing")
     pin = _park_pin(street, city, postal)
@@ -219,6 +231,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
                 "oc_parks_detail_time_unverified",
                 "oc_parks_detail_schedule_mismatch",
                 "oc_parks_detail_title_mismatch",
+                "oc_parks_detail_cancelled",
             }:
                 continue   # Explicit partial admission, not a full publisher feed.
             raise
