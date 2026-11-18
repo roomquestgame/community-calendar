@@ -131,6 +131,15 @@ def _complete_ics_location(value):
     # documented 540 William Hilton Parkway. Correct only this exact venue.
     if name == "First Presbyterian Church" and street == "540 William Parkway" and city == "Hilton Head Island":
         street="540 William Hilton Pkwy"
+    # HHSO's Parish Life Center lists the *church office* at 31 Saint Gregory
+    # Drive. Beaufort County's official 2026 precinct/venue directory explicitly
+    # names the distinct Parish Life Center at 32 Saint Gregory Drive.
+    # Correct ONLY this exact publisher venue. Never infer a GPS or put it
+    # at the 31 church/school pin; let normal street geocoding evaluate 32.
+    # https://www.beaufortcountysc.gov/vote/Polling%20Locations%20--%20School%20Board%20District%207%20Special%20Election.html
+    if (name == "St. Gregory the Great Parish Life Center"
+            and street == "31 Saint Gregory Drive" and city == "Bluffton"):
+        street = "32 Saint Gregory Dr"
     address=_address(name, street, city)
     return (name,address,city) if address else None
 
