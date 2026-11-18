@@ -16,7 +16,7 @@
 | 8 | Jack O'Neill Restaurant — `jack_oneill_live_music_santa_cruz_ca` | `https://www.jackoneillrestaurant.com/live-music/` plus own dated artist detail pages | **9** | Official 175 W Cliff Drive. Event card's date and show times cross-checked against publisher details; one empty artist description held | 9 | 9 |
 | 9 | Stockwell Cellars — `stockwell_cellars_santa_cruz_ca` | `https://www.stockwellcellars.com/events?format=json` | **2** | Each Squarespace event independently confirms 1100 Fair Avenue, Santa Cruz; genuine publisher venue GPS accepted, fake NYC point rejected | 2 | 2 |
 | 10 | The Diversity Center — `diversity_center_santa_cruz_ca` | `https://www.diversitycenter.org/upcoming-events?format=json` | **17** | Verified physical-event venue `1117 Soquel Avenue, Santa Cruz CA`. Zoom-only and offsite listings withheld; no fake NYC default pin | 17 | 17 |
-| | **Total publisher dry-run occurrences** | | **155** | All nine sources have complete native street evidence | **155** | **114** |
+| | **Total publisher dry-run occurrences** | | **155** | All ten sources have complete publisher event street evidence | **155** | **114** |
 
 Source dry-run counts are **not** unique, deduped or public EventQuest cards. Images are **unlicensed candidates** until downstream rights and bytes check. The same event may appear in First Friday and another organizer. Source keys, original event URL hosts, complete descriptions and real wall-time occurrences are source-bound. No invented map pins, times, recurrence or generic Other categories.
 
