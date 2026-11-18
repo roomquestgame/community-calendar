@@ -9,6 +9,12 @@ This owner-approved discovery batch surveys GitHub/GitLab and original publisher
 - Clarksville ChamberMate already stages five future occurrences; four physically located future events are held for missing verified coordinates, and one virtual future event is held as remote. Its staged descriptions and photo **candidates** do not prove public photo licensing or readiness.
 - Dallas Parks includes the already-registered catID=14 ICS feed plus distinct category feeds; preserve exact query selectors.
 
+## Exact live source-key reconciliation
+
+The read-only comparison across all **3,881** municipal rows and **85** dedicated Localist rows is saved in `docs/public-source-leads-20261118-reconciled.json` (12 researched leads, 2026-11-18). Results: **4 already registered**, **4 pending exact publisher feed probes**, **2 lacking confirmed platform endpoints**, **2 requiring adapter/schema review**. All retain `auto_register: false` and `auto_publish: false`.
+
+A newly identified existing record is `municipal_mapsee_844b6c0e0aca1771e1a1646f` (NYC Permitted Events Socrata): **paused**, `preview_error=timezone_unresolved`, zero future staged; it needs a reviewed mapping/timezone repair, not a duplicate registration. The 4 existing rows include UCSB, Boston Public Library and Dallas Parks as above.
+
 ## Reproducible offline reconciliation
 `scripts/reconcile-public-source-leads.mjs` reads a manually researched lead manifest and current read-only registry JSON exports. It never opens network connections, queries a database, creates source records, executes collectors, modifies the PG17 schema, changes worker scheduling, or publishes images/events.
 
