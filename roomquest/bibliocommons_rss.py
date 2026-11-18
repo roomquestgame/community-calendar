@@ -141,7 +141,11 @@ def parse_page(payload, *, slug, zone, state, now, horizon):
             raise ValueError("bibliocommons_rss_end_before_start")
         if begins > horizon or (ending or begins) < now:
             continue
-        if _field(item, "is_cancelled") == "true" or _field(item, "is_virtual") == "true":
+        if _field(item, "is_cancelled") == "true":
+            # Snapshot disappearance alone does not retract previously published events.
+            # Require an explicit cancellation/tombstone contract before enabling.
+            raise ValueError("bibliocommons_rss_cancellation_requires_review")
+        if _field(item, "is_virtual") == "true":
             continue
         place, street, city, lat, lng = _geo(item.find(EVENT_NS + "location"), state)
         if not street:
