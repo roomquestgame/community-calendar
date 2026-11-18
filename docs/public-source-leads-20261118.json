@@ -1,0 +1,102 @@
+{
+  "audit_date": "2026-11-18",
+  "note": "Curated external leads; none automatically approved. No unpublished event or media rights inferred.",
+  "candidates": [
+    {
+      "name": "UC Santa Barbara",
+      "platform": "localist",
+      "url": "https://campuscalendar.ucsb.edu/api/2/events",
+      "reference": "https://developer.ucsb.edu/content/events",
+      "note": "Already registered, request_failed. Do not re-register.",
+      "verified": {}
+    },
+    {
+      "name": "Currituck Chamber of Commerce NC",
+      "platform": "chambermate",
+      "url": "https://currituckchamberofcommerce.chambermate.com",
+      "reference": "https://www.currituckchamber.org/",
+      "note": "Official member portal tenant; exact public event API and event payload must be tested.",
+      "verified": {}
+    },
+    {
+      "name": "Grants Pass and Josephine County Chamber OR",
+      "platform": "chambermate",
+      "url": "https://www.grantspasschamber.org/",
+      "reference": "https://www.grantspasstribune.com/grants-pass-chamber-expands-digital-access-for-local-businesses-with-new-member-platform/",
+      "note": "ChamberMate adoption verified in September 2026; tenant endpoint not confirmed.",
+      "verified": {}
+    },
+    {
+      "name": "Mountain Home Area Chamber AR",
+      "platform": "chambermate",
+      "url": "https://enjoymountainhome.com/events",
+      "reference": "https://enjoymountainhome.com/events",
+      "note": "Live event listings exist; ChamberMate tenant endpoint unverified.",
+      "verified": {}
+    },
+    {
+      "name": "Charlotte Mecklenburg Library NC",
+      "platform": "bibliocommons",
+      "url": "https://cmlibrary.bibliocommons.com/v2/events",
+      "reference": "https://github.com/tophe112-source/mapsee-aggregator/blob/main/bibliocommons_sources.json",
+      "note": "Catalog tenant lead; dense feed needs bounded pages and real description, image, location samples.",
+      "verified": {}
+    },
+    {
+      "name": "King County Library System WA",
+      "platform": "bibliocommons",
+      "url": "https://kcls.bibliocommons.com/v2/events",
+      "reference": "https://github.com/tophe112-source/mapsee-aggregator/blob/main/bibliocommons_sources.json",
+      "note": "Catalog tenant lead; current payload unverified.",
+      "verified": {}
+    },
+    {
+      "name": "Central Rappahannock Regional Library VA",
+      "platform": "bibliocommons",
+      "url": "https://librarypoint.bibliocommons.com/v2/events",
+      "reference": "https://github.com/tophe112-source/mapsee-aggregator/blob/main/bibliocommons_sources.json",
+      "note": "Catalog tenant lead; check branch addresses, descriptions and candidate images.",
+      "verified": {}
+    },
+    {
+      "name": "Boston Public Library MA",
+      "platform": "bibliocommons",
+      "url": "https://bpl.bibliocommons.com/v2/events",
+      "reference": "https://github.com/tophe112-source/mapsee-aggregator/blob/main/bibliocommons_sources.json",
+      "note": "Already approved under separate source key; skip.",
+      "verified": {}
+    },
+    {
+      "name": "Fairfax County VA Events",
+      "platform": "drupal_html",
+      "url": "https://www.fairfaxcounty.gov/events/",
+      "reference": "https://github.com/tophe112-source/mapsee-aggregator/blob/main/drupal_fullcalendar_sources.json",
+      "note": "Official Drupal FullCalendar and reviewed venue-map lead; parser admission not proven.",
+      "verified": {}
+    },
+    {
+      "name": "Orange County Parks CA",
+      "platform": "drupal_html",
+      "url": "https://parks.oc.gov/events",
+      "reference": "https://github.com/tophe112-source/mapsee-aggregator/blob/main/drupal_fullcalendar_sources.json",
+      "note": "Official parks Drupal calendar, parser adaptation and publisher rights review needed.",
+      "verified": {}
+    },
+    {
+      "name": "NYC Permitted Events Socrata",
+      "platform": "socrata",
+      "url": "https://data.cityofnewyork.us/resource/tvpp-9vvx.json",
+      "reference": "https://github.com/tophe112-source/mapsee-aggregator/blob/main/opendata_sources.json",
+      "note": "Existing municipal_mapsee_844b6c0e0aca1771e1a1646f is paused after timezone_unresolved; reviewed mapping/timezone repair needed, not a new source.",
+      "verified": {}
+    },
+    {
+      "name": "Dallas Parks Calendar TX",
+      "platform": "ical",
+      "url": "https://www.dallasparks.org/common/modules/iCalendar/iCalendar.aspx?catID=14&feed=calendar",
+      "reference": "https://github.com/tophe112-source/mapsee-aggregator",
+      "note": "Already municipal_mapsee_58a7b2aaf9ac4acbba023cbb, preserve selector.",
+      "verified": {}
+    }
+  ]
+}
