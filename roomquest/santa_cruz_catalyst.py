@@ -40,8 +40,7 @@ def _date(day,month_header,show_text):
  if not header or not match or not clock:return None
  try:
   date=datetime.strptime(f'{match.group(2)} {match.group(3)} {header.group(2)}','%b %d %Y').date()
-  weekday=datetime.strptime(match.group(1),'%a').weekday()
-  if date.weekday()!=weekday or date.strftime('%B')!=header.group(1):return None
+  if date.strftime('%a')!=match.group(1) or date.strftime('%B')!=header.group(1):return None
   hh=int(clock.group(1));mm=int(clock.group(2) or 0)
   if not 1<=hh<=12:return None
   hour=hh%12+(12 if clock.group(3).lower()=='pm' else 0)
