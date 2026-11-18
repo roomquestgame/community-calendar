@@ -30,3 +30,12 @@ Initial read-only classifier title+short-description probes: Holiday Pops and Li
 For production: collector PR, passing focused tests and Vercel READY; then one forward-only migration for approved verified source keys, guarded source publication/street/photo and category checks, and queued previews; then validate staged vs published counts, dedupe, descriptions, verified event-specific streets, category-null/Other and thumbnails. Current Postgres17 baseline and other city/provider records remain untouched. No routine per-source GitHub Actions runs.
 
 Follow-up: implement the 10 held venues only after a supported publisher endpoint/event-level facts and robots/rights check exists. An HTML 200 or regional aggregator listing is not sufficient.
+
+
+## 2026-11-18 exact Parish Life Center address correction
+
+HHSO's venue URL `https://hhso.org/locations/st-gregory-the-great-parish-life-center/` supplies `31 Saint Gregory Drive, Bluffton`, also used by the *St. Gregory the Great church/parish office*. However the **Beaufort County Board of Voter Registration and Elections**, which actually uses the **Parish Life Center** as a polling location, repeatedly and explicitly lists that **particular facility at `32 Saint Gregory Dr, Bluffton, SC 29909/29910`**. Official source: https://www.beaufortcountysc.gov/vote/Polling%20Locations%20--%20School%20Board%20District%207%20Special%20Election.html; the county 2017 project-site plan and 2026 notices corroborate number 32. This is an **actual verified distinction between two related venues**, not a street-number guess.
+
+Only the exact HHSO iCalendar location `St. Gregory the Great Parish Life Center, 31 Saint Gregory Drive, Bluffton, SC` is corrected to `32 Saint Gregory Dr, Bluffton, SC`; generic churches, unrelated venues and the official 31 church-office address stay untouched. The normal event geocoder evaluates the **corrected numbered venue**. No supplied geocoordinate is inferred from the church, neighboring Catholic school or city center; the event must remain pending if Geocodio cannot resolve the 32 address precisely enough. No client UI, category rules, direct event edits, PostgreSQL migrations, robot policy exceptions or image rights changed in this collector PR.
+
+A same-source first-collection replay is required after the corrected collector reaches production; the earlier 31-street staged snapshot must not be considered complete under this new venue evidence. Existing publication/dedupe retains source/recurrence identities.
