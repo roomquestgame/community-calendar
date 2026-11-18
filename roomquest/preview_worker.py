@@ -1370,7 +1370,7 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                     url, accept, respect_robots=True, deadline_at=deadline,
                     allowed_hosts=gainesville_sources.ALLOWED_HOSTS[source_key]),
                 deadline_at=deadline)
-            if any(not isinstance(row.get('description'), str) or not row['description'].strip()
+            if any(not isinstance(row.get('description'), str)
                    or len(row['description']) > gainesville_sources.MAX_DESCRIPTION
                    or not isinstance(row.get('venue_address'), str)
                    or not row['venue_address'].strip() for row in records):
