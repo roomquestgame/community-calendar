@@ -1447,6 +1447,33 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                 'p_venue_count': sum(row.get('lat') is not None for row in records),
                 'p_error': None, 'p_events': records,
                 'p_parser_capability': 'publisher_event_candidates_v1'}
+    from roomquest import santa_cruz_local_venues
+    if source_key in santa_cruz_local_venues.SOURCES:
+        deadline=min(monotonic()+36,deadline_at-8 if deadline_at is not None else float('inf'))
+        try:
+            records=santa_cruz_local_venues.collect(
+                source,lambda url,accept:fetch_publisher(
+                    url,accept,respect_robots=True,deadline_at=deadline,
+                    allowed_hosts=santa_cruz_local_venues.ALLOWED_HOSTS[source_key]),
+                deadline_at=deadline)
+            if len(records)>santa_cruz_local_venues.MAX_RECORDS or any(
+                not isinstance(row.get('description'),str) or not row['description'].strip()
+                or len(row['description'])>santa_cruz_local_venues.MAX_DESCRIPTION
+                or not isinstance(row.get('venue_address'),str)
+                or not row['venue_address'].strip() for row in records):
+                raise ValueError('santa_cruz_local_incomplete_event')
+        except PreviewError:
+            raise
+        except (ValueError,TypeError,KeyError,OverflowError) as exc:
+            code=str(exc)
+            raise PreviewError(code if re.fullmatch(r'[a-z_]{3,100}',code)
+                               else 'invalid_santa_cruz_local_payload') from exc
+        samples=records[:MAX_PREVIEWS]
+        while len(json.dumps(samples,ensure_ascii=False))>18_000:samples.pop()
+        return {'p_source_key':source_key,'p_samples':samples,
+                'p_future_count':len(records),
+                'p_venue_count':sum(row.get('lat') is not None for row in records),
+                'p_error':None,'p_events':records}
     from roomquest import santa_cruz_sources
     if source_key in santa_cruz_sources.SOURCES:
         deadline = min(monotonic() + 40,
