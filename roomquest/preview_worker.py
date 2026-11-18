@@ -2810,6 +2810,11 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
         'victoria_town_calendar_va', 'vance_county_arts_council_nc'))
     from roomquest.holly_hill_sources import publisher_media as holly_hill_media
     publisher_media = publisher_media or holly_hill_media(source)
+    from roomquest import knoxville_sources
+    # Knoxville Events Calendar sources join the reviewed WordPress image cohort.
+    publisher_media = publisher_media or (
+        source_key in knoxville_sources.SOURCES and source.get('kind') == 'json'
+        and source.get('platform_adapter') == 'wordpress')
     from roomquest import gulf_recurring, gulf_seasonal, gulf_venues
     publisher_media = publisher_media or (html and any(
         source_key in module.SOURCES for module in (gulf_recurring, gulf_seasonal, gulf_venues)))
