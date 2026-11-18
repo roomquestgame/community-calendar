@@ -49,3 +49,29 @@ Repeat fetches use stable publisher UID and occurrence timestamps. Unknown event
 - Production PR checklist (app/backend repo): source row, exact source support and event identity, full-description staging, venue-geocoder path, classification trigger checks, regression, dry run, single migration, deployment, read-only published event query, visual card verification.
 
 No CAPTCHA/Cloudflare workaround was attempted; sources that serve 403 robots checks remain withheld.
+
+
+## Follow-on Anchorage publisher batch — November 18, 2026
+
+Only sources *not already working in production* are included. Anchorage Public Library (151 published), Alaska Botanical Garden (7), and the existing Anchorage Park Foundation are not copied or registered again.
+
+| New primary publisher | Structured feed | Collector type | Dry-run eligible future events | Narrative, street and media |
+|---|---|---|---:|---|
+| Alaska Zoo | https://www.alaskazoo.org/event-calendar?month=december-2026&view=calendar&format=json | Existing Squarespace JSON monthly items; three bounded calendar months | **30** | 8 learn / 11 gardens_nature / 11 festival; 109–1,404 description chars; 4731 O'Malley Road, Anchorage AK 99507; venue-provided coordinates (61.1236344,-149.7908746); sampled original image HTTP 200, PNG 1080×1080 |
+| Cook Inlet Historical Society | https://www.cookinlethistoricalsociety.org/lecture-series?format=json | Existing Squarespace upcoming-event JSON | **1** | Learn; full 3,242-char description, official Anchorage Museum 625 C Street, Anchorage AK 99501 and publisher map 61.215893,-149.8846999; sampled image HTTP 200, JPEG 800×450 |
+
+The Zoo month pages had 18 November, 20 December, 3 January records. After 60-day/date, uniqueness, category, verified street/location and public-attendance filters, **30 eligible** remain. No duplicate occurrences, blanks, truncated descriptions or source-wide map pins. Promotions, private/member-only listings and invalid/offsite records are excluded. The Historical Society publisher's venue address used ZIP 99508 despite explicitly identifying 625 C Street at Anchorage Museum; the Museum's own official address is **99501**. We require the publisher's correct venue name/street and use the independently verified postal code; we never invent a street number. Source photos are candidates only, rights unreviewed.
+
+### Other primary organizers checked but not enrolled
+
+| Source | Reason withheld |
+|---|---|
+| UAA SeawolfLife public ICS — https://uaa.campusgroups.com/ics_helper | 620 raw VEVENT entries; 97 future parsed, but 73 future entries say "Sign in to download the location". The final ICS CDN host returned robots.txt 403 and the existing safe collector fetch returned dns_unavailable. Do not bypass access checks or fill private venue fields |
+| Anchorage Museum — https://www.anchoragemuseum.org/visit/calendar/ | Live first-party events and planetarium listings found, but a structured endpoint is not verified; retain as pending native API/ICS discovery, not a new unreviewed HTML scraper |
+| CenterTix / Alaska PAC — https://centertix.com/events/ | Live performances, but public structured endpoint unavailable/unverified; timeout during JSON probe; investigate safe presenter-specific feed |
+| 49th State Brewing — https://www.49thstatebrewing.com/anchorage/ | Earlier audit found 5 raw TEC API events; robots.txt returned 403 and event-level venue addresses were incomplete |
+| Anchorage Chamber — https://business.anchoragechamber.org/api/events | GrowthZone XML endpoint returned 240 raw entries; robots.txt 403 and event venue resolution incomplete |
+| Koot's — https://koots.com/ | Recurring weekly formats only, no verified upcoming dated machine-readable feed; don't manufacture recurrence dates |
+| Williwaw Social — https://williwawsocial.com/welcome/ | Official site says permanently closed; exclude completely |
+
+The 31 eligible events were validated directly against official publisher responses using the existing EventQuest sanitizer, date/timezone conversion, source-identity bounds and verified event venue points. Both current and new Anchorage adapter suites passed **13 pytest tests**. Both image samples resolved successfully but must not be published without appropriate image rights. Production collection and public visibility require a separate guarded source-registry release.
