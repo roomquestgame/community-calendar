@@ -1360,6 +1360,34 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                 'p_future_count': len(records),
                 'p_venue_count': sum(row.get('lat') is not None for row in records),
                 'p_error': None, 'p_events': records}
+    from roomquest import anchorage_batch20_wasilla
+    if source_key in anchorage_batch20_wasilla.SOURCES:
+        deadline = min(monotonic() + 38,
+                       deadline_at - 8 if deadline_at is not None else float('inf'))
+        try:
+            records = anchorage_batch20_wasilla.collect(
+                source, lambda url, accept: fetch_publisher(
+                    url, accept, respect_robots=True, deadline_at=deadline,
+                    allowed_hosts=anchorage_batch20_wasilla.ALLOWED_HOSTS[source_key]), deadline_at=deadline)
+            if any(not isinstance(row.get('description'), str) or not row['description'].strip()
+                   or len(row['description']) > anchorage_batch20_wasilla.MAX_DESCRIPTION
+                   or row.get('category') not in ('learn','create','music','hang_out')
+                   or row.get('venue_address') != anchorage_batch20_wasilla.VENUE[1]
+                   or row.get('lat') is not None or row.get('lng') is not None
+                   for row in records):
+                raise ValueError('wasilla_library_unverified_event')
+        except PreviewError:
+            raise
+        except (ValueError, TypeError, KeyError, OverflowError) as exc:
+            reason = str(exc)
+            raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}', reason)
+                               else 'invalid_wasilla_library_payload') from exc
+        samples = records[:MAX_PREVIEWS]
+        while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
+            samples.pop()
+        return {'p_source_key': source_key, 'p_samples': samples,
+                'p_future_count': len(records), 'p_venue_count': 0,
+                'p_error': None, 'p_events': records}
     from roomquest import anchorage_batch20_aiga
     if source_key in anchorage_batch20_aiga.SOURCES:
         deadline = min(monotonic() + 38,
