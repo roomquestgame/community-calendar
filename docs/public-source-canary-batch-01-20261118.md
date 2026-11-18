@@ -6,6 +6,9 @@ Date: **2026-11-18**. Approved scope: **at most ten independent candidate publis
 
 **This is a verified research/sample checkpoint, not an import or deployment receipt.** We have not activated any of the ten publishers, approved photos, or written events. All ten require source-specific worker/rights/venue tests before activation. No extra Postgres migration, PG17 squash work, cron or category backfill reset.
 
+
+**RSS pilot executed:** [three BiblioCommons RSS source verification receipts](bibliocommons-rss-batch01-canary-20261118.md) — Central Rappahannock 230 source-accurate timed/physical events; Palm Beach 425; King County held by >500-event cap. Publisher content rights and all-day coverage remain on hold; 0 new sources enabled or published.
+
 ## Source-by-source research checkpoint
 
 | # | Candidate | What was actually observed | Status / next test |
