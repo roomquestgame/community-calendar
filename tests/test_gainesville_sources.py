@@ -69,9 +69,17 @@ class GainesvilleTests(unittest.TestCase):
         self.assertAlmostEqual(row['lat'],34.2902575)
         self.assertEqual(row['timezone'],g.ZONE)
 
-    def test_empty_description_held(self):
-        self.assertIsNone(g._wordpress(wordpress_event(desc='   ')))
-        self.assertIsNone(g._squarespace(g.BLACKSTRAP,square_event(excerpt=''),datetime.now(timezone.utc)))
+    def test_missing_description_is_optional_not_fabricated(self):
+        wp = g._wordpress(wordpress_event(desc=''))
+        square = g._squarespace(g.BLACKSTRAP,square_event(excerpt=''),datetime.now(timezone.utc))
+        self.assertEqual(wp['description'], '')
+        self.assertEqual(square['description'], '')
+        self.assertTrue(wp['venue_address'])
+        self.assertTrue(square['venue_address'])
+
+    def test_offered_oversize_description_is_not_truncated(self):
+        with self.assertRaisesRegex(ValueError, 'publisher_description_limit'):
+            g._wordpress(wordpress_event(desc='<p>' + ('x' * 12010) + '</p>'))
 
     def test_low_res_and_untrusted_images(self):
         self.assertIsNone(g.photo_url(g.EXPLORE,'https://www.exploregainesville.org/wp-content/uploads/2026/11/painting-150x150.jpg'))
