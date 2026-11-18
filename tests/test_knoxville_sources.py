@@ -145,6 +145,28 @@ def test_makers_location_room_and_contraction_repair():
     assert all(r['timezone'] == knox.ZONE and r['description'].strip() for r in rows)
 
 
+def test_wordpress_sources_record_the_publisher_image_stage(monkeypatch):
+    from roomquest.preview_worker import _process_claimed_source
+    calls = []
+
+    def rpc(name, payload):
+        calls.append((name, payload))
+        return len(payload['p_events']) if name.endswith('record_staged_events') else None
+    monkeypatch.setattr(preview_worker, 'fetch_publisher',
+                        lambda url, accept, **kw: (FIXTURES / FIXTURE_FILES[knox.WDVX]).read_text(encoding='utf-8'))
+    monkeypatch.setattr(preview_worker, 'supabase_rpc', rpc)
+    assert _process_claimed_source(dict(source(knox.WDVX), id=1))['complete'] == 1
+    name, payload = calls[-1]
+    assert name == 'community_collector_record_preview_v3'
+    assert payload['p_parser_capability'] == 'publisher_event_candidates_v1'
+
+    calls.clear()
+    monkeypatch.setattr(preview_worker, 'fetch_publisher', lambda url, accept, **kw: makers_fetch()(url, accept))
+    assert _process_claimed_source(dict(source(knox.MAKERS), id=2))['complete'] == 1
+    assert calls[-1][0] == 'community_collector_record_preview_v2'
+    assert 'p_parser_capability' not in calls[-1][1]
+
+
 def test_worker_branch_enforces_completeness_and_image_capability(monkeypatch):
     def fake_fetch(url, accept, **kwargs):
         assert kwargs['respect_robots'] is True and kwargs['allowed_hosts'] == ('wdvx.com',)
