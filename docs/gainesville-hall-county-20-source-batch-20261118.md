@@ -1,0 +1,47 @@
+# Gainesville / Hall County, Georgia — 20 NEW direct event-source batch
+Research baseline: November 18, 2026 · Scope: Gainesville, Oakwood, Flowery Branch, Hall County and immediately adjacent municipalities.
+
+The owner explicitly requested **20 distinct new feeds** in addition to the four-source Gainesville batch already live. **Native publisher APIs, Localist, iCalendar, Squarespace, LibCal RSS and established collector formats come before Mapsee.** Do not count an existing production provider or a list of third-party aggregator cards as a new publisher. Dates, locations and native publisher event links are required. Complete available description/image fields are collected; missing description/image does not disqualify a valid event. Never fabricate street numbers or treat a source center as an event point.
+
+The table distinguishes actual publisher machine-readable **feeds** from public dated **calendars requiring extraction**. A public webpage is an event-source candidate, **not** a claim that RSS/ICS/JSON exists or that it has been registered.
+
+| # | New source / direct publisher URL | Type; current validation | Implementation status |
+|---|---|---|---|
+| 01 | [Blackshear Place Library](https://hallcountylibrary.libcal.com/rss.php?iid=6354&m=month&cid=18964) | LibCal RSS, 31 publisher entries; **23** valid future via actual collector, 23 narratives, exact street 2927 Atlanta Highway, Gainesville GA 30507 | This PR; native adapter |
+| 02 | [East Hall Library](https://hallcountylibrary.libcal.com/rss.php?iid=6354&m=month&cid=19167) | LibCal RSS, 16 entries; **14** valid future, 14 narratives; official street 3911 P Davidson Road, Gainesville GA 30507 | This PR; native adapter |
+| 03 | [Murrayville Library](https://hallcountylibrary.libcal.com/rss.php?iid=6354&m=month&cid=18965) | LibCal RSS, 24 entries; **23** valid future, 23 narratives; 4796 Thompson Bridge Road, Gainesville GA 30506 | This PR; native adapter |
+| 04 | [North Hall Tech Center](https://hallcountylibrary.libcal.com/rss.php?iid=6354&m=month&cid=18966) | LibCal RSS, 31 entries; **31** valid future; 4175 Nopone Road Suite B, Gainesville GA 30506 | This PR; native adapter |
+| 05 | [Spout Springs Library](https://hallcountylibrary.libcal.com/rss.php?iid=6354&m=month&cid=18955) | LibCal RSS, 44 entries; **40** valid future; 6488 Spout Springs Road, Flowery Branch GA 30542 | This PR; native adapter |
+| 06 | [Hall County commissioners](https://www.hallcounty.org/common/modules/iCalendar/iCalendar.aspx?catID=63&feed=calendar) | CivicPlus iCalendar, public 200; two upcoming **timed** public meetings in checked 60-day window, exact government center street in VEVENT | Next; county civic feed |
+| 07 | [Hall County tax assessors](https://www.hallcounty.org/common/modules/iCalendar/iCalendar.aspx?catID=71&feed=calendar) | CivicPlus iCalendar, public 200; two upcoming timed meetings checked, exact government center street in VEVENT | Next; county civic feed |
+| 08 | [Hall County planning outreach](https://www.hallcounty.org/common/modules/iCalendar/iCalendar.aspx?catID=74&feed=calendar) | CivicPlus iCalendar, public 200; two upcoming timed public-participation meetings with actual publisher location | Next; county civic feed |
+| 09 | [City of Flowery Branch](https://www.flowerybranchga.org/calendar.php) | First-party Revize calendar, public event calendar and native Revize asset observed; extract dated event details and civic-vs-public split | Native Revize review |
+| 10 | [NoFo Brew Co. — Gainesville](https://www.nofobrew.co/wp-json/wp/v2/events?per_page=20) | Native WP REST custom `events` endpoint HTTP 200 with **19** event posts; venue schedules also on official Gainesville pages. The WP post date is **not automatically the event date**, so the event date/venue must be parsed independently. | Adapter review |
+| 11 | [The Arts Council](https://www.theartscouncil.net/events?format=json) | Squarespace event JSON HTTP 200, future shows on publisher. 2026 near-term event streets need per-event proof; never use Smithgall headquarters for off-site performances. | Squarespace review |
+| 12 | [Lanier Islands Resort](https://www.lanierislands.com/events/?month=November&view=tiles&year=2026) | Public dated events HTML (HTTP 200), multiple JSON-LD Event candidates; 7000 Lanier Islands Pkwy, Buford GA 30518 is publisher resort, not universal event-venue address. | HTML/JSON-LD review |
+| 13 | [Explore Braselton official tourism events](https://www.explorebraselton.com/event-list) | Publisher event listing HTML/Wix 200 with many upcoming timed events, each with its own venue; not an invented ICS feed | Wix/event data review |
+| 14 | [Northeast Georgia History Center](https://www.negahc.org/events) | First-party upcoming events HTML HTTP 200; dated homeschool days, history lectures, heritage craft and music sessions; per-event schedules/registration need extraction. | HTML schedule review |
+| 15 | [University of North Georgia Music Events](https://ung.edu/music/music-events.php) | Official HTML calendar 200, dated/venue-specific music and recital events; filter Gainesville/Oakwood campus rather than indiscriminately publishing Dahlonega campus. | HTML schedule review |
+| 16 | [University of North Georgia Public Events](https://ung.edu/calendars/public-events-calendar.php) | University webpage HTTP 200 includes public CollegeNet 25Live/Trumba widget; public event widget collection and per-campus venue filtering still require validation. | CollegeNet review |
+| 17 | [Flowery Branch Winery & Vineyard](https://www.fbwinery.com/events) | Official live events page HTTP 200, Wix-built; local shows and themed events; check event-specific dates rather than assuming website modification date. 5773 Conner Road, Flowery Branch GA 30542 is the on-site venue when source confirms. | Wix event review |
+| 18 | [City of Buford Calendar](https://www.cityofbuford.com/calendar) | Official public calendar 200 showing 2026 dated council, hearings, court and holiday festival entries; distinguish service closures vs public events. | Municipal HTML review |
+| 19 | [Town of Clermont Calendar](https://clermontga.com/town-calendar) | Official public monthly calendar 200; 2026 Christmas parade and town meetings with dates/times. Festival park vs town hall require event-specific location. | Municipal HTML review |
+| 20 | [Barefoot Sailing Club](https://www.barefootsailingclub.org/upcoming-races) | Publisher race schedule with dated 2026 regattas, LARC and club meetups; multiple true venues (Aqualand parking, LLSC Clubhouse and elsewhere) require event-owned coordinates/addresses. | Wix calendar review |
+
+**Machine-readable, directly verified:** #01–08, #10–11 (some not yet publishable). **HTML/calendar widget validated:** #09, #12–20. Count = **20 distinct previously unregistered sources**, not **20 deployed collectors**. Only #01–05 have passed full collector dry runs as of this file. Other 15 must pass parser/date/venue/robots audits before production registration.
+
+## Held and excluded sources, deliberately not counted among 20
+- Existing official botanical garden events are already in EventQuest via previously registered source; do not register a duplicate.
+- Existing Explore Gainesville, Blackstrap, Brenau, Gainesville Library on the Square already have source rows; do not count as NEW.
+- Meeple Madness Tockify ICS: has real dates but `robots.txt` disallows automated feed fetching; **do not bypass**.
+- Greater Hall Chamber GrowthZone event calendar is public in a browser but HTTP 403 to approved collector; held pending permitted access route.
+- Buford City Schools Edlio events page returns 403 to collector; held.
+- Hall County Chicopee Ag Center ICS `catID=72` is accessible but its four upcoming entries only have RFC DATE, not meeting times. Do not invent event start hours.
+- Hall County main ICS contains holiday office closures; civic notices may be kept in Civic, but don't turn closures into general Events.
+- Elachee Nature Science Center has outdoor programs but the homepage is not evidence of a dated usable event feed, so it is a **reserve** source until its registration calendar is verified.
+
+## Focused acceptance and live facts
+- Each #01–05 is registered in the **collector's exact source-key/LibCal campus+feed allowlist** for a future backend migration, not a production DB row. All addresses are verified independently in Hall County's facilities documents; user-level geocoder can refine.
+- Preview uses existing `preview_source`, publisher robots/10-second crawl-delay, existing LibCal RSS XML parsing, timed event checks, sanitization (12k per-source limit), exact first-party event URL and per-branch campus equality. No source-wide venue point, guessing, duplicate feed reuse, off-branch events, or blank-description holds.
+- Dry run in Vercel Sandbox for five branch feeds: **23 + 14 + 23 + 31 + 40 = 131 valid future event occurrences**, all 131 with publisher descriptions and source-owned address, zero image offers. 21 focused tests passed. No raw total (146) is misrepresented as imported cards.
+- Deployment sequence: collector PR -> Vercel production READY with exact SHA -> single app-repo migration registering **only the five audited sources** -> GitHub protected DB deploy -> production health/staged/geocoder/event checks. Remaining 15 are separate individually reviewed direct-source adapters and should be imported in later safe batches without introducing unvalidated live-source rows.

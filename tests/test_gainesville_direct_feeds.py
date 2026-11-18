@@ -58,7 +58,7 @@ def meeple_event(*, location='Meeple Madness, 7400 Spout Springs Rd Suite 205, F
 
 class DirectGainesvilleTests(unittest.TestCase):
     def test_source_keys_are_direct_not_mapsee(self):
-        self.assertEqual(set(g.SOURCES), {g.BRENAU, g.MEEPLE, g.LIBRARY})
+        self.assertEqual(set(g.SOURCES), {g.BRENAU, g.MEEPLE, *g.LIBRARY_PROFILES})
         self.assertTrue(all(not k.startswith('municipal_mapsee_') for k in g.SOURCES))
         for key, spec in g.SOURCES.items():
             changed={**source(key), 'feed_url':spec[0]+'-injected'}
@@ -103,6 +103,35 @@ class DirectGainesvilleTests(unittest.TestCase):
         self.assertEqual(rows[0]['venue_address'],g.LIBRARY_STREET)
         self.assertIn('',[x['description'] for x in rows])
         self.assertIn('Library book club',[x['description'] for x in rows])
+
+    def test_each_hall_library_branch_has_distinct_verified_publisher_feed(self):
+        self.assertEqual(len(g.LIBRARY_PROFILES), 6)
+        self.assertEqual(len({p[0] for p in g.LIBRARY_PROFILES.values()}), 6)
+        self.assertEqual(len({p[2] for p in g.LIBRARY_PROFILES.values()}), 6)
+        for key, (cid, campus, street, city) in g.LIBRARY_PROFILES.items():
+            with self.subTest(key=key):
+                self.assertEqual(g.SOURCES[key][0],
+                    f'https://hallcountylibrary.libcal.com/rss.php?iid=6354&m=month&cid={cid}')
+                item = lib_event(eventid=str(18000000+cid), campus=campus,
+                                 desc='First-party adult and youth program details')
+                rows = g.collect(source(key), lambda *_: rss([item]))
+                self.assertEqual(len(rows), 1)
+                self.assertEqual(rows[0]['venue_address'], street)
+                self.assertEqual(rows[0]['venue_city'], city)
+                self.assertEqual(rows[0]['description'],
+                                 'First-party adult and youth program details')
+                self.assertTrue(rows[0]['venue_name'].startswith(campus))
+                self.assertIsNone(rows[0].get('image_url'))
+                invalid = lib_event(eventid=str(19000000+cid), campus='Incorrect Branch')
+                self.assertEqual(g.collect(source(key), lambda *_:rss([invalid])), [])
+
+    def test_new_branch_missing_description_is_allowed(self):
+        key = 'hall_library_spout_springs_ga'
+        rows = g.collect(source(key), lambda *_:rss([
+            lib_event(eventid='18345001', campus=g.LIBRARY_PROFILES[key][1], desc='')]))
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]['description'], '')
+        self.assertEqual(rows[0]['venue_city'], 'Flowery Branch')
 
     def test_library_all_day_and_wrong_campus_are_held(self):
         items=[lib_event(start='00:00:00',end='23:59:59'),
