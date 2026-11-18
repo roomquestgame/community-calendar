@@ -1,5 +1,7 @@
 # EventQuest public collector expansion — Batch 01 / 10 sources
 
+**Executed bounded pilot:** [Mountain Home live four-event canary](mountain-home-batch01-live-canary-20261118.md) — actual HTML collector tests passed (8/8), 4 full-description records, **0 verified geocoded/public events**. No source registration. BiblioCommons JSON ingestion remains on hold for publisher rights; Currituck's 60-day ChamberMate API window returned zero events.
+
 Date: **2026-11-18**. Approved scope: **at most ten independent candidate publishers per canary**. The exact machine-readable source list, evidence URLs and outstanding gate states are in [Batch 01 JSON](public-source-canary-batch-01-20261118.json).
 
 **This is a verified research/sample checkpoint, not an import or deployment receipt.** We have not activated any of the ten publishers, approved photos, or written events. All ten require source-specific worker/rights/venue tests before activation. No extra Postgres migration, PG17 squash work, cron or category backfill reset.
