@@ -66,10 +66,14 @@ def photo_url(key, value):
 
 def _narrative(value):
     from roomquest.event_description import description
+    if value is None or value == '':
+        return ''
     if not isinstance(value, str):
-        return None
+        raise ValueError('invalid_event_description')
     text = description(value, limit=max(len(value), MAX_DESCRIPTION + 1))
-    return text if text and len(text) <= MAX_DESCRIPTION else None
+    if len(text) > MAX_DESCRIPTION:
+        raise ValueError('publisher_description_limit')
+    return text
 
 def _street(street, city, state, postal=''):
     street, city, state, postal = map(plain, (street, city, state, postal))
@@ -120,8 +124,6 @@ def _wordpress(item):
     except (ValueError,TypeError,KeyError):
         _hold(EXPLORE,identity,'date_conflict');return None
     narrative = _narrative(item.get('description'))
-    if not narrative:
-        _hold(EXPLORE,identity,'description_missing');return None
     link=item.get('url')
     if not event_url(EXPLORE,link):
         _hold(EXPLORE,identity,'event_url_invalid');return None
@@ -161,8 +163,6 @@ def _squarespace(key,item,now):
     if not now-timedelta(hours=24)<=start<=now+timedelta(days=WINDOW_DAYS):
         return None
     narrative=_narrative(item.get('body')) or _narrative(item.get('excerpt'))
-    if not narrative:
-        _hold(key,identity,'description_missing');return None
     link=urljoin(SOURCES[key][0],item.get('fullUrl') or '')
     if not event_url(key,link):
         _hold(key,identity,'event_url_invalid');return None
