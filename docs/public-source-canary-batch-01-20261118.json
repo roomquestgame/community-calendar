@@ -1,0 +1,379 @@
+{
+  "title": "EventQuest external collector canary — Batch 01",
+  "as_of_date": "2026-11-18",
+  "batch_size_limit": 10,
+  "source_count": 10,
+  "approvals": "Candidate evaluation authorized; do not auto-enable or imply publication without verified publisher facts and image rights. No source registration in this commit.",
+  "rules": "Source-preserving, bounded, demand-aware existing collector. No new pg17 migration, cron, reclassification reset or guest-facing feed. Rights and secure worker publication remain separately verified.",
+  "acceptance_checks": [
+    "exact_feed_access",
+    "future_occurrence_sample",
+    "source_description_parity",
+    "venue_address_evidence",
+    "timezone_and_recurrence",
+    "categories_and_audience",
+    "publisher_terms",
+    "cross_source_dedupe",
+    "media_policy"
+  ],
+  "items": [
+    {
+      "number": 1,
+      "name": "King County Library System, WA",
+      "platform_candidate": "bibliocommons",
+      "calendar_url": "https://kcls.bibliocommons.com/v2/events",
+      "publisher_page": "https://kcls.org/",
+      "stage": "publisher_html_verified",
+      "source_registered": false,
+      "publication_verified": false,
+      "evidence": [
+        "https://kcls.bibliocommons.com/v2/events",
+        "https://kcls.bibliocommons.com/v2/events/6ad65b51e06996003a848f28"
+      ],
+      "blocker": "Gateway JSON / real worker access unconfirmed; source-owned offsite venue and recurrence must be validated",
+      "gates": {
+        "exact_feed_access": "pending",
+        "future_occurrence_sample": "pending",
+        "source_description_parity": "pending",
+        "venue_address_evidence": "pending",
+        "timezone_and_recurrence": "pending",
+        "categories_and_audience": "pending",
+        "publisher_terms": "pending",
+        "cross_source_dedupe": "pending",
+        "media_policy": "pending"
+      },
+      "media": {
+        "image_candidate_verified": false,
+        "byte_and_mime_verified": false,
+        "publication_rights_verified": false,
+        "use_fallback_until_approved": true
+      },
+      "publisher_listing_count_observed": 4260,
+      "detail_sample": {
+        "title": "StoryWalk at MacFarland Park",
+        "original_url": "https://kcls.bibliocommons.com/v2/events/6ad65b51e06996003a848f28",
+        "schedule": "Oct 14–Nov 24, 2026, all day",
+        "venue_evidence": "MacFarland Park, 1401 Chinook Avenue, Enumclaw, WA",
+        "description_visible": true,
+        "photo_rights_confirmed": false,
+        "full_description_comparison": "source detail inspected; collector output not yet available"
+      }
+    },
+    {
+      "number": 2,
+      "name": "Central Rappahannock Regional Library, VA",
+      "platform_candidate": "bibliocommons",
+      "calendar_url": "https://librarypoint.bibliocommons.com/v2/events",
+      "publisher_page": "https://www.librarypoint.org/",
+      "stage": "publisher_html_verified",
+      "source_registered": false,
+      "publication_verified": false,
+      "evidence": [
+        "https://librarypoint.bibliocommons.com/v2/events",
+        "https://librarypoint.bibliocommons.com/v2/events/6a60f5ffc7e02e3d006ae958"
+      ],
+      "blocker": "Gateway JSON / collector fields not verified; library branch and hybrid attendance evidence required",
+      "gates": {
+        "exact_feed_access": "pending",
+        "future_occurrence_sample": "pending",
+        "source_description_parity": "pending",
+        "venue_address_evidence": "pending",
+        "timezone_and_recurrence": "pending",
+        "categories_and_audience": "pending",
+        "publisher_terms": "pending",
+        "cross_source_dedupe": "pending",
+        "media_policy": "pending"
+      },
+      "media": {
+        "image_candidate_verified": false,
+        "byte_and_mime_verified": false,
+        "publication_rights_verified": false,
+        "use_fallback_until_approved": true
+      },
+      "publisher_listing_count_observed": 1498,
+      "detail_sample": {
+        "title": "Hybrid Teen Book Group: Nonfiction November",
+        "original_url": "https://librarypoint.bibliocommons.com/v2/events/6a60f5ffc7e02e3d006ae958",
+        "schedule": "Nov 12, 2026, 5:30–6:30 pm (past example)",
+        "venue_evidence": "Porter Branch (specific address still unverified)",
+        "description_visible": true,
+        "photo_rights_confirmed": false
+      }
+    },
+    {
+      "number": 3,
+      "name": "Palm Beach County Library System, FL",
+      "platform_candidate": "bibliocommons",
+      "calendar_url": "https://pbclibrary.bibliocommons.com/v2/events",
+      "publisher_page": "https://www.pbclibrary.org/",
+      "stage": "publisher_html_verified",
+      "source_registered": false,
+      "publication_verified": false,
+      "evidence": [
+        "https://pbclibrary.bibliocommons.com/v2/events/",
+        "https://pbclibrary.bibliocommons.com/v2/events/6aa2b004d96927005534573a"
+      ],
+      "blocker": "Gateway JSON and branch/online status not verified",
+      "gates": {
+        "exact_feed_access": "pending",
+        "future_occurrence_sample": "pending",
+        "source_description_parity": "pending",
+        "venue_address_evidence": "pending",
+        "timezone_and_recurrence": "pending",
+        "categories_and_audience": "pending",
+        "publisher_terms": "pending",
+        "cross_source_dedupe": "pending",
+        "media_policy": "pending"
+      },
+      "media": {
+        "image_candidate_verified": false,
+        "byte_and_mime_verified": false,
+        "publication_rights_verified": false,
+        "use_fallback_until_approved": true
+      },
+      "publisher_listing_count_observed": 2097,
+      "detail_sample": {
+        "title": "T is for Turkey",
+        "original_url": "https://pbclibrary.bibliocommons.com/v2/events/6aa2b004d96927005534573a",
+        "schedule": "Nov 12, 2026 (past example)",
+        "venue_evidence": "Glades Road Branch (address to verify)",
+        "description_visible": true,
+        "photo_rights_confirmed": false
+      }
+    },
+    {
+      "number": 4,
+      "name": "Fulton County Library System, GA",
+      "platform_candidate": "bibliocommons",
+      "calendar_url": "https://fulcolibrary.bibliocommons.com/v2/events",
+      "publisher_page": "https://www.fulcolibrary.org/",
+      "stage": "publisher_access_interrupted",
+      "source_registered": false,
+      "publication_verified": false,
+      "evidence": [
+        "https://fulcolibrary.bibliocommons.com/v2/events"
+      ],
+      "blocker": "Direct access returned JavaScript/bot verification despite search-index event excerpts; do not bypass; try permitted first-party feed or request publisher access",
+      "gates": {
+        "exact_feed_access": "pending",
+        "future_occurrence_sample": "pending",
+        "source_description_parity": "pending",
+        "venue_address_evidence": "pending",
+        "timezone_and_recurrence": "pending",
+        "categories_and_audience": "pending",
+        "publisher_terms": "pending",
+        "cross_source_dedupe": "pending",
+        "media_policy": "pending"
+      },
+      "media": {
+        "image_candidate_verified": false,
+        "byte_and_mime_verified": false,
+        "publication_rights_verified": false,
+        "use_fallback_until_approved": true
+      },
+      "source_http_observation": "bot_verification_screen"
+    },
+    {
+      "number": 5,
+      "name": "Charlotte Mecklenburg Library, NC",
+      "platform_candidate": "communico_transition",
+      "calendar_url": "https://www.cmlibrary.org/blog/coming-soon-new-online-calendar-room-reservations-and-more",
+      "publisher_page": "https://www.cmlibrary.org/",
+      "stage": "platform_transition_hold",
+      "source_registered": false,
+      "publication_verified": false,
+      "evidence": [
+        "https://www.cmlibrary.org/blog/coming-soon-new-online-calendar-room-reservations-and-more"
+      ],
+      "blocker": "Publisher announces event calendar moves from BiblioCommons to Communico November 19, 2026. Locate exact new publisher endpoint after switch; never register stale Biblio events",
+      "gates": {
+        "exact_feed_access": "pending",
+        "future_occurrence_sample": "pending",
+        "source_description_parity": "pending",
+        "venue_address_evidence": "pending",
+        "timezone_and_recurrence": "pending",
+        "categories_and_audience": "pending",
+        "publisher_terms": "pending",
+        "cross_source_dedupe": "pending",
+        "media_policy": "pending"
+      },
+      "media": {
+        "image_candidate_verified": false,
+        "byte_and_mime_verified": false,
+        "publication_rights_verified": false,
+        "use_fallback_until_approved": true
+      },
+      "cutover_announced": "2026-11-19",
+      "old_event_calendar": "https://cmlibrary.bibliocommons.com/v2/events"
+    },
+    {
+      "number": 6,
+      "name": "Currituck Chamber of Commerce, NC",
+      "platform_candidate": "chambermate",
+      "calendar_url": "https://currituckchamberofcommerce.chambermate.com",
+      "publisher_page": "https://www.currituckchamber.org/",
+      "stage": "publisher_platform_confirmed",
+      "source_registered": false,
+      "publication_verified": false,
+      "evidence": [
+        "https://www.currituckchamber.org/"
+      ],
+      "blocker": "Official public site refers to live ChamberMate calendar; exact uncredentialed getEventsInfo payload, events, descriptions and rights untested",
+      "gates": {
+        "exact_feed_access": "pending",
+        "future_occurrence_sample": "pending",
+        "source_description_parity": "pending",
+        "venue_address_evidence": "pending",
+        "timezone_and_recurrence": "pending",
+        "categories_and_audience": "pending",
+        "publisher_terms": "pending",
+        "cross_source_dedupe": "pending",
+        "media_policy": "pending"
+      },
+      "media": {
+        "image_candidate_verified": false,
+        "byte_and_mime_verified": false,
+        "publication_rights_verified": false,
+        "use_fallback_until_approved": true
+      },
+      "api_tenant_identity_unconfirmed": true
+    },
+    {
+      "number": 7,
+      "name": "Grants Pass & Josephine County Chamber, OR",
+      "platform_candidate": "chambermate_unresolved",
+      "calendar_url": "https://www.grantspasschamber.org/",
+      "publisher_page": "https://www.grantspasschamber.org/",
+      "stage": "exact_endpoint_hold",
+      "source_registered": false,
+      "publication_verified": false,
+      "evidence": [
+        "https://www.grantspasstribune.com/grants-pass-chamber-expands-digital-access-for-local-businesses-with-new-member-platform/",
+        "https://www.grantspasschamber.org/"
+      ],
+      "blocker": "Publisher announced ChamberMate conversion; no confirmed event-tenant name or API endpoint; do not derive a query from its domain",
+      "gates": {
+        "exact_feed_access": "pending",
+        "future_occurrence_sample": "pending",
+        "source_description_parity": "pending",
+        "venue_address_evidence": "pending",
+        "timezone_and_recurrence": "pending",
+        "categories_and_audience": "pending",
+        "publisher_terms": "pending",
+        "cross_source_dedupe": "pending",
+        "media_policy": "pending"
+      },
+      "media": {
+        "image_candidate_verified": false,
+        "byte_and_mime_verified": false,
+        "publication_rights_verified": false,
+        "use_fallback_until_approved": true
+      }
+    },
+    {
+      "number": 8,
+      "name": "Mountain Home Area Chamber, AR",
+      "platform_candidate": "publisher_html",
+      "calendar_url": "https://enjoymountainhome.com/events",
+      "publisher_page": "https://enjoymountainhome.com/events",
+      "stage": "publisher_event_detail_verified",
+      "source_registered": false,
+      "publication_verified": false,
+      "evidence": [
+        "https://enjoymountainhome.com/events",
+        "https://enjoymountainhome.com/events/20261120-a-sherlock-carol/"
+      ],
+      "blocker": "Website credits VisionAmp; do not assume ChamberMate. Direct detail supports title/date/time/venue/full prose; venue street+timezone and independent publisher rights need downstream checks. Only sponsor logos seen; no verified event photo",
+      "gates": {
+        "exact_feed_access": "pending",
+        "future_occurrence_sample": "pending",
+        "source_description_parity": "pending",
+        "venue_address_evidence": "pending",
+        "timezone_and_recurrence": "pending",
+        "categories_and_audience": "pending",
+        "publisher_terms": "pending",
+        "cross_source_dedupe": "pending",
+        "media_policy": "pending"
+      },
+      "media": {
+        "image_candidate_verified": false,
+        "byte_and_mime_verified": false,
+        "publication_rights_verified": false,
+        "use_fallback_until_approved": true
+      },
+      "detail_sample": {
+        "title": "A SHERLOCK CAROL",
+        "original_url": "https://enjoymountainhome.com/events/20261120-a-sherlock-carol/",
+        "schedule": "2026-11-20 7:00 pm local",
+        "venue_evidence": "Twin Lakes Playhouse, 600 West 6th Street, Mountain Home, Arkansas",
+        "description_visible": true,
+        "photo_rights_confirmed": false
+      },
+      "image_note": "No verified event-owned image; use normal fallback"
+    },
+    {
+      "number": 9,
+      "name": "Fairfax County Government Events, VA",
+      "platform_candidate": "drupal_fullcalendar",
+      "calendar_url": "https://www.fairfaxcounty.gov/events/",
+      "publisher_page": "https://www.fairfaxcounty.gov/",
+      "stage": "publisher_page_verified_parser_hold",
+      "source_registered": false,
+      "publication_verified": false,
+      "evidence": [
+        "https://www.fairfaxcounty.gov/events/",
+        "https://github.com/tophe112-source/mapsee-aggregator/blob/main/drupal_fullcalendar_sources.json"
+      ],
+      "blocker": "Dynamic public events view lacks event records in static fetch; requires reviewed Drupal fullcalendar extractor and exact event street not county HQ",
+      "gates": {
+        "exact_feed_access": "pending",
+        "future_occurrence_sample": "pending",
+        "source_description_parity": "pending",
+        "venue_address_evidence": "pending",
+        "timezone_and_recurrence": "pending",
+        "categories_and_audience": "pending",
+        "publisher_terms": "pending",
+        "cross_source_dedupe": "pending",
+        "media_policy": "pending"
+      },
+      "media": {
+        "image_candidate_verified": false,
+        "byte_and_mime_verified": false,
+        "publication_rights_verified": false,
+        "use_fallback_until_approved": true
+      }
+    },
+    {
+      "number": 10,
+      "name": "Orange County Parks, CA",
+      "platform_candidate": "drupal_fullcalendar",
+      "calendar_url": "https://parks.oc.gov/events",
+      "publisher_page": "https://parks.oc.gov/events",
+      "stage": "publisher_calendar_verified_parser_hold",
+      "source_registered": false,
+      "publication_verified": false,
+      "evidence": [
+        "https://parks.oc.gov/events",
+        "https://github.com/tophe112-source/mapsee-aggregator/blob/main/drupal_fullcalendar_sources.json"
+      ],
+      "blocker": "Live parks event calendar and source-specific Mapsee venue mappings exist; backend Drupal parser and location/sample parity untested",
+      "gates": {
+        "exact_feed_access": "pending",
+        "future_occurrence_sample": "pending",
+        "source_description_parity": "pending",
+        "venue_address_evidence": "pending",
+        "timezone_and_recurrence": "pending",
+        "categories_and_audience": "pending",
+        "publisher_terms": "pending",
+        "cross_source_dedupe": "pending",
+        "media_policy": "pending"
+      },
+      "media": {
+        "image_candidate_verified": false,
+        "byte_and_mime_verified": false,
+        "publication_rights_verified": false,
+        "use_fallback_until_approved": true
+      }
+    }
+  ]
+}

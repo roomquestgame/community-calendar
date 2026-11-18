@@ -1,5 +1,10 @@
 # External public-calendar leads — audited November 18, 2026
 
+## November 18 follow-up: first ten-source validation cohort
+
+The owner approved handling future external collector expansions in **groups of ten**, with publisher-event, complete description, precise venue, category, image validation and actual public-card verification before expanding. [Batch 01](public-source-canary-batch-01-20261118.md) records the exact ten, original publisher evidence and current holds; its [machine-readable manifest](public-source-canary-batch-01-20261118.json) and [read-only checker](tools/audit-public-source-canary.mjs) deliberately cannot activate sources. Charlotte Mecklenburg is changing to Communico on November 19, so its old Biblio calendar is withheld; Mountain Home's independently verified official page is HTML/VisionAmp, not assumed ChamberMate. No registrations, production writes, cron or migration changes.
+
+
 This owner-approved discovery batch surveys GitHub/GitLab and original publisher sites for supported EventQuest feed families. It **does not activate or scrape new publishers**. The evidence manifest is `docs/public-source-leads-20261118.json`.
 
 ## Production read-only overlap
