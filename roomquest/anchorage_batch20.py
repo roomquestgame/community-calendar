@@ -61,7 +61,7 @@ VENUES = {
             "3835 Spenard Road, Anchorage, AK", "Anchorage",
             (61.1857685, -149.9185543)),
     DANCE: ("Alaska Dance Promotions",
-            "300 East Dimond Boulevard, Suite 11A, Anchorage, AK 99515", "Anchorage",
+            "300 East Dimond Boulevard #11A, Anchorage, AK 99515", "Anchorage",
             (61.1444086, -149.875721)),
     MATSU_SOCIAL: ("Chepo's", "3001 Sun Mountain Avenue, Wasilla, AK 99654", "Wasilla",
                    (61.5723678, -149.3880472)),
@@ -283,6 +283,12 @@ def _row(key, event, now):
         return None
     starts, ends = timestamp(start_raw), timestamp(end_raw)
     if ends <= starts or ends <= now or starts > now + timedelta(days=WINDOW_DAYS):
+        return None
+    if key == DANCE and (starts < now or ends - starts > timedelta(hours=20)):
+        # The publisher describes a multi-month weekly dance SERIES as one
+        # VEVENT-like interval. No concrete weekly occurrence dates are supplied;
+        # keep it out until verified rather than showing a fictitious 224-day card.
+        _hold(key, identity, "dance_series_without_dated_occurrences")
         return None
     desc = _description(event.get("body") or event.get("excerpt"))
     if not desc:
