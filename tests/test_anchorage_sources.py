@@ -114,4 +114,4 @@ def test_worker_preview_routes_through_bounded_existing_fetch(monkeypatch):
     result = preview_worker.preview_source(source(ak.LIBRARY))
     assert result['p_future_count'] == len(result['p_events']) == 1
     assert result['p_events'][0]['category'] == 'learn'
-    assert result['p_parser_capability'] == 'publisher_event_candidates_v1'
+    assert 'p_parser_capability' not in result  # Backend V3 is not enabled for ICS/Squarespace.
