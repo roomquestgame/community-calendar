@@ -2177,6 +2177,10 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
             from roomquest.biblioevents import GATEWAY, collect as collect_html
             allowed_hosts = (GATEWAY,)
             html_budget = 36
+        elif source_key == 'mountain_home_chamber_calendar_ar':
+            from roomquest.mountain_home_chamber import HOST, collect as collect_html
+            allowed_hosts = (HOST,)
+            html_budget = 30
         elif source_key == 'council_bluffs_public_library_ia':
             from roomquest.council_bluffs_library import HOST, collect as collect_html
             allowed_hosts = (HOST,)
