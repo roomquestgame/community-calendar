@@ -2,7 +2,7 @@
 
 **Date of source checks:** November 18, 2026. This is a **new 20-source collector branch** and does not duplicate the preceding UCSC/Kuumbwa two-feed release or the six-source production batch (#266/#267). User instruction: pull **20 actual working feeds in each branch**, not twenty websites researched. This branch is **not merged or published**, and there is no new database migration.
 
-## Verified live collector previews (11 / 20)
+## Verified live collector previews (12 / 20)
 
 | # | New direct publisher and source key | Exact primary feed | Eligible future publisher events | Event location evidence | Full descriptions | Publisher photo candidates |
 |---:|---|---|---:|---|---|---:|
@@ -17,7 +17,8 @@
 | 9 | Stockwell Cellars — `stockwell_cellars_santa_cruz_ca` | `https://www.stockwellcellars.com/events?format=json` | **2** | Each Squarespace event independently confirms 1100 Fair Avenue, Santa Cruz; genuine publisher venue GPS accepted, fake NYC point rejected | 2 | 2 |
 | 10 | The Diversity Center — `diversity_center_santa_cruz_ca` | `https://www.diversitycenter.org/upcoming-events?format=json` | **17** | Verified physical-event venue `1117 Soquel Avenue, Santa Cruz CA`. Zoom-only and offsite listings withheld; no fake NYC default pin | 17 | 17 |
 | 11 | Wines of Santa Cruz Mountains — `wines_santa_cruz_mountains_ca` | `https://winesofthesantacruzmountains.com/events/` plus reviewed own detail | **1** | Explicit official Swift Street Courtyard check-in: **334 Ingalls St Suite A, Santa Cruz**; other wine-walk stops are not assigned this address; no invented coordinates | 1 | 0 |
-| | **Total publisher dry-run occurrences** | | **156** | All eleven sources have complete publisher event street evidence | **156** | **114** |
+| 12 | Santa Cruz Public Libraries — `santa_cruz_public_libraries_libnet_ca` | Official `santacruzpl.libnet.info/feeds?data=...` native ICS, then bounded original `/event/{id}` detail | **20** | Exact named public-library branches, first-party branch streets and 20 native, geographically validated library `GEO` points | 20 | 0 |
+| | **Total publisher dry-run occurrences** | | **176** | All twelve sources have complete publisher event street evidence | **176** | **114** |
 
 Source dry-run counts are **not** unique, deduped or public EventQuest cards. Images are **unlicensed candidates** until downstream rights and bytes check. The same event may appear in First Friday and another organizer. Source keys, original event URL hosts, complete descriptions and real wall-time occurrences are source-bound. No invented map pins, times, recurrence or generic Other categories.
 
@@ -25,7 +26,7 @@ Source dry-run counts are **not** unique, deduped or public EventQuest cards. Im
 
 - Existing baseline targeted collector regression suite: **38 focused tests passed** in isolated Vercel sandbox, including new Madson/Jack/Stockwell fixtures; ten publisher sources exercised using the real guarded `preview_worker.preview_source` against primary sites (not test fixtures alone). All 138 accepted dry-run records have original full descriptions and event-specific streets.
 - `roomquest/preview_worker.py` uses the original guarded fetch, robots+SSRF host allowlist and bounded deadlines. The Events Calendar sources, Squarespace sources, and HTML event-detail sources have separate reviewed identities.
-- Current branch is **in development**. No PR merge, production Vercel deployment, source registration or fresh PG17 migration is claimed for these eleven.
+- Current branch is **in development**. No PR merge, production Vercel deployment, source registration or fresh PG17 migration is claimed for these twelve.
 - When the 20 **independent working and new** publishers are verified, group the collector adapters in a small number of coherent PRs, merge/test, deploy the Vercel production collector, then use **only** GitHub's protected `db-deploy.yml` to run a minimal forward-only source-enrollment migration. Never touch the 2026-11-17 PostgreSQL 17 history-only baseline or existing production users/events.
 - Live post-deployment checks must cover source uniqueness, complete preview receipts, downstream category evidence, street-level geocoding, rights/size image checks, duplicate suppression and public Home/Events/Map cards. Do not publish a source whose own feed is empty or blocked.
 
@@ -41,7 +42,7 @@ Source dry-run counts are **not** unique, deduped or public EventQuest cards. Im
 - **Life Lab:** a single upcoming event had a generic NYC map pin instead of event street evidence. **Bike Santa Cruz County:** a few future publisher events, but publisher calendar timezone `America/Tijuana` and mixed offsite venues require explicit timezone/location review.
 - **Explicit non-Santa-Cruz exclusion:** Santa Cruz Brewing Co (`santacruzbrews.com`) belongs to Santa Clarita, CA and must never be counted for this region.
 
-**Release contract:** the branch is 11/20 independently guarded event sources, **not** 20 publisher feeds, and remains undeployed until 20 distinct new sources are tested. Counts above are publisher previews, not unique or public EventQuest cards. Prior six batch-2 and UCSC/Kuumbwa are already separate deployed work.
+**Release contract:** the branch is 12/20 independently guarded event sources, **not** 20 publisher feeds, and remains undeployed until 20 distinct new sources are tested. Counts above are publisher previews, not unique or public EventQuest cards. Prior six batch-2 and UCSC/Kuumbwa are already separate deployed work.
 
 ## Candidate sources still not credited toward the 20
 
@@ -58,3 +59,12 @@ Exact official calendar: `https://winesofthesantacruzmountains.com/events/`. Sco
 **Explicit hold:** Pajaro Valley Arts `https://pvarts.org/upcoming/` shows current future publisher programs with exact original event detail pages, but the official guarded RoomQuest robots preflight returns `robots_denied`. The dated 2023 ICS cannot substitute for it. Experimental adapter was withheld, **not counted**; do not bypass publisher access.
 
 **Production read-only follow-up:** Discretion Brewing has **24** and Woodhouse **6** future `community_staged_events` with `decision=include`, full text and source health OK, but **zero** corresponding future `external_events` each. Both have historical publication observations and no outstanding request. Museum and Kuumbwa have published external rows despite stage coordinates missing, so **missing geocoding is not an established root cause**. Investigate the publisher/serving contract with safe read-only observations; any remediation must be a protected forward-only GitHub database migration. These 30 staged source occurrences are not claimed public cards.
+
+
+### November 18 — Verified twelfth publisher: Santa Cruz Public Libraries
+
+First-party Communico Libnet calendar: \`https://santacruzpl.libnet.info/feeds?data=...\`, using the library website's own documented iCal feed filters with \`location=all\`; the exact base64-encoded identity is fixed in \`roomquest/santa_cruz_libnet.py\`. Robots permits the feed and \`/event/{id}\` detail routes. The native response contains **500** individually dated, confirmed VEVENT records, with explicit UTC starts/ends, numeric publisher event IDs, location names, source categories and publisher GEO fields (including some rejected 0,0 placeholders). The full calendar is far larger than a safe bounded detail pull: the guarded collector reviewed **26** of the earliest eligible future items and admitted **20** with full original event narratives, exact matching local-clock start/end, official branch street address and 20 valid publisher-origin coordinates; **0 images** are claimed. The provider's repeated disclaimer was removed from card prose, while the publisher's actual program details were retained. The 20 are **not** 500 validated, deduped, staged or publicly served cards; coverage is deliberately bounded to 10 days/26 original details per preview and requires a scale-up architecture review before claiming complete library coverage.
+
+Five new isolation regression tests passed (source identity, full detail, virtual/short/mismatched details, fake GPS, publisher evidence and preview integration). Live guarded preview passed in 23.4 seconds, 20 eligible occurrences, with robots, host and deadline enforcement. Production remains untouched.
+
+**Further source holds from the same audit:** Santa Cruz Shakespeare declares a 20-second robots crawl delay; City of Santa Cruz events directory robots request returned HTTP 403; Felton Music Hall's official JSON-LD has two future listings but no description and its corresponding first-party \`/shows/\` detail links currently returned HTTP 404. Roaring Camp has official dated seasonal programs but complex recurrence/departure clocks and venue specificity still require authoritative event-level checks. None of these is counted as another working publisher.

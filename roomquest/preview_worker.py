@@ -1600,6 +1600,34 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         return {'p_source_key':source_key,'p_samples':samples,
                 'p_future_count':len(records),'p_venue_count':0,
                 'p_error':None,'p_events':records}
+    from roomquest import santa_cruz_libnet
+    if source_key == santa_cruz_libnet.KEY:
+        deadline = min(monotonic() + 45, deadline_at - 6 if deadline_at is not None else float('inf'))
+        try:
+            records = santa_cruz_libnet.collect(
+                source, lambda url, accept: fetch_publisher(
+                    url, accept, respect_robots=True, deadline_at=deadline,
+                    allowed_hosts=santa_cruz_libnet.ALLOWED_HOSTS[source_key]),
+                deadline_at=deadline)
+            if not records or len(records) > santa_cruz_libnet.MAX_EVENTS or any(
+                not isinstance(r.get('description'), str) or not r['description'].strip()
+                or len(r['description']) > santa_cruz_libnet.MAX_DESCRIPTION
+                or not isinstance(r.get('venue_address'), str) or not r['venue_address'].strip()
+                for r in records
+            ):
+                raise ValueError('santa_cruz_library_incomplete_preview')
+        except PreviewError:
+            raise
+        except (ValueError, TypeError, KeyError, OverflowError) as exc:
+            reason = str(exc)
+            raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}', reason)
+                               else 'invalid_santa_cruz_library_payload') from exc
+        samples = records[:MAX_PREVIEWS]
+        while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
+            samples.pop()
+        return {'p_source_key': source_key, 'p_samples': samples,
+                'p_future_count': len(records), 'p_venue_count': 0,
+                'p_error': None, 'p_events': records}
     from roomquest import santa_cruz_winegrowers
     if source_key==santa_cruz_winegrowers.KEY:
         deadline=min(monotonic()+38,deadline_at-6 if deadline_at is not None else float('inf'))
