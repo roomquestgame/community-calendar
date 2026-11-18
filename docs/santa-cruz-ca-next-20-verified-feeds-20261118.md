@@ -2,7 +2,7 @@
 
 **Date of source checks:** November 18, 2026. This is a **new 20-source collector branch** and does not duplicate the preceding UCSC/Kuumbwa two-feed release or the six-source production batch (#266/#267). User instruction: pull **20 actual working feeds in each branch**, not twenty websites researched. This branch is **not merged or published**, and there is no new database migration.
 
-## Verified live collector previews (10 / 20)
+## Verified live collector previews (11 / 20)
 
 | # | New direct publisher and source key | Exact primary feed | Eligible future publisher events | Event location evidence | Full descriptions | Publisher photo candidates |
 |---:|---|---|---:|---|---|---:|
@@ -16,15 +16,16 @@
 | 8 | Jack O'Neill Restaurant — `jack_oneill_live_music_santa_cruz_ca` | `https://www.jackoneillrestaurant.com/live-music/` plus own dated artist detail pages | **9** | Official 175 W Cliff Drive. Event card's date and show times cross-checked against publisher details; one empty artist description held | 9 | 9 |
 | 9 | Stockwell Cellars — `stockwell_cellars_santa_cruz_ca` | `https://www.stockwellcellars.com/events?format=json` | **2** | Each Squarespace event independently confirms 1100 Fair Avenue, Santa Cruz; genuine publisher venue GPS accepted, fake NYC point rejected | 2 | 2 |
 | 10 | The Diversity Center — `diversity_center_santa_cruz_ca` | `https://www.diversitycenter.org/upcoming-events?format=json` | **17** | Verified physical-event venue `1117 Soquel Avenue, Santa Cruz CA`. Zoom-only and offsite listings withheld; no fake NYC default pin | 17 | 17 |
-| | **Total publisher dry-run occurrences** | | **155** | All ten sources have complete publisher event street evidence | **155** | **114** |
+| 11 | Wines of Santa Cruz Mountains — `wines_santa_cruz_mountains_ca` | `https://winesofthesantacruzmountains.com/events/` plus reviewed own detail | **1** | Explicit official Swift Street Courtyard check-in: **334 Ingalls St Suite A, Santa Cruz**; other wine-walk stops are not assigned this address; no invented coordinates | 1 | 0 |
+| | **Total publisher dry-run occurrences** | | **156** | All eleven sources have complete publisher event street evidence | **156** | **114** |
 
 Source dry-run counts are **not** unique, deduped or public EventQuest cards. Images are **unlicensed candidates** until downstream rights and bytes check. The same event may appear in First Friday and another organizer. Source keys, original event URL hosts, complete descriptions and real wall-time occurrences are source-bound. No invented map pins, times, recurrence or generic Other categories.
 
 ## Verification and rollout safeguards
 
-- Existing baseline targeted collector regression suite: **34 focused tests passed** in isolated Vercel sandbox, including new Madson/Jack/Stockwell fixtures; ten publisher sources exercised using the real guarded `preview_worker.preview_source` against primary sites (not test fixtures alone). All 138 accepted dry-run records have original full descriptions and event-specific streets.
+- Existing baseline targeted collector regression suite: **38 focused tests passed** in isolated Vercel sandbox, including new Madson/Jack/Stockwell fixtures; ten publisher sources exercised using the real guarded `preview_worker.preview_source` against primary sites (not test fixtures alone). All 138 accepted dry-run records have original full descriptions and event-specific streets.
 - `roomquest/preview_worker.py` uses the original guarded fetch, robots+SSRF host allowlist and bounded deadlines. The Events Calendar sources, Squarespace sources, and HTML event-detail sources have separate reviewed identities.
-- Current branch is **in development**. No PR merge, production Vercel deployment, source registration or fresh PG17 migration is claimed for these nine.
+- Current branch is **in development**. No PR merge, production Vercel deployment, source registration or fresh PG17 migration is claimed for these eleven.
 - When the 20 **independent working and new** publishers are verified, group the collector adapters in a small number of coherent PRs, merge/test, deploy the Vercel production collector, then use **only** GitHub's protected `db-deploy.yml` to run a minimal forward-only source-enrollment migration. Never touch the 2026-11-17 PostgreSQL 17 history-only baseline or existing production users/events.
 - Live post-deployment checks must cover source uniqueness, complete preview receipts, downstream category evidence, street-level geocoding, rights/size image checks, duplicate suppression and public Home/Events/Map cards. Do not publish a source whose own feed is empty or blocked.
 
@@ -40,7 +41,7 @@ Source dry-run counts are **not** unique, deduped or public EventQuest cards. Im
 - **Life Lab:** a single upcoming event had a generic NYC map pin instead of event street evidence. **Bike Santa Cruz County:** a few future publisher events, but publisher calendar timezone `America/Tijuana` and mixed offsite venues require explicit timezone/location review.
 - **Explicit non-Santa-Cruz exclusion:** Santa Cruz Brewing Co (`santacruzbrews.com`) belongs to Santa Clarita, CA and must never be counted for this region.
 
-**Release contract:** the branch is 10/20 independently guarded event sources, **not** 20 publisher feeds, and remains undeployed until 20 distinct new sources are tested. Counts above are publisher previews, not unique or public EventQuest cards. Prior six batch-2 and UCSC/Kuumbwa are already separate deployed work.
+**Release contract:** the branch is 11/20 independently guarded event sources, **not** 20 publisher feeds, and remains undeployed until 20 distinct new sources are tested. Counts above are publisher previews, not unique or public EventQuest cards. Prior six batch-2 and UCSC/Kuumbwa are already separate deployed work.
 
 ## Candidate sources still not credited toward the 20
 
@@ -49,3 +50,11 @@ The following require better native/structured feeds or reviews: City of Santa C
 **Explicit false positive:** `santacruzbrews.com` is **Santa Cruz Brewing Co. in Santa Clarita, CA**, not the city or county of Santa Cruz. Do **not** import or count it.
 
 After 20 verified source collectors have genuinely passed, move to the next 20-source branch and retain the same standards.
+
+### November 18 — Verified eleventh publisher: Wines of Santa Cruz Mountains
+
+Exact official calendar: `https://winesofthesantacruzmountains.com/events/`. Scoped live guarded Preview (robots/DNS/source identity) admitted **1** current event: **Surf City Stroll** on **November 21, 2026, 1–4 p.m. Pacific**, with **2,818 characters** of full first-party publisher narrative, exact event page `https://winesofthesantacruzmountains.com/events/surfcitystroll/` and the publisher's numbered **334 Ingalls St, Suite A, Santa Cruz** registration/check-in venue. Preserve it as the **check-in point**, not as a false coordinate for all the stroll's other participating wineries; no native coordinates are fabricated. The publisher lists two other future shows, including a 2027 passport outside the current 60-day window; neither is admitted without independently sufficient time and venue evidence. **0 image candidates**, no rights assumption. Four new fixtures and the complete targeted **38-test** collector suite pass. This is an **unmerged development-branch collector**, not a newly published EventQuest card.
+
+**Explicit hold:** Pajaro Valley Arts `https://pvarts.org/upcoming/` shows current future publisher programs with exact original event detail pages, but the official guarded RoomQuest robots preflight returns `robots_denied`. The dated 2023 ICS cannot substitute for it. Experimental adapter was withheld, **not counted**; do not bypass publisher access.
+
+**Production read-only follow-up:** Discretion Brewing has **24** and Woodhouse **6** future `community_staged_events` with `decision=include`, full text and source health OK, but **zero** corresponding future `external_events` each. Both have historical publication observations and no outstanding request. Museum and Kuumbwa have published external rows despite stage coordinates missing, so **missing geocoding is not an established root cause**. Investigate the publisher/serving contract with safe read-only observations; any remediation must be a protected forward-only GitHub database migration. These 30 staged source occurrences are not claimed public cards.
