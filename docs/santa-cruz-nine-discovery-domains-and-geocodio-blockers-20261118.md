@@ -45,3 +45,7 @@ Both have `community_address_waits` (6 + 24), their `community_address_demand_ac
 - This document adds **zero** new verified sources to the 20, and performs no database, production collector, API-key, quota or scheduler mutation.
 - Next collector batch priority: prototype **direct** Symposium/Symphony season, Trail Stewardship event details, Boardwalk events, Fairgrounds with timed details, direct racing organizer, and primary gaming calendars. Check availability/robots and implement within the **existing** branch/adapters; source counts only after real guarded preview tests.
 - Continue widening all nine search domains, but count **distinct publisher feeds**, not sites, categories, syndicated copies or candidate tables.
+
+### November 18 Symphony verification update
+
+Publisher's original 2026–27 season calendar and its two official venue pages passed the guarded collector in an isolated Vercel sandbox. Two dated January 2027 shows have original clock times, durations, narrative and specific numbered addresses, with **no invented coordinates**. One newly verified source added to branch (14/20), with two dry-run event occurrences—not two sources or public cards. The two occurrences share the official calendar URL; no invented event-specific URLs. No production database or collector mutations.

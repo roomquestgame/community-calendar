@@ -41,6 +41,9 @@ def family(source_key, event_url):
         from roomquest import gainesville_sources
         if source_key in gainesville_sources.SOURCES:
             return 'gainesville:' + source_key if gainesville_sources.event_url(source_key, event_url) else None
+        from roomquest import santa_cruz_symphony
+        if source_key==santa_cruz_symphony.KEY:
+            return 'santa_cruz_symphony' if santa_cruz_symphony.event_url(event_url) else None
         from roomquest import santa_cruz_libnet
         if source_key == santa_cruz_libnet.KEY:
             return 'santa_cruz_libnet' if santa_cruz_libnet.event_url(event_url) else None
