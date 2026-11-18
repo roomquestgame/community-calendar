@@ -286,10 +286,10 @@ def _libcal(source, fetch):
             continue
         row.update(description=narrative, timezone=ZONE, publisher_categories=labels,
                    location_provenance="publisher_branch_identity_official_street")
-        key = (row["id"], row["starts_at"])
-        if key in out and out[key] != row:
+        occurrence_key = (row["id"], row["starts_at"])
+        if occurrence_key in out and out[occurrence_key] != row:
             raise ValueError("conflicting_event_occurrence")
-        out[key] = row
+        out[occurrence_key] = row
     return sorted(out.values(), key=lambda r: (r["starts_at"], r["title"], r["id"]))
 
 
