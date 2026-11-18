@@ -78,9 +78,9 @@ ACCEPTED_ACCURACY_TYPES = frozenset({
 
 def _street_without_number_and_unit(value: str) -> str:
     """Compare the publisher and Geocodio street even when a suite is absent."""
-    main = re.sub(r"^[0-9][a-z0-9-]*\\s+", "", canonical(value))
+    main = re.sub(r"^[0-9][a-z0-9-]*\s+", "", canonical(value))
     return re.sub(
-        r"\\s+(?:ste|suite|unit|apt|apartment|#)\\s+[a-z0-9-]+$", "", main
+        r"\s+(?:ste|suite|unit|apt|apartment|#)\s+[a-z0-9-]+$", "", main
     )
 
 
