@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {identity,auditEvidence,reconcile} from '../scripts/reconcile-public-source-leads.mjs';
+import {identity,auditEvidence,reconcile} from '../docs/tools/reconcile-public-source-leads.mjs';
 test('Localist host and API identity match',()=>assert.equal(identity('localist','https://campuscalendar.ucsb.edu'),identity('localist','https://campuscalendar.ucsb.edu/api/2/events')));
 test('Biblio tenant and gateway identity match',()=>assert.equal(identity('bibliocommons','https://bpl.bibliocommons.com/v2/events'),identity('bibliocommons','https://gateway.bibliocommons.com/v2/libraries/bpl/events?limit=5')));
 test('ChamberMate verified tenant matches its API identity',()=>assert.equal(identity('chambermate','https://currituckchamberofcommerce.chambermate.com'),identity('chambermate','https://api.chambermate.com/core/biz/webPresence/getEventsInfo?websiteDomain=currituckchamberofcommerce.chambermate.com')));
