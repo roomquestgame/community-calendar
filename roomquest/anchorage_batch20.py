@@ -282,6 +282,13 @@ def _row(key, event, now):
         _hold(key, identity, "event_times_missing")
         return None
     starts, ends = timestamp(start_raw), timestamp(end_raw)
+    # The publisher labels a 224-day FNDL listing as one "upcoming" event.
+    # It describes recurring Friday dance nights but supplies no distinct
+    # occurrence times; never invent weekly recurrences or publish a months-long
+    # party as a continuous event. Genuine Dance events last a few hours.
+    if key == DANCE and ends - starts > timedelta(days=1):
+        _hold(key, identity, "recurring_program_without_dated_occurrences")
+        return None
     if ends <= starts or ends <= now or starts > now + timedelta(days=WINDOW_DAYS):
         return None
     desc = _description(event.get("body") or event.get("excerpt"))
