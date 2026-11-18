@@ -132,3 +132,34 @@ def test_image_candidate_rejects_resizes_and_wrong_hosts():
     for candidate in [base+"?width=400",base.replace("alaskawildlife.org","example.com"),
                       base.replace("Reindeer-with-noses.jpg","logo.jpg"),base.replace("https:","http:")]:
         assert ak.photo_url(ak.AWCC,candidate) is None
+
+def test_winter_solstice_sewing_exact_studio_full_description_and_held_notices():
+    venue={"venue":"Winter Solstice Sewing & Crafts","address":"400 W Potter Drive",
+           "city":"Anchorage","state":"AK","zip":"99518","geo_lat":None,"geo_lng":None}
+    def sew(title,**changes):
+        base=event(title=title,id=83023,
+                   url="https://wintersolsticecrafts.com/event/getting-started-with-a-sewing-machine/",
+                   venue=venue,categories=[{"name":"Classes"}],
+                   description="<p>Spend the afternoon practicing sewing basics with a teacher. "
+                               + "Bring your own materials for a hands-on course. "*30 + "</p>")
+        base.update(changes)
+        return base
+    accepted=sew("Getting Started With A Sewing Machine")
+    rows=ak.collect(source(ak.SEW),fetch([accepted]),now=NOW)
+    assert len(rows)==1
+    row=rows[0]
+    assert row["category"]=="create"
+    assert row["venue_address"]=="400 W Potter Drive, Anchorage, AK 99518"
+    assert row["lat"] is None and row["lng"] is None
+    assert len(row["description"])>1500 and "<" not in row["description"]
+    disallowed=[
+        sew("Closed to recuperate from Thanksgiving!"),
+        sew("Mysterious Events"),
+        sew("Getting Started With A Sewing Machine", venue=dict(venue,address="1 Unverified Lane")),
+        sew("Getting Started With A Sewing Machine", description=""),
+        sew("Getting Started With A Sewing Machine", description="X"*12001),
+        sew("Getting Started With A Sewing Machine", all_day=True),
+        sew("Getting Started With A Sewing Machine", url="https://wrong.example.org/event/other/"),
+    ]
+    for item in disallowed:
+        assert ak.collect(source(ak.SEW),fetch([item]),now=NOW)==[]
