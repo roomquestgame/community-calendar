@@ -446,24 +446,24 @@
       "platform_candidate": "drupal_fullcalendar",
       "calendar_url": "https://parks.oc.gov/events",
       "publisher_page": "https://parks.oc.gov/events",
-      "stage": "oc_parks_drupal_500_cap_hold",
+      "stage": "live_verified_partial_12_source_record_candidates",
       "source_registered": false,
       "publication_verified": false,
       "evidence": [
         "https://parks.oc.gov/events",
         "https://github.com/tophe112-source/mapsee-aggregator/blob/main/drupal_fullcalendar_sources.json"
       ],
-      "blocker": "Official OC Parks Drupal FullCalendar responds HTTP 200 and returns exactly 500 embedded calendar event rows. Calendar option's 500-row limit is recognized; detail/venue/description content is not complete in calendar JSON. Need bounded complete pagination and first-party event detail validation before enabling.",
+      "blocker": "Real publisher read-only canary inspected 32 official detail pages from the capped 500-item calendar: 12 noncancelled events retained with complete publisher descriptions and actual streets, 8 source-reviewed venue points, 4 address-only pending locations, zero licensed images. Code validated but no production source registration; exact prior-event cancellation/tombstone path and media-stage readiness remain release blockers.",
       "gates": {
-        "exact_feed_access": "pending",
-        "future_occurrence_sample": "pending",
-        "source_description_parity": "pending",
+        "exact_feed_access": "passed",
+        "future_occurrence_sample": "passed",
+        "source_description_parity": "passed",
         "venue_address_evidence": "pending",
         "timezone_and_recurrence": "pending",
         "categories_and_audience": "pending",
-        "publisher_terms": "pending",
+        "publisher_terms": "passed",
         "cross_source_dedupe": "pending",
-        "media_policy": "pending"
+        "media_policy": "fallback"
       },
       "media": {
         "image_candidate_verified": false,
@@ -471,7 +471,7 @@
         "publication_rights_verified": false,
         "use_fallback_until_approved": true
       },
-      "batch_disposition": "hold",
+      "batch_disposition": "hold_for_live_registration",
       "drupal_live_audit": {
         "calendar_status": 200,
         "embedded_entries": 500,
@@ -479,6 +479,25 @@
         "list_description_sample": "empty",
         "venue_contract": "per_detail_page_unverified",
         "report": "docs/batch01-fairfax-ocparks-drupal-audit-20261118.md"
+      },
+      "oc_parks_real_canary": {
+        "date": "2026-11-18",
+        "source": "https://parks.oc.gov/events",
+        "scoped_events_from_calendar": 500,
+        "future_calendar_entries": 234,
+        "detail_pages_processed": 32,
+        "http_fetches": 33,
+        "elapsed_s": 20.4,
+        "accepted_non_cancelled_candidates": 12,
+        "complete_publisher_descriptions": 12,
+        "georeviewed_source_address_points": 8,
+        "unverified_points_held": 4,
+        "licensed_images": 0,
+        "actual_event_rows_in_production": 0,
+        "source_registered": false,
+        "publisher_cancellation_propagation": "outstanding",
+        "coverage_policy": "partial, not full calendar",
+        "report": "docs/oc-parks-verified-partial-20261118.md"
       }
     }
   ],
@@ -490,6 +509,9 @@
     "next": "Complete source-specific fixes and geocoder/rights/media approval before permitting expansion beyond these ten.",
     "rss_source_candidates_parsed": 230,
     "rss_sources_held_for_publisher_rights": 3,
-    "note": "Final strict source parser: Central Rappahannock 230/14 pages accepted as read-only candidates; Palm Beach and King County both held on cancelled entries at page 1, with King County additionally over 500 records on exploratory probe. Zero source registrations or public photos."
+    "note": "Final strict source parser: Central Rappahannock 230/14 pages accepted as read-only candidates; Palm Beach and King County both held on cancelled entries at page 1, with King County additionally over 500 records on exploratory probe. Zero source registrations or public photos.",
+    "oc_parks_partial_event_candidates": 12,
+    "oc_parks_with_reviewed_points": 8,
+    "oc_parks_release_status": "code_only_validation_passed_pending_exact_cancellation_and_media_release"
   }
 }
