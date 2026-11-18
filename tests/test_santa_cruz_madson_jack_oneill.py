@@ -98,3 +98,43 @@ def test_jack_does_not_follow_cross_site_detail_links():
         return jack_card(link='https://another-domain.test/events/poison')
     assert jack.collect(profile(jack.KEY,jack),fetch,now=NOW)==[]
     assert not jack.event_url('https://another-domain.test/events/poison')
+
+
+
+def stockwell_event(**changes):
+    start=datetime(2026,12,5,12,0,tzinfo=ZoneInfo(sc.ZONE))
+    e={
+      'id':'stockwell-12345', 'workflowState':1,
+      'title':'Holiday Wine Shopping &amp; Wine Club Pickup Weekend',
+      'startDate':int(start.timestamp()*1000),
+      'endDate':int((start+timedelta(hours=5)).timestamp()*1000),
+      'body':'<p>Visit Stockwell Cellars to shop local gifts and enjoy the tasting room.</p>',
+      'fullUrl':'/events/2026/12/5/holiday-wine-shopping-amp-wine-club-pickup-weekend',
+      'location':{'addressTitle':'Stockwell Cellars','addressLine1':'1100 Fair Avenue',
+                  'addressLine2':'Santa Cruz, CA, 95060',
+                  'markerLat':36.9593916,'markerLng':-122.0454786},
+      'assetUrl':'https://images.squarespace-cdn.com/content/v1/5acbe1b5b27e3910337dbee9/1794870461668-DQ82TC28XRXG54LP1ENR/Couple+in+a+Cozy+Barrel+Room.png?format=750w',
+      'categories':[]
+    }
+    e.update(changes)
+    return e
+
+def test_stockwell_native_location_with_original_coords_and_photo():
+    profile_stock=profile(sc.STOCKWELL,sc)
+    rows=sc.collect(profile_stock,lambda url,accept:madson_payload([stockwell_event()]),now=NOW)
+    assert len(rows)==1
+    e=rows[0]
+    assert e['venue_address']=='1100 Fair Avenue, Santa Cruz, CA 95060'
+    assert abs(e['lat']-36.9593916)<0.000001
+    assert abs(e['lng']-(-122.0454786))<0.000001
+    assert 'tasting room' in e['description']
+    assert e['image_url'].endswith('.png')
+
+def test_stockwell_does_not_accept_offsite_or_source_default_nyc():
+    p=profile(sc.STOCKWELL,sc)
+    outside=stockwell_event(location=dict(stockwell_event()['location'],addressLine1='10 Another Street'))
+    nyc=stockwell_event(location=dict(stockwell_event()['location'],markerLat=40.7207559,markerLng=-74.0007613),
+                        id='nyc')
+    assert sc.collect(p,lambda *args:madson_payload([outside]),now=NOW)==[]
+    result=sc.collect(p,lambda *args:madson_payload([nyc]),now=NOW)
+    assert len(result)==1 and result[0].get('lat') is None
