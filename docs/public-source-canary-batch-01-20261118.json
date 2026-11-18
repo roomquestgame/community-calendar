@@ -23,14 +23,14 @@
       "platform_candidate": "bibliocommons",
       "calendar_url": "https://kcls.bibliocommons.com/v2/events",
       "publisher_page": "https://kcls.org/",
-      "stage": "rss_volume_500_record_hold",
+      "stage": "rss_cancellation_and_volume_hold",
       "source_registered": false,
       "publication_verified": false,
       "evidence": [
         "https://kcls.bibliocommons.com/v2/events",
         "https://kcls.bibliocommons.com/v2/events/6ad65b51e06996003a848f28"
       ],
-      "blocker": "Valid RSS but exceeds 500-event bounded source cap after 23 pages. Requires durable page/window strategy; no partial source certified.",
+      "blocker": "Final strict parser stops on an explicit cancelled item on page 1 (0.89 s), requiring cancellation/tombstone support. Earlier exploratory parsing also exceeded 500 eligible records at page 23; neither can be marked complete. Publisher reuse rights remain unapproved.",
       "gates": {
         "exact_feed_access": "passed",
         "future_occurrence_sample": "passed",
@@ -73,7 +73,12 @@
         "source_registered": false,
         "public_cards_verified": 0,
         "scope": "21-day bounded physical timed events; not full library coverage",
-        "report": "docs/bibliocommons-rss-batch01-canary-20261118.md"
+        "report": "docs/bibliocommons-rss-batch01-canary-20261118.md",
+        "final_guard": "bibliocommons_rss_cancellation_requires_review",
+        "final_run_pages": 1,
+        "final_run_seconds": 0.89,
+        "final_eligible_events": null,
+        "pre_guard_volume_probe": "more_than_500_on_page_23"
       }
     },
     {
@@ -82,14 +87,14 @@
       "platform_candidate": "bibliocommons",
       "calendar_url": "https://librarypoint.bibliocommons.com/v2/events",
       "publisher_page": "https://www.librarypoint.org/",
-      "stage": "rss_parser_success_rights_and_all_day_hold",
+      "stage": "rss_parser_passed_rights_and_all_day_hold",
       "source_registered": false,
       "publication_verified": false,
       "evidence": [
         "https://librarypoint.bibliocommons.com/v2/events",
         "https://librarypoint.bibliocommons.com/v2/events/6a60f5ffc7e02e3d006ae958"
       ],
-      "blocker": "230 precisely timed, physical RSS records with full RSS-field descriptions, addresses and coordinates. Publisher commercial redistribution rights, all-day coverage, cross-source dedupe, backend 12k text and image policy still unverified.",
+      "blocker": "Final cancellation-safe code parsed 230 timed physical events from 14 pages in 9.80 s with source descriptions/coordinates, zero approved photos. Commercial RSS content rights, non-timed programs, exact page-vs-RSS parity and downstream writer checks still held.",
       "gates": {
         "exact_feed_access": "passed",
         "future_occurrence_sample": "passed",
@@ -131,7 +136,11 @@
         "source_registered": false,
         "public_cards_verified": 0,
         "scope": "21-day bounded physical timed events; not full library coverage",
-        "report": "docs/bibliocommons-rss-batch01-canary-20261118.md"
+        "report": "docs/bibliocommons-rss-batch01-canary-20261118.md",
+        "final_guard": "passed_bounded_timed_physical_parser",
+        "final_run_pages": 14,
+        "final_run_seconds": 9.8,
+        "final_eligible_events": 230
       }
     },
     {
@@ -140,14 +149,14 @@
       "platform_candidate": "bibliocommons",
       "calendar_url": "https://pbclibrary.bibliocommons.com/v2/events",
       "publisher_page": "https://www.pbclibrary.org/",
-      "stage": "rss_parser_success_rights_and_all_day_hold",
+      "stage": "rss_cancellation_tombstone_hold",
       "source_registered": false,
       "publication_verified": false,
       "evidence": [
         "https://pbclibrary.bibliocommons.com/v2/events/",
         "https://pbclibrary.bibliocommons.com/v2/events/6aa2b004d96927005534573a"
       ],
-      "blocker": "425 precisely timed, physical RSS records with full RSS-field descriptions, addresses and coordinates. Near 30-second worker budget, and publisher rights, backend long descriptions and missing all-day events require review.",
+      "blocker": "Final strict parser detected cancelled entry on page 1 (0.79 s) and refused a success snapshot. Older exploratory parser read 425 eligible records before the cancellation guard; do NOT count those as a valid final pull. Commercial rights and image approval remain held.",
       "gates": {
         "exact_feed_access": "passed",
         "future_occurrence_sample": "passed",
@@ -189,7 +198,12 @@
         "source_registered": false,
         "public_cards_verified": 0,
         "scope": "21-day bounded physical timed events; not full library coverage",
-        "report": "docs/bibliocommons-rss-batch01-canary-20261118.md"
+        "report": "docs/bibliocommons-rss-batch01-canary-20261118.md",
+        "final_guard": "bibliocommons_rss_cancellation_requires_review",
+        "final_run_pages": 1,
+        "final_run_seconds": 0.79,
+        "final_eligible_events": null,
+        "pre_guard_exploratory_candidate_count": 425
       }
     },
     {
@@ -454,8 +468,8 @@
     "publicly_verified_new_sources": 0,
     "reason": "Publisher rights, empty provider windows, transition, missing adapter, or event-specific geocodes; source eight has verified parser but remains venue-geo held.",
     "next": "Complete source-specific fixes and geocoder/rights/media approval before permitting expansion beyond these ten.",
-    "rss_source_candidates_parsed": 655,
+    "rss_source_candidates_parsed": 230,
     "rss_sources_held_for_publisher_rights": 3,
-    "note": "King County cap hit at >500. Central Rappahannock 230 and Palm Beach 425 are parser-only source-owned RSS facts, zero published. Four Mountain Home first-party HTML records also remain geo-held."
+    "note": "Final strict source parser: Central Rappahannock 230/14 pages accepted as read-only candidates; Palm Beach and King County both held on cancelled entries at page 1, with King County additionally over 500 records on exploratory probe. Zero source registrations or public photos."
   }
 }
