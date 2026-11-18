@@ -108,3 +108,25 @@ def test_preview_uses_approved_hosts_and_full_event_description(monkeypatch):
     assert result["p_future_count"]==1
     assert result["p_venue_count"]==1
     assert len(result["p_events"][0]["description"])>2000
+
+def test_dance_two_public_upcoming_shows_with_exact_studio():
+    location=dict(addressTitle="Alaska Dance Promotions",
+                  addressLine1="300 E. Dimond Blvd, Ste 11A",
+                  addressLine2="Anch, AK, 99515",
+                  mapLat=61.1439843,mapLng=-149.8759416)
+    thanksgiving=event(ak.DANCE,"Thanksgiving Dance Party",
+                       "/events/thanksgiving-dance-party",location,
+                       startDate=ms("2026-11-28T02:00:00Z"))
+    xmas=event(ak.DANCE,"Christmas Collection 2026",
+               "/events/christmas",
+               dict(location,addressLine1="300 East Dimond Blvd, Ste 11A",
+                    addressLine2="Anchorage",mapLat=61.1444086,mapLng=-149.875721),
+               startDate=ms("2026-12-19T02:00:00Z"))
+    result=ak.collect(source(ak.DANCE),fetch(thanksgiving,xmas),now=NOW)
+    assert len(result)==2
+    assert {e["category"] for e in result}=={"party","movies_theater"}
+    assert all(e["venue_address"]==ak.VENUES[ak.DANCE][1] for e in result)
+    assert all(e["lat"] is not None for e in result)
+    assert not ak.collect(source(ak.DANCE),
+                          fetch(dict(thanksgiving,location=dict(location,addressLine1="1 Wrong St"))),
+                          now=NOW)
