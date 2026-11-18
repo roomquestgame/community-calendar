@@ -41,3 +41,11 @@ Each newly discovered publisher remains on **review hold** until:
 5. **Localist:** repair UCSB's failed connection; no duplicate Mapsee entries.
 
 **This PR is research/reconciliation only.** It does not change production SQL, sources, descriptions, images or events; source and image publishing still require their existing review and evidence path.
+
+## Publisher-site sample findings (read-only; 2026-11-18)
+
+- **King County Library System (KCLS)**: The official [BiblioCommons events listing](https://kcls.bibliocommons.com/v2/events?page=1&types=56a93aa4fa6b611f620201d0) shows **LEGO Block Party** at **Duvall Library, November 19, 2026, 4:30–5:30 PM**, with descriptive event prose; other official [KCLS listings](https://kcls.bibliocommons.com/v2/events?page=3&types=5679e0f352c7b9de5c01213b) show **Teen Dungeons & Dragons Club**, Tukwila, November 19, 4:00–5:30 PM, and [the virtual-event filter](https://kcls.bibliocommons.com/v2/events?locations=BC_VIRTUAL) confirms virtual programs are also mixed into the platform. This verifies that useful future events and descriptive text exist on the publisher's public HTML. It does **not** establish complete gateway API payload, full-event-description parity, street mapping, image bytes/rights, publisher permission or EventQuest ingestion readiness.
+- **Mountain Home Area Chamber (AR)**: The official [November 2026 event calendar](https://enjoymountainhome.com/events) lists **Teen Friday After Hours — Vikings** at Baxter County Library on November 20, and **Mountain Home Symphony Concert** on November 22 with 1600 S College Street as its listed venue. The [publisher print view](https://enjoymountainhome.com/events/print-events/) includes event-description paragraphs. This is genuine event evidence but is **not** verification of its ChamberMate JSON tenant, description/photo payload shape or publisher media rights.
+- A protected raw BiblioCommons gateway request and the ChamberMate robots endpoint could **not** be independently read in this session. Do not mark the corresponding API, robots, image, or complete-description checks passed by extrapolating from web search snippets.
+
+All observed events remain **research-only leads**, not newly staged, geocoded, categorized or published EventQuest events.
