@@ -1492,7 +1492,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                                else 'invalid_rio_payload') from exc
         samples=records[:MAX_PREVIEWS]
         while len(json.dumps(samples,ensure_ascii=False))>18_000:samples.pop()
-        return {'p_source_key':source_key,'p_samples':samples,
+        return {'p_parser_capability':'publisher_event_candidates_v1',
+                'p_source_key':source_key,'p_samples':samples,
                 'p_future_count':len(records),'p_venue_count':sum(r.get('lat') is not None for r in records),
                 'p_error':None,'p_events':records}
     from roomquest import santa_cruz_local_venues
@@ -1518,7 +1519,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                                else 'invalid_santa_cruz_local_payload') from exc
         samples=records[:MAX_PREVIEWS]
         while len(json.dumps(samples,ensure_ascii=False))>18_000:samples.pop()
-        return {'p_source_key':source_key,'p_samples':samples,
+        return {'p_parser_capability':'publisher_event_candidates_v1',
+                'p_source_key':source_key,'p_samples':samples,
                 'p_future_count':len(records),
                 'p_venue_count':sum(row.get('lat') is not None for row in records),
                 'p_error':None,'p_events':records}
@@ -3002,6 +3004,16 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
         'victoria_town_calendar_va', 'vance_county_arts_council_nc'))
     from roomquest.holly_hill_sources import publisher_media as holly_hill_media
     publisher_media = publisher_media or holly_hill_media(source)
+    from roomquest import santa_cruz_rio, santa_cruz_local_venues
+    publisher_media = publisher_media or (
+        (source_key == santa_cruz_rio.KEY
+         and (source.get('feed_url'),source.get('kind'),source.get('platform_adapter'))
+             == santa_cruz_rio.SOURCES[santa_cruz_rio.KEY]
+         and source.get('timezone') == santa_cruz_rio.ZONE)
+        or (source_key in santa_cruz_local_venues.SOURCES
+            and (source.get('feed_url'),source.get('kind'),source.get('platform_adapter'))
+                == santa_cruz_local_venues.SOURCES[source_key]
+            and source.get('timezone') == santa_cruz_local_venues.ZONE))
     from roomquest import santa_cruz_sources
     publisher_media = publisher_media or (
         source_key in santa_cruz_sources.SOURCES and source.get('kind') == 'json'
