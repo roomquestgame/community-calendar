@@ -54,7 +54,7 @@ def _hold(source, identity, reason):
 def _description(raw):
     from roomquest.event_description import description
     if not isinstance(raw, str):
-        return ""
+        return None
     text = description(raw, limit=max(len(raw), MAX_DESCRIPTION + 1))
     return text if text.strip() and len(text) <= MAX_DESCRIPTION else None
 
