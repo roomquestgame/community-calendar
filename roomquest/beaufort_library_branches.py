@@ -21,6 +21,13 @@ BASE = "https://beaufort.librarycalendar.com/events/feed/ical"
 HOST = "beaufort.librarycalendar.com"
 MAX_DESCRIPTION = 12000
 MAX_ITEMS = 500
+CORE_CATEGORIES = frozenset({
+    "hang_out","food_drink","get_active","outdoors","create","learn","give_back",
+    "new_here","party","music","sports","festival","movies_theater","arts_culture",
+    "health","civic","playgrounds","trails","gardens_nature","museums_discovery",
+    "sports_recreation","swimming_water_play","climbing_adventure",
+    "picnic_gathering","dogs_pets",
+})
 LOGGER = logging.getLogger(__name__)
 
 # Branch identifiers from publisher's own public branch-select form (2026-11-18).
@@ -93,7 +100,7 @@ def photo_url(key, value):
         if re.search(r"(^|[-_/])(icon|logo|avatar|favicon|placeholder|thumbnail)([-_.]|$)",
                      p.path,re.I):
             return None
-        if re.search(r"-[0-9]{2,4}x[0-9]{2,4}[.]",p.path,re.I):
+        if re.search(r"-[0-9]{2,4}x[0-9]{2,4}[.]",p.path,re.I) or ".." in p.path:
             return None
         if re.fullmatch(r"/sites/default/files/(?:20[0-9]{2}/)?[a-z0-9_./-]+[.](?:jpg|jpeg|png|webp)",
                         p.path,re.I):
