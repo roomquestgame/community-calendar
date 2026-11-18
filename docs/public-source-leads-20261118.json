@@ -87,7 +87,7 @@
       "platform": "socrata",
       "url": "https://data.cityofnewyork.us/resource/tvpp-9vvx.json",
       "reference": "https://github.com/tophe112-source/mapsee-aggregator/blob/main/opendata_sources.json",
-      "note": "Socrata API but not one of existing specifically approved schema mappings.",
+      "note": "Existing municipal_mapsee_844b6c0e0aca1771e1a1646f is paused after timezone_unresolved; reviewed mapping/timezone repair needed, not a new source.",
       "verified": {}
     },
     {
