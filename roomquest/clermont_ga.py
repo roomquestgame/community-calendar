@@ -150,7 +150,7 @@ def parse(payload, fetch_detail, *, now=None):
 def collect(source, fetch, *, deadline_at=None):
     if (source.get("source_key") != KEY or source.get("feed_url") != URL
             or source.get("kind") != "html"
-            or source.get("platform_adapter") != "clermont_drupal_calendar"
+            or source.get("platform_adapter") != "html"
             or source.get("timezone") != ZONE):
         raise ValueError("unregistered_clermont_source")
     if deadline_at is not None and monotonic() > deadline_at:
