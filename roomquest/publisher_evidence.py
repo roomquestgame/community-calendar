@@ -28,6 +28,9 @@ ROSEMONT_REVIEWED_FEATURED_IMAGE = (
 def family(source_key, event_url):
     """Bind an enrolled publisher family to its own canonical event link."""
     try:
+        from roomquest import santa_cruz_watsonville_taiko
+        if source_key == santa_cruz_watsonville_taiko.KEY:
+            return 'watsonville_taiko' if santa_cruz_watsonville_taiko.event_url(event_url) else None
         from roomquest import anchorage_batch20_dirty_apron
         if source_key in anchorage_batch20_dirty_apron.SOURCES:
             return ('anchorage_batch20_dirty_apron:' + source_key
