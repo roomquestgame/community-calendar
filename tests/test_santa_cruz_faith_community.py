@@ -29,6 +29,9 @@ def test_owner_local_community_date_duration_and_real_street():
     assert r["ends_at"]=="2026-11-21T20:00:00+00:00"
     assert r.get("latitude") is None and r.get("longitude") is None
     assert "H.O.M.E." in r["description"]
+    assert r["publisher_categories"] == ["Volunteer", "Donation Drive"]
+    assert r["category"] == "volunteer, homelessness outreach, clothing donations"
+    assert m.CATEGORY_EVIDENCE["Kokua Concert"][1] == ["Live Music", "Concert"]
     assert family(m.KEY,r["event_url"])=="santa_cruz_faith_community"
 
 @pytest.mark.parametrize("field,value",[
