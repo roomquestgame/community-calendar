@@ -41,6 +41,9 @@ def family(source_key, event_url):
         from roomquest import gainesville_sources
         if source_key in gainesville_sources.SOURCES:
             return 'gainesville:' + source_key if gainesville_sources.event_url(source_key, event_url) else None
+        from roomquest import santa_cruz_sparkys
+        if source_key == santa_cruz_sparkys.KEY:
+            return 'santa_cruz_sparkys' if santa_cruz_sparkys.event_url(event_url) else None
         from roomquest import santa_cruz_reindeer
         if source_key==santa_cruz_reindeer.KEY:
             return 'santa_cruz_reindeer' if santa_cruz_reindeer.event_url(event_url) else None
