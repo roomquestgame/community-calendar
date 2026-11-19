@@ -1628,6 +1628,31 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         return {'p_source_key': source_key, 'p_samples': samples,
                 'p_future_count': len(records), 'p_venue_count': 0,
                 'p_error': None, 'p_events': records}
+    from roomquest import santa_cruz_sparkys
+    if source_key == santa_cruz_sparkys.KEY:
+        deadline = min(monotonic() + 38, deadline_at - 5 if deadline_at is not None else float('inf'))
+        try:
+            records = santa_cruz_sparkys.collect(
+                source, lambda url, accept: fetch_publisher(
+                    url, accept, respect_robots=True, deadline_at=deadline,
+                    allowed_hosts=santa_cruz_sparkys.ALLOWED_HOSTS[source_key]),
+                deadline_at=deadline)
+            if len(records) > santa_cruz_sparkys.MAX_RECORDS or any(
+                    not r.get('description') or not r.get('venue_address')
+                    for r in records):
+                raise ValueError('sparkys_incomplete_event')
+        except PreviewError:
+            raise
+        except (ValueError, TypeError, KeyError, OverflowError) as exc:
+            reason = str(exc)
+            raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}', reason)
+                               else 'invalid_sparkys_event_payload') from exc
+        samples = records[:MAX_PREVIEWS]
+        while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
+            samples.pop()
+        return {'p_source_key': source_key, 'p_samples': samples,
+                'p_future_count': len(records), 'p_venue_count': 0,
+                'p_error': None, 'p_events': records}
     from roomquest import santa_cruz_reindeer
     if source_key==santa_cruz_reindeer.KEY:
         deadline=min(monotonic()+37,deadline_at-6 if deadline_at is not None else float('inf'))
