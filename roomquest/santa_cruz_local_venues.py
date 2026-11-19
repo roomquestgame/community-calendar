@@ -21,16 +21,19 @@ ZONE='America/Los_Angeles'
 WOODHOUSE='woodhouse_brewing_santa_cruz_ca'
 DISCRETION='discretion_brewing_soquel_ca'
 AG_HISTORY='agricultural_history_project_watsonville_ca'
+MAKER='santa_cruz_maker_studios_fall_workshops_ca'
 SOURCES={
  WOODHOUSE:('https://www.woodhousebrews.com/api/events','json','squarespace'),
  DISCRETION:('https://www.discretionbrewing.com/events/','html','html'),
  AG_HISTORY:('https://aghistoryproject.org/2nd-saturday-on-the-farm/','html','html'),
+ MAKER:('https://scmakerstudios.com/fall-events-2026/','html','html'),
 }
 ALLOWED_HOSTS={k:(urlsplit(v[0]).hostname,) for k,v in SOURCES.items()}
 VENUE={
  WOODHOUSE:('Woodhouse Blending & Brewing','119 Madrone St, Santa Cruz, CA 95060','Santa Cruz'),
  DISCRETION:('Discretion Brewing','2703 41st Ave Ste A, Soquel, CA 95073','Soquel'),
  AG_HISTORY:('Agricultural History Project Center & Museum','2601 East Lake Avenue, Watsonville, CA 95076','Watsonville'),
+ MAKER:('Santa Cruz Maker Studios','427 A. Swift Street, Santa Cruz, CA 95060','Santa Cruz'),
 }
 MAX_RECORDS=180
 MAX_DESCRIPTION=12000
@@ -49,6 +52,8 @@ def event_url(key,value):
  if p.scheme!='https' or p.username or p.password or p.port not in (None,443) or p.query:return False
  if key==AG_HISTORY:
   return bool(p.hostname=='aghistoryproject.org' and p.path=='/2nd-saturday-on-the-farm/' and not p.fragment)
+ if key==MAKER:
+  return bool(p.hostname=='scmakerstudios.com' and p.path=='/fall-events-2026/' and not p.fragment)
  if key==WOODHOUSE:
   return bool(p.hostname=='minnow-cowbell-xynk.squarespace.com' and not p.fragment
    and re.fullmatch(r'/events/20\d{2}/\d{1,2}/\d{1,2}/[-a-z0-9]+/?',p.path))
@@ -221,12 +226,98 @@ def ag_history(page,official_hours,now):
  from roomquest.publisher_evidence import attach
  return [attach(row,AG_HISTORY)]
 
+
+def maker_studios(page,official_about,now):
+ """Original dated Sunday maker sign-ups; no extrapolated weekly recurrence."""
+ from bs4 import BeautifulSoup
+ from calendar import monthrange
+ soup=BeautifulSoup(page,'html.parser')
+ about=BeautifulSoup(official_about,'html.parser')
+ h1=[n.get_text(' ',strip=True) for n in soup.select('h1')]
+ if h1.count('Fall Events 2026')!=1:
+  raise ValueError('maker_2026_calendar_unverified')
+ address='427 A. Swift Street, Santa Cruz, CA 95060'
+ if ('Santa Cruz Maker Studios' not in about.get_text(' ',strip=True)
+     or 'Visit us at '+address not in about.get_text(' ',strip=True)):
+  raise ValueError('maker_official_street_unverified')
+ body=soup.get_text(' ',strip=True)
+ try:
+  a=body.index('Fall 2026 Event Registration')
+  b=body.index('Signing up a second family member',a)
+ except ValueError as exc:
+  raise ValueError('maker_registration_sections_unverified') from exc
+ block=body[a:b]
+ intros=[
+  'Join us for our seasonal Sunday workshops! Each event features a unique hands-on project designed to inspire creativity and celebrate the season.',
+  'Planning to join us throughout the season? Our Maker Sundays Semester Pass includes all Sunday Maker classes and special events, offering the best value while reserving your spot for the entire semester.',
+  'Please note: Registering through the Maker Sundays Registration Form or purchasing a Semester Pass includes these special event dates, so there is no need to register for them separately.'
+ ]
+ if any(block.count(t)!=1 for t in intros):
+  raise ValueError('maker_original_narrative_unverified')
+ dates=[
+  ('2026-11-29','Fall Wreath Making','November',29),
+  ('2026-12-06','Holiday Wreath Making','December',6),
+  ('2026-12-13','Holiday Gift Making','December',13),
+  ('2026-12-20','Holiday Gift Making','December',20),
+ ]
+ headings=[f'{label}: Sunday, {month} {day}' for _,label,month,day in dates]
+ if any(block.count(h)!=1 for h in headings):
+  raise ValueError('maker_dated_event_unverified')
+ rows=[]
+ for idx,(day,label,month,num) in enumerate(dates):
+  if datetime.fromisoformat(day).weekday()!=6:
+   raise ValueError('maker_sunday_date_unverified')
+  head=headings[idx]
+  start=block.index(head)
+  end=block.index(headings[idx+1],start) if idx+1<len(dates) else len(block)
+  excerpt=block[start:end]
+  abbrev='Nov' if month=='November' else 'Dec'
+  for session,first,last,start_time,end_time in (
+    ('youth',7,12,'10:00am','12:00pm'),
+    ('advanced',10,15,'12:30pm','2:30pm'),
+  ):
+   pat=(rf'{abbrev}\.\s*{num}\s*\({session.title()} Ages\s*{first}\s*[–-]\s*{last}\)'
+        rf'\s*{re.escape(start_time)}-{re.escape(end_time)}\s*[–-]\s*\$45\.00')
+   # Registration labels are event-specific and must not be guessed from open hours.
+   match=re.search(pat,excerpt,re.I)
+   if not match or len(re.findall(pat,excerpt,re.I))!=1:
+    raise ValueError('maker_session_time_unverified')
+   sh,sm=map(int,re.search(r'(\d{1,2}):(\d{2})',start_time).groups())
+   eh,em=map(int,re.search(r'(\d{1,2}):(\d{2})',end_time).groups())
+   if session=='advanced':sh+=12;eh+=12
+   elif end_time.endswith('pm'):eh+=12
+   begin=datetime(2026,int(day[5:7]),num,sh,sm,tzinfo=ZoneInfo(ZONE)).astimezone(timezone.utc)
+   finish=datetime(2026,int(day[5:7]),num,eh,em,tzinfo=ZoneInfo(ZONE)).astimezone(timezone.utc)
+   if not within(begin,finish,now):continue
+   venue,street,city=VENUE[MAKER]
+   uid=f'scmaker-{day}-{session}'
+   title=f'{label} — {session.title()} Maker Sunday'
+   row=record(title,begin.isoformat(),finish.isoformat(),venue,street,city,
+              SOURCES[MAKER][0],uid,'Maker Workshop, Youth Program',None,None,ZONE,
+              retain_until_end=True)
+   if not row:continue
+   # Every segment is the publisher's own complete text; no synthetic activity prose.
+   prose=full_description(' '.join((head,match.group(0),*intros)))
+   if not prose or len(prose)<300:
+    raise ValueError('maker_original_narrative_unverified')
+   row.update(description=prose,timezone=ZONE,
+              publisher_categories=['Maker Workshop','Youth Program'],
+              location_provenance='publisher_verified_studio_street')
+   from roomquest.publisher_evidence import attach
+   rows.append(attach(row,MAKER))
+ if len(rows)!=len({(r['id'],r['starts_at']) for r in rows}):
+  raise ValueError('maker_duplicate_occurrence')
+ return sorted(rows,key=lambda r:(r['starts_at'],r['id']))
+
 def collect(source,fetch,*,deadline_at=None,now=None):
  key=source.get('source_key')
  if key not in SOURCES or (source.get('feed_url'),source.get('kind'),source.get('platform_adapter'))!=SOURCES[key] or source.get('timezone')!=ZONE:
   raise ValueError('unregistered_santa_cruz_local_source')
  if deadline_at and monotonic()>=deadline_at:raise ValueError('collection_deadline')
  now=now or datetime.now(timezone.utc)
+ if key==MAKER:
+  return maker_studios(fetch(SOURCES[key][0],'text/html'),
+                       fetch('https://scmakerstudios.com/about/','text/html'),now)
  if key==AG_HISTORY:
   return ag_history(fetch(SOURCES[key][0],'text/html'),
                     fetch('https://aghistoryproject.org/hours-admission/','text/html'),now)
