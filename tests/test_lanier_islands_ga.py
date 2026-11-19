@@ -31,8 +31,8 @@ def test_explicit_nightly_expansion_and_exact_address():
     assert all(x["event_url"] == DETAIL for x in rows)
     assert all(x["venue_address"] == "7000 Lanier Islands Parkway, Buford, GA 30518" for x in rows)
     assert all(x["description"] and "2026 winter light show" in x["description"] for x in rows)
-    assert rows[0]["starts_at"].startswith("2026-11-20T17:00:00")
-    assert rows[-1]["starts_at"].startswith("2027-01-03T17:00:00")
+    assert rows[0]["starts_at"].startswith("2026-11-20T22:00:00")
+    assert rows[-1]["starts_at"].startswith("2027-01-03T22:00:00")
 
 def test_no_recurrence_guessed_when_evidence_missing():
     assert parse("", DETAIL_HTML, now=NOW) == []
