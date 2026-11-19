@@ -114,4 +114,3 @@ def collect(source, fetch, *, deadline_at=None, now=None):
         if len(result) > MAX_RECORDS:
             raise ValueError("taiko_too_many_valid_events")
     return result
-
