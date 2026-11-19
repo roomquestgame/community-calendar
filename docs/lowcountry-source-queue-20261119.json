@@ -1,13 +1,13 @@
 {
   "region": "Hilton Head Island / Bluffton / Beaufort County / Port Royal / South Carolina Lowcountry",
-  "checkpoint_local": "2026-11-19 14:42 EST (seventh continuation, cross-provider collision and 3 first-party holds)",
+  "checkpoint_local": "2026-11-19 15:41 EST (eighth continuation; 9-lane recheck, original Sea Pines and PRC occurrence validation, collision review)",
   "target_new_distinct_feeds_per_batch": 20,
   "new_deployed_this_continuation": 0,
   "verified_ready_count": 0,
   "candidate_hold_count": 17,
   "previous_public_source_associated": 324,
   "previous_staged": 326,
-  "previous_future_visible": 317,
+  "previous_future_visible": 313,
   "previous_source_count": 15,
   "notes": [
     "Never count original Hilton Head 5, Beaufort County Library 6 including St Helena, or Greenhouse Bluffton as NEW again.",
@@ -26,7 +26,14 @@
     "New first-party candidate holds: venue-confirmed Comedy Magic Cabaret official SeatEngine schedule (dated originals, actual venue number but exact GEO/parser pending), PRC official run calendar with mixed ownership/location and occasional listing/prose times. No additional feed was deployed; do not count holds as verified.",
     "Seventh continuation 14:42 EST: read-only production 15 approved Lowcountry municipal source IDs verified 326 stage-future, 324 scheduled/public source-associated cards, 317 future-visible; 0 missing geo, 0 missing numbered street prefix, 0 'other' categories and distinct (provider_event_id,starts_at) per source; 10 of 324 descriptions under 40 characters, all in Beaufort County library branch feeds, flagged for description improvement without altering data.",
     "Cross-provider audit: 33 existing FindLocal Comedy Magic Cabaret cards at exact numbered 843 William Hilton Pkwy (29 future); avoid duplicate feed release until safe provider dedupe and evidence of additional uncovered original events.",
-    "New 9-lane official discovery HOLD candidates: Sea Pines Dec19 holiday wagon at Heritage Farm 185 Greenwood Drive; Arts Center Dec15 Cheyenne Jackson 4PM and 7:30PM plus Annie production; Hunting Island current 2026 nature programs with divergent park meeting points. No new publisher passed ALL GEO/robots/collector regression gates; no DB/collector deploy this checkpoint."
+    "New 9-lane official discovery HOLD candidates: Sea Pines Dec19 holiday wagon at Heritage Farm 185 Greenwood Drive; Arts Center Dec15 Cheyenne Jackson 4PM and 7:30PM plus Annie production; Hunting Island current 2026 nature programs with divergent park meeting points. No new publisher passed ALL GEO/robots/collector regression gates; no DB/collector deploy this checkpoint.",
+    "Hour eight verified from read-only production at approx 15:41 ET: same exact 15 approved source IDs (5803-5807,5813-5817,5873,5879,5886,5889,5894); 326 staged, 324 scheduled public associated, 313 future-visible; no missing numbered street or location across published source-associated rows, 10 descriptions under 40 chars; source preview all complete. DO NOT mistake time-passed card attrition for feed deletion.",
+    "Hourly same-region new feed deployments: ZERO. Prior active feeds not counted again. 17 existing publisher HOLD candidates, ZERO validated release-ready. No approved candidate was eligible to deploy without verified robots and exact event meeting-point geometry plus parser.",
+    "Fresh Nov19 official Sea Pines expanded from one December wagon canary: Nov24 Full Moon Wagon Ride (5:15-6:15PM), Nov27 Caramel Apple Festival (1-3PM), Dec19 Polar Pines Express (starts 1PM), Dec29 Holiday Lights Wagon Ride (5-6PM), plus Nov23-28 publisher-listed Thanksgiving wagon rides (starts 10AM, individually confirm dates). All canonical original detail URLs, all show Heritage Farm 185 Greenwood Drive. STILL HOLD until independently confirmed exact meeting-site GPS and robots/collector access; do NOT reuse resort centroid.",
+    "Palmetto Running Company shows separate 2026-11-24 5:30PM Tuesday Track Night at Bluffton Middle School, 30 New Mustang Drive, and 2026-11-28 7AM Group Run/Walk at The Grind, 349 Hope Pond Way Unit 104. Do not assign one uniform GPS to mixed locations. Nov26 Palmetto Bluff Turkey Trot cites Wilson Village Green without exact numbered start point, and Dec13 Buffalo Run cites unnumbered Old Moreland Road; hold those occurrences rather than fabricated street.",
+    "Chamber-owned ChamberMaster filtered catgid/6 listing now shows six future Dec1/3/7/8/9 and Jan12 events. Each event needs independently exact venue GEO; do not count other publisher's Southern Barrel Tuesday Game Night syndicated in the Chamber calendar as a new original Chamber feed.",
+    "Gaming investigation: Captain Jax official 24 Palmetto Bay Road Suite G (https://captainjax.com/) verifies venue and gaming merchandise, but no first-party date-specific 2026 event calendar was found; is an UNQUALIFIED exploratory lead and NOT included as an eighteenth publisher feed. Sun City and Beaufort Library gaming dates are not new independent eligible sources.",
+    "Read-only overlap check: sampled future Sea Pines title and exact 185 Greenwood address and selected Chamber-owned event titles showed no currently scheduled provider hits; not a full duplicate proof. Arts Center 14 Shelter Cove existing FindLocal results reviewed were Art League academy classes, not proof of Arts Center theatrical event duplication; still require complete cross-provider match check before any publish."
   ],
   "sources": [
     {
@@ -233,7 +240,20 @@
         "source-owned/category filter prevents duplicate publisher events with existing Hilton Head / Beaufort sources",
         "bounded parser with detailed original URL, local time and no recurrence guesses, plus focused tests"
       ],
-      "priority": 3
+      "priority": 3,
+      "review_20261119_hour8": {
+        "publisher_owned_filtered_calendar": "https://blufftonchamberofcommerce.org/events/catgid/6",
+        "publisher_calendar_upcoming_seen": [
+          "2026-12-01",
+          "2026-12-03",
+          "2026-12-07",
+          "2026-12-08",
+          "2026-12-09",
+          "2027-01-12"
+        ],
+        "exclude_syndicated_example": "https://blufftonchamberofcommerce.org/events/details/tuesday-game-night-at-southern-barrel-12-15-2026-20379",
+        "release_ready": false
+      }
     },
     {
       "key": "town_bluffton_merry_made_market_sc",
@@ -292,7 +312,31 @@
         "publisher-owned versus sponsored/reposted races and public/member-only eligibility",
         "reconcile listing-vs-prose time conflict on Nov24 track; bounded parser, recurrence/dedupe and tests; terms/robots"
       ],
-      "priority": 5
+      "priority": 5,
+      "review_20261119_hour8": {
+        "first_party_examples": [
+          {
+            "date": "2026-11-24",
+            "title": "Tuesday Track Night",
+            "starts_local": "17:30",
+            "url": "https://shop.palmettorunningcompany.com/event/30642/TuesdayTrackNight",
+            "venue": "Bluffton Middle School, 30 New Mustang Drive, Bluffton SC 29910"
+          },
+          {
+            "date": "2026-11-28",
+            "title": "Bluffton Group Run/Walk",
+            "starts_local": "07:00",
+            "url": "https://shop.palmettorunningcompany.com/event/31337/BlufftonGroupRunWalk",
+            "venue": "The Grind at New River Village, 349 Hope Pond Way Unit 104, Bluffton SC 29910"
+          }
+        ],
+        "excluded_or_pending": [
+          "Nov26 Turkey Trot Wilson Village Green lacks numbered start street",
+          "Dec13 Buffalo Run Old Moreland Road lacks numbered start street",
+          "Locations vary per event; must be separately verified"
+        ],
+        "release_ready": false
+      }
     },
     {
       "key": "sea_pines_resort_hhi_sc",
@@ -312,7 +356,49 @@
         "publisher robots, date-bounded index and event-detail full prose/start/end time with verified eligibility and cancellations",
         "source-specific guarded collector with exact original event URLs, occurrence IDs, focused regression tests and cross-provider dedupe"
       ],
-      "priority": 2
+      "priority": 2,
+      "review_20261119_hour8": {
+        "first_party_examples": [
+          {
+            "date": "2026-11-24",
+            "title": "Night at the Preserve: Full Moon Wagon Ride",
+            "starts_local": "17:15",
+            "ends_local": "18:15",
+            "url": "https://www.seapines.com/experiences/events/night-preserve-full-moon-wagon-ride-20",
+            "venue": "Heritage Farm, 185 Greenwood Drive, Hilton Head Island, SC 29928"
+          },
+          {
+            "date": "2026-11-27",
+            "title": "Caramel Apple Festival",
+            "starts_local": "13:00",
+            "ends_local": "15:00",
+            "url": "https://www.seapines.com/experiences/events/caramel-apple-festival",
+            "venue": "Heritage Farm, 185 Greenwood Drive, Hilton Head Island, SC 29928"
+          },
+          {
+            "date": "2026-12-19",
+            "title": "Polar Pines Express Holiday Wagon Ride",
+            "starts_local": "13:00",
+            "ends_local": null,
+            "url": "https://www.seapines.com/experiences/events/polar-pines-express-holiday-wagon-ride",
+            "venue": "Heritage Farm, 185 Greenwood Drive, Hilton Head Island, SC 29928"
+          },
+          {
+            "date": "2026-12-29",
+            "title": "Holiday Lights Wagon Ride",
+            "starts_local": "17:00",
+            "ends_local": "18:00",
+            "url": "https://www.seapines.com/experiences/events/holiday-lights-wagon-ride",
+            "venue": "Heritage Farm, 185 Greenwood Drive, Hilton Head Island, SC 29928"
+          }
+        ],
+        "excluded_or_pending": [
+          "Thanksgiving Wagon Rides 2026-11-23 through 28, source declares daily but requires per-occurrence proof",
+          "Resort GPS and meeting-site eligibility unverified"
+        ],
+        "duplicate_spotcheck": "0 matches sampled by these event titles or 185 Greenwood exact-address text in scheduled external_events at checkpoint; wider collision audit still required",
+        "release_ready": false
+      }
     },
     {
       "key": "arts_center_coastal_carolina_hhi_sc",
@@ -331,7 +417,11 @@
         "independently reviewed exact numbered venue GPS (14 Shelter Cove Lane) and existing FindLocal/Hilton Head Symphony/Culture HHI collision audit",
         "publisher robots/permitted collection, bounded pagination, full published narratives and tested parser"
       ],
-      "priority": 3
+      "priority": 3,
+      "review_20261119_hour8": {
+        "independent_overlap_note": "Read-only 14 Shelter Cove FindLocal matches sampled are Art League Academy workshops. Do NOT classify them as evidence of Arts Center theater duplication. Confirm actual Annie and Cheyenne Jackson occurrence overlaps by original ticket/artist identity before releasing.",
+        "release_ready": false
+      }
     },
     {
       "key": "hunting_island_state_park_programs_sc",
@@ -386,5 +476,15 @@
     }
   ],
   "collector_verified_pending_release": 1,
-  "new_candidate_sources_this_continuation": 3
+  "new_candidate_sources_this_continuation": 3,
+  "exploratory_leads_not_counted": [
+    {
+      "publisher": "Captain Jax (Hilton Head Island tabletop gaming)",
+      "first_party_url": "https://captainjax.com/",
+      "official_numbered_address": "24 Palmetto Bay Road, Suite G, Hilton Head Island, SC 29928",
+      "why_unqualified": "No publicly accessible 2026-11-19-or-later dated first-party gaming event canonical URL or schedule verified; merchandise and third-party mentions do not establish a feed",
+      "lane": 8,
+      "state": "exploratory_only"
+    }
+  ]
 }
