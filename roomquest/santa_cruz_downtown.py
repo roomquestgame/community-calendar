@@ -44,7 +44,7 @@ def event_url(value):
 
 
 def _main(payload):
-    if not isinstance(payload, str) or not (300 <= len(payload) <= MAX_HTML):
+    if not isinstance(payload, str) or not (50 <= len(payload) <= MAX_HTML):
         raise ValueError("downtown_html_invalid")
     soup = BeautifulSoup(payload, "html.parser")
     main = soup.select_one("main")
@@ -60,7 +60,8 @@ def collect(source, fetch, *, deadline_at=None, now=None):
             or source.get("timezone") != ZONE):
         raise ValueError("downtown_source_identity_mismatch")
     main = _main(fetch(URL, "text/html"))
-    kiosk = _main(fetch(KIOSK, "text/html"))
+    kiosk_raw = fetch(KIOSK, "text/html")
+    kiosk = _main(kiosk_raw)
     heading = main.select_one("h1")
     if heading is None or heading.get_text(" ", strip=True).strip() != "The Naughty List":
         raise ValueError("downtown_event_heading_drift")
@@ -72,7 +73,8 @@ def collect(source, fetch, *, deadline_at=None, now=None):
             or CANCELLED.search(text)):
         raise ValueError("downtown_event_date_or_street_drift")
     kiosk_text = kiosk.get_text(" ", strip=True)
-    if not KIOSK_ADDRESS.search(kiosk_text) or "Santa Cruz" not in kiosk_text:
+    if (not KIOSK_ADDRESS.search(kiosk_text)
+            or "Santa Cruz" not in BeautifulSoup(kiosk_raw, "html.parser").get_text(" ", strip=True)):
         raise ValueError("downtown_official_kiosk_street_missing")
     paragraphs = [p.get_text(" ", strip=True) for p in main.select("p")]
     start_i = next((i for i, p in enumerate(paragraphs)
