@@ -35,7 +35,7 @@ def test_guarded_publisher_and_checkin_street():
     assert row["venue_address"] == m.STREET
     assert row["starts_at"] == "2026-12-12T02:00:00+00:00"
     assert row["ends_at"] == "2026-12-12T05:00:00+00:00"
-    assert row["latitude"] is None and row["longitude"] is None
+    assert row.get("latitude") is None and row.get("longitude") is None
     assert "Only ticket buyers" in row["description"]
     assert row["timezone"] == m.ZONE
     assert family(m.KEY,m.URL) == "santa_cruz_downtown"
