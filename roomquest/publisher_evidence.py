@@ -163,6 +163,9 @@ def family(source_key, event_url):
         from roomquest import santa_cruz_rio
         if source_key == santa_cruz_rio.KEY:
             return 'santa_cruz_rio' if santa_cruz_rio.event_url(event_url) else None
+        from roomquest import scotts_valley_cocoa
+        if source_key==scotts_valley_cocoa.KEY:
+            return 'scotts_valley_cocoa' if scotts_valley_cocoa.event_url(event_url) else None
         from roomquest import santa_cruz_local_venues
         if source_key in santa_cruz_local_venues.SOURCES:
             return 'santa_cruz_local:' + source_key if santa_cruz_local_venues.event_url(source_key,event_url) else None
