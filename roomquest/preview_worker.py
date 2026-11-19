@@ -1628,6 +1628,34 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         return {'p_source_key': source_key, 'p_samples': samples,
                 'p_future_count': len(records), 'p_venue_count': 0,
                 'p_error': None, 'p_events': records}
+    from roomquest import santa_cruz_turkey_trot, santa_cruz_melo
+    for module in (santa_cruz_turkey_trot, santa_cruz_melo):
+        if source_key != module.KEY:
+            continue
+        deadline = min(monotonic() + 38, deadline_at - 5 if deadline_at is not None else float('inf'))
+        try:
+            records = module.collect(
+                source, lambda url, accept: fetch_publisher(
+                    url, accept, respect_robots=True, deadline_at=deadline,
+                    allowed_hosts=module.ALLOWED_HOSTS[source_key]),
+                deadline_at=deadline)
+            if len(records) > module.MAX_RECORDS or any(
+                    not r.get('description') or not r.get('venue_address')
+                    or not r.get('ends_at') or r.get('lat') is not None or r.get('lng') is not None
+                    for r in records):
+                raise ValueError('santa_cruz_new_source_incomplete_event')
+        except PreviewError:
+            raise
+        except (ValueError, TypeError, KeyError, OverflowError) as exc:
+            reason = str(exc)
+            raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}', reason)
+                               else 'invalid_santa_cruz_new_source_payload') from exc
+        samples = records[:MAX_PREVIEWS]
+        while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
+            samples.pop()
+        return {'p_source_key': source_key, 'p_samples': samples,
+                'p_future_count': len(records), 'p_venue_count': 0,
+                'p_error': None, 'p_events': records}
     from roomquest import santa_cruz_bargetto
     if source_key == santa_cruz_bargetto.KEY:
         deadline = min(monotonic() + 38, deadline_at - 5 if deadline_at is not None else float('inf'))
