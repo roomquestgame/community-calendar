@@ -1,13 +1,13 @@
 {
   "region": "Hilton Head Island / Bluffton / Beaufort County / Port Royal / South Carolina Lowcountry",
-  "checkpoint_local": "2026-11-19 11:35 EST (fourth hourly continuation)",
+  "checkpoint_local": "2026-11-19 13:07 EST (fifth continuation; production read-only audit)",
   "target_new_distinct_feeds_per_batch": 20,
   "new_deployed_this_continuation": 0,
   "verified_ready_count": 0,
-  "candidate_hold_count": 11,
+  "candidate_hold_count": 12,
   "previous_public_source_associated": 313,
   "previous_staged": 315,
-  "previous_future_visible": 307,
+  "previous_future_visible": 306,
   "previous_source_count": 14,
   "notes": [
     "Never count original Hilton Head 5, Beaufort County Library 6 including St Helena, or Greenhouse Bluffton as NEW again.",
@@ -18,7 +18,10 @@
     "Journal for full 9-lane audit: docs/journal/2026-11-19-lowcountry-hour-three.md",
     "11:35 ET fourth hourly audit verified two already-deployed sources after prior checkpoint: Southern Barrel and Roasting Room. Both collector+protected DB migrations and Vercel READY; counts 8+7 new public cards. They are removed from HOLD and tracked as DEPLOYED, not counted as newly deployed by this documentation-only run.",
     "Top Dawg event details were 404 on external read; hold without first-party full event narratives. Bluffton Farm & Flea special Nov22 is confirmed on publisher site but GEO and recurrence not verified.",
-    "Do not use historical SOBA gallery 7 Church Street as the Art SCHOOL event address: publisher's 2025 school program lists 8 Church Street; each event venue must be reverified."
+    "Do not use historical SOBA gallery 7 Church Street as the Art SCHOOL event address: publisher's 2025 school program lists 8 Church Street; each event venue must be reverified.",
+    "Fifth continuation: new verified bounded Palmetto Bluff Conservancy first-party collector merged in PR #339, SHA f40c795e4dee2ad456154b93b6c10f47db1562d7, 10 live future original event canaries. Exact SHA itself does not have a Vercel production deployment; latest READY cfa636d4a0ec722ea72ad7979817592e84511f53 is an independently confirmed direct descendant. Strict exact-SHA gate for DRAFT protected DB PR #1344 remains unsatisfied; do not enroll until it is explicitly cleared without rolling back newer unrelated collector code.",
+    "Read-only DB at 13:07 EST: 14 approved existing Lowcountry source keys ID 5803-5807,5813-5817,5873,5879,5886,5889, 315 staged, 313 public source-associated cards, 306 future. No Palmetto source enrollment. Migration ledger latest applied 20261126010000, draft planned 20261126090000.",
+    "New 9-lane first-party investigation: Greater Bluffton Chamber ChamberMaster first-party December detail canaries have full narratives, bounded list and event-specific numbered physical addresses (231 Buckwalter Place Blvd Dec7; 97 Progressive St Dec3; 162 Bluffton Rd Dec1). Not release ready: robots, independent exact venue GEO, strict chamber-owned category filtering, code/tests. Town of Bluffton December 13 Merry & Made Market official vendor source gives 30 Red Barn Drive; third-party listing gives conflicting 38 Red Barn Drive; must use event-specific official identity and geocode before publish."
   ],
   "sources": [
     {
@@ -67,16 +70,15 @@
         7
       ],
       "feed_url": "https://www.palmettobluff.com/organizer/palmetto-bluff-conservancy/",
-      "event_url": "https://www.palmettobluff.com/events/",
-      "evidence": "First-party organizer and event listing appear to use WordPress/The Events Calendar; includes nature and conservation programming and site markets, but onsite/offsite excursion meeting locations vary.",
-      "state": "hold",
+      "event_url": "https://www.palmettobluff.com/event/brown-bag-lunch-oak-island/",
+      "evidence": "Merged community-calendar PR #339 commit f40c795e4dee2ad456154b93b6c10f47db1562d7. First-party The Events Calendar bounded 65-day/50-result JSON; 10 valid future source canaries (Nov 20 Pop-up Shop, Nov 24 Track and Sign, Dec 2 Brown Bag); numbered event-specific Conservancy Classroom 655 Old Moreland Rd, Bluffton SC 29910; independent Census exact match 32.178086450464,-80.897273890865. 16 tests passed, publisher robots allows endpoint with 10s delay, no images. New source is NOT YET registered.",
+      "state": "collector_validated_pending_exact_sha_production_gate",
       "blockers": [
-        "fresh upcoming dated first-party detail URL verified for Nov19+ (not archive)",
-        "public eligibility (resident/club-only?)",
-        "exact event-specific meeting street and independent GEO",
-        "robots and date-bounded parser tests"
+        "PR #339 exact merged SHA f40c795e4dee2ad456154b93b6c10f47db1562d7 has NO exact-sha Vercel production READY record; newer latest READY cfa636d4a0ec722ea72ad7979817592e84511f53 contains this SHA as direct ancestor but strict literal gate remains",
+        "app DB enrollment PR #1344 is DRAFT; its single forward-only PG17 20261126090000 migration must not merge until collector deployment gate clears, and must be applied ONLY through protected db-deploy.yml after latest ledger check",
+        "read back live preview / staged / published records and identities only AFTER protected enrollment"
       ],
-      "priority": 5
+      "priority": 1
     },
     {
       "key": "coastal_discovery_museum_sc",
@@ -227,6 +229,46 @@
         "first-party source supports only Nov22 special; normal market repetitions lack verified first-party original detail/occurrence IDs",
         "publisher robots and collection access, full event prose and bounded collector tests outstanding"
       ]
+    },
+    {
+      "key": "greater_bluffton_chamber_sc",
+      "publisher": "Greater Bluffton Chamber of Commerce (publisher-owned ChamberMaster events only)",
+      "category_lanes": [
+        1,
+        6,
+        9
+      ],
+      "feed_url": "https://blufftonchamberofcommerce.org/events/catgid/6",
+      "event_url": "https://blufftonchamberofcommerce.org/events/details/ribbon-cutting-celebration-for-culver-s-21168",
+      "evidence": "Verified original ChamberMaster list contains Dec1 Coffee + Connections, Dec3 Get to Know Chamber, Dec7 Culver's ribbon cutting, Dec8 Grounds for Growth, Dec9 breakfast and Jan12. Individual original detail Dec7 has 9:30-10AM, full first-party description, actual numbered venue 231 Buckwalter Place Boulevard Bluffton SC 29910. Dec3 detail has 8:30-10 at 97 Progressive Street; Dec1 has 8-9 at 162 Bluffton Rd suite 102-103. HTML list can be date-bounded; distinguish Chamber-owned events from community submissions and other publishers, reject nonpublic listings.",
+      "state": "hold",
+      "blockers": [
+        "robots/publisher access policy not yet checked for bounded ChamberMaster HTML",
+        "independent event-specific exact street GEO for at least one canary; no source centroid substitutions",
+        "source-owned/category filter prevents duplicate publisher events with existing Hilton Head / Beaufort sources",
+        "bounded parser with detailed original URL, local time and no recurrence guesses, plus focused tests"
+      ],
+      "priority": 3
+    },
+    {
+      "key": "town_bluffton_merry_made_market_sc",
+      "publisher": "Town of Bluffton Government (official market notice)",
+      "category_lanes": [
+        5,
+        7,
+        9
+      ],
+      "feed_url": "https://townofbluffton.sc.gov/FormCenter/Town-15/Blufftons-Merry-and-Made-Market-Vendor-R-102",
+      "event_url": "https://townofbluffton.sc.gov/FormCenter/Town-15/Blufftons-Merry-and-Made-Market-Vendor-R-102",
+      "evidence": "Official town vendor registration confirms Sunday Dec13 2026, 11AM-5PM Merry and Made Market at New Riverside Barn Park, 30 Red Barn Drive, Bluffton SC 29910. Official Sep2025 town news release also says the barn is at 30 Red Barn Drive. External Explore Beaufort listing instead says 38 Red Barn Drive: location conflict must not be papered over. Form is vendor application, not a proper public original event narrative, so event identity/rights insufficient for registration.",
+      "state": "hold",
+      "blockers": [
+        "find original first-party public EVENT page rather than a vendor registration form; date/time and full public description",
+        "resolve town venue 30 Red Barn Drive vs third-party 38 Red Barn Drive with independently verified event point/GPS",
+        "robots and allowed first-party source collection, strict bounded single-occurrence parser and unit tests",
+        "one-time listing does not justify invented recurring market feed"
+      ],
+      "priority": 8
     }
   ],
   "new_deployed_since_prior_0943_checkpoint": 2,
@@ -259,5 +301,6 @@
       "migration": "20261125160000_lowcountry_roasting_room_first_party",
       "vercel_ready": "https://vercel.com/room-quest-game/roomquest-community-collector/BHH5fdKds3gZ7XCGh4X2G9Lo7HDk"
     }
-  ]
+  ],
+  "collector_verified_pending_release": 1
 }
