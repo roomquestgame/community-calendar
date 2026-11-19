@@ -82,6 +82,9 @@ def family(source_key, event_url):
         from roomquest import santa_cruz_boardwalk
         if source_key==santa_cruz_boardwalk.KEY:
             return 'santa_cruz_boardwalk' if santa_cruz_boardwalk.event_url(event_url) else None
+        from roomquest import santa_cruz_save_our_shores
+        if source_key == santa_cruz_save_our_shores.KEY:
+            return "save_our_shores" if santa_cruz_save_our_shores.event_url(event_url) else None
         from roomquest import santa_cruz_shakespeare
         if source_key == santa_cruz_shakespeare.KEY:
             return "santa_cruz_shakespeare" if santa_cruz_shakespeare.event_url(event_url) else None
@@ -278,6 +281,9 @@ def family(source_key, event_url):
 def image_url(value, publisher):
     if not isinstance(value, str) or len(value) > 2000:
         return None
+    if publisher == "save_our_shores":
+        from roomquest.santa_cruz_save_our_shores import photo_url
+        return photo_url(value)  # Owner image candidate; normal downstream rights/byte gates apply.
     if isinstance(publisher, str) and publisher.startswith('anchorage_batch20_wasilla:'):
         return None  # City public event facts only, no image reuse rights implied.
     if isinstance(publisher, str) and publisher.startswith('anchorage_batch20_aiga:'):
