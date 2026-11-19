@@ -1713,6 +1713,328 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         return {'p_source_key':source_key,'p_samples':samples,
                 'p_future_count':len(records),'p_venue_count':0,
                 'p_error':None,'p_events':records}
+    from roomquest import santa_cruz_jack_oneill
+    if source_key==santa_cruz_jack_oneill.KEY:
+        deadline=min(monotonic()+39,deadline_at-5 if deadline_at is not None else float('inf'))
+        try:
+            records=santa_cruz_jack_oneill.collect(source,
+                lambda url,accept:fetch_publisher(
+                    url,accept,respect_robots=True,deadline_at=deadline,
+                    allowed_hosts=santa_cruz_jack_oneill.ALLOWED_HOSTS[source_key]),
+                deadline_at=deadline)
+            if len(records)>santa_cruz_jack_oneill.MAX_RECORDS or any(
+               not isinstance(r.get('description'),str) or not r['description'].strip()
+               or len(r['description'])>santa_cruz_jack_oneill.MAX_DESCRIPTION
+               or not isinstance(r.get('venue_address'),str) or not r['venue_address'].strip()
+               for r in records):
+                raise ValueError('incomplete_jack_oneill_event')
+        except PreviewError:raise
+        except (ValueError,TypeError,KeyError,OverflowError) as exc:
+            reason=str(exc)
+            raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}',reason)
+                               else 'invalid_jack_oneill_payload') from exc
+        samples=records[:MAX_PREVIEWS]
+        while len(json.dumps(samples,ensure_ascii=False))>18_000:samples.pop()
+        return {'p_parser_capability':'publisher_event_candidates_v1',
+                'p_source_key':source_key,'p_samples':samples,
+                'p_future_count':len(records),'p_venue_count':0,
+                'p_error':None,'p_events':records}
+    from roomquest import santa_cruz_mah
+    if source_key==santa_cruz_mah.KEY:
+        deadline=min(monotonic()+39,deadline_at-5 if deadline_at is not None else float('inf'))
+        try:
+            records=santa_cruz_mah.collect(
+                source,lambda url,accept:fetch_publisher(
+                    url,accept,respect_robots=True,deadline_at=deadline,
+                    allowed_hosts=santa_cruz_mah.ALLOWED_HOSTS[source_key]),
+                deadline_at=deadline)
+            if len(records)>santa_cruz_mah.MAX_RECORDS or any(
+                not isinstance(r.get('description'),str) or not r['description'].strip()
+                or len(r['description'])>santa_cruz_mah.MAX_DESCRIPTION
+                or not isinstance(r.get('venue_address'),str) or not r['venue_address'].strip()
+                for r in records):
+                raise ValueError('incomplete_mah_event')
+        except PreviewError:raise
+        except (ValueError,TypeError,KeyError,OverflowError) as exc:
+            reason=str(exc)
+            raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}',reason)
+                               else 'invalid_mah_event_payload') from exc
+        samples=records[:MAX_PREVIEWS]
+        while len(json.dumps(samples,ensure_ascii=False))>18_000:samples.pop()
+        return {'p_source_key':source_key,'p_samples':samples,
+                'p_future_count':len(records),'p_venue_count':0,
+                'p_error':None,'p_events':records}
+    from roomquest import santa_cruz_catalyst
+    if source_key==santa_cruz_catalyst.KEY:
+        deadline=min(monotonic()+39,deadline_at-5 if deadline_at is not None else float('inf'))
+        try:
+            records=santa_cruz_catalyst.collect(
+                source,lambda url,accept:fetch_publisher(
+                    url,accept,respect_robots=True,deadline_at=deadline,
+                    allowed_hosts=santa_cruz_catalyst.ALLOWED_HOSTS[source_key]),
+                deadline_at=deadline)
+            if len(records)>santa_cruz_catalyst.MAX_RECORDS or any(
+                not isinstance(r.get('description'),str) or not r['description'].strip()
+                or len(r['description'])>santa_cruz_catalyst.MAX_DESCRIPTION
+                or not isinstance(r.get('venue_address'),str) or not r['venue_address'].strip()
+                for r in records):
+                raise ValueError('incomplete_catalyst_event')
+        except PreviewError:raise
+        except (ValueError,TypeError,KeyError,OverflowError) as exc:
+            reason=str(exc)
+            raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}',reason)
+                               else 'invalid_catalyst_event_payload') from exc
+        samples=records[:MAX_PREVIEWS]
+        while len(json.dumps(samples,ensure_ascii=False))>18_000:samples.pop()
+        return {'p_source_key':source_key,'p_samples':samples,
+                'p_future_count':len(records),'p_venue_count':0,
+                'p_error':None,'p_events':records}
+    from roomquest import santa_cruz_418
+    if source_key==santa_cruz_418.KEY:
+        deadline=min(monotonic()+38,deadline_at-6 if deadline_at is not None else float('inf'))
+        try:
+            records=santa_cruz_418.collect(source,lambda url,accept:fetch_publisher(
+                url,accept,respect_robots=True,deadline_at=deadline,
+                allowed_hosts=santa_cruz_418.ALLOWED_HOSTS[source_key]),
+                deadline_at=deadline)
+            if len(records)>santa_cruz_418.MAX_RECORDS or any(
+                not isinstance(r.get('description'),str) or not r['description'].strip()
+                or len(r['description'])>santa_cruz_418.MAX_DESCRIPTION
+                or not isinstance(r.get('venue_address'),str)
+                or not r['venue_address'].strip() for r in records):
+                raise ValueError('incomplete_418_event')
+        except PreviewError:raise
+        except (ValueError,TypeError,KeyError,OverflowError) as exc:
+            reason=str(exc)
+            raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}',reason)
+                               else 'invalid_418_event_payload') from exc
+        samples=records[:MAX_PREVIEWS]
+        while len(json.dumps(samples,ensure_ascii=False))>18_000:samples.pop()
+        return {'p_source_key':source_key,'p_samples':samples,
+                'p_future_count':len(records),'p_venue_count':0,
+                'p_error':None,'p_events':records}
+    from roomquest import santa_cruz_libnet
+    if source_key == santa_cruz_libnet.KEY:
+        deadline = min(monotonic() + 45, deadline_at - 6 if deadline_at is not None else float('inf'))
+        try:
+            records = santa_cruz_libnet.collect(
+                source, lambda url, accept: fetch_publisher(
+                    url, accept, respect_robots=True, deadline_at=deadline,
+                    allowed_hosts=santa_cruz_libnet.ALLOWED_HOSTS[source_key]),
+                deadline_at=deadline)
+            if not records or len(records) > santa_cruz_libnet.MAX_EVENTS or any(
+                not isinstance(r.get('description'), str) or not r['description'].strip()
+                or len(r['description']) > santa_cruz_libnet.MAX_DESCRIPTION
+                or not isinstance(r.get('venue_address'), str) or not r['venue_address'].strip()
+                for r in records
+            ):
+                raise ValueError('santa_cruz_library_incomplete_preview')
+        except PreviewError:
+            raise
+        except (ValueError, TypeError, KeyError, OverflowError) as exc:
+            reason = str(exc)
+            raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}', reason)
+                               else 'invalid_santa_cruz_library_payload') from exc
+        samples = records[:MAX_PREVIEWS]
+        while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
+            samples.pop()
+        return {'p_source_key': source_key, 'p_samples': samples,
+                'p_future_count': len(records), 'p_venue_count': 0,
+                'p_error': None, 'p_events': records}
+    from roomquest import santa_cruz_turkey_trot, santa_cruz_melo
+    for module in (santa_cruz_turkey_trot, santa_cruz_melo):
+        if source_key != module.KEY:
+            continue
+        deadline = min(monotonic() + 38, deadline_at - 5 if deadline_at is not None else float('inf'))
+        try:
+            records = module.collect(
+                source, lambda url, accept: fetch_publisher(
+                    url, accept, respect_robots=True, deadline_at=deadline,
+                    allowed_hosts=module.ALLOWED_HOSTS[source_key]),
+                deadline_at=deadline)
+            if len(records) > module.MAX_RECORDS or any(
+                    not r.get('description') or not r.get('venue_address')
+                    or not r.get('ends_at') or r.get('lat') is not None or r.get('lng') is not None
+                    for r in records):
+                raise ValueError('santa_cruz_new_source_incomplete_event')
+        except PreviewError:
+            raise
+        except (ValueError, TypeError, KeyError, OverflowError) as exc:
+            reason = str(exc)
+            raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}', reason)
+                               else 'invalid_santa_cruz_new_source_payload') from exc
+        samples = records[:MAX_PREVIEWS]
+        while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
+            samples.pop()
+        return {'p_source_key': source_key, 'p_samples': samples,
+                'p_future_count': len(records), 'p_venue_count': 0,
+                'p_error': None, 'p_events': records}
+    from roomquest import santa_cruz_bargetto
+    if source_key == santa_cruz_bargetto.KEY:
+        deadline = min(monotonic() + 38, deadline_at - 5 if deadline_at is not None else float('inf'))
+        try:
+            records = santa_cruz_bargetto.collect(
+                source, lambda url, accept: fetch_publisher(
+                    url, accept, respect_robots=True, deadline_at=deadline,
+                    allowed_hosts=santa_cruz_bargetto.ALLOWED_HOSTS[source_key]),
+                deadline_at=deadline)
+            if len(records) > santa_cruz_bargetto.MAX_RECORDS or any(
+                    not r.get('description') or not r.get('venue_address') or not r.get('ends_at')
+                    for r in records):
+                raise ValueError('bargetto_incomplete_event')
+        except PreviewError:
+            raise
+        except (ValueError, TypeError, KeyError, OverflowError) as exc:
+            reason = str(exc)
+            raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}', reason)
+                               else 'invalid_bargetto_event_payload') from exc
+        samples = records[:MAX_PREVIEWS]
+        while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
+            samples.pop()
+        return {'p_source_key': source_key, 'p_samples': samples,
+                'p_future_count': len(records), 'p_venue_count': 0,
+                'p_error': None, 'p_events': records}
+    from roomquest import santa_cruz_sparkys
+    if source_key == santa_cruz_sparkys.KEY:
+        deadline = min(monotonic() + 38, deadline_at - 5 if deadline_at is not None else float('inf'))
+        try:
+            records = santa_cruz_sparkys.collect(
+                source, lambda url, accept: fetch_publisher(
+                    url, accept, respect_robots=True, deadline_at=deadline,
+                    allowed_hosts=santa_cruz_sparkys.ALLOWED_HOSTS[source_key]),
+                deadline_at=deadline)
+            if len(records) > santa_cruz_sparkys.MAX_RECORDS or any(
+                    not r.get('description') or not r.get('venue_address')
+                    for r in records):
+                raise ValueError('sparkys_incomplete_event')
+        except PreviewError:
+            raise
+        except (ValueError, TypeError, KeyError, OverflowError) as exc:
+            reason = str(exc)
+            raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}', reason)
+                               else 'invalid_sparkys_event_payload') from exc
+        samples = records[:MAX_PREVIEWS]
+        while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
+            samples.pop()
+        return {'p_source_key': source_key, 'p_samples': samples,
+                'p_future_count': len(records), 'p_venue_count': 0,
+                'p_error': None, 'p_events': records}
+    from roomquest import santa_cruz_reindeer
+    if source_key==santa_cruz_reindeer.KEY:
+        deadline=min(monotonic()+37,deadline_at-6 if deadline_at is not None else float('inf'))
+        try:
+            records=santa_cruz_reindeer.collect(source,lambda url,accept:fetch_publisher(
+                url,accept,respect_robots=True,deadline_at=deadline,
+                allowed_hosts=santa_cruz_reindeer.ALLOWED_HOSTS[source_key]),deadline_at=deadline)
+            if len(records)>santa_cruz_reindeer.MAX_RECORDS or any(
+                not r.get('description') or not r.get('venue_address') for r in records):
+                raise ValueError('reindeer_incomplete_event')
+        except PreviewError:raise
+        except (ValueError,TypeError,KeyError,OverflowError) as exc:
+            reason=str(exc)
+            raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}',reason)
+                               else 'invalid_reindeer_event_payload') from exc
+        samples=records[:MAX_PREVIEWS]
+        while len(json.dumps(samples,ensure_ascii=False))>18_000:samples.pop()
+        return {'p_source_key':source_key,'p_samples':samples,
+                'p_future_count':len(records),'p_venue_count':0,
+                'p_error':None,'p_events':records}
+    from roomquest import santa_cruz_boardwalk
+    if source_key==santa_cruz_boardwalk.KEY:
+        deadline=min(monotonic()+37,deadline_at-6 if deadline_at is not None else float('inf'))
+        try:
+            records=santa_cruz_boardwalk.collect(source,lambda url,accept:fetch_publisher(
+                url,accept,respect_robots=True,deadline_at=deadline,
+                allowed_hosts=santa_cruz_boardwalk.ALLOWED_HOSTS[source_key]),deadline_at=deadline)
+            if len(records)>santa_cruz_boardwalk.MAX_RECORDS or any(
+                not r.get('description') or not r.get('venue_address') for r in records):
+                raise ValueError('boardwalk_incomplete_event')
+        except PreviewError:raise
+        except (ValueError,TypeError,KeyError,OverflowError) as exc:
+            reason=str(exc)
+            raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}',reason)
+                               else 'invalid_boardwalk_event_payload') from exc
+        samples=records[:MAX_PREVIEWS]
+        while len(json.dumps(samples,ensure_ascii=False))>18_000:samples.pop()
+        return {'p_source_key':source_key,'p_samples':samples,
+                'p_future_count':len(records),'p_venue_count':0,
+                'p_error':None,'p_events':records}
+    from roomquest import santa_cruz_symphony
+    if source_key==santa_cruz_symphony.KEY:
+        deadline=min(monotonic()+37,deadline_at-6 if deadline_at is not None else float('inf'))
+        try:
+            records=santa_cruz_symphony.collect(
+                source,lambda url,accept:fetch_publisher(
+                    url,accept,respect_robots=True,deadline_at=deadline,
+                    allowed_hosts=santa_cruz_symphony.ALLOWED_HOSTS[source_key]),
+                deadline_at=deadline)
+            if (len(records)>santa_cruz_symphony.MAX_RECORDS or
+                any(not isinstance(r.get('description'),str) or not r['description'].strip()
+                    or len(r['description'])>santa_cruz_symphony.MAX_DESCRIPTION
+                    or not r.get('venue_address') for r in records)):
+                raise ValueError('symphony_incomplete_event')
+        except PreviewError:raise
+        except (ValueError,TypeError,KeyError,OverflowError) as exc:
+            reason=str(exc)
+            raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}',reason)
+                               else 'invalid_symphony_event_payload') from exc
+        samples=records[:MAX_PREVIEWS]
+        while len(json.dumps(samples,ensure_ascii=False))>18_000:samples.pop()
+        return {'p_source_key':source_key,'p_samples':samples,
+                'p_future_count':len(records),'p_venue_count':0,
+                'p_error':None,'p_events':records}
+    from roomquest import santa_cruz_winegrowers
+    if source_key==santa_cruz_winegrowers.KEY:
+        deadline=min(monotonic()+38,deadline_at-6 if deadline_at is not None else float('inf'))
+        try:
+            records=santa_cruz_winegrowers.collect(
+                source,lambda url,accept:fetch_publisher(
+                    url,accept,respect_robots=True,deadline_at=deadline,
+                    allowed_hosts=santa_cruz_winegrowers.ALLOWED_HOSTS[source_key]),
+                deadline_at=deadline)
+            if len(records)>santa_cruz_winegrowers.MAX_RECORDS or any(
+                not isinstance(r.get('description'),str) or not r['description'].strip()
+                or len(r['description'])>santa_cruz_winegrowers.MAX_DESCRIPTION
+                or not isinstance(r.get('venue_address'),str) or not r['venue_address'].strip()
+                for r in records):
+                raise ValueError('scmwa_incomplete_event')
+        except PreviewError:raise
+        except (ValueError,TypeError,KeyError,OverflowError) as exc:
+            reason=str(exc)
+            raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}',reason)
+                               else 'invalid_scmwa_event_payload') from exc
+        samples=records[:MAX_PREVIEWS]
+        while len(json.dumps(samples,ensure_ascii=False))>18_000:samples.pop()
+        return {'p_source_key':source_key,'p_samples':samples,
+                'p_future_count':len(records),'p_venue_count':0,
+                'p_error':None,'p_events':records}
+    from roomquest import santa_cruz_square_venues
+    if source_key in santa_cruz_square_venues.SOURCES:
+        deadline=min(monotonic()+37,deadline_at-6 if deadline_at is not None else float('inf'))
+        try:
+            records=santa_cruz_square_venues.collect(
+                source,lambda url,accept:fetch_publisher(
+                    url,accept,respect_robots=True,deadline_at=deadline,
+                    allowed_hosts=santa_cruz_square_venues.ALLOWED_HOSTS[source_key]),
+                deadline_at=deadline)
+            if len(records)>santa_cruz_square_venues.MAX_RECORDS or any(
+                not isinstance(r.get('description'),str) or not r['description'].strip()
+                or len(r['description'])>santa_cruz_square_venues.MAX_DESCRIPTION
+                or not isinstance(r.get('venue_address'),str) or not r['venue_address'].strip()
+                for r in records):
+                raise ValueError('santa_cruz_square_incomplete_event')
+        except PreviewError:raise
+        except (ValueError,TypeError,KeyError,OverflowError) as exc:
+            reason=str(exc)
+            raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}',reason)
+                               else 'invalid_santa_cruz_square_payload') from exc
+        samples=records[:MAX_PREVIEWS]
+        while len(json.dumps(samples,ensure_ascii=False))>18_000:samples.pop()
+        return {'p_parser_capability':'publisher_event_candidates_v1',
+                'p_source_key':source_key,'p_samples':samples,
+                'p_future_count':len(records),
+                'p_venue_count':sum(r.get('lat') is not None for r in records),
+                'p_error':None,'p_events':records}
     from roomquest import santa_cruz_rio
     if source_key == santa_cruz_rio.KEY:
         deadline=min(monotonic()+36,deadline_at-8 if deadline_at is not None else float('inf'))
@@ -3282,6 +3604,18 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
         'victoria_town_calendar_va', 'vance_county_arts_council_nc'))
     from roomquest.holly_hill_sources import publisher_media as holly_hill_media
     publisher_media = publisher_media or holly_hill_media(source)
+    from roomquest import santa_cruz_jack_oneill
+    publisher_media = publisher_media or (
+       source_key==santa_cruz_jack_oneill.KEY
+       and (source.get('feed_url'),source.get('kind'),source.get('platform_adapter'))
+           == santa_cruz_jack_oneill.SOURCES[santa_cruz_jack_oneill.KEY]
+       and source.get('timezone')==santa_cruz_jack_oneill.ZONE)
+    from roomquest import santa_cruz_square_venues
+    publisher_media = publisher_media or (
+        source_key in santa_cruz_square_venues.SOURCES
+        and (source.get('feed_url'),source.get('kind'),source.get('platform_adapter'))
+            == santa_cruz_square_venues.SOURCES[source_key]
+        and source.get('timezone') == santa_cruz_square_venues.ZONE)
     from roomquest import santa_cruz_rio, santa_cruz_local_venues
     publisher_media = publisher_media or (
         (source_key == santa_cruz_rio.KEY

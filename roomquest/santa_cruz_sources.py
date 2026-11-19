@@ -23,20 +23,24 @@ UCSC = 'uc_santa_cruz_primary_ca'
 KUUMBWA = 'kuumbwa_jazz_santa_cruz_ca'
 NATURAL_HISTORY = 'santa_cruz_museum_natural_history_ca'
 VISIT_SANTA_CRUZ = 'visit_santa_cruz_county_ca'
+FIRST_FRIDAY = 'first_friday_santa_cruz_ca'
+CAPITOLA_VILLAGE = 'capitola_village_events_ca'
 API = '/wp-json/tribe/events/v1/events'
 SOURCES = {
     UCSC: ('https://events.ucsc.edu' + API, 'json', 'wordpress'),
     KUUMBWA: ('https://www.kuumbwajazz.org' + API, 'json', 'wordpress'),
     NATURAL_HISTORY: ('https://santacruzmuseum.org' + API, 'json', 'wordpress'),
     VISIT_SANTA_CRUZ: ('https://www.santacruz.org' + API, 'json', 'wordpress'),
+    FIRST_FRIDAY: ('https://firstfridaysantacruz.com' + API, 'json', 'wordpress'),
+    CAPITOLA_VILLAGE: ('https://capitolavillage.com' + API, 'json', 'wordpress'),
 }
 ALLOWED_HOSTS = {key: (urlsplit(value[0]).hostname,) for key, value in SOURCES.items()}
-MAX_PAGES = {UCSC: 3, KUUMBWA: 1, NATURAL_HISTORY: 1, VISIT_SANTA_CRUZ: 4}
+MAX_PAGES = {UCSC: 3, KUUMBWA: 1, NATURAL_HISTORY: 1, VISIT_SANTA_CRUZ: 4, FIRST_FRIDAY: 1, CAPITOLA_VILLAGE: 3}
 PAGE_SIZE = 100
 MAX_RECORDS = 200
 MAX_DESCRIPTION = 12000
 WINDOW_DAYS = 30
-SOURCE_WINDOW_DAYS = {VISIT_SANTA_CRUZ: 17}
+SOURCE_WINDOW_DAYS = {VISIT_SANTA_CRUZ: 17, CAPITOLA_VILLAGE: 60}
 CITY_WHITELIST = {
     'santa cruz', 'aptos', 'capitola', 'watsonville', 'scotts valley',
     'felton', 'soquel', 'ben lomond', 'boulder creek', 'live oak',
@@ -48,7 +52,8 @@ STREET = re.compile(
     r'court|ct|way|parkway|pkwy|place|pl|plaza|circle|cir|highway|hwy|'
     r'terrace|ter|trail|trl)\b\.?', re.I)
 IMAGE_HOST = {UCSC: 'events.ucsc.edu', KUUMBWA: 'www.kuumbwajazz.org',
-              NATURAL_HISTORY: 'santacruzmuseum.org', VISIT_SANTA_CRUZ: 'www.santacruz.org'}
+              NATURAL_HISTORY: 'santacruzmuseum.org', VISIT_SANTA_CRUZ: 'www.santacruz.org',
+              FIRST_FRIDAY: 'firstfridaysantacruz.com', CAPITOLA_VILLAGE: 'capitolavillage.com'}
 NO_IMAGE = re.compile(r'(?:^|[-_/])(?:logo|favicon|icon|avatar|placeholder|pixel)(?:[-_.]|$)', re.I)
 SMALL_IMAGE = re.compile(r'-[1-5][0-9]{1,2}x[1-5][0-9]{1,2}\.(?:png|jpe?g|webp)$', re.I)
 NONPUBLIC = re.compile(r'\b(?:cancelled|canceled|postponed|private event|members[- ]only|invite[- ]only)\b', re.I)
@@ -60,7 +65,7 @@ def event_url(key, value):
     url = urlsplit(value)
     path = ('/calendar/' if key == KUUMBWA else
             '/upcoming-event/' if key == VISIT_SANTA_CRUZ else '/event/')
-    date_suffix = r'(?:20\d{2}-\d{2}-\d{2}/)?' if key in (NATURAL_HISTORY, VISIT_SANTA_CRUZ) else ''
+    date_suffix = r'(?:20\d{2}-\d{2}-\d{2}/)?' if key in (NATURAL_HISTORY, VISIT_SANTA_CRUZ, CAPITOLA_VILLAGE) else ''
     return bool(url.scheme == 'https' and url.hostname == ALLOWED_HOSTS[key][0]
                 and not url.username and not url.password and url.port in (None, 443)
                 and not url.query and not url.fragment

@@ -64,6 +64,36 @@ def family(source_key, event_url):
         from roomquest import gainesville_sources
         if source_key in gainesville_sources.SOURCES:
             return 'gainesville:' + source_key if gainesville_sources.event_url(source_key, event_url) else None
+        from roomquest import santa_cruz_turkey_trot
+        if source_key == santa_cruz_turkey_trot.KEY:
+            return 'santa_cruz_turkey_trot' if santa_cruz_turkey_trot.event_url(event_url) else None
+        from roomquest import santa_cruz_melo
+        if source_key == santa_cruz_melo.KEY:
+            return 'santa_cruz_melo' if santa_cruz_melo.event_url(event_url) else None
+        from roomquest import santa_cruz_bargetto
+        if source_key == santa_cruz_bargetto.KEY:
+            return 'santa_cruz_bargetto' if santa_cruz_bargetto.event_url(event_url) else None
+        from roomquest import santa_cruz_sparkys
+        if source_key == santa_cruz_sparkys.KEY:
+            return 'santa_cruz_sparkys' if santa_cruz_sparkys.event_url(event_url) else None
+        from roomquest import santa_cruz_reindeer
+        if source_key==santa_cruz_reindeer.KEY:
+            return 'santa_cruz_reindeer' if santa_cruz_reindeer.event_url(event_url) else None
+        from roomquest import santa_cruz_boardwalk
+        if source_key==santa_cruz_boardwalk.KEY:
+            return 'santa_cruz_boardwalk' if santa_cruz_boardwalk.event_url(event_url) else None
+        from roomquest import santa_cruz_symphony
+        if source_key==santa_cruz_symphony.KEY:
+            return 'santa_cruz_symphony' if santa_cruz_symphony.event_url(event_url) else None
+        from roomquest import santa_cruz_libnet
+        if source_key == santa_cruz_libnet.KEY:
+            return 'santa_cruz_libnet' if santa_cruz_libnet.event_url(event_url) else None
+        from roomquest import santa_cruz_jack_oneill
+        if source_key==santa_cruz_jack_oneill.KEY:
+            return 'santa_cruz_jack_oneill' if santa_cruz_jack_oneill.event_url(event_url) else None
+        from roomquest import santa_cruz_square_venues
+        if source_key in santa_cruz_square_venues.SOURCES:
+            return 'santa_cruz_square:' + source_key if santa_cruz_square_venues.event_url(source_key,event_url) else None
         from roomquest import santa_cruz_rio
         if source_key == santa_cruz_rio.KEY:
             return 'santa_cruz_rio' if santa_cruz_rio.event_url(event_url) else None
@@ -258,6 +288,12 @@ def image_url(value, publisher):
     if isinstance(publisher, str) and publisher.startswith('gainesville:'):
         from roomquest.gainesville_sources import photo_url as gainesville_photo_url
         return gainesville_photo_url(publisher.removeprefix('gainesville:'), value)
+    if publisher=='santa_cruz_jack_oneill':
+        from roomquest.santa_cruz_jack_oneill import photo_url as jack_photo_url
+        return jack_photo_url(value)
+    if isinstance(publisher,str) and publisher.startswith('santa_cruz_square:'):
+        from roomquest.santa_cruz_square_venues import photo_url as sc_square_photo_url
+        return sc_square_photo_url(publisher.removeprefix('santa_cruz_square:'),value)
     if publisher == 'santa_cruz_rio':
         from roomquest.santa_cruz_rio import photo_url as rio_photo_url
         return rio_photo_url(value)
