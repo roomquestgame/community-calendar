@@ -380,6 +380,30 @@ def collect(source, fetch, *, deadline_at=None):
             raise ValueError('conflicting_event_occurrence')
         unique[key] = row
     result = sorted(unique.values(), key=lambda e: (e['starts_at'], e['title']))
+    if source_key == 'friends_sc_state_parks_ca':
+        # Strict original TEC identity. Never assign a source-wide park point.
+        if (source.get('kind'), source.get('platform_adapter'),
+                source.get('feed_url'), source.get('timezone')) != (
+                'json', 'wordpress',
+                'https://thatsmypark.org/wp-json/tribe/events/v1/events',
+                'America/Los_Angeles'):
+            raise ValueError('unregistered_santa_cruz_parks_source')
+        accepted = []
+        for event in result:
+            street = event.get('venue_address') or ''
+            first = street.strip().split(' ', 1)[0]
+            lat, lng = event.get('lat'), event.get('lng')
+            if (not first.isdigit() or ', CA, ' not in street
+                    or not isinstance(lat, (int, float))
+                    or not isinstance(lng, (int, float))
+                    or not (36.0 <= lat <= 38.0 and -123.0 <= lng <= -121.0)
+                    or not (event.get('event_url') or '').startswith('https://thatsmypark.org/event/')
+                    or len(event.get('description') or '') < 80
+                    or not event.get('starts_at') or not event.get('ends_at')
+                    or event['starts_at'] >= event['ends_at']):
+                continue
+            accepted.append(event)
+        result = accepted[:24]
     if rosemont:
         _rosemont_log('normalized', held=rosemont_held, excluded=rosemont_excluded, records=len(result))
         if not result and rosemont_held:
