@@ -1,3 +1,15 @@
+# EVE-145 Batch002 collector handoff — verified 2026-11-19 14:28 ET
+
+Batch002 is complete. No collector extraction or Vercel deployment was needed: the existing NPS adapter already stored the descriptions. The app-side rights projection is deployed through [PR #1353](https://github.com/roomquestgame/RoomQuestGame/pull/1353), merge `d1e48873f2e194450fe315c09d4c69e3510befb8`, protected [Database deploy #465](https://github.com/roomquestgame/RoomQuestGame/actions/runs/44597723104) SUCCESS, migration `20261130010000_eve145_nps_public_excerpts`.
+
+Current bounded production readback: 6,081 linked eligible NPS occurrences, 6,081 nonempty stored descriptions, 6,080 meaningful by the >=40/not-title proxy, and 6,081 actual public excerpts. Every excerpt retains National Park Service attribution, an NPS source URL and the required government-work notice; lengths are 51–600 characters. The registry remains paused/deactivated, no duplicate provider or municipal collector was enabled, and `facts_only*` remains suppressed. The migration rewrites no event rows.
+
+Exact sample OpenSEO before `fbbb765d-a604-4bda-8b36-386f1d74bc8f` versus after `56e7c225-87f1-4d26-8a04-561417013fdb`: 131→227 words, HTTP 200/indexable, thin warning cleared. Rendered About, attribution and source link were verified.
+
+Next collector cursor is permission-limited, not an extraction patch: Riley has 110 staged / 97 meaningful and 27 stored / 0 descriptions but terms prohibit scrape/crawl and provide no commercial narrative grant; Apex has 20/20 staged and 18/0 stored with no affirmative reuse grant; Howard has 6/6 staged and 6/0 stored under noncommercial/personal terms forbidding reposting. Keep all three facts-only/restricted absent new affirmative evidence. Virginia Commonwealth Calendar remains facts/links-only.
+
+---
+
 # EVE-145 Batch002 collector handoff — 2026-11-19 10:45 ET
 
 No collector extraction change was required or deployed in this batch. The existing NPS adapter already stores nonempty descriptions for all 6,154 linked upcoming occurrences measured (6,153 substantial by the >=40/not-title proxy). Batch002 is a narrowly reviewed public-projection change in app [PR #1324](https://github.com/roomquestgame/RoomQuestGame/pull/1324), not a new collector, source duplication or crawl.
