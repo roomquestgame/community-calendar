@@ -115,6 +115,9 @@ def event_detail(html, url, *, now=None):
     if len(address_matches) != 1:
         return None
     loc = address_matches[0]
+    # Reject apparent Braselton, GA labels paired with a non-Braselton postal code.
+    if loc["zip"] != "30517":
+        return None
     venue = loc["venue"].strip()
     street = f"{loc['street'].strip()}, Braselton, GA {loc['zip']}"
     # Exact street is on this event detail, not a site-wide coverage point.
