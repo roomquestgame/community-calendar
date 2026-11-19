@@ -24,6 +24,7 @@ AG_HISTORY='agricultural_history_project_watsonville_ca'
 MAKER='santa_cruz_maker_studios_fall_workshops_ca'
 TANNERY='tannery_arts_center_winter_market_2026_ca'
 SCCMOD='santa_cruz_childrens_museum_craft_fair_2026_ca'
+SCMAC='santa_cruz_mountains_art_center_gift_art_2026_ca'
 SOURCES={
  WOODHOUSE:('https://www.woodhousebrews.com/api/events','json','squarespace'),
  DISCRETION:('https://www.discretionbrewing.com/events/','html','html'),
@@ -31,6 +32,7 @@ SOURCES={
  MAKER:('https://scmakerstudios.com/fall-events-2026/','html','html'),
  TANNERY:('https://www.tanneryartscenter.org/winter-art-market','html','html'),
  SCCMOD:('https://www.sccmod.org/learn-more/childrenscraftfair','html','html'),
+ SCMAC:('https://www.mountainartcenter.org/call-for-artists-gift-of-art-2026/','html','html'),
 }
 ALLOWED_HOSTS={k:(urlsplit(v[0]).hostname,) for k,v in SOURCES.items()}
 VENUE={
@@ -40,6 +42,7 @@ VENUE={
  MAKER:('Santa Cruz Maker Studios','427 A. Swift Street, Santa Cruz, CA 95060','Santa Cruz'),
  TANNERY:('Tannery Arts Center','1050-1060 River Street, Santa Cruz, CA 95060','Santa Cruz'),
  SCCMOD:('Capitola Mall, outside MOD and Macy’s','1855 41st Ave, Capitola, CA','Capitola'),
+ SCMAC:('Santa Cruz Mountains Art Center','9341 Mill Street, Ben Lomond, CA 95005','Ben Lomond'),
 }
 MAX_RECORDS=180
 MAX_DESCRIPTION=12000
@@ -64,6 +67,8 @@ def event_url(key,value):
   return bool(p.hostname=='www.tanneryartscenter.org' and p.path=='/winter-art-market' and not p.fragment)
  if key==SCCMOD:
   return bool(p.hostname=='www.sccmod.org' and p.path=='/learn-more/childrenscraftfair' and not p.fragment)
+ if key==SCMAC:
+  return bool(p.hostname=='www.mountainartcenter.org' and p.path=='/call-for-artists-gift-of-art-2026/' and not p.fragment)
  if key==WOODHOUSE:
   return bool(p.hostname=='minnow-cowbell-xynk.squarespace.com' and not p.fragment
    and re.fullmatch(r'/events/20\d{2}/\d{1,2}/\d{1,2}/[-a-z0-9]+/?',p.path))
@@ -413,6 +418,79 @@ def sccmod_craft_fair(page,now):
  from roomquest.publisher_evidence import attach
  return [attach(row,SCCMOD)]
 
+
+def mountain_art_center_gift_art(page,now):
+ """Two explicitly timed 2026 original gallery holiday events.
+
+ The primary original page is an artist call; the other deadlines, studio opening
+ hours and exhibit period are NOT individual public-event occurrences.
+ """
+ from bs4 import BeautifulSoup
+ soup=BeautifulSoup(page,'html.parser')
+ for tag in soup(['script','style','nav','header']):
+  tag.decompose()
+ h1=[n.get_text(' ',strip=True) for n in soup.find_all('h1')]
+ if h1.count('Call for Artists: The Gift of Art')!=1:
+  raise ValueError('scmac_original_2026_identity_unverified')
+ text=soup.get_text(' ',strip=True)
+ if 'Exhibit Dates: November 5 – December 22, 2026' not in text:
+  raise ValueError('scmac_original_year_unverified')
+ address='9341 Mill Street, Ben Lomond, CA 95005'
+ if len([p for p in soup.select('p') if p.get_text(' ',strip=True)==address])!=1:
+  raise ValueError('scmac_original_venue_street_unverified')
+ related=[h for h in soup.find_all('h3') if h.get_text(' ',strip=True)=='Related Events for this exhibit:']
+ if len(related)!=1:
+  raise ValueError('scmac_original_related_events_unverified')
+ segment=related[0].find_next_sibling('p')
+ if segment is None:
+  raise ValueError('scmac_original_event_schedule_unverified')
+ events=segment.get_text(' ',strip=True)
+ # The page provides a 2026 exhibition year and separate related-event clocks.
+ expected=[
+  ('2026-12-04','First Friday Open House',17,19,'scmac-2026-12-04-first-friday'),
+  ('2026-12-19','Annual Holiday Sale',12,17,'scmac-2026-12-19-holiday-sale'),
+ ]
+ patterns=[
+  r'First Friday Open House,\s*December\s*4\s*\|\s*5\s*[–—-]\s*7\s*pm',
+  r'Annual Holiday Sale,\s*December\s*19\s*\|\s*12\s*[–—-]\s*5\s*pm',
+ ]
+ if any(len(re.findall(p,events,re.I))!=1 for p in patterns):
+  raise ValueError('scmac_original_dates_and_clocks_unverified')
+ paragraphs=[p.get_text(' ',strip=True) for p in soup.select('p')]
+ original=[p for p in paragraphs if p.startswith('Once again we will have our popular holiday gift exhibit.')]
+ if len(original)!=1 or len(original[0])<240 or not all(s in original[0] for s in (
+     'functional ceramics','jewelry','All mediums are welcome','But all submissions must be for sale')):
+  raise ValueError('scmac_original_full_narrative_unverified')
+ if any(re.search(r'\b(?:cancelled|canceled|postponed|private event)\b',e,re.I)
+        for e in (events,original[0])):
+  raise ValueError('scmac_original_event_status_review')
+ rows=[]
+ venue,street,city=VENUE[SCMAC]
+ for (day,title,hour,finish,uid),pattern in zip(expected,patterns):
+  if day=='2026-12-04' and datetime.fromisoformat(day).weekday()!=4:
+   raise ValueError('scmac_friday_calendar_conflict')
+  if day=='2026-12-19' and datetime.fromisoformat(day).weekday()!=5:
+   raise ValueError('scmac_saturday_calendar_conflict')
+  start=datetime.fromisoformat(day).replace(hour=hour,tzinfo=ZoneInfo(ZONE)).astimezone(timezone.utc)
+  end=datetime.fromisoformat(day).replace(hour=finish,tzinfo=ZoneInfo(ZONE)).astimezone(timezone.utc)
+  if not within(start,end,now):continue
+  row=record('The Gift of Art — '+title,start.isoformat(),end.isoformat(),
+             venue,street,city,SOURCES[SCMAC][0],uid,
+             'Art Gallery, Holiday Event',None,None,ZONE,retain_until_end=True)
+  if not row:raise ValueError('scmac_event_record_unexpectedly_rejected')
+  date_clock=re.search(pattern,events,re.I).group(0)
+  prose=full_description(original[0]+'\n\n'+date_clock)
+  if not prose or len(prose)<270:
+   raise ValueError('scmac_original_narrative_unverified')
+  row.update(description=prose,timezone=ZONE,
+             publisher_categories=['Art Gallery','Holiday Event'],
+             location_provenance='publisher_verified_gallery_street')
+  from roomquest.publisher_evidence import attach
+  rows.append(attach(row,SCMAC))
+ if len(rows)!=len({(r['id'],r['starts_at']) for r in rows}):
+  raise ValueError('scmac_duplicate_original_occurrence')
+ return sorted(rows,key=lambda r:(r['starts_at'],r['id']))
+
 def collect(source,fetch,*,deadline_at=None,now=None):
  key=source.get('source_key')
  if key not in SOURCES or (source.get('feed_url'),source.get('kind'),source.get('platform_adapter'))!=SOURCES[key] or source.get('timezone')!=ZONE:
@@ -423,6 +501,8 @@ def collect(source,fetch,*,deadline_at=None,now=None):
   return tannery_market(fetch(SOURCES[key][0],'text/html'),now)
  if key==SCCMOD:
   return sccmod_craft_fair(fetch(SOURCES[key][0],'text/html'),now)
+ if key==SCMAC:
+  return mountain_art_center_gift_art(fetch(SOURCES[key][0],'text/html'),now)
  if key==MAKER:
   return maker_studios(fetch(SOURCES[key][0],'text/html'),
                        fetch('https://scmakerstudios.com/about/','text/html'),now)
