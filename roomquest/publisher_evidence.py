@@ -57,6 +57,10 @@ def family(source_key, event_url):
         if source_key in hilton_head_sources.SOURCES:
             return ('hilton_head:' + source_key
                     if hilton_head_sources.event_url(source_key, event_url) else None)
+        from roomquest import hall_ga_civic_ical
+        if source_key in hall_ga_civic_ical.SOURCES:
+            return ('hall_ga_civic:' + source_key
+                    if hall_ga_civic_ical.event_url(source_key,event_url) else None)
         from roomquest import gainesville_direct_feeds
         if source_key in gainesville_direct_feeds.SOURCES:
             return ('gainesville_direct:' + source_key
@@ -284,6 +288,8 @@ def family(source_key, event_url):
 def image_url(value, publisher):
     if not isinstance(value, str) or len(value) > 2000:
         return None
+    if isinstance(publisher, str) and publisher.startswith('hall_ga_civic:'):
+        return None  # Calendar supplies no event photos; no extra rights inferred.
     if publisher == "save_our_shores":
         from roomquest.santa_cruz_save_our_shores import photo_url
         return photo_url(value)  # Owner image candidate; normal downstream rights/byte gates apply.
