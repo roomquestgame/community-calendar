@@ -22,11 +22,13 @@ WOODHOUSE='woodhouse_brewing_santa_cruz_ca'
 DISCRETION='discretion_brewing_soquel_ca'
 AG_HISTORY='agricultural_history_project_watsonville_ca'
 MAKER='santa_cruz_maker_studios_fall_workshops_ca'
+TANNERY='tannery_arts_center_winter_market_2026_ca'
 SOURCES={
  WOODHOUSE:('https://www.woodhousebrews.com/api/events','json','squarespace'),
  DISCRETION:('https://www.discretionbrewing.com/events/','html','html'),
  AG_HISTORY:('https://aghistoryproject.org/2nd-saturday-on-the-farm/','html','html'),
  MAKER:('https://scmakerstudios.com/fall-events-2026/','html','html'),
+ TANNERY:('https://www.tanneryartscenter.org/winter-art-market','html','html'),
 }
 ALLOWED_HOSTS={k:(urlsplit(v[0]).hostname,) for k,v in SOURCES.items()}
 VENUE={
@@ -34,6 +36,7 @@ VENUE={
  DISCRETION:('Discretion Brewing','2703 41st Ave Ste A, Soquel, CA 95073','Soquel'),
  AG_HISTORY:('Agricultural History Project Center & Museum','2601 East Lake Avenue, Watsonville, CA 95076','Watsonville'),
  MAKER:('Santa Cruz Maker Studios','427 A. Swift Street, Santa Cruz, CA 95060','Santa Cruz'),
+ TANNERY:('Tannery Arts Center','1050-1060 River Street, Santa Cruz, CA 95060','Santa Cruz'),
 }
 MAX_RECORDS=180
 MAX_DESCRIPTION=12000
@@ -54,6 +57,8 @@ def event_url(key,value):
   return bool(p.hostname=='aghistoryproject.org' and p.path=='/2nd-saturday-on-the-farm/' and not p.fragment)
  if key==MAKER:
   return bool(p.hostname=='scmakerstudios.com' and p.path=='/fall-events-2026/' and not p.fragment)
+ if key==TANNERY:
+  return bool(p.hostname=='www.tanneryartscenter.org' and p.path=='/winter-art-market' and not p.fragment)
  if key==WOODHOUSE:
   return bool(p.hostname=='minnow-cowbell-xynk.squarespace.com' and not p.fragment
    and re.fullmatch(r'/events/20\d{2}/\d{1,2}/\d{1,2}/[-a-z0-9]+/?',p.path))
@@ -308,12 +313,62 @@ def maker_studios(page,official_about,now):
   raise ValueError('maker_duplicate_occurrence')
  return sorted(rows,key=lambda r:(r['starts_at'],r['id']))
 
+
+def tannery_market(page,now):
+ """One original first-party 2026 winter art market; retain the full published event text.
+
+ Original venue is a 1050-1060 River Street CAMPUS RANGE, not a fabricated
+ one-building address, publisher office, geocode or coverage centroid.
+ Downstream Geocodio must resolve the exact ASCII-equivalent published range.
+ """
+ from bs4 import BeautifulSoup
+ soup=BeautifulSoup(page,'html.parser')
+ for tag in soup(['script','style','nav','footer','header']):
+  tag.decompose()
+ titles=[v.get_text(' ',strip=True) for v in soup.find_all('h1')]
+ dates=[v.get_text(' ',strip=True) for v in soup.find_all('h2')]
+ body=soup.get_text(' ',strip=True)
+ actual=[
+  'WINTER ART MARKET 2026',
+  'Saturday, Dec. 12, 2026',
+  'When: Saturday, December 12, 2026 | 10am–5pm',
+  'Where: Tannery Arts Center, 1050–1060 River Street, Santa Cruz',
+  'Admission: Free and open to the public',
+ ]
+ if titles.count(actual[0])!=1 or dates.count(actual[1])!=1:
+  raise ValueError('tannery_event_heading_or_date_unverified')
+ if any(body.count(t)!=1 for t in actual[2:]):
+  raise ValueError('tannery_official_clocks_venue_or_admission_unverified')
+ if re.search(r'\b(?:cancelled|canceled|postponed|private event)\b',body,re.I):
+  raise ValueError('tannery_market_status_requires_review')
+ begin=datetime(2026,12,12,10,tzinfo=ZoneInfo(ZONE)).astimezone(timezone.utc)
+ finish=datetime(2026,12,12,17,tzinfo=ZoneInfo(ZONE)).astimezone(timezone.utc)
+ if datetime(2026,12,12).weekday()!=5:
+  raise ValueError('tannery_event_day_mismatch')
+ if not within(begin,finish,now):return []
+ venue,street,city=VENUE[TANNERY]
+ description_text=full_description('. '.join(actual)+'.')
+ if not description_text or len(description_text)<140:
+  raise ValueError('tannery_original_narrative_missing')
+ url=SOURCES[TANNERY][0]
+ row=record('Winter Art Market 2026',begin.isoformat(),finish.isoformat(),
+            venue,street,city,url,'tannery-2026-12-12-winter-art-market',
+            'Winter Art Market',None,None,ZONE,retain_until_end=True)
+ if not row:raise ValueError('tannery_record_unexpectedly_rejected')
+ row.update(description=description_text,timezone=ZONE,
+            publisher_categories=['Winter Art Market'],
+            location_provenance='publisher_official_event_campus_street_range')
+ from roomquest.publisher_evidence import attach
+ return [attach(row,TANNERY)]
+
 def collect(source,fetch,*,deadline_at=None,now=None):
  key=source.get('source_key')
  if key not in SOURCES or (source.get('feed_url'),source.get('kind'),source.get('platform_adapter'))!=SOURCES[key] or source.get('timezone')!=ZONE:
   raise ValueError('unregistered_santa_cruz_local_source')
  if deadline_at and monotonic()>=deadline_at:raise ValueError('collection_deadline')
  now=now or datetime.now(timezone.utc)
+ if key==TANNERY:
+  return tannery_market(fetch(SOURCES[key][0],'text/html'),now)
  if key==MAKER:
   return maker_studios(fetch(SOURCES[key][0],'text/html'),
                        fetch('https://scmakerstudios.com/about/','text/html'),now)
