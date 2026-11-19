@@ -45,3 +45,50 @@ The table distinguishes actual publisher machine-readable **feeds** from public 
 - Preview uses existing `preview_source`, publisher robots/10-second crawl-delay, existing LibCal RSS XML parsing, timed event checks, sanitization (12k per-source limit), exact first-party event URL and per-branch campus equality. No source-wide venue point, guessing, duplicate feed reuse, off-branch events, or blank-description holds.
 - Dry run in Vercel Sandbox for five branch feeds: **23 + 14 + 23 + 31 + 40 = 131 valid future event occurrences**, all 131 with publisher descriptions and source-owned address, zero image offers. 21 focused tests passed. No raw total (146) is misrepresented as imported cards.
 - Deployment sequence: collector PR -> Vercel production READY with exact SHA -> single app-repo migration registering **only the five audited sources** -> GitHub protected DB deploy -> production health/staged/geocoder/event checks. Remaining 15 are separate individually reviewed direct-source adapters and should be imported in later safe batches without introducing unvalidated live-source rows.
+
+## Hourly continuation — November 19, 2026, 06:00 America/New_York
+
+### Production audit — read-only Supabase (project `drpqjuqghpjivtwznfdj`)
+
+Exact expansion source keys queried from `public.municipal_event_sources`, `public.community_staged_events`, and `public.external_events`; future means `starts_at >= now()`. **Source registrations are not published events.**
+
+| Source | Status | Future staged | Future published |
+|---|---|---:|---:|
+| blackstrap_rock_hall_ga (preexisting direct) | approved / preview complete | 6 | 6 |
+| brenau_public_events_ga (preexisting direct) | approved / preview complete | 7 | 1 |
+| explore_gainesville_ga (preexisting direct) | paused / robots_unavailable | 0 | 0 |
+| hall_library_gainesville_ga (preexisting direct) | approved / preview complete | 39 | 39 |
+| hall_library_blackshear_place_ga (**new #01**) | approved / preview complete | 23 | 23 |
+| hall_library_east_hall_ga (**new #02**) | approved / preview complete | 13 | 0 |
+| hall_library_murrayville_ga (**new #03**) | approved / preview complete | 23 | 23 |
+| hall_library_north_hall_tech_ga (**new #04**) | approved / preview complete | 30 | 0 |
+| hall_library_spout_springs_ga (**new #05**) | approved / preview complete | 40 | 40 |
+| **All nine registered** | **8 approved, 1 paused** | **181** | **132** |
+
+**Cumulative after this check:** 9 Gainesville direct source rows, of which **five** are genuinely NEW in the 20-feed expansion; 181 future staged, 132 future published, 130 published with description, zero with published image. Six Blackstrap staged image *candidates* and seven Brenau staged image *candidates* are **not** published photos. The entire 20-feed baseline still contains **15 candidates not yet fully tested or enrolled**, rather than 15 published sources.
+
+Location review: East Hall 13 and North Hall Tech 30 staged timed events are accepted for staging with their official street addresses, but none has published. Brenau's seven future staged items have zero stage coordinate values and only one published. `udell_venue_lookups` returned no rows for these three source IDs at the time of this snapshot; this is **not enough to establish the specific cause** of missing public cards. Inspect the publisher geocoding path before applying any venue workaround. No guessed pin is permitted.
+
+### Fresh first-party discovery from all nine domains
+
+All nine domains were searched again, including nightlife/social, arts/culture/education, outdoor/active, food/drink, family/community, sports/fitness, shopping/markets, games/hobbies/clubs, and civic/services. The 15 unlaunched entries #06–20 remain in the main table. Additional official native-calendar category **leads**, not newly validated live feeds or production registrations:
+
+| Next reserve lead (not counted toward baseline 20) | Official publisher link / machine-readable candidate | Status |
+|---|---|---|
+| City of Gainesville Downtown Events (shopping, festivals, arts, family) | https://www.gainesville.org/common/modules/iCalendar/iCalendar.aspx?catID=34&feed=calendar | Official Gainesville iCalendar directory links this exact category. Its response identified `text/calendar`, but the web-content reader does not expose the VEVENT body, robots policy, dates, venues, or supported collector preview; **needs validation**. |
+| City of Gainesville Parks and Recreation (outdoor, sports, family) | https://www.gainesville.org/common/modules/iCalendar/iCalendar.aspx?catID=23&feed=calendar | Linked in official city iCalendar directory; automated preview body inaccessible in this pass, not yet validated. |
+| City of Gainesville Mayor and Council Meetings (civic) | https://www.gainesville.org/common/modules/iCalendar/iCalendar.aspx?catID=37&feed=calendar | Official city linked category, body/details not verified; route to Civic only if timed public meetings with event-owned venues. |
+| Hall County Parks and Leisure Services (outdoor, sports, family) | https://www.hallcounty.org/common/modules/iCalendar/iCalendar.aspx?catID=61&feed=calendar | County-published category link exists, reader did not expose content; needs date, venue, robots, and cancellation checks. |
+| Hall County Planning Commission (civic) | https://www.hallcounty.org/common/modules/iCalendar/iCalendar.aspx?catID=64&feed=calendar | County-published category, body unavailable in this read; compare overlap with #06–08 before allowing cards. |
+
+Directory evidence: https://www.gainesville.org/iCalendar.aspx and https://www.hallcounty.org/iCalendar.aspx. All five proposed URLs were checked against `public.municipal_event_sources.feed_url` in a read-only URL-pattern scan, and **none was enrolled there**. This checks exact feed registration, not all possible cross-provider event duplicates.
+
+Other discovered organizer leads/one-off activity **not counted as feeds**: City of Gainesville official Nov 21 Festival of Trees kickoff and Jingle Mingle (https://www.gainesville.org/m/NewsFlash, already potentially covered by Explore Gainesville but its direct endpoint is paused); Greater Hall Chamber upcoming public calendar (https://members.ghcc.com/events, previously held due to collector 403); Quinlan Visual Arts Center (https://www.quinlanartscenter.org/, events program but machine-readable feed not proved); 2026 Gainesville Turkey Trot (https://runsignup.com/Race/Info/GA/Gainesville/LimestoneShirtFactory, organizer one-off event, not a recurring publisher feed). Protect against duplicate syndication, past-only sports listings and undated social schedule mentions.
+
+### Release gate and next actions
+
+**This check added zero fully end-to-end validated feeds and made zero collector/DB feed releases.** The previous five library-branch releases remain deployed, and Vercel's latest production collector was READY at SHA `434b5d17231682ac4ee8fd1d5e38defd19895cd1` (Santa Cruz PR #287, not a Gainesville feed release).
+
+Priority batch: #06–08 Hall County commissioners/tax/planning native CivicPlus feeds, the closest candidates to deploy; prior November 18 source research found two upcoming timed meetings per feed with a publisher street. Before adding production rows, run the **current** exact-source collector preview behind robots/access policy and confirm current VEVENT timestamp, URL, location, nonduplicative civic routing and description. If all three qualify, ship just three through collector PR -> Vercel READY exact SHA -> *one* append-only guarded forward migration in `RoomQuestGame` -> protected `db-deploy.yml` -> read-only public-card audit. If even one qualifies, deploy that smaller validated batch; never invent enough feeds to hit 20. Next examine #10 NoFo WordPress custom posts for real *event* time, #11 Arts Council Squarespace show venues, and #09 Flowery Branch Revize date/detail extraction. Recheck current app migrations before writing SQL: baseline must never be rerun or modified.
+
+**Latest audit result is a production measurement, not a collector preview success for the five new reserve links.** A later hourly run must not promote a website listing, HTTP success, or candidate URL to a fully validated/published feed.
