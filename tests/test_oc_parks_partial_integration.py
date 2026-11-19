@@ -35,8 +35,9 @@ class OCPartialIntegration(unittest.TestCase):
             return "<html>publisher source</html>"
         with patch.object(preview_worker, "fetch_publisher", side_effect=fetched):
             with patch.object(oc_parks_partial, "parse_calendar", return_value=[entry]):
-                with patch.object(oc_parks_partial, "parse_detail", return_value=(row, row["description"])):
-                    output = preview_worker.preview_source(SOURCE, deadline_at=monotonic()+40)
+                with patch.object(oc_parks_partial, "cancellation_records", return_value=[]):
+                    with patch.object(oc_parks_partial, "parse_detail", return_value=(row, row["description"])):
+                        output = preview_worker.preview_source(SOURCE, deadline_at=monotonic()+40)
         self.assertEqual(output["p_future_count"], 1)
         self.assertEqual(output["p_venue_count"], 1)
         self.assertEqual(output["p_parser_capability"], "publisher_event_candidates_v1")

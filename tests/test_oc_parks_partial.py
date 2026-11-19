@@ -153,9 +153,13 @@ class OCParksPartialTests(unittest.TestCase):
         self.assertEqual(len(matches),1)
         self.assertEqual(matches[0]["eid"],"1")
 
-    def test_updated_detail_page_cancellation_is_held(self):
+    def test_updated_detail_page_cancellation_produces_nonpublic_tombstone(self):
         rows,_ = self.collect(second=detail(title="CANCELED: Oak Woodland Bird Walk"))
-        self.assertEqual(rows, [])
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["publisher_status"], "cancelled")
+        self.assertEqual(rows[0]["status_evidence"], "detail_page")
+        self.assertIsNone(rows[0]["lat"])
+        self.assertIsNone(rows[0]["lng"])
 
     def test_date_without_verified_start_fails_closed(self):
         with self.assertRaisesRegex(ValueError, "oc_parks_calendar_time_invalid"):

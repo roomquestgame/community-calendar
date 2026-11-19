@@ -2,6 +2,14 @@
 
 The EventQuest owner explicitly approved **pulling the OC Parks events that can be verified** without waiting for complete coverage of the source's 500-entry Drupal calendar. This is a source-bounded, read-only **real publisher canary** with safe collector code, not a claim of 500 published events.
 
+## November 18 follow-up — explicit cancellation records and bounded refresh
+
+The collector now emits publisher-evidenced **negative-status tombstone candidates** in the same ordinary source-scoped batch. It only marks a cancellation when the official 500-item calendar itself says CANCELED/POSTPONED or the exact event detail page updates to that state. **Missing from the capped list never causes a cancellation.** Publisher event ID, exact event URL and original start time are bound to each negative record; no invented venue, image, description or active card is created.
+
+The detail-fetch budget was reduced from **32 to 20** to leave adequate room for the existing 36-second HTML worker deadline. A new live read-only refresh (Nov. 18, 2026) fetched **21 pages** in **10.6 seconds**, and emitted **7 positive verified records (5 source-reviewed points, 2 coordinate holds)** plus **2 exact cancelled records**. All 7 positives retained original publisher descriptions; no image URL was imported. **33 focused OC Parks tests passed**. This is still a parser/worker payload, not proof of successful staging or public cancellation.
+
+**Release boundary:** backend staging must preserve `publisher_status` and safely apply exact prior-card cancellation only to the same source, URL, provider-event ID and start time. Until those current live PG17 contracts are verified and activated, **no OC Parks source registration or public card is approved**.
+
 ## Publisher origin and terms
 
 - Official calendar: https://parks.oc.gov/events
