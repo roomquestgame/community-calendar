@@ -1,7 +1,7 @@
 """St. Helena official first-party bounded iCalendar safety tests."""
 from datetime import datetime, timezone
 from unittest.mock import patch
-from tests.test_beaufort_library_branches import source, fixture
+from test_beaufort_library_branches import source, fixture
 from roomquest import beaufort_library_branches as b
 
 
