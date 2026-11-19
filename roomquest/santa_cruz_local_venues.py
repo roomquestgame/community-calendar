@@ -230,7 +230,6 @@ def ag_history(page,official_hours,now):
 def maker_studios(page,official_about,now):
  """Original dated Sunday maker sign-ups; no extrapolated weekly recurrence."""
  from bs4 import BeautifulSoup
- from calendar import monthrange
  soup=BeautifulSoup(page,'html.parser')
  about=BeautifulSoup(official_about,'html.parser')
  h1=[n.get_text(' ',strip=True) for n in soup.select('h1')]
@@ -284,8 +283,8 @@ def maker_studios(page,official_about,now):
     raise ValueError('maker_session_time_unverified')
    sh,sm=map(int,re.search(r'(\d{1,2}):(\d{2})',start_time).groups())
    eh,em=map(int,re.search(r'(\d{1,2}):(\d{2})',end_time).groups())
-   if session=='advanced':sh+=12;eh+=12
-   elif end_time.endswith('pm'):eh+=12
+   sh=(sh%12)+(12 if start_time.endswith('pm') else 0)
+   eh=(eh%12)+(12 if end_time.endswith('pm') else 0)
    begin=datetime(2026,int(day[5:7]),num,sh,sm,tzinfo=ZoneInfo(ZONE)).astimezone(timezone.utc)
    finish=datetime(2026,int(day[5:7]),num,eh,em,tzinfo=ZoneInfo(ZONE)).astimezone(timezone.utc)
    if not within(begin,finish,now):continue
