@@ -32,3 +32,10 @@
 3. Complete one further **distinct** original publisher (#20), preferably from undercovered market/gaming/outdoor domains; allow incremental independent release before 20 if safe. Continue 9-domain discovery at every run, including rural and county areas.
 
 This receipt is source-first and read-only apart from the already merged protected source enrollment. Dry-run, stage and public counts are never interchangeable.
+
+
+## 2026-11-19 ~20:23 UTC — production fetch follow-up (source #19 held)
+
+**Important source publication distinction:** Source **5899** is registered/approved through applied migration 20261201120000, but actual Vercel production fetch did **not** complete. Post-enrollment production preview first reported `source_network_error`; a subsequent read-only preview shows `robots_unavailable` and **2 failed attempts**, still queued, with **0 staged / 0 public events**, and no venue/Geocodio result. Exact Vercel production runtime warning at 2026-11-19T20:19:25Z on `POST /api/html-demand` for source 5899: `PreviewError`, `OSError`, `phase=fetch`, `error_kind=transient`, elapsed 18874 ms, `source_network_error`. Another unrelated source 5665 experienced the same error earlier. Do not bypass original publisher robots/transport gates, fake successful publication, or claim a functioning production feed until allowed publisher fetch and downstream records succeed. Investigate publisher robots availability and transport as a scoped transient blocker; retain the source in normal fail-closed queue while checking later. Source #19 is **original-collector live-verified and production-enrolled, publication-held**, not a public card.
+
+Read-only Supabase additionally confirmed ongoing `database_unavailable` for Madson 5845 (22 failures) and Santa Cruz Art League 5860 (11); Vercel/PostgREST logs have multiple SQLSTATE `57014` timeouts on Nov 19, but source-specific causality is not yet proven. Do not directly modify production queues or source coordinates. The wider follow-on cohort had 30 future public server rows before this source #19 publication attempt, all with real streets/geolocations.
