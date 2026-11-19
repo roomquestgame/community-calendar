@@ -423,3 +423,8 @@ Guarded live `preview_worker.preview_source`: **p_error=None; p_future_count=1; 
 **Independent production check during run:** the previous follow-on **15 registered** sources had **27 future public events** (23 Shakespeare, 3 Save Our Shores, 1 Agricultural History Project); new Tannery had **0 because it was not yet enrolled**. Pre-existing Madson Wines 5845 still queued with `database_unavailable` and 22 failures; Art League 5860 queued same error with 11 failures, while multiple other staged sources have null coordinates and are queued for normal geocoding. Do not count staged events as published or confuse these older problems with #16. No direct production SQL writes or PG17 baseline edits.
 
 Next iteration: investigate direct first-party timed food, sports, gaming, small-town markets and nonprofit calendars; verify addresses/events/robots; release independently safe sources incrementally.
+
+
+## November 19 UTC — hourly readback: SCCMOD now public; Dante Wix rich-text parser repaired
+
+See [scoped nine-domain follow-through audit](santa-cruz-nine-domain-hourly-20261119-dante-rich-text-recovery.md) for nine original discovery lanes, owners/holds, fresh source-by-source Supabase receipts and the isolated 191-test live guarded Dante Wix full-description repair. **17 existing** second-cohort source registrations, **28** independently confirmed follow-on future public server rows (23 Shakespeare + 3 Save Our Shores + 1 AHP + 1 SCCMOD), and **0 extra new publisher enrolled** in this parser-only work. Dante 5878 paused with `dante_full_narrative_missing`; existing Madson 5845 still has 22 database_unavailable failures. No direct production SQL writes, invented points, or PG17 baseline edits.

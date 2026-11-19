@@ -73,3 +73,33 @@ def test_bad_source_identity_and_url_fail_closed():
 def test_empty_index_is_not_a_calendar():
     rows=m.collect(SOURCE,lambda u,a:"<main>No upcoming</main>",now=NOW)
     assert rows==[]
+
+def test_current_wix_rich_text_about_section_preserves_full_original_narrative():
+    base=fixture()
+    def fetch(url, accept):
+        html=base(url, accept)
+        if url == m.INDEX:
+            return html
+        return html.replace(
+            '<div class="X7JGg">Ci vediamo per un caffè?',
+            '<div data-hook="about-section"><h2 data-hook="about">About the Event</h2><div data-id="content-viewer">Ci vediamo per un caffè?'
+        ).replace('This is a free event, aside from any beverages/treats.</div>',
+                  'This is a free event, aside from any beverages/treats.</div></div>')
+    rows=m.collect(SOURCE,fetch,now=NOW)
+    assert len(rows)==2
+    assert all(row["description"].startswith("Ci vediamo per un caffè?") for row in rows)
+    assert all("This is a free event" in row["description"] for row in rows)
+
+def test_wix_rich_text_excerpt_only_must_fail_closed():
+    base=fixture()
+    def fetch(url, accept):
+        html=base(url, accept)
+        if url == m.INDEX:
+            return html
+        return html.replace(
+            '<div class="X7JGg">Ci vediamo per un caffè?',
+            '<div data-hook="about-section"><div data-id="content-viewer">Ci vediamo per un caffè?'
+        ).replace("All levels welcome. This is a free event, aside from any beverages/treats.",
+                  "All levels welcome.")
+    with pytest.raises(ValueError, match="dante_full_narrative_missing"):
+        m.collect(SOURCE, fetch, now=NOW)
