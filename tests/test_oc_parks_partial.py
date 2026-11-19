@@ -78,6 +78,12 @@ class OCParksPartialTests(unittest.TestCase):
         self.assertNotIn("Body", text)
         self.assertEqual(row["ends_at"], "2026-11-19T09:30:00-08:00")
 
+    def test_live_source_timezone_is_explicit_for_stage_contract(self):
+        rows, _ = self.collect()
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["timezone"], "America/Los_Angeles")
+        self.assertEqual(rows[0]["publisher_status"], "scheduled")
+
     def test_event_images_are_never_granted_from_page_presence(self):
         rows, _ = self.collect()
         self.assertEqual(len(rows), 1)
