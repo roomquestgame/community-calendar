@@ -82,6 +82,33 @@ def family(source_key, event_url):
         from roomquest import santa_cruz_boardwalk
         if source_key==santa_cruz_boardwalk.KEY:
             return 'santa_cruz_boardwalk' if santa_cruz_boardwalk.event_url(event_url) else None
+        from roomquest import santa_cruz_save_our_shores
+        if source_key == santa_cruz_save_our_shores.KEY:
+            return "save_our_shores" if santa_cruz_save_our_shores.event_url(event_url) else None
+        from roomquest import santa_cruz_shakespeare
+        if source_key == santa_cruz_shakespeare.KEY:
+            return "santa_cruz_shakespeare" if santa_cruz_shakespeare.event_url(event_url) else None
+        from roomquest import santa_cruz_faith_community
+        if source_key == santa_cruz_faith_community.KEY:
+            return 'santa_cruz_faith_community' if santa_cruz_faith_community.event_url(event_url) else None
+        from roomquest import santa_cruz_little_giant
+        if source_key == santa_cruz_little_giant.KEY:
+            return 'santa_cruz_little_giant' if santa_cruz_little_giant.event_url(event_url) else None
+        from roomquest import santa_cruz_chess_club
+        if source_key == santa_cruz_chess_club.KEY:
+            return 'santa_cruz_chess_club' if santa_cruz_chess_club.event_url(event_url) else None
+        from roomquest import santa_cruz_downtown
+        if source_key == santa_cruz_downtown.KEY:
+            return 'santa_cruz_downtown' if santa_cruz_downtown.event_url(event_url) else None
+        from roomquest import santa_cruz_hotel_holidays
+        if source_key in santa_cruz_hotel_holidays.SOURCES:
+            return ('santa_cruz_hotel:' + source_key) if santa_cruz_hotel_holidays.event_url(source_key,event_url) else None
+        from roomquest import santa_cruz_art_league
+        if source_key==santa_cruz_art_league.KEY:
+            return 'santa_cruz_art_league' if santa_cruz_art_league.event_url(event_url) else None
+        from roomquest import santa_cruz_fabrica
+        if source_key==santa_cruz_fabrica.KEY:
+            return 'santa_cruz_fabrica' if santa_cruz_fabrica.event_url(event_url) else None
         from roomquest import santa_cruz_symphony
         if source_key==santa_cruz_symphony.KEY:
             return 'santa_cruz_symphony' if santa_cruz_symphony.event_url(event_url) else None
@@ -257,6 +284,9 @@ def family(source_key, event_url):
 def image_url(value, publisher):
     if not isinstance(value, str) or len(value) > 2000:
         return None
+    if publisher == "save_our_shores":
+        from roomquest.santa_cruz_save_our_shores import photo_url
+        return photo_url(value)  # Owner image candidate; normal downstream rights/byte gates apply.
     if isinstance(publisher, str) and publisher.startswith('anchorage_batch20_wasilla:'):
         return None  # City public event facts only, no image reuse rights implied.
     if isinstance(publisher, str) and publisher.startswith('anchorage_batch20_aiga:'):
@@ -288,6 +318,9 @@ def image_url(value, publisher):
     if isinstance(publisher, str) and publisher.startswith('gainesville:'):
         from roomquest.gainesville_sources import photo_url as gainesville_photo_url
         return gainesville_photo_url(publisher.removeprefix('gainesville:'), value)
+    if publisher=='santa_cruz_fabrica':
+        from roomquest.santa_cruz_fabrica import photo_url
+        return photo_url(value)
     if publisher=='santa_cruz_jack_oneill':
         from roomquest.santa_cruz_jack_oneill import photo_url as jack_photo_url
         return jack_photo_url(value)
