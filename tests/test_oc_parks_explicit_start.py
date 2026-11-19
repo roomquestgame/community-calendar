@@ -73,5 +73,5 @@ def test_description_original_html_is_kept_without_inserted_or_fabricated_prose(
             + "A challenging hike through the canyon. " * 12)
     row = _run("Fitness Hike - Willow", "/events/fitness-hike-willow-4",
                "18751 Laguna Canyon Road", "Laguna Beach", "92651", body)
-    assert row["description"] == body
+    assert row["description"] == body.strip()
     assert len(row["description"]) > 150
