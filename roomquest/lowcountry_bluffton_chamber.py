@@ -85,7 +85,7 @@ def _detail(url, claimed, soup, now):
     narrative = plain(desc_node.get_text(" ", strip=True)) if desc_node else ""
     if not 80 <= len(narrative) <= MAX_DESCRIPTION or PRIVATE.search(narrative):
         return None
-    meta_node = panel.select_one(".gz-details-links .col-sm-5")
+    meta_node = panel.select_one(".gz-details-links")
     meta = plain(meta_node.get_text(" ", strip=True)) if meta_node else ""
     found = DATE.search(meta)
     if not found:
