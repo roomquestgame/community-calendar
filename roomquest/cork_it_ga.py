@@ -28,12 +28,17 @@ MAX_RECORDS = 70
 MAX_DESCRIPTION = 12000
 
 
-def event_url(path):
-    if not isinstance(path, str) or not re.fullmatch(r"/eventdates/[A-Za-z0-9-]{6,120}", path):
+def event_url(value):
+    if not isinstance(value, str) or len(value) > 260:
         return False
-    url = "https://" + HOST + path
-    p = urlsplit(url)
-    return p.scheme == "https" and p.hostname == HOST and not p.query and not p.fragment
+    try:
+        p = urlsplit(value)
+        return (p.scheme == "https" and p.hostname == HOST
+                and p.username is None and p.password is None
+                and p.port in (None, 443) and not p.query and not p.fragment
+                and bool(re.fullmatch(r"/eventdates/[A-Za-z0-9-]{6,120}", p.path)))
+    except ValueError:
+        return False
 
 
 def _clock(value):
@@ -64,7 +69,7 @@ def parse(payload, *, now=None):
         if item.get("workflowState") != 1 or item.get("cancelled") is True or item.get("allDay") or item.get("allDayEvent"):
             continue
         identity, path = item.get("id"), item.get("fullUrl")
-        if not isinstance(identity, str) or not re.fullmatch(r"[a-zA-Z0-9]{12,40}", identity) or not event_url(path):
+        if not isinstance(identity, str) or not re.fullmatch(r"[a-zA-Z0-9]{12,40}", identity) or not event_url("https://" + HOST + path):
             continue
         title = plain(item.get("title"))
         if not title:
