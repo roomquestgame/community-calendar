@@ -179,6 +179,7 @@ def cancellation_records(calendar_html, *, now=None):
             "venue_name": "", "venue_address": "", "venue_city": "",
             "lat": None, "lng": None, "category": "",
             "timezone": ZONE, "publisher_status": status,
+            "status_evidence": "calendar_title", "status_evidence_url": CALENDAR,
             "description": "", "publisher_categories": [],
         })
         if len(rows) > 50:
@@ -186,16 +187,20 @@ def cancellation_records(calendar_html, *, now=None):
     return rows
 
 
-def _detail_cancellation(item):
-    """A new cancellation on the exact item URL, confirmed in its detail page."""
+def _detail_cancellation(item, *, status):
+    """A changed status on the exact publisher detail URL, not a guessed title."""
+    if status not in ("cancelled", "postponed"):
+        raise ValueError("oc_parks_detail_status_invalid")
     return {
-        "id": item["eid"], "title": "Canceled: " + item["title"],
+        "id": item["eid"], "title": item["title"],
         "starts_at": item["starts_at"].isoformat(),
         "ends_at": item["ends_at"].isoformat(),
         "event_url": "https://" + HOST + item["url"],
         "venue_name": "", "venue_address": "", "venue_city": "",
         "lat": None, "lng": None, "category": "",
-        "timezone": ZONE, "publisher_status": "cancelled",
+        "timezone": ZONE, "publisher_status": status,
+        "status_evidence": "detail_page",
+        "status_evidence_url": "https://" + HOST + item["url"],
         "description": "", "publisher_categories": [],
     }
 
@@ -226,7 +231,8 @@ def parse_detail(entry, html):
     title_node = soup.title
     page_title = plain(title_node.get_text(" ", strip=True)) if title_node else ""
     if CANCELLATION_TITLE.search(page_title):
-        raise ValueError("oc_parks_detail_cancelled")
+        raise ValueError("oc_parks_detail_postponed" if re.match(r"^\s*(postponed|rescheduled)\b", page_title, re.I)
+                         else "oc_parks_detail_cancelled")
     if not page_title.endswith(" | OC Parks") or _norm(page_title[:-11]) != _norm(entry["title"]):
         raise ValueError("oc_parks_detail_title_mismatch")
     timing = soup.select_one(".info-date-time__body")
@@ -261,7 +267,8 @@ def parse_detail(entry, html):
     if len(text) > DESCRIPTION_LIMIT:
         raise ValueError("oc_parks_description_requires_long_text_review")
     if CANCELLATION_TITLE.search(text):
-        raise ValueError("oc_parks_detail_cancelled")
+        raise ValueError("oc_parks_detail_postponed" if re.match(r"^\s*(postponed|rescheduled)\b", text, re.I)
+                         else "oc_parks_detail_cancelled")
     if not text:
         raise ValueError("oc_parks_detail_description_missing")
     pin = _park_pin(street, city, postal)
@@ -295,8 +302,9 @@ def collect(source, fetch, *, deadline_at=None, now=None):
         try:
             row, narrative = parse_detail(item, body)
         except ValueError as exc:
-            if str(exc) == "oc_parks_detail_cancelled":
-                canceled.append(_detail_cancellation(item))
+            if str(exc) in ("oc_parks_detail_cancelled", "oc_parks_detail_postponed"):
+                canceled.append(_detail_cancellation(
+                    item, status="postponed" if str(exc) == "oc_parks_detail_postponed" else "cancelled"))
                 continue
             if str(exc) in {
                 "oc_parks_detail_street_missing",
