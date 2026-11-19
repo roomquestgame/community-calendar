@@ -1763,6 +1763,37 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                 'p_venue_count':sum(row.get('lat') is not None for row in records),
                 'p_error':None,'p_events':records,
                 'p_parser_capability':'publisher_event_candidates_v1'}
+    from roomquest import lowcountry_palmetto_running
+    if source_key == lowcountry_palmetto_running.KEY:
+        deadline = min(monotonic() + 43,
+                       deadline_at - 8 if deadline_at is not None else float('inf'))
+        try:
+            records = lowcountry_palmetto_running.collect(
+                source, lambda url, accept: fetch_publisher(
+                    url, accept, respect_robots=True, deadline_at=deadline,
+                    allowed_hosts=lowcountry_palmetto_running.ALLOWED_HOSTS[source_key]),
+                deadline_at=deadline)
+            if len(records)>lowcountry_palmetto_running.MAX_DETAILS or any(
+                    not row.get('description') or row.get('category')!='sports'
+                    or not lowcountry_palmetto_running.event_url(row.get('event_url'))
+                    or not row.get('venue_address') or row.get('lat') is None
+                    or row.get('lng') is None or row.get('end_time_verified') is not False
+                    for row in records):
+                raise ValueError('prc_invalid_event')
+        except PreviewError:
+            raise
+        except (ValueError,TypeError,KeyError,OverflowError) as exc:
+            reason=str(exc)
+            raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}',reason)
+                               else 'invalid_prc_payload') from exc
+        samples=records[:MAX_PREVIEWS]
+        while len(json.dumps(samples,ensure_ascii=False))>18_000:
+            samples.pop()
+        return {'p_source_key':source_key,'p_samples':samples,
+                'p_future_count':len(records),
+                'p_venue_count':sum(row.get('lat') is not None for row in records),
+                'p_error':None,'p_events':records,
+                'p_parser_capability':'publisher_event_candidates_v1'}
     from roomquest import lowcountry_palmetto_bluff_conservancy
     if source_key == lowcountry_palmetto_bluff_conservancy.KEY:
         deadline = min(monotonic() + 43,
