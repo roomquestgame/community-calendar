@@ -2962,6 +2962,9 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         elif source_key in VA_WIX_SOURCES:
             from roomquest.virginia_wix_events import collect as collect_html
             allowed_hosts = (urlparse(VA_WIX_SOURCES[source_key][0]).hostname,)
+        elif source_key == "explore_braselton_official_ga":
+            from roomquest.explore_braselton_ga import HOST, collect as collect_html
+            allowed_hosts = (HOST,)
         elif source_key == "hall_bourbon_brothers_gainesville_ga":
             from roomquest.hall_bourbon_ga import HOST, collect as collect_html
             allowed_hosts = (HOST,)
@@ -4101,7 +4104,7 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
     from roomquest.virginia_wix_events import SOURCES as VA_WIX_SOURCES
     from roomquest.maryland_sources import ARTS, HTML as MARYLAND_HTML, PG_PARKS
     from roomquest.nebraska_venues import SOURCES as NEBRASKA_VENUES
-    publisher_media = (html and (source_key in NEBRASKA_VENUES or source_key in RALEIGH_SOURCES or source_key in MARYLAND_HTML or source_key in VA_WIX_SOURCES or source_key == 'porch_on_main_flowery_branch_ga' or source_key == 'barefoot_sailing_flowery_branch_ga' or source_key in ('visit_farmville_va', 'prizery_va', 'red_door_104_va', 'south_boston_speedway_va', 'discover_halifax_va', 'sova_innovation_hub_va'))) or reviewed_chamber or (source_key in ('madison_county_parks_ia', 'think_iowa_city_ia', 'rosemont_of_virginia', 'longwood_basketball_va', 'hurrdat_sports_bar_ne', ARTS, PG_PARKS) and source.get('kind') == 'json'
+    publisher_media = (html and (source_key in NEBRASKA_VENUES or source_key in RALEIGH_SOURCES or source_key in MARYLAND_HTML or source_key in VA_WIX_SOURCES or source_key == 'porch_on_main_flowery_branch_ga' or source_key == 'barefoot_sailing_flowery_branch_ga' or source_key == 'explore_braselton_official_ga' or source_key in ('visit_farmville_va', 'prizery_va', 'red_door_104_va', 'south_boston_speedway_va', 'discover_halifax_va', 'sova_innovation_hub_va'))) or reviewed_chamber or (source_key in ('madison_county_parks_ia', 'think_iowa_city_ia', 'rosemont_of_virginia', 'longwood_basketball_va', 'hurrdat_sports_bar_ne', ARTS, PG_PARKS) and source.get('kind') == 'json'
                        and source.get('platform_adapter') == 'wordpress') or (html and (source_key.startswith(('virginia_state_parks_', 'mycountyparks_ia_'))
                                 or source_key in ('council_bluffs_public_library_ia', 'bellevue_times_ne', 'unleashcb_ia', 'visit_mason_city_ia', 'chase_city_chamber_va', 'experience_waterloo_ia',
                                                   'south_hill_chamber_va', 'clarksville_community_players_va',
