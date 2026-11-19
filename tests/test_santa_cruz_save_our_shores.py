@@ -42,6 +42,7 @@ def test_original_publisher_street_and_image_candidate_and_real_time():
     assert r["lat"] is None and r["lng"] is None
     assert len(r["description"])>120
     assert r["publisher_categories"]==["Beach Cleanup"]
+    assert r["publisher_details"] == {}
     assert r["image_url"].endswith("hidden-beach-event.jpg")
     assert family(m.KEY,r["event_url"])=="save_our_shores"
 

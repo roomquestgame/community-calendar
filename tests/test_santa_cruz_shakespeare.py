@@ -33,6 +33,7 @@ def test_real_publisher_venue_street_runtimes_and_identity():
     assert all(x["event_url"]==m.URL and x["publisher_ticket_url"].startswith(TICKET) for x in rows)
     assert all(len(x["description"])>=220 and x.get("image_url") in (None,"") for x in rows)
     assert len({x["id"] for x in rows})==2
+    assert all(x["publisher_details"] == {} for x in rows)
     assert family(m.KEY,m.URL)=="santa_cruz_shakespeare"
     assert family(m.KEY,"https://other.net") is None
 

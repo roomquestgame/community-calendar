@@ -140,7 +140,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
             location_provenance="original_production_page_venue_street",
             location_evidence_url=URL, schedule_evidence_url=URL,
             publisher_ticket_url=anchor["href"])
-        rows.append(attach(row, KEY, facts={"original_ticket_url": anchor["href"]},
+        rows.append(attach(row, KEY,
                            evidence_url=URL))
         if len(rows) > MAX_RECORDS:
             raise ValueError("shakespeare_record_limit")

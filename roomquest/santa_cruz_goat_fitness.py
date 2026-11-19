@@ -110,7 +110,7 @@ def _detail(url, fetch, now):
                publisher_categories=["HYROX"],
                location_provenance="original_punchpass_event_schema_exact_street",
                location_evidence_url=url, schedule_evidence_url=url)
-    return attach(row, KEY, evidence_url=url, facts={"owner_class_id": uid})
+    return attach(row, KEY, evidence_url=url)
 
 
 def collect(source, fetch, *, deadline_at=None, now=None):

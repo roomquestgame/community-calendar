@@ -49,6 +49,7 @@ def test_publisher_hyrox_exact_street_start_end_narrative_and_no_guessed_pin():
     assert len(rows)==1
     r=rows[0]
     assert r["event_url"]==URL
+    assert r["publisher_details"] == {}  # DB publisher_event_details allows only reviewed fact keys
     assert r["venue_address"]=="1055 17th Ave, Santa Cruz, CA 95062"
     assert r["starts_at"]=="2026-11-19T17:15:00+00:00"
     assert r["ends_at"]=="2026-11-19T18:10:00+00:00"
