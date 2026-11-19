@@ -1664,6 +1664,41 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                 'p_venue_count':sum(row.get('lat') is not None for row in records),
                 'p_error':None,'p_events':records,
                 'p_parser_capability':'publisher_event_candidates_v1'}
+    from roomquest import lowcountry_southern_barrel
+    if source_key == lowcountry_southern_barrel.KEY:
+        deadline = min(monotonic() + 43,
+                       deadline_at - 8 if deadline_at is not None else float('inf'))
+        try:
+            records = lowcountry_southern_barrel.collect(
+                source, lambda url, accept: fetch_publisher(
+                    url, accept, respect_robots=True, deadline_at=deadline,
+                    allowed_hosts=lowcountry_southern_barrel.ALLOWED_HOSTS[source_key]),
+                deadline_at=deadline)
+            if len(records)>lowcountry_southern_barrel.MAX_ITEMS or any(
+                not isinstance(row.get('description'),str)
+                or not row['description'].strip()
+                or len(row['description'])>lowcountry_southern_barrel.MAX_DESCRIPTION
+                or row.get('category')!='hang_out'
+                or row.get('venue_address')!=lowcountry_southern_barrel.STREET
+                or row.get('lat')!=lowcountry_southern_barrel.LAT
+                or row.get('lng')!=lowcountry_southern_barrel.LNG
+                or not lowcountry_southern_barrel.event_url(row.get('event_url'))
+                for row in records):
+                raise ValueError('southern_barrel_incomplete_event')
+        except PreviewError:
+            raise
+        except (ValueError,TypeError,KeyError,OverflowError) as exc:
+            reason=str(exc)
+            raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}',reason)
+                               else 'invalid_southern_barrel_payload') from exc
+        samples=records[:MAX_PREVIEWS]
+        while len(json.dumps(samples,ensure_ascii=False))>18_000:
+            samples.pop()
+        return {'p_source_key':source_key,'p_samples':samples,
+                'p_future_count':len(records),
+                'p_venue_count':sum(row.get('lat') is not None for row in records),
+                'p_error':None,'p_events':records,
+                'p_parser_capability':'publisher_event_candidates_v1'}
     from roomquest import lowcountry_greenhouse
     if source_key == lowcountry_greenhouse.KEY:
         deadline = min(monotonic() + 43,
