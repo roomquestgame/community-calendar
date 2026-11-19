@@ -82,6 +82,9 @@ def family(source_key, event_url):
         from roomquest import santa_cruz_boardwalk
         if source_key==santa_cruz_boardwalk.KEY:
             return 'santa_cruz_boardwalk' if santa_cruz_boardwalk.event_url(event_url) else None
+        from roomquest import santa_cruz_fabrica
+        if source_key==santa_cruz_fabrica.KEY:
+            return 'santa_cruz_fabrica' if santa_cruz_fabrica.event_url(event_url) else None
         from roomquest import santa_cruz_symphony
         if source_key==santa_cruz_symphony.KEY:
             return 'santa_cruz_symphony' if santa_cruz_symphony.event_url(event_url) else None
@@ -288,6 +291,9 @@ def image_url(value, publisher):
     if isinstance(publisher, str) and publisher.startswith('gainesville:'):
         from roomquest.gainesville_sources import photo_url as gainesville_photo_url
         return gainesville_photo_url(publisher.removeprefix('gainesville:'), value)
+    if publisher=='santa_cruz_fabrica':
+        from roomquest.santa_cruz_fabrica import photo_url
+        return photo_url(value)
     if publisher=='santa_cruz_jack_oneill':
         from roomquest.santa_cruz_jack_oneill import photo_url as jack_photo_url
         return jack_photo_url(value)
