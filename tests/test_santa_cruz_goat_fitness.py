@@ -54,7 +54,7 @@ def test_publisher_hyrox_exact_street_start_end_narrative_and_no_guessed_pin():
     assert r["ends_at"]=="2026-11-19T18:10:00+00:00"
     assert r["description"]==FULL_BODY
     assert r["lat"] is None and r["lng"] is None
-    assert r["image_url"] is None
+    assert not r.get("image_url")
     assert family(m.KEY,URL)=="santa_cruz_goat_fitness"
 
 def test_reject_non_owner_street_and_clocks_or_missing_description():
