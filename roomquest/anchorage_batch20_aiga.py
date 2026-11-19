@@ -26,6 +26,13 @@ ROOT = "https://alaska.aiga.org"
 SOURCES = {KEY: (FEED, "rss", "wordpress")}
 ALLOWED_HOSTS = {KEY: ("alaska.aiga.org",)}
 VENUE = ("W xyz Lounge", "310 West 36th Avenue, Anchorage, AK 99503", "Anchorage")
+# 2026-11-19 independent US Census Bureau exact street address match.
+# Street-segment interpolation, not surveyed building entrance GPS.
+VENUE_LAT = 61.188015711649
+VENUE_LNG = -149.886917308221
+VENUE_GEO_EVIDENCE = ("US Census Bureau address geocoder Public_AR_Current; "
+                      "matched 310 W 36TH AVE, ANCHORAGE AK 99503; "
+                      "street-interpolated address geolocation, reviewed 2026-11-19")
 MAX_DESCRIPTION = 12000
 MAX_RECORDS = 24
 WINDOW_DAYS = 60
@@ -96,8 +103,8 @@ def _event(item, fetch, now, deadline):
         return None
     row.update(description=desc, category="hang_out", timezone=ZONE,
                publisher_categories=["AIGA Alaska", "Design Meetup"],
-               location_provenance="official_aiga_event_page_venue_street",
-               lat=None, lng=None, reason="missing_verified_venue_geo")
+               location_provenance=VENUE_GEO_EVIDENCE,
+               lat=VENUE_LAT, lng=VENUE_LNG)
     return row
 
 
