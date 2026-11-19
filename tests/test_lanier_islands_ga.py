@@ -28,6 +28,7 @@ def test_explicit_nightly_expansion_and_exact_address():
     rows = parse(LISTING, DETAIL_HTML, now=NOW)
     assert len(rows) == 45
     assert len({x["starts_at"] for x in rows}) == 45
+    assert len({x["id"] for x in rows}) == 45
     assert all(x["event_url"] == DETAIL for x in rows)
     assert all(x["venue_address"] == "7000 Lanier Islands Parkway, Buford, GA 30518" for x in rows)
     assert all(x["description"] and "2026 winter light show" in x["description"] for x in rows)
