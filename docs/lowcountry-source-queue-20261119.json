@@ -1,21 +1,23 @@
 {
   "region": "Hilton Head Island / Bluffton / Beaufort County / Port Royal / South Carolina Lowcountry",
-  "checkpoint_local": "2026-11-19 09:43 EST (third hourly continuation)",
+  "checkpoint_local": "2026-11-19 11:00 EST (fourth hourly continuation; successful first-party incremental release)",
   "target_new_distinct_feeds_per_batch": 20,
-  "new_deployed_this_continuation": 0,
+  "new_deployed_this_continuation": 1,
   "verified_ready_count": 0,
-  "candidate_hold_count": 11,
-  "previous_public_source_associated": 298,
-  "previous_staged": 300,
-  "previous_future_visible": 296,
-  "previous_source_count": 12,
+  "candidate_hold_count": 12,
+  "previous_public_source_associated": 306,
+  "previous_staged": 308,
+  "previous_future_visible": 302,
+  "previous_source_count": 13,
   "notes": [
-    "Never count original Hilton Head 5, Beaufort County Library 6 including St Helena, or Greenhouse Bluffton as NEW again.",
-    "Publisher event GEO must be grounded independently at exact numbered venue street; no centroid guess.",
-    "All proposed source keys below are UNREGISTERED holds, not deployed or validated-ready.",
-    "Preserve St Gregory Parish Life Center unresolved hall GPS and Greenhouse conflicting Music Bingo Nov23/25 date hold.",
-    "Release using tested collector plus a single forward-only PG17 batch migration via protected db-deploy.yml, never direct SQL write.",
-    "Journal for full 9-lane audit: docs/journal/2026-11-19-lowcountry-hour-three.md"
+    "13 approved/source-associated Lowcountry publishers in production: preexisting original 5, six Beaufort County Library (including St Helena), Greenhouse, and this hour's Southern Barrel. Count only Southern Barrel as one NEW feed this run.",
+    "Live read-only public counts at 2026-11-19 ~11 AM EST: 308 staged, 306 source-associated public rows and 302 future scheduled. Sources may overlap or age out; public count is not a globally unique event count.",
+    "Collector PR #328 merged at 77d88956f193f84172f1a53086a1d94ad0b9d3a9, exact Vercel production deployment READY; app/PG17 PR #1328 merged at 54a96e088f76d8113a83afce0b207ad20ac16ef3, protected db-deploy workflow #44560449148 SUCCESS, PG17 source ID 5886 preview complete 8, staged 8, public 8.",
+    "One source's eight original Wednesday trivia event URLs/date+time descriptions/GEO were verified. Census Public_AR_Current exact numbered 375 Buckwalter Place Blvd address matched x=-80.918827729347 y=32.271693851895; this is not publisher-provided point and not a source centroid. No event images ingested.",
+    "Publishing category nuance: staged source category is hang_out; unified downstream classifier currently marks external primary sports with categories [sports,hang_out] and reason 'Participant games with separate social play and instruction evidence'. Do not mutate active global overlay/category jobs in source expansion; review scoped policy before next change.",
+    "Preserve St Gregory the Great Parish Life Center unresolved separate hall GPS and Greenhouse conflicting Nov23/25 Music Bingo hold.",
+    "Continue all nine categories (Nightlife/Social; Arts/Education; Outdoor; Food; Family; Sports/Fitness; Markets/Makers; Gaming/Hobbies; Civic/Community) with distinct first-party publisher counts; holds not padded to 20.",
+    "Never edit production data via Supabase direct SQL; only protected db-deploy.yml migrations after deployed collector SHA; no baseline rewrite."
   ],
   "sources": [
     {
@@ -27,14 +29,15 @@
       ],
       "feed_url": "https://southernbarrel.com/music-events",
       "event_url": "https://southernbarrel.com/event/wednesday-night-trivia-2026-11-25",
-      "evidence": "Publisher lists individual Wednesday trivia events 2026-11-25 through 2027-01-27; detail states 7–9 PM and original narrative. Publisher footer and contact confirm 375 Buckwalter Place Blvd, Bluffton SC 29910.",
-      "state": "hold",
-      "blockers": [
-        "authoritative event-venue GPS for this exact street not found in audited production venue tables",
-        "robots/access result not yet confirmed; do not infer from web rendering",
-        "bounded HTML collector and focused regression tests not yet implemented"
-      ],
-      "priority": 1
+      "evidence": "LIVE 2026-11-19 publisher original calendar + eight unique event details dated November 25 2026 to January 13 2027; strict parser checks event JSON-LD, event H3 date, Wednesday 7–9pm EST, venue address; 375 Buckwalter Place Blvd, Bluffton SC 29910 Census Public_AR_Current exact-address geocoding, not publisher GEO; source ID 5886 complete preview, 8 staged, 8 public, 8 future; robot policy search=yes, ai-train=no, use=reference; no photos. Validated collector PR #328 Vercel READY, protected PG17 workflow SUCCESS.",
+      "state": "deployed",
+      "blockers": [],
+      "priority": 0,
+      "public_cards": 8,
+      "staged_records": 8,
+      "preview_status": "complete",
+      "source_id": 5886,
+      "category_note": "staged category hang_out; published primary sports, categories [sports,hang_out] due to live unified classifier, needs scoped policy review; no Other."
     },
     {
       "key": "beaufort_county_public_meetings_sc",
@@ -44,10 +47,10 @@
       ],
       "feed_url": "https://www.beaufortcountysc.gov/events/2026/11/index.html",
       "event_url": "https://www.beaufortcountysc.gov/events/2026/11/11.24.2026%20SOLOCO.html",
-      "evidence": "New bounded official month HTML archive: November 2026 listing ~31 entries; December 2026 listing ~23; original civic meeting details include Nov24 Southern Lowcountry Regional Board, Rotary Community Center 11 Recreation Court, Bluffton SC. Unbounded calendar.ics previously >2,767 VEVENTs and lacks per-event GEO.",
+      "evidence": "New bounded official month HTML archive: November 2026 listing ~31 entries; December 2026 listing ~23; original civic meeting details include Nov24 Southern Lowcountry Regional Board, Rotary Community Center 11 Recreation Court, Bluffton SC. Unbounded calendar.ics previously >2,767 VEVENTs and lacks per-event GEO. /robots.txt checked 2026-11-19: user-agent * with empty Disallow (HTML permitted by robots).",
       "state": "hold",
       "blockers": [
-        "robots/terms decision not confirmed for HTML",
+        "publisher terms/permissions beyond robots remain unreviewed",
         "original meeting-specific time range, attendance eligibility, street and independent GPS for EACH valid event",
         "bounded two-to-three-month HTML/detail collector plus cancellations and closures filter and regression tests"
       ],
@@ -63,12 +66,12 @@
       ],
       "feed_url": "https://roastingroom.live/homepage/",
       "event_url": "https://roastingroom.live/homepage/",
-      "evidence": "First-party dates Nov27 Plump 8 PM, Dec4 John Brewster 8 PM, Dec6 acoustic brunch at noon, later 2026 and 2027 shows. Publisher About says upstairs at 1297 May River Road, Bluffton SC.",
+      "evidence": "First-party dates Nov27 Plump 8 PM, Dec4 John Brewster 8 PM, Dec6 acoustic brunch at noon, later 2026 and 2027 shows. Publisher About says upstairs at 1297 May River Road, Bluffton SC. 2026-11-19 live publisher robots allows homepage (disallows admin/private), Google Maps venue link, and U.S. Census exact-numbered-address match 1297 May River Rd Bluffton SC 29910: y=32.237307650723, x=-80.861864789765. November 27 Plump and December 4 John Brewster independently observed.",
       "state": "hold",
       "blockers": [
         "per-show original event URL/identity and complete narrative validation",
-        "GPS for 1297 May River Rd",
-        "robots/access and bounded parser tests; validate on-sale/cancelled status"
+        "robots/access and bounded parser tests; validate on-sale/cancelled status",
+        "confirm unique bookmarkable publisher per-show details (current page uses #show hash) and source-specific parser with complete narrative"
       ],
       "priority": 3
     },
@@ -82,12 +85,12 @@
       ],
       "feed_url": "https://sobagallery.com/soba-events/",
       "event_url": "https://sobagallery.com/holiday-class-brusho-poinsettias-december-2-with-helen-hodge/",
-      "evidence": "First-party adult Dec2 Brusho Poinsettias workshop; Nov21/Dec5 children sessions discussed in prior checkpoint; exact numbered venue 7 Church St, Bluffton. Market recurrence must be confirmed for 2026 and not inferred from stale 2024/2025 page.",
+      "evidence": "First-party adult Dec2 Brusho Poinsettias workshop; Nov21/Dec5 children sessions discussed in prior checkpoint; exact numbered venue 7 Church St, Bluffton. Market recurrence must be confirmed for 2026 and not inferred from stale 2024/2025 page. Live 2026-11-19 publisher robots.txt allows public pages with Crawl-delay: 10; Census exact 7 Church Street geocoder returned no match, retain GPS hold.",
       "state": "hold",
       "blockers": [
         "independently verified event-specific street GPS at 7 Church Street absent from production reviewed venue and geocoder tables",
-        "robots/access and individual class capacity/paid-only eligibility",
-        "bounded event parsing/occurrence tests"
+        "bounded event parsing/occurrence tests",
+        "honor 10-second crawl delay and source-specific bounded parser"
       ],
       "priority": 4
     },
@@ -222,6 +225,54 @@
         "owner site robots/rights and dated collector"
       ],
       "priority": 11
+    },
+    {
+      "key": "town_of_bluffton_civic_sc",
+      "publisher": "Town of Bluffton, SC",
+      "category_lanes": [
+        5,
+        6,
+        7,
+        9
+      ],
+      "feed_url": "https://townofbluffton.sc.gov/Calendar.aspx",
+      "event_url": "https://townofbluffton.sc.gov/Calendar.aspx?EID=3237",
+      "evidence": "Official Town website search index shows 2026 municipal events, sports/fitness and weekly Bridge Collective Market at Martin Family Park, 68 Boundary St. Source not registered as of read-only database 2026-11-19. Live sandbox GET calendar and event returned HTTP 404 even while public search index still shows individual event page; cannot validate upcoming live events.",
+      "state": "hold",
+      "blockers": [
+        "first-party calendar currently returns 404 from collector network: check domain migration/accessible canonical host; do not rely on stale indexed events",
+        "verify live upcoming date and event street address + independent GEO before source enrollment",
+        "bounded CivicEngage collector/terms/robots and cancellations"
+      ],
+      "priority": 11
+    },
+    {
+      "key": "bluffton_farm_flea_market_sc",
+      "publisher": "Bluffton Farm & Flea",
+      "category_lanes": [
+        4,
+        5,
+        7
+      ],
+      "feed_url": "https://www.blufftonfarmandflea.com/",
+      "event_url": null,
+      "evidence": "First-party Squarespace homepage live HTTP 200 and public robots allow root; third-party Bluffton.com recurring venue schedule lists Fri/Sat markets and Nov25/Dec2 Wednesday Vintage Bazaar at 172 Bluffton Road, Bluffton SC. First party /events and /calendar returned 404 in live check; no verified first-party event detail/unique identity.",
+      "state": "hold",
+      "blockers": [
+        "find first-party upcoming event-specific details or permitted Squarespace collection; cannot substitute third-party calendar as first-party",
+        "independently verify numbered venue street GPS",
+        "date-bound source parser, holiday schedule and category tests"
+      ],
+      "priority": 12
     }
-  ]
+  ],
+  "verified_deployed_new_keys": [
+    "southern_barrel_bluffton_sc"
+  ],
+  "public_cards_added_this_run": 8,
+  "collector_merge_sha": "77d88956f193f84172f1a53086a1d94ad0b9d3a9",
+  "db_merge_sha": "54a96e088f76d8113a83afce0b207ad20ac16ef3",
+  "db_workflow_run": "https://github.com/roomquestgame/RoomQuestGame/actions/runs/44560449148",
+  "collector_ready_deployment": "https://vercel.com/room-quest-game/roomquest-community-collector/3KJJz4ijr8yZW5dMU5g17ZGvMoKL",
+  "last_hour_validated_event_candidates": 8
 }
