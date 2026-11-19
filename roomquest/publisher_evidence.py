@@ -82,6 +82,9 @@ def family(source_key, event_url):
         from roomquest import santa_cruz_boardwalk
         if source_key==santa_cruz_boardwalk.KEY:
             return 'santa_cruz_boardwalk' if santa_cruz_boardwalk.event_url(event_url) else None
+        from roomquest import santa_cruz_art_league
+        if source_key==santa_cruz_art_league.KEY:
+            return 'santa_cruz_art_league' if santa_cruz_art_league.event_url(event_url) else None
         from roomquest import santa_cruz_fabrica
         if source_key==santa_cruz_fabrica.KEY:
             return 'santa_cruz_fabrica' if santa_cruz_fabrica.event_url(event_url) else None
