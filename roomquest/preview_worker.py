@@ -2630,6 +2630,31 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                 'p_source_key':source_key,'p_samples':samples,
                 'p_future_count':len(records),'p_venue_count':sum(r.get('lat') is not None for r in records),
                 'p_error':None,'p_events':records}
+    from roomquest import scotts_valley_cocoa
+    if source_key==scotts_valley_cocoa.KEY:
+        deadline=min(monotonic()+35,deadline_at-6 if deadline_at is not None else float('inf'))
+        try:
+            records=scotts_valley_cocoa.collect(
+                source,lambda url,accept:fetch_publisher(
+                    url,accept,respect_robots=True,deadline_at=deadline,
+                    allowed_hosts=scotts_valley_cocoa.ALLOWED_HOSTS[source_key]),
+                deadline_at=deadline)
+            if len(records)>scotts_valley_cocoa.MAX_RECORDS or any(
+                not isinstance(r.get('description'),str) or len(r['description'])<175
+                or not r.get('venue_address') or not r.get('ends_at')
+                or r.get('lat') is not None or r.get('lng') is not None for r in records):
+                raise ValueError('scotts_cocoa_incomplete_original_event')
+        except PreviewError:raise
+        except (ValueError,TypeError,KeyError,OverflowError) as exc:
+            code=str(exc)
+            raise PreviewError(code if re.fullmatch(r'[a-z_]{3,100}',code)
+                               else 'invalid_scotts_cocoa_original_payload') from exc
+        samples=records[:MAX_PREVIEWS]
+        while len(json.dumps(samples,ensure_ascii=False))>18_000:samples.pop()
+        return {'p_parser_capability':'publisher_event_candidates_v1',
+                'p_source_key':source_key,'p_samples':samples,
+                'p_future_count':len(records),'p_venue_count':0,
+                'p_error':None,'p_events':records}
     from roomquest import santa_cruz_local_venues
     if source_key in santa_cruz_local_venues.SOURCES:
         deadline=min(monotonic()+36,deadline_at-8 if deadline_at is not None else float('inf'))
