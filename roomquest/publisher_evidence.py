@@ -28,6 +28,9 @@ ROSEMONT_REVIEWED_FEATURED_IMAGE = (
 def family(source_key, event_url):
     """Bind an enrolled publisher family to its own canonical event link."""
     try:
+        from roomquest import santa_cruz_watsonville_taiko
+        if source_key == santa_cruz_watsonville_taiko.KEY:
+            return 'watsonville_taiko' if santa_cruz_watsonville_taiko.event_url(event_url) else None
         from roomquest import anchorage_batch20_dirty_apron
         if source_key in anchorage_batch20_dirty_apron.SOURCES:
             return ('anchorage_batch20_dirty_apron:' + source_key
@@ -65,9 +68,16 @@ def family(source_key, event_url):
         if source_key in hall_ga_civic_ical.SOURCES:
             return ('hall_ga_civic:' + source_key
                     if hall_ga_civic_ical.event_url(source_key,event_url) else None)
-        from roomquest import barefoot_sailing_ga
-        if source_key == barefoot_sailing_ga.KEY:
-            return source_key if barefoot_sailing_ga.event_url(event_url) else None
+        # Fail a malformed optional regional adapter closed without breaking
+        # attribution for unrelated publisher families.
+        try:
+            from roomquest import barefoot_sailing_ga
+        except SyntaxError:
+            if source_key == "barefoot_sailing_flowery_branch_ga":
+                return None
+        else:
+            if source_key == barefoot_sailing_ga.KEY:
+                return source_key if barefoot_sailing_ga.event_url(event_url) else None
         from roomquest import gainesville_direct_feeds
         if source_key in gainesville_direct_feeds.SOURCES:
             return ('gainesville_direct:' + source_key
