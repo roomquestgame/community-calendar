@@ -1423,6 +1423,41 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         return {"p_source_key": source_key, "p_samples": samples,
                 "p_future_count": len(records), "p_venue_count": len(records),
                 "p_error": None, "p_events": records}
+    from roomquest import anchorage_skinny_raven
+    if source_key in anchorage_skinny_raven.SOURCES:
+        deadline = min(monotonic() + 38,
+                       deadline_at - 8 if deadline_at is not None else float("inf"))
+        try:
+            records = anchorage_skinny_raven.collect(
+                source, lambda url, accept: fetch_publisher(
+                    url, accept, respect_robots=True, deadline_at=deadline,
+                    allowed_hosts=anchorage_skinny_raven.ALLOWED_HOSTS[source_key]),
+                deadline_at=deadline)
+            if len(records) > 1 or any(
+                    not anchorage_skinny_raven.event_url(source_key, row.get("event_url"))
+                    or not isinstance(row.get("description"), str)
+                    or not row["description"].strip()
+                    or len(row["description"]) > anchorage_skinny_raven.MAX_DESCRIPTION
+                    or row.get("category") != "sports"
+                    or row.get("timezone") != anchorage_skinny_raven.ZONE
+                    or row.get("venue_address") != anchorage_skinny_raven.VENUE[1]
+                    or row.get("lat") != anchorage_skinny_raven.POINT[0]
+                    or row.get("lng") != anchorage_skinny_raven.POINT[1]
+                    or row.get("image_url")
+                    for row in records):
+                raise ValueError("skinny_raven_unverified_occurrence")
+        except PreviewError:
+            raise
+        except (ValueError, TypeError, KeyError, OverflowError) as exc:
+            reason = str(exc)
+            raise PreviewError(reason if re.fullmatch(r"[a-z_]{3,100}", reason)
+                               else "invalid_skinny_raven_payload") from exc
+        samples = records[:MAX_PREVIEWS]
+        while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
+            samples.pop()
+        return {"p_source_key": source_key, "p_samples": samples,
+                "p_future_count": len(records), "p_venue_count": len(records),
+                "p_error": None, "p_events": records}
     from roomquest import anchorage_chamber_public
     if source_key in anchorage_chamber_public.SOURCES:
         deadline = min(monotonic() + 38,
