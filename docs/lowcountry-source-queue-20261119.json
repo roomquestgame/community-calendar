@@ -1,14 +1,14 @@
 {
   "region": "Hilton Head Island / Bluffton / Beaufort County / Port Royal / South Carolina Lowcountry",
-  "checkpoint_local": "2026-11-19 13:07 EST (fifth continuation; production read-only audit)",
+  "checkpoint_local": "2026-11-19 13:48 EST (sixth continuation; protected Palmetto deployed and read-back)",
   "target_new_distinct_feeds_per_batch": 20,
-  "new_deployed_this_continuation": 0,
+  "new_deployed_this_continuation": 1,
   "verified_ready_count": 0,
-  "candidate_hold_count": 12,
-  "previous_public_source_associated": 313,
-  "previous_staged": 315,
-  "previous_future_visible": 306,
-  "previous_source_count": 14,
+  "candidate_hold_count": 14,
+  "previous_public_source_associated": 324,
+  "previous_staged": 326,
+  "previous_future_visible": 317,
+  "previous_source_count": 15,
   "notes": [
     "Never count original Hilton Head 5, Beaufort County Library 6 including St Helena, or Greenhouse Bluffton as NEW again.",
     "Publisher event GEO must be grounded independently at exact numbered venue street; no centroid guess.",
@@ -19,9 +19,11 @@
     "11:35 ET fourth hourly audit verified two already-deployed sources after prior checkpoint: Southern Barrel and Roasting Room. Both collector+protected DB migrations and Vercel READY; counts 8+7 new public cards. They are removed from HOLD and tracked as DEPLOYED, not counted as newly deployed by this documentation-only run.",
     "Top Dawg event details were 404 on external read; hold without first-party full event narratives. Bluffton Farm & Flea special Nov22 is confirmed on publisher site but GEO and recurrence not verified.",
     "Do not use historical SOBA gallery 7 Church Street as the Art SCHOOL event address: publisher's 2025 school program lists 8 Church Street; each event venue must be reverified.",
-    "Fifth continuation: new verified bounded Palmetto Bluff Conservancy first-party collector merged in PR #339, SHA f40c795e4dee2ad456154b93b6c10f47db1562d7, 10 live future original event canaries. Exact SHA itself does not have a Vercel production deployment; latest READY cfa636d4a0ec722ea72ad7979817592e84511f53 is an independently confirmed direct descendant. Strict exact-SHA gate for DRAFT protected DB PR #1344 remains unsatisfied; do not enroll until it is explicitly cleared without rolling back newer unrelated collector code.",
     "Read-only DB at 13:07 EST: 14 approved existing Lowcountry source keys ID 5803-5807,5813-5817,5873,5879,5886,5889, 315 staged, 313 public source-associated cards, 306 future. No Palmetto source enrollment. Migration ledger latest applied 20261126010000, draft planned 20261126090000.",
-    "New 9-lane first-party investigation: Greater Bluffton Chamber ChamberMaster first-party December detail canaries have full narratives, bounded list and event-specific numbered physical addresses (231 Buckwalter Place Blvd Dec7; 97 Progressive St Dec3; 162 Bluffton Rd Dec1). Not release ready: robots, independent exact venue GEO, strict chamber-owned category filtering, code/tests. Town of Bluffton December 13 Merry & Made Market official vendor source gives 30 Red Barn Drive; third-party listing gives conflicting 38 Red Barn Drive; must use event-specific official identity and geocode before publish."
+    "New 9-lane first-party investigation: Greater Bluffton Chamber ChamberMaster first-party December detail canaries have full narratives, bounded list and event-specific numbered physical addresses (231 Buckwalter Place Blvd Dec7; 97 Progressive St Dec3; 162 Bluffton Rd Dec1). Not release ready: robots, independent exact venue GEO, strict chamber-owned category filtering, code/tests. Town of Bluffton December 13 Merry & Made Market official vendor source gives 30 Red Barn Drive; third-party listing gives conflicting 38 Red Barn Drive; must use event-specific official identity and geocode before publish.",
+    "Sixth continuation: Palmetto Bluff Conservancy DEPLOYED, not queued: collector PR #339 merged SHA f40c795, current exact production Vercel READY artifact SHA 0430bc974f117bab97cf53d979e09381a7171ef6 retains collector unchanged (GitHub ahead_by=4,behind_by=0), DB PR #1344 merged SHA 490c4931e2b2eb3ec70c04c3f54211aa542b6b05 after migration reversion 20261128010000. Protected DB workflow run 44591039899 succeeded; live source 5894 preview complete, stage future 11, published 11/future 11. Existing 14 remain; 15 sources 326 stage-future sum, 324 published and 317 future-visible source-associated records.",
+    "St Helena 1451-VEVENT feed already date bounded using publisher-supported start and end; never re-enroll. Preserve St Gregory hall unresolved GPS and Greenhouse source conflicting music bingo as holds.",
+    "New first-party candidate holds: venue-confirmed Comedy Magic Cabaret official SeatEngine schedule (dated originals, actual venue number but exact GEO/parser pending), PRC official run calendar with mixed ownership/location and occasional listing/prose times. No additional feed was deployed; do not count holds as verified."
   ],
   "sources": [
     {
@@ -59,26 +61,6 @@
         "bounded event parsing/occurrence tests"
       ],
       "priority": 4
-    },
-    {
-      "key": "palmetto_bluff_conservancy_sc",
-      "publisher": "Palmetto Bluff Conservancy",
-      "category_lanes": [
-        2,
-        3,
-        5,
-        7
-      ],
-      "feed_url": "https://www.palmettobluff.com/organizer/palmetto-bluff-conservancy/",
-      "event_url": "https://www.palmettobluff.com/event/brown-bag-lunch-oak-island/",
-      "evidence": "Merged community-calendar PR #339 commit f40c795e4dee2ad456154b93b6c10f47db1562d7. First-party The Events Calendar bounded 65-day/50-result JSON; 10 valid future source canaries (Nov 20 Pop-up Shop, Nov 24 Track and Sign, Dec 2 Brown Bag); numbered event-specific Conservancy Classroom 655 Old Moreland Rd, Bluffton SC 29910; independent Census exact match 32.178086450464,-80.897273890865. 16 tests passed, publisher robots allows endpoint with 10s delay, no images. New source is NOT YET registered.",
-      "state": "collector_validated_pending_exact_sha_production_gate",
-      "blockers": [
-        "PR #339 exact merged SHA f40c795e4dee2ad456154b93b6c10f47db1562d7 has NO exact-sha Vercel production READY record; newer latest READY cfa636d4a0ec722ea72ad7979817592e84511f53 contains this SHA as direct ancestor but strict literal gate remains",
-        "app DB enrollment PR #1344 is DRAFT; its single forward-only PG17 20261126090000 migration must not merge until collector deployment gate clears, and must be applied ONLY through protected db-deploy.yml after latest ledger check",
-        "read back live preview / staged / published records and identities only AFTER protected enrollment"
-      ],
-      "priority": 1
     },
     {
       "key": "coastal_discovery_museum_sc",
@@ -269,6 +251,44 @@
         "one-time listing does not justify invented recurring market feed"
       ],
       "priority": 8
+    },
+    {
+      "key": "comedy_magic_cabaret_hhi_sc",
+      "publisher": "Comedy Magic Cabaret — venue-owned, externally hosted SeatEngine calendar",
+      "category_lanes": [
+        1,
+        2,
+        5
+      ],
+      "feed_url": "https://hilton-head-comedy-magic-cabaret.seatengine.com/",
+      "event_url": "https://hilton-head-comedy-magic-cabaret.seatengine.com/events/137447",
+      "evidence": "Venue official https://www.comedymagiccabaret.com/ links directly to its SeatEngine event calendar. On Nov19 2026, original venue SeatEngine showed Hidden Theater 8PM Nov20 / Dec4/11/18/22; Kerry Pollock Nov21,24,25,27,28 and December dates, plus Dec31 NYE. Full original prose, individual /events/{id} pages, venue-listed 843 William Hilton Pkwy, Hilton Head Island SC 29928. This is one distinct publisher, not separate feeds for each show.",
+      "state": "hold",
+      "blockers": [
+        "review SeatEngine robots and collection terms plus date bounded pagination/occurrence extraction, test exact /events ID for all dated performances",
+        "independent Census exact-address GEO for 843 William Hilton Parkway (not South Island Square centroid)",
+        "source-specific adapter and tests proving per-show time/description/host/identity, dedup versus Culture HHI, no inferred end time or image rights"
+      ],
+      "priority": 3
+    },
+    {
+      "key": "palmetto_running_company_sc",
+      "publisher": "Palmetto Running Company / PRC Run Club first-party event schedule",
+      "category_lanes": [
+        3,
+        6,
+        9
+      ],
+      "feed_url": "https://shop.palmettorunningcompany.com/content/events",
+      "event_url": "https://shop.palmettorunningcompany.com/content/events",
+      "evidence": "Official https://palmettorunningcompany.com/run-club links to its own /content/events page with Nov21 Friendsgiving 7:30AM at Celebration Park, Nov24 Tuesday Track 5:30PM Bluffton Middle School, Nov28 Bluffton run/walk at The Grind, Dec1/8 Track, Dec12 Elf on the Run at 4211 North Okatie Hwy, Dec13 Buffalo Run. Unlike general weekly clubs, dated original publisher details and descriptive narratives do exist. Some entries are externally organized races; filter by PRC publisher ownership. Official page sometimes contains mismatched 6PM listing and 5:30PM prose; fail closed on contradictions.",
+      "state": "hold",
+      "blockers": [
+        "event-specific dated stable IDs and exact GPS for changing run start/finish streets; venue names alone insufficient",
+        "publisher-owned versus sponsored/reposted races and public/member-only eligibility",
+        "reconcile listing-vs-prose time conflict on Nov24 track; bounded parser, recurrence/dedupe and tests; terms/robots"
+      ],
+      "priority": 5
     }
   ],
   "new_deployed_since_prior_0943_checkpoint": 2,
