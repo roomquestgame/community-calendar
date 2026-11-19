@@ -36,7 +36,8 @@ VENUES = {
     CHAMINADE: ("Chaminade Resort & Spa", "One Chaminade Lane, Santa Cruz, CA 95065"),
     DREAM_INN: ("Dream Inn", "175 W Cliff Dr, Santa Cruz, CA 95060"),
 }
-GEOCODIO_CHAMINADE_STREET = "1 Chaminade Lane, Santa Cruz, CA 95065"  # Official written 'One'\nMAX_RECORDS = 3
+GEOCODIO_CHAMINADE_STREET = "1 Chaminade Lane, Santa Cruz, CA 95065"  # Official written 'One'
+MAX_RECORDS = 3
 MAX_DESCRIPTION = 12000
 MAX_HTML = 650000
 CANCELLED = re.compile(r"\b(?:cancelled|canceled|postponed|private event|members[- ]only)\b", re.I)
