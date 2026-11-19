@@ -1,0 +1,227 @@
+{
+  "region": "Hilton Head Island / Bluffton / Beaufort County / Port Royal / South Carolina Lowcountry",
+  "checkpoint_local": "2026-11-19 09:43 EST (third hourly continuation)",
+  "target_new_distinct_feeds_per_batch": 20,
+  "new_deployed_this_continuation": 0,
+  "verified_ready_count": 0,
+  "candidate_hold_count": 11,
+  "previous_public_source_associated": 298,
+  "previous_staged": 300,
+  "previous_future_visible": 296,
+  "previous_source_count": 12,
+  "notes": [
+    "Never count original Hilton Head 5, Beaufort County Library 6 including St Helena, or Greenhouse Bluffton as NEW again.",
+    "Publisher event GEO must be grounded independently at exact numbered venue street; no centroid guess.",
+    "All proposed source keys below are UNREGISTERED holds, not deployed or validated-ready.",
+    "Preserve St Gregory Parish Life Center unresolved hall GPS and Greenhouse conflicting Music Bingo Nov23/25 date hold.",
+    "Release using tested collector plus a single forward-only PG17 batch migration via protected db-deploy.yml, never direct SQL write.",
+    "Journal for full 9-lane audit: docs/journal/2026-11-19-lowcountry-hour-three.md"
+  ],
+  "sources": [
+    {
+      "key": "southern_barrel_bluffton_sc",
+      "publisher": "Southern Barrel Brewing Co.",
+      "category_lanes": [
+        1,
+        4
+      ],
+      "feed_url": "https://southernbarrel.com/music-events",
+      "event_url": "https://southernbarrel.com/event/wednesday-night-trivia-2026-11-25",
+      "evidence": "Publisher lists individual Wednesday trivia events 2026-11-25 through 2027-01-27; detail states 7–9 PM and original narrative. Publisher footer and contact confirm 375 Buckwalter Place Blvd, Bluffton SC 29910.",
+      "state": "hold",
+      "blockers": [
+        "authoritative event-venue GPS for this exact street not found in audited production venue tables",
+        "robots/access result not yet confirmed; do not infer from web rendering",
+        "bounded HTML collector and focused regression tests not yet implemented"
+      ],
+      "priority": 1
+    },
+    {
+      "key": "beaufort_county_public_meetings_sc",
+      "publisher": "Beaufort County government",
+      "category_lanes": [
+        9
+      ],
+      "feed_url": "https://www.beaufortcountysc.gov/events/2026/11/index.html",
+      "event_url": "https://www.beaufortcountysc.gov/events/2026/11/11.24.2026%20SOLOCO.html",
+      "evidence": "New bounded official month HTML archive: November 2026 listing ~31 entries; December 2026 listing ~23; original civic meeting details include Nov24 Southern Lowcountry Regional Board, Rotary Community Center 11 Recreation Court, Bluffton SC. Unbounded calendar.ics previously >2,767 VEVENTs and lacks per-event GEO.",
+      "state": "hold",
+      "blockers": [
+        "robots/terms decision not confirmed for HTML",
+        "original meeting-specific time range, attendance eligibility, street and independent GPS for EACH valid event",
+        "bounded two-to-three-month HTML/detail collector plus cancellations and closures filter and regression tests"
+      ],
+      "priority": 2
+    },
+    {
+      "key": "roasting_room_bluffton_sc",
+      "publisher": "Roasting Room",
+      "category_lanes": [
+        1,
+        2,
+        4
+      ],
+      "feed_url": "https://roastingroom.live/homepage/",
+      "event_url": "https://roastingroom.live/homepage/",
+      "evidence": "First-party dates Nov27 Plump 8 PM, Dec4 John Brewster 8 PM, Dec6 acoustic brunch at noon, later 2026 and 2027 shows. Publisher About says upstairs at 1297 May River Road, Bluffton SC.",
+      "state": "hold",
+      "blockers": [
+        "per-show original event URL/identity and complete narrative validation",
+        "GPS for 1297 May River Rd",
+        "robots/access and bounded parser tests; validate on-sale/cancelled status"
+      ],
+      "priority": 3
+    },
+    {
+      "key": "soba_bluffton_art_school_sc",
+      "publisher": "Society of Bluffton Artists",
+      "category_lanes": [
+        2,
+        5,
+        7
+      ],
+      "feed_url": "https://sobagallery.com/soba-events/",
+      "event_url": "https://sobagallery.com/holiday-class-brusho-poinsettias-december-2-with-helen-hodge/",
+      "evidence": "First-party adult Dec2 Brusho Poinsettias workshop; Nov21/Dec5 children sessions discussed in prior checkpoint; exact numbered venue 7 Church St, Bluffton. Market recurrence must be confirmed for 2026 and not inferred from stale 2024/2025 page.",
+      "state": "hold",
+      "blockers": [
+        "independently verified event-specific street GPS at 7 Church Street absent from production reviewed venue and geocoder tables",
+        "robots/access and individual class capacity/paid-only eligibility",
+        "bounded event parsing/occurrence tests"
+      ],
+      "priority": 4
+    },
+    {
+      "key": "palmetto_bluff_conservancy_sc",
+      "publisher": "Palmetto Bluff Conservancy",
+      "category_lanes": [
+        2,
+        3,
+        5,
+        7
+      ],
+      "feed_url": "https://www.palmettobluff.com/organizer/palmetto-bluff-conservancy/",
+      "event_url": "https://www.palmettobluff.com/events/",
+      "evidence": "First-party organizer and event listing appear to use WordPress/The Events Calendar; includes nature and conservation programming and site markets, but onsite/offsite excursion meeting locations vary.",
+      "state": "hold",
+      "blockers": [
+        "fresh upcoming dated first-party detail URL verified for Nov19+ (not archive)",
+        "public eligibility (resident/club-only?)",
+        "exact event-specific meeting street and independent GEO",
+        "robots and date-bounded parser tests"
+      ],
+      "priority": 5
+    },
+    {
+      "key": "coastal_discovery_museum_sc",
+      "publisher": "Coastal Discovery Museum",
+      "category_lanes": [
+        2,
+        3,
+        5,
+        7
+      ],
+      "feed_url": "https://www.coastaldiscovery.org/winter-program-schedule/",
+      "event_url": "https://www.coastaldiscovery.org/botanica-exhibit/",
+      "evidence": "Publisher dated Botanica curator tour Nov24 2026 1 PM; Dec17 1 PM and Jan15 11 AM; excursions include Pinckney Island and Broad Creek while onsite museum is 70 Honey Horn Drive.",
+      "state": "hold",
+      "blockers": [
+        "per-occurrence first-party canonical event URL and end time",
+        "distinguish onsite from offsite activity meeting point and exact GPS",
+        "robots/calendar extraction with bounds and focused tests"
+      ],
+      "priority": 6
+    },
+    {
+      "key": "port_royal_civic_sc",
+      "publisher": "Town of Port Royal",
+      "category_lanes": [
+        9
+      ],
+      "feed_url": "https://www.portroyal.org/Calendar.aspx",
+      "event_url": null,
+      "evidence": "Official CivicEngage calendar; events may lack actual meeting building and numbered venue address.",
+      "state": "hold",
+      "blockers": [
+        "reliable publisher bounded date access",
+        "event-specific numbered street, independently verified GPS and eligibility",
+        "tested source-specific parser"
+      ],
+      "priority": 7
+    },
+    {
+      "key": "art_league_hilton_head_sc",
+      "publisher": "Art League of Hilton Head Academy",
+      "category_lanes": [
+        2,
+        5,
+        7
+      ],
+      "feed_url": "https://shop.artleaguehhi.org/module/events.htm",
+      "event_url": null,
+      "evidence": "Official classes listing, but prior crawl robots denial includes module event paths.",
+      "state": "hold",
+      "blockers": [
+        "robots-permitted official alternative (do not scrape disallowed paths)",
+        "per-event exact studio location and GPS",
+        "dated bounded parser/tests"
+      ],
+      "priority": 8
+    },
+    {
+      "key": "jazz_corner_hilton_head_sc",
+      "publisher": "The Jazz Corner",
+      "category_lanes": [
+        1,
+        2,
+        4
+      ],
+      "feed_url": null,
+      "event_url": null,
+      "evidence": "Recognized prior prospect, but publisher calendar/venue geocoding not independently checked this run; avoid Culture HHI duplicate.",
+      "state": "hold",
+      "blockers": [
+        "publisher first-party URL and upcoming event canary",
+        "exact event street GEO and parser",
+        "duplicate checks"
+      ],
+      "priority": 9
+    },
+    {
+      "key": "uscb_group_fitness_sc",
+      "publisher": "University of South Carolina Beaufort",
+      "category_lanes": [
+        6,
+        2
+      ],
+      "feed_url": "https://www.uscb.edu/campus-life/campus-recreation/group-fitness/index.html",
+      "event_url": null,
+      "evidence": "Campus group fitness timetable found in prior review; not a stable unique public event identity.",
+      "state": "hold",
+      "blockers": [
+        "community eligibility rather than students-only",
+        "per-occurrence original date/time/ID",
+        "specific studio and GEO"
+      ],
+      "priority": 10
+    },
+    {
+      "key": "sun_city_hhi_activities_sc",
+      "publisher": "Sun City Hilton Head activity calendar",
+      "category_lanes": [
+        6,
+        8
+      ],
+      "feed_url": "https://funcityhiltonhead.com/events/2026-09-30/",
+      "event_url": null,
+      "evidence": "Hobby/bridge, game and activity classes appear on calendar; example page is historical September date. Some activities restricted to residents and venue listed only by building name.",
+      "state": "hold",
+      "blockers": [
+        "verify dates Nov19+ and public eligibility; reject resident-only",
+        "numbered real building street and GEO",
+        "owner site robots/rights and dated collector"
+      ],
+      "priority": 11
+    }
+  ]
+}
