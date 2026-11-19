@@ -52,7 +52,7 @@ class ClermontTests(unittest.TestCase):
         self.assertEqual(parse(html([dict(EVENT,start="2026-11-28")]),lambda u,a: DETAIL,now=NOW),[])
         with self.assertRaisesRegex(ValueError,"unregistered_clermont_source"):
             collect({"source_key":KEY,"feed_url":URL,"kind":"html",
-                     "platform_adapter":"clermont_drupal_calendar","timezone":"UTC"},
+                     "platform_adapter":"html","timezone":"UTC"},
                     lambda u,a: DETAIL)
 
     def test_identical_duplicate_collapses(self):
