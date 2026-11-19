@@ -102,16 +102,22 @@ def parse(payload, fetch_detail, *, now=None):
         detail = BeautifulSoup(fetch_detail(link, "text/html"), "html.parser")
         article_title = detail.select_one(".field--name-title")
         date_field = detail.select_one(".field--name-field-when")
-        venue_field = detail.select_one(".field--name-field-location-name .field__item")
-        body_field = detail.select_one(".node__content .field--name-body .field__item")
+        venue_field = detail.select_one(".field--name-field-location-name.field__item")
+        body_field = detail.select_one(".node__content .field--name-body.field__item")
         if not all((article_title, date_field, venue_field, body_field)):
             continue
         if plain(article_title.get_text(" ", strip=True)).casefold() != title.casefold():
             continue
-        date_text = plain(date_field.get_text(" ", strip=True))
-        date_label = start.strftime("%b %d %Y").replace(" 0", " ")
-        if (date_label not in date_text
-            or any(f"{m.hour % 12 or 12}:{m.minute:02}" not in date_text for m in (start, end))):
+        detail_times = date_field.select("time[datetime]")
+        if len(detail_times) != 2:
+            continue
+        try:
+            detail_start, detail_end = (datetime.fromisoformat(t["datetime"]) for t in detail_times)
+        except (ValueError, KeyError, TypeError):
+            continue
+        if (detail_start.tzinfo is None or detail_end.tzinfo is None
+                or detail_start.astimezone(timezone.utc) != start.astimezone(timezone.utc)
+                or detail_end.astimezone(timezone.utc) != end.astimezone(timezone.utc)):
             continue
         venue = plain(venue_field.get_text(" ", strip=True))
         body = body_field.get_text(" ", strip=True)
