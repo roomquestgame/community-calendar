@@ -29,6 +29,9 @@ def family(source_key, event_url):
     """Bind an enrolled publisher family to its own canonical event link."""
     try:
         # Direct publisher check before unrelated optional collector imports.
+        if source_key == "cork_it_gainesville_ga":
+            from roomquest.cork_it_ga import event_url as is_cork_it_event
+            return source_key if is_cork_it_event(event_url) else None
         if source_key == "clermont_town_calendar_ga":
             from roomquest.clermont_ga import event_url as is_clermont_event
             return source_key if is_clermont_event(event_url) else None
