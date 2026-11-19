@@ -130,6 +130,77 @@ def parse_calendar(html, *, now=None):
     return sorted(selected.values(), key=lambda x: (x["starts_at"], x["eid"]))[:MAX_DETAIL_FETCHES]
 
 
+def cancellation_records(calendar_html, *, now=None):
+    """Only explicit publisher cancellation/postponement titles make tombstones.
+
+    Missing from a 500-capped listing never implies a cancellation. Tombstones
+    never create events: the database matches an existing exact URL, provider ID,
+    occurrence timestamp and source before changing its status.
+    """
+    settings = BeautifulSoup(calendar_html, "html.parser").select_one(
+        'script[data-drupal-selector="drupal-settings-json"]')
+    if settings is None:
+        raise ValueError("oc_parks_calendar_settings_missing")
+    try:
+        data = json.loads(settings.string or "")
+        fc = data["fullCalendarView"]
+        if not isinstance(fc, list) or len(fc) != 1:
+            raise ValueError
+        entries = json.loads(fc[0]["calendar_options"])["events"]
+    except (KeyError, ValueError, TypeError) as exc:
+        raise ValueError("oc_parks_calendar_schema_invalid") from exc
+    if not isinstance(entries, list) or not 1 <= len(entries) <= CALENDAR_MAX_ITEMS:
+        raise ValueError("oc_parks_calendar_count_invalid")
+    reference = (now or datetime.now(timezone.utc)).astimezone(ZoneInfo(ZONE))
+    horizon = reference + timedelta(days=HORIZON_DAYS)
+    rows, seen = [], set()
+    for e in entries:
+        if not isinstance(e, dict):
+            raise ValueError("oc_parks_calendar_entry_invalid")
+        title = plain(e.get("title"))
+        match = CANCELLATION_TITLE.search(title)
+        if not match:
+            continue
+        url, eid = e.get("url"), str(e.get("eid") or "")
+        if (not isinstance(url, str) or not URL_RE.fullmatch(url)
+                or not re.fullmatch(r"[1-9]\d{0,10}", eid)):
+            raise ValueError("oc_parks_cancellation_identity_invalid")
+        start, end = _date(e.get("start")), _date(e.get("end"))
+        if end <= start or end < reference - timedelta(days=1) or start > horizon:
+            continue
+        identity = (eid, url, start)
+        if identity in seen:
+            raise ValueError("oc_parks_cancellation_duplicate")
+        seen.add(identity)
+        status = "postponed" if re.match(r"^\s*(?:postponed|rescheduled)\b", title, re.I) else "cancelled"
+        rows.append({
+            "id": eid, "title": title, "starts_at": start.isoformat(),
+            "ends_at": end.isoformat(), "event_url": "https://" + HOST + url,
+            "venue_name": "", "venue_address": "", "venue_city": "",
+            "lat": None, "lng": None, "category": "",
+            "timezone": ZONE, "publisher_status": status,
+            "description": "", "publisher_categories": [],
+        })
+        if len(rows) > 50:
+            raise ValueError("oc_parks_cancellation_batch_limit")
+    return rows
+
+
+def _detail_cancellation(item):
+    """A new cancellation on the exact item URL, confirmed in its detail page."""
+    return {
+        "id": item["eid"], "title": "Canceled: " + item["title"],
+        "starts_at": item["starts_at"].isoformat(),
+        "ends_at": item["ends_at"].isoformat(),
+        "event_url": "https://" + HOST + item["url"],
+        "venue_name": "", "venue_address": "", "venue_city": "",
+        "lat": None, "lng": None, "category": "",
+        "timezone": ZONE, "publisher_status": "cancelled",
+        "description": "", "publisher_categories": [],
+    }
+
+
+
 def _detail_date(text):
     match = DETAIL_TIME.fullmatch(" ".join((text or "").split()))
     if match is None:
@@ -212,6 +283,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
         raise ValueError("collection_deadline")
     calendar = fetch(CALENDAR, "text/html")
     selected = parse_calendar(calendar, now=now)
+    canceled = cancellation_records(calendar, now=now)
     records = []
     seen = set()
     for item in selected:
@@ -223,6 +295,9 @@ def collect(source, fetch, *, deadline_at=None, now=None):
         try:
             row, narrative = parse_detail(item, body)
         except ValueError as exc:
+            if str(exc) == "oc_parks_detail_cancelled":
+                canceled.append(_detail_cancellation(item))
+                continue
             if str(exc) in {
                 "oc_parks_detail_street_missing",
                 "oc_parks_detail_shared_area_address",
@@ -240,9 +315,18 @@ def collect(source, fetch, *, deadline_at=None, now=None):
                 raise ValueError("oc_parks_duplicate_event_id")
             seen.add(row["id"])
             row["description"] = narrative
+            row["publisher_status"] = "scheduled"
             # No unlicensed photographs, image URLs, organizer HQ coordinates,
             # invented category overlays, or invented attendance guarantees.
             row.pop("image_url", None)
             row.pop("image_candidate_url", None)
             records.append(row)
-    return sorted(records, key=lambda r: (r["starts_at"], r["id"]))
+    # Every negative status is an explicit publisher statement. Never treat
+    # absent entries in the 500-capped calendar as cancelled.
+    merged = { (r["id"], r["starts_at"]): r for r in records }
+    for row in canceled:
+        key = (row["id"], row["starts_at"])
+        if key in merged and merged[key].get("publisher_status") == "scheduled":
+            raise ValueError("oc_parks_cancellation_positive_conflict")
+        merged[key] = row
+    return sorted(merged.values(), key=lambda r: (r["starts_at"], r["id"]))
