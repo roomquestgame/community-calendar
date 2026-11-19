@@ -66,6 +66,17 @@ class HallGaCivicCases(unittest.TestCase):
         self.assertIsNone(e.get("lat"))
         self.assertIsNone(e.get("lng"))
         self.assertEqual(e["publisher_details"]["jurisdiction_id"],"us-ga-hall-county")
+        self.assertEqual(e["civic"]["version"],1)
+        self.assertEqual(e["civic"]["kind"],"meeting")
+        self.assertEqual(e["civic"]["topic"],"government")
+        self.assertEqual(e["civic"]["jurisdiction_id"],"us-ga-hall-county")
+        self.assertEqual(e["civic"]["timezone"],g.ZONE)
+        self.assertEqual(e["civic"]["time_precision"],"timed")
+        self.assertEqual(e["civic"]["source_url"],e["event_url"])
+        verified=datetime.fromisoformat(e["civic"]["verified_at"])
+        deadline=datetime.fromisoformat(e["civic"]["valid_until"])
+        self.assertLessEqual(deadline,datetime.fromisoformat(e["ends_at"]))
+        self.assertLess((datetime.now(timezone.utc)-verified).total_seconds(),60)
 
     def test_missing_optional_description_is_valid(self):
         e=vevent(desc="https://www.hallcounty.org/calendar.aspx?EID=1691")
