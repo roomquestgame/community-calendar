@@ -1375,7 +1375,7 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                    or row.get('category') != 'create'
                    or row.get('venue_address') != anchorage_batch20_dirty_apron.VENUE[1]
                    or row.get('lat') is not None or row.get('lng') is not None
-                   or not anchorage_batch20_dirty_apron.event_url(source_key, row.get('url'))
+                   or not anchorage_batch20_dirty_apron.event_url(source_key, row.get('event_url'))
                    for row in records):
                 raise ValueError('dirty_apron_unverified_event')
         except PreviewError:
