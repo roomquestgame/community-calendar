@@ -55,6 +55,30 @@ class ClermontTests(unittest.TestCase):
                      "platform_adapter":"html","timezone":"UTC"},
                     lambda u,a: DETAIL)
 
+    def test_registered_html_dispatch_uses_robots_safe_first_party_fetch(self):
+        # End-to-end preview route regression: previous deployment had the
+        # correct parser but HTML dispatched elsewhere and failed closed.
+        from unittest.mock import patch
+        from roomquest.preview_worker import preview_source
+        source = {"source_key": KEY, "feed_url": URL, "kind": "html",
+                  "platform_adapter": "html", "timezone": ZONE}
+        calls = []
+        def publisher(url, accept, **kwargs):
+            calls.append((url, accept, kwargs))
+            if url == URL:
+                return html([EVENT])
+            if url == "https://clermontga.com/event/christmas-parade":
+                return DETAIL
+            raise AssertionError("unexpected publisher URL")
+        with patch("roomquest.preview_worker.fetch_publisher", side_effect=publisher):
+            result = preview_source(source)
+        self.assertEqual(result["p_future_count"], 1)
+        self.assertEqual(len(result["p_events"]), 1)
+        self.assertEqual(result["p_events"][0]["category"], "Festival")
+        self.assertEqual(len(calls), 2)
+        self.assertTrue(all(c[2].get("respect_robots") is True for c in calls))
+        self.assertTrue(all(c[2].get("allowed_hosts") == ("clermontga.com",) for c in calls))
+
     def test_identical_duplicate_collapses(self):
         self.assertEqual(len(parse(html([EVENT,EVENT]),lambda u,a: DETAIL,now=NOW)),1)
 

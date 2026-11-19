@@ -3088,6 +3088,12 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         elif source_key in VA_WIX_SOURCES:
             from roomquest.virginia_wix_events import collect as collect_html
             allowed_hosts = (urlparse(VA_WIX_SOURCES[source_key][0]).hostname,)
+        elif source_key == "clermont_town_calendar_ga":
+            # Must dispatch inside the HTML family before the generic
+            # unregistered_html_source guard (not after it).
+            from roomquest.clermont_ga import HOST, collect as collect_html
+            allowed_hosts = (HOST,)
+            html_budget = 26
         elif source_key == "explore_braselton_official_ga":
             from roomquest.explore_braselton_ga import HOST, collect as collect_html
             allowed_hosts = (HOST,)
@@ -3434,27 +3440,6 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         return {"p_source_key": source["source_key"], "p_samples": samples,
                 "p_future_count": len(records),
                 "p_venue_count": sum(1 for row in records if row["lat"] is not None),
-                "p_error": None, "p_events": records}
-    if source.get("source_key") == "clermont_town_calendar_ga":
-        from roomquest.clermont_ga import collect as collect_clermont
-        deadline = min(monotonic() + 26,
-                       deadline_at - 8 if deadline_at is not None else float("inf"))
-        try:
-            records = collect_clermont(source, lambda url, accept: fetch_publisher(
-                url, accept, respect_robots=True, deadline_at=deadline),
-                deadline_at=deadline)
-        except PreviewError:
-            raise
-        except (ValueError, TypeError, KeyError, OverflowError) as exc:
-            reason = str(exc)
-            raise PreviewError(reason if re.fullmatch(r"[a-z_]{3,100}", reason)
-                               else "invalid_calendar_payload") from exc
-        samples = records[:MAX_PREVIEWS]
-        while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
-            samples.pop()
-        return {"p_source_key": source["source_key"], "p_samples": samples,
-                "p_future_count": len(records),
-                "p_venue_count": sum(1 for r in records if r["lat"] is not None),
                 "p_error": None, "p_events": records}
     if source.get("source_key") == "hall_arts_council_gainesville_ga":
         from roomquest.hall_arts_council_ga import collect as collect_arts
