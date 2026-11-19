@@ -1,4 +1,4 @@
-"""Direct Santa Cruz venue calendars: Woodhouse public JSON, Discretion dated HTML.
+"""Direct Santa Cruz venue calendars: Woodhouse, Discretion, Agricultural History Project.
 
 The first-party API is authoritative for Woodhouse. Do not use its undated
 JavaScript fallback. Discretion has no structured event endpoint; parse only
@@ -20,14 +20,17 @@ from roomquest.event_description import description
 ZONE='America/Los_Angeles'
 WOODHOUSE='woodhouse_brewing_santa_cruz_ca'
 DISCRETION='discretion_brewing_soquel_ca'
+AG_HISTORY='agricultural_history_project_watsonville_ca'
 SOURCES={
  WOODHOUSE:('https://www.woodhousebrews.com/api/events','json','squarespace'),
  DISCRETION:('https://www.discretionbrewing.com/events/','html','html'),
+ AG_HISTORY:('https://aghistoryproject.org/2nd-saturday-on-the-farm/','html','html'),
 }
 ALLOWED_HOSTS={k:(urlsplit(v[0]).hostname,) for k,v in SOURCES.items()}
 VENUE={
  WOODHOUSE:('Woodhouse Blending & Brewing','119 Madrone St, Santa Cruz, CA 95060','Santa Cruz'),
  DISCRETION:('Discretion Brewing','2703 41st Ave Ste A, Soquel, CA 95073','Soquel'),
+ AG_HISTORY:('Agricultural History Project Center & Museum','2601 East Lake Avenue, Watsonville, CA 95076','Watsonville'),
 }
 MAX_RECORDS=180
 MAX_DESCRIPTION=12000
@@ -44,6 +47,8 @@ def event_url(key,value):
  if key not in SOURCES or not isinstance(value,str):return False
  p=urlsplit(value)
  if p.scheme!='https' or p.username or p.password or p.port not in (None,443) or p.query:return False
+ if key==AG_HISTORY:
+  return bool(p.hostname=='aghistoryproject.org' and p.path=='/2nd-saturday-on-the-farm/' and not p.fragment)
  if key==WOODHOUSE:
   return bool(p.hostname=='minnow-cowbell-xynk.squarespace.com' and not p.fragment
    and re.fullmatch(r'/events/20\d{2}/\d{1,2}/\d{1,2}/[-a-z0-9]+/?',p.path))
@@ -170,12 +175,61 @@ def discretion(html,now):
   records[key]=row
  return sorted(records.values(),key=lambda v:(v['starts_at'],v['title'],v['id']))
 
+def ag_history(page,official_hours,now):
+ """One explicitly dated 2026 program, not a year-round guessed recurrence."""
+ from bs4 import BeautifulSoup
+ soup=BeautifulSoup(page,'html.parser')
+ proof=BeautifulSoup(official_hours,'html.parser')
+ heading=[h for h in soup.find_all('h2') if re.fullmatch(
+   r'2026\s+2nd\s+Saturdays,\s*11:00am\s*[-–—]\s*2:00pm',
+   h.get_text(' ',strip=True),re.I)]
+ dated=[h for h in soup.find_all('h4') if re.fullmatch(
+   r'December\s+12th\s*[-–—]\s*Holidays\s+on\s+the\s+Farm',
+   h.get_text(' ',strip=True),re.I)]
+ if len(heading)!=1 or len(dated)!=1 or dated[0].find_previous('h2')!=heading[0]:
+  raise ValueError('ag_history_schedule_unverified')
+ address_pattern=r'\b2601\s+East\s+Lake\s+Avenue\b'
+ if not all(re.search(address_pattern,doc.get_text(' ',strip=True),re.I)
+            for doc in (soup,proof)):
+  raise ValueError('ag_history_street_unverified')
+ if 'Agricultural History Project' not in proof.get_text(' ',strip=True):
+  raise ValueError('ag_history_venue_unverified')
+ paragraphs=[]
+ for node in soup.find_all('p'):
+  value=node.get_text(' ',strip=True)
+  if ('Every month we produce a 2nd Saturday on the Farm' in value or
+      'We have created some unique interactive educational activities' in value):
+   paragraphs.append(value)
+ if len(paragraphs)!=2 or any(len(t)<90 for t in paragraphs):
+  raise ValueError('ag_history_narrative_unverified')
+ # Dated owner's own heading is a full event identity. No inferred future dates.
+ start=datetime(2026,12,12,11,tzinfo=ZoneInfo(ZONE)).astimezone(timezone.utc)
+ end=datetime(2026,12,12,14,tzinfo=ZoneInfo(ZONE)).astimezone(timezone.utc)
+ if start.weekday()!=5 and datetime(2026,12,12).weekday()!=5:
+  raise ValueError('ag_history_date_mismatch')
+ if not within(start,end,now):return []
+ title='Holidays on the Farm'
+ venue,street,city=VENUE[AG_HISTORY]
+ row=record(title,start.isoformat(),end.isoformat(),venue,street,city,
+            SOURCES[AG_HISTORY][0], 'aghistoryproject-2026-12-12-holidays',
+            'Family Event, Agricultural Heritage',None,None,ZONE,retain_until_end=True)
+ if not row:return []
+ prose=full_description(' '.join(paragraphs+[dated[0].get_text(' ',strip=True)]))
+ if not prose:raise ValueError('ag_history_narrative_unverified')
+ row.update(description=prose,timezone=ZONE,publisher_categories=['Family Event','Agricultural Heritage'],
+            location_provenance='publisher_venue_verified_entrance_street')
+ from roomquest.publisher_evidence import attach
+ return [attach(row,AG_HISTORY)]
+
 def collect(source,fetch,*,deadline_at=None,now=None):
  key=source.get('source_key')
  if key not in SOURCES or (source.get('feed_url'),source.get('kind'),source.get('platform_adapter'))!=SOURCES[key] or source.get('timezone')!=ZONE:
   raise ValueError('unregistered_santa_cruz_local_source')
  if deadline_at and monotonic()>=deadline_at:raise ValueError('collection_deadline')
  now=now or datetime.now(timezone.utc)
+ if key==AG_HISTORY:
+  return ag_history(fetch(SOURCES[key][0],'text/html'),
+                    fetch('https://aghistoryproject.org/hours-admission/','text/html'),now)
  if key==WOODHOUSE:
   payload=json.loads(fetch(SOURCES[key][0],'application/json'))
   if not isinstance(payload,dict) or not isinstance(payload.get('events'),list) or len(payload['events'])>180:
