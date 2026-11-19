@@ -89,7 +89,7 @@ def parse(listing_html, detail_html, *, now=None):
     except ValueError:
         return []
     days = (last - first).days + 1
-    if not (1 <= days <= MAX_OCCURRENCES and 12 <= start_hour < end_hour <= 12):
+    if not (1 <= days <= MAX_OCCURRENCES and 1 <= start_hour < end_hour <= 12):
         return []
     narrative = description(str(intro), limit=12000)
     if len(narrative) >= 12000:
