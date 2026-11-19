@@ -1,10 +1,10 @@
 {
   "region": "Hilton Head Island / Bluffton / Beaufort County / Port Royal / South Carolina Lowcountry",
-  "checkpoint_local": "2026-11-19 18:05 EST tenth continuation: Chamber deployed and 2 new original candidate feeds",
+  "checkpoint_local": "2026-11-19 18:34 EST eleventh continuation: 2 new first-party holds, full read-only audit; 0 eligible feeds to deploy",
   "target_new_distinct_feeds_per_batch": 20,
-  "new_deployed_this_continuation": 1,
+  "new_deployed_this_continuation": 0,
   "verified_ready_count": 0,
-  "candidate_hold_count": 19,
+  "candidate_hold_count": 21,
   "previous_public_source_associated": 325,
   "previous_staged": 327,
   "previous_future_visible": 309,
@@ -40,7 +40,8 @@
     "Gaming/hobby source breakthrough Nov19: Pink Palmetto Events original 2026 Nov20-Dec19 Mahjong experiences + January lessons (https://www.pinkpalmettoevents.com/calendar); distinctive NEW publisher (not Beaufort Library Mahjong). Multiple host sites (Currents Bluffton, Montage Palmetto Bluff, Tin & Tallow, Gifted Hilton Head, etc) require original per-event ticket details and independent numbered venue street/GEO; do NOT assign one source centroid.",
     "Tenth continuation: prior HOLD Greater Bluffton Chamber source is LIVE after collector PR #372 merge bd3c608d5020255b3b1a38fac89174f0d95f5bb0 and exact Vercel READY dpl_2C7PJY8BzxcciMpnFEchGhQdntgm, DB enrollment PR #1389 merged 2f035789ff52a328c55dba751587f3b58f7af54a, applied ledger 20261203023000. Municipal source id 5907, health ok, preview complete, stage 1, actual published+future public 1; distinct venue 97 Progressive Street, 1179-char first-party prose, no image rights; 16 total active / 327 stage future / 325 public / 309 future public. This was completed by overlapping authorized work after ninth checkpoint, do not claim the documentation task independently shipped it.",
     "Tenth category-quality caveat: new Chamber staged event category 'learn' becomes public 'give_back'; exact card id provider_event_id 'bluffton_chamber:21153'. Filed roomquestgame/RoomQuestGame#1392; correct narrowly without resetting overlays.",
-    "Tenth category audit: 2 NEW independent publisher HOLDS: Michael Anthony cooking school Hilton Head (official date-stamped first party Squarespace classes in Dec 2026 + Jan2027, exact 37 New Orleans Road address but robots/GEO/parser pending); May River Theatre Bluffton (official 2027 Producers run Feb12-28 at Ulmer Auditorium 20 Bridge St, no per-performance ticket timestamps/GEO yet). Research covered all 9 lanes; Beaufort Water Festival official Dec5 boat parade and Beaufort Art Association November-December gallery exhibit are exploratory non-independent feed leads, not padded into queue."
+    "Tenth category audit: 2 NEW independent publisher HOLDS: Michael Anthony cooking school Hilton Head (official date-stamped first party Squarespace classes in Dec 2026 + Jan2027, exact 37 New Orleans Road address but robots/GEO/parser pending); May River Theatre Bluffton (official 2027 Producers run Feb12-28 at Ulmer Auditorium 20 Bridge St, no per-performance ticket timestamps/GEO yet). Research covered all 9 lanes; Beaufort Water Festival official Dec5 boat parade and Beaufort Art Association November-December gallery exhibit are exploratory non-independent feed leads, not padded into queue.",
+    "Eleventh checkpoint: 16 approved source IDs unchanged; source-reported 327 stage future and 325 scheduled/public external cards, 309 future public. All 325 have location/numbered street and valid canonical category, 325 unique source/occurrence/start; 10 Beaufort library descriptions under 40 chars. Live SQL ledger latest 20261203150000. Vercel READY production deployed 577357fb556aac5ec9d572ad791df6bf3577608c is ahead of Chamber commit by 2 and Palmetto Running commit by 6 (neither rolled back). No new migration, no new enrollment. 2 independent HOLD sources: Gullah Kinfolk Traveling Theater two 2026-12-03/04 first party performances at numbered 805 Carteret St and Farmers Market of Bluffton official 68 Boundary St schedule, with special Wednesday Nov25 opening and Thanksgiving Nov26 closure that contradict third parties. Robots, exact event GEO, independent original occurrence/detail and parser tests block deployment. Michael Anthony original 2026 Nov-Jan cooking school listing verified 11:30AM-2:30PM 37 New Orleans Road, event-level ICS links found, but automated robots endpoint inaccessible to external evidence and independently verified venue pin still outstanding. Pink Palmetto conflicting cache versions (current index vs older HTML) requires live source freshness check. St Helena already date-bounded; do not re-enroll."
   ],
   "sources": [
     {
@@ -572,6 +573,46 @@
         "Cross-provider dedup with existing ticket and FindLocal theater shows"
       ],
       "priority": 9
+    },
+    {
+      "key": "gullah_kinfolk_traveling_theater_beaufort_sc",
+      "publisher": "Gullah Kinfolk Traveling Theater",
+      "category_lanes": [
+        1,
+        2,
+        5,
+        9
+      ],
+      "feed_url": "https://www.gullahkinfolktravelingtheater.org/",
+      "event_url": "https://www.gullahkinfolktravelingtheater.org/events/2026-christmas-wish-freedom-thursday-uscb",
+      "evidence": "NEW distinct first-party theater publisher. Two individual current 2026 event details: 2026-12-03 and 2026-12-04, each 7:00–9:00 PM local, Christmas Wish...Freedom, USCB Center for Performing Arts, 805 Carteret St, Beaufort SC 29902. Canonical Friday detail https://www.gullahkinfolktravelingtheater.org/events/2026-christmas-wish-freedom-friday-uscb. Full publisher show narrative and public ticket tiers are visible. Read-only source-address/title spot check of public external_events returned no matches (not comprehensive cross-provider reconciliation). Source not registered.",
+      "state": "hold",
+      "blockers": [
+        "publisher robots/terms and authorized first-party event list extraction not yet verified",
+        "independent event venue street geocode and exact theater check-in point required",
+        "strictly bounded Wix/event detail parser, occurrence and cancellation tests, full cross-provider duplicate audit"
+      ],
+      "priority": 3
+    },
+    {
+      "key": "farmers_market_bluffton_sc",
+      "publisher": "Farmers Market of Bluffton (organizer's own schedule)",
+      "category_lanes": [
+        4,
+        5,
+        7,
+        9
+      ],
+      "feed_url": "https://www.farmersmarketbluffton.org/",
+      "event_url": null,
+      "evidence": "NEW independent first-party official recurring market schedule: 68 Boundary Street at Martin Family Park, Bluffton SC 29910, Thursdays 12–4 PM normally; publisher explicitly says OPEN Wednesday 2026-11-25 12–4 and CLOSED Thanksgiving Thursday 2026-11-26. Other third-party aggregator feeds incorrectly list Nov 26 and 12–5; NEVER infer those occurrences or hours. Currently a verified recurring schedule only, not a validated eligible feed.",
+      "state": "hold",
+      "blockers": [
+        "publisher does not supply independently linked individual dated detail URLs; determine if acceptable authorized per-occurrence originals exist",
+        "publisher robots/terms and cancellation-aware bounded recurrence handling",
+        "independent 68 Boundary St park entrance/location GEO, category and cross-provider duplicate tests"
+      ],
+      "priority": 11
     }
   ],
   "new_deployed_since_prior_0943_checkpoint": 2,
