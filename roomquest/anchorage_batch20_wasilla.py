@@ -26,6 +26,11 @@ FEED = ROOT + "/Calendar.aspx?CID=23"
 SOURCES = {KEY: (FEED, "html", "html")}
 ALLOWED_HOSTS = {KEY: ("www.cityofwasilla.gov",)}
 VENUE = ("Wasilla Public Library", "500 N. Crusey St., Wasilla, AK 99654", "Wasilla")
+# Independently matched 2026-11-19 to U.S. Census Public_AR_Current:
+# 500 N CRUSEY ST, WASILLA, AK 99654 (house-number street interpolation,
+# NOT a surveyed front door or a generic center-of-city coordinate).
+VENUE_POINT = (61.583150999412, -149.429816984026)
+VENUE_GEO_EVIDENCE = "US Census Bureau Public_AR_Current 500 N CRUSEY ST WASILLA AK 99654 matched address; street segment interpolation reviewed 2026-11-19"
 MONTHS = 3
 MAX_EIDS = 110
 MAX_DESCRIPTION = 12000
@@ -167,8 +172,8 @@ def _event(eid, html, now):
         return None
     row.update(description=desc,category=category,timezone=ZONE,
                publisher_categories=["Wasilla Public Library"],
-               location_provenance="verified_city_published_event_street",
-               lat=None,lng=None,reason="missing_verified_venue_geo")
+               location_provenance="city_published_venue_plus_reviewed_census_matched_street",
+               lat=VENUE_POINT[0],lng=VENUE_POINT[1],reason=None)
     return row
 
 
