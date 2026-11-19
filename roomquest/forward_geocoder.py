@@ -110,10 +110,17 @@ def address_matches(item: dict, address: str) -> bool:
     if not result_city or result_city != expected_city:
         return False
 
+    # Compare the physical building street fields, not a provider's optional
+    # unit fragments. Geocodio sometimes returns a unit_type without a number
+    # (or vice versa); neither changes which building was geocoded.
+    components = item.get("address_components") or {}
+    provider_core = canonical(" ".join(
+        str(components.get(k) or "") for k in
+        ("predirectional", "street", "suffix", "postdirectional")
+    ).strip())
     return bool(
-        _street_without_number_and_unit(result_street)
-        and _street_without_number_and_unit(result_street)
-        == _street_without_number_and_unit(expected_street)
+        provider_core
+        and provider_core == _street_without_number_and_unit(expected_street)
         and (kind not in {"rooftop", "point"}
              or result_street.split(" ", 1)[0] == expected_street.split(" ", 1)[0])
     )
