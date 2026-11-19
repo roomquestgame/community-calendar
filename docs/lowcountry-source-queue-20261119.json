@@ -1,13 +1,13 @@
 {
   "region": "Hilton Head Island / Bluffton / Beaufort County / Port Royal / South Carolina Lowcountry",
-  "checkpoint_local": "2026-11-19 15:41 EST (eighth continuation; 9-lane recheck, original Sea Pines and PRC occurrence validation, collision review)",
+  "checkpoint_local": "2026-11-19 17:00+ EST ninth continuation (first-party PRC live collector, FindLocal collision and wrong-event-GEO audit, Pink Palmetto gaming discovery)",
   "target_new_distinct_feeds_per_batch": 20,
   "new_deployed_this_continuation": 0,
   "verified_ready_count": 0,
-  "candidate_hold_count": 17,
+  "candidate_hold_count": 18,
   "previous_public_source_associated": 324,
   "previous_staged": 326,
-  "previous_future_visible": 313,
+  "previous_future_visible": 309,
   "previous_source_count": 15,
   "notes": [
     "Never count original Hilton Head 5, Beaufort County Library 6 including St Helena, or Greenhouse Bluffton as NEW again.",
@@ -34,7 +34,10 @@
     "Chamber-owned ChamberMaster filtered catgid/6 listing now shows six future Dec1/3/7/8/9 and Jan12 events. Each event needs independently exact venue GEO; do not count other publisher's Southern Barrel Tuesday Game Night syndicated in the Chamber calendar as a new original Chamber feed.",
     "Gaming investigation: Captain Jax official 24 Palmetto Bay Road Suite G (https://captainjax.com/) verifies venue and gaming merchandise, but no first-party date-specific 2026 event calendar was found; is an UNQUALIFIED exploratory lead and NOT included as an eighteenth publisher feed. Sun City and Beaufort Library gaming dates are not new independent eligible sources.",
     "Read-only overlap check: sampled future Sea Pines title and exact 185 Greenwood address and selected Chamber-owned event titles showed no currently scheduled provider hits; not a full duplicate proof. Arts Center 14 Shelter Cove existing FindLocal results reviewed were Art League academy classes, not proof of Arts Center theatrical event duplication; still require complete cross-provider match check before any publish.",
-    "Follow-up first-party Sea Pines venue evidence: official geocaching PDF https://www.seapines.com/sites/default/files/media/documents/Geocaching%20Answers_updated_0.pdf lists Heritage Farm UNDER THE HUT 32.131131,-80.800686 and Fish Island TOP OF MAP 32.143305,-80.78886. Publisher warns geocache points lead to the next location, not current: these are VERIFIED publisher landmark clues only, NOT exact numbered street GPS or event check-in points; do not automatically publish pins. Six additional first-party Sea Pines event details with dates/numbered streets at 149 Lighthouse Road, 147 Lighthouse Road Suite G, and 35 Lake Joe Trail added as event candidates, NOT extra feeds."
+    "Follow-up first-party Sea Pines venue evidence: official geocaching PDF https://www.seapines.com/sites/default/files/media/documents/Geocaching%20Answers_updated_0.pdf lists Heritage Farm UNDER THE HUT 32.131131,-80.800686 and Fish Island TOP OF MAP 32.143305,-80.78886. Publisher warns geocache points lead to the next location, not current: these are VERIFIED publisher landmark clues only, NOT exact numbered street GPS or event check-in points; do not automatically publish pins. Six additional first-party Sea Pines event details with dates/numbered streets at 149 Lighthouse Road, 147 Lighthouse Road Suite G, and 35 Lake Joe Trail added as event candidates, NOT extra feeds.",
+    "Ninth checkpoint: PRC publisher HTML robots Allow:/, original event-level data and 20 Lowcountry tests passed; collector merged PR #367 SHA f5b88faa4a2fcee1c9dd4972a3de6ab617a2deaf, NOT enrolled. Six full first-party live event canaries are already identical canonical original URL and start time in findlocal_public: all six FindLocal cards use incorrect business headquarters venue 30 Plantation Park Dr Suite 202, Bluffton. HOLD new source to avoid duplicate cards. FindLocal original-event venue remediation issue roomquestgame/RoomQuestGame#1384. Publisher JSON-LD mislabeled local wall times as Z; original visual times trusted with America/New_York.",
+    "Ninth checkpoint: Independent Census Public_AR_Current exact-numbered street address geocoding found 97 Progressive St (32.272939834494,-80.915951812245), 185 Greenwood Dr (32.143341725004,-80.789236878718), 149 Lighthouse Rd (32.139612303419,-80.810175536415), 14 Shelter Cove Ln (32.179550569199,-80.727404581681), 172 Bluffton Rd (32.241498160977,-80.859289715187), and 30 New Mustang Dr (32.25540699494,-80.87723364386). Census street-point values MUST NOT overwrite event publisher meeting-point GEO. For Bluffton Farm & Flea Nov22 this removes Census street-geocode blocker but robots + date/full-narrative collector remain.",
+    "Gaming/hobby source breakthrough Nov19: Pink Palmetto Events original 2026 Nov20-Dec19 Mahjong experiences + January lessons (https://www.pinkpalmettoevents.com/calendar); distinctive NEW publisher (not Beaufort Library Mahjong). Multiple host sites (Currents Bluffton, Montage Palmetto Bluff, Tin & Tallow, Gifted Hilton Head, etc) require original per-event ticket details and independent numbered venue street/GEO; do NOT assign one source centroid."
   ],
   "sources": [
     {
@@ -309,9 +312,10 @@
       "evidence": "Official https://palmettorunningcompany.com/run-club links to its own /content/events page with Nov21 Friendsgiving 7:30AM at Celebration Park, Nov24 Tuesday Track 5:30PM Bluffton Middle School, Nov28 Bluffton run/walk at The Grind, Dec1/8 Track, Dec12 Elf on the Run at 4211 North Okatie Hwy, Dec13 Buffalo Run. Unlike general weekly clubs, dated original publisher details and descriptive narratives do exist. Some entries are externally organized races; filter by PRC publisher ownership. Official page sometimes contains mismatched 6PM listing and 5:30PM prose; fail closed on contradictions.",
       "state": "hold",
       "blockers": [
-        "event-specific dated stable IDs and exact GPS for changing run start/finish streets; venue names alone insufficient",
-        "publisher-owned versus sponsored/reposted races and public/member-only eligibility",
-        "reconcile listing-vs-prose time conflict on Nov24 track; bounded parser, recurrence/dedupe and tests; terms/robots"
+        "6/6 verified original detail URLs and UTC start timestamps already exist in FindLocal (duplicate release risk); issue #1384 tracks safe correction",
+        "FindLocal 6 cards incorrectly pinned to organizer HQ rather than event-specific physical numbered street/GPS; needs targeted correction",
+        "Resolve cross-provider dedup/preference and test one visible canonical original URL/start before protected forward-only source migration",
+        "Production Vercel READY exact collector SHA and PG17 migration required before any enrollment"
       ],
       "priority": 5,
       "review_20261119_hour8": {
@@ -337,6 +341,18 @@
           "Locations vary per event; must be separately verified"
         ],
         "release_ready": false
+      },
+      "collector_pr": "https://github.com/roomquestgame/community-calendar/pull/367",
+      "collector_merged_sha": "f5b88faa4a2fcee1c9dd4972a3de6ab617a2deaf",
+      "validation_20261119_hour9": {
+        "robots": "Allow /; Disallow /admin and /api; HTML /content/events and original /event/{id}/{slug} available",
+        "live_original_future_events": 6,
+        "focused_and_lowcountry_regression_tests_passed": 20,
+        "full_description_and_event_geo": "6 first-party event canaries with full descriptions, original URLs, numbered event venues, event-specific publisher GPS, validated local clock times, withheld unverified end times and no images",
+        "production_exact_canonical_overlaps_with_findlocal": 6,
+        "duplicate_issue": "https://github.com/roomquestgame/RoomQuestGame/issues/1384",
+        "blocker": "ALL six validated original URLs/starts_at are ALREADY published by findlocal_public with wrong organizer-default street 30 Plantation Park Drive, Suite 202, Bluffton (rather than actual source event streets); do NOT enroll before cross-provider dedupe/authoritative replacement",
+        "production_enrollment": "NOT DONE"
       }
     },
     {
@@ -524,6 +540,29 @@
         "robots and bounded first-party extractor with regressions; verify not already published through SC Parks/NPS or any community sources"
       ],
       "priority": 4
+    },
+    {
+      "key": "pink_palmetto_mahjong_sc",
+      "publisher": "Pink Palmetto Events / Pink Palmetto Mahjong",
+      "category_lanes": [
+        2,
+        4,
+        5,
+        7,
+        8
+      ],
+      "feed_url": "https://www.pinkpalmettoevents.com/calendar",
+      "event_url": "https://www.pinkpalmettoevents.com/calendar",
+      "evidence": "Official first-party calendar includes Nov 20 Guided Play Mahjong at Currents Bluffton 3–5PM, Nov 21 Intro to Mahjong at Montage 10AM–12PM, Nov25 guided play Tin & Tallow 9:30–11:30AM, several Dec1/5/8/10/11/15/16/19 dates, and Jan13/20/27 multi-part lessons. Eventbrite venue listing independently shows Currents 6 Promenade Street Bluffton and ticketed event from organizer. Original publisher domain, not staging *.squarespace.com. First-party listing alone is not a full individual narrative or exact per-event meeting site.",
+      "state": "hold",
+      "blockers": [
+        "first-party calendar per-event sign-up original detail URL and complete publisher narrative for each usable occurrence, public access/eligibility",
+        "publisher robots/permissions and bounded squarespace parser tests",
+        "independent event-specific numbered street/GPS across changing host venues (no shared source centroid)",
+        "cross-provider canonical URL/start collision check before enrollment; no inferred Jan recurrence"
+      ],
+      "priority": 2,
+      "discovered_date": "2026-11-19"
     }
   ],
   "new_deployed_since_prior_0943_checkpoint": 2,
