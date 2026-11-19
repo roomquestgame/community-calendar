@@ -54,7 +54,8 @@ class ValidationTests(unittest.TestCase):
                 self.assertEqual(accepted["results"][0]["address_components"]["unit_number"], unit)
                 opener.assert_called_once()
 
-    def test_wrong_missing_or_incomplete_provider_suite_is_rejected(self):
+    def test_provider_building_point_can_share_coordinates_across_suites(self):
+        # Publisher street+building is verified; a provider may omit a suite.
         for unit_type, unit_number in [("Ste", "102"), (None, None), ("", ""),
                                        ("Ste", None), (None, "104"), ("Unit", "104")]:
             with self.subTest(unit_type=unit_type, unit_number=unit_number):
@@ -63,7 +64,9 @@ class ValidationTests(unittest.TestCase):
                     number="10411", predirectional="", street="Portal", suffix="Rd",
                     city="La Vista", state_province="NE", postal_code="",
                     unit_type=unit_type, unit_number=unit_number)
-                self.assertIsNone(g.verify(payload, "10411 portal rd ste 104,la vista,ne"))
+                self.assertIsNotNone(g.verify(
+                    payload, "10411 portal rd ste 104,la vista,ne"))
+
 
     def test_optional_empty_secondary_components_preserve_existing_building_match(self):
         for empty in (None, "", "  "):
@@ -73,32 +76,37 @@ class ValidationTests(unittest.TestCase):
                     unit_type=empty, unit_number=empty)
                 self.assertIsNotNone(g.verify(payload, ADDRESS))
 
-    def test_matching_suite_still_requires_confidence_country_and_unique_location(self):
+    def test_matching_suite_accepts_lower_confidence_and_top_ranked_point(self):
         address = "10411 portal rd ste 104,la vista,ne"
         payload = response()
         payload["results"][0]["address_components"].update(
             number="10411", predirectional="", street="Portal", suffix="Rd",
             city="La Vista", state_province="NE", postal_code="",
             unit_type="Ste", unit_number="104")
-        for changes in ({"accuracy": .89}, {"accuracy_type": "range_interpolation"}):
+        for changes in ({"accuracy": .56}, {"accuracy_type": "range_interpolation"},
+                        {"accuracy_type": "street_center"}):
             with self.subTest(changes=changes):
-                rejected = copy.deepcopy(payload)
-                rejected["results"][0].update(changes)
-                self.assertIsNone(g.verify(rejected, address))
+                candidate = copy.deepcopy(payload)
+                candidate["results"][0].update(changes)
+                self.assertIsNotNone(g.verify(candidate, address))
         for field, value in (("country", "CA"), ("state_province", "KS"), ("number", "10412")):
             with self.subTest(field=field):
                 rejected = copy.deepcopy(payload)
                 rejected["results"][0]["address_components"][field] = value
                 self.assertIsNone(g.verify(rejected, address))
         for wrong_suite in (False, True):
-            rejected = copy.deepcopy(payload)
-            alternate = copy.deepcopy(rejected["results"][0])
+            ranked = copy.deepcopy(payload)
+            alternate = copy.deepcopy(ranked["results"][0])
             if wrong_suite:
                 alternate["address_components"]["unit_number"] = "102"
             else:
                 alternate["location"]["lat"] += .02
-            rejected["results"].append(alternate)
-            self.assertIsNone(g.verify(rejected, address))
+            ranked["results"].append(alternate)
+            chosen = g.verify(ranked, address)
+            self.assertIsNotNone(chosen)
+            self.assertEqual(len(chosen["results"]), 1)
+            self.assertEqual(chosen["results"][0]["location"], payload["results"][0]["location"])
+
 
     def test_live_postal_locality_difference_preserves_street_and_state(self):
         r = response()
@@ -146,21 +154,50 @@ class ValidationTests(unittest.TestCase):
         self.assertIsNotNone(g.verify(r, "400 w church st,orlando,fl"))
         self.assertIsNone(g.verify(r, ADDRESS))
 
-    def test_low_confidence_approximate_invalid_and_nonfinite_fail(self):
-        for values in [{"accuracy": .89}, {"accuracy_type": "range_interpolation"},
-                       {"accuracy_type": "place"}, {"accuracy": float("nan")},
+    def test_geocodio_accepts_street_and_city_level_coordinates(self):
+        for values in [{"accuracy": .12}, {"accuracy_type": "range_interpolation"},
+                       {"accuracy_type": "nearest_rooftop_match"},
+                       {"accuracy_type": "street_center"}]:
+            with self.subTest(values=values):
+                self.assertIsNotNone(g.verify(response(**values), ADDRESS))
+        city = response(accuracy=.17, accuracy_type="place")
+        city["results"][0]["address_components"].update(number="", street="", suffix="")
+        self.assertIsNotNone(g.verify(city, ADDRESS))
+        city["results"][0]["address_components"]["city"] = "Orlando"
+        self.assertIsNone(g.verify(city, ADDRESS))
+        for values in [{"accuracy_type": "county"}, {"accuracy_type": "state"},
+                       {"accuracy": float("nan")}, {"accuracy": -0.1},
                        {"location": {"lat": float("inf"), "lng": 0}},
                        {"location": {"lat": True, "lng": 0}}]:
             self.assertIsNone(g.verify(response(**values), ADDRESS))
-        for r in [None, {}, {"results": []}, {"results": [None]}, {"results": "bad"}]:
-            self.assertIsNone(g.verify(r, ADDRESS))
+        for payload in [None, {}, {"results": []}, {"results": [None]}, {"results": "bad"}]:
+            self.assertIsNone(g.verify(payload, ADDRESS))
 
-    def test_ambiguous_candidates_fail_but_same_parcel_duplicates_pass(self):
-        r = response()
-        r["results"].append(copy.deepcopy(r["results"][0]))
-        self.assertIsNotNone(g.verify(r, ADDRESS))
-        r["results"][1]["location"]["lat"] += .02
-        self.assertIsNone(g.verify(r, ADDRESS))
+    def test_santa_cruz_addresses_accept_real_provider_precision_tiers(self):
+        woodhouse = response(accuracy=.65, accuracy_type="range_interpolation")
+        woodhouse["results"][0]["address_components"].update(
+            number="119", predirectional="", street="Madrone", suffix="St",
+            city="Santa Cruz", state_province="CA", unit_type="", unit_number="")
+        self.assertIsNotNone(g.verify(woodhouse, "119 madrone st,santa cruz,ca"))
+
+        discretion = response(accuracy=.58, accuracy_type="nearest_rooftop_match")
+        discretion["results"][0]["address_components"].update(
+            number="2703", predirectional="", street="41st", suffix="Ave",
+            city="Soquel", state_province="CA", unit_type="", unit_number="")
+        self.assertIsNotNone(g.verify(discretion, "2703 41st ave ste a,soquel,ca"))
+        discretion["results"][0]["address_components"]["state_province"] = "NY"
+        self.assertIsNone(g.verify(discretion, "2703 41st ave ste a,soquel,ca"))
+
+    def test_top_geocodio_candidate_wins_over_lower_ranked_alternatives(self):
+        payload = response()
+        payload["results"].append(copy.deepcopy(payload["results"][0]))
+        payload["results"][1]["location"]["lat"] += .02
+        payload["results"][1]["address_components"]["state_province"] = "VA"
+        chosen = g.verify(payload, ADDRESS)
+        self.assertIsNotNone(chosen)
+        self.assertEqual(chosen["results"][0]["location"], payload["results"][0]["location"])
+        self.assertEqual(len(chosen["results"]), 1)
+
 
     def test_endpoint_bearer_header_no_appends_no_automatic_retries(self):
         opener = MagicMock(return_value=io.BytesIO(json.dumps(response()).encode()))
