@@ -34,3 +34,18 @@ Reviewed existing queue and seventh continuation; checked main branch and latest
 3. Build and run fail-closed adapters/regressions on eligible candidates, verify net-new event identity against FindLocal and other existing providers.
 4. Merge tested code, prove production Vercel READY at deployed SHA, and enroll batch through one newer protected PG17 migration; deploy any verified subset 1–19 if ready.
 5. Reread this queue and journal next checkpoint; never re-enroll 15 active sources, do not touch St. Gregory unresolved hall GEO, existing squash/category/overlay workers.
+
+## Addendum: official publisher venue landmarks and more event detail canaries
+
+Sea Pines publishes a first-party [geocaching answer sheet](https://www.seapines.com/sites/default/files/media/documents/Geocaching%20Answers_updated_0.pdf) naming **Heritage Farm, under the hut: 32.131131, -80.800686**, and **Sea Pines Forest Preserve / Fish Island, top of map: 32.143305, -80.78886**. The document expressly says its clues lead to the **next** location rather than the current one. These are useful venue-landmark evidence, but do **not** establish event participant meeting check-in or an independent exact street-address match. **They remain in the HOLD metadata, not as event GPS.**
+
+Additional original Sea Pines events:
+- Nov26 Thanksgiving Scavenger Hunt 09:00, 149 Lighthouse Road: https://www.seapines.com/experiences/events/thanksgiving-scavenger-hunt (end unknown)
+- Nov27 Fishing Tournament 10:00–11:30, Fish Island **35 Lake Joe Trail**: https://www.seapines.com/experiences/events/23rd-annual-fishing-tournament
+- Nov27 Lighthouse Kids Co. Holiday Event 17:00–21:00, **147 Lighthouse Road Suite G**: https://www.seapines.com/experiences/events/lighthouse-kids-co-holiday-event (distinct shop; source ownership guard)
+- Dec10 Sip & Shop 17:00–20:00, **149 Lighthouse Road**: https://www.seapines.com/experiences/events/sip-shop-starboard-lighthouse-kids-co
+- Dec27–28 Holiday Fun in Harbour Town 17:00–19:30, **149 Lighthouse Road**: https://www.seapines.com/experiences/events/holiday-fun-harbour-town (multi-day range: no guessed two occurrences)
+- Dec31–Jan1 New Year's Eve Celebration 18:00–00:30, **149 Lighthouse Road**: https://www.seapines.com/experiences/events/new-years-eve-celebration
+- Harbour Town Lights https://www.seapines.com/experiences/events/harbour-town-lights is an **all-day multi-week seasonal installation**: no invented daily timed cards.
+
+These are additional potential cards for **one** publisher, not additional feed identities. Existing count remains 17 HELD publishers / 0 ready, 15 enrolled sources, 324 published source-associated records.

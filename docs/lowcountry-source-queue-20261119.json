@@ -33,7 +33,8 @@
     "Palmetto Running Company shows separate 2026-11-24 5:30PM Tuesday Track Night at Bluffton Middle School, 30 New Mustang Drive, and 2026-11-28 7AM Group Run/Walk at The Grind, 349 Hope Pond Way Unit 104. Do not assign one uniform GPS to mixed locations. Nov26 Palmetto Bluff Turkey Trot cites Wilson Village Green without exact numbered start point, and Dec13 Buffalo Run cites unnumbered Old Moreland Road; hold those occurrences rather than fabricated street.",
     "Chamber-owned ChamberMaster filtered catgid/6 listing now shows six future Dec1/3/7/8/9 and Jan12 events. Each event needs independently exact venue GEO; do not count other publisher's Southern Barrel Tuesday Game Night syndicated in the Chamber calendar as a new original Chamber feed.",
     "Gaming investigation: Captain Jax official 24 Palmetto Bay Road Suite G (https://captainjax.com/) verifies venue and gaming merchandise, but no first-party date-specific 2026 event calendar was found; is an UNQUALIFIED exploratory lead and NOT included as an eighteenth publisher feed. Sun City and Beaufort Library gaming dates are not new independent eligible sources.",
-    "Read-only overlap check: sampled future Sea Pines title and exact 185 Greenwood address and selected Chamber-owned event titles showed no currently scheduled provider hits; not a full duplicate proof. Arts Center 14 Shelter Cove existing FindLocal results reviewed were Art League academy classes, not proof of Arts Center theatrical event duplication; still require complete cross-provider match check before any publish."
+    "Read-only overlap check: sampled future Sea Pines title and exact 185 Greenwood address and selected Chamber-owned event titles showed no currently scheduled provider hits; not a full duplicate proof. Arts Center 14 Shelter Cove existing FindLocal results reviewed were Art League academy classes, not proof of Arts Center theatrical event duplication; still require complete cross-provider match check before any publish.",
+    "Follow-up first-party Sea Pines venue evidence: official geocaching PDF https://www.seapines.com/sites/default/files/media/documents/Geocaching%20Answers_updated_0.pdf lists Heritage Farm UNDER THE HUT 32.131131,-80.800686 and Fish Island TOP OF MAP 32.143305,-80.78886. Publisher warns geocache points lead to the next location, not current: these are VERIFIED publisher landmark clues only, NOT exact numbered street GPS or event check-in points; do not automatically publish pins. Six additional first-party Sea Pines event details with dates/numbered streets at 149 Lighthouse Road, 147 Lighthouse Road Suite G, and 35 Lake Joe Trail added as event candidates, NOT extra feeds."
   ],
   "sources": [
     {
@@ -397,7 +398,88 @@
           "Resort GPS and meeting-site eligibility unverified"
         ],
         "duplicate_spotcheck": "0 matches sampled by these event titles or 185 Greenwood exact-address text in scheduled external_events at checkpoint; wider collision audit still required",
-        "release_ready": false
+        "release_ready": false,
+        "publisher_landmark_evidence": [
+          {
+            "description": "Sea Pines geocaching coordinates for Heritage Farm (under hut); NOT verified event registration / 185 Greenwood road-address point",
+            "coordinates": {
+              "lat": 32.131131,
+              "lng": -80.800686
+            },
+            "first_party_url": "https://www.seapines.com/sites/default/files/media/documents/Geocaching%20Answers_updated_0.pdf",
+            "status": "landmark_only_not_meeting_pin"
+          },
+          {
+            "description": "Sea Pines Forest Preserve Fish Island (top of posted map), NOT event meeting point",
+            "coordinates": {
+              "lat": 32.143305,
+              "lng": -80.78886
+            },
+            "first_party_url": "https://www.seapines.com/sites/default/files/media/documents/Geocaching%20Answers_updated_0.pdf",
+            "status": "landmark_only_not_meeting_pin"
+          }
+        ],
+        "additional_official_originals": [
+          {
+            "date": "2026-11-26",
+            "title": "Thanksgiving Scavenger Hunt",
+            "start_local": "09:00",
+            "address": "149 Lighthouse Road, Hilton Head Island, SC 29928",
+            "url": "https://www.seapines.com/experiences/events/thanksgiving-scavenger-hunt",
+            "note": "starts at 9; do not invent end"
+          },
+          {
+            "date": "2026-11-27",
+            "title": "23rd Annual Fishing Tournament",
+            "start_local": "10:00",
+            "end_local": "11:30",
+            "address": "35 Lake Joe Trail, Hilton Head Island, SC 29928",
+            "url": "https://www.seapines.com/experiences/events/23rd-annual-fishing-tournament"
+          },
+          {
+            "date": "2026-11-27",
+            "title": "Lighthouse Kids Co. Holiday Event",
+            "start_local": "17:00",
+            "end_local": "21:00",
+            "address": "147 Lighthouse Road Suite G, Hilton Head Island, SC 29928",
+            "url": "https://www.seapines.com/experiences/events/lighthouse-kids-co-holiday-event",
+            "note": "Separate named shop at suite, confirm actual publisher ownership/rights before source inclusion"
+          },
+          {
+            "date": "2026-12-10",
+            "title": "Sip & Shop at Starboard and Lighthouse Kids Co.",
+            "start_local": "17:00",
+            "end_local": "20:00",
+            "address": "149 Lighthouse Road, Hilton Head Island, SC 29928",
+            "url": "https://www.seapines.com/experiences/events/sip-shop-starboard-lighthouse-kids-co"
+          },
+          {
+            "date": "2026-12-27",
+            "end_date": "2026-12-28",
+            "title": "Holiday Fun in Harbour Town",
+            "start_local": "17:00",
+            "end_local": "19:30",
+            "address": "149 Lighthouse Road, Hilton Head Island, SC 29928",
+            "url": "https://www.seapines.com/experiences/events/holiday-fun-harbour-town",
+            "note": "date range: do NOT infer same start both days without checking occurrence semantics"
+          },
+          {
+            "date": "2026-12-31",
+            "end_date": "2027-01-01",
+            "title": "New Year's Eve Celebration",
+            "start_local": "18:00",
+            "end_local": "00:30",
+            "address": "149 Lighthouse Road, Hilton Head Island, SC 29928",
+            "url": "https://www.seapines.com/experiences/events/new-years-eve-celebration",
+            "note": "crosses midnight; careful timezone/daylight/occurrence identity"
+          }
+        ],
+        "explicit_exclusions": [
+          "Thanksgiving Wagon Rides 2026-11-23 through 28, source declares daily but requires per-occurrence proof",
+          "Resort GPS and meeting-site eligibility unverified",
+          "Harbour Town Lights Nov27-Jan1 is ALL DAY season-long visual installation, not a verified single timed event; do not synthesize daily events",
+          "Publisher geocache landmark coordinates, explicitly published as clues toward next location, do NOT prove participant gathering point or exact 185 Greenwood numbered street"
+        ]
       }
     },
     {
