@@ -23,17 +23,17 @@ ZONE = "America/New_York"
 SOURCES = {KEY: (URL, "html", "html")}
 PATH = re.compile(r"/event-details/[a-z0-9]+(?:-[a-z0-9]+)*/?", re.I)
 SCHEDULE = re.compile(
-    r"\\b([A-Z][a-z]{2})\\s+(\\d{1,2}),\\s+(20\\d{2}),\\s*"
-    r"(\\d{1,2}:\\d{2}\\s*[AP]M)\\s*[-–—]\\s*"
-    r"(\\d{1,2}:\\d{2}\\s*[AP]M)\\b", re.I
+    r"\b([A-Z][a-z]{2})\s+(\d{1,2}),\s+(20\d{2}),\s*"
+    r"(\d{1,2}:\d{2}\s*[AP]M)\s*[-–—]\s*"
+    r"(\d{1,2}:\d{2}\s*[AP]M)\b", re.I
 )
 LOCATION = re.compile(
-    r"(?P<venue>[A-Za-z][^,]{3,90}),\\s*"
-    r"(?P<street>\\d{1,6}\\s+[^,]{3,110}),\\s*"
-    r"Braselton,\\s*GA\\s*(?P<zip>\\d{5})(?:,\\s*USA)?",
+    r"(?P<venue>[A-Za-z][^,]{3,90}),\s*"
+    r"(?P<street>\d{1,6}\s+[^,]{3,110}),\s*"
+    r"Braselton,\s*GA\s*(?P<zip>\d{5})(?:,\s*USA)?",
     re.I
 )
-CANCEL = re.compile(r"\\bcancell?ed\\b|\\bpostponed\\b|\\bTBD\\b", re.I)
+CANCEL = re.compile(r"\bcancell?ed\b|\bpostponed\b|\bTBD\b", re.I)
 MAX_DETAILS = 4  # A bounded robots-paced pass, not a whole Wix crawl.
 MAX_DESCRIPTION = 12000
 
@@ -58,7 +58,7 @@ def image_candidate(value):
         return (value if p.scheme == "https" and p.hostname == "static.wixstatic.com"
                 and p.path.startswith("/media/") and p.port in (None, 443)
                 and not p.username and not p.password and not p.query and not p.fragment
-                and re.search(r"\\.(?:jpe?g|png|webp)$", p.path, re.I) else None)
+                and re.search(r"\.(?:jpe?g|png|webp)$", p.path, re.I) else None)
     except ValueError:
         return None
 
@@ -76,7 +76,7 @@ def listing_urls(html):
 
 def _clock(day, token):
     return datetime.combine(day, datetime.strptime(
-        re.sub(r"\\s+", "", token).upper(), "%I:%M%p").time(), ZoneInfo(ZONE))
+        re.sub(r"\s+", "", token).upper(), "%I:%M%p").time(), ZoneInfo(ZONE))
 
 
 def event_detail(html, url, *, now=None):
@@ -128,10 +128,10 @@ def event_detail(html, url, *, now=None):
     narrative = description(body, limit=MAX_DESCRIPTION)
     if len(narrative) >= MAX_DESCRIPTION:
         return None  # never silently truncate a full publisher description
-    label = ("Sports" if re.search(r"\\b(?:5k|race|run|marathon)\\b", title, re.I)
-             else "Arts & Crafts" if re.search(r"\\b(?:woodworking|craft|art class)\\b", title, re.I)
-             else "Food & Drink" if re.search(r"\\b(?:brunch|buffet|wine tasting)\\b", title, re.I)
-             else "Festival" if re.search(r"\\b(?:parade|festival|tree lighting)\\b", title, re.I)
+    label = ("Sports" if re.search(r"\b(?:5k|race|run|marathon)\b", title, re.I)
+             else "Arts & Crafts" if re.search(r"\b(?:woodworking|craft|art class)\b", title, re.I)
+             else "Food & Drink" if re.search(r"\b(?:brunch|buffet|wine tasting)\b", title, re.I)
+             else "Festival" if re.search(r"\b(?:parade|festival|tree lighting)\b", title, re.I)
              else "Community")
     row = record(title, start.isoformat(), end.isoformat(), venue, street,
                  "Braselton", url, url, label, tz=ZONE, retain_until_end=True)
