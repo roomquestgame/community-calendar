@@ -172,6 +172,24 @@ def test_think_bounded_pagination_rebuilds_registered_url_and_preserves_distinct
     assert all(u.startswith(THINK['feed_url']+'?') for u in calls)
 
 
+@pytest.mark.parametrize('length', [2512, 12000, 12001])
+def test_think_retains_reviewed_narrative_with_bounded_safe_text(length):
+    from roomquest.mapsee_adapter import parse_tribe
+    payload = json.loads((FIXTURES/'think-sample.json').read_text())
+    original = tourism.collect_think(THINK, lambda *_: json.dumps(payload), now=NOW)[0]
+    item = next(e for e in payload['events'] if str(e['id']) == original['id'])
+    narrative = 'Event program details. ' + 'x' * (length - 23)
+    assert len(narrative) == length
+    item['description'] = '<nav>Unrelated links</nav><script>unsafe()</script><p>' + narrative + '</p>'
+    row, = tourism.collect_think(THINK, lambda *_: json.dumps({'events': [item]}), now=NOW)
+    assert row['description'] == narrative[:12000]
+    for field in ('id', 'title', 'starts_at', 'ends_at', 'event_url', 'venue_address', 'timezone'):
+        assert row.get(field) == original.get(field)
+    # The source-specific repair cannot relax unrelated TEC feeds.
+    generic, = parse_tribe({'events': [item]}, strict_public=True, retain_description=True)
+    assert generic['description'] == narrative[:2000]
+
+
 @pytest.mark.parametrize('key', ['unleashcb_ia','visit_mason_city_ia','think_iowa_city_ia'])
 def test_enrollment_identity_cannot_be_redirected_to_an_arbitrary_source(key):
     s = THINK if key == 'think_iowa_city_ia' else source(key)

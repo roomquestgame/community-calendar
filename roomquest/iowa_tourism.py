@@ -13,6 +13,7 @@ from icalendar import Calendar
 
 from roomquest.mapsee_adapter import record, timestamp, plain
 from roomquest.publisher_evidence import attach, optional_description
+from roomquest.event_description import description
 from roomquest.mycountyparks import cancelled
 
 TZ = ZoneInfo('America/Chicago')
@@ -302,6 +303,10 @@ def collect_think(source, fetch, *, deadline_at=None, now=None):
                 if not parsed:
                     continue
                 row = parsed[0]
+                # This reviewed publisher supports the source-specific 12k
+                # staging/publication bound (EVE-145). The generic TEC adapter
+                # retains its 2k default for every other source.
+                row['description'] = description(item.get('description'), limit=12000)
                 if cancelled(row['title'], row.get('description', '')):
                     raise ValueError('publisher_cancelled')
                 row['description'] = optional_description(key, row['id'], row.get('description'))
