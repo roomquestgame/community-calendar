@@ -1,3 +1,15 @@
+# EVE-145 Batch002 collector handoff — 2026-11-19 10:45 ET
+
+No collector extraction change was required or deployed in this batch. The existing NPS adapter already stores nonempty descriptions for all 6,154 linked upcoming occurrences measured (6,153 substantial by the >=40/not-title proxy). Batch002 is a narrowly reviewed public-projection change in app [PR #1324](https://github.com/roomquestgame/RoomQuestGame/pull/1324), not a new collector, source duplication or crawl.
+
+Official NPS API/disclaimer evidence supports NPS-authored event-description reuse in external apps/websites with existing NPS attribution, original event URL and an explicit U.S.-Government-work notice; third-party material, images and marks remain excluded. The app migration leaves the municipal rights row paused/deactivated and preserves facts-only suppression. Production remains unchanged because the exact database replay [run #1713](https://github.com/roomquestgame/RoomQuestGame/actions/runs/44556719681) was blocked before a runner started by GitHub billing/spend-limit status. Do not merge/deploy until the exact current app head passes protected validation.
+
+Current rights queue: Riley Street Art Supply has 110 upcoming staged / 97 meaningful but publisher terms prohibit spider/crawl/scrape and do not grant commercial narrative republication; Apex PRD has 20/20 but no affirmative reuse grant; Howard County Arts has 6/6 and its permission is noncommercial/personal with network reposting forbidden. These remain facts-only/restricted. No collector adapter changes, feed enrollment, provider duplication, forced crawl, event rewrite, Vercel collector deployment or mobile release occurred.
+
+OpenSEO before: audit `fbbb765d-a604-4bda-8b36-386f1d74bc8f`, exact NPS sample HTTP 200/indexable, 131 words, thin warning present. After audit remains pending a verified protected deployment.
+
+---
+
 # Verified result — 2026-11-19 09:55 ET
 
 Batch001 complete: same Think Iowa City event93158 stores2512characters (+512), matching upstream sanitized hash. Other12 existing descriptions and all13 IDs/titles/dates/timezones unchanged. Preview complete14:54:20UTC/errorNULL, publication queue drained. Public excerptNULL; final OpenSEO124→124words/thin warning unchanged. No public SEO gain.
