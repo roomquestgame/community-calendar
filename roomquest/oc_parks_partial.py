@@ -1,7 +1,7 @@
 """OC Parks: truthful, bounded, *partial* Drupal FullCalendar event collector.
 
 The public calendar exposes at most 500 event IDs; that is not full coverage.
-We review no more than 32 nearest future detail pages per claim. We only emit
+We review no more than 20 nearest future detail pages per claim. We only emit
 events whose official detail page confirms the exact local start/end, complete
 publisher narrative and event-owned numbered street. A known shared Irvine
 Ranch administrative address is NOT an event start point, so those records are
@@ -28,8 +28,8 @@ CALENDAR = "https://parks.oc.gov/events"
 ZONE = "America/Los_Angeles"
 HORIZON_DAYS = 21
 CALENDAR_MAX_ITEMS = 500
-MAX_DETAIL_FETCHES = 32
-MAX_RETURNED_EVENTS = 24
+MAX_DETAIL_FETCHES = 20
+MAX_RETURNED_EVENTS = 14
 DESCRIPTION_LIMIT = 2000   # Shared current external-event writer constraint
 URL_RE = re.compile(r"/events/([a-z0-9-]{3,130})")
 START_RE = re.compile(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}")
