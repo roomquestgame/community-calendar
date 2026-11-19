@@ -1664,6 +1664,41 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                 'p_venue_count':sum(row.get('lat') is not None for row in records),
                 'p_error':None,'p_events':records,
                 'p_parser_capability':'publisher_event_candidates_v1'}
+    from roomquest import lowcountry_palmetto_bluff_conservancy
+    if source_key == lowcountry_palmetto_bluff_conservancy.KEY:
+        deadline = min(monotonic() + 43,
+                       deadline_at - 8 if deadline_at is not None else float('inf'))
+        try:
+            records = lowcountry_palmetto_bluff_conservancy.collect(
+                source, lambda url, accept: fetch_publisher(
+                    url, accept, respect_robots=True, deadline_at=deadline,
+                    allowed_hosts=lowcountry_palmetto_bluff_conservancy.ALLOWED_HOSTS[source_key]),
+                deadline_at=deadline)
+            if len(records) > lowcountry_palmetto_bluff_conservancy.MAX_ITEMS or any(
+                not isinstance(row.get('description'),str)
+                or not row['description'].strip()
+                or len(row['description']) > lowcountry_palmetto_bluff_conservancy.MAX_DESCRIPTION
+                or row.get('category') not in ('festival','gardens_nature','learn')
+                or row.get('venue_address') != lowcountry_palmetto_bluff_conservancy.STREET
+                or row.get('lat') != lowcountry_palmetto_bluff_conservancy.LAT
+                or row.get('lng') != lowcountry_palmetto_bluff_conservancy.LNG
+                or not lowcountry_palmetto_bluff_conservancy.event_url(row.get('event_url'))
+                for row in records):
+                raise ValueError('palmetto_bluff_incomplete_event')
+        except PreviewError:
+            raise
+        except (ValueError,TypeError,KeyError,OverflowError) as exc:
+            reason=str(exc)
+            raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}',reason)
+                               else 'invalid_palmetto_bluff_payload') from exc
+        samples=records[:MAX_PREVIEWS]
+        while len(json.dumps(samples,ensure_ascii=False))>18_000:
+            samples.pop()
+        return {'p_source_key':source_key,'p_samples':samples,
+                'p_future_count':len(records),
+                'p_venue_count':sum(row.get('lat') is not None for row in records),
+                'p_error':None,'p_events':records,
+                'p_parser_capability':'publisher_event_candidates_v1'}
     from roomquest import lowcountry_roasting_room
     if source_key == lowcountry_roasting_room.KEY:
         deadline = min(monotonic() + 43,
