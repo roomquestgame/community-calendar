@@ -8,7 +8,7 @@ Existing ICS recurrence/time and 60-day bounded collection are reused.
 """
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from urllib.parse import urlsplit
 import logging
 import re
@@ -54,6 +54,10 @@ SOURCES = {
         78, "Lobeco Branch Library", "1862 Trask Pkwy",
         "Lobeco", "29931", 32.5552852, -80.7448265,
         "1862 Trask Parkway, (Hwy 17), Lobeco, SC, 29931, US"),
+    "beaufort_library_st_helena_sc": (
+        80, "St. Helena Branch Library", "6355 Jonathan Francis Sr. Rd",
+        "St. Helena Island", "29920", 32.3879972, -80.5713595,
+        "6355 Jonathan Francis Sr. Rd, St. Helena Island, SC, 29920, US"),
 }
 ALLOWED_HOSTS = {key: (HOST,) for key in SOURCES}
 
@@ -63,6 +67,18 @@ def feed_url(key):
         raise ValueError("unregistered_beaufort_library_source")
     code = SOURCES[key][0]
     return f"{BASE}?branches%5B{code}%5D={code}"
+
+
+ST_HELENA_KEY = "beaufort_library_st_helena_sc"
+# The official publisher calendar supports first-party start and end parameters.
+# The registered source identity remains stable; only fetch URL rolls daily.
+def collection_url(key, now=None):
+    url = feed_url(key)
+    if key != ST_HELENA_KEY:
+        return url
+    today = (now or datetime.now(timezone.utc)).date()
+    return (f"{url}&start={today.isoformat()}"
+            f"&end={(today + timedelta(days=60)).isoformat()}")
 
 
 def source_valid(source):
@@ -196,7 +212,7 @@ def collect(source, fetch, *, deadline_at=None):
     key=source["source_key"]
     code, venue, street, city, postal, ref_lat, ref_lng, expected_location = SOURCES[key]
     url=feed_url(key)
-    payload=fetch(url,"text/calendar")
+    payload=fetch(collection_url(key),"text/calendar")
     if isinstance(payload,bytes):
         payload=payload.decode("utf-8","replace")
     if not isinstance(payload,str):
