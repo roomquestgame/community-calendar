@@ -2082,6 +2082,31 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         return {'p_source_key':source_key,'p_samples':samples,
                 'p_future_count':len(records),'p_venue_count':0,
                 'p_error':None,'p_events':records}
+    from roomquest import santa_cruz_chess_club
+    if source_key == santa_cruz_chess_club.KEY:
+        deadline = min(monotonic()+40, deadline_at-6 if deadline_at is not None else float('inf'))
+        try:
+            records = santa_cruz_chess_club.collect(
+                source, lambda url,accept: fetch_publisher(
+                    url,accept,respect_robots=True,deadline_at=deadline,
+                    allowed_hosts=santa_cruz_chess_club.ALLOWED_HOSTS[source_key]),
+                deadline_at=deadline)
+            if len(records)>santa_cruz_chess_club.MAX_RECORDS or any(
+                not isinstance(r.get('description'),str) or len(r['description'])<150
+                or not r.get('venue_address') or not r.get('ends_at')
+                or not r.get('timezone') or r.get('latitude') is not None
+                or r.get('longitude') is not None for r in records):
+                raise ValueError('chess_incomplete_event')
+        except PreviewError: raise
+        except (ValueError,TypeError,KeyError,OverflowError) as exc:
+            reason=str(exc)
+            raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}',reason)
+                               else 'invalid_chess_event_payload') from exc
+        samples=records[:MAX_PREVIEWS]
+        while len(json.dumps(samples,ensure_ascii=False))>18_000:samples.pop()
+        return {'p_source_key':source_key,'p_samples':samples,
+                'p_future_count':len(records),'p_venue_count':0,
+                'p_error':None,'p_events':records}
     from roomquest import santa_cruz_downtown
     if source_key == santa_cruz_downtown.KEY:
         deadline = min(monotonic()+39, deadline_at-6 if deadline_at is not None else float('inf'))
@@ -3819,6 +3844,12 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
         and (source.get('feed_url'), source.get('kind'), source.get('platform_adapter'))
             == santa_cruz_little_giant.SOURCES[santa_cruz_little_giant.KEY]
         and source.get('timezone') == santa_cruz_little_giant.ZONE)
+    from roomquest import santa_cruz_chess_club
+    publisher_media = publisher_media or (
+        source_key == santa_cruz_chess_club.KEY
+        and (source.get('feed_url'),source.get('kind'),source.get('platform_adapter'))
+            == santa_cruz_chess_club.SOURCES[santa_cruz_chess_club.KEY]
+        and source.get('timezone') == santa_cruz_chess_club.ZONE)
     from roomquest import santa_cruz_downtown
     publisher_media = publisher_media or (
         source_key == santa_cruz_downtown.KEY
