@@ -138,7 +138,17 @@ def collect(source, fetch, *, deadline_at=None, now=None):
             continue
         row.update(description=clean_description,timezone=ZONE,
                    publisher_categories=["civic","public meeting"],
-                   location_provenance="publisher_vevent_explicit_street")
+                   location_provenance="publisher_vevent_explicit_street",
+                   civic={"version":1,
+                          "kind":"meeting",
+                          "topic":"government",
+                          "jurisdiction_id":"us-ga-hall-county",
+                          "applicability":"jurisdiction",
+                          "time_precision":"timed",
+                          "timezone":ZONE,
+                          "source_url":url,
+                          "verified_at":datetime.now(timezone.utc).isoformat(),
+                          "valid_until":end.astimezone(timezone.utc).isoformat()})
         from roomquest.publisher_evidence import attach
         row=attach(row,key,facts={"jurisdiction_id":"us-ga-hall-county",
                                    "civic_kind":"meeting","civic_topic":"government"})
