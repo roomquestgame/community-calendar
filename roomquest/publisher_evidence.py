@@ -361,7 +361,7 @@ def image_url(value, publisher):
         return photo_url(value)
     if publisher == 'lanier_islands_events_ga':
         from roomquest.lanier_islands_ga import image_candidate
-        return image_candidate(candidate_url)
+        return image_candidate(value)
     if publisher == 'porch_on_main_flowery_branch_ga':
         from roomquest.porch_on_main_ga import image_candidate
         return image_candidate(value)
