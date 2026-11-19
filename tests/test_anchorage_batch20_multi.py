@@ -107,3 +107,65 @@ def test_source_preview_honors_robots_and_host(monkeypatch):
     assert row["p_future_count"]==1
     assert len(row["p_events"])==1
     assert row["p_venue_count"]==1
+
+
+REFUGE = dict(addressTitle="Refuge Coffee",addressLine1="3309 Spenard Road",
+              addressLine2="Anchorage, Alaska, 99503",
+              mapLat=61.1901288,mapLng=-149.9058736)
+REFUGE_BODY = "<p>Join us for an Open Mic Night at Refuge Coffee hosted by our dear friend Yody! All ages and talents welcome, this is a family friendly event.</p>"
+
+def refuge_event(date, suffix):
+    # Publisher source records: separate original IDs, URLs and dated occurrences.
+    return ev(ak.REFUGE,"Open Mic Night ",REFUGE,
+              "/events/open-mic-night-"+suffix,
+              id="publisher-refuge-"+suffix,
+              body=REFUGE_BODY,
+              startDate=msec(date+"T02:00:00Z"),
+              endDate=msec(date+"T05:00:00Z"))
+
+def test_refuge_three_original_occurrences_are_music_with_real_site_points():
+    rows=ak.collect(source(ak.REFUGE),fetch(
+        refuge_event("2026-11-21","nov20"),
+        refuge_event("2026-12-05","dec04"),
+        refuge_event("2026-12-19","dec18")),now=NOW)
+    assert len(rows)==3
+    assert len({(x["id"],x["starts_at"]) for x in rows})==3
+    assert all(x["category"]=="music" for x in rows)
+    assert all(x["venue_address"]=="3309 Spenard Road, Anchorage, AK 99503" for x in rows)
+    assert all(x["lat"]==61.1901288 and x["lng"]==-149.9058736 for x in rows)
+    assert all("All ages and talents welcome" in x["description"] for x in rows)
+    assert all(x.get("image_candidate_url") is None for x in rows)
+    assert all(x["timezone"]=="America/Anchorage" for x in rows)
+
+def test_refuge_requires_first_party_street_gps_tz_and_event_perm_link():
+    base=refuge_event("2026-11-21","nov20")
+    cases=[
+        dict(base,location=dict(REFUGE,addressLine1="")),
+        dict(base,location=dict(REFUGE,addressLine1="3300 Spenard Road")),
+        dict(base,location=dict(REFUGE,mapLat=40.7207559,mapLng=-74.0007613)),
+        dict(base,location=dict(REFUGE,addressLine2="Milwaukee, WI, 99503")),
+        dict(base,location=dict(REFUGE,addressTitle="Other Cafe")),
+        dict(base,title="Private Booking"),
+        dict(base,title="Unspecified Gathering"),
+        dict(base,body="<p></p>"),
+        dict(base,fullUrl="https://evil.example/events/open-mic-night-nov20"),
+        dict(base,fullUrl="/unrelated/event/open-mic-night-nov20"),
+        dict(base,startDate=msec("2026-11-21T05:00:00Z")),
+    ]
+    for item in cases:
+        assert ak.collect(source(ak.REFUGE),fetch(item),now=NOW)==[]
+    with pytest.raises(ValueError,match="publisher_timezone_changed"):
+        ak.collect(source(ak.REFUGE),fetch(base,zone="America/New_York"),now=NOW)
+
+def test_refuge_preview_uses_robots_guard_and_exact_host(monkeypatch):
+    item=refuge_event("2026-11-21","nov20")
+    def guarded_fetch(url,accept,**kwargs):
+        assert url=="https://www.refugecoffeeak.com/events/?format=json"
+        assert kwargs["respect_robots"] is True
+        assert kwargs["allowed_hosts"]==("www.refugecoffeeak.com",)
+        return fetch(item)(url,accept)
+    monkeypatch.setattr(preview_worker,"fetch_publisher",guarded_fetch)
+    row=preview_worker.preview_source(source(ak.REFUGE))
+    assert row["p_future_count"]==1
+    assert row["p_venue_count"]==1
+    assert row["p_events"][0]["category"]=="music"

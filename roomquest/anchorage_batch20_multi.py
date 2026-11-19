@@ -18,14 +18,17 @@ from roomquest.anchorage_sources import _description, NONPUBLIC, VIRTUAL, ZONE
 
 COMEDY = "rubber_ptarmigan_anchorage_comedy_ak"
 AUDUBON = "anchorage_audubon_society_ak"
+REFUGE = "refuge_coffee_collab_ak"
 SOURCES = {
     COMEDY: ("https://www.rubberptarmigan.com/events", "json", "squarespace"),
     AUDUBON: ("https://www.anchorageaudubon.org/annual-events-1", "json", "squarespace"),
+    REFUGE: ("https://www.refugecoffeeak.com/events/", "json", "squarespace"),
 }
 ALLOWED_HOSTS = {k: (urlsplit(v[0]).hostname,) for k,v in SOURCES.items()}
 PATHS = {
     COMEDY: re.compile(r"/events/[a-z0-9]+(?:-[a-z0-9]+)*/?"),
     AUDUBON: re.compile(r"/annual-events-1/[a-z0-9]+(?:-[a-z0-9]+)*/?"),
+    REFUGE: re.compile(r"/events/[a-z0-9]+(?:-[a-z0-9]+)*/?"),
 }
 CITIES = {"Anchorage","Wasilla","Palmer","Girdwood","Eagle River","Chugiak","Portage"}
 MAX_DESCRIPTION = 12000
@@ -36,6 +39,7 @@ PHOTO_BAD = re.compile(r"(?:^|[-_/])(?:logo|favicon|avatar|pixel|icon|placeholde
 STREET = re.compile(r"^\d{1,6}\s+[A-Za-z]")
 CITY = re.compile(r"^([A-Za-z ]+),\s*(?:AK|Alaska)(?:,\s*(\d{5}))?$",re.I)
 AUDUBON_POINT=(61.1902270,-149.863681)
+REFUGE_POINT=(61.1901288,-149.9058736)
 logger=logging.getLogger(__name__)
 
 
@@ -103,6 +107,15 @@ def _venue(key, e):
     if city not in CITIES:
         return None
     zipcode=m.group(2)
+    if key==REFUGE:
+        name=plain(location.get("addressTitle"))
+        if (name.casefold() != "refuge coffee"
+                or street.casefold() != "3309 spenard road"
+                or city != "Anchorage" or zipcode != "99503"
+                or abs(point[0]-REFUGE_POINT[0])>0.004
+                or abs(point[1]-REFUGE_POINT[1])>0.004):
+            return None
+        return "Refuge Coffee","3309 Spenard Road, Anchorage, AK 99503",city,point
     if key==AUDUBON:
         if (street!="1014 Energy Court" or city!="Anchorage" or zipcode!="99508"
                 or abs(point[0]-AUDUBON_POINT[0])>0.004
@@ -116,6 +129,10 @@ def _venue(key, e):
 
 
 def _category(key,title,description):
+    if key==REFUGE:
+        if re.fullmatch(r"Open Mic Night\s*",title,re.I) and re.search(r"\bopen mic\b",description,re.I):
+            return "music"
+        return None
     if key==AUDUBON:
         if title=="December Evening Program":
             return "hang_out" # Official December program is potluck/social
@@ -170,7 +187,8 @@ def _row(key,e,now):
                publisher_categories=[plain(x) for x in e.get("categories",[]) if isinstance(x,str)],
                location_provenance="publisher_event_specific_street_and_GPS")
     from roomquest.publisher_evidence import attach
-    return attach(row,key,candidate=e.get("assetUrl"))
+    # Publisher image rights are unreviewed: no image candidates for this new source.
+    return attach(row,key,candidate=None if key==REFUGE else e.get("assetUrl"))
 
 
 def collect(source,fetch,*,deadline_at=None,now=None):
