@@ -331,6 +331,9 @@ def image_url(value, publisher):
     if isinstance(publisher, str) and publisher.startswith('hilton_head:'):
         from roomquest.hilton_head_sources import photo_url as hilton_photo_url
         return hilton_photo_url(publisher.removeprefix('hilton_head:'), value)
+    if publisher == 'barefoot_sailing_flowery_branch_ga':
+        from roomquest.barefoot_sailing_ga import photo_url
+        return photo_url(value)
     if isinstance(publisher, str) and publisher.startswith('gainesville_direct:'):
         from roomquest.gainesville_direct_feeds import photo_url as direct_photo_url
         return direct_photo_url(publisher.removeprefix('gainesville_direct:'), value)
