@@ -78,6 +78,9 @@ def family(source_key, event_url):
         else:
             if source_key == barefoot_sailing_ga.KEY:
                 return source_key if barefoot_sailing_ga.event_url(event_url) else None
+        from roomquest import explore_braselton_ga
+        if source_key == explore_braselton_ga.KEY:
+            return source_key if explore_braselton_ga.event_url(event_url) else None
         from roomquest import hall_bourbon_ga
         if source_key == hall_bourbon_ga.KEY:
             return source_key if hall_bourbon_ga.event_url(event_url) else None
@@ -347,6 +350,9 @@ def image_url(value, publisher):
     if isinstance(publisher, str) and publisher.startswith('hilton_head:'):
         from roomquest.hilton_head_sources import photo_url as hilton_photo_url
         return hilton_photo_url(publisher.removeprefix('hilton_head:'), value)
+    if publisher == 'explore_braselton_official_ga':
+        from roomquest.explore_braselton_ga import image_candidate
+        return image_candidate(value)
     if publisher == 'hall_bourbon_brothers_gainesville_ga':
         from roomquest.hall_bourbon_ga import photo_url
         return photo_url(value)
