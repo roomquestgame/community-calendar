@@ -1390,6 +1390,39 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         return {'p_source_key': source_key, 'p_samples': samples,
                 'p_future_count': len(records), 'p_venue_count': len(records),
                 'p_error': None, 'p_events': records}
+    from roomquest import anchorage_local71_public
+    if source_key in anchorage_local71_public.SOURCES:
+        deadline = min(monotonic() + 38,
+                       deadline_at - 8 if deadline_at is not None else float('inf'))
+        try:
+            records = anchorage_local71_public.collect(
+                source, lambda url, accept: fetch_publisher(
+                    url, accept, respect_robots=True, deadline_at=deadline,
+                    allowed_hosts=anchorage_local71_public.ALLOWED_HOSTS[source_key]),
+                deadline_at=deadline)
+            if any(not anchorage_local71_public.event_url(source_key, row.get('event_url'))
+                   or not isinstance(row.get('description'), str) or not row['description'].strip()
+                   or len(row['description']) > anchorage_local71_public.MAX_DESCRIPTION
+                   or row.get('category') != 'hang_out'
+                   or row.get('venue_address') != anchorage_local71_public.PEANUT_FARM[1]
+                   or row.get('lat') != anchorage_local71_public.PEANUT_FARM[3]
+                   or row.get('lng') != anchorage_local71_public.PEANUT_FARM[4]
+                   or row.get('timezone') != anchorage_local71_public.ZONE
+                   or row.get('image_url')
+                   for row in records):
+                raise ValueError('local71_incomplete_event')
+        except PreviewError:
+            raise
+        except (ValueError, TypeError, KeyError, OverflowError) as exc:
+            reason = str(exc)
+            raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}', reason)
+                               else 'invalid_local71_payload') from exc
+        samples = records[:MAX_PREVIEWS]
+        while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
+            samples.pop()
+        return {'p_source_key': source_key, 'p_samples': samples,
+                'p_future_count': len(records), 'p_venue_count': len(records),
+                'p_error': None, 'p_events': records}
     from roomquest import anchorage_winter_wonder_fest
     if source_key in anchorage_winter_wonder_fest.SOURCES:
         deadline = min(monotonic() + 38,
