@@ -27,7 +27,7 @@ ALLOWED_HOSTS = {KEY: (HOST,)}
 MAX_ITEMS = 24
 MAX_DESCRIPTION = 12000
 PATH = re.compile(r"/event/wednesday-night-trivia-(20\d{2}-\d{2}-\d{2})/?", re.I)
-DETAIL = re.compile(r'<h3\b[^>]*>(.*?)</h3>\s*<h1\b[^>]*>(.*?)</h1>(.*?)<script\b[^>]*type=["\']application/ld\+json["\']', re.I | re.S)
+DETAIL = re.compile(r'<h3\b[^>]*class="mt-4"[^>]*>(.*?)</h3>\s*<h1\b[^>]*>(.*?)</h1>(.*?)<script\b[^>]*type=["\']application/ld\+json["\']', re.I | re.S)
 SCRIPT = re.compile(r'<script\b[^>]*type=["\']application/ld\+json["\'][^>]*>(.*?)</script>', re.I | re.S)
 TIME = re.compile(r"\bfrom\s+(\d{1,2})\s*(am|pm)\s*[-–]\s*(\d{1,2})\s*(am|pm)\b", re.I)
 
