@@ -323,6 +323,9 @@ def collect(source, fetch, *, deadline_at=None, now=None):
                 raise ValueError("oc_parks_duplicate_event_id")
             seen.add(row["id"])
             row["description"] = narrative
+            # The shared record normalizer returns an absolute UTC start but
+            # omits the original publisher timezone. Staging requires BOTH.
+            row["timezone"] = ZONE
             row["publisher_status"] = "scheduled"
             # No unlicensed photographs, image URLs, organizer HQ coordinates,
             # invented category overlays, or invented attendance guarantees.
