@@ -117,6 +117,9 @@ def family(source_key, event_url):
         from roomquest import santa_cruz_hotel_holidays
         if source_key in santa_cruz_hotel_holidays.SOURCES:
             return ('santa_cruz_hotel:' + source_key) if santa_cruz_hotel_holidays.event_url(source_key,event_url) else None
+        from roomquest import santa_cruz_dante
+        if source_key==santa_cruz_dante.KEY:
+            return 'dante_santa_cruz' if santa_cruz_dante.event_url(event_url) else None
         from roomquest import santa_cruz_art_league
         if source_key==santa_cruz_art_league.KEY:
             return 'santa_cruz_art_league' if santa_cruz_art_league.event_url(event_url) else None
