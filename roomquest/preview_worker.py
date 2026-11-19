@@ -3003,6 +3003,9 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         elif source_key == "hall_bourbon_brothers_gainesville_ga":
             from roomquest.hall_bourbon_ga import HOST, collect as collect_html
             allowed_hosts = (HOST,)
+        elif source_key == "lanier_islands_events_ga":
+            from roomquest.lanier_islands_ga import HOST, collect as collect_html
+            allowed_hosts = (HOST,)
         elif source_key == "porch_on_main_flowery_branch_ga":
             from roomquest.porch_on_main_ga import HOST, collect as collect_html
             allowed_hosts = (HOST,)
