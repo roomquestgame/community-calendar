@@ -84,6 +84,9 @@ def family(source_key, event_url):
         from roomquest import hall_bourbon_ga
         if source_key == hall_bourbon_ga.KEY:
             return source_key if hall_bourbon_ga.event_url(event_url) else None
+        from roomquest import lanier_islands_ga
+        if source_key == lanier_islands_ga.KEY:
+            return source_key if lanier_islands_ga.event_url(event_url) else None
         from roomquest import porch_on_main_ga
         if source_key == porch_on_main_ga.KEY:
             return source_key if porch_on_main_ga.event_url(event_url) else None
@@ -356,6 +359,9 @@ def image_url(value, publisher):
     if publisher == 'hall_bourbon_brothers_gainesville_ga':
         from roomquest.hall_bourbon_ga import photo_url
         return photo_url(value)
+    if publisher == 'lanier_islands_events_ga':
+        from roomquest.lanier_islands_ga import image_candidate
+        return image_candidate(value)
     if publisher == 'porch_on_main_flowery_branch_ga':
         from roomquest.porch_on_main_ga import image_candidate
         return image_candidate(value)
