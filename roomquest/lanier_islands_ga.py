@@ -106,7 +106,7 @@ def parse(listing_html, detail_html, *, now=None):
                 now + timedelta(days=90)):
             continue
         row = record("Magical Nights of Lights", start.isoformat(), end.isoformat(),
-                     VENUE, STREET, "Buford", DETAIL, DETAIL, "Community / Social",
+                     VENUE, STREET, "Buford", DETAIL, f"{DETAIL}#{day.isoformat()}", "Community / Social",
                      tz=ZONE, retain_until_end=True)
         if row is None:
             continue
