@@ -53,4 +53,3 @@ def test_source_identity_and_time_guard():
     assert not m.event_url("https://attacker.org/events/2026/12/5/cookie-workshop")
     assert not m.event_url("https://www.watsonvilletaiko.org/events/2026/12/5/cookie-workshop?bad=1")
     assert run(fixture(startDate=1796506200809))[0]["lat"] is None
-
