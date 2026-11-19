@@ -1374,7 +1374,7 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                    or len(row['description']) > anchorage_batch20_dirty_apron.MAX_DESCRIPTION
                    or row.get('category') != 'create'
                    or row.get('venue_address') != anchorage_batch20_dirty_apron.VENUE[1]
-                   or row.get('lat') is not None or row.get('lng') is not None
+                   or row.get('lat') != anchorage_batch20_dirty_apron.VENUE_LAT or row.get('lng') != anchorage_batch20_dirty_apron.VENUE_LNG
                    or not anchorage_batch20_dirty_apron.event_url(source_key, row.get('event_url'))
                    for row in records):
                 raise ValueError('dirty_apron_unverified_event')
@@ -1388,7 +1388,7 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
             samples.pop()
         return {'p_source_key': source_key, 'p_samples': samples,
-                'p_future_count': len(records), 'p_venue_count': 0,
+                'p_future_count': len(records), 'p_venue_count': len(records),
                 'p_error': None, 'p_events': records}
     from roomquest import anchorage_batch20_wasilla
     if source_key in anchorage_batch20_wasilla.SOURCES:
@@ -1432,7 +1432,7 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                    or not isinstance(row.get('venue_address'), str)
                    or not row['venue_address'].strip()
                    or row.get('category') not in ('hang_out',)
-                   or (row.get('lat') is None) != (row.get('lng') is None)
+                   or row.get('lat') != anchorage_batch20_aiga.VENUE_LAT or row.get('lng') != anchorage_batch20_aiga.VENUE_LNG
                    for row in records):
                 raise ValueError('anchorage_aiga_incomplete_event')
         except PreviewError:
