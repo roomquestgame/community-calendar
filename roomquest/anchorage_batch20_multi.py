@@ -108,6 +108,7 @@ def _venue(key, e):
         return None
     zipcode=m.group(2)
     if key==REFUGE:
+        name=plain(location.get("addressTitle"))
         if (name.casefold() != "refuge coffee"
                 or street.casefold() != "3309 spenard road"
                 or city != "Anchorage" or zipcode != "99503"
