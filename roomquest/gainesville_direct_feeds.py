@@ -22,6 +22,7 @@ from roomquest.gainesville_sources import _narrative, _street
 ZONE = "America/New_York"
 BRENAU = "brenau_public_events_ga"
 MEEPLE = "meeple_madness_flowery_branch_ga"
+SAILING = "hall_ga_barefoot_sailing_wix"
 LIBRARY = "hall_library_gainesville_ga"
 # Exact publisher calendar IDs and official facility addresses, not guessed
 # event locations or a default point for off-site events.
@@ -43,6 +44,7 @@ LIBRARY_PROFILES = {
 SOURCES = {
     BRENAU: ("https://www.brenau.edu/wp-json/tribe/events/v1/events", "json", "wordpress"),
     MEEPLE: ("https://tockify.com/api/feeds/ics/meeplemadness", "ical", "ical"),
+    SAILING: ("https://www.barefootsailingclub.org/upcoming-races", "html", "html"),
     **{key: (
         f"https://hallcountylibrary.libcal.com/rss.php?iid=6354&m=month&cid={profile[0]}",
         "rss", "library") for key, profile in LIBRARY_PROFILES.items()},
@@ -67,6 +69,9 @@ def event_url(key, url):
     u = urlsplit(url)
     if u.scheme != "https" or u.username or u.password or u.query or u.fragment:
         return False
+    if key == SAILING:
+        return bool(u.hostname == "www.barefootsailingclub.org" and
+            re.fullmatch(r"/event-details/[a-z0-9-]{5,120}", u.path))
     if key == BRENAU:
         return bool(u.hostname == "www.brenau.edu" and
             re.fullmatch(r"/event/[a-z0-9]+(?:-[a-z0-9]+)*/(?:20\d{2}-\d{2}-\d{2}/)?", u.path))
@@ -293,6 +298,124 @@ def _libcal(source, fetch):
     return sorted(out.values(), key=lambda r: (r["starts_at"], r["title"], r["id"]))
 
 
+
+def _sailing(fetch, *, now, deadline):
+    """Publisher's server-rendered Wix list + individually linked details.
+
+    Calendar cards with TBD dates, unlinked save-the-dates, off-site venues
+    without an explicit street or unverifiable times are deliberately held.
+    Wix warmup declares the local US Eastern timezone; never infer UTC.
+    """
+    from bs4 import BeautifulSoup
+    from roomquest.event_description import description
+    from roomquest.publisher_evidence import attach
+    payload = fetch(SOURCES[SAILING][0], "text/html")
+    if isinstance(payload, bytes):
+        payload = payload.decode("utf-8", "strict")
+    if not isinstance(payload, str) or not 0 < len(payload) <= 3_000_000:
+        raise ValueError("publisher_calendar_size")
+    if "America\\/New_York" not in payload and '"America/New_York"' not in payload:
+        raise ValueError("publisher_timezone_unverified")
+    cards = BeautifulSoup(payload, "lxml").select('li[data-hook="event-list-item"]')
+    if not cards or len(cards) > 50:
+        raise ValueError("publisher_list_unverified")
+    date_re = re.compile(
+        r"(?P<begin>[A-Z][a-z]{2} \d{1,2}, 20\d{2}, "
+        r"\d{1,2}:\d{2} [AP]M)"
+        r"(?:\s*[\u2013-]\s*(?P<finish>\d{1,2}:\d{2} [AP]M))?"
+    )
+    location_re = re.compile(
+        r"(?P<name>[^,]{3,100}), (?P<street>\d{1,6} [^,]{5,105}), "
+        r"(?P<city>Flowery Branch|Gainesville|Oakwood|Buford), GA "
+        r"(?P<zip>\d{5}), USA"
+    )
+    out = {}
+    for card in cards:
+        if monotonic() >= deadline:
+            raise ValueError("collection_deadline")
+        def card_text(hook):
+            el = card.select_one(f'[data-hook="{hook}"]')
+            return plain(el.get_text(" ", strip=True)) if el else ""
+        title = card_text("ev-list-item-title")
+        if not title or CANCEL.search(title):
+            continue
+        date_text = card_text("date")
+        loc_text = card_text("location")
+        when = date_re.fullmatch(date_text)
+        place = location_re.fullmatch(loc_text)
+        if not when or not place or not re.search(
+            r"\b(?:Road|Rd|Drive|Dr|Street|St|Lane|Ln|Boulevard|Blvd|"
+            r"Parkway|Pkwy|Avenue|Ave|Way|Highway|Hwy)\b",
+            place["street"], re.I):
+            _hold(SAILING, title, "schedule_or_event_street_unverified")
+            continue
+        links = {a.get("href") for a in card.select("a[href]")
+                 if event_url(SAILING, a.get("href"))}
+        if len(links) != 1:
+            _hold(SAILING, title, "publisher_event_link_unverified")
+            continue
+        url = next(iter(links))
+        try:
+            begin = datetime.strptime(when["begin"], "%b %d, %Y, %I:%M %p")
+            start = begin.replace(tzinfo=ZoneInfo(ZONE))
+            # Do not silently choose a fold for ambiguous DST wall time.
+            if (begin.replace(tzinfo=ZoneInfo(ZONE), fold=0).utcoffset() !=
+                begin.replace(tzinfo=ZoneInfo(ZONE), fold=1).utcoffset()):
+                _hold(SAILING, title, "publisher_time_ambiguous")
+                continue
+            end = None
+            if when["finish"]:
+                finish = datetime.strptime(
+                    begin.strftime("%b %d, %Y") + ", " + when["finish"],
+                    "%b %d, %Y, %I:%M %p"
+                ).replace(tzinfo=ZoneInfo(ZONE))
+                if finish <= start or finish - start > timedelta(hours=18):
+                    _hold(SAILING, title, "publisher_end_unverified")
+                    continue
+                end = finish
+        except ValueError:
+            _hold(SAILING, title, "publisher_date_unverified")
+            continue
+        if not now - timedelta(hours=24) <= start.astimezone(timezone.utc) <= now + timedelta(days=60):
+            continue
+        # Read the complete event narrative, not an abbreviated list teaser.
+        detail = fetch(url, "text/html")
+        if isinstance(detail, bytes):
+            detail = detail.decode("utf-8", "strict")
+        if not isinstance(detail, str) or not 0 < len(detail) <= 3_000_000:
+            raise ValueError("publisher_detail_size")
+        page = BeautifulSoup(detail, "lxml")
+        def detail_text(hook):
+            el = page.select_one(f'[data-hook="{hook}"]')
+            return plain(el.get_text(" ", strip=True)) if el else ""
+        if (detail_text("event-title") != title
+            or detail_text("event-full-date") != date_text
+            or detail_text("event-full-location") != loc_text):
+            raise ValueError("publisher_event_detail_conflict")
+        description_el = page.select_one('[data-hook="event-description"]')
+        raw_text = description_el.get_text("\n", strip=True) if description_el else ""
+        narrative = description(raw_text, limit=max(len(raw_text) + 1, MAX_DESCRIPTION + 1))
+        if len(narrative) > MAX_DESCRIPTION:
+            _hold(SAILING, title, "publisher_description_limit")
+            continue
+        address = f'{place["street"]}, {place["city"]}, GA {place["zip"]}'
+        uid = urlsplit(url).path.rsplit("/", 1)[-1]
+        row = record(title, start.isoformat(), end.isoformat() if end else None,
+                     place["name"], address, place["city"], url, uid,
+                     "sports", None, None, ZONE, retain_until_end=True)
+        if row is None:
+            continue
+        row.update(description=narrative, timezone=ZONE,
+                   publisher_categories=["sailing", "boat racing"],
+                   location_provenance="publisher_wix_list_and_detail_event_street")
+        row = attach(row, SAILING)
+        occurrence_key = (row["id"], row["starts_at"])
+        if occurrence_key in out and out[occurrence_key] != row:
+            raise ValueError("conflicting_sailing_occurrence")
+        out[occurrence_key] = row
+    return sorted(out.values(), key=lambda r: (r["starts_at"], r["id"]))
+
+
 def collect(source, fetch, *, deadline_at=None, now=None):
     key = source.get("source_key")
     expected = SOURCES.get(key)
@@ -301,6 +424,8 @@ def collect(source, fetch, *, deadline_at=None, now=None):
         raise ValueError("unregistered_gainesville_direct_source")
     now = now or datetime.now(timezone.utc)
     deadline = min(monotonic() + 42, deadline_at or float("inf"))
+    if key == SAILING:
+        return _sailing(fetch, now=now, deadline=deadline)
     if key == MEEPLE:
         return _meeple(source, fetch)
     if key in LIBRARY_PROFILES:
