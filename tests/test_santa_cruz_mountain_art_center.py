@@ -19,7 +19,7 @@ def test_exact_two_true_dated_original_events():
  assert [r['id'] for r in rows]==['scmac-2026-12-04-first-friday','scmac-2026-12-19-holiday-sale']
  assert [r['starts_at'] for r in rows]==['2026-12-05T01:00:00+00:00','2026-12-19T20:00:00+00:00']
  assert [r['ends_at'] for r in rows]==['2026-12-05T03:00:00+00:00','2026-12-20T01:00:00+00:00']
- assert all('9341 Mill Street' in r['address'] for r in rows)
+ assert all('9341 Mill Street' in r['venue_address'] for r in rows)
  assert all('functional ceramics' in r['description'] for r in rows)
  assert all(r['timezone']=='America/Los_Angeles' for r in rows)
  assert all(not r.get('lat') and not r.get('lng') for r in rows)
