@@ -26,7 +26,15 @@ KIDS = ROOT + "/kids-cooking-classes/"
 FEEDS = (ADULT, KIDS)
 SOURCES = {KEY: (ADULT, "json", "squarespace")}
 ALLOWED_HOSTS = {KEY: ("www.thedirtyapron.com",)}
-VENUE = ("The Dirty Apron", "3565 Arctic Blvd, Ste D3, Anchorage, AK 99503", "Anchorage")
+VENUE = ("The Dirty Apron", "3565 Arctic Blvd Suite D3, Anchorage, AK 99503", "Anchorage")
+# 2026-11-19 independent US Census Bureau address match (Public_AR_Current).
+# Census point is a matched exact street-number interpolation, not a
+# surveyed entrance; original publisher's map point independently corroborates.
+VENUE_LAT = 61.188366793834
+VENUE_LNG = -149.897840114071
+VENUE_GEO_EVIDENCE = ("US Census Bureau address geocoder Public_AR_Current; "
+                      "matched 3565 ARCTIC BLVD, ANCHORAGE AK 99503; "
+                      "street-interpolated address geolocation, reviewed 2026-11-19")
 MAX_DESCRIPTION = 12000
 MAX_RECORDS = 100
 WINDOW_DAYS = 60
@@ -117,8 +125,8 @@ def _row(event, group, fetch, now, deadline):
         return None
     row.update(description=description, category="create", timezone=ZONE,
                publisher_categories=["The Dirty Apron", "Cooking Classes"],
-               location_provenance="first_party_event_page_studio_street_requires_geocodio",
-               lat=None, lng=None, reason="missing_verified_venue_geo")
+               location_provenance=VENUE_GEO_EVIDENCE,
+               lat=VENUE_LAT, lng=VENUE_LNG)
     from roomquest.publisher_evidence import attach
     return attach(row, KEY, candidate=None)
 

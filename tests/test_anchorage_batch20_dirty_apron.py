@@ -57,11 +57,11 @@ def test_two_calendars_are_one_publisher_with_street_but_no_guessed_gps():
     rows=ak.collect(source(), fetch_map([adult],[family]),now=NOW)
     assert len(rows)==2
     assert {row["id"] for row in rows}=={"publisher-1","publisher-2"}
-    assert all(row["venue_address"]==ak.VENUE[1] and row["lat"] is None
-               and row["lng"] is None for row in rows)
+    assert all(row["venue_address"]==ak.VENUE[1] and row["lat"] == ak.VENUE_LAT
+               and row["lng"] == ak.VENUE_LNG for row in rows)
     assert all(row["category"]=="create" and row["timezone"]==ak.ZONE for row in rows)
     assert all(row.get("image_candidate_url") is None for row in rows)
-    assert all(row["reason"]=="missing_verified_venue_geo" for row in rows)
+    assert all("US Census Bureau" in row["location_provenance"] for row in rows)
     assert all("hands-on" in row["description"] for row in rows)
 
 def test_excludes_sold_out_closed_offsite_or_mismatched_venue():
@@ -103,7 +103,7 @@ def test_guarded_preview_checks_both_calendars_and_original_detail_pages(monkeyp
         return fixture(url,accept)
     monkeypatch.setattr(preview_worker,"fetch_publisher",guarded)
     out=preview_worker.preview_source(source())
-    assert out["p_future_count"]==1 and out["p_venue_count"]==0
+    assert out["p_future_count"]==1 and out["p_venue_count"]==1
     assert out["p_events"][0]["event_url"].startswith(ak.ROOT)
     assert ak.ADULT+"?format=json" in urls and ak.KIDS+"?format=json" in urls
     assert ak.ROOT+base["fullUrl"] in urls
