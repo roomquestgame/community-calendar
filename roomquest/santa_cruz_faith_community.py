@@ -29,10 +29,16 @@ MAX_RECORDS = 20
 MAX_JSON = 650000
 MAX_OWNER = 950000
 MAX_DESCRIPTION = 12000
-ALLOWED_TITLES = {
-    "Grog Night @Youth Group", "H.O.M.E. Donations", "BLOOD DRIVE",
-    "Jingle Jam", "Diaper Drive Distribution", "Ladies Tea", "Kokua Concert"
+CATEGORY_EVIDENCE = {
+    "Grog Night @Youth Group": ("youth group, social games", ["Youth Group", "Games", "Social"]),
+    "H.O.M.E. Donations": ("volunteer, homelessness outreach, clothing donations", ["Volunteer", "Donation Drive"]),
+    "BLOOD DRIVE": ("blood donation, community service", ["Blood Donation", "Community Service"]),
+    "Jingle Jam": ("family holiday gathering", ["Holiday", "Family Activities"]),
+    "Diaper Drive Distribution": ("diaper donations, community support", ["Donation Drive", "Community Assistance"]),
+    "Ladies Tea": ("social, tea, gathering", ["Social Gathering", "Tea"]),
+    "Kokua Concert": ("live music, concert", ["Live Music", "Concert"]),
 }
+ALLOWED_TITLES = set(CATEGORY_EVIDENCE)
 STREET_PATTERN = re.compile(r"\b115\s+S\.?\s+Morrissey\s+A(?:ve|venue)\b", re.I)
 OWNER_ADDRESS = re.compile(r"115\s+S\.?\s+Morrissey\s+A(?:ve|venue)[,\s]+Santa\s+Cruz,\s*CA\s+95062", re.I)
 
@@ -113,12 +119,12 @@ def collect(source, fetch, *, deadline_at=None, now=None):
             raise ValueError("faith_description_missing")
         row = record(title,start.isoformat(),end.isoformat(),
                      str(loc.get("addressTitle") or "Faith Community Church").strip(),
-                     STREET,"Santa Cruz",url,ident,"family, community, volunteer, education",
+                     STREET,"Santa Cruz",url,ident,CATEGORY_EVIDENCE[title][0],
                      None,None,ZONE,retain_until_end=True)
         if row is None:
             continue
         row.update(description=narrative,timezone=ZONE,
-                   publisher_categories=["Community","Family & Kids","Volunteering"],
+                   publisher_categories=CATEGORY_EVIDENCE[title][1],
                    location_provenance="owner_calendar_event_address_and_owner_footer",
                    location_evidence_url=OWNER,schedule_evidence_url=url)
         out.append(attach(row,KEY,evidence_url=url))
