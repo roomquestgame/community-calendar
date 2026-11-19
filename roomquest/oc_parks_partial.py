@@ -39,6 +39,17 @@ DETAIL_TIME = re.compile(
     r"^(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun),?\s+([A-Za-z]+)\s+(\d{1,2}),\s*(\d{4})\s+"
     r"(\d{1,2}:\d{2}\s*[ap]m)\s*-\s*(\d{1,2}:\d{2}\s*[ap]m)\s*(PST|PDT)$", re.I)
 EXCLUDED_AREA_ADDRESS = "13333 Black Star Canyon Rd"
+# Certain first-party details provide a specific event start address even when
+# the separate Drupal Location field points at a broader park's headquarters.
+# The publisher's explicit event start wins, without copying the old park pin.
+EXPLICIT_START_ADDRESS = re.compile(
+    r"\b(?:this|the)\s+(?:program|event|hike|walk)\s+"
+    r"(?:begins?|starts?|will\s+begin|will\s+start)\s+(?:at|from)\s+"
+    r"(?:the\s+)?(?P<name>[^,\n*]{3,100}),\s*"
+    r"(?P<street>\d{1,6}\s+[^,\n*]{2,95}),\s*"
+    r"(?P<city>[a-z][a-z .-]{1,55}),\s*CA\s+(?P<postal>9\d{4})\b",
+    re.I,
+)
 CANCELLATION_TITLE = re.compile(
     r"^\s*(?:(?:cancelled|canceled|postponed|rescheduled)\b|"
     r"(?:this|the)\s+(?:event|program)\s+(?:has\s+been|is)\s+(?:cancelled|canceled)\b)", re.I)
@@ -271,8 +282,23 @@ def parse_detail(entry, html):
                          else "oc_parks_detail_cancelled")
     if not text:
         raise ValueError("oc_parks_detail_description_missing")
+    # A street explicitly labelled as the event *starting point* in the
+    # original narrative overrides a generic park address in the Drupal
+    # Location field. Otherwise a card could point miles from the event.
+    source_start = EXPLICIT_START_ADDRESS.search(text)
+    explicit_name = None
+    if source_start:
+        proposed_street = plain(source_start.group("street"))
+        proposed_city = plain(source_start.group("city"))
+        proposed_postal = source_start.group("postal")
+        if not ADDRESS_NUMBER_RE.match(proposed_street):
+            raise ValueError("oc_parks_explicit_start_unverified")
+        if (_norm(proposed_street), _norm(proposed_city), proposed_postal) != (
+                _norm(street), _norm(city), postal):
+            street, city, postal = proposed_street, proposed_city, proposed_postal
+            explicit_name = plain(source_start.group("name"))
     pin = _park_pin(street, city, postal)
-    name = pin[3] if pin else f"{street}, {city}"
+    name = explicit_name or (pin[3] if pin else f"{street}, {city}")
     full_address = f"{street}, {city}, CA {postal}"
     return record(entry["title"], start.isoformat(), end.isoformat(),
                   name, full_address, city, "https://" + HOST + entry["url"],
