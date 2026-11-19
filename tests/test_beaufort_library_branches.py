@@ -53,9 +53,9 @@ def collect(key, *args, **kwargs):
 
 class BeaufortDirectLibraryTests(unittest.TestCase):
     def test_five_unique_exact_branch_sources(self):
-        self.assertEqual(len(b.SOURCES),5)
-        self.assertEqual(set(x[0] for x in b.SOURCES.values()),{72,74,77,78,79})
-        self.assertEqual(len(set(b.feed_url(k) for k in b.SOURCES)),5)
+        self.assertEqual(len(b.SOURCES),6)
+        self.assertEqual(set(x[0] for x in b.SOURCES.values()),{72,74,77,78,79,80})
+        self.assertEqual(len(set(b.feed_url(k) for k in b.SOURCES)),6)
         for key in b.SOURCES:
             self.assertTrue(b.source_valid(source(key)))
             self.assertFalse(b.source_valid({**source(key),"timezone":"UTC"}))
