@@ -57,3 +57,18 @@ Official Santa Cruz Beach Boardwalk source is now directly verified for **one** 
 ### November 18 Boulder Creek Reindeer Run direct venue resolution
 
 One additional verified **Sports & Fitness** publisher with direct 2026 Christmas Eve 9 a.m.–noon event evidence and original 5K run/walk prose. Boulder Creek Recreation & Park District itself specifies **Junction Park, 13264 Middleton Ave** at its first-party `/rentals` page. Keep venue-name-to-street evidence and pass the address to existing Geocodio, never infer a point from the park's centroid or the district office. The first-party organizer and official park pages passed guarded live fetch; **one** event preview, **one** new source (16/20), no image rights or public cards claimed. This is separate from blocked Woodhouse/Discretion addresses and from the Track Club/RunSignup November 21 date conflict.
+
+
+### November 18 — Geocodio closeout and eighteenth-source research correction
+
+**Superseding status of the two existing brewery feeds:** The prior ambiguous Geocodio diagnosis above is historical. Protected database migration `20261121180000` and follow-up `20261121210000` were subsequently deployed through the approved GitHub database workflow; collector PR #283 merged into production. Live read-only `public.external_events` counts reconfirmed **24 future Discretion** and **6 future Woodhouse** rows. Those 30 previously enrolled events are now published backend records; they are not new publisher sources and are not retried. No signed-in device screenshot/rendering was independently established during this run.
+
+**Discovery areas 1 and 7 — distinct new publisher:** `Bargetto Winery` owns `https://www.bargetto.com/events/upcoming` with primary structured JSON-LD plus its own `/events/upcoming/art-and-wine-art-in-the-cellars-2026-12-06` details. First-party Soquel event at **3535 N Main Street** has explicit **Dec 5–6, 2026, 11 a.m.–5 p.m. each day** and complete original prose. Two separate occurrence identities were live-tested by guarded preview, raising the new batch to **18/20** (211 publisher-preview occurrences). The two Monterey events are not imported into Soquel; no coordinates or rights presumed.
+
+**Discovery area 2 prior-source exclusion:** Santa Cruz Museum of Natural History at `santacruzmuseum.org/wp-json/tribe/events/v1/events` has a working 12-event official TEC REST endpoint, but the exact `santa_cruz_museum_natural_history_ca` key is **already registered in `roomquest/santa_cruz_sources.py`**. It adds **zero** new sources.
+
+**Discovery area 3 hold:** `santacruztrails.org/events/` robots.txt is HTTP 404 and the original events site is reachable, but differing park/trailhead event locations still require real official numbered streets and fully verified sessions. Neither headquarters coordinates nor generic forest centroids can be substituted.
+
+**Discovery area 7 hold:** `scmmakersmarket.com/events/` returned HTTP 404 and the host root returned HTTP 406 to the guarded sandbox. Official `/apply/` is a vendor-application lead rather than a safely verified public event feed; outside organizer pages describe dates inconsistently. Do not count a source until original schedule, day-by-day times, street and robots fetch pass.
+
+**Discovery areas 8 and 9:** No new primary signed gaming calendar with a verified guarded publisher preview was found in this iteration; the original Mythic Games / GAME Santa Cruz leads remain uncounted. Santa Cruz City's previously blocked robots route remains on hold; do not circumvent it. Two independently verified **new** publisher feeds still needed before the 20-source release gate. The nine headings are search domains only, not EventQuest category taxonomy.
