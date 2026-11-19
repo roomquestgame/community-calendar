@@ -182,8 +182,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
                    schedule_evidence_url=FEED)
         img=e.get("image") or {}
         candidate=photo_url(img.get("url")) if isinstance(img,dict) else None
-        result.append(attach(row,KEY,candidate=candidate,evidence_url=e["url"],
-                             facts={"owner_rest_id":str(event_id)}))
+        result.append(attach(row,KEY,candidate=candidate,evidence_url=e["url"]))
     if len(result)>MAX_RECORDS:
         raise ValueError("save_our_shores_record_limit")
     return result
