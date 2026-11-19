@@ -2,7 +2,7 @@
 
 **Date of source checks:** November 18, 2026. This is a **new 20-source collector branch** and does not duplicate the preceding UCSC/Kuumbwa two-feed release or the six-source production batch (#266/#267). User instruction: pull **20 actual working feeds in each branch**, not twenty websites researched. This branch is **not merged or published**, and there is no new database migration.
 
-## Verified live collector previews (16 / 20)
+## Verified live collector previews (17 / 20)
 
 | # | New direct publisher and source key | Exact primary feed | Eligible future publisher events | Event location evidence | Full descriptions | Publisher photo candidates |
 |---:|---|---|---:|---|---|---:|
@@ -22,7 +22,8 @@
 | 14 | Santa Cruz Symphony — `santa_cruz_symphony_season_ca` | `https://santacruzsymphony.org/2026-27-concert-season-overview` and official Civic/Mello venue pages | **2** | Jan 16, 2027 Civic Auditorium (307 Church St., Santa Cruz) and Jan 17 Henry J. Mello Center (250 E. Beach St., Watsonville); original published times and 1h45 duration | 2 | 0 |
 | 15 | Santa Cruz Beach Boardwalk — `santa_cruz_beach_boardwalk_events_ca` | `https://beachboardwalk.com/events-and-entertainment/` with direct `https://beachboardwalk.com/brunch-with-santa/` detail and first-party Grove venue page | **1** | Brunch with Santa on Dec 13, 2026 9–11:30 a.m. at The Grove, **400 Beach Street, Santa Cruz**; sold-out movie and generic winter promotion excluded | 1 | 0 |
 | 16 | Boulder Creek Reindeer Run — `boulder_creek_reindeer_run_ca` | `https://www.bouldercreekreindeerrun.com/` plus independent park district location `https://www.bcrpd.org/rentals` | **1** | Dec 24, 2026, **9 a.m.–noon** publisher window at **Junction Park, 13264 Middleton Ave, Boulder Creek CA 95006** verified by official park operator | 1 | 0 |
-| | **Total publisher dry-run occurrences** | | **193** | All sixteen sources have complete publisher event street evidence | **193** | **127** |
+| 17 | Sparky's Holiday Lights — `sparkys_holiday_lights_watsonville_ca` | `https://www.sparkysholidaylights.com/` first-party annual schedule | **16** | 14 explicitly dated drive-through and 2 walk-through evenings (Nov 27–Dec 24, 2026) with 5:30–9 p.m. or 5–9 p.m. Pacific time; official **2601 East Lake Avenue, Watsonville CA 95076** event street; no fabricated coordinates | 16 | 0 |
+| | **Total publisher dry-run occurrences** | | **209** | All seventeen sources have complete publisher event street evidence | **209** | **127** |
 
 Source dry-run counts are **not** unique, deduped or public EventQuest cards. Images are **unlicensed candidates** until downstream rights and bytes check. The same event may appear in First Friday and another organizer. Source keys, original event URL hosts, complete descriptions and real wall-time occurrences are source-bound. No invented map pins, times, recurrence or generic Other categories.
 
@@ -30,7 +31,7 @@ Source dry-run counts are **not** unique, deduped or public EventQuest cards. Im
 
 - Existing baseline targeted collector regression suite: **38 focused tests passed** in isolated Vercel sandbox, including new Madson/Jack/Stockwell fixtures; ten publisher sources exercised using the real guarded `preview_worker.preview_source` against primary sites (not test fixtures alone). All 138 accepted dry-run records have original full descriptions and event-specific streets.
 - `roomquest/preview_worker.py` uses the original guarded fetch, robots+SSRF host allowlist and bounded deadlines. The Events Calendar sources, Squarespace sources, and HTML event-detail sources have separate reviewed identities.
-- Current branch is **in development**. No PR merge, production Vercel deployment, source registration or fresh PG17 migration is claimed for these sixteen.
+- Current branch is **in development**. No PR merge, production Vercel deployment, source registration or fresh PG17 migration is claimed for these seventeen.
 - When the 20 **independent working and new** publishers are verified, group the collector adapters in a small number of coherent PRs, merge/test, deploy the Vercel production collector, then use **only** GitHub's protected `db-deploy.yml` to run a minimal forward-only source-enrollment migration. Never touch the 2026-11-17 PostgreSQL 17 history-only baseline or existing production users/events.
 - Live post-deployment checks must cover source uniqueness, complete preview receipts, downstream category evidence, street-level geocoding, rights/size image checks, duplicate suppression and public Home/Events/Map cards. Do not publish a source whose own feed is empty or blocked.
 
@@ -94,3 +95,8 @@ The first-party Boardwalk events listing, individual Brunch with Santa detail an
 ### November 18 — Verified sixteenth publisher: Boulder Creek Reindeer Run
 
 First-party `www.bouldercreekreindeerrun.com` and official Boulder Creek Recreation and Park District `/rentals` were permitted by guarded robots and fetched within deadlines. **One** Christmas Eve **December 24, 2026 9 a.m.–noon America/Los_Angeles** original event window passed live guarded preview with **1,003 characters** of publisher narrative. **Junction Park** is an original named venue; park operator independently confirms the actual street **13264 Middleton Ave, Boulder Creek CA 95006**, preserving name-to-official-street evidence for ordinary downstream Geocodio (no invented coordinates). No separate 5K gun start is invented, no daily recurrence or licensed image assumed. Four focused tests and **38 targeted Santa Cruz tests** passed in isolated sandbox. Development-only; 0 new public event claims.
+
+
+### November 18 — Verified seventeenth publisher: Sparky's Holiday Lights
+
+First-party annual holiday schedule at `https://www.sparkysholidaylights.com/` passed the production-style guarded `preview_worker.preview_source` in an isolated Vercel sandbox with source identity, official robots.txt, host allowlist and deadline enforced: **16 future eligible occurrences** across **14 drive-through days** and **2 walk-through nights**. The publisher explicitly enumerates Nov 27–29, Dec 4–6, Dec 11–13 and Dec 18–24, with 5:30–9 p.m. drive-through and 5–9 p.m. walk-through. No intervening dates or times were inferred. Publisher's current-year 2026 community-display PDF link corroborates the season (older 2025 links ignored). December 3 Krampus is held for incomplete event-specific prose. Both admitted program types carry the organizer's own narrative (**288 characters for drive-through**), original schedule URL and stable date/type occurrence identity; no invented event-specific detail routes. Exact original street: **Santa Cruz County Fairgrounds, 2601 East Lake Avenue, Watsonville CA 95076**. No invented geocodes; no ambiguous site logo or sponsor image was assigned to a card. **18 focused Santa Cruz regression tests passed** in the sandbox, including six new publisher tests; guarded live preview returned `p_error=null`, `p_future_count=16`, all 16 with complete descriptions. The tested files were committed to this same development branch. No source registration, collector production deploy, Geocodio output or public EventQuest cards are claimed. Batch is **17/20 distinct publishers, 209 dry-run occurrences**, with **three more** independently guarded new sources required before release.
