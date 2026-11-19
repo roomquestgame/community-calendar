@@ -58,7 +58,7 @@ def meeple_event(*, location='Meeple Madness, 7400 Spout Springs Rd Suite 205, F
 
 class DirectGainesvilleTests(unittest.TestCase):
     def test_source_keys_are_direct_not_mapsee(self):
-        self.assertEqual(set(g.SOURCES), {g.BRENAU, g.MEEPLE, *g.LIBRARY_PROFILES})
+        self.assertEqual(set(g.SOURCES), {g.BRENAU, g.MEEPLE, g.SAILING, *g.LIBRARY_PROFILES})
         self.assertTrue(all(not k.startswith('municipal_mapsee_') for k in g.SOURCES))
         for key, spec in g.SOURCES.items():
             changed={**source(key), 'feed_url':spec[0]+'-injected'}
