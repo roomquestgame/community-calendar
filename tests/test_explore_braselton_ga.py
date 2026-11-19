@@ -5,7 +5,7 @@ from roomquest.explore_braselton_ga import (
 )
 
 NOW = datetime(2026, 11, 19, 16, tzinfo=timezone.utc)
-TREE = "https://www.explorebraselton.com/event-details/cars-of-chateau"
+TREE = "https://www.explorebraselton.com/event-details/tree-lighting-celebration"
 OTHER = "https://www.explorebraselton.com/event-details/brunch-with-santa-2026"
 IMAGE = "https://static.wixstatic.com/media/abcdef123.webp"
 
@@ -50,14 +50,14 @@ def test_hold_missing_true_event_fields_and_wrong_cities():
     for replacements in fixtures:
         assert event_detail(html(**replacements), TREE, now=NOW) is None, replacements
     assert event_detail(html(url=OTHER), TREE, now=NOW) is None
-    assert event_detail(html(), "https://evil.example/event-details/cars-of-chateau", now=NOW) is None
+    assert event_detail(html(), "https://evil.example/event-details/tree-lighting-celebration", now=NOW) is None
 
 def test_safe_url_image_and_listing_identity():
     for value in (
-        "http://www.explorebraselton.com/event-details/cars-of-chateau",
-        "https://www.explorebraselton.com/event-details/cars-of-chateau?utm=1",
-        "https://example.com/event-details/cars-of-chateau",
-        "https://www.explorebraselton.com@evil.example/event-details/cars-of-chateau",
+        "http://www.explorebraselton.com/event-details/tree-lighting-celebration",
+        "https://www.explorebraselton.com/event-details/tree-lighting-celebration?utm=1",
+        "https://example.com/event-details/tree-lighting-celebration",
+        "https://www.explorebraselton.com@evil.example/event-details/tree-lighting-celebration",
         "https://www.explorebraselton.com/event-list"
     ):
         assert not event_url(value)
@@ -65,14 +65,14 @@ def test_safe_url_image_and_listing_identity():
     assert image_candidate(IMAGE) == IMAGE
     assert image_candidate("https://evil.example/media/abcdef123.webp") is None
     assert image_candidate("https://static.wixstatic.com/media/abc.webp?token=bad") is None
-    listing = ('<a href="/event-details/cars-of-chateau">One</a>'
-               '<a href="/event-details/cars-of-chateau">Duplicate</a>'
+    listing = ('<a href="/event-details/tree-lighting-celebration">One</a>'
+               '<a href="/event-details/tree-lighting-celebration">Duplicate</a>'
                '<a href="https://evil.example/event-details/other">Other</a>'
                '<a href="/event-details/brunch-with-santa-2026">Two</a>')
     assert listing_urls(listing) == [TREE, OTHER]
 
 def test_collector_does_not_fabricate_fields_or_skip_source_gate():
-    index = '<a href="/event-details/cars-of-chateau">Tree lighting</a>'
+    index = '<a href="/event-details/tree-lighting-celebration">Tree lighting</a>'
     seen = []
     def fetch(url, accept):
         seen.append(url)
