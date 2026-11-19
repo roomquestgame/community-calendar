@@ -23,12 +23,14 @@ DISCRETION='discretion_brewing_soquel_ca'
 AG_HISTORY='agricultural_history_project_watsonville_ca'
 MAKER='santa_cruz_maker_studios_fall_workshops_ca'
 TANNERY='tannery_arts_center_winter_market_2026_ca'
+SCCMOD='santa_cruz_childrens_museum_craft_fair_2026_ca'
 SOURCES={
  WOODHOUSE:('https://www.woodhousebrews.com/api/events','json','squarespace'),
  DISCRETION:('https://www.discretionbrewing.com/events/','html','html'),
  AG_HISTORY:('https://aghistoryproject.org/2nd-saturday-on-the-farm/','html','html'),
  MAKER:('https://scmakerstudios.com/fall-events-2026/','html','html'),
  TANNERY:('https://www.tanneryartscenter.org/winter-art-market','html','html'),
+ SCCMOD:('https://www.sccmod.org/learn-more/childrenscraftfair','html','html'),
 }
 ALLOWED_HOSTS={k:(urlsplit(v[0]).hostname,) for k,v in SOURCES.items()}
 VENUE={
@@ -37,6 +39,7 @@ VENUE={
  AG_HISTORY:('Agricultural History Project Center & Museum','2601 East Lake Avenue, Watsonville, CA 95076','Watsonville'),
  MAKER:('Santa Cruz Maker Studios','427 A. Swift Street, Santa Cruz, CA 95060','Santa Cruz'),
  TANNERY:('Tannery Arts Center','1050-1060 River Street, Santa Cruz, CA 95060','Santa Cruz'),
+ SCCMOD:('Capitola Mall, outside MOD and Macy’s','1855 41st Ave, Capitola, CA','Capitola'),
 }
 MAX_RECORDS=180
 MAX_DESCRIPTION=12000
@@ -59,6 +62,8 @@ def event_url(key,value):
   return bool(p.hostname=='scmakerstudios.com' and p.path=='/fall-events-2026/' and not p.fragment)
  if key==TANNERY:
   return bool(p.hostname=='www.tanneryartscenter.org' and p.path=='/winter-art-market' and not p.fragment)
+ if key==SCCMOD:
+  return bool(p.hostname=='www.sccmod.org' and p.path=='/learn-more/childrenscraftfair' and not p.fragment)
  if key==WOODHOUSE:
   return bool(p.hostname=='minnow-cowbell-xynk.squarespace.com' and not p.fragment
    and re.fullmatch(r'/events/20\d{2}/\d{1,2}/\d{1,2}/[-a-z0-9]+/?',p.path))
@@ -361,6 +366,53 @@ def tannery_market(page,now):
  from roomquest.publisher_evidence import attach
  return [attach(row,TANNERY)]
 
+def sccmod_craft_fair(page,now):
+ """One exact publisher-owned Small Business Saturday 2026 fair, not a monthly recurrence."""
+ from bs4 import BeautifulSoup
+ soup=BeautifulSoup(page,'html.parser')
+ for node in soup(['script','style','nav','footer','header']):
+  node.decompose()
+ titles=[node.get_text(' ',strip=True) for node in soup.find_all('h1')]
+ details=[node.get_text(' ',strip=True) for node in soup.find_all('h2')]
+ expected_title="Small Business Saturday Children's Craft Fair"
+ expected_schedule="Saturday, November 28, 2026 | 2:00 to 5:00 PM"
+ expected_venue="Capitola Mall, outside MOD and Macy’s | 1855 41st Ave, Capitola, CA"
+ if titles.count(expected_title)!=1 or sum(expected_schedule in s and expected_venue in s and 'Free Admission' in s for s in details)!=1:
+  raise ValueError('sccmod_original_schedule_street_unverified')
+ if datetime(2026,11,28).weekday()!=5:
+  raise ValueError('sccmod_saturday_conflict')
+ parts=[
+  'Looking for unique holiday gifts in Santa Cruz County?',
+  'Skip the big-box crowds and find one-of-a-kind gifts',
+  'Kids can browse, budget, and pick out holiday gifts',
+ ]
+ texts=[node.get_text(' ',strip=True) for node in soup.find_all('p')]
+ narrative=[]
+ for prefix in parts:
+  matches=[s for s in texts if s.startswith(prefix) and len(s)>=150]
+  if len(matches)!=1:
+   raise ValueError('sccmod_original_narrative_unverified')
+  narrative.append(matches[0])
+ body=' '.join(narrative)
+ if NOT_PUBLIC.search(body+' '+' '.join(details)):
+  raise ValueError('sccmod_nonpublic_event')
+ prose=full_description('\n\n'.join(narrative))
+ if not prose or len(prose)<550:
+  raise ValueError('sccmod_original_narrative_unverified')
+ begin=datetime(2026,11,28,14,tzinfo=ZoneInfo(ZONE)).astimezone(timezone.utc)
+ finish=datetime(2026,11,28,17,tzinfo=ZoneInfo(ZONE)).astimezone(timezone.utc)
+ if not within(begin,finish,now):return []
+ venue,street,city=VENUE[SCCMOD]
+ row=record(expected_title,begin.isoformat(),finish.isoformat(),venue,street,city,
+            SOURCES[SCCMOD][0],'sccmod-2026-11-28-childrens-craft-fair',
+            'Children’s Craft Fair, Small Business Saturday',None,None,ZONE,retain_until_end=True)
+ if not row:return []
+ row.update(description=prose,timezone=ZONE,
+            publisher_categories=['Children’s Craft Fair','Small Business Saturday'],
+            location_provenance='exact_original_publisher_mall_event_street')
+ from roomquest.publisher_evidence import attach
+ return [attach(row,SCCMOD)]
+
 def collect(source,fetch,*,deadline_at=None,now=None):
  key=source.get('source_key')
  if key not in SOURCES or (source.get('feed_url'),source.get('kind'),source.get('platform_adapter'))!=SOURCES[key] or source.get('timezone')!=ZONE:
@@ -369,6 +421,8 @@ def collect(source,fetch,*,deadline_at=None,now=None):
  now=now or datetime.now(timezone.utc)
  if key==TANNERY:
   return tannery_market(fetch(SOURCES[key][0],'text/html'),now)
+ if key==SCCMOD:
+  return sccmod_craft_fair(fetch(SOURCES[key][0],'text/html'),now)
  if key==MAKER:
   return maker_studios(fetch(SOURCES[key][0],'text/html'),
                        fetch('https://scmakerstudios.com/about/','text/html'),now)
