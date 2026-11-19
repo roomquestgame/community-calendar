@@ -98,12 +98,24 @@ def collect(source, fetch, *, deadline_at=None, now=None):
         if not now-timedelta(hours=3) <= start.astimezone(timezone.utc) <= now+timedelta(days=60):
             continue
         summary = data.get("description")
+        if not isinstance(summary, str) or len(summary.strip()) < 45:
+            raise ValueError("dante_full_narrative_missing")
+        # Wix now renders the full owner-authored body through its rich-text
+        # content viewer. Preserve the old markup path, but never use the
+        # short JSON-LD excerpt in place of the full narrative.
         blocks = [x.get_text(" ", strip=True) for x in page.select("div.X7JGg")]
-        blocks = [x for x in blocks if x.startswith("Ci vediamo per un caffè?")
-                  and isinstance(summary, str) and summary.strip() in x]
+        blocks.extend(x.get_text(" ", strip=True) for x in
+                      page.select('[data-hook="about-section"] [data-id="content-viewer"]'))
+        def normalized(text):
+            return re.sub(r"\s+", " ", text).strip()
+        blocks = [normalized(x) for x in blocks
+                  if normalized(x).startswith("Ci vediamo per un caffè?")
+                  and normalized(summary) in normalized(x)]
         if len(blocks) != 1:
             raise ValueError("dante_full_narrative_missing")
         narrative = blocks[0]
+        if len(narrative) < len(normalized(summary)) + 45:
+            raise ValueError("dante_full_narrative_missing")
         if not 80 <= len(narrative) <= MAX_DESCRIPTION:
             raise ValueError("dante_description_incomplete")
         row = record(title.strip(), start.isoformat(), end.isoformat(), VENUE,
