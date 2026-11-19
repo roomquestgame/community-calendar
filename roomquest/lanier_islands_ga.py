@@ -100,8 +100,8 @@ def parse(listing_html, detail_html, *, now=None):
     tz = ZoneInfo(ZONE)
     for n in range(days):
         day = first + timedelta(days=n)
-        start = datetime(day.year, day.month, day.day, start_hour, tzinfo=tz)
-        end = datetime(day.year, day.month, day.day, end_hour, tzinfo=tz)
+        start = datetime(day.year, day.month, day.day, start_hour + 12, tzinfo=tz)
+        end = datetime(day.year, day.month, day.day, end_hour + 12, tzinfo=tz)
         if not (now - timedelta(hours=24) <= start.astimezone(timezone.utc) <=
                 now + timedelta(days=90)):
             continue
