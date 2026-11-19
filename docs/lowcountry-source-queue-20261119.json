@@ -1,14 +1,14 @@
 {
   "region": "Hilton Head Island / Bluffton / Beaufort County / Port Royal / South Carolina Lowcountry",
-  "checkpoint_local": "2026-11-19 17:00+ EST ninth continuation (first-party PRC live collector, FindLocal collision and wrong-event-GEO audit, Pink Palmetto gaming discovery)",
+  "checkpoint_local": "2026-11-19 18:05 EST tenth continuation: Chamber deployed and 2 new original candidate feeds",
   "target_new_distinct_feeds_per_batch": 20,
-  "new_deployed_this_continuation": 0,
+  "new_deployed_this_continuation": 1,
   "verified_ready_count": 0,
-  "candidate_hold_count": 18,
-  "previous_public_source_associated": 324,
-  "previous_staged": 326,
+  "candidate_hold_count": 19,
+  "previous_public_source_associated": 325,
+  "previous_staged": 327,
   "previous_future_visible": 309,
-  "previous_source_count": 15,
+  "previous_source_count": 16,
   "notes": [
     "Never count original Hilton Head 5, Beaufort County Library 6 including St Helena, or Greenhouse Bluffton as NEW again.",
     "Publisher event GEO must be grounded independently at exact numbered venue street; no centroid guess.",
@@ -37,7 +37,10 @@
     "Follow-up first-party Sea Pines venue evidence: official geocaching PDF https://www.seapines.com/sites/default/files/media/documents/Geocaching%20Answers_updated_0.pdf lists Heritage Farm UNDER THE HUT 32.131131,-80.800686 and Fish Island TOP OF MAP 32.143305,-80.78886. Publisher warns geocache points lead to the next location, not current: these are VERIFIED publisher landmark clues only, NOT exact numbered street GPS or event check-in points; do not automatically publish pins. Six additional first-party Sea Pines event details with dates/numbered streets at 149 Lighthouse Road, 147 Lighthouse Road Suite G, and 35 Lake Joe Trail added as event candidates, NOT extra feeds.",
     "Ninth checkpoint: PRC publisher HTML robots Allow:/, original event-level data and 20 Lowcountry tests passed; collector merged PR #367 SHA f5b88faa4a2fcee1c9dd4972a3de6ab617a2deaf, NOT enrolled. Six full first-party live event canaries are already identical canonical original URL and start time in findlocal_public: all six FindLocal cards use incorrect business headquarters venue 30 Plantation Park Dr Suite 202, Bluffton. HOLD new source to avoid duplicate cards. FindLocal original-event venue remediation issue roomquestgame/RoomQuestGame#1384. Publisher JSON-LD mislabeled local wall times as Z; original visual times trusted with America/New_York.",
     "Ninth checkpoint: Independent Census Public_AR_Current exact-numbered street address geocoding found 97 Progressive St (32.272939834494,-80.915951812245), 185 Greenwood Dr (32.143341725004,-80.789236878718), 149 Lighthouse Rd (32.139612303419,-80.810175536415), 14 Shelter Cove Ln (32.179550569199,-80.727404581681), 172 Bluffton Rd (32.241498160977,-80.859289715187), and 30 New Mustang Dr (32.25540699494,-80.87723364386). Census street-point values MUST NOT overwrite event publisher meeting-point GEO. For Bluffton Farm & Flea Nov22 this removes Census street-geocode blocker but robots + date/full-narrative collector remain.",
-    "Gaming/hobby source breakthrough Nov19: Pink Palmetto Events original 2026 Nov20-Dec19 Mahjong experiences + January lessons (https://www.pinkpalmettoevents.com/calendar); distinctive NEW publisher (not Beaufort Library Mahjong). Multiple host sites (Currents Bluffton, Montage Palmetto Bluff, Tin & Tallow, Gifted Hilton Head, etc) require original per-event ticket details and independent numbered venue street/GEO; do NOT assign one source centroid."
+    "Gaming/hobby source breakthrough Nov19: Pink Palmetto Events original 2026 Nov20-Dec19 Mahjong experiences + January lessons (https://www.pinkpalmettoevents.com/calendar); distinctive NEW publisher (not Beaufort Library Mahjong). Multiple host sites (Currents Bluffton, Montage Palmetto Bluff, Tin & Tallow, Gifted Hilton Head, etc) require original per-event ticket details and independent numbered venue street/GEO; do NOT assign one source centroid.",
+    "Tenth continuation: prior HOLD Greater Bluffton Chamber source is LIVE after collector PR #372 merge bd3c608d5020255b3b1a38fac89174f0d95f5bb0 and exact Vercel READY dpl_2C7PJY8BzxcciMpnFEchGhQdntgm, DB enrollment PR #1389 merged 2f035789ff52a328c55dba751587f3b58f7af54a, applied ledger 20261203023000. Municipal source id 5907, health ok, preview complete, stage 1, actual published+future public 1; distinct venue 97 Progressive Street, 1179-char first-party prose, no image rights; 16 total active / 327 stage future / 325 public / 309 future public. This was completed by overlapping authorized work after ninth checkpoint, do not claim the documentation task independently shipped it.",
+    "Tenth category-quality caveat: new Chamber staged event category 'learn' becomes public 'give_back'; exact card id provider_event_id 'bluffton_chamber:21153'. Filed roomquestgame/RoomQuestGame#1392; correct narrowly without resetting overlays.",
+    "Tenth category audit: 2 NEW independent publisher HOLDS: Michael Anthony cooking school Hilton Head (official date-stamped first party Squarespace classes in Dec 2026 + Jan2027, exact 37 New Orleans Road address but robots/GEO/parser pending); May River Theatre Bluffton (official 2027 Producers run Feb12-28 at Ulmer Auditorium 20 Bridge St, no per-performance ticket timestamps/GEO yet). Research covered all 9 lanes; Beaufort Water Festival official Dec5 boat parade and Beaufort Art Association November-December gallery exhibit are exploratory non-independent feed leads, not padded into queue."
   ],
   "sources": [
     {
@@ -225,39 +228,6 @@
         "first-party source supports only Nov22 special; normal market repetitions lack verified first-party original detail/occurrence IDs",
         "publisher robots and collection access, full event prose and bounded collector tests outstanding"
       ]
-    },
-    {
-      "key": "greater_bluffton_chamber_sc",
-      "publisher": "Greater Bluffton Chamber of Commerce (publisher-owned ChamberMaster events only)",
-      "category_lanes": [
-        1,
-        6,
-        9
-      ],
-      "feed_url": "https://blufftonchamberofcommerce.org/events/catgid/6",
-      "event_url": "https://blufftonchamberofcommerce.org/events/details/ribbon-cutting-celebration-for-culver-s-21168",
-      "evidence": "Verified original ChamberMaster list contains Dec1 Coffee + Connections, Dec3 Get to Know Chamber, Dec7 Culver's ribbon cutting, Dec8 Grounds for Growth, Dec9 breakfast and Jan12. Individual original detail Dec7 has 9:30-10AM, full first-party description, actual numbered venue 231 Buckwalter Place Boulevard Bluffton SC 29910. Dec3 detail has 8:30-10 at 97 Progressive Street; Dec1 has 8-9 at 162 Bluffton Rd suite 102-103. HTML list can be date-bounded; distinguish Chamber-owned events from community submissions and other publishers, reject nonpublic listings. Fresh Nov19 state SC Department of Commerce property listing https://properties.zoomprospector.com/sccommerce/property/97-Progressive-Street-Bluffton-South-Carolina/F80F63FB-AB81-4307-ADF1-1A63AB9FC7C1 publishes 97 Progressive St site lat/long 32.2733,-80.9186, while nearby listing for same street shows 32.2732,-80.9185 (separate property/tenant); verify exact Cove unit before promoting as independently exact GEO. Original Dec3 first-party detail https://blufftonchamberofcommerce.org/events/details/get-to-know-your-chamber-membership-benefits-overview-december-2026-21153 has 8:30-10AM, original full long narrative and 97 Progressive address.",
-      "state": "hold",
-      "blockers": [
-        "robots/publisher access policy not yet checked for bounded ChamberMaster HTML",
-        "independent event-specific exact street GEO for at least one canary; no source centroid substitutions",
-        "source-owned/category filter prevents duplicate publisher events with existing Hilton Head / Beaufort sources",
-        "bounded parser with detailed original URL, local time and no recurrence guesses, plus focused tests"
-      ],
-      "priority": 3,
-      "review_20261119_hour8": {
-        "publisher_owned_filtered_calendar": "https://blufftonchamberofcommerce.org/events/catgid/6",
-        "publisher_calendar_upcoming_seen": [
-          "2026-12-01",
-          "2026-12-03",
-          "2026-12-07",
-          "2026-12-08",
-          "2026-12-09",
-          "2027-01-12"
-        ],
-        "exclude_syndicated_example": "https://blufftonchamberofcommerce.org/events/details/tuesday-game-night-at-southern-barrel-12-15-2026-20379",
-        "release_ready": false
-      }
     },
     {
       "key": "town_bluffton_merry_made_market_sc",
@@ -563,6 +533,45 @@
       ],
       "priority": 2,
       "discovered_date": "2026-11-19"
+    },
+    {
+      "key": "michael_anthonys_cooking_school_hhi_sc",
+      "publisher": "Michael Anthony's Cucina Italiana Cooking School",
+      "category_lanes": [
+        2,
+        4
+      ],
+      "feed_url": "https://www.michael-anthonys.com/cooking-school",
+      "event_url": "https://www.michael-anthonys.com/cooking-school/wicked-good-cooking-class-hilton-head-island-sc",
+      "evidence": "Official live Squarespace first-party list contains individually dated 2026-12-03 Wicked Good, 12-08 Dinner with Friends, 12-11 Holiday Gourmet, 12-16 Gnocchi, 12-17 Italian Dinner Party, 12-18 Tuscan Winter, 12-22 Fresh Pasta, 12-26 Italian New Year, 12-29 Ravioli, 12-30 Pastas of Emilia-Romagna, 2027-01-02 Cold Winter Nights. Original detail pages show 11:30AM-2:30PM local, full publisher narratives, 37 New Orleans Road, Hilton Head Island SC 29928; not merely weekly restaurant opening hours. Read-only source/venue overlap SQL Nov19 found zero current public external_events at this numbered venue or cooking-school canonical domain.",
+      "state": "hold",
+      "blockers": [
+        "Robots/access and terms policy: robots.txt was not accessible via external fetch; confirm permitted listing, event detail and per-event ICS access before any collector",
+        "Independent exact venue-address geocode and whether cooking school inside premises has a different verified participant check-in pin",
+        "Bounded official Squarespace list/detail or ICS parser, date/restriction/cancellation tests, no invented photo rights",
+        "Full cross-provider title/date/URL dedup including not only exact venue address"
+      ],
+      "priority": 3
+    },
+    {
+      "key": "may_river_theatre_bluffton_sc",
+      "publisher": "May River Theatre",
+      "category_lanes": [
+        1,
+        2,
+        5
+      ],
+      "feed_url": "https://www.mayrivertheatre.com/",
+      "event_url": null,
+      "evidence": "Official first-party homepage currently advertises 2027 Season and The Producers Feb12-Feb28 2027 at Ulmer Auditorium, 20 Bridge Street, Bluffton SC 29910; 2027 season/Flex Tickets and improv tickets also listed. Distinct May River Theatre publisher, NOT the Town of Bluffton whose separate FindLocal events reuse 20 Bridge Street. Date range is documented, but individual performance dates/times and publisher URLs are not yet validated.",
+      "state": "hold",
+      "blockers": [
+        "Find original date-specific show ticket/detail pages, each distinct local performance time and public eligibility; reject broad Feb12-28 run as one invented occurrence",
+        "Check official calendar robots/terms and bounded collector tests",
+        "Independent proof Ulmer Auditorium entrance/pin at the numbered 20 Bridge Street building, not neighboring Town of Bluffton municipal entrance",
+        "Cross-provider dedup with existing ticket and FindLocal theater shows"
+      ],
+      "priority": 9
     }
   ],
   "new_deployed_since_prior_0943_checkpoint": 2,
@@ -597,7 +606,7 @@
     }
   ],
   "collector_verified_pending_release": 1,
-  "new_candidate_sources_this_continuation": 3,
+  "new_candidate_sources_this_continuation": 2,
   "exploratory_leads_not_counted": [
     {
       "publisher": "Captain Jax (Hilton Head Island tabletop gaming)",
