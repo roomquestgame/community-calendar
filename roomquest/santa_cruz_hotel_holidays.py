@@ -36,7 +36,7 @@ VENUES = {
     CHAMINADE: ("Chaminade Resort & Spa", "One Chaminade Lane, Santa Cruz, CA 95065"),
     DREAM_INN: ("Dream Inn", "175 W Cliff Dr, Santa Cruz, CA 95060"),
 }
-MAX_RECORDS = 3
+GEOCODIO_CHAMINADE_STREET = "1 Chaminade Lane, Santa Cruz, CA 95065"  # Official written 'One'\nMAX_RECORDS = 3
 MAX_DESCRIPTION = 12000
 MAX_HTML = 650000
 CANCELLED = re.compile(r"\b(?:cancelled|canceled|postponed|private event|members[- ]only)\b", re.I)
@@ -84,7 +84,9 @@ def _street(soup, key):
     normalized = " ".join(soup.get_text(" ", strip=True).split())
     if owner_street not in normalized:
         raise ValueError("hotel_official_street_missing")
-    return owner_street
+    # Publisher spells the exact civic number "One". Convert spelling to digit
+    # for ordinary shared street-number/Geocodio processing, not a guessed pin.
+    return GEOCODIO_CHAMINADE_STREET if key == CHAMINADE else owner_street
 
 
 def _narrative(raw):
