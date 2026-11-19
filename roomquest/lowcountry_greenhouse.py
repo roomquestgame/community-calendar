@@ -201,7 +201,10 @@ def collect(source,fetch,*,deadline_at=None,now=None):
         if i_start is None or i_end is None or geo is None:
             continue
         try:
-            i_lat,i_lng=[float(x) for x in geo.to_ical().decode().split(";")]
+            native_geo=geo.to_ical()
+            if isinstance(native_geo,bytes):
+                native_geo=native_geo.decode("ascii")
+            i_lat,i_lng=[float(x) for x in native_geo.split(";")]
         except (ValueError,TypeError,AttributeError):
             continue
         if (i_start.dt.astimezone(timezone.utc)!=begins.astimezone(timezone.utc)
