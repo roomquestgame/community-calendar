@@ -50,7 +50,8 @@ def test_aiga_one_public_meetup_and_disallows_board_items():
     assert item["venue_address"]=="310 West 36th Avenue, Anchorage, AK 99503"
     assert item["category"]=="hang_out"
     assert item["starts_at"]=="2026-12-10T02:30:00+00:00"
-    assert item["lat"] is None and item["lng"] is None
+    assert item["lat"]==aiga.VENUE_LAT and item["lng"]==aiga.VENUE_LNG
+    assert "US Census Bureau" in item["location_provenance"]
     assert "<" not in item["description"] and "community" in item["description"]
 
 def test_invalid_offsite_missing_times_or_non_anchorage_zone_held():
@@ -81,4 +82,4 @@ def test_preview_never_bypasses_robots_or_allowed_host(monkeypatch):
     result=preview_worker.preview_source(source())
     assert result["p_future_count"]==1
     assert result["p_events"][0]["category"]=="hang_out"
-    assert result["p_venue_count"]==0
+    assert result["p_venue_count"]==1
