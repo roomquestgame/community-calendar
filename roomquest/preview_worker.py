@@ -1403,7 +1403,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                    or len(row['description']) > anchorage_batch20_wasilla.MAX_DESCRIPTION
                    or row.get('category') not in ('learn','create','music','hang_out')
                    or row.get('venue_address') != anchorage_batch20_wasilla.VENUE[1]
-                   or row.get('lat') is not None or row.get('lng') is not None
+                   or row.get('lat') != anchorage_batch20_wasilla.VENUE_POINT[0]
+                   or row.get('lng') != anchorage_batch20_wasilla.VENUE_POINT[1]
                    for row in records):
                 raise ValueError('wasilla_library_unverified_event')
         except PreviewError:
