@@ -54,9 +54,12 @@ SOURCES = {
         78, "Lobeco Branch Library", "1862 Trask Pkwy",
         "Lobeco", "29931", 32.5552852, -80.7448265,
         "1862 Trask Parkway, (Hwy 17), Lobeco, SC, 29931, US"),
+    # The publisher uses St. Helena Island; canonical Saint Helena Island is
+    # the SAME city but avoids DB udell_address interpreting "St." as a street.
+    # Preserve the original publisher LOCATION in the final tuple for guards.
     "beaufort_library_st_helena_sc": (
         80, "St. Helena Branch Library", "6355 Jonathan Francis Sr. Rd",
-        "St. Helena Island", "29920", 32.3879972, -80.5713595,
+        "Saint Helena Island", "29920", 32.3879972, -80.5713595,
         "6355 Jonathan Francis Sr. Rd, St. Helena Island, SC, 29920, US"),
 }
 ALLOWED_HOSTS = {key: (HOST,) for key in SOURCES}
