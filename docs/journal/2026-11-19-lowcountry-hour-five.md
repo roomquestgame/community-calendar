@@ -1,0 +1,40 @@
+# Lowcountry hourly expansion — fifth checkpoint, November 19 2026, 13:07 EST
+
+## Operational result
+
+- **0 NEW collector+database publisher feeds deployed by this continuation**. Prior live baseline remains 14 enrolled first-party publisher sources. Do **not** count existing 14 again.
+- Read-only Supabase production query across **exact 14 source IDs** (5803–5807, 5813–5817, 5873, 5879, 5886, 5889): **315 staged rows, 313 not-hidden/not-cancelled source-associated public rows, 306 future public rows**. These are source-associated counts, not deduplicated unique app cards. All 14 have `preview_status=complete`.
+- **1 additional first-party collector adapter validated but NOT production-enrolled**: `palmetto_bluff_conservancy_sc`, collector [PR #339](https://github.com/roomquestgame/community-calendar/pull/339), merged exact SHA `f40c795e4dee2ad456154b93b6c10f47db1562d7`. Existing official TEC JSON bounded 65d / maximum 50 events yielded 10 original upcoming event canaries. Publisher-listed actual venue `655 Old Moreland Road, Bluffton, SC 29910`; US Census exact-numbered address lat `32.178086450464` long `-80.897273890865`. Focused + regression: 16 passed. No image rights assumed.
+- **Do not release database yet**: Vercel production queried by exact SHA `f40c795e4dee2ad456154b93b6c10f47db1562d7` returns zero deployments. Most recent production [READY deployment](https://vercel.com/room-quest-game/roomquest-community-collector/unWrnTTYFtjuvuqXsnSH9pkF3RVw) from `cfa636d4a0ec722ea72ad7979817592e84511f53` is direct descendant (GitHub compare `ahead_by=1, behind_by=0`), proving Palmetto code is present in a newer production build, **but the literal exact-SHA READY release gate documented in the app PR is not met**. Never deploy the older SHA to production if that would roll back unrelated newer collector fixes; do not bypass this gate implicitly.
+- [Draft database enrollment PR #1344](https://github.com/roomquestgame/RoomQuestGame/pull/1344) exists, with ONE forward-only `20261126090000` migration. Last applied production migration observed `20261126010000`. Source key `palmetto_bluff_conservancy_sc` has **0 database registrations, 0 stages, 0 public cards** at checkpoint. Do not use execute_sql for any DB write. When deployment gate is satisfied, verify current migration ledger/new concurrent migrations and apply only through protected `.github/workflows/db-deploy.yml`, then verify staging/public separately. Protect PG17 baseline and concurrent jobs.
+
+## Nine-lane source discovery and validation
+
+| Lane | Verified publisher evidence and action | New deployable publisher count |
+| --- | --- | ---: |
+| 1 Nightlife & Social | Roasting Room, Southern Barrel, Greenhouse already live. New Greater Bluffton Chamber first-party networking events Dec 1 & Dec 3, held pending source-owned event filter and exact event GEO. Jazz Corner remains original held prospect. | 0 |
+| 2 Arts, Culture & Education | SOBA Art School and Coastal Discovery holds. Hilton Head Christian Academy's own 2026/27 [theater season](https://www.hhca.org/fine-arts/theater/practice-theater-overview-page) confirms later public theatrical productions, but no eligible future November/December verified first-party detail in current window. | 0 |
+| 3 Outdoor & Active | Palmetto Bluff Conservancy strictly validated collector (one pending); offsite excursions rejected; Coastal Discovery tours still lack original exact meeting point. | 0 |
+| 4 Food & Drink | Existing restaurant/brewery publisher feeds live and not counted again; Bluffton Farm & Flea Nov 22 still held, do not infer recurring market dates. | 0 |
+| 5 Family & Kids | Existing library first-party feed covers events; SOBA kids events held. Official town Dec13 market welcomes child makers but is same new town publisher lead, not extra feed. | 0 |
+| 6 Sports & Fitness | Island Recreation live; University of South Carolina Beaufort fitness held for general-public eligibility. Chamber Dec1 networking at Dancing Hammock Pilates & Movement is a Chamber event, **not** an independent sports/fitness publisher. | 0 |
+| 7 Markets, Makers & Shopping | Official [Town of Bluffton Merry & Made Market notice](https://townofbluffton.sc.gov/FormCenter/Town-15/Blufftons-Merry-and-Made-Market-Vendor-R-102) confirms Dec13 11AM–5PM at New Riverside Barn Park **30 Red Barn Drive**, not the third-party 38 Red Barn Drive; still only a vendor-registration notice, not an event-detail/public narrative. Keep on hold. | 0 |
+| 8 Gaming & Hobbies | Beaufort library chess / Mahjong already part of live library publisher feed; `sun_city_hhi_activities_sc` resident-eligibility hold. Old Roll Initiative business listing is not evidence of an active future first-party 2026 event; **no NEW gaming publisher validated**. | 0 |
+| 9 Civic, Volunteering & Community | **New promising original publisher:** [Greater Bluffton Chamber date-bounded official ChamberMaster calendar](https://blufftonchamberofcommerce.org/events/catgid/6). [Dec7 Culver's ribbon-cutting detail](https://blufftonchamberofcommerce.org/events/details/ribbon-cutting-celebration-for-culver-s-21168) exposes 9:30–10AM, detailed full original text and `231 Buckwalter Place Boulevard`; [Dec3 member overview](https://blufftonchamberofcommerce.org/events/details/get-to-know-your-chamber-membership-benefits-overview-december-2026-21153) uses `97 Progressive Street`; [Dec1 coffee networking](https://blufftonchamberofcommerce.org/events/details/coffee-connections-at-dancing-hammock-pilates-movement-sponsored-by-bluffton-builders-19522) uses `162 Bluffton Road, suite 102–103`. Still needs robots/terms, independent event-specific Census/GEO, source-ownership filter (not all submitted community entries Chamber-owned), bounded collector and tests. Port Royal and Beaufort County monthly government calendar remain held. | 0 |
+
+## Durable queue state
+
+See [docs/lowcountry-source-queue-20261119.json](../lowcountry-source-queue-20261119.json).
+
+- **0 fully deployable feeds**, **1 collector-validated/pending protected deployment gate**, **12 held publisher candidates** (13 total queue records). The 2 newly added holds are `greater_bluffton_chamber_sc` and `town_bluffton_merry_made_market_sc`.
+- Palmetto Bluff is not a deployed feed merely because collector code merged. No direct database write or new Vercel deployment made this checkpoint.
+- St Gregory Parish Life Center Bluffton remains staged until exact hall coordinates established; never substitute generic facility GPS.
+- Historical St. Helena 1,451 VEVENT issue remains resolved by **publisher-supported bounded** `start=YYYY-MM-DD&end=YYYY-MM-DD` calendar requests from the existing registered library source; do not create an extra source.
+
+## Next executable actions
+
+1. Evaluate exact-SHA Vercel release gate for collector PR #339 while keeping all concurrent Santa Cruz and other deployments intact. Do not roll back newer production code simply to produce an older SHA receipt; keep app enrollment PR #1344 draft until strict gate satisfied through a safe plan.
+2. Prioritize one bounded source-specific ChamberMaster adapter, but only for Chamber-owned events, after official robots/permission review, fresh Census exact venue matches, and full details/time tests. Search chamber member submissions for duplicates.
+3. Recheck Town of Bluffton first-party public EVENT detail (vendor form alone insufficient); independently ground its numbered venue GEO, and only then consider a one-time publisher adapter.
+4. Continue resolving SOBA school 8 vs gallery 7 Church Street, Bluffton Farm & Flea November 22 GPS, Coastal Discovery specific nature meeting points, plus independent public gaming venue sources.
+5. On every verified release: test, merge collector PR, verify production READY SHA; one forward-only PG17 app migration through protected db-deploy workflow; read back exact source preview, staged, published and future counts; record immutable receipts. Batch target 20 new distinct sources but release every validated smaller batch, never pad with repeat publishers.
