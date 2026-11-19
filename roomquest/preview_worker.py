@@ -1390,6 +1390,39 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         return {'p_source_key': source_key, 'p_samples': samples,
                 'p_future_count': len(records), 'p_venue_count': len(records),
                 'p_error': None, 'p_events': records}
+    from roomquest import anchorage_trappers_public
+    if source_key in anchorage_trappers_public.SOURCES:
+        deadline = min(monotonic() + 38,
+                       deadline_at - 8 if deadline_at is not None else float("inf"))
+        try:
+            records = anchorage_trappers_public.collect(
+                source, lambda url, accept: fetch_publisher(
+                    url, accept, respect_robots=True, deadline_at=deadline,
+                    allowed_hosts=anchorage_trappers_public.ALLOWED_HOSTS[source_key]),
+                deadline_at=deadline)
+            if any(
+                not anchorage_trappers_public.event_url(source_key, row.get("event_url"))
+                or not isinstance(row.get("description"), str) or not row["description"].strip()
+                or len(row["description"]) > anchorage_trappers_public.MAX_DESCRIPTION
+                or row.get("category") != "learn"
+                or row.get("venue_address") != anchorage_trappers_public.VENUE[1]
+                or row.get("timezone") != anchorage_trappers_public.ZONE
+                or (row.get("lat"), row.get("lng")) != anchorage_trappers_public.POINT
+                or row.get("image_url")
+                for row in records):
+                raise ValueError("trappers_unverified_occurrence")
+        except PreviewError:
+            raise
+        except (ValueError, TypeError, KeyError, OverflowError) as exc:
+            reason = str(exc)
+            raise PreviewError(reason if re.fullmatch(r"[a-z_]{3,100}", reason)
+                               else "trappers_invalid_payload") from exc
+        samples = records[:MAX_PREVIEWS]
+        while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
+            samples.pop()
+        return {"p_source_key": source_key, "p_samples": samples,
+                "p_future_count": len(records), "p_venue_count": len(records),
+                "p_error": None, "p_events": records}
     from roomquest import anchorage_chamber_public
     if source_key in anchorage_chamber_public.SOURCES:
         deadline = min(monotonic() + 38,
