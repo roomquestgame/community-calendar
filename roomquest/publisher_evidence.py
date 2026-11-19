@@ -68,9 +68,16 @@ def family(source_key, event_url):
         if source_key in hall_ga_civic_ical.SOURCES:
             return ('hall_ga_civic:' + source_key
                     if hall_ga_civic_ical.event_url(source_key,event_url) else None)
-        from roomquest import barefoot_sailing_ga
-        if source_key == barefoot_sailing_ga.KEY:
-            return source_key if barefoot_sailing_ga.event_url(event_url) else None
+        # Fail a malformed optional regional adapter closed without breaking
+        # attribution for unrelated publisher families.
+        try:
+            from roomquest import barefoot_sailing_ga
+        except SyntaxError:
+            if source_key == "barefoot_sailing_flowery_branch_ga":
+                return None
+        else:
+            if source_key == barefoot_sailing_ga.KEY:
+                return source_key if barefoot_sailing_ga.event_url(event_url) else None
         from roomquest import gainesville_direct_feeds
         if source_key in gainesville_direct_feeds.SOURCES:
             return ('gainesville_direct:' + source_key
