@@ -1,6 +1,7 @@
 """Publisher identity, timing, location and description guards for Cork It."""
 import json
 import unittest
+from unittest.mock import patch
 from datetime import datetime, timezone
 
 from roomquest.cork_it_ga import KEY, URL, ZONE, parse, collect
@@ -76,6 +77,19 @@ class CorkItTests(unittest.TestCase):
         self.assertEqual(parse(payload([event(fullUrl="https://evil.example/events/live")]), now=NOW), [])
         self.assertEqual(parse(payload([event(startDate=None)]), now=NOW), [])
         self.assertEqual(parse(payload([event(allDay=True)]), now=NOW), [])
+
+    def test_live_preview_dispatch_uses_robots_and_exact_publisher_host(self):
+        from roomquest.preview_worker import preview_source
+        source = {"source_key": KEY, "feed_url": URL, "kind": "json",
+                  "platform_adapter": "squarespace", "timezone": ZONE}
+        with patch("roomquest.preview_worker.fetch_publisher",
+                   return_value=payload([event()])) as fetch:
+            got = preview_source(source)
+        self.assertEqual(got["p_future_count"], 1)
+        self.assertEqual(got["p_venue_count"], 1)
+        self.assertEqual(got["p_parser_capability"], "publisher_event_candidates_v1")
+        self.assertTrue(fetch.call_args.kwargs["respect_robots"])
+        self.assertEqual(fetch.call_args.kwargs["allowed_hosts"], ("www.corkitgainesville.com",))
 
     def test_dedup_and_profile_identity(self):
         self.assertEqual(len(parse(payload([event(), event()]), now=NOW)), 1)
