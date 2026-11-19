@@ -28,6 +28,10 @@ ROSEMONT_REVIEWED_FEATURED_IMAGE = (
 def family(source_key, event_url):
     """Bind an enrolled publisher family to its own canonical event link."""
     try:
+        # Direct publisher check before unrelated optional collector imports.
+        if source_key == "hall_arts_council_gainesville_ga":
+            from roomquest.hall_arts_council_ga import event_url as is_arts_event
+            return source_key if is_arts_event(event_url) else None
         from roomquest import santa_cruz_watsonville_taiko
         if source_key == santa_cruz_watsonville_taiko.KEY:
             return 'watsonville_taiko' if santa_cruz_watsonville_taiko.event_url(event_url) else None
@@ -359,6 +363,9 @@ def image_url(value, publisher):
     if publisher == 'explore_braselton_official_ga':
         from roomquest.explore_braselton_ga import image_candidate
         return image_candidate(value)
+    if publisher == 'hall_arts_council_gainesville_ga':
+        from roomquest.hall_arts_council_ga import photo_url
+        return photo_url(value)
     if publisher == 'hall_bourbon_brothers_gainesville_ga':
         from roomquest.hall_bourbon_ga import photo_url
         return photo_url(value)
