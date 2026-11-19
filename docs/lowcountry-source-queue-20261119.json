@@ -1,41 +1,26 @@
 {
   "region": "Hilton Head Island / Bluffton / Beaufort County / Port Royal / South Carolina Lowcountry",
-  "checkpoint_local": "2026-11-19 09:43 EST (third hourly continuation)",
+  "checkpoint_local": "2026-11-19 11:35 EST (fourth hourly continuation)",
   "target_new_distinct_feeds_per_batch": 20,
   "new_deployed_this_continuation": 0,
   "verified_ready_count": 0,
   "candidate_hold_count": 11,
-  "previous_public_source_associated": 298,
-  "previous_staged": 300,
-  "previous_future_visible": 296,
-  "previous_source_count": 12,
+  "previous_public_source_associated": 313,
+  "previous_staged": 315,
+  "previous_future_visible": 307,
+  "previous_source_count": 14,
   "notes": [
     "Never count original Hilton Head 5, Beaufort County Library 6 including St Helena, or Greenhouse Bluffton as NEW again.",
     "Publisher event GEO must be grounded independently at exact numbered venue street; no centroid guess.",
     "All proposed source keys below are UNREGISTERED holds, not deployed or validated-ready.",
     "Preserve St Gregory Parish Life Center unresolved hall GPS and Greenhouse conflicting Music Bingo Nov23/25 date hold.",
     "Release using tested collector plus a single forward-only PG17 batch migration via protected db-deploy.yml, never direct SQL write.",
-    "Journal for full 9-lane audit: docs/journal/2026-11-19-lowcountry-hour-three.md"
+    "Journal for full 9-lane audit: docs/journal/2026-11-19-lowcountry-hour-three.md",
+    "11:35 ET fourth hourly audit verified two already-deployed sources after prior checkpoint: Southern Barrel and Roasting Room. Both collector+protected DB migrations and Vercel READY; counts 8+7 new public cards. They are removed from HOLD and tracked as DEPLOYED, not counted as newly deployed by this documentation-only run.",
+    "Top Dawg event details were 404 on external read; hold without first-party full event narratives. Bluffton Farm & Flea special Nov22 is confirmed on publisher site but GEO and recurrence not verified.",
+    "Do not use historical SOBA gallery 7 Church Street as the Art SCHOOL event address: publisher's 2025 school program lists 8 Church Street; each event venue must be reverified."
   ],
   "sources": [
-    {
-      "key": "southern_barrel_bluffton_sc",
-      "publisher": "Southern Barrel Brewing Co.",
-      "category_lanes": [
-        1,
-        4
-      ],
-      "feed_url": "https://southernbarrel.com/music-events",
-      "event_url": "https://southernbarrel.com/event/wednesday-night-trivia-2026-11-25",
-      "evidence": "Publisher lists individual Wednesday trivia events 2026-11-25 through 2027-01-27; detail states 7–9 PM and original narrative. Publisher footer and contact confirm 375 Buckwalter Place Blvd, Bluffton SC 29910.",
-      "state": "hold",
-      "blockers": [
-        "authoritative event-venue GPS for this exact street not found in audited production venue tables",
-        "robots/access result not yet confirmed; do not infer from web rendering",
-        "bounded HTML collector and focused regression tests not yet implemented"
-      ],
-      "priority": 1
-    },
     {
       "key": "beaufort_county_public_meetings_sc",
       "publisher": "Beaufort County government",
@@ -52,25 +37,6 @@
         "bounded two-to-three-month HTML/detail collector plus cancellations and closures filter and regression tests"
       ],
       "priority": 2
-    },
-    {
-      "key": "roasting_room_bluffton_sc",
-      "publisher": "Roasting Room",
-      "category_lanes": [
-        1,
-        2,
-        4
-      ],
-      "feed_url": "https://roastingroom.live/homepage/",
-      "event_url": "https://roastingroom.live/homepage/",
-      "evidence": "First-party dates Nov27 Plump 8 PM, Dec4 John Brewster 8 PM, Dec6 acoustic brunch at noon, later 2026 and 2027 shows. Publisher About says upstairs at 1297 May River Road, Bluffton SC.",
-      "state": "hold",
-      "blockers": [
-        "per-show original event URL/identity and complete narrative validation",
-        "GPS for 1297 May River Rd",
-        "robots/access and bounded parser tests; validate on-sale/cancelled status"
-      ],
-      "priority": 3
     },
     {
       "key": "soba_bluffton_art_school_sc",
@@ -222,6 +188,76 @@
         "owner site robots/rights and dated collector"
       ],
       "priority": 11
+    },
+    {
+      "key": "top_dawg_tavern_hilton_head_sc",
+      "publisher": "Top Dawg Tavern & Pizzeria",
+      "category_lanes": [
+        1,
+        4,
+        5,
+        6,
+        8
+      ],
+      "feed_url": "https://topdawgtavern.com/hilton-head/events",
+      "event_url": "https://topdawgtavern.com/hilton-head/event/trivia-night-at-top-dawg-tavern-hilton-head-2026-12-04",
+      "evidence": "Official site lists dated Nov 22 & 29 live music, Nov 25 Friendsgiving, Dec 4/11/18 trivia, Dec 8 art activity and Dec 12 Santa; official Hilton Head restaurant address 13 Harbourside Lane, Hilton Head Island, SC 29928 (restaurant may have different on-site Tavern vs Pizzeria rooms). Detail page samples returned HTTP 404 in external fetch, despite the listing's event cards. No event canary can be accepted until detail accessibility and exact venue proof succeed.",
+      "state": "hold",
+      "blockers": [
+        "official Event Details links tested Nov19 returned 404; do not publish listing-only cards without individual complete narrative",
+        "publisher robots/permission and bounded parser not yet checked",
+        "exact event-specific Tavern/Pizzeria numbered building/site coordinates still not independently validated",
+        "per-event start/end time and cancellation state not verified"
+      ]
+    },
+    {
+      "key": "bluffton_farm_flea_sc",
+      "publisher": "Bluffton Farm and Flea",
+      "category_lanes": [
+        4,
+        5,
+        7
+      ],
+      "feed_url": "https://www.blufftonfarmandflea.com/vintage-art-bazaar-application",
+      "event_url": "https://www.blufftonfarmandflea.com/vintage-art-bazaar-application",
+      "evidence": "First-party publisher confirms Sunday November 22, 2026 11am-4pm special Vintage & Art Bazaar at 172 Bluffton Road, Bluffton SC. Independent community listings give ongoing Wed and Fri/Sat markets through December, but they are not grounds to synthesize first-party recurrences.",
+      "state": "hold",
+      "blockers": [
+        "no independently verified exact street-address latitude/longitude for 172 Bluffton Rd",
+        "first-party source supports only Nov22 special; normal market repetitions lack verified first-party original detail/occurrence IDs",
+        "publisher robots and collection access, full event prose and bounded collector tests outstanding"
+      ]
+    }
+  ],
+  "new_deployed_since_prior_0943_checkpoint": 2,
+  "deployed_since_prior_checkpoint": [
+    {
+      "key": "southern_barrel_bluffton_sc",
+      "source_id": 5886,
+      "feed_url": "https://southernbarrel.com/music-events",
+      "staged": 8,
+      "published": 8,
+      "future_visible": 8,
+      "verified_at": "2026-11-19 11:35 EST",
+      "collector_pr": "https://github.com/roomquestgame/community-calendar/pull/328",
+      "collector_merge_sha": "77d88956f193f84172f1a53086a1d94ad0b9d3a9",
+      "database_pr": "https://github.com/roomquestgame/RoomQuestGame/pull/1328",
+      "migration": "20261125110000_lowcountry_southern_barrel_first_party",
+      "vercel_ready": "https://vercel.com/room-quest-game/roomquest-community-collector/3KJJz4ijr8yZW5dMU5g17ZGvMoKL"
+    },
+    {
+      "key": "roasting_room_bluffton_sc",
+      "source_id": 5889,
+      "feed_url": "https://roastingroom.live/",
+      "staged": 7,
+      "published": 7,
+      "future_visible": 7,
+      "verified_at": "2026-11-19 11:35 EST",
+      "collector_pr": "https://github.com/roomquestgame/community-calendar/pull/331",
+      "collector_merge_sha": "413618c7651282ba8e40fb196dac9335f12347a6",
+      "database_pr": "https://github.com/roomquestgame/RoomQuestGame/pull/1333",
+      "migration": "20261125160000_lowcountry_roasting_room_first_party",
+      "vercel_ready": "https://vercel.com/room-quest-game/roomquest-community-collector/BHH5fdKds3gZ7XCGh4X2G9Lo7HDk"
     }
   ]
 }
