@@ -9,12 +9,14 @@ EVENT = {"title":"Christmas Parade ", "id":"0-0","eid":"253-D-0",
          "url":"/event/christmas-parade","allDay":False,
          "start":"2026-11-28T17:30:00","end":"2026-11-28T19:30:00"}
 DETAIL = """<div class="field--name-title">Christmas Parade</div>
-<div class="field--name-field-when">When Sat, Nov 28 2026, 5:30 - to 7:30pm</div>
-<div class="node__content"><div class="field--name-body"><div class="field__item">
+<div class="field--name-field-when">When
+<time datetime="2026-11-28T17:30:00-05:00">Sat, Nov 28 2026, 5:30</time>
+<time datetime="2026-11-28T19:30:00-05:00">7:30pm</time></div>
+<div class="node__content"><div class="field--name-body field__item">
 JOIN US ON NOVEMBER 28TH AT 5:30 PM FOR OUR ANNUAL CHRISTMAS PARADE AND TREE LIGHTING
 TO FOLLOW IN THE PARK. CHATTAHOOCHEE PARK - 639 MAIN STREET. FREE HOT CHOCOLATE.
-</div></div></div>
-<div class="field--name-field-location-name"><div class="field__item">Clermont Chattahoochee Park</div></div>"""
+</div></div>
+<div class="field--name-field-location-name field__item">Clermont Chattahoochee Park</div>"""
 
 
 def html(events, *, zone=ZONE):
@@ -41,7 +43,7 @@ class ClermontTests(unittest.TestCase):
 
     def test_missing_street_mismatched_detail_or_changed_zone_held(self):
         self.assertEqual(parse(html([EVENT]), lambda u,a: DETAIL.replace("639 MAIN STREET","LOCATION TBA"), now=NOW),[])
-        self.assertEqual(parse(html([EVENT]), lambda u,a: DETAIL.replace("Nov 28","Nov 29"), now=NOW),[])
+        self.assertEqual(parse(html([EVENT]), lambda u,a: DETAIL.replace("2026-11-28T17:30:00","2026-11-29T17:30:00"), now=NOW),[])
         with self.assertRaisesRegex(ValueError,"timezone_changed"):
             parse(html([EVENT],zone="America/Chicago"), lambda u,a: DETAIL, now=NOW)
 
