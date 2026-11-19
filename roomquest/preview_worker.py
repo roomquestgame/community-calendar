@@ -1798,6 +1798,41 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                 'p_venue_count':sum(row.get('lat') is not None for row in records),
                 'p_error':None,'p_events':records,
                 'p_parser_capability':'publisher_event_candidates_v1'}
+    from roomquest import lowcountry_bluffton_chamber
+    if source_key == lowcountry_bluffton_chamber.KEY:
+        deadline = min(monotonic() + 43,
+                       deadline_at - 8 if deadline_at is not None else float("inf"))
+        try:
+            records = lowcountry_bluffton_chamber.collect(
+                source, lambda url, accept: fetch_publisher(
+                    url, accept, respect_robots=True, deadline_at=deadline,
+                    allowed_hosts=lowcountry_bluffton_chamber.ALLOWED_HOSTS[source_key]),
+                deadline_at=deadline)
+            if len(records) > lowcountry_bluffton_chamber.MAX_CANDIDATES or any(
+                    not lowcountry_bluffton_chamber.event_url(row.get("event_url"))
+                    or row.get("category") != "learn"
+                    or not isinstance(row.get("description"), str)
+                    or not 80 <= len(row["description"]) <= lowcountry_bluffton_chamber.MAX_DESCRIPTION
+                    or row.get("venue_address") != "97 Progressive Street, Bluffton, SC 29910"
+                    or row.get("lat") != lowcountry_bluffton_chamber.VENUES["the cove"]["lat"]
+                    or row.get("lng") != lowcountry_bluffton_chamber.VENUES["the cove"]["lng"]
+                    or row.get("timezone") != lowcountry_bluffton_chamber.ZONE
+                    or row.get("image_url") for row in records):
+                raise ValueError("bluffton_chamber_unverified_occurrence")
+        except PreviewError:
+            raise
+        except (ValueError, TypeError, KeyError, OverflowError) as exc:
+            reason = str(exc)
+            raise PreviewError(reason if re.fullmatch(r"[a-z_]{3,100}", reason)
+                               else "bluffton_chamber_invalid_data") from exc
+        samples = records[:MAX_PREVIEWS]
+        while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
+            samples.pop()
+        return {"p_source_key": source_key, "p_samples": samples,
+                "p_future_count": len(records),
+                "p_venue_count": sum(row.get("lat") is not None for row in records),
+                "p_error": None, "p_events": records,
+                "p_parser_capability": "publisher_event_candidates_v1"}
     from roomquest import lowcountry_palmetto_running
     if source_key == lowcountry_palmetto_running.KEY:
         deadline = min(monotonic() + 43,
