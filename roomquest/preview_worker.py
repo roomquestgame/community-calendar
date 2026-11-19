@@ -1631,6 +1631,38 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                 'p_venue_count': sum(row.get('lat') is not None for row in records),
                 'p_error': None, 'p_events': records,
                 'p_parser_capability': 'publisher_event_candidates_v1'}
+    from roomquest import hall_ga_civic_ical
+    if source_key in hall_ga_civic_ical.SOURCES:
+        deadline = min(monotonic() + 44,
+                       deadline_at - 8 if deadline_at is not None else float('inf'))
+        try:
+            records = hall_ga_civic_ical.collect(
+                source, lambda url, accept: fetch_publisher(
+                    url, accept, respect_robots=True, deadline_at=deadline,
+                    allowed_hosts=hall_ga_civic_ical.ALLOWED_HOSTS[source_key]),
+                deadline_at=deadline)
+            if any(not isinstance(row.get('description'), str)
+                   or len(row['description']) > hall_ga_civic_ical.MAX_DESCRIPTION
+                   or not isinstance(row.get('venue_address'), str)
+                   or not row['venue_address'].strip()
+                   or row.get('category') != 'civic'
+                   or not hall_ga_civic_ical.event_url(source_key,row.get('event_url'))
+                   for row in records):
+                raise ValueError('hall_ga_civic_incomplete_event')
+        except PreviewError:
+            raise
+        except (ValueError, TypeError, KeyError, OverflowError) as exc:
+            reason = str(exc)
+            raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}',reason)
+                               else 'invalid_hall_ga_civic_payload') from exc
+        samples = records[:MAX_PREVIEWS]
+        while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
+            samples.pop()
+        return {'p_source_key': source_key, 'p_samples': samples,
+                'p_future_count': len(records),
+                'p_venue_count': sum(row.get('lat') is not None for row in records),
+                'p_error': None, 'p_events': records,
+                'p_parser_capability': 'publisher_event_candidates_v1'}
     from roomquest import gainesville_direct_feeds
     if source_key in gainesville_direct_feeds.SOURCES:
         deadline = min(monotonic() + 43,

@@ -92,3 +92,20 @@ Other discovered organizer leads/one-off activity **not counted as feeds**: City
 Priority batch: #06–08 Hall County commissioners/tax/planning native CivicPlus feeds, the closest candidates to deploy; prior November 18 source research found two upcoming timed meetings per feed with a publisher street. Before adding production rows, run the **current** exact-source collector preview behind robots/access policy and confirm current VEVENT timestamp, URL, location, nonduplicative civic routing and description. If all three qualify, ship just three through collector PR -> Vercel READY exact SHA -> *one* append-only guarded forward migration in `RoomQuestGame` -> protected `db-deploy.yml` -> read-only public-card audit. If even one qualifies, deploy that smaller validated batch; never invent enough feeds to hit 20. Next examine #10 NoFo WordPress custom posts for real *event* time, #11 Arts Council Squarespace show venues, and #09 Flowery Branch Revize date/detail extraction. Recheck current app migrations before writing SQL: baseline must never be rerun or modified.
 
 **Latest audit result is a production measurement, not a collector preview success for the five new reserve links.** A later hourly run must not promote a website listing, HTTP success, or candidate URL to a fully validated/published feed.
+
+## Direct Hall County CivicPlus iCalendar validation — November 19, 2026
+
+The original 20-feed queue entries **#06–08** have now passed EventQuest's real `preview_source` collector path, rather than just a website or feed URL check. This collector change is first-party and deliberately distinguishes native CivicPlus iCalendar from Mapsee.
+
+| Source | Direct publisher feed | Future, exact timed events | Publisher narratives |
+| --- | --- | ---: | ---: |
+| #06 Hall County Commissioners | `https://www.hallcounty.org/common/modules/iCalendar/iCalendar.aspx?catID=63&feed=calendar` | **2** | **0** (optional) |
+| #07 Board of Tax Assessors | `https://www.hallcounty.org/common/modules/iCalendar/iCalendar.aspx?catID=71&feed=calendar` | **1** | **0** (optional) |
+| #08 Planning Public Outreach | `https://www.hallcounty.org/common/modules/iCalendar/iCalendar.aspx?catID=74&feed=calendar` | **2** | **2** |
+
+All five individual VEVENTs have publisher-owned local time with explicit `TZID=America/New_York`, a validated bounded `DTEND`, an exact `EID` permalink in the VEVENT's DESCRIPTION (the VEVENT `URL` incorrectly links to its feed), numeric `UID` matching that `EID`, and an event-owned physical location. The only confirmed streets were **2875 Browns Bridge Road, Gainesville GA 30504** (Hall County Government Center) and **3001 McEver Rd, Gainesville GA 30504** (Free Chapel). No coordinates were embedded in the feed and none is invented by the adapter. Every event has the `civic` category, and the follow-on database registration must use the Hall County Civic jurisdiction so meetings route through the separate Civic Hub.
+
+Robots policy was checked before opening each first-party feed; all three were allowed at the time of the audit. Their normal fetches completed as `text/calendar` with HTTP 200. Recurring, cancelled, undated/date-only, unlinked, ambiguous-time, unknown-venue or mismatched-UID records are held, not fabricated. The exact-source Python adapter lives in `roomquest/hall_ga_civic_ical.py`. Eight focused unit tests passed. Direct collector previews produced **5** verified future candidates, not yet five public cards. This 3-feed batch is additive to the previously registered five branch LibCal feeds: target progress becomes **8/20 only AFTER the DB registration actually applies**.
+
+**Release gates:** merge this collector PR, deploy its merged SHA through the existing Vercel project and verify READY; then make exactly one guarded forward GitHub database migration for three exact source profiles plus a new Hall County Civic jurisdiction/meeting rules, no PG17 baseline rerun, no direct Supabase writes. Actual future staging/publishing must be read back separately. Remaining original leads #09–20 stay in the research queue for the hourly runner across all nine categories.
+
