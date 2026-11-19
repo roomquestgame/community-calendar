@@ -3402,6 +3402,27 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                 "p_future_count": len(records),
                 "p_venue_count": sum(1 for row in records if row["lat"] is not None),
                 "p_error": None, "p_events": records}
+    if source.get("source_key") == "hall_arts_council_gainesville_ga":
+        from roomquest.hall_arts_council_ga import collect as collect_arts
+        deadline = min(monotonic() + 24,
+                       deadline_at - 8 if deadline_at is not None else float("inf"))
+        try:
+            records = collect_arts(source, lambda url, accept: fetch_publisher(
+                url, accept, respect_robots=True, deadline_at=deadline),
+                deadline_at=deadline)
+        except PreviewError:
+            raise
+        except (ValueError, TypeError, KeyError, OverflowError) as exc:
+            reason = str(exc)
+            raise PreviewError(reason if re.fullmatch(r"[a-z_]{3,100}", reason)
+                               else "invalid_calendar_payload") from exc
+        samples = records[:MAX_PREVIEWS]
+        while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
+            samples.pop()
+        return {"p_source_key": source["source_key"], "p_samples": samples,
+                "p_future_count": len(records),
+                "p_venue_count": sum(1 for r in records if r["lat"] is not None),
+                "p_error": None, "p_events": records}
     if source.get("platform_adapter") == "squarespace" and source.get("kind") == "json":
         from roomquest.squarespace import SOURCES, collect as collect_squarespace
         if source.get("source_key", "").startswith("municipal_mapsee_"):
