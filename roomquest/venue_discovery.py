@@ -173,6 +173,10 @@ def discover(lead, fetch=fetch_publisher, *, deadline_at=None):
             feed = endpoint if endpoint and host(endpoint) == host(official) else None
         elif result.get("p_reason") in ("single_event_page", "invalid_ical"):
             feed = None
+        elif result.get("p_outcome") == "review" and (
+                feed.lower().endswith(".ics") or "ical=1" in feed.lower()
+                or "icalendar.aspx" in feed.lower()):
+            feed = None  # A failed subscription is not a working feed.
         # A genuine HTML calendar page remains a candidate even without an
         # implemented adapter; the shared registrar will mark it for review.
     return {"p_outcome": "verified", "p_website_url": official,
