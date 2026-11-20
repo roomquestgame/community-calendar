@@ -1592,34 +1592,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                 'p_future_count': len(records), 'p_venue_count': len(records),
                 'p_error': None, 'p_events': records}
     from roomquest import anchorage_batch20_wasilla
-    if source_key in anchorage_batch20_wasilla.SOURCES:
-        deadline = min(monotonic() + 38,
-                       deadline_at - 8 if deadline_at is not None else float('inf'))
-        try:
-            records = anchorage_batch20_wasilla.collect(
-                source, lambda url, accept: fetch_publisher(
-                    url, accept, respect_robots=True, deadline_at=deadline,
-                    allowed_hosts=anchorage_batch20_wasilla.ALLOWED_HOSTS[source_key]), deadline_at=deadline)
-            if any(not isinstance(row.get('description'), str) or not row['description'].strip()
-                   or len(row['description']) > anchorage_batch20_wasilla.MAX_DESCRIPTION
-                   or row.get('category') not in ('learn','create','music','hang_out')
-                   or row.get('venue_address') != anchorage_batch20_wasilla.VENUE[1]
-                   or row.get('lat') != anchorage_batch20_wasilla.VENUE_POINT[0]
-                   or row.get('lng') != anchorage_batch20_wasilla.VENUE_POINT[1]
-                   for row in records):
-                raise ValueError('wasilla_library_unverified_event')
-        except PreviewError:
-            raise
-        except (ValueError, TypeError, KeyError, OverflowError) as exc:
-            reason = str(exc)
-            raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}', reason)
-                               else 'invalid_wasilla_library_payload') from exc
-        samples = records[:MAX_PREVIEWS]
-        while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
-            samples.pop()
-        return {'p_source_key': source_key, 'p_samples': samples,
-                'p_future_count': len(records), 'p_venue_count': 0,
-                'p_error': None, 'p_events': records}
+    if source_key == anchorage_batch20_wasilla.KEY:
+        raise PreviewError("publisher_checkpoint_required")
     from roomquest import anchorage_batch20_aiga
     if source_key in anchorage_batch20_aiga.SOURCES:
         deadline = min(monotonic() + 38,
@@ -4167,6 +4141,12 @@ def _preview_atlantic_continuation_chunk(source, pacing, *, collection_context, 
         publisher_handoff=publisher_handoff, observe_phase=observe_phase)
 
 
+def _preview_wasilla_chunk(source, pacing, **kwargs):
+    from roomquest import anchorage_batch20_wasilla as wasilla
+    return _preview_fetch_chunk(source, pacing, adapter=wasilla,
+                                allowed_hosts=wasilla.ALLOWED_HOSTS[wasilla.KEY], **kwargs)
+
+
 def _preview_new_york_chunk(source, pacing, *, collection_context, deadline_at,
                             publisher_handoff=None, observe_phase=None):
     from roomquest import new_york_sources
@@ -4493,6 +4473,7 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
     if source.get('source_key') == 'visit_raleigh_nc':
         return _process_visit_raleigh(source, pacing, collection_context=collection_context,
             deadline_at=deadline_at, publisher_handoff=publisher_handoff, observe_phase=observe_phase)
+    from roomquest import anchorage_batch20_wasilla as wasilla
     from roomquest.linked_event_descriptions import PROFILES as linked_description_profiles
     from roomquest import new_york_sources
     new_york_checkpoint_keys = new_york_sources.checkpoint_keys()
@@ -4516,6 +4497,7 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
         deadline = min(monotonic() + 43, deadline_at or float("inf"))
         checkpoint_key = source.get("source_key")
         if ((checkpoint_key in ("discover_halifax_va", "visit_atlantic_city_nj", "noyes_arts_atlantic_city_nj", "atlantic_city_municipal_nj", "greatday_atlantic_city_nj")
+                or checkpoint_key == wasilla.KEY
                 or checkpoint_key in continuation_checkpoint_keys
                 or checkpoint_key in new_york_checkpoint_keys
                 or checkpoint_key in boston_checkpoint_keys
@@ -4525,6 +4507,7 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
                 and type(source.get("fetch_checkpoint_version")) is int
                 and source["fetch_checkpoint_version"] == 1):
             preview_chunk = (_preview_halifax_chunk if checkpoint_key == "discover_halifax_va"
+                             else _preview_wasilla_chunk if checkpoint_key == wasilla.KEY
                              else _preview_new_york_chunk if checkpoint_key in new_york_checkpoint_keys
                              else _preview_boston_chunk if checkpoint_key in boston_checkpoint_keys
                              else _preview_raleigh_direct_chunk if checkpoint_key in raleigh_direct_checkpoint_keys

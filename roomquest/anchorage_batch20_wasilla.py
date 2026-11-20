@@ -7,11 +7,13 @@ featured events, other venues, closures and unknown categories are excluded.
 """
 from __future__ import annotations
 
-from concurrent.futures import ThreadPoolExecutor
+from copy import deepcopy
+from hashlib import sha256
 from datetime import datetime, timedelta, timezone
 from time import monotonic
 from urllib.parse import parse_qs, urljoin, urlsplit
 from zoneinfo import ZoneInfo
+import json
 import logging
 import re
 
@@ -177,38 +179,88 @@ def _event(eid, html, now):
     return row
 
 
-def collect(source,fetch,*,deadline_at=None,now=None):
-    if (source.get("source_key")!=KEY
-            or (source.get("feed_url"),source.get("kind"),source.get("platform_adapter"))!=SOURCES[KEY]
-            or source.get("timezone")!=ZONE):
+def _manifest_hash(ids):
+    return sha256(",".join(ids).encode("ascii")).hexdigest()
+
+
+def _resume(checkpoint, now):
+    if checkpoint is None:
+        return {
+            "version": 1, "source_key": KEY, "started_at": now.isoformat(),
+            "window_start": now.astimezone(ZoneInfo(ZONE)).date().isoformat(),
+            "ids": [], "manifest_hash": _manifest_hash([]), "manifest_count": MONTHS,
+            "cursor": 0, "events": [], "diagnostics": [],
+        }
+
+    state = deepcopy(checkpoint)
+    ids, cursor = state["ids"], state["cursor"]
+    started = datetime.fromisoformat(state["started_at"])
+    if (state["version"] != 1 or state["source_key"] != KEY
+            or started.utcoffset() != timedelta(0)
+            or not now - timedelta(hours=4) <= started <= now + timedelta(minutes=1)
+            or state["window_start"] != started.astimezone(ZoneInfo(ZONE)).date().isoformat()
+            or not isinstance(ids, list) or len(ids) > MAX_EIDS
+            or any(not isinstance(eid, str) or not re.fullmatch(r"[0-9]{3,7}", eid) for eid in ids)
+            or ids != sorted(set(ids), key=lambda eid: (int(eid), eid))
+            or state["manifest_hash"] != _manifest_hash(ids)
+            or state["manifest_count"] != MONTHS + len(ids)
+            or type(cursor) is not int or not 0 <= cursor <= state["manifest_count"]):
+        raise ValueError("wasilla_checkpoint_invalid")
+
+    events, held = state["events"], state["diagnostics"]
+    if not isinstance(events, list) or not isinstance(held, list):
+        raise ValueError("wasilla_checkpoint_invalid")
+    covered = list(held)
+    for row in events:
+        if (not isinstance(row, dict) or row.get("event_url") != ROOT + "/Calendar.aspx?EID=" + row["id"]
+                or not event_url(KEY, row["event_url"])
+                or row.get("category") != _category(row["title"]) or not row.get("category")
+                or (row.get("venue_name"), row.get("venue_address"), row.get("venue_city")) != VENUE
+                or (row.get("lat"), row.get("lng")) != VENUE_POINT or row.get("timezone") != ZONE
+                or not isinstance(row.get("description"), str) or not row["description"].strip()
+                or len(row["description"]) > MAX_DESCRIPTION):
+            raise ValueError("wasilla_checkpoint_invalid")
+        covered.append(row["id"])
+    prefix = ids[:max(0, cursor - MONTHS)]
+    if len(covered) != len(prefix) or set(covered) != set(prefix):
+        raise ValueError("wasilla_checkpoint_invalid")
+    return state
+
+
+def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None):
+    """Fetch one allowed calendar or detail page per lease. Only a complete snapshot can stage."""
+    if (source.get("source_key") != KEY or source.get("timezone") != ZONE
+            or (source.get("feed_url"), source.get("kind"), source.get("platform_adapter")) != SOURCES[KEY]):
         raise ValueError("unregistered_wasilla_library_source")
-    now=now or datetime.now(timezone.utc)
-    deadline=min(monotonic()+38,deadline_at if deadline_at is not None else float("inf"))
-    ids=set()
-    for year,month in _selected_calendar_months(now):
-        if monotonic()>=deadline:
+    now = (now or datetime.now(timezone.utc)).astimezone(timezone.utc)
+    state = _resume(checkpoint, now)
+    cursor = state["cursor"]
+    if cursor < state["manifest_count"]:
+        if deadline_at is not None and monotonic() >= deadline_at:
             raise ValueError("collection_deadline")
-        url=ROOT+f"/Calendar.aspx?CID=23&month={month}&year={year}"
-        ids.update(_ids(fetch(url,"text/html")))
-        if len(ids)>MAX_EIDS:
-            raise ValueError("wasilla_source_record_limit")
-    # CivicPlus event detail pages carry complete descriptions that the month
-    # view's truncated microdata does not. Use three modest concurrent requests
-    # (rather than ~35 serial network round trips) within V2 worker deadline.
-    # This is only a fetch fan-out; no background pagination or missing-record
-    # acceptance. Any failed request invalidates the complete snapshot.
-    results={}
-    def load(eid):
-        if monotonic()>=deadline:
-            raise ValueError("collection_deadline")
-        return _event(eid,fetch(ROOT+"/Calendar.aspx?EID="+eid,"text/html"),now)
-    with ThreadPoolExecutor(max_workers=3) as pool:
-        for row in pool.map(load,sorted(ids,key=int)):
-            if row:
-                key=(row["id"],row["starts_at"])
-                if key in results and results[key]!=row:
-                    raise ValueError("conflicting_wasilla_event_occurrence")
-                results[key]=row
-    if monotonic()>=deadline:
-        raise ValueError("collection_deadline")
-    return sorted(results.values(),key=lambda x:(x["starts_at"],x["id"]))
+        if cursor < MONTHS:
+            # Anchor month boundaries to the first lease, including across New Year.
+            months = list(_selected_calendar_months(datetime.fromisoformat(state["started_at"])))
+            year, month = months[cursor]
+            page = fetch(ROOT + f"/Calendar.aspx?CID=23&month={month}&year={year}", "text/html")
+            ids = set(state["ids"]) | _ids(page)
+            if len(ids) > MAX_EIDS:
+                raise ValueError("wasilla_source_record_limit")
+            state["ids"] = sorted(ids, key=lambda eid: (int(eid), eid))
+            state["manifest_hash"] = _manifest_hash(state["ids"])
+            state["manifest_count"] = MONTHS + len(ids)
+        else:
+            eid = state["ids"][cursor - MONTHS]
+            row = _event(eid, fetch(ROOT + "/Calendar.aspx?EID=" + eid, "text/html"), now)
+            if row is None:
+                state["diagnostics"].append(eid)
+            else:
+                state["events"].append(row)
+        state["cursor"] += 1
+
+    if len(json.dumps(state, ensure_ascii=False).encode("utf-8")) > 880_000:
+        raise ValueError("wasilla_checkpoint_size_limit")
+    complete = state["cursor"] == state["manifest_count"]
+    events = sorted((row for row in state["events"] if datetime.fromisoformat(row["ends_at"]) > now),
+                    key=lambda row: (row["starts_at"], row["id"])) if complete else []
+    return {"checkpoint": state, "complete": complete, "events": events}

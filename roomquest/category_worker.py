@@ -571,6 +571,7 @@ def report_category_failure(category, error):
 
 def collect_category(category, ticket):
     from roomquest import new_york_sources, boston_sources, raleigh_direct_sources
+    from roomquest.anchorage_batch20_wasilla import KEY as wasilla_key
     diagnostics = _Diagnostics(category)
     try:
         if category not in CATEGORIES:
@@ -594,6 +595,7 @@ def collect_category(category, ticket):
                 if category == 'html':
                     process_args['publisher_handoff'] = publisher_handoff
                     if ((source.get('source_key') in ('discover_halifax_va', 'visit_atlantic_city_nj', 'noyes_arts_atlantic_city_nj', 'atlantic_city_municipal_nj', 'greatday_atlantic_city_nj', 'visit_raleigh_nc')
+                            or source.get('source_key') == wasilla_key
                             or source.get('source_key') in LINKED_DESCRIPTION_PROFILES
                             or source.get('source_key') in ATLANTIC_LIBRARY_CHECKPOINT_KEYS
                             or source.get('source_key') in ATLANTIC_NIGHTLIFE_CHECKPOINT_KEYS
