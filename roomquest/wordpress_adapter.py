@@ -5,6 +5,7 @@ No venue search, source-wide pin, extra scheduler or provider identity change.
 """
 from datetime import datetime, timedelta, timezone
 import json
+from hashlib import md5
 import re
 import sys
 from time import monotonic
@@ -268,14 +269,19 @@ def collect(source, fetch, *, deadline_at=None):
         raise ValueError('unregistered_rosemont_source')
     root = urlsplit(source['feed_url'])
     profile = profiles().get(source_key) if (source_key or '').startswith('municipal_mapsee_') else None
-    public_calendar = bool(profile and profile.get('config', {}).get('strict_public') is True)
+    direct_key = 'municipal_' + md5(('feed_registration:' + source['feed_url']).encode()).hexdigest()[:24]
+    public_calendar = source_key == direct_key or bool(profile and profile.get('config', {}).get('strict_public') is True)
+    params = dict(parse_qsl(root.query, keep_blank_values=True))
     if '/wp-json/tribe/events/v1/events' in root.path:
         if root.path.rstrip('/').split('/wp-json/', 1)[1] != 'tribe/events/v1/events':
             raise ValueError('unsupported_wordpress_endpoint')
         path = root.path
+    elif 'rest_route' in params:
+        if params['rest_route'].rstrip('/') != '/tribe/events/v1/events':
+            raise ValueError('unsupported_wordpress_endpoint')
+        path = root.path or '/'
     else:
         path = root.path.rstrip('/') + '/wp-json/tribe/events/v1/events'
-    params = dict(parse_qsl(root.query, keep_blank_values=True))
     now = datetime.now(timezone.utc)
     params.update(per_page=100, start_date=now.date().isoformat(),
                   end_date=(now + timedelta(days=60)).date().isoformat())
