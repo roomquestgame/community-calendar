@@ -23,4 +23,34 @@ def collect(i=None,p=None,source=None,now=NOW):
     return m.collect(source or SRC, lambda url,accept: i or index() if url==m.FEED else p or fixture(),now=now)
 def test_original():
     a=collect()
-    ass...[truncated]
+    assert len(a)==1
+    e=a[0]
+    assert e["id"]=="fourvalleys:holiday-wreath-making:2026-11-22"
+    assert e["event_url"]==m.DETAIL and e["category"]=="create"
+    assert e["venue_address"]==m.VENUE[1] and (e["lat"],e["lng"])==m.POINT
+    assert len(e["description"])>=200 and not e.get("image_url")
+@pytest.mark.parametrize("change",[{"source_key":"impostor"},{"timezone":"UTC"},{"kind":"ics"},{"feed_url":"https://wrong.invalid"}])
+def test_source_identity(change):
+    with pytest.raises(ValueError,match="fvcs_source_mismatch"):collect(source={**SRC,**change})
+@pytest.mark.parametrize("bad",[index(is_community="true"),index(date=111),index(repeats=2),index(href="/events/impostor")])
+def test_index_changes(bad):
+    with pytest.raises(ValueError,match="fvcs_original_dated_listing_changed"):collect(i=bad)
+@pytest.mark.parametrize("bad",[fixture(title="Wrong"),fixture(start="2025-11-22T22:00:00.000Z"),fixture(address="Unknown Ave"),fixture(desc="Tiny")])
+def test_detail_changes(bad):
+    with pytest.raises(ValueError):collect(p=bad)
+def test_expired():
+    assert collect(now=datetime(2026,11,24,tzinfo=timezone.utc))==[]
+def test_urls_media():
+    assert m.event_url(m.KEY,m.DETAIL)
+    assert not m.event_url(m.KEY,m.DETAIL+"?bad=1")
+    assert not m.event_url(m.KEY,"https://other.invalid/x")
+    assert m.photo_url(m.KEY,m.EXPECTED_IMAGE) is None
+def test_preview_respects_robots(monkeypatch):
+    seen=[]
+    def get(url,accept,**kwargs):
+        seen.append((url,kwargs))
+        return index() if url==m.FEED else fixture()
+    monkeypatch.setattr(preview_worker,"fetch_publisher",get)
+    ans=preview_worker.preview_source(SRC)
+    assert ans["p_error"] is None and ans["p_future_count"]==1
+    assert len(seen)==2 and all(v["respect_robots"] is True and v["allowed_hosts"]==m.ALLOWED_HOSTS[m.KEY] for _,v in seen)
