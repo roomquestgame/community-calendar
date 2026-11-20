@@ -22,7 +22,7 @@ def factory(pages, seen):
     return fetch
 
 
-def test_boplex_shares_a_real_ical_feed_but_not_single_event_calendar():
+def test_synthetic_boplex_style_page_discovery_requires_a_valid_ical_response():
     website = "https://www.boplex.com/our-venues/bojangles-coliseum"
     calendar = "https://www.boplex.com/events"
     feed = "https://www.boplex.com/events/?ical=1"
@@ -188,3 +188,62 @@ def test_dynamic_calendar_without_verified_full_feed_stays_pending_review():
     assert result["p_feed_url"] is None
     assert result["p_reason"] == "calendar_not_found"
     assert len(calls)==2
+
+
+
+def test_multiple_full_calendar_links_are_held_not_arbitrarily_selected():
+    html=('<h1>Bojangles Coliseum Charlotte</h1>'
+          '<a href="/events/first.ics">Subscribe to Sports Calendar</a>'
+          '<a href="/events/second.ics">Subscribe to Concert Calendar</a>')
+    calls=[]
+    result=discover(lead(),fetch=lambda url,accept,**opts:
+                    (calls.append(url) or html))
+    assert result["p_feed_url"] is None
+    assert result["p_reason"] == "multiple_calendar_links"
+    assert len(calls) == 1  # Don't choose an arbitrary partial calendar.
+
+
+def test_calendar_link_403_does_not_erase_first_party_website_confirmation():
+    source=lead()
+    calendar="https://www.boplex.com/events/?ical=1"
+    def fetch(url,accept,**opts):
+        if url==calendar:
+            raise PreviewError("publisher_http_403")
+        return ('<h1>Bojangles Coliseum Charlotte</h1>'
+                '<a href="/events/?ical=1">Subscribe to Calendar</a>')
+    result=discover(source,fetch=fetch)
+    assert result["p_outcome"]=="verified"
+    assert result["p_feed_url"] is None
+    assert result["p_reason"]=="calendar_access_denied"
+
+
+def test_discovery_keeps_venue_specific_query_selectors_and_validates_response():
+    source=lead("Resident Culture Brewing (Plaza Midwood)",
+                "https://residentculturebrewing.com/",
+                "https://residentculturebrewing.com/events/",
+                "2101 Central Ave, Charlotte, NC 28205")
+    homepage=('<h1>Resident Culture Brewing</h1>'
+              '<a href="/events/?fwp_event_location=plaza-midwood">Events Calendar</a>')
+    listing="https://residentculturebrewing.com/events/?fwp_event_location=plaza-midwood"
+    def fetch(url,accept,**opts):
+        if url==source["website"]:
+            return homepage
+        assert url == listing
+        return ('<h1>Events Calendar</h1>'
+                '<div class="tribe-events">All events</div>')
+    result=discover(source,fetch=fetch)
+    assert result["p_feed_url"] is None  # TEC hint requires a real API response.
+    assert result["p_reason"]=="calendar_not_found"
+
+
+def test_probe_budget_never_trawls_many_calendar_pages():
+    source=lead()
+    urls=[]
+    homepage=('<h1>Bojangles Coliseum Charlotte</h1>'
+              + "".join(f'<a href="/events-page-{i}">View All Events</a>'
+                        for i in range(20)))
+    def fetch(url,accept,**opts):
+        urls.append(url)
+        return homepage if url==source["website"] else "<h1>Events</h1>"
+    discover(source,fetch=fetch)
+    assert len(urls)<=5  # Website + no more than four bounded requests.
