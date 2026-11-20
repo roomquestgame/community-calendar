@@ -2797,6 +2797,32 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                 'p_source_key':source_key,'p_samples':samples,
                 'p_future_count':len(records),'p_venue_count':sum(r.get('lat') is not None for r in records),
                 'p_error':None,'p_events':records}
+    from roomquest import santa_cruz_felton_fire
+    if source_key == santa_cruz_felton_fire.KEY:
+        deadline=min(monotonic()+45,deadline_at-8 if deadline_at is not None else float('inf'))
+        try:
+            records=santa_cruz_felton_fire.collect(
+                source, lambda url,accept: fetch_publisher(
+                    url,accept,respect_robots=True,deadline_at=deadline,
+                    allowed_hosts=santa_cruz_felton_fire.ALLOWED_HOSTS[source_key]),
+                deadline_at=deadline)
+            if len(records)>santa_cruz_felton_fire.MAX_RECORDS or any(
+                len(r.get('description') or '')<300 or not r.get('venue_address')
+                or not r.get('ends_at') or r.get('lat') is not None
+                or r.get('lng') is not None for r in records):
+                raise ValueError('felton_fire_original_event_incomplete')
+        except PreviewError:
+            raise
+        except (ValueError,TypeError,KeyError,OverflowError) as exc:
+            code=str(exc)
+            raise PreviewError(code if re.fullmatch(r'[a-z_]{3,100}',code)
+                               else 'invalid_felton_fire_original_payload') from exc
+        samples=records[:MAX_PREVIEWS]
+        while len(json.dumps(samples,ensure_ascii=False))>18_000:samples.pop()
+        return {'p_parser_capability':'publisher_event_candidates_v1',
+                'p_source_key':source_key,'p_samples':samples,
+                'p_future_count':len(records),'p_venue_count':sum(r.get('lat') is not None for r in records),
+                'p_error':None,'p_events':records}
     from roomquest import santa_cruz_rcnv
     if source_key == santa_cruz_rcnv.KEY:
         deadline = min(monotonic()+45, deadline_at-8 if deadline_at is not None else float('inf'))
