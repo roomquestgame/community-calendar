@@ -312,12 +312,12 @@ def find_calendar(website_html, website_url, event_url, fetch, deadline):
         # *potential* parent listing. Probe it; never register it by inference.
         parent = _publisher_event_index(event_url, website_url)
         if parent and parent not in pages and parent != base:
-            pages.insert(0, parent)
+            pages.append(parent)  # Keep verified venue-specific page filters first.
         if event_url:
             matched = _link(website_url, event_url)
             if matched and urlsplit(matched).path.rstrip("/").lower().endswith(
                     ("/events", "/calendar", "/upcoming-events")) and matched not in pages:
-                pages.insert(0, matched)
+                pages.append(matched)
 
         # Prefer proven endpoints over generic HTML and stay within budget.
         while endpoints and count < MAX_REQUESTS and machine_checks < MAX_FEEDS:
