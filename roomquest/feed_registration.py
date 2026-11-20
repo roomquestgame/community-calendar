@@ -85,7 +85,15 @@ def classify(url, payload, hint=None, endpoint_only=False, venue_website=False):
         except (ValueError, RecursionError):
             return review('invalid_json')
         if is_tec_collection(url) and isinstance(obj, dict) and isinstance(obj.get('events'), list):
-            return review('wordpress_pending', 'wordpress')
+            events = obj['events']
+            if events:
+                valid = all(isinstance(event, dict) and event.get('id') and event.get('title')
+                            and (event.get('start_date') or event.get('utc_start_date')) for event in events)
+            else:
+                valid = type(obj.get('total')) is int and obj['total'] == 0
+            if valid:
+                return {'p_outcome': 'verified', 'p_endpoint': url, 'p_type': 'wordpress'}
+            return review('invalid_wordpress_calendar', 'wordpress')
         return review('unrecognized_json')
     if not body.startswith('<') or endpoint_only:
         return review('no_reusable_calendar')

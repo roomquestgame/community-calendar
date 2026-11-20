@@ -3673,7 +3673,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
             profile = profiles().get(source["source_key"])
             if not profile or profile["type"] != "tribe" or profile["url"] != source.get("feed_url"):
                 raise PreviewError("unregistered_mapsee_source")
-        deadline = min(monotonic() + (35 if maryland else 20), deadline_at - 8 if deadline_at is not None else float("inf"))
+        direct_calendar = bool(re.fullmatch(r"municipal_[0-9a-f]{24}", source_key))
+        deadline = min(monotonic() + (35 if maryland or direct_calendar else 20), deadline_at - 8 if deadline_at is not None else float("inf"))
         try:
             if maryland:
                 host = urlparse(source['feed_url']).hostname

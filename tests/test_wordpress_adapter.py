@@ -140,18 +140,20 @@ class WordPressTests(unittest.TestCase):
 class ParksTests(unittest.TestCase):
  def test_madison_zone_fallback_requires_matching_official_detail(self):
   import copy
+  from zoneinfo import ZoneInfo
+  day=(datetime.now(timezone.utc)+timedelta(days=2)).date()
+  start=f'{day} 18:00:00';end=f'{day} 19:00:00'
   e=event();e.update(status='publish',timezone='UTC+0',url='https://venue.example.org/calendar/event/',
-   start_date='2026-11-17 18:00:00',end_date='2026-11-17 19:00:00',
-   utc_start_date='2026-11-17 18:00:00',utc_end_date='2026-11-17 19:00:00')
+   start_date=start,end_date=end,utc_start_date=start,utc_end_date=end)
   source={'source_key':'madison_county_parks_ia','feed_url':'https://venue.example.org','timezone':'America/Chicago'}
-  page='<h1 class="tribe-events-single-event-title">Public concert</h1><div class="tribe-events-schedule"><span class="tribe-event-date-start">November 17 @ 6:00 pm</span><span class="tribe-event-time">7:00 pm</span></div><div class="tribe-events-start-time" title="2026-11-17"></div>'
+  page=f'<h1 class="tribe-events-single-event-title">Public concert</h1><div class="tribe-events-schedule"><span class="tribe-event-date-start">{day:%B %d} @ 6:00 pm</span><span class="tribe-event-time">7:00 pm</span></div><div class="tribe-events-start-time" title="{day}"></div>'
   calls=[]
   def fetch(url,accept):
    calls.append((url,accept));return page if accept=='text/html' else json.dumps({'events':[copy.deepcopy(e)]})
   row=collect(source,fetch)[0]
-  self.assertEqual(datetime.fromisoformat(row['starts_at']).astimezone(timezone.utc).isoformat(),'2026-11-18T00:00:00+00:00')
+  self.assertEqual(datetime.fromisoformat(row['starts_at']),datetime.fromisoformat(start).replace(tzinfo=ZoneInfo('America/Chicago')))
   self.assertEqual(row['timezone'],'America/Chicago');self.assertEqual(len(calls),2)
-  for bad in (page.replace('Public concert','Wrong event'),page.replace('2026-11-17','2026-11-03'),page.replace('6:00 pm','5:00 pm'),page.replace('7:00 pm','8:00 pm')):
+  for bad in (page.replace('Public concert','Wrong event'),page.replace(str(day),str(day-timedelta(days=1))),page.replace('6:00 pm','5:00 pm'),page.replace('7:00 pm','8:00 pm')):
    with self.subTest(page=bad),self.assertRaisesRegex(ValueError,'publisher_timezone_review_required'):
     collect(source,lambda u,a:bad if a=='text/html' else json.dumps({'events':[e]}))
   e['url']='https://other.example.org/calendar/event/'
@@ -343,3 +345,17 @@ class MarylandCalendarTests(unittest.TestCase):
     self.assertEqual(result['complete'], 1)
     self.assertEqual(rpc.call_args.args[0], 'community_collector_record_preview_v3')
     self.assertEqual(rpc.call_args.args[1]['p_parser_capability'], 'publisher_event_candidates_v1')
+
+
+def test_registered_query_route_preserves_endpoint_and_checks_public_status():
+    from hashlib import md5
+    feed = 'https://venue.example.org/calendar/?rest_route=%2Ftribe%2Fevents%2Fv1%2Fevents'
+    key = 'municipal_' + md5(('feed_registration:' + feed).encode()).hexdigest()[:24]
+    requested = []
+    def fetch(url, accept):
+        requested.append(urlsplit(url))
+        return json.dumps({'events': [dict(event(1), status='publish'), dict(event(2), status='draft')]})
+    rows = collect({'source_key': key, 'feed_url': feed}, fetch)
+    assert [str(r['id']) for r in rows] == ['1']
+    assert requested[0].path == '/calendar/'
+    assert parse_qs(requested[0].query)['rest_route'] == ['/tribe/events/v1/events']

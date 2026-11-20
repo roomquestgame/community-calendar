@@ -77,3 +77,13 @@ def test_verified_venue_follows_one_same_publisher_calendar_then_registers_its_f
         assert rpc.call_args.args[1]['p_endpoint'] == venue + 'music.ics'
         assert [call.args[0] for call in fetch.call_args_list] == [venue, venue + 'events/']
         assert all(call.kwargs['respect_robots'] for call in fetch.call_args_list)
+
+def test_wordpress_collection_requires_endpoint_and_event_evidence():
+    import json
+    payload = json.dumps({'events': [{'id': 71, 'title': 'Public reading', 'start_date': '2027-01-04 10:00:00'}]})
+    for url in (URL + '/wp-json/tribe/events/v1/events', URL + '/?rest_route=%2Ftribe%2Fevents%2Fv1%2Fevents'):
+        assert classify(url, payload) == {'p_outcome': 'verified', 'p_endpoint': url, 'p_type': 'wordpress'}
+        assert classify(url, '{"events":[],"total":0}')['p_outcome'] == 'verified'
+        assert classify(url, '{"events":[{}]}')['p_reason'] == 'invalid_wordpress_calendar'
+        assert classify(url, '{"events":[]}')['p_outcome'] == 'review'
+    assert classify(URL + '/arbitrary', payload)['p_outcome'] == 'review'
