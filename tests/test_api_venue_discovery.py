@@ -235,8 +235,8 @@ def test_discovery_keeps_venue_specific_query_selectors_and_validates_response()
         assert url == "https://residentculturebrewing.com/wp-json/tribe/events/v1/events"
         return '{"error":"api_not_enabled"}'
     result=discover(source,fetch=fetch)
-    assert result["p_feed_url"] is None  # TEC hint requires a real API response.
-    assert result["p_reason"]=="calendar_not_found"
+    assert result["p_feed_url"] == listing  # Keep exact venue selector.
+    assert result["p_reason"]=="html_listing_found"
 
 
 def test_probe_budget_never_trawls_many_calendar_pages():
