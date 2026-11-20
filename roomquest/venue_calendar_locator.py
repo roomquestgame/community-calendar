@@ -10,6 +10,7 @@ from urllib.parse import parse_qs, parse_qsl, urlencode, urldefrag, urljoin, url
 import re
 
 from roomquest.feed_registration import classify, is_event_export, is_tec_collection
+from roomquest.registration_formats import scoped_endpoint
 from roomquest.preview_worker import PreviewError, public_source_url
 
 CALENDAR_PAGE = re.compile(
@@ -253,6 +254,10 @@ def _reusable_html_index(parsed, html, url, event_url):
 
 
 def _wp_candidate(html, site):
+    # Never replace a location-filtered events listing with an unfiltered TEC
+    # collection that could silently import events for unrelated venues.
+    if urlsplit(site).query:
+        return None
     text = html[:MAX_SOURCE_BYTES].lower()
     if not any(token in text for token in TEC_HINTS):
         return None
@@ -286,7 +291,8 @@ def find_calendar(website_html, website_url, event_url, fetch, deadline):
         # Multiple distinct source subscriptions are ambiguous in a singular
         # handoff. Prefer one proven TEC collection over duplicate iCal exports,
         # otherwise preserve the website for review instead of guessing.
-        direct = list(parsed.feeds)
+        direct = [u for u in parsed.feeds
+                  if scoped_endpoint(base,u)]
         wp_direct = [u for u in direct if parsed.feeds[u] == "wordpress"]
         if len(direct) > 1 and len(wp_direct) != 1:
             return None, "multiple_feeds"
