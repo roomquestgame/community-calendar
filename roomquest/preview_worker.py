@@ -3216,6 +3216,10 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                                       'civic_jurisdiction_id', 'civic_jurisdiction_name') if key in source}}
                 records = parse(payload, calendar_source, legacy=not mapsee,
                                 include_description=civic_ics or raleigh_ics or source_key == "independence_ia_library_family")
+                if (re.fullmatch(r"municipal_[0-9a-f]{24}", source_key)
+                        and not (civic_ics or raleigh_url or portsmouth_url)):
+                    from roomquest.ical_venue_address import extract_venue_addresses
+                    extract_venue_addresses(records)
                 if source_key == omaha_lincoln.LA_VISTA_LIBRARY and source["feed_url"] == omaha_lincoln.LA_VISTA_FEED:
                     records = omaha_lincoln.normalize_la_vista_library(records)
                 if civic_ics:
