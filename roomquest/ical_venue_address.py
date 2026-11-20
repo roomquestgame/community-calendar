@@ -32,7 +32,7 @@ _JOINED = re.compile(
 _STATE_NAME_END = re.compile(r'\b(?:' + '|'.join(sorted(_STATE_CODES, key=len, reverse=True))
                              + rf')(?=,?\s*(?:{_ZIP})?$)', re.I)
 _UNUSABLE = re.compile(r'[<>;|@]|https?://|\b(?:online|virtual|zoom|webinar|P\.?\s*O\.?\s+box)\b', re.I)
-_NUMBER = re.compile(r"(?<![\w-])\d{1,7}[A-Za-z]?\s+(?=[A-Za-z])")
+_NUMBER = re.compile(r"(?<![\w-])\d{1,7}[A-Za-z]?\s+(?=[A-Za-z]|[0-9]+(?:st|nd|rd|th)\b)", re.I)
 _REPEAT_LOCALITY = re.compile(rf'\b(?P<local>{_CITY}\s+(?:{US_STATES})\s+{_ZIP})\s+(?P=local)$', re.I)
 
 
