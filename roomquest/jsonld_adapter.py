@@ -134,6 +134,15 @@ def parse(payload, base=''):
         if not isinstance(link, str) or not link:
             raise ValueError('event_link_missing')
         street = address(a)
+        # Some publishers put the complete US address in streetAddress as well
+        # as supplying PostalAddress components. Join those components only once.
+        if isinstance(a, dict) and all(isinstance(a.get(k), str) and a[k].strip()
+                                       for k in ('streetAddress','addressLocality','addressRegion','postalCode')):
+            city, region, postal = (re.escape(a[k].strip()) for k in ('addressLocality','addressRegion','postalCode'))
+            full = re.fullmatch(r'(.+?,\s*' + city + r',\s*' + region + r'\s+' + postal +
+                                r')(?:,\s*(?:USA|US|United States))?', a['streetAddress'].strip(), re.I)
+            if full:
+                street = full[1]
         lat, lng = g.get('latitude'), g.get('longitude')
         if base == SCRAP_RVA_URL and isinstance(a, dict):
             reviewed = SCRAP_RVA_LOCATIONS.get(a.get('streetAddress'))

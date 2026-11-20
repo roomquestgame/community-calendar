@@ -3345,7 +3345,11 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         from roomquest.nebraska_venues import SOURCES as NEBRASKA_VENUES
         from roomquest import nebraska_final, richmond_public_calendars
         from roomquest import gulf_recurring, gulf_seasonal, gulf_venues
-        if source_key in gulf_recurring.SOURCES:
+        from roomquest import registered_listings
+        if source.get('feed_url') in registered_listings.URLS and source_key == registered_listings.source_key(source['feed_url']):
+            collect_html = registered_listings.collect
+            allowed_hosts = (urlparse(source['feed_url']).hostname,)
+        elif source_key in gulf_recurring.SOURCES:
             collect_html = gulf_recurring.collect
             allowed_hosts = gulf_recurring.allowed_hosts(source_key)
         elif source_key in gulf_seasonal.SOURCES:
