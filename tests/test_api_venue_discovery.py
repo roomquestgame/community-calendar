@@ -29,7 +29,7 @@ def test_boplex_shares_a_real_ical_feed_but_not_single_event_calendar():
     pages = {
         website: '<title>Bojangles Coliseum</title><p>Charlotte</p><a href="/events">All Events</a>',
         calendar: '<h1>Events</h1><a href="/events/?ical=1">Subscribe</a>',
-        feed: 'BEGIN:VCALENDAR\\nVERSION:2.0\\nBEGIN:VEVENT\\nUID:checkers-1\\nDTSTART:20261121T190000Z\\nSUMMARY:Game\\nEND:VEVENT\\nEND:VCALENDAR',
+        feed: 'BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nUID:checkers-1\nDTSTART:20261121T190000Z\nSUMMARY:Game\nEND:VEVENT\nEND:VCALENDAR',
     }
     seen = []
     result = discover(lead(), fetch=factory(pages,seen))
