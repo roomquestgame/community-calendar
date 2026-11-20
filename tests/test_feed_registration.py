@@ -87,3 +87,38 @@ def test_wordpress_collection_requires_endpoint_and_event_evidence():
         assert classify(url, '{"events":[{}]}')['p_reason'] == 'invalid_wordpress_calendar'
         assert classify(url, '{"events":[]}')['p_outcome'] == 'review'
     assert classify(URL + '/arbitrary', payload)['p_outcome'] == 'review'
+
+
+def test_html_listing_keeps_filter_and_single_events_out_of_registration():
+    url = URL + '/events?venue=East'
+    page = '<a href="/event/play">Play</a><a href="/event/music">Music</a>'
+    assert classify(url, page)['p_reason'] == 'html_adapter_needed'
+    assert classify(url, page + '<a href="/all.ics">All venues</a>')['p_outcome'] == 'review'
+    assert classify(url, page + '<a href="/feed.ics?venue=East">East</a>')['p_endpoint'].endswith('venue=East')
+    assert classify(URL + '/events/detail/a-play', page)['p_reason'] == 'single_event_page'
+
+
+def test_jsonld_collection_runs_normalizer_before_verification():
+    import json
+    from datetime import datetime, timedelta, timezone
+    url = URL + '/events'
+    future = (datetime.now(timezone.utc) + timedelta(days=4)).isoformat()
+    base = {'@type': 'MusicEvent', 'startDate': future, 'name': 'Concert', 'location': {'name': 'Concert Hall'}}
+    def wrap(events):
+        return '<script type="application/ld+json">' + json.dumps(events) + '</script>'
+    assert classify(url, wrap([dict(base, url=url + '/one'), dict(base, url=url + '/two')]))['p_type'] == 'jsonld'
+    assert classify(url, wrap([dict(base, url=url + '/one'), dict(base, url=url + '/two')]))['p_outcome'] == 'verified'
+    assert classify(url, wrap(dict(base,url=url)))['p_reason'] == 'single_event_page'
+
+
+def test_squarespace_listing_preserves_all_selectors_for_probe():
+    listing = 'https://calendar.example.org/events?tag=A&tag=B'
+    html = '<html class="collection-type-events"><script src="https://static.squarespace.com/site.js"></script></html>'
+    assert classify(listing, html)['p_endpoint'] == listing + '&format=json'
+
+
+def test_empty_calendar_cannot_activate_without_a_collected_event():
+    with patch('roomquest.feed_registration.supabase_rpc', side_effect=[{'url': URL}, True]) as rpc, \
+         patch('roomquest.feed_registration.fetch_publisher', return_value=EMPTY):
+        assert register('ticket')['outcome'] == 'review'
+        assert rpc.call_args.args[1]['p_reason'] == 'no_extractable_events'
