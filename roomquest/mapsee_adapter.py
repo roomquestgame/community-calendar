@@ -93,7 +93,7 @@ def record(title, start, end, venue, street, city, url, identity, category="", l
     return out
 
 
-def parse_localist(data):
+def parse_localist(data, *, registered=False):
     if not isinstance(data, dict) or not isinstance(data.get("events"),list):
         raise ValueError("unsupported_localist_payload")
     out=[]
@@ -103,6 +103,9 @@ def parse_localist(data):
         event=wrapper.get("event",{})
         if event.get("status") in {"canceled","cancelled","postponed"} or event.get("experience")=="virtual":
             continue
+        if registered and (event.get('private') is not False or event.get('rejected') is not False
+                           or event.get('publish_status') != 'published' or event.get('status') != 'live'):
+            continue
         geo=event.get("geo") or {}; street=event.get("address") or ""
         instances=event.get("event_instances")
         if not isinstance(instances,list) or not instances:raise ValueError("event_occurrences_missing")
@@ -111,10 +114,20 @@ def parse_localist(data):
                 raise ValueError("unsupported_localist_occurrence")
             v=instance.get("event_instance",{})
             venue=", ".join(plain(x) for x in (event.get("location_name"),event.get("room_number")) if x)
+            if registered and v.get('all_day'):
+                continue
+            identity = event.get('id')
+            if registered:
+                if not v.get('id') or v.get('event_id') != event.get('id'):
+                    raise ValueError('invalid_localist_occurrence')
+                identity = v['id']
             r=record(event.get("title"),v.get("start"),v.get("end"),venue,street,
-                "",event.get("localist_url") or event.get("url"),event.get("id"),
+                geo.get("city", "") if registered else "",event.get("localist_url") or event.get("url"),identity,
                 ", ".join(x.get("name","") for x in (event.get("filters") or {}).get("event_types",[]) if isinstance(x,dict)),
-                geo.get("latitude"),geo.get("longitude"),event.get("timezone"))
+                geo.get("latitude"),geo.get("longitude"),event.get("timezone"),publisher_geo=registered)
+            if r and registered:
+                from roomquest.event_description import description
+                r['description'] = description(event.get('description_text') or event.get('description'))
             if r:out.append(r)
     return out
 

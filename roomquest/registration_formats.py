@@ -45,6 +45,14 @@ def collection_evidence(url, body, obj=None):
     soup = BeautifulSoup(body, 'html.parser') if html else None
     if html and soup.find('meta', attrs={'property': 'og:type', 'content': re.compile(r'^(?:event|event\.event)$', re.I)}):
         return {'p_outcome': 'review', 'p_reason': 'single_event_page', 'p_type': 'html'}
+    if html:
+        from roomquest.localist_registration import endpoint
+        try:
+            localist = endpoint(url, soup)
+        except ValueError as exc:
+            return extraction_hold('localist', exc)
+        if localist:
+            return {'p_outcome': 'discovered', 'p_type': 'localist', 'p_endpoint': localist}
     blocks = soup.find_all('script', type=re.compile('^application/ld\\+json', re.I)) if html else []
     structured = bool(blocks) if html else isinstance(obj, (dict, list))
     if structured:
