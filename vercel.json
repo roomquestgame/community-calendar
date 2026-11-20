@@ -56,12 +56,20 @@
     "api/feed_registration.py": {
       "maxDuration": 60,
       "excludeFiles": "{roomquest/catalogs/**,cities/**,docs/**,reports/**,supabase/**,xmlui/**,tests/**,website/**,node_modules/**,**/*.webm,**/*.png,**/*.jpg,**/*.jpeg}"
+    },
+    "api/venue_discovery.py": {
+      "maxDuration": 60,
+      "excludeFiles": "{roomquest/catalogs/**,cities/**,docs/**,reports/**,supabase/**,xmlui/**,tests/**,website/**,node_modules/**,**/*.webm,**/*.png,**/*.jpg,**/*.jpeg}"
     }
   },
   "routes": [
     {
       "src": "/api/feed-registration",
       "dest": "/api/feed_registration.py"
+    },
+    {
+      "src": "/api/venue-discovery",
+      "dest": "/api/venue_discovery.py"
     },
     {
       "src": "/api/timezones",
