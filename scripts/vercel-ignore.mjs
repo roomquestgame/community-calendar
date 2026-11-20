@@ -20,6 +20,13 @@ export function affectsBuild(path, profile = 'web') {
 
 export function buildDecision(env, paths, profile = 'web') {
   if (env.RQ_VERCEL_FORCE_BUILD === '1') return { build: true, reason: 'explicit force' };
+  // An approved one-off production collector release can opt in without
+  // mutating shared Vercel settings when previous-SHA history includes skipped
+  // deployments. This NEVER enables disabled preview collector builds.
+  if (profile === 'collector' && env.VERCEL_ENV === 'production'
+      && /\\[collector-build\\]/i.test(env.VERCEL_GIT_COMMIT_MESSAGE || '')) {
+    return { build: true, reason: 'explicit collector production release' };
+  }
   if (env.VERCEL_ENV === 'preview') {
     if (profile === 'collector') return { build: false, reason: 'collector previews disabled' };
     const optedIn = env.RQ_VERCEL_WEB_PREVIEW === '1'
