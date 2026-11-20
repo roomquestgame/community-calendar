@@ -3700,12 +3700,13 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                 "p_error": None, "p_events": records}
     if source.get("platform_adapter") == "jsonld" and source.get("kind") == "json":
         from roomquest.jsonld_adapter import collect as collect_jsonld
+        from roomquest.registration_formats import source_key as registration_source_key
         if source.get("source_key", "").startswith("municipal_mapsee_"):
             from roomquest.mapsee_adapter import profiles
             profile = profiles().get(source["source_key"])
             if not profile or profile["type"] != "jsonld" or profile["url"] != source.get("feed_url"):
                 raise PreviewError("unregistered_mapsee_source")
-        else:
+        elif source_key != registration_source_key(source["feed_url"]):
             raise PreviewError("unregistered_jsonld_source")
         deadline = min(monotonic() + 20, deadline_at - 8 if deadline_at is not None else float("inf"))
         try:
@@ -3779,12 +3780,13 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                 "p_parser_capability": "publisher_event_candidates_v1"}
     if source.get("platform_adapter") == "squarespace" and source.get("kind") == "json":
         from roomquest.squarespace import SOURCES, collect as collect_squarespace
+        from roomquest.registration_formats import source_key as registration_source_key
         if source.get("source_key", "").startswith("municipal_mapsee_"):
             from roomquest.mapsee_adapter import profiles
             profile = profiles().get(source["source_key"])
             if not profile or profile["type"] != "squarespace" or profile["url"] != source.get("feed_url"):
                 raise PreviewError("unregistered_mapsee_source")
-        elif source.get("feed_url") not in SOURCES:
+        elif source.get("feed_url") not in SOURCES and source_key != registration_source_key(source["feed_url"]):
             raise PreviewError("unregistered_squarespace_source")
         deadline = min(monotonic() + 20, deadline_at - 8 if deadline_at is not None else float("inf"))
         try:

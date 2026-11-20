@@ -3,7 +3,7 @@ from datetime import datetime, time, timezone
 import json
 import math
 import re
-from urllib.parse import urljoin, urlsplit, urlunsplit, parse_qsl, urlencode
+from urllib.parse import urljoin, urlsplit, urlunsplit, parse_qsl
 from zoneinfo import ZoneInfo
 
 from roomquest.mapsee_adapter import plain, timestamp
@@ -92,8 +92,8 @@ def collect(source, fetch):
     query = dict(parse_qsl(root.query, keep_blank_values=True))
     if query.get('format', 'json') != 'json' or 'offset' in query:
         raise ValueError('unsupported_squarespace_endpoint')
-    query['format'] = 'json'
-    url = urlunsplit((root.scheme, root.netloc, root.path, urlencode(query), ''))
+    query_string = root.query if 'format' in query else root.query + ('&' if root.query else '') + 'format=json'
+    url = urlunsplit((root.scheme, root.netloc, root.path, query_string, ''))
     payload = fetch(url, 'application/json')
     if base in SOURCES:
         return parse(payload, source)  # Retain reviewed timezone/state/location checks.

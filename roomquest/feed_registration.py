@@ -6,6 +6,7 @@ from time import monotonic
 from urllib.parse import parse_qs, urldefrag, urljoin, urlsplit
 
 from icalendar import Calendar
+from roomquest.registration_formats import collection_evidence, probe, scoped_endpoint
 
 from roomquest.preview_worker import PreviewError, fetch_publisher, public_source_url, supabase_rpc
 from roomquest.publisher_pacing import capture_publisher_pacing
@@ -26,7 +27,7 @@ def is_event_export(url):
     parts = urlsplit(url)
     keys = {key.lower() for key in parse_qs(parts.query)}
     return bool({'eventid', 'event_id', 'eid', 'tribe_event_id'} & keys or
-                re.search(r'/(?:event|events/event)/[^/]+', parts.path, re.I))
+                re.search(r'/(?:event|events/(?:event|detail)|wp-json/tribe/events/v1/events)/[^/]+', parts.path, re.I))
 
 
 class CalendarLinks(HTMLParser):
@@ -78,6 +79,8 @@ def classify(url, payload, hint=None, endpoint_only=False, venue_website=False):
                 return review('invalid_ical', 'ical')
         except (ValueError, KeyError, TypeError, IndexError):
             return review('invalid_ical', 'ical')
+        if str(calendar.get('METHOD', '')).upper() in {'REQUEST', 'REPLY', 'CANCEL', 'COUNTER', 'DECLINECOUNTER'}:
+            return review('single_event_page', 'ical')
         return {'p_outcome': 'verified', 'p_endpoint': url, 'p_type': 'ical'}
     if body.startswith(('{', '[')):
         try:
@@ -94,20 +97,27 @@ def classify(url, payload, hint=None, endpoint_only=False, venue_website=False):
             if valid:
                 return {'p_outcome': 'verified', 'p_endpoint': url, 'p_type': 'wordpress'}
             return review('invalid_wordpress_calendar', 'wordpress')
-        return review('unrecognized_json')
-    if not body.startswith('<') or endpoint_only:
+        return collection_evidence(url, body, obj) or review('unrecognized_json')
+    if not body.startswith('<'):
         return review('no_reusable_calendar')
     parser = CalendarLinks(url)
     parser.feed(body)
-    links = parser.links
+    evidence = collection_evidence(url, body)
+    if evidence and (evidence['p_outcome'] == 'verified' or (not endpoint_only and evidence['p_outcome'] == 'discovered') or evidence.get('p_reason') == 'single_event_page'):
+        return evidence
+    if endpoint_only:
+        return evidence if evidence and evidence['p_outcome'] == 'review' else review('no_reusable_calendar')
+    links = {target: kind for target, kind in parser.links.items() if scoped_endpoint(url, target)}
+    if parser.links and not links:
+        return evidence or review('calendar_filter_unverified', 'html')
     if len(links) > 1 and hint:
         preferred = {url: kind for url, kind in links.items() if kind == hint}
         if preferred:
             links = preferred
-    if not links and venue_website and len(parser.calendar_pages) == 1:
+    if not links and venue_website and len(parser.calendar_pages) == 1 and scoped_endpoint(url, next(iter(parser.calendar_pages))):
         return {'calendar_page': next(iter(parser.calendar_pages))}
     if len(links) != 1:
-        return review('multiple_calendar_links' if links else 'no_reusable_calendar')
+        return review('multiple_calendar_links', 'html') if links else evidence or review('no_reusable_calendar')
     endpoint, kind = next(iter(links.items()))
     return {'p_outcome': 'discovered', 'p_endpoint': endpoint, 'p_type': kind}
 
@@ -130,8 +140,11 @@ def register(ticket):
                                        allowed_hosts=(urlsplit(url).hostname,))
                 result = classify(url, body, candidate.get('type_hint'))
                 if result['p_outcome'] == 'verified':
-                    result['p_outcome'] = 'discovered'
+                    result = (dict(result, p_outcome='discovered') if probe(url, body, result['p_type'])
+                              else review('no_extractable_events', result['p_type']))
                 result.setdefault('p_endpoint', url)
+            if result['p_outcome'] == 'verified' and not probe(url, body, result['p_type']):
+                result = review('no_extractable_events', result['p_type'])
         except PreviewError as exc:
             reason = str(exc)
             if reason in DENIALS:
