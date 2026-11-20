@@ -228,9 +228,11 @@ def test_discovery_keeps_venue_specific_query_selectors_and_validates_response()
     def fetch(url,accept,**opts):
         if url==source["website"]:
             return homepage
-        assert url == listing
-        return ('<h1>Events Calendar</h1>'
-                '<div class="tribe-events">All events</div>')
+        if url == listing:
+            return ('<h1>Events Calendar</h1>'
+                    '<div class="tribe-events">All events</div>')
+        assert url == "https://residentculturebrewing.com/wp-json/tribe/events/v1/events"
+        return '{"error":"api_not_enabled"}'
     result=discover(source,fetch=fetch)
     assert result["p_feed_url"] is None  # TEC hint requires a real API response.
     assert result["p_reason"]=="calendar_not_found"
