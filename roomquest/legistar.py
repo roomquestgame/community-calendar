@@ -109,8 +109,8 @@ def _identity(item, spec):
     return f"legistar:{spec['client']}:{event_id}"
 
 
-def parse_page(data, source, *, now=None):
-    spec = validate(source)
+def parse_page(data, source, *, now=None, spec=None):
+    spec = spec if spec is not None else validate(source)
     current = _now(now)
     if not isinstance(data, list) or len(data) > PAGE_SIZE:
         raise ValueError('invalid_legistar_payload')
@@ -169,8 +169,9 @@ def parse_page(data, source, *, now=None):
                        timezone=spec['timezone'], publisher_categories=['Civic & Public Services', 'Public Meeting'],
                        # Internal app visibility cutoff only; the unknown
                        # publisher end remains None in the event contract.
-                       publisher_status=status,
-                       civic=_metadata(spec, url, current, begins + timedelta(hours=3)))
+                       publisher_status=status)
+            if spec.get("jurisdiction_id"):
+                row["civic"] = _metadata(spec, url, current, begins + timedelta(hours=3))
             rows.append(row)
         except (ValueError, TypeError, OverflowError) as exc:
             held += 1
@@ -181,8 +182,8 @@ def parse_page(data, source, *, now=None):
     return rows, held
 
 
-def collect(source, fetch, *, deadline_at=None, now=None):
-    spec = validate(source)
+def collect(source, fetch, *, deadline_at=None, now=None, spec=None):
+    spec = spec if spec is not None else validate(source)
     current = _now(now)
     local_date = current.astimezone(ZoneInfo(spec['timezone'])).date()
     rows, held, identities = [], 0, set()
@@ -205,7 +206,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
             if identity in identities:
                 raise ValueError('legistar_pagination_repeated')
             identities.add(identity)
-        parsed, rejected = parse_page(data, source, now=current)
+        parsed, rejected = parse_page(data, source, now=current, spec=spec)
         rows.extend(parsed)
         held += rejected
         if len(data) < PAGE_SIZE:

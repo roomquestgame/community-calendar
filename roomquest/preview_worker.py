@@ -1211,6 +1211,31 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
     from roomquest.rockhouse import SOURCES as ROCKHOUSE_SOURCES
     from roomquest import civic_local_calendars, civic_schedule, legistar, municipal_notices, virginia_civic
     source_key = source.get('source_key')
+    from roomquest import provider_registration
+    from roomquest.registration_formats import source_key as registration_key
+    adapter = source.get('platform_adapter')
+    url = source.get('feed_url') or ''
+    if adapter in provider_registration.FAMILIES and source_key == registration_key(url):
+        if source.get('kind') != ('xml' if adapter == 'growthzone' else 'json'):
+            raise PreviewError('provider_kind_mismatch')
+        deadline = min(monotonic() + 32, deadline_at - 8 if deadline_at is not None else float('inf'))
+        def fetch(target, accept):
+            return fetch_publisher(target, accept, respect_robots=True, deadline_at=deadline,
+                                   allowed_hosts=(urlparse(url).hostname,))
+        try:
+            profile = provider_registration.read_profile(url, adapter, supabase_rpc)
+            records = provider_registration.collect(url, adapter, fetch, deadline=deadline, profile=profile)
+        except PreviewError:
+            raise
+        except (ValueError, KeyError, TypeError, OverflowError, AttributeError) as exc:
+            reason = str(exc)
+            raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}', reason) else 'invalid_provider_collection') from exc
+        samples = records[:MAX_PREVIEWS]
+        while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
+            samples.pop()
+        return {'p_source_key':source_key, 'p_samples':samples, 'p_events':records,
+                'p_future_count':len(records), 'p_venue_count':sum(row.get('lat') is not None for row in records),
+                'p_error':None}
     from roomquest import raleigh_direct_sources
     if raleigh_direct_sources.adapter_for(source_key) is not None:
         try:
@@ -3908,7 +3933,7 @@ def supabase_rpc(path: str, payload: dict, *, timeout: float = 4):
     security-definer RPCs. The token must never enter a public client or log.
     """
     import urllib.request
-    allowed = {"community_collector_claim_registration", "community_collector_finish_registration",
+    allowed = {"community_collector_feed_profile", "community_collector_claim_registration", "community_collector_finish_registration",
                "community_collector_claim_api_venue_discovery", "community_collector_finish_api_venue_discovery",
                "community_collector_claim_category", "community_collector_publish_category", "community_collector_finish_category", "community_collector_claim_previews", "community_collector_claim_demand_preview", "community_collector_claim_chambermaster", "community_collector_record_preview", "community_collector_record_preview_v2", "community_collector_record_preview_v3",
                "community_collector_read_fetch_checkpoint", "community_collector_write_fetch_checkpoint",

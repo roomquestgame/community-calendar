@@ -15,7 +15,9 @@ MAX_DETAILS = 20
 
 def collect(source, payload, deadline_at, fetcher=fetch_publisher):
     """Require a complete bounded snapshot; never silently truncate a chamber."""
-    if not source.get('source_key', '').startswith('municipal_chambermaster_'):
+    from roomquest.registration_formats import source_key
+    if (not source.get('source_key', '').startswith('municipal_chambermaster_')
+            and source.get('source_key') != source_key(source['feed_url'])):
         raise PreviewError('unregistered_chambermaster_source')
     api = urlparse(source['feed_url'])
     if api.path != '/api/events' or api.query or api.fragment:

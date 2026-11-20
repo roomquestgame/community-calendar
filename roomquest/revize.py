@@ -56,8 +56,8 @@ class EventHold(ValueError):
     """A known event has unresolved facts; unrelated valid events may proceed."""
 
 
-def _log(kind, **fields):
-    print(json.dumps({'event': 'revize_' + kind, 'source_key': SOURCE_KEY,
+def _log(kind, *, source_key=SOURCE_KEY, **fields):
+    print(json.dumps({'event': 'revize_' + kind, 'source_key': source_key,
                       **fields}, sort_keys=True), file=sys.stderr)
 
 
@@ -82,28 +82,28 @@ def _narrative(value):
                      if line.strip())[:2000]
 
 
-def _local(value):
+def _local(value, zone=TIMEZONE):
     if not isinstance(value, str) or not re.fullmatch(
             r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2})?(?:Z|[+-]\d{2}:\d{2})?', value):
         raise EventHold('event_time_missing')
     try:
-        return timestamp(value, TIMEZONE).astimezone(ZoneInfo(TIMEZONE))
+        return timestamp(value, zone).astimezone(ZoneInfo(zone))
     except (ValueError, OverflowError) as exc:
         raise EventHold(str(exc)) from exc
 
 
-def _wall(value):
-    return value.astimezone(ZoneInfo(TIMEZONE)).replace(tzinfo=None)
+def _wall(value, zone=TIMEZONE):
+    return value.astimezone(ZoneInfo(zone)).replace(tzinfo=None)
 
 
-def _wall_instant(value):
+def _wall_instant(value, zone=TIMEZONE):
     # dateutil expands local wall times. Revalidate each occurrence; attaching a
     # ZoneInfo directly would silently select an ambiguous/nonexistent offset.
-    return _local(value.isoformat(timespec='seconds'))
+    return _local(value.isoformat(timespec='seconds'), zone)
 
 
-def _duration(item, start):
-    end = _local(item['end']) if item.get('end') else None
+def _duration(item, start, zone=TIMEZONE):
+    end = _local(item['end'], zone) if item.get('end') else None
     declared = item.get('duration')
     duration = None
     if declared not in (None, ''):
@@ -112,7 +112,7 @@ def _duration(item, start):
         hours, minutes = map(int, declared.split(':'))
         duration = timedelta(hours=hours, minutes=minutes)
     if end is not None:
-        span = _wall(end) - _wall(start)
+        span = _wall(end, zone) - _wall(start, zone)
         if duration is not None and duration != span:
             raise EventHold('publisher_schedule_conflict')
         duration = span
@@ -123,26 +123,26 @@ def _duration(item, start):
     return duration
 
 
-def _rule_date(value):
+def _rule_date(value, zone=TIMEZONE):
     if not re.fullmatch(r'\d{8}T\d{6}Z?', value):
         raise ValueError('recurrence_invalid')
     try:
         dt = datetime.strptime(value.rstrip('Z'), '%Y%m%dT%H%M%S')
         if value.endswith('Z'):
-            dt = _wall(dt.replace(tzinfo=timezone.utc))
+            dt = _wall(dt.replace(tzinfo=timezone.utc), zone)
         return dt
     except ValueError as exc:
         raise ValueError('recurrence_invalid') from exc
 
 
-def _rule_set(raw, start, horizon, deadline):
+def _rule_set(raw, start, horizon, deadline, zone=TIMEZONE):
     raw = _text(raw, 'recurrence', limit=20000)
     result = rruleset()
     rule_count = date_count = start_count = 0
     for line in raw.splitlines():
         if not line.strip():
             continue
-        match = re.fullmatch(r'(DTSTART|RRULE|RDATE|EXDATE)(?:;TZID=America/New_York)?:(.+)', line.strip())
+        match = re.fullmatch(rf'(DTSTART|RRULE|RDATE|EXDATE)(?:;TZID={re.escape(zone)})?:(.+)', line.strip())
         if not match:
             raise ValueError('recurrence_invalid')
         name, value = match.groups()
@@ -168,13 +168,13 @@ def _rule_set(raw, start, horizon, deadline):
             if 'UNTIL' in config and 'COUNT' in config:
                 raise ValueError('recurrence_invalid')
             count = int(config.pop('COUNT')) if 'COUNT' in config else None
-            until = min(_rule_date(config['UNTIL']), _wall(horizon)) if 'UNTIL' in config else _wall(horizon)
+            until = min(_rule_date(config['UNTIL'], zone), _wall(horizon, zone)) if 'UNTIL' in config else _wall(horizon, zone)
             config['UNTIL'] = until.strftime('%Y%m%dT%H%M%S')
-            if _wall(start) < _wall(horizon) - timedelta(days=366 * 50):
+            if _wall(start, zone) < _wall(horizon, zone) - timedelta(days=366 * 50):
                 raise ValueError('recurrence_expansion_limit')
             try:
                 rule = rrulestr(';'.join(k + '=' + v for k, v in config.items()),
-                               dtstart=_wall(start))
+                               dtstart=_wall(start, zone))
             except (ValueError, TypeError, OverflowError) as exc:
                 raise ValueError('recurrence_invalid') from exc
             # Bound the rule itself by the actual window, including impossible
@@ -194,10 +194,10 @@ def _rule_set(raw, start, horizon, deadline):
             if date_count > MAX_EXCEPTION_DATES:
                 raise ValueError('recurrence_record_limit')
             for part in values:
-                parsed = _rule_date(part)
+                parsed = _rule_date(part, zone)
                 if name == 'DTSTART':
                     start_count += 1
-                    if start_count != 1 or parsed != _wall(start):
+                    if start_count != 1 or parsed != _wall(start, zone):
                         raise ValueError('publisher_schedule_conflict')
                 elif name == 'RDATE':
                     result.rdate(parsed)
@@ -208,14 +208,14 @@ def _rule_set(raw, start, horizon, deadline):
     return result
 
 
-def _occurrences(item, start, duration, current, deadline):
+def _occurrences(item, start, duration, current, deadline, zone=TIMEZONE):
     horizon = current + timedelta(days=LOOKAHEAD_DAYS)
     if not item.get('rrule'):
-        candidates = (_wall(start),)
+        candidates = (_wall(start, zone),)
     else:
-        candidates = _rule_set(item['rrule'], start, horizon, deadline)
-    lower = _wall(current - duration)
-    upper = _wall(horizon)
+        candidates = _rule_set(item['rrule'], start, horizon, deadline, zone)
+    lower = _wall(current - duration, zone)
+    upper = _wall(horizon, zone)
     result = []
     for scanned, wall in enumerate(candidates, 1):
         _check_deadline(deadline)
@@ -225,8 +225,8 @@ def _occurrences(item, start, duration, current, deadline):
             break
         if wall < lower:
             continue
-        begins = _wall_instant(wall)
-        ends = _wall_instant(wall + duration)
+        begins = _wall_instant(wall, zone)
+        ends = _wall_instant(wall + duration, zone)
         if ends <= begins:
             raise EventHold('invalid_event_end')
         if ends > current and begins <= horizon:
@@ -236,11 +236,11 @@ def _occurrences(item, start, duration, current, deadline):
     return result
 
 
-def _venue(value):
+def _venue(value, reviewed_venues=REVIEWED_VENUES):
     location = plain(_text(value, 'location', limit=2000))
     if re.search(r'\b(?:virtual|online|zoom|webinar)\b', location, re.I):
         raise EventHold('virtual_event')
-    if matched := REVIEWED_VENUES.get(location.casefold()):
+    if matched := reviewed_venues.get(location.casefold()):
         return (*matched, 'reviewed_named_venue_address')
     # Other future events must carry their own full street/locality/state.
     locality = re.search(r',\s*([^,]+),\s*([A-Z]{2})(?:\s+\d{5}(?:-\d{4})?)?(?:,?\s+USA)?$', location)
@@ -265,7 +265,7 @@ def _status(item):
     raise EventHold('unsupported_event_status')
 
 
-def _status_row(title, begins, ends, venue, address, city, identity, category):
+def _status_row(title, begins, ends, venue, address, city, identity, category, calendar=CALENDAR):
     """Exact status facts can update an existing occurrence without new venue.
 
     This is used only for positively cancelled/postponed rows whose exact start
@@ -276,7 +276,7 @@ def _status_row(title, begins, ends, venue, address, city, identity, category):
             'starts_at': begins.astimezone(timezone.utc).isoformat(),
             'ends_at': ends.astimezone(timezone.utc).isoformat() if ends else None,
             'venue_name': venue[:400], 'venue_address': address[:400], 'venue_city': city[:120],
-            'lat': None, 'lng': None, 'event_url': CALENDAR,
+            'lat': None, 'lng': None, 'event_url': calendar,
             'category': category[:80], 'reason': 'missing_verified_venue_geo'}
 
 
@@ -286,6 +286,7 @@ def _public_closure(title):
 
 
 def _closure_notice(item, title, narrative, start, current, status):
+    zone = TIMEZONE
     if item.get('rrule'):
         raise EventHold('civic_closure_recurrence_requires_review')
     if (re.search(r'\bclos(?:e|es|ed|ing)\b.{0,100}\bnoon\b', ' '.join(narrative.split()), re.I)
@@ -297,7 +298,7 @@ def _closure_notice(item, title, narrative, start, current, status):
     if item.get('allDay'):
         if (start.hour, start.minute, start.second) != (0, 0, 0):
             raise EventHold('publisher_schedule_conflict')
-        end = _local(item['end']) if item.get('end') else None
+        end = _local(item['end'], zone) if item.get('end') else None
         if end is not None and (end.hour, end.minute, end.second) != (0, 0, 0):
             raise EventHold('publisher_schedule_conflict')
         return date_notice(identity=identity, title=title, starts_on=start.date(),
@@ -305,8 +306,8 @@ def _closure_notice(item, title, narrative, start, current, status):
                            now=current, jurisdiction_id='us-va-south-hill',
                            jurisdiction_name='Town of South Hill', source_url=CALENDAR,
                            tz=TIMEZONE, status=status)
-    duration = _duration(item, start)
-    end = _wall_instant(_wall(start) + duration)
+    duration = _duration(item, start, zone)
+    end = _wall_instant(_wall(start, zone) + duration, zone)
     if end <= current or start > current + timedelta(days=LOOKAHEAD_DAYS):
         return None
     row = _status_row(title, start, end, '', '', '', identity, 'Civic & Public Services')
@@ -322,7 +323,8 @@ def _closure_notice(item, title, narrative, start, current, status):
     return row
 
 
-def parse(payload, *, now=None, deadline_at=None, include_civic=False):
+def parse(payload, *, now=None, deadline_at=None, include_civic=False,
+          zone=TIMEZONE, calendar=CALENDAR, source_key=SOURCE_KEY):
     current = now or datetime.now(timezone.utc)
     if current.tzinfo is None:
         raise ValueError('revize_now_timezone_missing')
@@ -364,7 +366,7 @@ def parse(payload, *, now=None, deadline_at=None, include_civic=False):
             status = _status(item)
             if status is None and re.search(r'\b(?:cancelled|canceled|postponed)\b', title, re.I):
                 raise EventHold('cancellation_requires_exact_status')
-            start = _local(item.get('start'))
+            start = _local(item.get('start'), zone)
             if not isinstance(item.get('allDay', False), bool):
                 raise ValueError('invalid_revize_all_day')
             if include_civic and _public_closure(title):
@@ -378,18 +380,18 @@ def parse(payload, *, now=None, deadline_at=None, include_civic=False):
                 continue
             status_update = status in ('cancelled', 'postponed')
             if status_update and not item.get('rrule'):
-                end = _local(item['end']) if item.get('end') else None
+                end = _local(item['end'], zone) if item.get('end') else None
                 if end is not None and end <= start:
                     raise EventHold('invalid_event_end')
                 occurrences = ([(start, end)] if current - MAX_DURATION <= start <=
                                current + timedelta(days=LOOKAHEAD_DAYS) else [])
             else:
-                duration = _duration(item, start)
-                occurrences = _occurrences(item, start, duration, current, deadline_at)
+                duration = _duration(item, start, zone)
+                occurrences = _occurrences(item, start, duration, current, deadline_at, zone)
             if not occurrences:
                 continue
             try:
-                venue, address, city, provenance = _venue(item.get('location'))
+                venue, address, city, provenance = _venue(item.get('location'), REVIEWED_VENUES if source_key == SOURCE_KEY else {})
             except EventHold:
                 if not status_update:
                     raise
@@ -399,14 +401,14 @@ def parse(payload, *, now=None, deadline_at=None, include_civic=False):
             category = plain(_text(item.get('primary_calendar_name'), 'category', limit=100))
             for begins, ends in occurrences:
                 identity = 'revize:' + rid + '__' + begins.astimezone(timezone.utc).strftime('%Y%m%dT%H%M%SZ')
-                row = (_status_row(title, begins, ends, venue, address, city, identity, category)
+                row = (_status_row(title, begins, ends, venue, address, city, identity, category, calendar)
                        if status_update else
                        record(title, begins.isoformat(), ends.isoformat(), venue, address,
-                              city, CALENDAR, identity, category, tz=TIMEZONE,
+                              city, calendar, identity, category, tz=zone,
                               retain_until_end=True))
                 if row is None:
                     continue
-                row.update(timezone=TIMEZONE, description=narrative,
+                row.update(timezone=zone, description=narrative,
                            publisher_categories=[category] if category else [],
                            location_provenance=provenance)
                 if status:
@@ -417,14 +419,15 @@ def parse(payload, *, now=None, deadline_at=None, include_civic=False):
                         jurisdiction_name='Town of South Hill', source_url=CALENDAR,
                         verified_at=current, valid_until=ends or begins + timedelta(hours=3),
                         precision='timed', tz=TIMEZONE)
-                attach(row, SOURCE_KEY, facts={})
+                if source_key == SOURCE_KEY:
+                    attach(row, source_key, facts={})
                 records.append(row)
                 if len(records) > MAX_OCCURRENCES:
                     raise ValueError('source_record_limit')
         except EventHold as exc:
             held += 1
-            _log('event_held', identity='revize:' + rid, reason=str(exc))
-    _log('normalized', upstream_records=len(data), held=held, excluded=excluded, records=len(records))
+            _log('event_held', source_key=source_key, identity='revize:' + rid, reason=str(exc))
+    _log('normalized', source_key=source_key, upstream_records=len(data), held=held, excluded=excluded, records=len(records))
     if held and not records:
         raise ValueError('revize_event_evidence_unavailable')
     _check_deadline(deadline_at)
