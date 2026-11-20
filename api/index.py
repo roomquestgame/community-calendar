@@ -1,4 +1,5 @@
 """One Vercel Python entrypoint for the restricted collector routes."""
+from api.feed_registration import handler as RegistrationHandler
 from api.category_demand import handler as CategoryHandler
 from api.html_demand import handler as HtmlHandler
 from api.media_demand import handler as MediaHandler
@@ -14,6 +15,8 @@ class handler(PreviewHandler, GeocoderHandler, ChamberMasterHandler, PilotHandle
     """Reuse both handlers' authentication without introducing public inputs."""
 
     def do_GET(self):
+        if self.path == "/api/feed-registration":
+            return RegistrationHandler.do_GET(self)
         if self.path == "/api/timezones":
             return TimezoneHandler.do_GET(self)
         if self.path == "/api/things-to-do-pilot":
@@ -33,6 +36,8 @@ class handler(PreviewHandler, GeocoderHandler, ChamberMasterHandler, PilotHandle
         return PreviewHandler.do_GET(self)
 
     def do_POST(self):
+        if self.path == "/api/feed-registration":
+            return RegistrationHandler.do_POST(self)
         if self.path == "/api/timezones":
             return TimezoneHandler.do_POST(self)
         if self.path == "/api/things-to-do-pilot":
@@ -52,7 +57,7 @@ class handler(PreviewHandler, GeocoderHandler, ChamberMasterHandler, PilotHandle
         return PreviewHandler.do_POST(self)
 
     def log_message(self, *args):
-        if self.path in ("/api/geocode", "/api/media-demand", "/api/things-to-do-pilot"):
+        if self.path in ("/api/geocode", "/api/feed-registration", "/api/media-demand", "/api/things-to-do-pilot"):
             return
         return PreviewHandler.log_message(self, *args)
 

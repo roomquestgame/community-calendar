@@ -42,3 +42,26 @@ def test_no_publisher_request_for_unknown_or_used_ticket():
          patch('roomquest.feed_registration.fetch_publisher') as fetch:
         assert register('old') == {'outcome':'idle'}
         fetch.assert_not_called()
+
+
+def test_production_entrypoint_dispatches_registration_before_preview():
+    import importlib.util
+    from pathlib import Path
+    from types import ModuleType
+    from unittest.mock import Mock
+
+    modules = {}
+    for name in ('geocode', 'preview', 'chambermaster', 'provider_pilot', 'category_demand',
+                 'html_demand', 'media_demand', 'things_to_do', 'timezones', 'feed_registration'):
+        module = ModuleType('api.' + name)
+        module.handler = type(name + 'Handler', (), {'do_GET': Mock(), 'do_POST': Mock()})
+        modules[module.__name__] = module
+    spec = importlib.util.spec_from_file_location('registration_index', Path(__file__).parents[1] / 'api/index.py')
+    entry = importlib.util.module_from_spec(spec)
+    with patch.dict('sys.modules', modules):
+        spec.loader.exec_module(entry)
+    handler = object.__new__(entry.handler)
+    handler.path = '/api/feed-registration'
+    handler.do_POST()
+    modules['api.feed_registration'].handler.do_POST.assert_called_once_with(handler)
+    modules['api.preview'].handler.do_POST.assert_not_called()
