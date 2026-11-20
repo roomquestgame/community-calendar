@@ -250,3 +250,66 @@ def test_probe_budget_never_trawls_many_calendar_pages():
         return homepage if url==source["website"] else "<h1>Events</h1>"
     discover(source,fetch=fetch)
     assert len(urls)<=5  # Website + no more than four bounded requests.
+
+
+
+def test_venue_specific_events_filter_is_preserved_exactly():
+    source=lead("Resident Culture Brewing (Plaza Midwood)",
+                "https://residentculturebrewing.com/",
+                "https://residentculturebrewing.com/events/",
+                "2101 Central Ave, Charlotte, NC 28205")
+    venue_list="https://residentculturebrewing.com/events/?fwp_event_location=plaza-midwood"
+    pages={
+        source["website"]: '<h1>Resident Culture Brewing</h1><a href="/events/?fwp_event_location=plaza-midwood">View All Events</a>',
+        venue_list: '<h1>Events</h1><p>Browse upcoming events by location</p>',
+        "https://residentculturebrewing.com/events": '<h1>Events</h1>',
+    }
+    seen=[]
+    def fetch(url,accept,**opts):
+        seen.append(url)
+        return pages[url]
+    result=discover(source,fetch=fetch)
+    assert result["p_outcome"]=="verified"
+    assert result["p_feed_url"]==venue_list
+    assert result["p_reason"]=="html_listing_found"
+    assert seen[:2]==[source["website"],venue_list]
+
+
+def test_two_distinct_venues_discover_same_official_boplex_calendar():
+    root="https://www.boplex.com"
+    events=root+"/events"
+    for name,slug in [("Bojangles Coliseum","bojangles-coliseum"),
+                      ("Ovens Auditorium","ovens-auditorium")]:
+        website=root+"/our-venues/"+slug
+        evidence=root+"/events/"+slug+"-concert"
+        source=lead(name,website,evidence,
+                    "2700 E Independence Boulevard, Charlotte, NC 28205")
+        def fetch(url,accept,**opts):
+            if url==website:
+                return f'<h1>{name}</h1><p>Charlotte</p><a href="/events">View All Events</a>'
+            assert url==events
+            return '<h1>Upcoming Events</h1><div class="event-calendar"></div>'
+        result=discover(source,fetch=fetch)
+        assert result["p_feed_url"]==events
+        assert result["p_reason"]=="html_listing_found"
+
+
+def test_squarespace_calendar_json_is_validated_before_handoff():
+    source=lead("Example Events Center",
+                "https://www.exampleevents.org/events",
+                "https://www.exampleevents.org/events",
+                "14 Main Street, Charlotte, NC 28205")
+    api="https://www.exampleevents.org/events?format=json"
+    html=('<h1>Example Events Center</h1><div class="squarespace-context">'
+          '<time datetime="2026-11-22">November 22</time>'
+          '<p>Upcoming Events</p></div>')
+    seen=[]
+    def fetch(url,accept,**opts):
+        seen.append(url)
+        if url==api:
+            return '{"upcoming":[{"id":"abc123","startDate":1795323600000,"title":"Event"}]}'
+        return html
+    result=discover(source,fetch=fetch)
+    assert result["p_feed_url"]==api
+    assert result["p_reason"]=="reusable_squarespace"
+    assert seen==[source["website"],api]
