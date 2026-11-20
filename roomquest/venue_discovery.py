@@ -149,6 +149,15 @@ def discover(lead, fetch=fetch_publisher, *, deadline_at=None):
         return {"p_outcome": "review", "p_reason": "untrusted_venue_website"}
     if not explicit and (not public_source_url(evidence) or aggregator(evidence)):
         return {"p_outcome": "review", "p_reason": "official_venue_website_needed"}
+    if not explicit:
+        # A ticketing/publisher event URL is not necessarily owned by its venue.
+        # Without a supplied venue website, require a matching brand in the
+        # domain *before* attempting the site's home page.
+        brand_words = [word for word in name_forms(lead["name"])[-1].split()
+                       if len(word) >= 5]
+        compact_host = re.sub(r"[^a-z0-9]", "", host(evidence))
+        if not brand_words or not any(word in compact_host for word in brand_words):
+            return {"p_outcome": "review", "p_reason": "official_venue_website_needed"}
     official = explicit or root(evidence)
     if not public_source_url(official) or aggregator(official):
         return {"p_outcome": "review", "p_reason": "official_venue_website_needed"}
