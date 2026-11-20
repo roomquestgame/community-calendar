@@ -7,7 +7,7 @@ from datetime import date, datetime
 from html.parser import HTMLParser
 import json
 import re
-from urllib.parse import urljoin, urlsplit
+from urllib.parse import parse_qs, urljoin, urlsplit
 from zoneinfo import ZoneInfo
 from roomquest.mapsee_adapter import record, address
 
@@ -110,6 +110,24 @@ def parse(payload, base=''):
                and isinstance(n.get('itemListElement'), list) and not n['itemListElement'] for n in nodes):
             return []
         raise ValueError('unsupported_jsonld_event_shape')
+    # Humanitix supplies the map pin beside the complete address in the same
+    # public location object. Ignore missing or conflicting matches.
+    address_pins = {}
+    if urlsplit(base).hostname == 'events.humanitix.com':
+        for target, raw_address in re.findall(
+                r'\bdirectionsLink:("(?:[^"\\]|\\.){1,1000}"),address:("(?:[^"\\]|\\.){1,400}")', payload):
+            try:
+                maps = urlsplit(json.loads(target))
+                label = json.loads(raw_address)
+                if maps.hostname != 'www.google.com' or maps.path.rstrip('/') != '/maps/search':
+                    continue
+                point = parse_qs(maps.query).get('query', [])
+                if len(point) == 1 and re.fullmatch(r'-?\d{1,2}\.\d+,-?\d{1,3}\.\d+',point[0]):
+                    lat, lng = map(float, point[0].split(','))
+                    if -90 <= lat <= 90 and -180 <= lng <= 180:
+                        address_pins.setdefault(label, set()).add((lat, lng))
+            except (ValueError, TypeError):
+                continue
     out = {}
     for e in events:
         if str(e.get('eventStatus', '')).endswith(('EventCancelled', 'EventPostponed')):
@@ -144,6 +162,14 @@ def parse(payload, base=''):
             if full:
                 street = full[1]
         lat, lng = g.get('latitude'), g.get('longitude')
+        if isinstance(a, dict) and lat is None and lng is None and isinstance(a.get('streetAddress'), str):
+            points = address_pins.get(a['streetAddress'], set())
+            # Two event records may vary in sub-meter pin precision. Use an
+            # actual publisher point only when all pins agree within ~1.1 m/axis.
+            if points:
+                lats, lngs = zip(*points)
+                if max(lats)-min(lats) <= 0.00001 and max(lngs)-min(lngs) <= 0.00001:
+                    lat, lng = min(points)
         if base == SCRAP_RVA_URL and isinstance(a, dict):
             reviewed = SCRAP_RVA_LOCATIONS.get(a.get('streetAddress'))
             if reviewed:
