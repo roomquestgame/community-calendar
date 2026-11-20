@@ -5,7 +5,7 @@ but the shared registration checker still owns final source acceptance. Bounded
 publisher visits, same-host URLs, robots/pacing and no fabricated feed URLs.
 """
 from html.parser import HTMLParser
-from urllib.parse import parse_qs, unquote, urldefrag, urljoin, urlsplit, urlunsplit
+from urllib.parse import parse_qs, urldefrag, urljoin, urlsplit, urlunsplit
 import re
 
 from roomquest.feed_registration import classify, is_event_export, is_tec_collection
@@ -187,18 +187,29 @@ def find_calendar(website_html, website_url, event_url, fetch, deadline):
     endpoints = []
     best_html = None
     count = 0
+    machine_checks = 0
+    page_checks = 0
     while candidates:
         base, html = candidates.pop(0)
         if base in inspected:
             continue
         inspected.add(base)
         parsed = _signals(html, base)
-        for endpoint in parsed.feeds:
+        # Multiple distinct source subscriptions are ambiguous in a singular
+        # handoff. Prefer one proven TEC collection over duplicate iCal exports,
+        # otherwise preserve the website for review instead of guessing.
+        direct = list(parsed.feeds)
+        wp_direct = [u for u in direct if parsed.feeds[u] == "wordpress"]
+        if len(direct) > 1 and len(wp_direct) != 1:
+            return best_html, "multiple_feeds"
+        if len(wp_direct) == 1:
+            direct = wp_direct
+        for endpoint in direct:
             if endpoint not in endpoints:
                 endpoints.append(endpoint)
         wp = _wp_candidate(html, base)
         if wp and wp not in endpoints:
-            endpoints.append(wp)
+            endpoints.insert(0, wp)
         if parsed.is_dated_listing(html) and best_html is None:
             best_html = base
         for u, score in sorted(parsed.pages.items(), key=lambda x: (-x[1], x[0])):
@@ -212,12 +223,13 @@ def find_calendar(website_html, website_url, event_url, fetch, deadline):
                 pages.insert(0, matched)
 
         # Prefer proven endpoints over generic HTML and stay within budget.
-        while endpoints and count < MAX_REQUESTS and count < MAX_FEEDS + len(inspected) - 1:
+        while endpoints and count < MAX_REQUESTS and machine_checks < MAX_FEEDS:
             url = endpoints.pop(0)
             if url in inspected:
                 continue
             inspected.add(url)
             count += 1
+            machine_checks += 1
             try:
                 data = fetch(url, "text/calendar,application/json,text/html",
                              respect_robots=True, allowed_hosts=(_host(website_url),),
@@ -230,13 +242,14 @@ def find_calendar(website_html, website_url, event_url, fetch, deadline):
             if check.get("p_outcome") == "verified" and check.get("p_type") in ("ical", "wordpress"):
                 return url, check["p_type"]
             # Invalid/cancelled/single event feed never becomes a registered source.
-        if count >= MAX_REQUESTS or len(inspected) > MAX_PAGES + MAX_FEEDS + 1:
+        if count >= MAX_REQUESTS:
             break
-        if not candidates and pages and len([u for u in inspected if u != website_url]) < MAX_REQUESTS:
+        if not candidates and pages and page_checks < MAX_PAGES:
             page_url = pages.pop(0)
             if page_url in inspected:
                 continue
             count += 1
+            page_checks += 1
             try:
                 data = fetch(page_url, "text/html,application/xhtml+xml",
                              respect_robots=True, allowed_hosts=(_host(website_url),),
