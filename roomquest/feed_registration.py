@@ -34,6 +34,7 @@ class CalendarLinks(HTMLParser):
         super().__init__(convert_charrefs=True)
         self.url = url
         self.links = {}
+        self.calendar_pages = set()
 
     def handle_starttag(self, tag, attributes):
         if tag not in ('link', 'a', 'input'):
@@ -49,6 +50,10 @@ class CalendarLinks(HTMLParser):
             return
         parts = urlsplit(url)
         query = parse_qs(parts.query)
+        if (tag == 'a' and parts.hostname == urlsplit(self.url).hostname and not parts.query
+                and parts.path.rstrip('/').rsplit('/', 1)[-1].lower() in
+                ('events', 'calendar', 'events-calendar', 'event-calendar', 'upcoming-events', 'calendar.aspx')):
+            self.calendar_pages.add(url)
         if is_tec_collection(url):
             self.links[url] = 'wordpress'
         elif (webcal or attrs.get('type') == 'text/calendar' or parts.path.lower().endswith('.ics')
@@ -61,7 +66,7 @@ def review(reason, collector=None):
     return {'p_outcome': 'review', 'p_reason': reason, 'p_type': collector}
 
 
-def classify(url, payload, hint=None, endpoint_only=False):
+def classify(url, payload, hint=None, endpoint_only=False, venue_website=False):
     if is_event_export(url):
         return review('single_event_page')
     body = payload.lstrip('\ufeff \t\r\n')
@@ -91,6 +96,8 @@ def classify(url, payload, hint=None, endpoint_only=False):
         preferred = {url: kind for url, kind in links.items() if kind == hint}
         if preferred:
             links = preferred
+    if not links and venue_website and len(parser.calendar_pages) == 1:
+        return {'calendar_page': next(iter(parser.calendar_pages))}
     if len(links) != 1:
         return review('multiple_calendar_links' if links else 'no_reusable_calendar')
     endpoint, kind = next(iter(links.items()))
@@ -105,8 +112,18 @@ def register(ticket):
     url = candidate['url']
     with capture_publisher_pacing() as pacing:
         try:
-            body = fetch_publisher(url, ACCEPT, respect_robots=True, deadline_at=monotonic() + 35)
-            result = classify(url, body, candidate.get('type_hint'), candidate.get('endpoint_only', False))
+            deadline = monotonic() + 35
+            body = fetch_publisher(url, ACCEPT, respect_robots=True, deadline_at=deadline)
+            result = classify(url, body, candidate.get('type_hint'), candidate.get('endpoint_only', False),
+                              candidate.get('verified_venue_website', False))
+            if 'calendar_page' in result:
+                url = result['calendar_page']
+                body = fetch_publisher(url, ACCEPT, respect_robots=True, deadline_at=deadline,
+                                       allowed_hosts=(urlsplit(url).hostname,))
+                result = classify(url, body, candidate.get('type_hint'))
+                if result['p_outcome'] == 'verified':
+                    result['p_outcome'] = 'discovered'
+                result.setdefault('p_endpoint', url)
         except PreviewError as exc:
             reason = str(exc)
             if reason in DENIALS:
@@ -118,5 +135,7 @@ def register(ticket):
                           'p_retry_seconds': max(pacing['retry_after_seconds'], pacing['crawl_delay_seconds'])}
             else:
                 result = review(reason if re.fullmatch(r'[a-z0-9_]{1,100}', reason) else 'publisher_check_failed')
+    if url != candidate['url']:
+        result.setdefault('p_endpoint', url)
     recorded = supabase_rpc('community_collector_finish_registration', {**args, **result}, timeout=8)
     return {'outcome': result['p_outcome'] if recorded else 'lease_expired'}
