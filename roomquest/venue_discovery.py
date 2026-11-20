@@ -162,6 +162,7 @@ def discover(lead, fetch=fetch_publisher, *, deadline_at=None):
         "html_listing": "html_listing_found",
         "none": "calendar_not_found",
         "access_denied": "calendar_access_denied",
+        "multiple_feeds": "multiple_calendar_links",
     }.get(finding, "calendar_needs_review")
     return {"p_outcome": "verified", "p_website_url": official,
             "p_feed_url": feed if feed and host(feed) == host(official) else None,
