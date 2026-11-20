@@ -128,6 +128,8 @@ def register(ticket):
     if not candidate:
         return {'outcome': 'idle'}
     url = candidate['url']
+    from roomquest import registered_listings
+    from roomquest.registration_formats import source_key, extraction_hold
     with capture_publisher_pacing() as pacing:
         try:
             deadline = monotonic() + 35
@@ -143,6 +145,18 @@ def register(ticket):
                     result = (dict(result, p_outcome='discovered') if probe(url, body, result['p_type'])
                               else review('no_extractable_events', result['p_type']))
                 result.setdefault('p_endpoint', url)
+            if url in registered_listings.URLS and result.get('p_outcome') == 'review':
+                def fetch_detail(target, accept):
+                    return fetch_publisher(target, accept, respect_robots=True, deadline_at=deadline,
+                                           allowed_hosts=(urlsplit(url).hostname,))
+                try:
+                    registered_listings.collect({'source_key': source_key(url), 'feed_url': url}, fetch_detail, listing=body)
+                    result = {'p_outcome': 'verified' if url == candidate['url'] else 'discovered',
+                              'p_type': 'html', 'p_endpoint': url}
+                except PreviewError:
+                    raise
+                except (ValueError, KeyError, TypeError) as exc:
+                    result = extraction_hold('html', exc)
             if result['p_outcome'] == 'verified' and not probe(url, body, result['p_type']):
                 result = review('no_extractable_events', result['p_type'])
         except PreviewError as exc:
