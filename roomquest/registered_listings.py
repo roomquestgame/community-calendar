@@ -2,7 +2,7 @@
 import calendar
 from datetime import datetime, timedelta
 import re
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlsplit
 from zoneinfo import ZoneInfo
 
 from bs4 import BeautifulSoup
@@ -57,6 +57,7 @@ def boplex(listing, fetch, today):
     soup = BeautifulSoup(fetch(home, 'text/html'), 'html.parser')
     dates = {(today + timedelta(days=i)).strftime('%a, %b %d').upper().replace(' 0', ' '):
              today + timedelta(days=i) for i in range(61)}
+    locations = {}
     for card in soup.select('article.bp-card-carousel__card'):
         title = card.select_one('a:has(.bp-card-carousel-card__title)')
         venue = content(card, '.bp-card-carousel-card__location')
@@ -68,9 +69,24 @@ def boplex(listing, fetch, today):
         url = urljoin(home, title.get('href', ''))
         if not url.startswith(BOPLEX + '/'):
             continue
+        venue_url = urljoin(home, card.select_one('.bp-card-carousel-card__location').get('href', ''))
+        if venue_url != home + 'our-venues/' + venue.lower().replace(' ', '-'):
+            continue
+        if venue not in locations:
+            page = BeautifulSoup(fetch(venue_url, 'text/html'), 'html.parser')
+            pins = set()
+            for link in page.select('a[href]'):
+                maps = urlsplit(link['href'])
+                if maps.hostname == 'www.google.com' and maps.path.startswith('/maps/place/' + venue.replace(' ', '+') + '/'):
+                    pin = re.search(r'!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)', maps.path)
+                    if pin:
+                        pins.add((float(pin[1]), float(pin[2])))
+            if len(pins) != 1:
+                raise ValueError('boplex_venue_pin_unverified')
+            locations[venue] = pins.pop()
         yield record(title.get_text(' ', strip=True), datetime.combine(day, clock(when)), None,
                      venue, '2700 East Independence Blvd, Charlotte, NC 28205', 'Charlotte',
-                     url, url, content(card, '.bp-card-carousel-card__category'), tz=EASTERN.key)
+                     url, url, content(card, '.bp-card-carousel-card__category'), *locations[venue], tz=EASTERN.key)
 
 
 def resident(soup, url, fetch, today):
@@ -89,7 +105,7 @@ def resident(soup, url, fetch, today):
         day += timedelta(days=(weekday - day.weekday()) % 7)
         while day <= min(last, horizon):
             row = record(title, datetime.combine(day, start), datetime.combine(day, end) if end else None,
-                         'Resident Culture – ' + venue.title(), addresses[name], 'Charlotte', link,
+                         'Resident Culture – ' + ('7th Street' if name == '7th street' else venue.title()), addresses[name], 'Charlotte', link,
                          link + '|' + day.isoformat(), tz=EASTERN.key)
             if row:
                 row['description'] = description(narrative)
