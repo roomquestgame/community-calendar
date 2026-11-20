@@ -60,9 +60,10 @@ def test_registered_ical_worker_emits_usable_address_without_changing_identity()
                        'END:VEVENT','END:VCALENDAR'])
     source = dict(source_key='municipal_6bdd691c0b40e4a6200412d9', kind='ical', platform_adapter='ical',
                   feed_url='https://mms.sd-discovery.org/members/calendar/events_ical.php?org_id=SDDC')
-    with patch('roomquest.preview_worker.fetch_publisher', return_value=raw):
+    with patch('roomquest.preview_worker.fetch_publisher', return_value=raw) as fetch:
         first = preview_source(source)
         assert first == preview_source(source)
+        assert all(call.kwargs['respect_robots'] for call in fetch.call_args_list)
     assert len(first['p_events']) == 1
     record = first['p_events'][0]
     assert record['id'] == 'original'
