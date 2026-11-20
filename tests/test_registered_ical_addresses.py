@@ -35,6 +35,9 @@ def test_same_building_variants_are_order_independent_and_offsite_is_separate():
     ('Main Hall, 44 Park Ave, Suite 21, Auburn, WA 98001', '44 Park Ave, Suite 21, Auburn, WA 98001'),
     ('Main Hall\n44 Park Ave\nAuburn, WA 98001', '44 Park Ave, Auburn, WA 98001'),
     ('Main Hall, 44 Park Ave, Auburn, WA 98001, USA', '44 Park Ave, Auburn, WA 98001'),
+    ('City and County Government Center - 520 3rd Street  Brookings SD 57006', '520 3rd Street, Brookings, SD 57006'),
+    ('- 520 3rd St Suite 300  Brookings SD 57006', '520 3rd St Suite 300, Brookings, SD 57006'),
+    ('-   Brookings SD 57006', ''),
     ('Online at 44 Park Ave, Auburn, WA 98001', ''), ('Pierre SD 57501', ''),
     ('102 Main St / 42 New St, Raleigh, NC', ''), ('Main Hall', ''),
     ('', ''), ('<style>12 Main St, Raleigh, NC', ''),
@@ -71,3 +74,19 @@ def test_registered_ical_worker_emits_usable_address_without_changing_identity()
     assert record['venue_city'] == 'Pierre'
     assert record['lat'] is None
     assert first['p_samples'] == [record]
+
+
+def test_civicplus_recovers_only_the_publishers_own_event_link_and_skips_cancelled_meeting():
+    future = (datetime.now(timezone.utc) + timedelta(days=2)).strftime('%Y%m%dT%H%M%SZ')
+    url = 'https://city.example.org/common/modules/iCalendar/iCalendar.aspx?catID=14&feed=calendar'
+    source = dict(source_key='municipal_' + 'b' * 24, kind='ical', platform_adapter='ical', feed_url=url)
+    events = []
+    for uid, title in [('123', 'City Council Meeting'), ('124', 'City Council Meeting - CANCELLED')]:
+        events.extend(['BEGIN:VEVENT', 'UID:' + uid, 'SUMMARY:' + title, 'DTSTART:' + future,
+                       'DESCRIPTION:https://city.example.org/calendar.aspx?EID=' + uid,
+                       'LOCATION:Government Center - 520 3rd Street  Brookings SD 57006', 'END:VEVENT'])
+    raw = '\r\n'.join(['BEGIN:VCALENDAR', 'VERSION:2.0', *events, 'END:VCALENDAR'])
+    with patch('roomquest.preview_worker.fetch_publisher', return_value=raw):
+        result = preview_source(source)
+    assert [row['id'] for row in result['p_events']] == ['123']
+    assert result['p_events'][0]['event_url'] == 'https://city.example.org/calendar.aspx?EID=123'

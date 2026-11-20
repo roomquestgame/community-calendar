@@ -631,6 +631,12 @@ def parse(payload, source, *, legacy=False, include_description=False):
     # Retain the actual publisher labels separately from the legacy single text
     # category. VEVENT CATEGORIES can be a multi-valued vCategory or repeated.
     # Bound the labels before they enter our JSON staging contract.
+    source_url = source.get('url') or ''
+    direct_civicplus = bool(re.fullmatch(r'municipal_[0-9a-f]{24}', source.get('source_key') or '')
+                            and urlsplit(source_url).path.lower() == '/common/modules/icalendar/icalendar.aspx')
+    if direct_civicplus:
+        # Some CivicPlus calendars announce an explicit cancellation in the title.
+        result = [row for row in result if not re.search(r'\s[-–—]\s*cancell?ed\s*$', row['title'], re.I)]
     categories = {}
     detail_urls = {}
     for event in events:
@@ -646,7 +652,7 @@ def parse(payload, source, *, legacy=False, include_description=False):
                 if len(labels) >= 20:
                     break
         categories[str(event.get("UID", ""))] = labels
-        if include_description and source.get('source_key') == 'independence_ia_library_family':
+        if direct_civicplus or (include_description and source.get('source_key') == 'independence_ia_library_family'):
             uid = str(event.get('UID', ''))
             detail_urls[uid] = civicplus_detail_url(str(event.get('DESCRIPTION', '')), uid, source['url'])
 
@@ -663,6 +669,8 @@ def parse(payload, source, *, legacy=False, include_description=False):
             if not detail_urls.get(uid):
                 raise ValueError('publisher_detail_link_missing')
             e['event_url'] = detail_urls[uid]
+        if direct_civicplus and not e.get('event_url'):
+            e['event_url'] = detail_urls.get(e['id'].split('__', 1)[0])
         if not e.get("event_url"):
             feed_url = source.get("url")
             if not isinstance(feed_url, str) or not public_source_url(feed_url):

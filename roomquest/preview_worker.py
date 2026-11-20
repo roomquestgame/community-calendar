@@ -3177,7 +3177,7 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
             profile = profiles().get(source["source_key"])
             if not profile or profile["type"] != "ics" or profile["url"] != source.get("feed_url"):
                 raise PreviewError("unregistered_mapsee_source")
-        deadline = min(monotonic() + 20, deadline_at - 8 if deadline_at is not None else float("inf"))
+        deadline = min(monotonic() + (35 if direct_ical else 20), deadline_at - 8 if deadline_at is not None else float("inf"))
         try:
             if source_key in nebraska_library_ics.SOURCES:
                 payload = fetch_publisher(source["feed_url"], "text/calendar", respect_robots=True,
