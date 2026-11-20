@@ -201,7 +201,7 @@ def find_calendar(website_html, website_url, event_url, fetch, deadline):
         direct = list(parsed.feeds)
         wp_direct = [u for u in direct if parsed.feeds[u] == "wordpress"]
         if len(direct) > 1 and len(wp_direct) != 1:
-            return best_html, "multiple_feeds"
+            return None, "multiple_feeds"
         if len(wp_direct) == 1:
             direct = wp_direct
         for endpoint in direct:
