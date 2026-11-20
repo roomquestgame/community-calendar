@@ -10,7 +10,7 @@ from time import monotonic
 from urllib.parse import urlsplit, urlunsplit
 import re
 
-from roomquest.feed_registration import CalendarLinks, classify, is_event_export
+from roomquest.venue_calendar_locator import find_calendar
 from roomquest.preview_worker import (
     PreviewError, fetch_publisher, public_source_url, supabase_rpc,
 )
@@ -121,24 +121,6 @@ def venue_proof(page, url, lead):
     return None
 
 
-def candidate_page(page, url, lead):
-    links = CalendarLinks(url)
-    links.feed(page[:MAX_HTML])
-    # Only a single clearly linked source can be automatically handed off.
-    same_host_feeds = [(u, kind) for u, kind in links.links.items()
-                       if host(u) == host(url) and not is_event_export(u)]
-    if len(same_host_feeds) == 1:
-        return same_host_feeds[0][0]
-    if len(same_host_feeds) > 1:
-        return None
-    event = lead.get("event_url") or ""
-    if (public_source_url(event) and host(event) == host(url)
-            and urlsplit(event).path.rstrip("/").lower().endswith("/events")):
-        return event
-    pages = [u for u in links.calendar_pages if host(u) == host(url)]
-    return pages[0] if len(pages) == 1 else None
-
-
 def discover(lead, fetch=fetch_publisher, *, deadline_at=None):
     """A bounded first-party proof and at most one linked calendar-page check."""
     if not isinstance(lead, dict) or not lead.get("name"):
@@ -168,29 +150,24 @@ def discover(lead, fetch=fetch_publisher, *, deadline_at=None):
     proof = venue_proof(html, official, lead)
     if not proof:
         return {"p_outcome": "review", "p_reason": "publisher_identity_unverified"}
-    feed = candidate_page(html, official, lead)
-    if feed and feed != official:
-        # One additional request validates the calendar link is actually live.
-        # HTML calendars without a reusable adapter remain review candidates.
-        child = fetch(feed, "text/calendar,application/json,text/html",
-                      respect_robots=True, allowed_hosts=scope, deadline_at=deadline)
-        result = classify(feed, child)
-        if result.get("p_outcome") == "verified":
-            feed = result.get("p_endpoint", feed)
-        elif result.get("p_outcome") == "discovered":
-            endpoint = result.get("p_endpoint")
-            feed = endpoint if endpoint and host(endpoint) == host(official) else None
-        elif result.get("p_reason") in ("single_event_page", "invalid_ical"):
-            feed = None
-        elif result.get("p_outcome") == "review" and (
-                feed.lower().endswith(".ics") or "ical=1" in feed.lower()
-                or "icalendar.aspx" in feed.lower()):
-            feed = None  # A failed subscription is not a working feed.
-        # A genuine HTML calendar page remains a candidate even without an
-        # implemented adapter; the shared registrar will mark it for review.
+    feed, finding = find_calendar(
+        html, official, evidence, fetch, deadline)
+    # The receiving registry independently checks the proposed endpoint.
+    # Never supply an inferred URL that was not visited and validated.
+    if finding == "access_denied":
+        feed = None
+    reason = {
+        "ical": "reusable_ical",
+        "wordpress": "reusable_wordpress",
+        "squarespace": "reusable_squarespace",
+        "html_listing": "html_listing_found",
+        "none": "calendar_not_found",
+        "access_denied": "calendar_access_denied",
+        "multiple_feeds": "multiple_calendar_links",
+    }.get(finding, "calendar_needs_review")
     return {"p_outcome": "verified", "p_website_url": official,
             "p_feed_url": feed if feed and host(feed) == host(official) else None,
-            "p_proof": proof}
+            "p_proof": proof, "p_reason": reason}
 
 
 def run(ticket):

@@ -22,19 +22,21 @@ def factory(pages, seen):
     return fetch
 
 
-def test_boplex_shares_a_real_ical_feed_but_not_single_event_calendar():
+def test_synthetic_boplex_style_page_discovery_requires_a_valid_ical_response():
     website = "https://www.boplex.com/our-venues/bojangles-coliseum"
     calendar = "https://www.boplex.com/events"
     feed = "https://www.boplex.com/events/?ical=1"
     pages = {
         website: '<title>Bojangles Coliseum</title><p>Charlotte</p><a href="/events">All Events</a>',
         calendar: '<h1>Events</h1><a href="/events/?ical=1">Subscribe</a>',
+        feed: 'BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nUID:checkers-1\nDTSTART:20261121T190000Z\nSUMMARY:Game\nEND:VEVENT\nEND:VCALENDAR',
     }
     seen = []
     result = discover(lead(), fetch=factory(pages,seen))
     assert result == {"p_outcome":"verified","p_website_url":website,
-                      "p_feed_url":feed,"p_proof":"name_city_official_page"}
-    assert [x[0] for x in seen] == [website,calendar]
+                      "p_feed_url":feed,"p_proof":"name_city_official_page",
+                      "p_reason":"reusable_ical"}
+    assert [x[0] for x in seen] == [website,calendar,feed]
 
 
 def test_brewery_name_branch_suffix_accepts_its_verified_site_and_events_page():
@@ -56,7 +58,8 @@ def test_brewery_name_branch_suffix_accepts_its_verified_site_and_events_page():
     assert result["p_outcome"]=="verified"
     assert result["p_proof"]=="publisher_event_owner"
     assert result["p_feed_url"]=="https://residentculturebrewing.com/events/"
-    assert len(seen)==2
+    assert result["p_reason"]=="html_listing_found"
+    assert len(seen)==2  # Valid recurring events page, not a machine feed.
 
 
 def test_brand_without_calendar_remains_a_permanent_website_candidate():
@@ -68,7 +71,8 @@ def test_brand_without_calendar_remains_a_permanent_website_candidate():
                       (seen.append(url) or "<title>Broadway Comedy Club</title><h2>Comedy shows</h2>"))
     assert result["p_outcome"]=="verified"
     assert result["p_feed_url"] is None
-    assert seen==["https://www.broadwaycomedyclub.com/"]
+    assert seen==["https://www.broadwaycomedyclub.com/",
+                  "https://www.broadwaycomedyclub.com/shows"]
 
 
 def test_an_unverified_site_with_feed_links_is_not_promoted():
@@ -124,3 +128,188 @@ def test_named_venue_and_city_page_proof():
     assert venue_proof(html,"https://www.boplex.com/our-venues/ovens-auditorium",
                        lead("Ovens Auditorium","https://www.boplex.com/our-venues/ovens-auditorium",
                             address="2900 E Independence Boulevard, Charlotte, NC 28205"))=="name_city_official_page"
+
+
+
+def test_tec_endpoint_is_automatically_probed_only_when_website_has_tec_evidence():
+    source = lead("Broadway Comedy Club", "https://www.broadwaycomedyclub.com/",
+                  "https://www.broadwaycomedyclub.com/shows/november-2026",
+                  "318 W 53rd St, New York, NY")
+    host = "https://www.broadwaycomedyclub.com"
+    api = host + "/wp-json/tribe/events/v1/events"
+    pages = {
+        host + "/": '<title>Broadway Comedy Club</title><div class="tribe-events">Upcoming Events</div>',
+        api: '{"events":[{"id":31,"title":"Comedy Show","start_date":"2026-11-22 19:00:00"}],"total":1}',
+    }
+    seen = []
+    def fetch(url, accept, **opts):
+        seen.append(url)
+        assert opts["respect_robots"] is True
+        assert opts["allowed_hosts"] == ("www.broadwaycomedyclub.com",)
+        return pages[url]
+    result = discover(source, fetch=fetch)
+    assert result["p_feed_url"] == api
+    assert result["p_reason"] == "reusable_wordpress"
+    assert seen == [host + "/", api]
+
+
+def test_single_event_ical_download_is_not_promoted_as_calendar():
+    source = lead()
+    calls=[]
+    def fetch(url,accept,**opts):
+        calls.append(url)
+        return ('<h1>Bojangles Coliseum Charlotte</h1>'
+                '<a href="/events/checkers.ics">Add to Calendar</a>')
+    result = discover(source, fetch=fetch)
+    assert result["p_feed_url"] is None
+    assert len(calls) <= 2  # A parent index probe may occur, never the event ICS.
+
+
+def test_dated_html_events_collection_is_submitted_for_adapter_review():
+    source=lead("Broadway Comedy Club", "https://www.broadwaycomedyclub.com/",
+                "https://www.broadwaycomedyclub.com/shows/a-show",
+                "318 W 53rd St, New York, NY")
+    homepage=('<h1>Broadway Comedy Club</h1><h2>All Events</h2>'
+              '<time datetime="2026-11-20">Nov 20</time><a href="/shows/first-comedy-show">First</a>'
+              '<time datetime="2026-11-21">Nov 21</time><a href="/shows/second-comedy-show">Second</a>'
+              '<time datetime="2026-11-22">Nov 22</time><a href="/shows/third-comedy-show">Third</a>')
+    result=discover(source,fetch=lambda url,accept,**opts: homepage)
+    assert result["p_feed_url"] == "https://www.broadwaycomedyclub.com/shows"
+    assert result["p_reason"] == "html_listing_found"
+
+
+def test_dynamic_first_party_calendar_parent_reaches_html_adapter_queue():
+    site="https://www.boplex.com/our-venues/bojangles-coliseum"
+    pages={
+      site: '<h1>Bojangles Coliseum Charlotte</h1><a href="/events">All Events</a>',
+      "https://www.boplex.com/events": '<h1>Upcoming Events</h1><div id="dynamic-calendar"></div>',
+    }
+    calls=[]
+    result=discover(lead(),fetch=factory(pages,calls))
+    assert result["p_feed_url"] == "https://www.boplex.com/events"
+    assert result["p_reason"] == "html_listing_found"
+    assert len(calls)==2
+
+
+
+def test_multiple_full_calendar_links_are_held_not_arbitrarily_selected():
+    html=('<h1>Bojangles Coliseum Charlotte</h1>'
+          '<a href="/events/first.ics">Subscribe to Sports Calendar</a>'
+          '<a href="/events/second.ics">Subscribe to Concert Calendar</a>')
+    calls=[]
+    result=discover(lead(),fetch=lambda url,accept,**opts:
+                    (calls.append(url) or html))
+    assert result["p_feed_url"] is None
+    assert result["p_reason"] == "multiple_calendar_links"
+    assert len(calls) == 1  # Don't choose an arbitrary partial calendar.
+
+
+def test_calendar_link_403_does_not_erase_first_party_website_confirmation():
+    source=lead()
+    calendar="https://www.boplex.com/events/?ical=1"
+    def fetch(url,accept,**opts):
+        if url==calendar:
+            raise PreviewError("publisher_http_403")
+        return ('<h1>Bojangles Coliseum Charlotte</h1>'
+                '<a href="/events/?ical=1">Subscribe to Calendar</a>')
+    result=discover(source,fetch=fetch)
+    assert result["p_outcome"]=="verified"
+    assert result["p_feed_url"] is None
+    assert result["p_reason"]=="calendar_access_denied"
+
+
+def test_discovery_keeps_venue_specific_query_selectors_and_validates_response():
+    source=lead("Resident Culture Brewing (Plaza Midwood)",
+                "https://residentculturebrewing.com/",
+                "https://residentculturebrewing.com/events/",
+                "2101 Central Ave, Charlotte, NC 28205")
+    homepage=('<h1>Resident Culture Brewing</h1>'
+              '<a href="/events/?fwp_event_location=plaza-midwood">Events Calendar</a>')
+    listing="https://residentculturebrewing.com/events/?fwp_event_location=plaza-midwood"
+    def fetch(url,accept,**opts):
+        if url==source["website"]:
+            return homepage
+        if url == listing:
+            return ('<h1>Events Calendar</h1>'
+                    '<div class="tribe-events">All events</div>')
+        assert url == "https://residentculturebrewing.com/wp-json/tribe/events/v1/events"
+        return '{"error":"api_not_enabled"}'
+    result=discover(source,fetch=fetch)
+    assert result["p_feed_url"] == listing  # Keep exact venue selector.
+    assert result["p_reason"]=="html_listing_found"
+
+
+def test_probe_budget_never_trawls_many_calendar_pages():
+    source=lead()
+    urls=[]
+    homepage=('<h1>Bojangles Coliseum Charlotte</h1>'
+              + "".join(f'<a href="/events-page-{i}">View All Events</a>'
+                        for i in range(20)))
+    def fetch(url,accept,**opts):
+        urls.append(url)
+        return homepage if url==source["website"] else "<h1>Events</h1>"
+    discover(source,fetch=fetch)
+    assert len(urls)<=5  # Website + no more than four bounded requests.
+
+
+
+def test_venue_specific_events_filter_is_preserved_exactly():
+    source=lead("Resident Culture Brewing (Plaza Midwood)",
+                "https://residentculturebrewing.com/",
+                "https://residentculturebrewing.com/events/",
+                "2101 Central Ave, Charlotte, NC 28205")
+    venue_list="https://residentculturebrewing.com/events/?fwp_event_location=plaza-midwood"
+    pages={
+        source["website"]: '<h1>Resident Culture Brewing</h1><a href="/events/?fwp_event_location=plaza-midwood">View All Events</a>',
+        venue_list: '<h1>Events</h1><p>Browse upcoming events by location</p>',
+        "https://residentculturebrewing.com/events": '<h1>Events</h1>',
+    }
+    seen=[]
+    def fetch(url,accept,**opts):
+        seen.append(url)
+        return pages[url]
+    result=discover(source,fetch=fetch)
+    assert result["p_outcome"]=="verified"
+    assert result["p_feed_url"]==venue_list
+    assert result["p_reason"]=="html_listing_found"
+    assert seen[:2]==[source["website"],venue_list]
+
+
+def test_two_distinct_venues_discover_same_official_boplex_calendar():
+    root="https://www.boplex.com"
+    events=root+"/events"
+    for name,slug in [("Bojangles Coliseum","bojangles-coliseum"),
+                      ("Ovens Auditorium","ovens-auditorium")]:
+        website=root+"/our-venues/"+slug
+        evidence=root+"/events/"+slug+"-concert"
+        source=lead(name,website,evidence,
+                    "2700 E Independence Boulevard, Charlotte, NC 28205")
+        def fetch(url,accept,**opts):
+            if url==website:
+                return f'<h1>{name}</h1><p>Charlotte</p><a href="/events">View All Events</a>'
+            assert url==events
+            return '<h1>Upcoming Events</h1><div class="event-calendar"></div>'
+        result=discover(source,fetch=fetch)
+        assert result["p_feed_url"]==events
+        assert result["p_reason"]=="html_listing_found"
+
+
+def test_squarespace_calendar_json_is_validated_before_handoff():
+    source=lead("Example Events Center",
+                "https://www.exampleevents.org/events",
+                "https://www.exampleevents.org/events",
+                "14 Main Street, Charlotte, NC 28205")
+    api="https://www.exampleevents.org/events?format=json"
+    html=('<h1>Example Events Center</h1><div class="squarespace-context">'
+          '<time datetime="2026-11-22">November 22</time>'
+          '<p>Upcoming Events</p></div>')
+    seen=[]
+    def fetch(url,accept,**opts):
+        seen.append(url)
+        if url==api:
+            return '{"upcoming":[{"id":"abc123","startDate":1795323600000,"title":"Event"}]}'
+        return html
+    result=discover(source,fetch=fetch)
+    assert result["p_feed_url"]==api
+    assert result["p_reason"]=="reusable_squarespace"
+    assert seen==[source["website"],api]
