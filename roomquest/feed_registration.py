@@ -6,13 +6,13 @@ from time import monotonic
 from urllib.parse import parse_qs, urldefrag, urljoin, urlsplit
 
 from icalendar import Calendar
-from roomquest import localist_registration
+from roomquest import localist_registration, provider_registration
 from roomquest.registration_formats import collection_evidence, probe, scoped_endpoint
 
 from roomquest.preview_worker import PreviewError, fetch_publisher, public_source_url, supabase_rpc
 from roomquest.publisher_pacing import capture_publisher_pacing
 
-ACCEPT = 'text/calendar, application/json, text/html;q=0.8'
+ACCEPT = 'text/calendar, application/json, application/xml, text/xml, text/html;q=0.8'
 DENIALS = {'robots_denied', 'publisher_http_401', 'publisher_http_403'}
 RETRYABLE = {'dns_unavailable', 'robots_unavailable', 'source_fetch_deadline', 'source_network_error',
              'publisher_pacing_deferred', 'publisher_rate_limited', 'publisher_http_408', 'publisher_http_429'}
@@ -143,14 +143,34 @@ def register(ticket):
     with capture_publisher_pacing() as pacing:
         try:
             deadline = monotonic() + 35
-            body = fetch_publisher(url, ACCEPT, respect_robots=True, deadline_at=deadline)
-            result = classify(url, body, candidate.get('type_hint'), candidate.get('endpoint_only', False),
-                              candidate.get('verified_venue_website', False))
+            def check(target, endpoint_only=False, venue_website=False):
+                def fetch(resource, accept):
+                    return fetch_publisher(resource, accept, respect_robots=True, deadline_at=deadline,
+                                           allowed_hosts=(urlsplit(target).hostname,))
+                adapter = provider_registration.family(target)
+                body = None if adapter else fetch_publisher(
+                    target, ACCEPT, respect_robots=True, deadline_at=deadline,
+                    **({'allowed_hosts': (urlsplit(target).hostname,)} if target != candidate['url'] else {}))
+                adapter = adapter or provider_registration.family(target, body)
+                if adapter:
+                    try:
+                        config = provider_registration.read_profile(target, adapter, supabase_rpc)
+                        records = provider_registration.collect(target, adapter, fetch, deadline=deadline,
+                                                                profile=config, body=body)
+                        if records:
+                            return {'p_outcome':'verified', 'p_endpoint':target, 'p_type':adapter}, body
+                        return review('no_extractable_events', adapter), body
+                    except PreviewError:
+                        raise
+                    except (KeyError, ValueError, TypeError, OverflowError, AttributeError) as exc:
+                        return extraction_hold(adapter, exc), body
+                return classify(target, body, candidate.get('type_hint'), endpoint_only, venue_website), body
+
+            result, body = check(url, candidate.get('endpoint_only', False),
+                                 candidate.get('verified_venue_website', False))
             if 'calendar_page' in result:
                 url = result['calendar_page']
-                body = fetch_publisher(url, ACCEPT, respect_robots=True, deadline_at=deadline,
-                                       allowed_hosts=(urlsplit(url).hostname,))
-                result = classify(url, body, candidate.get('type_hint'))
+                result, body = check(url)
                 if result['p_outcome'] == 'verified':
                     result = (dict(result, p_outcome='discovered') if probe(url, body, result['p_type'])
                               else review('no_extractable_events', result['p_type']))
