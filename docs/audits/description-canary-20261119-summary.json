@@ -1,0 +1,287 @@
+[
+  {
+    "source_id": 2422,
+    "source_key": "municipal_mapsee_e701e9e414d90b3dd7c28372",
+    "publisher": "Boise Public Library - Library! at Bown Crossing, Library! at Cole & Ustick (Boise, ID)",
+    "started_at": "2026-11-20T01:31:38.121995+00:00",
+    "status": "captured",
+    "production_writes": 0,
+    "events": 196,
+    "nonblank": 196,
+    "longer": 0,
+    "shortened": 0,
+    "additional_characters": 0,
+    "encoding_repaired": 0,
+    "held_for_review": 8,
+    "max_description": 1897,
+    "response_receipts": [
+      {
+        "url": "https://boisepubliclibrary.libcal.com/ical_subscribe.php?src=p&cid=12885&cam=6072,6071",
+        "sha256": "bc8b2a7425cd7942ea428c7c57a1fed49ce4bc5967148ba42488a82c81d7067c",
+        "characters_or_bytes": 367180
+      }
+    ],
+    "finished_at": "2026-11-20T01:31:50.018083+00:00"
+  },
+  {
+    "source_id": 2898,
+    "source_key": "municipal_mapsee_76b81f64b3833a4e18382a92",
+    "publisher": "Fountaindale Public Library (Bolingbrook, IL)",
+    "started_at": "2026-11-20T01:31:50.018500+00:00",
+    "status": "captured",
+    "production_writes": 0,
+    "events": 317,
+    "nonblank": 317,
+    "longer": 0,
+    "shortened": 0,
+    "additional_characters": 0,
+    "encoding_repaired": 104,
+    "held_for_review": 0,
+    "max_description": 200,
+    "response_receipts": [
+      {
+        "url": "https://fountaindale.libnet.info/feeds?data=eyJmZWVkVHlwZSI6ImljYWwiLCJmaWx0ZXJzIjp7ImxvY2F0aW9uIjpbIjM3OCJdLCJhZ2VzIjpbImFsbCJdLCJ0eXBlcyI6WyJhbGwiXSwidGFncyI6W10sInRlcm0iOiIiLCJkYXlzIjo5MH19",
+        "sha256": "08022ab266d37f89d29c2870397a924eca35ed198b5895252ab28efac3d3704c",
+        "characters_or_bytes": 251724
+      }
+    ],
+    "finished_at": "2026-11-20T01:31:54.235740+00:00"
+  },
+  {
+    "source_id": 3453,
+    "source_key": "municipal_mapsee_596d8adec09fb63c63d0ec8c",
+    "publisher": "Montgomery County Public Libraries - Rockville Memorial, Twinbrook, Potomac (Washington)",
+    "started_at": "2026-11-20T01:31:54.236156+00:00",
+    "status": "captured",
+    "production_writes": 0,
+    "events": 249,
+    "nonblank": 249,
+    "longer": 0,
+    "shortened": 0,
+    "additional_characters": 0,
+    "encoding_repaired": 6,
+    "held_for_review": 0,
+    "max_description": 199,
+    "response_receipts": [
+      {
+        "url": "https://mcpl.libnet.info/feeds?data=eyJmZWVkVHlwZSI6ImljYWwiLCJmaWx0ZXJzIjp7ImxvY2F0aW9uIjpbIjE3NzUiLCIxNzc3IiwiMTc3MyJdLCJhZ2VzIjpbImFsbCJdLCJ0eXBlcyI6WyJhbGwiXSwidGFncyI6W10sInRlcm0iOiIiLCJkYXlzIjo5MH19",
+        "sha256": "3af1ab2394c67b6024dc26b5d7576929d44c0f2c4ce5c0e120ba64af67463389",
+        "characters_or_bytes": 246369
+      }
+    ],
+    "finished_at": "2026-11-20T01:31:56.766719+00:00"
+  },
+  {
+    "source_id": 3867,
+    "source_key": "municipal_mapsee_0067c97a79c6399c79eda7b2",
+    "publisher": "Seattle City Calendar",
+    "started_at": "2026-11-20T01:31:56.767124+00:00",
+    "status": "captured",
+    "production_writes": 0,
+    "events": 379,
+    "nonblank": 379,
+    "longer": 7,
+    "shortened": 0,
+    "additional_characters": 2488,
+    "encoding_repaired": 0,
+    "held_for_review": 15,
+    "max_description": 2950,
+    "response_receipts": [
+      {
+        "url": "https://www.trumba.com/calendars/seattlegov-city-wide.ics",
+        "sha256": "ef59a2ca3baa07b1fe1cf4fdecaf25a8ca324fed364511e1a1650253dbef9b4f",
+        "characters_or_bytes": 1266081
+      }
+    ],
+    "finished_at": "2026-11-20T01:32:02.379103+00:00"
+  },
+  {
+    "source_id": 3973,
+    "source_key": "municipal_mapsee_58f2b9a6a8c91f848193aecc",
+    "publisher": "St. Mary's County Library (St. Mary's County, MD)",
+    "started_at": "2026-11-20T01:32:02.379490+00:00",
+    "status": "captured",
+    "production_writes": 0,
+    "events": 220,
+    "nonblank": 220,
+    "longer": 0,
+    "shortened": 0,
+    "additional_characters": 0,
+    "encoding_repaired": 12,
+    "held_for_review": 0,
+    "max_description": 200,
+    "response_receipts": [
+      {
+        "url": "https://stmalib.libnet.info/feeds?data=eyJmZWVkVHlwZSI6ImljYWwiLCJmaWx0ZXJzIjp7ImxvY2F0aW9uIjpbIjE5MjciLCIxOTI4IiwiMTkyOSJdLCJhZ2VzIjpbImFsbCJdLCJ0eXBlcyI6WyJhbGwiXSwidGFncyI6W10sInRlcm0iOiIiLCJkYXlzIjo5MH19",
+        "sha256": "5f11de733c415060d9b1c75aa2bc84b168c1c3101d516a92e28c1069dd49a51f",
+        "characters_or_bytes": 198480
+      }
+    ],
+    "finished_at": "2026-11-20T01:32:06.040343+00:00"
+  },
+  {
+    "source_id": 4531,
+    "source_key": "municipal_mapsee_f63b83aa136931e0a77618b3",
+    "publisher": "Main Street Takoma (Takoma Park / Takoma DC)",
+    "started_at": "2026-11-20T01:32:06.040922+00:00",
+    "status": "captured",
+    "production_writes": 0,
+    "events": 182,
+    "nonblank": 182,
+    "longer": 1,
+    "shortened": 0,
+    "additional_characters": 254,
+    "encoding_repaired": 0,
+    "held_for_review": 0,
+    "max_description": 2254,
+    "response_receipts": [
+      {
+        "url": "https://mainstreettakoma.org/wp-json/tribe/events/v1/events?per_page=100&start_date=2026-11-20&end_date=2027-01-19&page=1",
+        "sha256": "c4206a6843373c58a5fd78061926a9ac4af46fc4aec91ccee1e693db21c71b75",
+        "characters_or_bytes": 190217
+      },
+      {
+        "url": "https://mainstreettakoma.org/wp-json/tribe/events/v1/events?per_page=100&start_date=2026-11-20&end_date=2027-01-19&page=2",
+        "sha256": "82d79803c9784a50a967928a385ffd75925eb05910b63abd465123ad8a1d565a",
+        "characters_or_bytes": 189397
+      },
+      {
+        "url": "https://mainstreettakoma.org/wp-json/tribe/events/v1/events?per_page=100&start_date=2026-11-20&end_date=2027-01-19&page=3",
+        "sha256": "cc8a5241dca907d9bd97b128c8406cb74c6baecb28d4b5bd63e28e353190d154",
+        "characters_or_bytes": 190993
+      },
+      {
+        "url": "https://mainstreettakoma.org/wp-json/tribe/events/v1/events?per_page=100&start_date=2026-11-20&end_date=2027-01-19&page=4",
+        "sha256": "6d825c674a8499a5a67d847037a2c9c2dc74cd375279268e1c283abbcd57c9ca",
+        "characters_or_bytes": 129633
+      }
+    ],
+    "finished_at": "2026-11-20T01:32:11.714287+00:00"
+  },
+  {
+    "source_id": 4643,
+    "source_key": "municipal_mapsee_f805b83dcb7b49a7b56ca68a",
+    "publisher": "Reston Community Center",
+    "started_at": "2026-11-20T01:32:11.714731+00:00",
+    "status": "captured",
+    "production_writes": 0,
+    "events": 144,
+    "nonblank": 144,
+    "longer": 0,
+    "shortened": 0,
+    "additional_characters": 0,
+    "encoding_repaired": 0,
+    "held_for_review": 0,
+    "max_description": 1523,
+    "response_receipts": [
+      {
+        "url": "https://restoncommunitycenter.com/wp-json/tribe/events/v1/events?per_page=100&start_date=2026-11-20&end_date=2027-01-19&page=1",
+        "sha256": "8c81b0f02eb3c1f68ee13031e4c98b91e26e1fd98b1f3d768e39f921012dfd44",
+        "characters_or_bytes": 290866
+      },
+      {
+        "url": "https://restoncommunitycenter.com/wp-json/tribe/events/v1/events?per_page=100&start_date=2026-11-20&end_date=2027-01-19&page=2",
+        "sha256": "98301573dde92de7bbba8f67499d63a3e39658f125e362fc5289c556fcfe5bd0",
+        "characters_or_bytes": 287851
+      },
+      {
+        "url": "https://restoncommunitycenter.com/wp-json/tribe/events/v1/events?per_page=100&start_date=2026-11-20&end_date=2027-01-19&page=3",
+        "sha256": "56b68a7d973d377e4cc565427589f5226ebfb0c089e9b67e7e1810efcf9587f3",
+        "characters_or_bytes": 232741
+      }
+    ],
+    "finished_at": "2026-11-20T01:32:16.680514+00:00"
+  },
+  {
+    "source_id": 5359,
+    "source_key": "omaha_public_library_biblioevents_ne",
+    "publisher": "Omaha Public Library",
+    "started_at": "2026-11-20T01:32:16.680909+00:00",
+    "status": "captured",
+    "production_writes": 0,
+    "events": 221,
+    "nonblank": 221,
+    "longer": 1,
+    "shortened": 0,
+    "additional_characters": 912,
+    "encoding_repaired": 0,
+    "held_for_review": 0,
+    "max_description": 2912,
+    "response_receipts": [
+      {
+        "url": "https://gateway.bibliocommons.com/v2/libraries/omaha/events?limit=100&page=1&startDate=2026-11-19&endDate=2026-12-11",
+        "sha256": "7f06944aae6c349f1a21c9636c9540ea05bb0bd43ffbffe7fa2dd0ce6096ff08",
+        "characters_or_bytes": 531124
+      },
+      {
+        "url": "https://gateway.bibliocommons.com/v2/libraries/omaha/events?limit=100&page=2&startDate=2026-11-19&endDate=2026-12-11",
+        "sha256": "c0e77dfd452d0512779e81cd9ef6e0ba8e1b21af69d6f3175b6f52d1e923a0b2",
+        "characters_or_bytes": 702315
+      },
+      {
+        "url": "https://gateway.bibliocommons.com/v2/libraries/omaha/events?limit=100&page=3&startDate=2026-11-19&endDate=2026-12-11",
+        "sha256": "3817175e3cf060aee54d4b477e546abcc2c9014d83746c01ca442ca985930484",
+        "characters_or_bytes": 211165
+      },
+      {
+        "url": "https://gateway.bibliocommons.com/v2/libraries/omaha/events?limit=100&page=4&startDate=2026-11-19&endDate=2026-12-11",
+        "sha256": "952e05b198b2074def59e0a8c52187f05caf3c16d4cee4b27074e52d7b47ac6a",
+        "characters_or_bytes": 253
+      }
+    ],
+    "finished_at": "2026-11-20T01:32:21.189990+00:00"
+  },
+  {
+    "source_id": 5434,
+    "source_key": "lincoln_city_libraries_localhop_ne",
+    "publisher": "Lincoln City Libraries",
+    "started_at": "2026-11-20T01:32:21.190559+00:00",
+    "status": "captured",
+    "production_writes": 0,
+    "events": 308,
+    "nonblank": 308,
+    "longer": 0,
+    "shortened": 0,
+    "additional_characters": 0,
+    "encoding_repaired": 0,
+    "held_for_review": 0,
+    "max_description": 825,
+    "response_receipts": [
+      {
+        "url": "https://events.getlocalhop.com/widgets/embed-calendar-js",
+        "sha256": "24a4bb5788a20821607bae5b1a731c38c69df5382ecd441f56568b7ae82809dc",
+        "characters_or_bytes": 31009
+      },
+      {
+        "url": "https://api.getlocalhop.com/1/classes/EventInstance?order=standardStartDate%2CobjectId&limit=500&include=event&where=%7B%22organization%22%3A%7B%22%24in%22%3A%5B%7B%22__type%22%3A%22Pointer%22%2C%22className%22%3A%22Organization%22%2C%22objectId%22%3A%226AtaVnGPEG%22%7D%2C%7B%22__type%22%3A%22Pointer%22%2C%22className%22%3A%22Organization%22%2C%22objectId%22%3A%22nK5vBZe484%22%7D%2C%7B%22__type%22%3A%22Pointer%22%2C%22className%22%3A%22Organization%22%2C%22objectId%22%3A%2280HRrgeDwT%22%7D%2C%7B%22__type%22%3A%22Pointer%22%2C%22className%22%3A%22Organization%22%2C%22objectId%22%3A%224564snjkLG%22%7D%2C%7B%22__type%22%3A%22Pointer%22%2C%22className%22%3A%22Organization%22%2C%22objectId%22%3A%2263gzyMgEK9%22%7D%2C%7B%22__type%22%3A%22Pointer%22%2C%22className%22%3A%22Organization%22%2C%22objectId%22%3A%22lv5NRuKBHq%22%7D%2C%7B%22__type%22%3A%22Pointer%22%2C%22className%22%3A%22Organization%22%2C%22objectId%22%3A%22SnpJDYGwJd%22%7D%2C%7B%22__type%22%3A%22Pointer%22%2C%22className%22%3A%22Organization%22%2C%22objectId%22%3A%222eg12ZWClL%22%7D%2C%7B%22__type%22%3A%22Pointer%22%2C%22className%22%3A%22Organization%22%2C%22objectId%22%3A%22RE2w8AISgs%22%7D%2C%7B%22__type%22%3A%22Pointer%22%2C%22className%22%3A%22Organization%22%2C%22objectId%22%3A%22UhFI0W5rYY%22%7D%5D%7D%2C%22standardStartDate%22%3A%7B%22%24gte%22%3A%7B%22__type%22%3A%22Date%22%2C%22iso%22%3A%222026-11-20T00%3A00%3A00.000Z%22%7D%2C%22%24lte%22%3A%7B%22__type%22%3A%22Date%22%2C%22iso%22%3A%222027-01-19T00%3A00%3A00.000Z%22%7D%7D%2C%22status%22%3A%22publish%22%7D",
+        "sha256": "dca4d8ccbfc58f0caeeb8c9214484609b9bf2b112f52c6a24f1e57af15dbfdd0",
+        "characters_or_bytes": 1417155
+      }
+    ],
+    "finished_at": "2026-11-20T01:32:32.989863+00:00"
+  },
+  {
+    "source_id": 5482,
+    "source_key": "atlantic_county_library_nj",
+    "publisher": "Atlantic County Library System",
+    "started_at": "2026-11-20T01:32:32.990395+00:00",
+    "status": "captured",
+    "production_writes": 0,
+    "events": 369,
+    "nonblank": 369,
+    "longer": 0,
+    "shortened": 0,
+    "additional_characters": 0,
+    "encoding_repaired": 0,
+    "held_for_review": 0,
+    "max_description": 736,
+    "response_receipts": [
+      {
+        "url": "https://atlanticcounty.librarycalendar.com/events/feed/ical",
+        "sha256": "e761272718fffc434ea8f3f4c8f45407fcccb8dfbf45b2f5d199cd833f2374b1",
+        "characters_or_bytes": 871428
+      }
+    ],
+    "finished_at": "2026-11-20T01:32:44.926446+00:00"
+  }
+]

@@ -1020,7 +1020,8 @@ def parse_ics_preview(payload: str, *, allow_ongoing=False, include_images=True,
                 # Retain the occurrence's own narrative after recurrence expansion.
                 # Do not look up by UID: recurrence overrides can have different text.
                 if include_description:
-                    record["description"] = str(item.get("DESCRIPTION", "")).strip()[:12000]
+                    from roomquest.description_canary_scope import retain
+                    record["description"] = retain(str(item.get("DESCRIPTION", "")).strip(), 12000)
                 results.append(record)
         except (KeyError, ValueError, TypeError):
             continue

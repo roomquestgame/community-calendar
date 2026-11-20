@@ -36,4 +36,5 @@ def description(value, *, limit=2000):
                      for line in soup.get_text('\n').splitlines() if line.strip())
     if _URL_ONLY.fullmatch(text):
         return ''
-    return text[:limit]
+    from roomquest.description_canary_scope import retain
+    return retain(text, limit)
