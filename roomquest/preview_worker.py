@@ -3397,6 +3397,10 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         elif source_key in VA_WIX_SOURCES:
             from roomquest.virginia_wix_events import collect as collect_html
             allowed_hosts = (urlparse(VA_WIX_SOURCES[source_key][0]).hostname,)
+        elif source_key == "neighbors_bar_braselton_ga":
+            from roomquest.neighbors_braselton_ga import HOST, collect as collect_html
+            allowed_hosts = (HOST,)
+            html_budget = 44
         elif source_key == "clermont_town_calendar_ga":
             # Must dispatch inside the HTML family before the generic
             # unregistered_html_source guard (not after it).
