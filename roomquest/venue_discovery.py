@@ -159,6 +159,7 @@ def discover(lead, fetch=fetch_publisher, *, deadline_at=None):
     reason = {
         "ical": "reusable_ical",
         "wordpress": "reusable_wordpress",
+        "squarespace": "reusable_squarespace",
         "html_listing": "html_listing_found",
         "none": "calendar_not_found",
         "access_denied": "calendar_access_denied",
