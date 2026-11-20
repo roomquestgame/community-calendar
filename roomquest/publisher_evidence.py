@@ -32,6 +32,9 @@ def family(source_key, event_url):
         if source_key == "the_landing_scotts_valley_ca":
             from roomquest.santa_cruz_landing import event_url as landing_event_url
             return "santa_cruz_landing" if landing_event_url(event_url) else None
+        if source_key == "gainesville_theatre_alliance_ga":
+            from roomquest.gainesville_theatre_ga import event_url as gta_event_url
+            return source_key if gta_event_url(event_url) else None
         if source_key == "neighbors_bar_braselton_ga":
             from roomquest.neighbors_braselton_ga import event_url as is_neighbors_event
             return source_key if is_neighbors_event(event_url) else None
