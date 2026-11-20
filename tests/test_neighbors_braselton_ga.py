@@ -70,7 +70,6 @@ class NeighborsTests(unittest.TestCase):
         self.assertEqual(parse(INDEX, lambda u,a:detail(j), now=NOW), [])
         self.assertFalse(event_url("https://neighborsbraselton.com/api/events"))
         self.assertFalse(event_url("https://anotherbraselton.com/events/matt-roper-2026-11-20"))
-        self.assertEqual(parse('<a href="/events/../api">Bad</a>',lambda u,a:detail(),now=NOW), []) if False else None
 
     def test_duplicate_index_link_is_not_double_fetched(self):
         urls = []
