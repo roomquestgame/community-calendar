@@ -173,6 +173,9 @@ def family(source_key, event_url):
         from roomquest import santa_cruz_rio
         if source_key == santa_cruz_rio.KEY:
             return 'santa_cruz_rio' if santa_cruz_rio.event_url(event_url) else None
+        from roomquest import santa_cruz_felton_fire
+        if source_key==santa_cruz_felton_fire.KEY:
+            return 'santa_cruz_felton_fire' if santa_cruz_felton_fire.event_url(event_url) else None
         from roomquest import santa_cruz_rcnv
         if source_key==santa_cruz_rcnv.KEY:
             return 'santa_cruz_rcnv' if santa_cruz_rcnv.event_url(event_url) else None
