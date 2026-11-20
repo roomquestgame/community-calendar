@@ -65,3 +65,15 @@ def test_production_entrypoint_dispatches_registration_before_preview():
     handler.do_POST()
     modules['api.feed_registration'].handler.do_POST.assert_called_once_with(handler)
     modules['api.preview'].handler.do_POST.assert_not_called()
+
+
+def test_verified_venue_follows_one_same_publisher_calendar_then_registers_its_feed():
+    venue = 'https://venue.example.org/'
+    page = '<a href="/events/">Events</a><a href="https://other.example.org/calendar">Partner</a>'
+    assert classify(venue, page)['p_outcome'] == 'review'
+    with patch('roomquest.feed_registration.supabase_rpc', side_effect=[{'url': venue, 'verified_venue_website': True}, True]) as rpc, \
+         patch('roomquest.feed_registration.fetch_publisher', side_effect=[page, '<a href="/music.ics">Subscribe</a>']) as fetch:
+        assert register('ticket')['outcome'] == 'discovered'
+        assert rpc.call_args.args[1]['p_endpoint'] == venue + 'music.ics'
+        assert [call.args[0] for call in fetch.call_args_list] == [venue, venue + 'events/']
+        assert all(call.kwargs['respect_robots'] for call in fetch.call_args_list)
