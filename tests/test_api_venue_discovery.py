@@ -57,9 +57,9 @@ def test_brewery_name_branch_suffix_accepts_its_verified_site_and_events_page():
     result = discover(source,fetch=fetch)
     assert result["p_outcome"]=="verified"
     assert result["p_proof"]=="publisher_event_owner"
-    assert result["p_feed_url"] is None
-    assert result["p_reason"]=="calendar_not_found"
-    assert len(seen)==2  # Weekly promotions are not a validated event feed.
+    assert result["p_feed_url"]=="https://residentculturebrewing.com/events/"
+    assert result["p_reason"]=="html_listing_found"
+    assert len(seen)==2  # Valid recurring events page, not a machine feed.
 
 
 def test_brand_without_calendar_remains_a_permanent_website_candidate():
@@ -71,7 +71,8 @@ def test_brand_without_calendar_remains_a_permanent_website_candidate():
                       (seen.append(url) or "<title>Broadway Comedy Club</title><h2>Comedy shows</h2>"))
     assert result["p_outcome"]=="verified"
     assert result["p_feed_url"] is None
-    assert seen==["https://www.broadwaycomedyclub.com/"]
+    assert seen==["https://www.broadwaycomedyclub.com/",
+                  "https://www.broadwaycomedyclub.com/shows"]
 
 
 def test_an_unverified_site_with_feed_links_is_not_promoted():
@@ -161,7 +162,7 @@ def test_single_event_ical_download_is_not_promoted_as_calendar():
                 '<a href="/events/checkers.ics">Add to Calendar</a>')
     result = discover(source, fetch=fetch)
     assert result["p_feed_url"] is None
-    assert len(calls) == 1
+    assert len(calls) <= 2  # A parent index probe may occur, never the event ICS.
 
 
 def test_dated_html_events_collection_is_submitted_for_adapter_review():
@@ -177,7 +178,7 @@ def test_dated_html_events_collection_is_submitted_for_adapter_review():
     assert result["p_reason"] == "html_listing_found"
 
 
-def test_dynamic_calendar_without_verified_full_feed_stays_pending_review():
+def test_dynamic_first_party_calendar_parent_reaches_html_adapter_queue():
     site="https://www.boplex.com/our-venues/bojangles-coliseum"
     pages={
       site: '<h1>Bojangles Coliseum Charlotte</h1><a href="/events">All Events</a>',
@@ -185,8 +186,8 @@ def test_dynamic_calendar_without_verified_full_feed_stays_pending_review():
     }
     calls=[]
     result=discover(lead(),fetch=factory(pages,calls))
-    assert result["p_feed_url"] is None
-    assert result["p_reason"] == "calendar_not_found"
+    assert result["p_feed_url"] == "https://www.boplex.com/events"
+    assert result["p_reason"] == "html_listing_found"
     assert len(calls)==2
 
 
