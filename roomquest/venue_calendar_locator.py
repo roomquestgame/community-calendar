@@ -5,7 +5,8 @@ but the shared registration checker still owns final source acceptance. Bounded
 publisher visits, same-host URLs, robots/pacing and no fabricated feed URLs.
 """
 from html.parser import HTMLParser
-from urllib.parse import parse_qs, urldefrag, urljoin, urlsplit, urlunsplit
+import json
+from urllib.parse import parse_qs, parse_qsl, urlencode, urldefrag, urljoin, urlsplit, urlunsplit
 import re
 
 from roomquest.feed_registration import classify, is_event_export, is_tec_collection
@@ -164,6 +165,41 @@ def _signals(html, base):
     return parsed
 
 
+def _squarespace_candidate(html, base):
+    body = html[:MAX_SOURCE_BYTES].lower()
+    # Squarespace exposes a JSON version of its calendar collection. Probe
+    # ONLY from a publisher calendar page containing Squarespace fingerprints.
+    if not any(token in body for token in ('squarespace.com', 'squarespace-cdn',
+                                           'static.squarespace.com', 'squarespace-context')):
+        return None
+    path = urlsplit(base)
+    if not CALENDAR_PAGE.search(path.path.lower().rstrip('/')):
+        return None
+    pairs = parse_qsl(path.query, keep_blank_values=True)
+    if any(key == 'format' and value != 'json' for key,value in pairs):
+        return None
+    pairs = [(key,value) for key,value in pairs if key != 'format']
+    pairs.append(('format','json'))
+    return urlunsplit((path.scheme,path.netloc,path.path,urlencode(pairs),''))
+
+
+def _squarespace_collection(body):
+    try:
+        data = json.loads(body)
+    except (ValueError, TypeError):
+        return False
+    if not isinstance(data,dict):
+        return False
+    entries = data.get('upcoming',data.get('items'))
+    if not isinstance(entries,list) or not 0<len(entries)<=500:
+        return False
+    # Do not interpret ordinary Squarespace blog/article JSON as an event feed.
+    return all(isinstance(x,dict) and isinstance(x.get('id'),str)
+               and isinstance(x.get('startDate'),(int,float))
+               and not isinstance(x['startDate'],bool)
+               for x in entries[:10])
+
+
 def _wp_candidate(html, site):
     text = html[:MAX_SOURCE_BYTES].lower()
     if not any(token in text for token in TEC_HINTS):
@@ -210,6 +246,9 @@ def find_calendar(website_html, website_url, event_url, fetch, deadline):
         wp = _wp_candidate(html, base)
         if wp and wp not in endpoints:
             endpoints.insert(0, wp)
+        square = _squarespace_candidate(html, base)
+        if square and square not in endpoints:
+            endpoints.append(square)
         if parsed.is_dated_listing(html) and best_html is None:
             best_html = base
         for u, score in sorted(parsed.pages.items(), key=lambda x: (-x[1], x[0])):
@@ -241,6 +280,8 @@ def find_calendar(website_html, website_url, event_url, fetch, deadline):
             check = classify(url, data, endpoint_only=True)
             if check.get("p_outcome") == "verified" and check.get("p_type") in ("ical", "wordpress"):
                 return url, check["p_type"]
+            if parse_qs(urlsplit(url).query).get("format") == ["json"] and _squarespace_collection(data):
+                return url, "squarespace"
             # Invalid/cancelled/single event feed never becomes a registered source.
         if count >= MAX_REQUESTS:
             break
