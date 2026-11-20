@@ -24,7 +24,7 @@ export function buildDecision(env, paths, profile = 'web') {
   // mutating shared Vercel settings when previous-SHA history includes skipped
   // deployments. This NEVER enables disabled preview collector builds.
   if (profile === 'collector' && env.VERCEL_ENV === 'production'
-      && /\\[collector-build\\]/i.test(env.VERCEL_GIT_COMMIT_MESSAGE || '')) {
+      && /\[collector-build\]/i.test(env.VERCEL_GIT_COMMIT_MESSAGE || '')) {
     return { build: true, reason: 'explicit collector production release' };
   }
   if (env.VERCEL_ENV === 'preview') {
