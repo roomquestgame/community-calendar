@@ -43,7 +43,9 @@ class NeighborsTests(unittest.TestCase):
         event = result[0]
         self.assertEqual(event["event_url"], DETAIL)
         self.assertEqual(event["timezone"], ZONE)
-        self.assertIn("6323 Grand Hickory", event["venue_address"])
+        self.assertEqual(event["venue_address"],
+                         "6323 Grand Hickory Dr Suite 200D, Braselton, GA 30517")
+        self.assertNotIn("Dr, Suite", event["venue_address"])
         self.assertIn("Live on the Neighbors stage", event["description"])
         self.assertEqual(event["category"], "Music")
         self.assertIsNone(event.get("lat"))
