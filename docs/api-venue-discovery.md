@@ -1,3 +1,11 @@
+## Producer-side automatic endpoint locator (November 20)
+
+The worker—not a ChatGPT session—locates reusable publisher calendar URLs. Starting from an independently verified venue page, it follows explicit calendar navigation and, when the provider's original event permalink establishes a same-host /events or /shows family, verifies that parent index. It probes iCal feeds, WordPress TEC JSON only when website markers justify it, and Squarespace event JSON only from a Squarespace calendar path; each response must validate before handoff. It can also return a clear publisher-owned recurring HTML events listing for the shared receiver's HTML-adapter backlog. It does not manufacture a feed from a homepage or individual event link.
+
+Discovery uses the original publisher robots/pacing/host/timeout guards, at most four extra first-party fetches, up to two calendar pages and up to two machine endpoint probes. Preserve venue filters and full query strings. Multiple distinct feeds, 403/robots, unknown venue ownership or malformed/unsupported endpoints do not cause speculative enrollment. Current BOplex /events is one shared candidate for two separately tracked venues; filter-specific calendars remain distinct.
+
+The EventQuest ticket-fenced finish RPC is responsible for submitting a verified `p_feed_url` via `community_register_discovered_feed`, associating each venue page with the same candidate and retaining the `community_feed_registration_status` receipt against its short-lived lead. **Do not modify the downstream registrar's technology adapter or source activation logic here.** Query actual registration status to report submitted/collected/published as separate milestones.
+
 # First-party venue and calendar discovery
 
 This upstream worker is a narrow adapter to EventQuest's existing feed registrar. It is **not** a replacement feed importer or an arbitrary URL crawler.
