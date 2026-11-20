@@ -3371,6 +3371,10 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         elif source_key in VA_WIX_SOURCES:
             from roomquest.virginia_wix_events import collect as collect_html
             allowed_hosts = (urlparse(VA_WIX_SOURCES[source_key][0]).hostname,)
+        elif source_key == "gainesville_theatre_alliance_ga":
+            from roomquest.gainesville_theatre_ga import HOST, collect as collect_html
+            allowed_hosts = (HOST,)
+            html_budget = 26
         elif source_key == "neighbors_bar_braselton_ga":
             from roomquest.neighbors_braselton_ga import HOST, collect as collect_html
             allowed_hosts = (HOST,)
