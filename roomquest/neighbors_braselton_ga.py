@@ -23,7 +23,10 @@ URL = "https://neighborsbraselton.com/events"
 ZONE = "America/New_York"
 VENUE = "Neighbors Bar"
 STREET = "6323 Grand Hickory Dr, Suite 200D"
-ADDRESS = STREET + ", Braselton, GA 30517"
+# The first-party PostalAddress uses a comma within streetAddress before Suite.
+# Preserve the exact same unit but normalize punctuation for the shared
+# udell_address() parser, which requires one street/city/state split.
+ADDRESS = STREET.replace(", Suite ", " Suite ") + ", Braselton, GA 30517"
 MAX_DETAILS = 18
 MAX_DAYS = 90
 DETAIL_RE = re.compile(r"/events/[a-z0-9][a-z0-9-]{2,95}-20\d\d-\d\d-\d\d")
