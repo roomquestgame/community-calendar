@@ -74,3 +74,13 @@ test('missing shallow history fetches the validated SHA; Git errors cause a safe
   assert.deepEqual(changedPaths({ VERCEL_GIT_PREVIOUS_SHA: sha }, '/repo', run), ['api/seo-event.js']);
   assert.equal(changedPaths({ VERCEL_GIT_PREVIOUS_SHA: sha }, '/repo', () => ({ status: 1 })), null);
 });
+
+
+test('production collector can explicitly release after a skipped deployment without changing web or preview policy', () => {
+  const tagged = { VERCEL_ENV: 'production', VERCEL_GIT_COMMIT_MESSAGE: 'Release original Girdwood source [collector-build]' };
+  assert.equal(buildDecision(tagged, [], 'collector').build, true);
+  assert.equal(buildDecision(tagged, ['docs/notes.md'], 'collector').build, true);
+  assert.equal(buildDecision({ ...tagged, VERCEL_ENV: 'preview' }, ['roomquest/new.py'], 'collector').build, false);
+  assert.equal(buildDecision(tagged, [], 'web').build, false);
+  assert.equal(buildDecision({ ...tagged, VERCEL_GIT_COMMIT_MESSAGE: 'ordinary' }, [], 'collector').build, false);
+});
