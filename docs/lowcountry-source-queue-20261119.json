@@ -1,13 +1,13 @@
 {
   "region": "Hilton Head Island / Bluffton / Beaufort County / Port Royal / South Carolina Lowcountry",
-  "checkpoint_local": "2026-11-19 20:04+ EST twelfth continuation: Michael collector Vercel READY, protected DB enrollment applied; awaiting preview/stage/public; Pat Conroy new hold",
+  "checkpoint_local": "2026-11-19 evening twelfth continuation: Michael 5911 live, 12 public published cards; Pat Conroy first-party hold discovered",
   "target_new_distinct_feeds_per_batch": 20,
   "new_deployed_this_continuation": 1,
   "verified_ready_count": 0,
   "candidate_hold_count": 21,
-  "previous_public_source_associated": 325,
-  "previous_staged": 327,
-  "previous_future_visible": 308,
+  "previous_public_source_associated": 337,
+  "previous_staged": 339,
+  "previous_future_visible": 320,
   "previous_source_count": 17,
   "notes": [
     "Never count original Hilton Head 5, Beaufort County Library 6 including St Helena, or Greenhouse Bluffton as NEW again.",
@@ -42,7 +42,8 @@
     "Tenth category-quality caveat: new Chamber staged event category 'learn' becomes public 'give_back'; exact card id provider_event_id 'bluffton_chamber:21153'. Filed roomquestgame/RoomQuestGame#1392; correct narrowly without resetting overlays.",
     "Tenth category audit: 2 NEW independent publisher HOLDS: Michael Anthony cooking school Hilton Head (official date-stamped first party Squarespace classes in Dec 2026 + Jan2027, exact 37 New Orleans Road address but robots/GEO/parser pending); May River Theatre Bluffton (official 2027 Producers run Feb12-28 at Ulmer Auditorium 20 Bridge St, no per-performance ticket timestamps/GEO yet). Research covered all 9 lanes; Beaufort Water Festival official Dec5 boat parade and Beaufort Art Association November-December gallery exhibit are exploratory non-independent feed leads, not padded into queue.",
     "Eleventh checkpoint: 16 approved source IDs unchanged; source-reported 327 stage future and 325 scheduled/public external cards, 309 future public. All 325 have location/numbered street and valid canonical category, 325 unique source/occurrence/start; 10 Beaufort library descriptions under 40 chars. Live SQL ledger latest 20261203150000. Vercel READY production deployed 577357fb556aac5ec9d572ad791df6bf3577608c is ahead of Chamber commit by 2 and Palmetto Running commit by 6 (neither rolled back). No new migration, no new enrollment. 2 independent HOLD sources: Gullah Kinfolk Traveling Theater two 2026-12-03/04 first party performances at numbered 805 Carteret St and Farmers Market of Bluffton official 68 Boundary St schedule, with special Wednesday Nov25 opening and Thanksgiving Nov26 closure that contradict third parties. Robots, exact event GEO, independent original occurrence/detail and parser tests block deployment. Michael Anthony original 2026 Nov-Jan cooking school listing verified 11:30AM-2:30PM 37 New Orleans Road, event-level ICS links found, but automated robots endpoint inaccessible to external evidence and independently verified venue pin still outstanding. Pink Palmetto conflicting cache versions (current index vs older HTML) requires live source freshness check. St Helena already date-bounded; do not re-enroll.",
-    "Twelfth checkpoint live: collector PR #382 merged + exact Vercel READY, latest READY descendant ahead 1 behind 0; protected DB PR #1402 merged, migration 20261204010000 applied, source #5911 registered, queue/interest/coverage seeded. Public still zero for new source; no credit for canaries. 17 enrolled sources incl 16 historical, stage 327, public 325, 308 future. First-party Pat Conroy Literary Center 2 future author details at 601 Bladen, 2026 Dec8 date/body weekday EST ambiguity held. PDPOA December cleanup assessed only as exploratory because public eligibility and exact road check-in not established. All 9 lanes checked; gaming still no new independently qualified outside Pink Palmetto hold. 0 other new feeds deployed."
+    "Twelfth checkpoint live: collector PR #382 merged + exact Vercel READY, latest READY descendant ahead 1 behind 0; protected DB PR #1402 merged, migration 20261204010000 applied, source #5911 registered, queue/interest/coverage seeded. Public still zero for new source; no credit for canaries. 17 enrolled sources incl 16 historical, stage 327, public 325, 308 future. First-party Pat Conroy Literary Center 2 future author details at 601 Bladen, 2026 Dec8 date/body weekday EST ambiguity held. PDPOA December cleanup assessed only as exploratory because public eligibility and exact road check-in not established. All 9 lanes checked; gaming still no new independently qualified outside Pink Palmetto hold. 0 other new feeds deployed.",
+    "POST-DEPLOY RECEIPT: source 5911 health ok/preview complete/no error and 12 staged; 12 actual scheduled public/12 future; 401–694 description chars; 12 unique occurrence IDs, all geocoded to independently verified 37 New Orleans Road, no images. Canonical published category food_drink (appropriate to cooking classes); aggregate 17 approved Lowcountry sources, 339 source-staged, 337 source-associated public, 320 future-visible. New distinct deployed 1, new public cards 12. No additional feed holds cleared."
   ],
   "sources": [
     {
@@ -545,15 +546,20 @@
       ],
       "feed_url": "https://www.michael-anthonys.com/cooking-school",
       "event_url": "https://www.michael-anthonys.com/cooking-school/wicked-good-cooking-class-hilton-head-island-sc",
-      "evidence": "Collector PR #382 merged at 7dcccd0f04f4a35e53c3cc67e3ccd8a8d90ec710; 12 live HTML-only 62-day/12-detail canaries, 29 focused/regression tests, source robots disallows ?format=json/ical but allows regular HTML, 37 New Orleans Road actual event venue, U.S. Census numbered street point 32.156240644051,-80.757117879495. Exact READY Vercel https://vercel.com/room-quest-game/roomquest-community-collector/FAMBr1hXoXJzaK8nBHGgBNsZYxbk, newest READY 9802e8c is descendant ahead 1 behind 0. App DB PR #1402 merged c7b65aa159f301e5e86650cc26b2310793db16ef, protected PG17 migration 20261204010000 applied read-only in live ledger. New source ID 5911 approved, publication request 1, active validation 1, source coverage seed 1; preview queued/health unchecked/staged 0/public 0 at 2026-11-19 evening. Do NOT claim 12 collected canaries are public cards; track post-enrollment health/preview, stage/public cards.",
-      "state": "enrolled_pending_preview_publication",
+      "evidence": "Collector PR #382 merged at 7dcccd0f04f4a35e53c3cc67e3ccd8a8d90ec710; 12 live HTML-only 62-day/12-detail canaries, 29 focused/regression tests, source robots disallows ?format=json/ical but allows regular HTML, 37 New Orleans Road actual event venue, U.S. Census numbered street point 32.156240644051,-80.757117879495. Exact READY Vercel https://vercel.com/room-quest-game/roomquest-community-collector/FAMBr1hXoXJzaK8nBHGgBNsZYxbk, newest READY 9802e8c is descendant ahead 1 behind 0. App DB PR #1402 merged c7b65aa159f301e5e86650cc26b2310793db16ef, protected PG17 migration 20261204010000 applied read-only in live ledger. New source ID 5911 approved, publication request 1, active validation 1, source coverage seed 1; preview queued/health unchecked/staged 0/public 0 at 2026-11-19 evening. Do NOT claim 12 collected canaries are public cards; track post-enrollment health/preview, stage/public cards. POST-DEPLOY read-only confirmed preview complete/health ok/no error, 12 staged-future and 12 actual public scheduled and future-visible, 401–694 character publisher descriptions, 12 unique occurrence IDs, 0 missing GEO/numbered street/non-Other category, 0 images, venue Census lat 32.156240644051/lng -80.757117879495. Public canonical category food_drink (collector emitted learn); reviewer should check canonical category precedence but food_drink is event-appropriate.",
+      "state": "deployed_live_published",
       "blockers": [],
       "priority": 0,
       "source_id": 5911,
       "collector_pr": "https://github.com/roomquestgame/community-calendar/pull/382",
       "database_pr": "https://github.com/roomquestgame/RoomQuestGame/pull/1402",
       "migration": "20261204010000_lowcountry_michael_anthonys_cooking_school",
-      "vercel_ready": "https://vercel.com/room-quest-game/roomquest-community-collector/FAMBr1hXoXJzaK8nBHGgBNsZYxbk"
+      "vercel_ready": "https://vercel.com/room-quest-game/roomquest-community-collector/FAMBr1hXoXJzaK8nBHGgBNsZYxbk",
+      "staged": 12,
+      "published": 12,
+      "future_visible": 12,
+      "preview_status": "complete",
+      "health": "ok"
     },
     {
       "key": "may_river_theatre_bluffton_sc",
@@ -668,7 +674,7 @@
       "vercel_ready": "https://vercel.com/room-quest-game/roomquest-community-collector/BHH5fdKds3gZ7XCGh4X2G9Lo7HDk"
     }
   ],
-  "collector_verified_pending_release": 1,
+  "collector_verified_pending_release": 0,
   "new_candidate_sources_this_continuation": 1,
   "exploratory_leads_not_counted": [
     {
@@ -689,5 +695,5 @@
     }
   ],
   "new_enrolled_this_continuation": 1,
-  "new_publicly_published_this_continuation": 0
+  "new_publicly_published_this_continuation": 12
 }
