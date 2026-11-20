@@ -174,7 +174,7 @@ def test_dated_html_events_collection_is_submitted_for_adapter_review():
               '<time datetime="2026-11-21">Nov 21</time><a href="/shows/second-comedy-show">Second</a>'
               '<time datetime="2026-11-22">Nov 22</time><a href="/shows/third-comedy-show">Third</a>')
     result=discover(source,fetch=lambda url,accept,**opts: homepage)
-    assert result["p_feed_url"] == "https://www.broadwaycomedyclub.com/"
+    assert result["p_feed_url"] == "https://www.broadwaycomedyclub.com/shows"
     assert result["p_reason"] == "html_listing_found"
 
 
