@@ -3171,6 +3171,7 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                           or source.get("timezone") != "America/New_York"):
             raise PreviewError("unregistered_virginia_civic_ics")
         mapsee = source_key.startswith("municipal_mapsee_")
+        direct_ical = bool(re.fullmatch(r"municipal_[0-9a-f]{24}", source_key))
         if mapsee:
             from roomquest.mapsee_adapter import profiles
             profile = profiles().get(source["source_key"])
@@ -3208,7 +3209,7 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                     host_scope["allowed_hosts"] = (urlparse(source["feed_url"]).hostname,)
                 payload = fetch_publisher(
                     source["feed_url"], "text/calendar",
-                    respect_robots=civic_ics or bool(raleigh_url or portsmouth_url) or mapsee
+                    respect_robots=civic_ics or bool(raleigh_url or portsmouth_url) or mapsee or direct_ical
                     or source_key in {"mecklenburg_va_libraries", "sarpy_tourism_ne"},
                     deadline_at=deadline, **host_scope)
                 calendar_source = {"url": source["feed_url"], "source_key": source_key,
@@ -3216,8 +3217,7 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                                       'civic_jurisdiction_id', 'civic_jurisdiction_name') if key in source}}
                 records = parse(payload, calendar_source, legacy=not mapsee,
                                 include_description=civic_ics or raleigh_ics or source_key == "independence_ia_library_family")
-                if (re.fullmatch(r"municipal_[0-9a-f]{24}", source_key)
-                        and not (civic_ics or raleigh_url or portsmouth_url)):
+                if direct_ical and not (civic_ics or raleigh_url or portsmouth_url):
                     from roomquest.ical_venue_address import extract_venue_addresses
                     extract_venue_addresses(records)
                 if source_key == omaha_lincoln.LA_VISTA_LIBRARY and source["feed_url"] == omaha_lincoln.LA_VISTA_FEED:
@@ -3893,7 +3893,8 @@ def supabase_rpc(path: str, payload: dict, *, timeout: float = 4):
     security-definer RPCs. The token must never enter a public client or log.
     """
     import urllib.request
-    allowed = {"community_collector_claim_category", "community_collector_publish_category", "community_collector_finish_category", "community_collector_claim_previews", "community_collector_claim_demand_preview", "community_collector_claim_chambermaster", "community_collector_record_preview", "community_collector_record_preview_v2", "community_collector_record_preview_v3",
+    allowed = {"community_collector_claim_registration", "community_collector_finish_registration",
+               "community_collector_claim_category", "community_collector_publish_category", "community_collector_finish_category", "community_collector_claim_previews", "community_collector_claim_demand_preview", "community_collector_claim_chambermaster", "community_collector_record_preview", "community_collector_record_preview_v2", "community_collector_record_preview_v3",
                "community_collector_read_fetch_checkpoint", "community_collector_write_fetch_checkpoint",
                "community_collector_record_staged_events", "community_collector_geocoder", "community_collector_geocoder_claim",
                "community_collector_venues", "community_collector_media", "community_collector_media_demand",

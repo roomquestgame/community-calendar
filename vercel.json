@@ -52,9 +52,17 @@
     "api/timezones.py": {
       "maxDuration": 60,
       "excludeFiles": "{roomquest/catalogs/**,cities/**,docs/**,reports/**,supabase/**,xmlui/**,tests/**,website/**,node_modules/**,**/*.webm,**/*.png,**/*.jpg,**/*.jpeg}"
+    },
+    "api/feed_registration.py": {
+      "maxDuration": 60,
+      "excludeFiles": "{roomquest/catalogs/**,cities/**,docs/**,reports/**,supabase/**,xmlui/**,tests/**,website/**,node_modules/**,**/*.webm,**/*.png,**/*.jpg,**/*.jpeg}"
     }
   },
   "routes": [
+    {
+      "src": "/api/feed-registration",
+      "dest": "/api/feed_registration.py"
+    },
     {
       "src": "/api/timezones",
       "dest": "/api/timezones.py"
