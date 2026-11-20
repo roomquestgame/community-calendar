@@ -3809,17 +3809,25 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                 "p_future_count": len(records),
                 "p_venue_count": sum(1 for row in records if row["lat"] is not None),
                 "p_error": None, "p_events": records}
-    if source.get("source_key", "").startswith("municipal_mapsee_"):
+    registered_localist = source.get('platform_adapter') == 'localist' and source.get('kind') == 'json'
+    if source.get("source_key", "").startswith("municipal_mapsee_") or registered_localist:
         from roomquest.mapsee_adapter import profiles, collect
-        profile = profiles().get(source["source_key"])
-        if not profile or profile["url"] != source.get("feed_url"):
+        from roomquest.registration_formats import source_key as registration_key
+        from roomquest.localist_registration import collect as collect_localist
+        direct_localist = registered_localist and source_key == registration_key(source['feed_url'])
+        profile = None if direct_localist else profiles().get(source["source_key"])
+        if not direct_localist and (not profile or profile["url"] != source.get("feed_url")):
             raise PreviewError("unregistered_mapsee_source")
         try:
             deadline = min(monotonic() + 20, deadline_at - 8 if deadline_at is not None else float("inf"))
             if monotonic() >= deadline:
                 raise PreviewError("collection_deadline")
-            records = collect(source, profile, lambda url, accept: fetch_publisher(
-                url, accept, respect_robots=True, deadline_at=deadline))
+            if direct_localist:
+                records = collect_localist(source['feed_url'], lambda url, accept: fetch_publisher(
+                    url, accept, respect_robots=True, deadline_at=deadline, allowed_hosts=(urlparse(source['feed_url']).hostname,)))
+            else:
+                records = collect(source, profile, lambda url, accept: fetch_publisher(
+                    url, accept, respect_robots=True, deadline_at=deadline))
         except PreviewError:
             # Transport errors are already safe, bounded codes (including HTTP digits).
             raise

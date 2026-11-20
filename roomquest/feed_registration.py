@@ -6,6 +6,7 @@ from time import monotonic
 from urllib.parse import parse_qs, urldefrag, urljoin, urlsplit
 
 from icalendar import Calendar
+from roomquest import localist_registration
 from roomquest.registration_formats import collection_evidence, probe, scoped_endpoint
 
 from roomquest.preview_worker import PreviewError, fetch_publisher, public_source_url, supabase_rpc
@@ -68,7 +69,7 @@ def review(reason, collector=None):
 
 
 def classify(url, payload, hint=None, endpoint_only=False, venue_website=False):
-    if is_event_export(url):
+    if is_event_export(url) or re.search(r'/api/2/events/[^/]+', urlsplit(url).path):
         return review('single_event_page')
     body = payload.lstrip('\ufeff \t\r\n')
     if body.upper().startswith('BEGIN:VCALENDAR'):
@@ -82,6 +83,15 @@ def classify(url, payload, hint=None, endpoint_only=False, venue_website=False):
         if str(calendar.get('METHOD', '')).upper() in {'REQUEST', 'REPLY', 'CANCEL', 'COUNTER', 'DECLINECOUNTER'}:
             return review('single_event_page', 'ical')
         return {'p_outcome': 'verified', 'p_endpoint': url, 'p_type': 'ical'}
+    if localist_registration.is_api(url):
+        try:
+            canonical = localist_registration.endpoint(url)
+            envelope = json.loads(body)
+        except ValueError as exc:
+            return review('localist_filter_unverified' if str(exc) == 'localist_filter_unverified' else 'invalid_localist_collection', 'localist')
+        if not isinstance(envelope, dict) or not isinstance(envelope.get('page'), dict) or not isinstance(envelope.get('events'), list):
+            return review('invalid_localist_collection', 'localist')
+        return {'p_outcome': 'verified' if canonical == url else 'discovered', 'p_type':'localist', 'p_endpoint':canonical}
     if body.startswith(('{', '[')):
         try:
             obj = json.loads(body)
@@ -103,7 +113,7 @@ def classify(url, payload, hint=None, endpoint_only=False, venue_website=False):
     parser = CalendarLinks(url)
     parser.feed(body)
     evidence = collection_evidence(url, body)
-    if evidence and (evidence['p_outcome'] == 'verified' or (not endpoint_only and evidence['p_outcome'] == 'discovered') or evidence.get('p_reason') == 'single_event_page'):
+    if evidence and (evidence['p_outcome'] == 'verified' or (not endpoint_only and evidence['p_outcome'] == 'discovered') or evidence.get('p_reason') in ('single_event_page','localist_filter_unverified')):
         return evidence
     if endpoint_only:
         return evidence if evidence and evidence['p_outcome'] == 'review' else review('no_reusable_calendar')
@@ -157,6 +167,16 @@ def register(ticket):
                     raise
                 except (ValueError, KeyError, TypeError) as exc:
                     result = extraction_hold('html', exc)
+            if result.get('p_type') == 'localist' and result['p_outcome'] == 'verified':
+                try:
+                    records = localist_registration.collect(url, lambda target, accept: fetch_publisher(
+                        target, accept, respect_robots=True, deadline_at=deadline, allowed_hosts=(urlsplit(url).hostname,)))
+                    if not records:
+                        result = review('no_extractable_events', 'localist')
+                except PreviewError:
+                    raise
+                except (ValueError, TypeError, KeyError, OverflowError) as exc:
+                    result = extraction_hold('localist', exc)
             if result['p_outcome'] == 'verified' and not probe(url, body, result['p_type']):
                 result = review('no_extractable_events', result['p_type'])
         except PreviewError as exc:
