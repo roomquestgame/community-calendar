@@ -122,3 +122,10 @@ def test_empty_calendar_cannot_activate_without_a_collected_event():
          patch('roomquest.feed_registration.fetch_publisher', return_value=EMPTY):
         assert register('ticket')['outcome'] == 'review'
         assert rpc.call_args.args[1]['p_reason'] == 'no_extractable_events'
+
+
+def test_squarespace_hold_preserves_the_collector_reason():
+    import json
+    data = {'upcoming': [], 'pagination': {'nextPage': True}}
+    result = classify(URL + '?format=json', json.dumps(data))
+    assert result == {'p_outcome': 'review', 'p_type': 'squarespace', 'p_reason': 'pagination_requires_review'}

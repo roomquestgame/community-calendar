@@ -21,6 +21,13 @@ def scoped_endpoint(listing, endpoint):
     return selectors <= Counter(parse_qsl(urlsplit(endpoint).query, keep_blank_values=True))
 
 
+def extraction_hold(family, error):
+    reason = str(error)
+    if not re.fullmatch(r'[a-z][a-z0-9_]{1,70}', reason):
+        reason = family + '_extraction_needed'
+    return {'p_outcome': 'review', 'p_reason': reason, 'p_type': family}
+
+
 def collection_evidence(url, body, obj=None):
     from roomquest.jsonld_adapter import parse as parse_jsonld
     from roomquest.squarespace import parse_registered
@@ -29,11 +36,11 @@ def collection_evidence(url, body, obj=None):
                 and any(isinstance(i, dict) and 'startDate' in i for i in obj['items']))):
         try:
             rows = parse_registered(obj, url)
-        except (ValueError, TypeError, KeyError, OverflowError):
-            rows = []
+        except (ValueError, TypeError, KeyError, OverflowError) as exc:
+            return extraction_hold('squarespace', exc)
         if rows:
             return {'p_outcome': 'verified', 'p_endpoint': url, 'p_type': 'squarespace'}
-        return {'p_outcome': 'review', 'p_reason': 'squarespace_extraction_needed', 'p_type': 'squarespace'}
+        return {'p_outcome': 'review', 'p_reason': 'no_extractable_events', 'p_type': 'squarespace'}
     html = obj is None
     soup = BeautifulSoup(body, 'html.parser') if html else None
     if html and soup.find('meta', attrs={'property': 'og:type', 'content': re.compile(r'^(?:event|event\.event)$', re.I)}):
@@ -49,7 +56,7 @@ def collection_evidence(url, body, obj=None):
         if len(links) >= 2 and url.split('#')[0] not in links:
             return {'p_outcome': 'verified', 'p_endpoint': url, 'p_type': 'jsonld'}
         if rows:
-            reason = 'single_event_page' if links == {url.split('#')[0]} else 'collection_scope_unverified'
+            reason = 'single_event_page' if url.split('#')[0] in links else 'collection_scope_unverified'
             return {'p_outcome': 'review', 'p_reason': reason, 'p_type': 'jsonld'}
     if html:
         hrefs = {a['href'].split('#')[0] for a in soup.select('a[href]') if EVENT_LINK.search(a['href'])}
