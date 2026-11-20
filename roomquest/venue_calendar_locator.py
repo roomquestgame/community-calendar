@@ -200,6 +200,58 @@ def _squarespace_collection(body):
                for x in entries[:10])
 
 
+def _publisher_event_index(event_url, official_url):
+    """A linked original event can suggest its parent calendar for verification.
+
+    No derived path is registered or retained before visiting that page through
+    the normal robots/pacing-aware publisher fetcher.
+    """
+    if not event_url:
+        return None
+    url = _link(official_url, event_url)
+    if not url:
+        return None
+    path = urlsplit(url).path
+    segments = [part for part in path.split("/") if part]
+    if not segments:
+        return None
+    if segments[0].lower() not in (
+        "events", "event", "calendar", "shows", "schedule", "upcoming-events"):
+        return None
+    root_path = "/" + ("events" if segments[0].lower() == "event" else segments[0])
+    if len(segments) == 1 and not urlsplit(url).query:
+        return url
+    parts = urlsplit(official_url)
+    return urlunsplit((parts.scheme, parts.netloc, root_path, "", ""))
+
+
+def _reusable_html_index(parsed, html, url, event_url):
+    """Allow *verified recurring event listings*, never generic homepages."""
+    segments = [part for part in urlsplit(url).path.split("/") if part]
+    if not segments or segments[-1].lower() not in (
+        "events", "calendar", "shows", "schedule", "upcoming-events",
+        "events-calendar", "event-calendar", "whatson", "whats-on"):
+        return False
+    if parsed.is_dated_listing(html):
+        return True
+    # Dynamic JS calendars can render their dates only in the browser; require
+    # both explicit publisher event-index language and upstream event ownership
+    # corroboration (the exact site hosts the original event or events index).
+    original = _link(url, event_url)
+    if not original:
+        return False
+    u = urlsplit(url)
+    o = urlsplit(original)
+    root_path = u.path.rstrip("/")
+    event_path = o.path.rstrip("/")
+    if event_path != root_path and not event_path.startswith(root_path + "/"):
+        return False
+    if not re.search(r"\b(?:all|upcoming|view all)\s+events\b|"
+                     r"<h[1-3][^>]*>\s*(?:events|calendar|shows)\b", html, re.I):
+        return False
+    return True
+
+
 def _wp_candidate(html, site):
     text = html[:MAX_SOURCE_BYTES].lower()
     if not any(token in text for token in TEC_HINTS):
@@ -249,12 +301,18 @@ def find_calendar(website_html, website_url, event_url, fetch, deadline):
         square = _squarespace_candidate(html, base)
         if square and square not in endpoints:
             endpoints.append(square)
-        if parsed.is_dated_listing(html) and best_html is None:
-            best_html = base
+        if (_reusable_html_index(parsed, html, base, event_url)
+                or (base != website_url and parsed.is_dated_listing(html))):
+            if best_html is None:
+                best_html = base
         for u, score in sorted(parsed.pages.items(), key=lambda x: (-x[1], x[0])):
             if u not in pages and u != base:
                 pages.append(u)
-        # A provider's original link may be an exact public /events listing.
+        # A provider-owned event permalink supplies a verified clue about its
+        # *potential* parent listing. Probe it; never register it by inference.
+        parent = _publisher_event_index(event_url, website_url)
+        if parent and parent not in pages and parent != base:
+            pages.insert(0, parent)
         if event_url:
             matched = _link(website_url, event_url)
             if matched and urlsplit(matched).path.rstrip("/").lower().endswith(
