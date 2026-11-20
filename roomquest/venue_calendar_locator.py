@@ -216,9 +216,9 @@ def _publisher_event_index(event_url, official_url):
     if not segments:
         return None
     if segments[0].lower() not in (
-        "events", "event", "calendar", "shows", "schedule", "upcoming-events"):
+        "events", "calendar", "shows", "schedule", "upcoming-events"):
         return None
-    root_path = "/" + ("events" if segments[0].lower() == "event" else segments[0])
+    root_path = "/" + segments[0]
     if len(segments) == 1 and not urlsplit(url).query:
         return url
     parts = urlsplit(official_url)
