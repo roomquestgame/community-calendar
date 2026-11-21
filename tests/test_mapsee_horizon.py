@@ -69,3 +69,18 @@ def test_mapsee_horizon_rejects_reversed_time_range():
             "starts_at": (now + timedelta(days=2)).isoformat(),
             "ends_at": (now + timedelta(days=1)).isoformat(),
         }], now)
+
+
+
+def test_mapsee_detail_page_does_not_enter_reusable_jsonld_collection():
+    from roomquest.mapsee_adapter import collect, is_single_event_page
+    from unittest.mock import Mock
+    url = "https://mdpls.org/event/17225435"
+    assert is_single_event_page(url)
+    assert not is_single_event_page("https://mdpls.org/events")
+    assert not is_single_event_page("https://another.example.org/event/17225435")
+    fetch = Mock()
+    with pytest.raises(ValueError, match="single_event_page"):
+        collect({"source_key": "municipal_mapsee_8c4025191da3db8cbb82946e",
+                 "feed_url": url}, {"type": "jsonld"}, fetch)
+    fetch.assert_not_called()
