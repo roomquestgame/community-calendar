@@ -318,8 +318,21 @@ def within_collection_horizon(records, now=None):
     return kept
 
 
+def is_single_event_page(url):
+    """Known publisher detail route is not a reusable calendar collection."""
+    parts = urlsplit(url)
+    return (parts.scheme == "https" and parts.hostname == "mdpls.org"
+            and re.fullmatch(r"/event/[0-9]+/?", parts.path) is not None)
+
+
 def collect(source,profile,fetch):
     """At most five requests/500 facts; truncation is a failure, never healthy empty."""
+    if (source.get("source_key", "").startswith("municipal_mapsee_")
+            and profile.get("type") == "jsonld"
+            and is_single_event_page(source.get("feed_url", ""))):
+        # Avoid re-fetching dozens of individual publisher events as separate
+        # permanent feeds. Recover via a verified collection URL instead.
+        raise ValueError("single_event_page")
     if profile["type"] == "tribe":
         from roomquest.wordpress_adapter import collect as collect_wordpress
         return collect_wordpress(source, fetch)
