@@ -82,7 +82,7 @@ def definition_contains(full, partial):
     return full == partial
 
 
-def parse(payload, base=''):
+def parse(payload, base='', *, native_source=None):
     if payload.lstrip().startswith(('{', '[')):
         blocks = [decode(payload)]
     else:
@@ -203,8 +203,14 @@ def parse(payload, base=''):
             urljoin(base, link), e.get('@id') or e.get('url'), e.get('keywords', ''),
             lat, lng)
         if row:
-            from roomquest.event_description import description
-            row['description'] = description(e.get('description'))
+            if native_source is not None:
+                from roomquest.registered_native_content import attach
+                image = e.get('image')
+                image = [resolve(value) for value in image[:5]] if isinstance(image, list) else resolve(image)
+                attach(row, native_source, description_value=e.get('description'), image_value=image)
+            else:
+                from roomquest.event_description import description
+                row['description'] = description(e.get('description'))
             key = (row['id'], row['starts_at'])
             if key in out and out[key] != row:
                 raise ValueError('conflicting_event_occurrence')
@@ -216,11 +222,14 @@ def parse(payload, base=''):
 
 
 def collect(source, fetch):
+    from roomquest.registered_native_content import enabled as native_enabled
+    native_content = native_enabled(source, adapter='jsonld')
     if source.get('source_key') == COALITION_KEY:
         if source['feed_url'] != COALITION_URL or source.get('timezone') != 'America/New_York':
             raise ValueError('unregistered_coalition_calendar')
         return collect_coalition(fetch)
-    return parse(fetch(source['feed_url'], 'text/html,application/ld+json'), source['feed_url'])
+    return parse(fetch(source['feed_url'], 'text/html,application/ld+json'), source['feed_url'],
+                 native_source=source if native_content else None)
 
 
 def collect_coalition(fetch):

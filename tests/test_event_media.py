@@ -121,7 +121,8 @@ class PhotoTests(unittest.TestCase):
             result=m.run_batch(database=db,resolver=lambda *a,**kw:None)
         self.assertEqual(result['unavailable'],1)
         self.assertEqual([x[0] for x in calls],['claim','fail'])
-        self.assertEqual(calls[0][1], {'limit': 3, 'candidate_only_version': 'publisher_event_html_v2'})
+        self.assertEqual(calls[0][1], {'limit': 3, 'candidate_only_version': 'publisher_event_html_v2',
+                                     'registered_native_content_version': 1})
         self.assertEqual(calls[-1][1]['lease_id'],CLAIM['lease_id'])
 
     def test_network_probe_bounds_content_and_validates_magic(self):

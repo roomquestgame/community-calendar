@@ -182,7 +182,8 @@ def _tribe_times_agree(event, zone):
     return True
 
 
-def parse_tribe(data, *, strict_public=False, retain_description=False, utc_default_zone=None):
+def parse_tribe(data, *, strict_public=False, retain_description=False, utc_default_zone=None,
+                native_source=None):
     # The same upstream Tribe parser used by Udell, with UTC dates and complete
     # event addresses retained rather than inferred from the publisher's city.
     from scrapers.lib.tribe_events import TribeEventsScraper
@@ -229,7 +230,11 @@ def parse_tribe(data, *, strict_public=False, retain_description=False, utc_defa
         r=record(e.get("title"),start,end,venue.get("venue"),street,venue.get("city"),e.get("url"),e.get("id"),
                  ", ".join(x.get("name","") for x in e.get("categories",[]) if isinstance(x,dict)),venue.get("geo_lat"),venue.get("geo_lng"),tz, publisher_geo=strict_public)
         if r:
-            if retain_description:
+            if native_source is not None:
+                from roomquest.registered_native_content import attach
+                attach(r, native_source, description_value=e.get('description'),
+                       image_value=e.get('image'))
+            elif retain_description:
                 from roomquest.event_description import description
                 value = e.get("description")
                 if value is not None and not isinstance(value, str):

@@ -235,6 +235,8 @@ def _madison_display_schedule(item, source, fetch):
 
 def collect(source, fetch, *, deadline_at=None):
     source_key = source.get('source_key')
+    from roomquest.registered_native_content import enabled as native_enabled
+    native_content = native_enabled(source, adapter='wordpress')
     from roomquest import richmond_performances
     if source_key == richmond_performances.KEY:
         return richmond_performances.collect(source, fetch)
@@ -353,7 +355,8 @@ def collect(source, fetch, *, deadline_at=None):
         parsed_rows = parse_tribe(payload, strict_public=public_calendar or reading_room or bool(hampton_url) or ncma or source.get("source_key") in
                                   ("madison_county_parks_ia", "nebraska_game_parks", ROSEMONT_KEY, jpb_basketball.KEY, hurrdat_calendar.KEY),
                                 retain_description=True,
-                                utc_default_zone=utc_default_zone)
+                                utc_default_zone=utc_default_zone,
+                                native_source=source if native_content else None)
         if hampton_url:
             parsed_rows = [_hampton_venue(source_key, row) for row in parsed_rows]
         if rosemont:
@@ -392,7 +395,10 @@ def collect(source, fetch, *, deadline_at=None):
             raise ValueError('rosemont_event_evidence_unavailable')
     if not result and ncma_held:
         raise ValueError('ncma_event_venue_unreviewed')
-    if result and not any(e.get('venue_name') or e.get('venue_address') for e in result):
+    # A positive registered-native capability permits private venue review.
+    # Blank fields and null GEO remain unchanged; backend holds/publication and
+    # exact Admin venue evidence still decide whether any occurrence is usable.
+    if result and not native_content and not any(e.get('venue_name') or e.get('venue_address') for e in result):
         raise ValueError('venue_extraction_unavailable')
     return result
 
