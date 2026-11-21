@@ -126,6 +126,44 @@ def _aware(value):
     return isinstance(value, datetime) and value.tzinfo is not None
 
 
+def _prune_mapsee_historical_singles(calendar, now):
+    """Remove only definitely ended, standalone Mapsee VEVENTs.
+
+    This is a conservative preprocessing step, not a truncation: keep entire
+    UID groups if any recurrence, exception, missing time or uncertain end is
+    present. Preserve publisher snapshot completeness for future occurrences.
+    """
+    groups = defaultdict(list)
+    for event in calendar.walk('VEVENT'):
+        groups[str(event.get('UID', ''))].append(event)
+    cutoff = now - timedelta(days=2)
+    removable = set()
+    for uid, group in groups.items():
+        if not uid or len(group) != 1:
+            continue
+        event = group[0]
+        if any(event.get(key) for key in (
+                'RRULE', 'RDATE', 'EXDATE', 'EXRULE', 'RECURRENCE-ID')):
+            continue
+        try:
+            start = event.decoded('DTSTART', None)
+            end = event.decoded('DTEND', None)
+        except (ValueError, TypeError, KeyError):
+            continue
+        if not (_aware(start) and _aware(end)) or end < start:
+            continue
+        if end < cutoff:
+            removable.add(uid)
+    if not removable:
+        return calendar
+    trimmed = deepcopy(calendar)
+    trimmed.subcomponents = [
+        event for event in trimmed.subcomponents
+        if event.name != 'VEVENT' or str(event.get('UID', '')) not in removable
+    ]
+    return trimmed
+
+
 def _prune_expired_until_groups(calendar, now):
     """Drop only provably ended, timed UID groups after raw ICS validation.
 
@@ -599,6 +637,13 @@ def parse(payload, source, *, legacy=False, include_description=False):
         cal = _prune_expired_until_groups(cal, datetime.now(timezone.utc))
         events = cal.walk('VEVENT')
         payload = cal.to_ical().decode()
+    if (source.get('source_key', '').startswith('municipal_mapsee_')
+            and original_event_count > 1000):
+        # Validate the original payload first. Prune only historical,
+        # nonrecurring, timed UID groups before the legacy 1000-item parser.
+        cal = _prune_mapsee_historical_singles(cal, datetime.now(timezone.utc))
+        events = cal.walk('VEVENT')
+        payload = cal.to_ical().decode()
     # Udell's recurrence expander intentionally returns None on a malformed
     # recurrence. For new catalog sources that must be reported as a failure.
     if sum(bool(e.get("RRULE")) for e in events)>50:
@@ -615,7 +660,7 @@ def parse(payload, source, *, legacy=False, include_description=False):
             raise ValueError('source_record_limit')
     # Feed histories can precede the future records. Keep the existing 1000-item
     # parser bound honest instead of silently calling a truncated feed empty.
-    if original_event_count>1000:
+    if len(events)>1000:
         raise ValueError("source_record_limit")
     date_notices = _civic_dates(cal, source)
     # Narrative retention is independent of the legacy image/venue contract.
