@@ -52,6 +52,92 @@ def test_conflicting_reference_and_multiple_physical_venues_fail():
     e=event();e['location']=[e['location'],{'@type':'Place','name':'Other Hall'}]
     with pytest.raises(ValueError,match='ambiguous_event_location'):parse(html(e),BASE)
 
+
+@pytest.mark.parametrize('reverse', [False, True])
+def test_compatible_repeated_person_metadata_allows_collection_registration(reverse):
+    # Synthetic RankMath-style metadata, not a captured publisher fixture.
+    from roomquest.feed_registration import classify
+
+    complete = {'@id': '#author', '@type': 'Person', 'name': 'Calendar Editor',
+                'image': {'@type': 'ImageObject', 'url': '/editor.png', 'width': 96}}
+    partial = {'@id': '#author', '@type': 'Person', 'name': 'Calendar Editor',
+               'image': {'url': '/editor.png'}}
+    metadata = [complete, partial]
+    if reverse:
+        metadata.reverse()
+    first = event()
+    second = {**first, '@id': 'second-event', 'url': '/event/two', 'name': 'Second concert'}
+    payload = html({'@graph': [metadata[0], first]}) + html({'@graph': [metadata[1], second]})
+
+    assert parse(payload, BASE) == parse(html([first, second]), BASE)
+    assert classify(BASE, payload) == {
+        'p_outcome': 'verified', 'p_endpoint': BASE, 'p_type': 'jsonld'}
+
+
+@pytest.mark.parametrize('reverse', [False, True])
+def test_agreeing_partial_venue_reference_keeps_complete_publisher_location(reverse):
+    item = event()
+    expected = parse(html(item), BASE)
+    complete = {**item['location'], '@id': '#hall'}
+    partial = {'@id': '#hall', '@type': 'Place',
+               'address': {'streetAddress': '12 Main St'},
+               'geo': {'latitude': 35.8}}
+    definitions = [complete, partial]
+    if reverse:
+        definitions.reverse()
+    item['location'] = {'@id': '#hall'}
+
+    assert parse(html({'@graph': [item, *definitions]}), BASE) == expected
+
+
+@pytest.mark.parametrize('change', [
+    {'name': 'Different Hall'},
+    {'@type': 'VirtualLocation'},
+    {'address': {'streetAddress': '99 Other St'}},
+    {'geo': {'latitude': 35.9}},
+    {'geo': {'latitude': '35.8'}},
+    {'geo': {'latitude': True}},
+])
+@pytest.mark.parametrize('reverse', [False, True])
+def test_conflicting_partial_venue_reference_still_fails(change, reverse):
+    item = event()
+    complete = {**item['location'], '@id': '#hall'}
+    partial = {'@id': '#hall', **change}
+    definitions = [complete, partial]
+    if reverse:
+        definitions.reverse()
+    item['location'] = {'@id': '#hall'}
+
+    with pytest.raises(ValueError, match='conflicting_jsonld_reference'):
+        parse(html({'@graph': [item, *definitions]}), BASE)
+
+
+@pytest.mark.parametrize('other', [
+    {'@id': '#author', '@type': 'Person', 'name': 'Different Editor'},
+    {'@id': '#author', '@type': 'Person', 'url': '/complementary-facts'},
+    {'@id': '#author', '@type': ['Person'], 'name': 'Calendar Editor'},
+])
+def test_conflicting_or_complementary_metadata_is_not_silently_merged(other):
+    complete = {'@id': '#author', '@type': 'Person', 'name': 'Calendar Editor'}
+    with pytest.raises(ValueError, match='conflicting_jsonld_reference'):
+        parse(html({'@graph': [event(), complete, other]}), BASE)
+
+
+@pytest.mark.parametrize('value', [[2, 1], [1], [True, 2], [{'x': 1}], []])
+def test_reference_lists_are_atomic(value):
+    complete = {'@id': '#metadata', 'value': [1, 2]}
+    other = {'@id': '#metadata', 'value': value}
+    with pytest.raises(ValueError, match='conflicting_jsonld_reference'):
+        parse(html({'@graph': [event(), complete, other]}), BASE)
+
+
+def test_repeated_event_definitions_are_never_merged():
+    item = event()
+    partial_event = {key: value for key, value in item.items() if key != 'location'}
+    with pytest.raises(ValueError, match='conflicting_event_occurrence'):
+        parse(html([item, partial_event]), BASE)
+
+
 def test_cancelled_and_virtual_skip_but_missing_timezone_fails():
     e=event();e['eventStatus']='https://schema.org/EventCancelled';assert parse(html(e),BASE)==[]
     e=event();e['location']={'@type':'VirtualLocation'};assert parse(html(e),BASE)==[]
