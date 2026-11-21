@@ -3723,7 +3723,9 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         samples = records[:MAX_PREVIEWS]
         while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
             samples.pop()
-        return {**({"p_parser_capability": "publisher_event_candidates_v1"}
+        from roomquest.registered_native_content import enabled as native_enabled, VERSION as NATIVE_VERSION
+        return {**({"p_parser_capability": NATIVE_VERSION} if native_enabled(source) else {}),
+                **({"p_parser_capability": "publisher_event_candidates_v1"}
                    if maryland or source_key in ('madison_county_parks_ia', 'think_iowa_city_ia', 'rosemont_of_virginia', 'longwood_basketball_va', 'hurrdat_sports_bar_ne') else {}),
                 "p_source_key": source["source_key"], "p_samples": samples,
                 "p_future_count": len(records),
@@ -3761,7 +3763,9 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         samples = records[:MAX_PREVIEWS]
         while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
             samples.pop()
-        return {"p_source_key": source["source_key"], "p_samples": samples,
+        from roomquest.registered_native_content import enabled as native_enabled, VERSION as NATIVE_VERSION
+        return {**({"p_parser_capability": NATIVE_VERSION} if native_enabled(source) else {}),
+                "p_source_key": source["source_key"], "p_samples": samples,
                 "p_future_count": len(records),
                 "p_venue_count": sum(1 for row in records if row["lat"] is not None),
                 "p_error": None, "p_events": records}
@@ -4539,9 +4543,12 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
                                     | atlantic_city_local_venues.CHECKPOINT_KEYS)
 
     phase, failure = "collection", {}
+    native_content = False
     operation = None
     try:
         _observe_collection_phase(observe_phase, "fetch")
+        from roomquest.registered_native_content import enabled as native_enabled, validate_record, VERSION as NATIVE_VERSION
+        native_content = native_enabled(source)
         deadline = min(monotonic() + 43, deadline_at or float("inf"))
         checkpoint_key = source.get("source_key")
         if ((checkpoint_key in ("discover_halifax_va", "visit_atlantic_city_nj", "noyes_arts_atlantic_city_nj", "atlantic_city_municipal_nj", "greatday_atlantic_city_nj")
@@ -4575,6 +4582,11 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
         if pacing["wait_unbounded"]:
             raise PreviewError("publisher_wait_requires_review")
         events = output.pop("p_events", [])
+        if native_content:
+            if output.get('p_parser_capability') != NATIVE_VERSION:
+                raise PreviewError('registered_native_evidence_invalid')
+            for event in events:
+                validate_record(event, source)
         phase = "staging"
         _observe_collection_phase(observe_phase, "stage")
         staged = 0
@@ -4597,7 +4609,8 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
             operation = "community_collector_record_staged_events"
             _observe_collection_phase(observe_phase, "stage", operation=operation)
             written = supabase_rpc("community_collector_record_staged_events", {
-                "p_source_key": source["source_key"], "p_events": batch
+                "p_source_key": source["source_key"], "p_events": batch,
+                **({"p_registered_native_content_version": 1} if native_content else {})
             })
             staged += int(written or 0)
     except (PreviewError, OSError, ValueError) as exc:
@@ -4735,6 +4748,11 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
     from roomquest import gulf_recurring, gulf_seasonal, gulf_venues
     publisher_media = publisher_media or (html and any(
         source_key in module.SOURCES for module in (gulf_recurring, gulf_seasonal, gulf_venues)))
+    publisher_media = publisher_media or native_content
+    if native_content:
+        # The v3 error receipt also identifies the negotiated protocol; it does
+        # not certify missing/partial/oversized snapshots as complete.
+        output['p_parser_capability'] = NATIVE_VERSION
     preview_rpc = ("community_collector_record_preview_v3"
                    if publisher_media
                    else "community_collector_record_preview_v2" if html or ical or civic

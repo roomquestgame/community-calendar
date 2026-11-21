@@ -55,6 +55,9 @@ _OPERATIONS = frozenset(('community_collector_claim_category',
 # This is an explicit diagnostic vocabulary, not a shape-only exception-message
 # filter: even a secret that happens to look like a code must not reach logs.
 _ERROR_CODES = frozenset(('database_unavailable', 'staging_deadline',
+    'registered_native_source_invalid', 'registered_native_capability_required',
+    'registered_native_event_identity_invalid', 'registered_native_description_too_long',
+    'registered_native_evidence_invalid',
     'atlantic_fair_clock_changed',
     'atlantic_fair_date_changed',
     'atlantic_fair_description_incomplete',

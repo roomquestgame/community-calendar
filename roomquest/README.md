@@ -1,3 +1,18 @@
+## Registered native calendar content — November 21, 2026 (prepared)
+
+Exact registered WordPress/JSON-LD claims may negotiate full sanitized native
+descriptions up to 12,000 characters and native image candidates through the
+existing validated media lane. An oversized description fails before staging.
+The positively negotiated WordPress path may retain blank venue facts for
+private Admin review; it does not infer a venue or grant publication.
+
+Read [the capability and rollout contract](../docs/registered-native-content.md)
+and [preparation journal](../docs/journal/2026-11-21-registered-native-content.md).
+The paired backend must deploy first, including downgrade protection and media
+claim negotiation. Noncapable legacy behavior and all publisher access, timing,
+venue, curation and publication gates remain in place. Source activation and
+actual Events/Map acceptance are still separate supported Admin steps.
+
 ## Publisher robots wildcard permissions — November 21, 2026 (prepared)
 
 The guarded publisher transport now interprets `*` and terminal `$` patterns,

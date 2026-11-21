@@ -179,7 +179,12 @@ def resolve_photo(claim: dict, *, fetcher=None, probe=None, clock=None, deadline
     fetcher, clock = fetcher or fetch_page, clock or monotonic
     deadline = deadline if deadline is not None else clock() + 20
     candidate_validator = None
-    if claim.get('candidate_only') is True:
+    from roomquest.registered_native_content import CAPABILITY, media_claim, image_candidate
+    if CAPABILITY in claim:
+        if not media_claim(claim):
+            return None
+        candidate_validator = image_candidate
+    elif claim.get('candidate_only') is True:
         from roomquest.publisher_evidence import family, image_url
         if claim.get('source_key') and (publisher := family(claim['source_key'], claim['event_url'])):
             candidate_validator = lambda url, *_: image_url(url, publisher)
@@ -242,7 +247,8 @@ def run_batch(*, database=None, resolver=None, clock=None, deadline_seconds=38):
     deadline = clock() + min(38, max(1, deadline_seconds))
     # The backend releases candidate-only VA work only to a deployed worker
     # that supports it; old workers retain their existing legacy claim path.
-    claims = database('claim', {'limit': 3, 'candidate_only_version': 'publisher_event_html_v2'}) or []
+    claims = database('claim', {'limit': 3, 'candidate_only_version': 'publisher_event_html_v2',
+                                'registered_native_content_version': 1}) or []
     def process(claim):
         try:
             return claim, resolver(claim, deadline=deadline), None

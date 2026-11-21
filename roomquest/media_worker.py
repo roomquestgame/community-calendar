@@ -194,7 +194,8 @@ def collect_media(ticket, *, database=None, resolver=None, clock=None):
 
     run = database('start', {'ticket': ticket, 'worker_version': WORKER_VERSION,
                             'candidate_only_version': CANDIDATE_VERSION,
-                            'publisher_candidates_version': 'publisher_event_candidates_v1'}, timeout=4)
+                            'publisher_candidates_version': 'publisher_event_candidates_v1',
+                            'registered_native_content_version': 1}, timeout=4)
     if not run:
         stats['stop_reason'] = 'not_admitted'
         return stats
@@ -220,6 +221,7 @@ def collect_media(ticket, *, database=None, resolver=None, clock=None):
                 if can_admit and not claims_blocked and len(futures) < concurrency:
                     free = concurrency - len(futures)
                     claims = database('claim', {**common, 'limit': free,
+                                                'registered_native_content_version': 1,
                                                 'exclude_hosts': limiter.excluded_hosts()}, timeout=CLAIM_TIMEOUT) or []
                     if not isinstance(claims, list) or len(claims) > free:
                         raise PreviewError('invalid_media_claim')
