@@ -927,7 +927,20 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
                     chunks.append(chunk)
                 encoding = response.encoding or "utf-8-sig"
                 if respect_robots and "charset=" not in response.headers.get("Content-Type", "").lower():
+                    # An HTML document can declare its own legacy encoding even
+                    # when the HTTP server omits charset. Trust only a literal
+                    # publisher declaration, never a guessed lossy fallback.
+                    # The payload is already bounded; do not fetch a second time.
                     encoding = "utf-8-sig"
+                    if "html" in response.headers.get("Content-Type", "").lower():
+                        head = b"".join(chunks)[:4096]
+                        declared = re.search(
+                            rb'<meta\s+[^>]*charset\s*=\s*["\']?([a-zA-Z0-9._-]+)',
+                            head, flags=re.I)
+                        if declared:
+                            label = declared.group(1).decode("ascii").lower()
+                            if label in ("utf-8", "utf8", "windows-1252", "iso-8859-1"):
+                                encoding = label
                 response.close()
                 if accept in ('image/jpeg', 'image/png'):
                     payload = b''.join(chunks)
