@@ -206,7 +206,7 @@ def test_html_registration_keeps_robots_denial_of_new_endpoint_on_hold():
     assert fetch.call_args_list[1].kwargs['respect_robots'] is True
 
 
-def test_existing_venue_locator_behavior_is_unchanged_without_unique_page_gate():
+def test_venue_locator_unique_page_guard_is_opt_in():
     from roomquest.venue_calendar_locator import find_calendar
     page = 'https://calendar.example.org/'
     html = ('<a href="/events">Upcoming events</a>'
@@ -214,6 +214,7 @@ def test_existing_venue_locator_behavior_is_unchanged_without_unique_page_gate()
     fetch = lambda *args, **kwargs: ''
     assert find_calendar(html, page, None, fetch, 10, require_unique_calendar_page=True) == (
         None, 'multiple_pages')
+    assert find_calendar(html, page, None, fetch, 10) == (None, 'none')
 
 
 
