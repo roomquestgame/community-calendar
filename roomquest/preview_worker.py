@@ -13,7 +13,6 @@ from concurrent.futures import ThreadPoolExecutor
 from time import monotonic
 from time import sleep
 from threading import Lock
-from urllib.robotparser import RobotFileParser
 import ipaddress
 import json
 import os
@@ -22,13 +21,14 @@ import socket
 import requests
 from roomquest.activity_request_admission import before_request as activity_before_request
 from urllib.error import HTTPError, URLError
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urlsplit
 from urllib.parse import urljoin
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from roomquest.collector_errors import failure_details
 from roomquest import publisher_robots_checkpoint as robots_checkpoint
+from roomquest.publisher_robots_policy import PublisherRobotsPolicy
 from roomquest.publisher_pacing import (capture_publisher_pacing, observe_crawl_delay,
                                        observe_retry_after, pacing_rpc_fields, robots_crawl_delay)
 
@@ -200,12 +200,8 @@ def _cache_robots(host, parser, *, raw=None, status=200):
 
 def _parse_robots_policy(host, raw):
     """One policy parser for fetched responses and authenticated fresh caches."""
-    parser = RobotFileParser()
     lines = raw.decode("utf-8-sig", errors="replace").splitlines()
-    if host == "core.service.elfsight.com":
-        # A trailing wildcard is a prefix match. RobotFileParser treats it literally.
-        lines = ["Allow: /p/" if line.strip() == "Allow: /p/*" else line for line in lines]
-    parser.parse(lines)
+    parser = PublisherRobotsPolicy(lines)
     delay = robots_crawl_delay(lines, robots_checkpoint.PERMISSION_USER_AGENT)
     if host in ("nytransitmuseum.org", "www.nytransitmuseum.org"):
         # The reviewed orphan directive remains a pacing floor on cache restore.
@@ -273,13 +269,19 @@ def _checkpoint_robots_snapshot(source):
         secret=os.environ.get("ROOMQUEST_COLLECTOR_TOKEN", ""), now=now)
 
 
+def _robots_request_path(url):
+    """Retain path parameters and query in the exact outgoing request target."""
+    parsed = urlsplit(url)
+    return (parsed.path or "/") + ("?" + parsed.query if parsed.query else "")
+
+
 def _checkpoint_publisher_ready(source, url, deadline):
     """Radegast may persist a robots-only phase instead of losing cold progress."""
     host, parsed = robots_checkpoint.profile(source), urlparse(url)
     if not public_source_url(url) or parsed.netloc != host:
         raise PreviewError("redirect_host_not_approved")
     validate_public_dns(host)
-    path = parsed.path + ("?" + parsed.query if parsed.query else "")
+    path = _robots_request_path(url)
     if not robots_allowed(host, path, deadline_at=deadline):
         raise PreviewError("robots_denied")
     try:
@@ -805,7 +807,7 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
                 raise PreviewError("source_fetch_deadline")
             validate_public_dns(parsed.hostname or "")
             if respect_robots and not robots_allowed(
-                    parsed.netloc, parsed.path + ("?" + parsed.query if parsed.query else ""),
+                    parsed.netloc, _robots_request_path(current),
                     deadline_at=current_deadline):
                 raise PreviewError("robots_denied")
             if respect_robots and monotonic() >= current_deadline:
