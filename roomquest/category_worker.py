@@ -7,6 +7,7 @@ import socket
 import ssl
 from time import monotonic, sleep
 from urllib.error import HTTPError, URLError
+import requests
 from roomquest.collector_errors import failure_details
 from roomquest.linked_event_descriptions import PROFILES as LINKED_DESCRIPTION_PROFILES
 from roomquest.atlantic_city_library_chamber import CHECKPOINT_KEYS as ATLANTIC_LIBRARY_CHECKPOINT_KEYS
@@ -449,7 +450,14 @@ def _error_code(error):
 def _error_type(error):
     # Never emit a custom exception class/module name or call str/repr(error).
     for family, label in ((PreviewError, 'PreviewError'), (HTTPError, 'HTTPError'),
-            (URLError, 'URLError'), (TimeoutError, 'TimeoutError'),
+            (URLError, 'URLError'),
+            (requests.exceptions.ConnectTimeout, 'RequestsConnectTimeout'),
+            (requests.exceptions.ReadTimeout, 'RequestsReadTimeout'),
+            (requests.exceptions.Timeout, 'RequestsTimeout'),
+            (requests.exceptions.SSLError, 'RequestsSSLError'),
+            (requests.exceptions.ConnectionError, 'RequestsConnectionError'),
+            (requests.exceptions.RequestException, 'RequestsRequestException'),
+            (TimeoutError, 'TimeoutError'),
             (ConnectionError, 'ConnectionError'), (PermissionError, 'PermissionError'),
             (OSError, 'OSError'), (json.JSONDecodeError, 'JSONDecodeError'),
             (TypeError, 'TypeError'), (ValueError, 'ValueError'), (KeyError, 'KeyError'),

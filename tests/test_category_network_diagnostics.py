@@ -3,10 +3,11 @@ import errno
 import json
 import socket
 import ssl
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 from urllib.error import HTTPError, URLError
 
 import pytest
+import requests
 
 from roomquest import category_worker as worker
 from roomquest import preview_worker as preview
@@ -176,3 +177,101 @@ def test_logging_failure_preserves_source_failure_and_finish():
     assert caught.value is error
     assert rpc.call_args_list[-1].args == ('community_collector_finish_category',
         {'p_category': 'html', 'p_ticket': 'private-ticket', 'p_outcome': 'failed'})
+
+
+REQUESTS_FAMILIES = [
+    (requests.exceptions.ConnectTimeout, 'RequestsConnectTimeout'),
+    (requests.exceptions.ReadTimeout, 'RequestsReadTimeout'),
+    (requests.exceptions.Timeout, 'RequestsTimeout'),
+    (requests.exceptions.SSLError, 'RequestsSSLError'),
+    (requests.exceptions.ConnectionError, 'RequestsConnectionError'),
+    (requests.exceptions.RequestException, 'RequestsRequestException'),
+]
+
+
+@pytest.mark.parametrize('family,label', REQUESTS_FAMILIES)
+@pytest.mark.parametrize('nested', [False, True])
+def test_requests_type_labels_are_fixed_and_never_log_exception_payload(caplog, family, label, nested):
+    response = requests.Response()
+    response.url = 'https://private.invalid/?secret=private-token'
+    response._content = SECRET.encode()
+    request = requests.Request('GET', response.url, headers={'Authorization': SECRET}).prepare()
+    cause = family(SECRET, request=request, response=response)
+    original_args = cause.args
+    error = PreviewError('source_network_error') if nested else cause
+    if nested:
+        error.__cause__ = cause
+    worker._Diagnostics('wordpress').observe('fetch', error=error)
+    record, = records(caplog)
+    assert record['cause_type' if nested else 'error_type'] == label
+    if nested:
+        assert record['error_code'] == 'source_network_error'
+        assert record['failure_scope'] == 'source' and record['error_kind'] == 'transient'
+    assert cause.args is original_args and cause.request is request and cause.response is response
+    assert 'private' not in caplog.text and 'https://' not in caplog.text
+    assert 'upstream_http_status' not in record and 'url_reason_type' not in record
+    assert all(entry.exc_info is None for entry in caplog.records)
+
+
+def test_requests_custom_subclass_name_and_nested_reason_are_not_inferred(caplog):
+    class PrivateRequestName(requests.exceptions.ConnectionError):
+        def __str__(self):
+            raise AssertionError('Must not stringify private exception')
+
+        def __repr__(self):
+            raise AssertionError('Must not repr private exception')
+
+    cause = PrivateRequestName(SECRET)
+    cause.__cause__ = socket.gaierror(socket.EAI_AGAIN, SECRET)
+    error = PreviewError('source_network_error')
+    error.__cause__ = cause
+    worker._Diagnostics('wordpress').report(error)
+    record, = records(caplog)
+    assert record['cause_type'] == 'RequestsConnectionError'
+    assert 'dns_errno' not in record and 'url_reason_type' not in record
+    assert 'PrivateRequestName' not in caplog.text and 'private' not in caplog.text
+
+
+@pytest.mark.parametrize('family,label', REQUESTS_FAMILIES)
+def test_requests_fetch_failure_retains_actual_source_disposition_and_single_attempt(caplog, family, label):
+    calls = []
+    source = {'action': 'collect', 'source_id': 6059, 'source_key': 'municipal_test_diagnostic',
+              'kind': 'json', 'platform_adapter': 'wordpress', 'timezone': 'Europe/London',
+              'feed_url': 'https://venue.example.org/wp-json/tribe/events/v1/events?venue=7'}
+    failure = family(SECRET)
+    session = MagicMock()
+    session.__enter__.return_value = session
+    session.get.side_effect = failure
+    def rpc(path, data, **kwargs):
+        calls.append((path, data))
+        return source if path == 'community_collector_claim_category' else True
+    with patch.object(worker, 'supabase_rpc', side_effect=rpc), \
+            patch.object(preview, 'supabase_rpc', side_effect=rpc), \
+            patch.object(preview.requests, 'Session', return_value=session), \
+            patch.object(preview, 'validate_public_dns'), \
+            patch.object(preview, 'robots_allowed', return_value=True), \
+            patch.object(preview, 'pace_publisher'):
+        result = worker.collect_category('wordpress', 'private-ticket')
+    assert result == {'category': 'wordpress', 'claimed': 1, 'complete': 0, 'failed': 1,
+                      'staged': 0, 'failure_scope': 'source', 'error_kind': 'transient',
+                      'error_code': 'source_network_error'}
+    session.get.assert_called_once()
+    assert session.get.call_args.kwargs['timeout'] == (3, 7)
+    assert session.get.call_args.kwargs['allow_redirects'] is False
+    assert [path for path, _ in calls] == ['community_collector_claim_category',
+        'community_collector_record_preview', 'community_collector_finish_category']
+    assert calls[1][1]['p_error'] == 'source_network_error'
+    assert calls[-1][1]['p_outcome'] == 'failed'
+    record, = records(caplog)
+    assert record['phase'] == 'fetch' and record['source_id'] == 6059
+    assert record['cause_type'] == label
+    assert 'private' not in caplog.text and 'https://' not in caplog.text
+
+
+@pytest.mark.parametrize('error,label', [
+    (TimeoutError(SECRET), 'TimeoutError'), (ConnectionError(SECRET), 'ConnectionError'),
+    (PermissionError(SECRET), 'PermissionError'), (OSError(SECRET), 'OSError'),
+    (URLError(SECRET), 'URLError'), (ValueError(SECRET), 'ValueError'),
+])
+def test_existing_nonrequests_error_labels_remain_exact(error, label):
+    assert worker._error_type(error) == label
