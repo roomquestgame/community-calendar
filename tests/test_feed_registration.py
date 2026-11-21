@@ -259,15 +259,13 @@ def test_verified_venue_linked_html_with_no_verified_feed_retains_original_revie
 
 
 
+
 def test_publisher_meta_charset_does_not_require_lossy_decoding():
-    # Check the actual fetcher's charset recognition pattern, not a second
-    # pattern copied into a test. The source declaration is publisher evidence.
-    import re
+    from roomquest.preview_worker import _html_declared_charset
     html = b'<html><head><meta charset="windows-1252"></head><body>caf\xe9</body></html>'
-    declared = re.search(
-        rb'<meta\s+[^>]*charset\s*=\s*["\']?([a-zA-Z0-9._-]+)',
-        html[:4096], flags=re.I)
-    assert declared is not None
-    encoding = declared.group(1).decode('ascii').lower()
-    assert encoding == 'windows-1252'
-    assert 'café' in html.decode(encoding, errors='strict')
+    assert _html_declared_charset(html) == 'windows-1252'
+    assert 'café' in html.decode(_html_declared_charset(html), errors='strict')
+    assert _html_declared_charset(b'<meta charset="utf-8">') == 'utf-8'
+    assert _html_declared_charset(b'<meta charset="unknown-charset">') is None
+    assert _html_declared_charset(b'<html>no charset</html>') is None
+    assert _html_declared_charset(b' ' * 4096 + b'<meta charset="windows-1252">') is None
