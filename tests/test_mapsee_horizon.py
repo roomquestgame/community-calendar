@@ -59,3 +59,13 @@ def test_mapsee_ics_prunes_only_provably_expired_standalone_uids():
     assert uids.count("duplicate") == 2
     assert set(uids) == {"future", "old-recurring", "missing-end", "date-only", "duplicate"}
     assert len(calendar.walk("VEVENT")) == 7
+
+
+
+def test_mapsee_horizon_rejects_reversed_time_range():
+    now = datetime(2026, 11, 21, tzinfo=timezone.utc)
+    with pytest.raises(ValueError, match="invalid_event_end"):
+        within_collection_horizon([{
+            "starts_at": (now + timedelta(days=2)).isoformat(),
+            "ends_at": (now + timedelta(days=1)).isoformat(),
+        }], now)
