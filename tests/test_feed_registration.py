@@ -256,3 +256,15 @@ def test_verified_venue_linked_html_with_no_verified_feed_retains_original_revie
     assert result['p_reason'] == 'html_adapter_needed'
     assert result['p_endpoint'] == listing
     assert fetch.call_count == 2
+
+
+def test_publisher_meta_charset_does_not_require_lossy_decoding():
+    # The bounded fetcher honors an explicit legacy HTML charset when the
+    # publisher omits the HTTP charset. A guessed replacement decode is unsafe.
+    import re
+    html = b'<html><head><meta charset="windows-1252"></head><body>caf\\xe9</body></html>'
+    declared = re.search(rb'<meta\\s+[^>]*charset\\s*=\\s*["\\\']?([a-zA-Z0-9._-]+)', html[:4096], re.I)
+    assert declared is not None
+    encoding = declared.group(1).decode('ascii').lower()
+    assert encoding == 'windows-1252'
+    assert 'caf\\xe9' in html.decode(encoding, errors='strict')
