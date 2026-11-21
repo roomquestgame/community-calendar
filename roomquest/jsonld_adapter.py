@@ -63,6 +63,25 @@ def types(node):
     return {v.rsplit('/', 1)[-1].rsplit('#', 1)[-1] for v in raw}
 
 
+def definition_contains(full, partial):
+    """Accept only a complete definition plus an agreeing subset of its facts.
+
+    JSON-LD publishers repeat metadata nodes in separate script blocks. Missing
+    properties are not contradictions, but a shared property's value must agree.
+    Lists stay atomic: do not combine different venues, types, or coordinates.
+    """
+    if type(full) is not type(partial):
+        return False
+    if isinstance(full, dict):
+        return all(key in full and definition_contains(full[key], value)
+                   for key, value in partial.items())
+    if isinstance(full, list):
+        return len(full) == len(partial) and all(
+            definition_contains(a, b) and definition_contains(b, a)
+            for a, b in zip(full, partial))
+    return full == partial
+
+
 def parse(payload, base=''):
     if payload.lstrip().startswith(('{', '[')):
         blocks = [decode(payload)]
@@ -94,9 +113,14 @@ def parse(payload, base=''):
     for node in nodes:
         identity = node.get('@id')
         if isinstance(identity, str) and len(node) > 1 and not is_event(node):
-            # Conflicting definitions must not silently attach a different venue.
-            if identity in refs and refs[identity] != node:
-                raise ValueError('conflicting_jsonld_reference')
+            if identity in refs:
+                # Keep the publisher's richer definition in either block order.
+                # Complementary or contradictory definitions still need review;
+                # never invent a combined venue from separate partial records.
+                if definition_contains(refs[identity], node):
+                    continue
+                if not definition_contains(node, refs[identity]):
+                    raise ValueError('conflicting_jsonld_reference')
             refs[identity] = node
     def resolve(value):
         if isinstance(value, dict) and set(value) == {'@id'}:
