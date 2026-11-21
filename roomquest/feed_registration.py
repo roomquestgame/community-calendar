@@ -221,7 +221,11 @@ def register(ticket):
                     raise
                 except (ValueError, KeyError, TypeError) as exc:
                     result = extraction_hold('html', exc)
-            if (url == candidate['url'] and not candidate.get('endpoint_only') and body
+            if (not candidate.get('endpoint_only') and body
+                    and (url == candidate['url'] or (
+                        candidate.get('verified_venue_website')
+                        and urlsplit(url).hostname == urlsplit(candidate['url']).hostname
+                        and scoped_endpoint(candidate['url'], url)))
                     and body.lstrip().lstrip(chr(0xfeff)).lstrip().startswith('<')
                     and result.get('p_outcome') == 'review'
                     and result.get('p_reason') in {
