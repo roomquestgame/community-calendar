@@ -1,5 +1,6 @@
 """Shared ChamberMaster public-API intake over Udell's XML and ICS parsers."""
 from concurrent.futures import ThreadPoolExecutor
+from contextvars import copy_context
 from datetime import datetime
 from time import monotonic
 from urllib.parse import urlparse
@@ -9,6 +10,7 @@ from icalendar import Calendar
 from roomquest.preview_worker import (
     PreviewError, _location, parse_growthzone_preview, fetch_publisher,
 )
+from roomquest.incremental_snapshot import RevalidatedDetail, detail_request, utc_start
 
 MAX_DETAILS = 20
 
@@ -35,28 +37,48 @@ def collect(source, payload, deadline_at, fetcher=fetch_publisher):
         if monotonic() >= deadline_at:
             return {**row, 'reason': 'publisher_venue_details_unavailable'}
         detail = row['event_url'].replace('/events/details/', '/events/addtocalendar/') + '?format=ICal'
-        try:
-            raw = fetcher(detail, 'text/calendar', respect_robots=True, deadline_at=deadline_at)
-        except PreviewError as exc:
-            if str(exc) in {'source_network_error', 'source_fetch_deadline',
-                            'publisher_rate_limited', 'publisher_pacing_deferred'}:
-                return {**row, 'reason': 'publisher_venue_details_unavailable'}
-            raise
-        calendar = Calendar.from_ical(raw)
-        matches = [event for event in calendar.walk('VEVENT')
-                   if str(event.get('UID', '')).split('.')[-1] == row['id']]
-        if len(matches) != 1:
-            raise PreviewError('chambermaster_detail_identity')
-        event = matches[0]
-        start = event.decoded('DTSTART')
-        if not isinstance(start, datetime) or start.tzinfo is None or start != datetime.fromisoformat(row['starts_at']):
-            raise PreviewError('chambermaster_detail_time')
-        if str(event.get('STATUS', '')).upper() in ('CANCELLED', 'CANCELED'):
-            return None
-        address = str(event.get('LOCATION', '')).strip()
-        row['venue_address'] = address[:400]
-        geo = event.get('GEO')
-        name, lat, lng = _location(address, getattr(geo, 'latitude', None), getattr(geo, 'longitude', None))
+        with detail_request(detail, 'text/calendar', row) as snapshot:
+            try:
+                raw = fetcher(detail, 'text/calendar', respect_robots=True, deadline_at=deadline_at)
+            except PreviewError as exc:
+                if str(exc) in {'source_network_error', 'source_fetch_deadline',
+                                'publisher_rate_limited', 'publisher_pacing_deferred'}:
+                    return {**row, 'reason': 'publisher_venue_details_unavailable'}
+                raise
+            if isinstance(raw, RevalidatedDetail):
+                evidence = raw.evidence
+            else:
+                calendar = Calendar.from_ical(raw)
+                matches = [event for event in calendar.walk('VEVENT')
+                           if str(event.get('UID', '')).split('.')[-1] == row['id']]
+                if len(matches) != 1:
+                    raise PreviewError('chambermaster_detail_identity')
+                event = matches[0]
+                start = event.decoded('DTSTART')
+                if not isinstance(start, datetime) or start.tzinfo is None or start != datetime.fromisoformat(row['starts_at']):
+                    raise PreviewError('chambermaster_detail_time')
+                address = str(event.get('LOCATION', '')).strip()
+                geo = event.get('GEO')
+                _, lat, lng = _location(address, getattr(geo, 'latitude', None), getattr(geo, 'longitude', None))
+                evidence = {
+                    'kind': 'chambermaster_ical_v1', 'id': row['id'],
+                    'starts_at': utc_start(row['starts_at']),
+                    'status': 'cancelled' if str(event.get('STATUS', '')).upper() in ('CANCELLED', 'CANCELED') else 'scheduled',
+                    'venue_address': address[:400], 'lat': lat, 'lng': lng,
+                }
+            # A validated HTTP representation never bypasses the XML schedule's
+            # identity/time checks or the normal venue-coordinate validation.
+            if evidence['id'] != row['id']:
+                raise PreviewError('chambermaster_detail_identity')
+            if utc_start(evidence['starts_at']) != utc_start(row['starts_at']):
+                raise PreviewError('chambermaster_detail_time')
+            if snapshot is not None:
+                snapshot.remember_detail(detail, 'text/calendar', evidence)
+            if evidence['status'] == 'cancelled':
+                return None
+        address = evidence['venue_address']
+        row['venue_address'] = address
+        name, lat, lng = _location(address, evidence['lat'], evidence['lng'])
         row.update(venue_name=name, lat=lat, lng=lng,
                    reason=None if lat is not None else 'missing_verified_venue_geo')
         return row
@@ -64,7 +86,10 @@ def collect(source, payload, deadline_at, fetcher=fetch_publisher):
     # Three bounded in-flight responses avoid serial network latency consuming
     # the entire source deadline; request count and snapshot semantics stay fixed.
     with ThreadPoolExecutor(max_workers=3) as pool:
-        return [row for row in pool.map(enrich, sorted(records, key=lambda x: (x['starts_at'], x['id'])))
+        # Each task needs its own Context, sharing only the bounded recorder and
+        # pacing state. ContextVars do not propagate into executor threads.
+        tasks = [(copy_context(), row) for row in sorted(records, key=lambda x: (x['starts_at'], x['id']))]
+        return [row for row in pool.map(lambda task: task[0].run(enrich, task[1]), tasks)
                 if row is not None]
 
 

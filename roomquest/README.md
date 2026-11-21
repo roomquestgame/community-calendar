@@ -1,3 +1,57 @@
+## Incremental collection snapshots — November 21, 2026 (implemented; awaiting deployment)
+
+Category claims may negotiate `incremental_snapshot.version: 1` for iCal,
+Localist, WordPress, ChamberMate and ChamberMaster. The worker parses the complete
+bounded source snapshot, fingerprints each existing ID/start/body, stages only
+changed bodies in batches of at most 20, and submits the complete membership
+manifest to the paired database completion RPC. The database owns lease, source
+policy, prior publication, presence renewal and withdrawal validation. Only an
+explicit `publication_required: false` skips the publication call; category
+finish still runs. No capability, unsupported/incomplete membership, civic or
+checkpoint-special sources keep the existing pipeline.
+
+The accepted baseline is scoped to the source, parser/dependency/configuration
+fingerprint and database policy. The stable event context is separate from the
+moving request window, so a refresh on a later day can still reuse unchanged
+event bodies. The new stage/completion RPCs may invalidate reuse while preparing
+the current lease for full legacy replay. The worker retains the complete parsed
+events until completion, replays all bodies on that explicit response, and never
+certifies a partial or failed fetch as an empty source.
+
+The shared transport records at most 32 request observations / 32KB: exact
+URL/Accept identity hashes, body and decoding representation hashes, and bounded
+ETag/Last-Modified values. It stores no raw feed bodies. Ordinary feeds still
+download and parse because current recurrence and event filters use moving date
+and time boundaries; their validators are metadata, not a whole-feed 304 bypass.
+The primary saving is repeated database staging/classification/publication work,
+not zero database writes or universally avoided downloads.
+
+ChamberMaster detail requests independently revalidate their exact URL and
+expected XML event ID/start. A 304, or a 200 with identical body and decoding
+representation, may reuse bounded normalized cancellation/location evidence.
+Listing validators never suppress detail requests. Charset changes force parsing
+or one bounded unconditional refetch; unsupported Vary and no-store responses
+clear future detail/validator reuse. Executor tasks explicitly carry the scoped
+recorder and publisher pacing context. Existing robots, DNS, redirects, deadlines,
+native-content validation and event identity checks remain in force.
+
+Deploy the paired database contract first, then this capability-gated worker.
+Record database and Git-connected worker deployment receipts in the paired
+RoomQuestGame incident journal; this implementation entry is not a rollout receipt.
+This source change does not resume recovery jobs 44/59, change source demand or
+freshness rules, alter registration paths, or add storage, credentials or CI runs.
+The existing 150KB RPC response cap remains; an oversized claim baseline must be
+omitted by the database so collection takes the safe full-body path.
+
+Focused offline verification:
+
+```sh
+python -m pytest tests/test_incremental_snapshot.py tests/test_category_worker.py tests/test_preview_transport_errors.py tests/test_roomquest_scoped_rpc.py tests/test_chambermate.py tests/test_chambermate_integration.py tests/test_localist_registration.py tests/test_wordpress_adapter.py tests/test_publisher_admission.py tests/test_publisher_robots_cache.py tests/test_publisher_robots_policy.py tests/test_registered_native_content.py -q
+```
+
+These tests cover actual parser/transport routes and controlled RPC responses.
+They do not establish live database acceptance or production deployment.
+
 ## Registered native calendar content — November 21, 2026 (prepared)
 
 Exact registered WordPress/JSON-LD claims may negotiate full sanitized native

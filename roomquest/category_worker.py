@@ -48,6 +48,8 @@ _OPERATIONS = frozenset(('community_collector_claim_category',
                          'community_collector_read_fetch_checkpoint',
                          'community_collector_write_fetch_checkpoint',
                          'community_collector_record_staged_events',
+                         'community_collector_stage_incremental',
+                         'community_collector_complete_incremental',
                          'community_collector_record_preview',
                          'community_collector_record_preview_v2',
                          'community_collector_record_preview_v3',
@@ -55,7 +57,7 @@ _OPERATIONS = frozenset(('community_collector_claim_category',
                          'community_collector_finish_category'))
 # This is an explicit diagnostic vocabulary, not a shape-only exception-message
 # filter: even a secret that happens to look like a code must not reach logs.
-_ERROR_CODES = frozenset(('database_unavailable', 'staging_deadline',
+_ERROR_CODES = frozenset(('database_unavailable', 'staging_deadline', 'incremental_receipt_invalid',
     'registered_native_source_invalid', 'registered_native_capability_required',
     'registered_native_event_identity_invalid', 'registered_native_description_too_long',
     'registered_native_evidence_invalid',
@@ -603,6 +605,8 @@ def collect_category(category, ticket):
                 diagnostics.observe('fetch')
                 process_args = {'deadline_at': diagnostics.started + 39,
                                 'observe_phase': diagnostics.observe}
+                if isinstance(source.get('incremental_snapshot'), dict):
+                    process_args['collection_context'] = args
                 if category == 'html':
                     process_args['publisher_handoff'] = publisher_handoff
                     if ((source.get('source_key') in ('discover_halifax_va', 'visit_atlantic_city_nj', 'noyes_arts_atlantic_city_nj', 'atlantic_city_municipal_nj', 'greatday_atlantic_city_nj', 'visit_raleigh_nc')
@@ -631,6 +635,11 @@ def collect_category(category, ticket):
                         # The recorded source hold/retry owns its next attempt.
                         # Release this HTML slot without cooling other publishers.
                         outcome = 'source_error'
+                    return result
+                if result.get('publication_required') is False:
+                    # The lease-fenced completion has already renewed complete
+                    # membership. A missing flag keeps the legacy publish call.
+                    outcome = 'complete'
                     return result
             # A source-bound ten-row publication call, with a shared database cap.
             # Remaining rows retain their checkpoint and dispatch a continuation.
