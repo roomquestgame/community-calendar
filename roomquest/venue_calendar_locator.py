@@ -267,7 +267,7 @@ def _wp_candidate(html, site):
                        "/wp-json/tribe/events/v1/events", "", ""))
 
 
-def find_calendar(website_html, website_url, event_url, fetch, deadline):
+def find_calendar(website_html, website_url, event_url, fetch, deadline, *, require_unique_calendar_page=False):
     """Return (URL, finding) from at most four additional first-party requests.
 
     'ical'/'wordpress': actual validated response, eligible for registration.
@@ -288,20 +288,32 @@ def find_calendar(website_html, website_url, event_url, fetch, deadline):
             continue
         inspected.add(base)
         parsed = _signals(html, base)
+        # Registration of a standalone page must not arbitrarily choose between
+        # multiple publisher-linked event calendars. Venue discovery keeps its
+        # existing, separately evidenced ranking behavior.
+        if require_unique_calendar_page and base == website_url:
+            linked_pages = [u for u in parsed.pages if scoped_endpoint(website_url, u)]
+            if len(linked_pages) > 1:
+                return None, "multiple_pages"
         # Multiple distinct source subscriptions are ambiguous in a singular
         # handoff. Prefer one proven TEC collection over duplicate iCal exports,
         # otherwise preserve the website for review instead of guessing.
         direct = [u for u in parsed.feeds
                   if scoped_endpoint(base,u)]
         wp_direct = [u for u in direct if parsed.feeds[u] == "wordpress"]
+        wp = _wp_candidate(html, base)
         if len(direct) > 1 and len(wp_direct) != 1:
-            return None, "multiple_feeds"
-        if len(wp_direct) == 1:
+            if not wp:
+                return None, "multiple_feeds"
+            # Several iCal exports are not permission to guess their scope.
+            # Probe the publisher-evidenced TEC collection instead; if it fails,
+            # the caller retains the original ambiguous-registration hold.
+            direct = []
+        elif len(wp_direct) == 1:
             direct = wp_direct
         for endpoint in direct:
             if endpoint not in endpoints:
                 endpoints.append(endpoint)
-        wp = _wp_candidate(html, base)
         if wp and wp not in endpoints:
             endpoints.insert(0, wp)
         square = _squarespace_candidate(html, base)
