@@ -90,7 +90,9 @@ def probe(url, body, kind):
         if kind == 'ical':
             rows = parse_ical(body, {'url': url, 'source_key': source_key(url)}, legacy=True)
         elif kind == 'wordpress':
-            rows = parse_tribe(json.loads(body), strict_public=True, retain_description=True,
+            from roomquest.reviewed_venue_addresses import complete_tec_venues
+            payload = complete_tec_venues(json.loads(body), {'url': url, 'source_key': source_key(url)})
+            rows = parse_tribe(payload, strict_public=True, retain_description=True,
                                utc_default_zone=TRIBE_UTC_DEFAULT_ZONES.get(source_key(url)))
         else:
             return True  # collection_evidence already ran the family parser

@@ -33,3 +33,49 @@ def complete_address(row, source):
         return
     row['venue_address'] = '134 Chapel Road, Sweet Briar, VA 24595'
     row['venue_city'] = 'Sweet Briar'
+
+
+TEC_VENUES = {
+    'https://thesuperradarcade.com/wp-json/tribe/events/v1/events':
+        ('The Super Rad Arcade Bar', '58 9th St.', 'Lynchburg', 'VA', '24504'),
+    'https://www.lucasoilstadium.com/wp-json/tribe/events/v1/events':
+        ('Lucas Oil Stadium', '500 S. Capitol Avenue', 'Indianapolis', 'IN', '46225'),
+}
+
+
+def complete_tec_venues(payload, source):
+    """Complete reviewed on-site calendars without altering an explicit venue.
+
+    Super Rad's event description supplies the Where? block and full address.
+    Lucas Oil's official homepage labels the feed Upcoming Stadium Events and
+    publishes 500 S. Capitol Avenue, Indianapolis, IN 46225 in its footer.
+    These source-scoped address inferences were reviewed 2026-11-21. No GEO.
+    """
+    import re
+    from urllib.parse import urlsplit
+    from roomquest.mapsee_adapter import plain
+    url = source.get('url', source.get('feed_url'))
+    profile = TEC_VENUES.get(url)
+    expected = 'municipal_' + md5(('feed_registration:' + str(url)).encode()).hexdigest()[:24]
+    if not profile or source.get('source_key') != expected:
+        return payload
+    name, street, city, state, postal = profile
+    events = []
+    for event in payload.get('events', []):
+        if not isinstance(event, dict):
+            events.append(event)
+            continue
+        text = plain(event.get('description'))
+        event_url = urlsplit(event.get('url') or '')
+        eligible = (not event.get('venue') and event_url.scheme == 'https'
+                    and event_url.netloc == urlsplit(url).netloc
+                    and event_url.path.startswith('/event/')
+                    and not re.search(r'\b(?:off[- ]?site|off[- ]?campus|virtual event|online event|webinar)\b', text, re.I))
+        if city == 'Lynchburg':
+            eligible = eligible and bool(re.search(
+                r'Where\?\s+The Super Rad Arcade Bar\s+58 9th St\.,\s+Lynchburg,\s+Virginia 24504', text))
+        if eligible:
+            event = {**event, 'venue': {'venue': name, 'address': street,
+                                      'city': city, 'state': state, 'zip': postal}}
+        events.append(event)
+    return {**payload, 'events': events}

@@ -352,6 +352,8 @@ def collect(source, fetch, *, deadline_at=None):
                             raise ValueError('publisher_schedule_conflict')
         # Never follow response next links; rebuild only this registered URL.
         utc_default_zone = 'America/New_York' if source_key == VIRGINIA_MOCA else TRIBE_UTC_DEFAULT_ZONES.get(source_key)
+        from roomquest.reviewed_venue_addresses import complete_tec_venues
+        payload = complete_tec_venues(payload, source)
         parsed_rows = parse_tribe(payload, strict_public=public_calendar or reading_room or bool(hampton_url) or ncma or source.get("source_key") in
                                   ("madison_county_parks_ia", "nebraska_game_parks", ROSEMONT_KEY, jpb_basketball.KEY, hurrdat_calendar.KEY),
                                 retain_description=True,
