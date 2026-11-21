@@ -31,6 +31,7 @@ from roomquest import publisher_robots_checkpoint as robots_checkpoint
 from roomquest.publisher_robots_policy import PublisherRobotsPolicy
 from roomquest.publisher_pacing import (capture_publisher_pacing, observe_crawl_delay,
                                        observe_retry_after, pacing_rpc_fields, robots_crawl_delay)
+from roomquest.incremental_snapshot import capture_snapshot, current_snapshot
 
 MAX_BODY = 3_000_000
 MAX_PREVIEWS = 10
@@ -791,10 +792,18 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
         # Public GenericEvents routing identity published in the store's SSR.
         # This is neither a credential nor an arbitrary caller-supplied header.
         headers['game-id'] = '2f532764-e06a-494b-9ca1-3e5dfea425ec'
+    # Only ordinary public GET representations participate. Conditional headers
+    # are available solely inside an independently validated detail request;
+    # a moving-window feed must still be fetched and completely parsed.
+    incremental = (current_snapshot() if calendar_form is None and calendar_json is None
+                   and localhop_app_id is None and not cardboard_arena_calendar and not visit_raleigh_api
+                   and game_theory_key is None and chapel_calendar_body is None
+                   and comedyworx_instance is None and brewing_instance is None else None)
     current = url
     admission_deadline = deadline_at if deadline_at is not None else monotonic() + 18
     deadline = min(admission_deadline, monotonic() + 18)
     network_started = False
+    unconditional = set()
     with requests.Session() as session:
         for _ in range(5):
             parsed = urlparse(current)
@@ -830,7 +839,9 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
                     response = session.post(current, data=chapel_calendar_body, headers=headers,
                                             timeout=timeout, stream=True, allow_redirects=False)
                 elif calendar_form is None and calendar_json is None:
-                    response = session.get(current, headers=headers, timeout=timeout,
+                    conditional = (incremental.conditional_headers(current, accept)
+                                   if incremental is not None and current not in unconditional else {})
+                    response = session.get(current, headers={**headers, **conditional}, timeout=timeout,
                                            stream=True, allow_redirects=False)
                 elif calendar_json is not None:
                     response = session.post(current, json=calendar_json, headers=headers,
@@ -858,6 +869,24 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
                         raise PreviewError("redirect_missing_location")
                     current = urljoin(current, location)
                     continue
+                if response.status_code == 304 and incremental is not None:
+                    response_encoding = response.encoding or "utf-8-sig"
+                    if respect_robots and "charset=" not in response.headers.get("Content-Type", "").lower():
+                        response_encoding = "utf-8-sig"
+                    reused = incremental.revalidated(current, accept, response.headers,
+                        encoding=response_encoding, errors="strict" if respect_robots else "replace") if conditional else None
+                    response.close()
+                    if reused is not None:
+                        return reused
+                    if conditional and current not in unconditional:
+                        # A changed parse representation on304 needs a body.
+                        # Retry once within the same redirect/network/deadline
+                        # bounds, including normal robots and pacing admission.
+                        unconditional.add(current)
+                        continue
+                    # A 304 without an exact validated normalized representation
+                    # is a failed fetch, never a successful empty calendar.
+                    raise PreviewError("publisher_http_304")
                 if response.status_code != 200:
                     code = response.status_code
                     response.close()
@@ -912,7 +941,14 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
                         raise PreviewError('invalid_publisher_pdf')
                     return payload
                 try:
-                    return b"".join(chunks).decode(encoding, errors="strict" if respect_robots else "replace")
+                    payload = b"".join(chunks)
+                    decoded = payload.decode(encoding, errors="strict" if respect_robots else "replace")
+                    if incremental is not None:
+                        reused = incremental.record_body(current, accept, payload, response.headers,
+                            encoding=encoding, errors="strict" if respect_robots else "replace")
+                        if reused is not None:
+                            return reused
+                    return decoded
                 except UnicodeError as exc:
                     raise PreviewError("invalid_source_encoding") from exc
             except requests.RequestException as exc:
@@ -3943,6 +3979,7 @@ def supabase_rpc(path: str, payload: dict, *, timeout: float = 4):
                "community_collector_claim_api_venue_discovery", "community_collector_finish_api_venue_discovery",
                "community_collector_claim_category", "community_collector_publish_category", "community_collector_finish_category", "community_collector_claim_previews", "community_collector_claim_demand_preview", "community_collector_claim_chambermaster", "community_collector_record_preview", "community_collector_record_preview_v2", "community_collector_record_preview_v3",
                "community_collector_read_fetch_checkpoint", "community_collector_write_fetch_checkpoint",
+               "community_collector_stage_incremental", "community_collector_complete_incremental",
                "community_collector_record_staged_events", "community_collector_geocoder", "community_collector_geocoder_claim",
                "community_collector_venues", "community_collector_media", "community_collector_media_demand",
                "community_collector_things_to_do", "community_collector_activity_discovery",
@@ -3984,7 +4021,7 @@ def _observe_collection_phase(observer, phase, *, operation=None, error=None):
 def _process_claimed_source(source: dict, *, deadline_at=None, publisher_handoff=None,
                             observe_phase=None, collection_context=None) -> dict:
     """Process a single claimed feed with the existing private staging contract."""
-    with capture_publisher_pacing() as pacing:
+    with capture_publisher_pacing() as pacing, capture_snapshot(source, collection_context):
         return _process_claimed_source_with_pacing(
             source, pacing, deadline_at=deadline_at, publisher_handoff=publisher_handoff,
             observe_phase=observe_phase, collection_context=collection_context)
@@ -4520,6 +4557,62 @@ def _preview_fetch_chunk(source, pacing, *, adapter, allowed_hosts, collection_c
         raise
 
 
+def _event_batches(events, *, empty=False):
+    batches, batch, size = [], [], 2
+    for event in events:
+        event_size = len(json.dumps(event, ensure_ascii=False).encode("utf-8")) + 2
+        if batch and (len(batch) >= STAGING_BATCH_SIZE or size + event_size > 150_000):
+            batches.append(batch)
+            batch, size = [], 2
+        batch.append(event)
+        size += event_size
+    if batch or empty:
+        batches.append(batch)
+    return batches
+
+
+def _stage_legacy_events(source, events, *, native_content, deadline, observe_phase):
+    staged = 0
+    operation = "community_collector_record_staged_events"
+    for batch in _event_batches(events, empty=True):
+        _observe_collection_phase(observe_phase, "stage")
+        if monotonic() > deadline - 4:
+            raise PreviewError("staging_deadline")
+        _observe_collection_phase(observe_phase, "stage", operation=operation)
+        written = supabase_rpc(operation, {
+            "p_source_key": source["source_key"], "p_events": batch,
+            **({"p_registered_native_content_version": 1} if native_content else {})
+        })
+        staged += int(written or 0)
+    return staged
+
+
+def _stage_incremental_events(snapshot, plan, *, native_content, deadline, observe_phase):
+    staged = 0
+    operation = "community_collector_stage_incremental"
+    for batch in _event_batches(plan["changed"]):
+        _observe_collection_phase(observe_phase, "stage")
+        if monotonic() > deadline - 4:
+            raise PreviewError("staging_deadline")
+        _observe_collection_phase(observe_phase, "stage", operation=operation)
+        result = supabase_rpc(operation, {
+            **snapshot.collection_context, "p_source_key": snapshot.source_key,
+            "p_policy_context": snapshot.policy_context, "p_context_hash": snapshot.context_hash,
+            "p_events": batch,
+            **({"p_registered_native_content_version": 1} if native_content else {})
+        })
+        if (isinstance(result, dict) and result.get("accepted") is False
+                and result.get("requires_full") is True):
+            # This response prepares the same lease for a complete legacy
+            # replay, including counters already touched by earlier batches.
+            return None
+        if (not isinstance(result, dict) or result.get("accepted") is not True
+                or type(result.get("staged")) is not int or result["staged"] != len(batch)):
+            raise PreviewError("incremental_receipt_invalid")
+        staged += result["staged"]
+    return staged
+
+
 def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, publisher_handoff=None,
                                        observe_phase=None, collection_context=None):
     if source.get('source_key') == 'visit_raleigh_nc':
@@ -4545,6 +4638,8 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
     phase, failure = "collection", {}
     native_content = False
     operation = None
+    incremental = current_snapshot()
+    incremental_plan = None
     try:
         _observe_collection_phase(observe_phase, "fetch")
         from roomquest.registered_native_content import enabled as native_enabled, validate_record, VERSION as NATIVE_VERSION
@@ -4589,30 +4684,17 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
                 validate_record(event, source)
         phase = "staging"
         _observe_collection_phase(observe_phase, "stage")
-        staged = 0
-        # Keep each transaction below the API statement budget. Completion is
-        # recorded only after every bounded batch has been accepted.
-        batches, batch, size = [], [], 2
-        for event in events:
-            event_size = len(json.dumps(event, ensure_ascii=False)) + 2
-            if batch and (len(batch) >= STAGING_BATCH_SIZE or size + event_size > 150_000):
-                batches.append(batch)
-                batch, size = [], 2
-            batch.append(event)
-            size += event_size
-        batches.append(batch)
-        for batch in batches:
-            operation = None
-            _observe_collection_phase(observe_phase, "stage")
-            if monotonic() > deadline - 4:
-                raise PreviewError("staging_deadline")
+        incremental_plan = incremental.plan(events, output) if incremental is not None else None
+        if incremental_plan is not None:
+            operation = "community_collector_stage_incremental"
+            staged = _stage_incremental_events(incremental, incremental_plan,
+                native_content=native_content, deadline=deadline, observe_phase=observe_phase)
+            if staged is None:
+                incremental_plan = None
+        if incremental_plan is None:
             operation = "community_collector_record_staged_events"
-            _observe_collection_phase(observe_phase, "stage", operation=operation)
-            written = supabase_rpc("community_collector_record_staged_events", {
-                "p_source_key": source["source_key"], "p_events": batch,
-                **({"p_registered_native_content_version": 1} if native_content else {})
-            })
-            staged += int(written or 0)
+            staged = _stage_legacy_events(source, events, native_content=native_content,
+                                          deadline=deadline, observe_phase=observe_phase)
     except (PreviewError, OSError, ValueError) as exc:
         _observe_collection_phase(observe_phase, "fetch" if phase == "collection" else "stage",
                                   operation=operation, error=exc)
@@ -4622,6 +4704,7 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
             "p_error": str(exc)[:120] if isinstance(exc, PreviewError) else "source_parse_error",
         }
         staged = 0
+        incremental_plan = None
         failure = failure_details(output["p_error"],
                                   expected_source_error=isinstance(exc, PreviewError), phase=phase)
     # A failed result is returned only after its source error/hold has been
@@ -4760,6 +4843,50 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
     if not publisher_media:
         # Only the v3 RPC accepts a parser capability marker.
         output.pop("p_parser_capability", None)
+    if incremental_plan is not None and output["p_error"] is None:
+        operation = "community_collector_complete_incremental"
+        completion_phase = "record"
+        try:
+            _observe_collection_phase(observe_phase, "record", operation=operation)
+            result = supabase_rpc(operation, {
+                **incremental.collection_context, "p_source_key": source_key,
+                "p_receipt": incremental.receipt(incremental_plan),
+                "p_preview": {
+                    "version": 3 if publisher_media else 2 if html or ical or civic else 1,
+                    "samples": output["p_samples"], "future_count": output["p_future_count"],
+                    "venue_count": output["p_venue_count"],
+                    **({"parser_capability": output["p_parser_capability"]}
+                       if "p_parser_capability" in output else {}),
+                    **{key.removeprefix("p_"): value for key, value in pacing_rpc_fields(pacing).items()},
+                },
+            })
+            if (isinstance(result, dict) and result.get("accepted") is False
+                    and result.get("requires_full") is True):
+                # All parsed bodies are still held locally. The server has
+                # reset only this lease's observation counters for safe replay.
+                operation = "community_collector_record_staged_events"
+                completion_phase = "stage"
+                staged = _stage_legacy_events(source, events, native_content=native_content,
+                                              deadline=deadline, observe_phase=observe_phase)
+            elif (isinstance(result, dict) and result.get("accepted") is True
+                    and type(result.get("publication_required")) is bool):
+                if publisher_handoff is not None and not pacing["wait_unbounded"]:
+                    publisher_handoff["ready_at"] = monotonic() + max(
+                        1, pacing["crawl_delay_seconds"], pacing["retry_after_seconds"])
+                return {"complete": 1, "failed": 0, "staged": staged,
+                        "publication_required": result["publication_required"]}
+            else:
+                raise PreviewError("incremental_receipt_invalid")
+        except (PreviewError, OSError, ValueError) as exc:
+            _observe_collection_phase(observe_phase, completion_phase, operation=operation, error=exc)
+            output = {
+                "p_source_key": source_key, "p_samples": [], "p_future_count": 0, "p_venue_count": 0,
+                "p_error": str(exc)[:120] if isinstance(exc, PreviewError) else "source_parse_error",
+                **({"p_parser_capability": NATIVE_VERSION} if native_content else {}),
+            }
+            staged = 0
+            failure = failure_details(output["p_error"],
+                expected_source_error=isinstance(exc, PreviewError), phase="staging")
     _observe_collection_phase(observe_phase, "record", operation=preview_rpc)
     if html or ical or publisher_media or civic:
         supabase_rpc(preview_rpc, {**output, **pacing_rpc_fields(pacing)})
