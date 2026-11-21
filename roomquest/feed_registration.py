@@ -117,6 +117,10 @@ def classify(url, payload, hint=None, endpoint_only=False, venue_website=False):
         return evidence
     if endpoint_only:
         return evidence if evidence and evidence['p_outcome'] == 'review' else review('no_reusable_calendar')
+    from roomquest.libcal_registration import subscription
+    libcal = subscription(url, body)
+    if libcal:
+        parser.links[libcal] = 'ical'
     links = {target: kind for target, kind in parser.links.items() if scoped_endpoint(url, target)}
     if parser.links and not links:
         return evidence or review('calendar_filter_unverified', 'html')
