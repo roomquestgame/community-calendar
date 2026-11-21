@@ -4,6 +4,7 @@ These tests do not emulate SQL publication, source approval, or media leasing.
 The matching backend fixture tests those private-stage/publication boundaries.
 """
 from copy import deepcopy
+from collections import OrderedDict
 from datetime import datetime, timedelta, timezone
 import json
 from unittest.mock import MagicMock, patch
@@ -415,6 +416,163 @@ def test_native_media_still_requires_validated_final_redirect_target():
         clock=lambda: 0, deadline=30)
     assert result is None
     fetch.assert_not_called()
+
+
+def image_response(status=200, headers=None):
+    response = MagicMock()
+    response.status_code = status
+    response.headers = headers or {'Content-Type': 'image/jpeg', 'Content-Length': '1000'}
+    response.iter_content.return_value = iter([b'\xff\xd8\xff\xe0image'])
+    response.__enter__.return_value = response
+    return response
+
+
+@pytest.mark.parametrize('policy', [False, 'robots_denied', 'publisher_wait_requires_review'])
+def test_native_image_policy_denial_precedes_get_without_page_fallback(policy):
+    fetch, session = MagicMock(), MagicMock()
+    effect = preview_worker.PreviewError(policy) if isinstance(policy, str) else None
+    with patch.object(event_media, 'validate_public_dns'), \
+            patch.object(event_media, 'robots_allowed', return_value=False, side_effect=effect) as robots, \
+            patch.object(event_media, 'pace_publisher') as pace:
+        assert event_media.resolve_photo(media_claim(), fetcher=fetch, session=session,
+            clock=lambda: 0, deadline=30, strict_deadline=True) is None
+    robots.assert_called_once_with('cdn.example.org', '/workshop-poster.jpg', deadline_at=8)
+    session.get.assert_not_called()
+    fetch.assert_not_called()
+    pace.assert_not_called()
+
+
+def test_native_image_checks_exact_query_and_each_redirect_under_host_permit():
+    from roomquest.media_worker import HostLimiter
+    first = PHOTO + '?size=large&version=2'
+    second = 'https://images.example.net/private/poster.jpg?license=none'
+    limiter = HostLimiter(1, clock=lambda: 0)
+    seen = []
+    def policy(host, path, *, deadline_at):
+        assert limiter._active[event_media.canonical_host(host)] == 1
+        seen.append((host, path, deadline_at))
+        return host == 'cdn.example.org'
+    session = MagicMock()
+    session.get.return_value = image_response(302, {'Location': second})
+    fetch = MagicMock()
+    with patch.object(event_media, 'validate_public_dns') as dns, \
+            patch.object(event_media, 'robots_allowed', side_effect=policy), \
+            patch.object(event_media, 'pace_publisher') as pace:
+        assert event_media.resolve_photo(media_claim(candidate_url=first), fetcher=fetch,
+            session=session, host_limiter=limiter, clock=lambda: 0, deadline=30,
+            strict_deadline=True) is None
+    assert seen == [('cdn.example.org', '/workshop-poster.jpg?size=large&version=2', 8),
+                    ('images.example.net', '/private/poster.jpg?license=none', 8)]
+    assert [call.args[0] for call in dns.call_args_list] == ['cdn.example.org', 'images.example.net']
+    session.get.assert_called_once()
+    assert session.get.call_args.args[0] == first
+    pace.assert_called_once_with('cdn.example.org', 8)
+    assert not limiter._active
+    fetch.assert_not_called()
+
+
+@pytest.mark.parametrize('code,reason', [
+    ('robots_unavailable', 'network_error'), ('publisher_rate_limited', 'transient_http'),
+    ('publisher_pacing_deferred', 'host_busy'), ('source_fetch_deadline', 'deadline'),
+])
+def test_native_temporary_policy_errors_use_existing_closed_defer_outcomes(code, reason):
+    session = MagicMock()
+    with patch.object(event_media, 'validate_public_dns'), \
+            patch.object(event_media, 'robots_allowed', side_effect=preview_worker.PreviewError(code)):
+        with pytest.raises(event_media.MediaDeferred) as caught:
+            event_media.resolve_photo(media_claim(), session=session, clock=lambda: 0,
+                deadline=30, strict_deadline=True)
+    assert caught.value.reason == reason
+    assert caught.value.host == 'cdn.example.org'
+    assert caught.value.attempted is False
+    session.get.assert_not_called()
+
+
+@pytest.mark.parametrize('wait,terminal', [(120, False), (3601, True), (86401, True)])
+def test_native_robots_retry_after_is_retained_or_stops_without_shorter_wait(wait, terminal):
+    from roomquest.publisher_pacing import observe_retry_after
+    def policy(*args, **kwargs):
+        observe_retry_after(str(wait))
+        raise preview_worker.PreviewError('publisher_rate_limited')
+    session = MagicMock()
+    with patch.object(event_media, 'validate_public_dns'), \
+            patch.object(event_media, 'robots_allowed', side_effect=policy):
+        if terminal:
+            assert event_media.resolve_photo(media_claim(), session=session,
+                clock=lambda: 0, deadline=30, strict_deadline=True) is None
+        else:
+            with pytest.raises(event_media.MediaDeferred) as caught:
+                event_media.resolve_photo(media_claim(), session=session,
+                    clock=lambda: 0, deadline=30, strict_deadline=True)
+            assert caught.value.reason == 'transient_http'
+            assert caught.value.retry_after_seconds == 120
+    session.get.assert_not_called()
+
+
+def test_native_image_cached_robots_still_checks_each_path_and_honors_crawl_delay():
+    now = [0]
+    clock = lambda: now[0]
+    sleeps = []
+    def sleep(seconds):
+        sleeps.append(seconds)
+        now[0] += seconds
+    robots_response = MagicMock()
+    robots_response.status = 200
+    robots_response.headers = {}
+    robots_response.read.return_value = b'User-agent: *\nDisallow: /private/\nCrawl-delay: 2\n'
+    robots_response.__enter__.return_value = robots_response
+    opener = MagicMock()
+    opener.open.return_value = robots_response
+    session = MagicMock()
+    session.get.return_value = image_response(302, {'Location': 'https://cdn.example.org/private/image.jpg'})
+    with patch.object(event_media, 'validate_public_dns'), patch.object(preview_worker, 'validate_public_dns'), \
+            patch.object(preview_worker, 'build_opener', return_value=opener), \
+            patch.object(preview_worker, 'monotonic', clock), patch.object(preview_worker, 'sleep', sleep), \
+            patch.object(preview_worker, '_robots_cache', OrderedDict()), \
+            patch.object(preview_worker, '_robots_delays', {}), \
+            patch.object(preview_worker, '_publisher_next', {}), \
+            patch.object(preview_worker, '_publisher_retry_after', {}):
+        assert event_media.resolve_photo(media_claim(), session=session, clock=clock,
+            deadline=30, strict_deadline=True) is None
+    opener.open.assert_called_once()
+    assert opener.open.call_args.args[0].full_url == 'https://cdn.example.org/robots.txt'
+    assert opener.open.call_args.kwargs['timeout'] <= 5
+    robots_response.read.assert_called_once_with(128001)
+    assert sleeps == [2]
+    session.get.assert_called_once()
+    assert now[0] == 2
+
+
+@pytest.mark.parametrize('spent', [7, 8])
+def test_native_robots_lookup_shares_existing_eight_second_probe_budget(spent):
+    now = [0]
+    def policy(host, path, *, deadline_at):
+        assert deadline_at == 8
+        now[0] = spent
+        return True
+    session = MagicMock()
+    session.get.return_value = image_response()
+    with patch.object(event_media, 'validate_public_dns'), \
+            patch.object(event_media, 'robots_allowed', side_effect=policy), \
+            patch.object(event_media, 'pace_publisher'):
+        if spent == 8:
+            with pytest.raises(event_media.MediaDeferred, match='deadline'):
+                event_media.resolve_photo(media_claim(), session=session, clock=lambda: now[0],
+                    deadline=30, strict_deadline=True)
+            session.get.assert_not_called()
+        else:
+            assert event_media.resolve_photo(media_claim(), session=session, clock=lambda: now[0],
+                deadline=30, strict_deadline=True)['image_url'] == PHOTO
+            assert sum(session.get.call_args.kwargs['timeout']) <= 1
+
+
+def test_legacy_image_probe_does_not_enter_native_policy_gate():
+    session = MagicMock()
+    session.get.return_value = image_response()
+    with patch.object(event_media, 'validate_public_dns'), \
+            patch.object(event_media, 'robots_allowed') as robots:
+        assert event_media.probe_image(PHOTO, session=session, clock=lambda: 0) == (PHOTO, 'image/jpeg')
+    robots.assert_not_called()
 
 
 @pytest.mark.parametrize('code', [

@@ -54,6 +54,19 @@ routine Admin/data changes and post-release Events/Map acceptance.
   Eight focused cases cover both directions, case, unchanged proof and rejection
   of sibling/other/double-`www.` subdomains. The native module passes 118 tests.
   No legacy URL, transport or redirect rule changed.
+- Backend review identified that the existing byte probe did not consult robots
+  for a generic native image/CDN path. Under root's explicit scope approval,
+  native probes now reuse the existing cached path-policy and pacing helpers
+  inside the current host permit and eight-second budget. An uncached host can
+  require one auxiliary robots lookup. Denied/unrepresentable/over-one-hour
+  policy waits do not become shorter invented retries or permission to crawl;
+  event facts survive without an approved image. Temporary cases retain the
+  existing closed defer labels. The native/media focused run passes 179 tests
+  and two subtests; no live publisher or production worker was invoked.
+- Independent final review passes the complete focused suite: **325 tests and
+  34 subtests** after both host-parity and native robots amendments. This
+  supersedes the earlier 302-case count without changing its recorded evidence.
+  Exact final remote-content verification remains a release gate.
 - A controlled before/after probe against the current-main base failed all
   five richer-contract expectations before the patch and passed all five
   afterward. It verifies both full descriptions, native image candidate,

@@ -16,6 +16,8 @@ from bs4 import BeautifulSoup
 import requests
 
 from roomquest.preview_worker import event_image, public_source_url, validate_public_dns, supabase_rpc, PreviewError
+from roomquest.preview_worker import robots_allowed, _robots_request_path, pace_publisher
+from roomquest.publisher_pacing import capture_publisher_pacing
 from roomquest.venue_resolver import fetch_page, json_nodes, words
 
 MIMES = {'image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif'}
@@ -101,8 +103,30 @@ def image_signature(data: bytes, mime: str) -> bool:
     return mime == 'image/avif' and data[4:8] == b'ftyp' and b'avif' in data[8:32]
 
 
+def _native_image_access(url, host, deadline, *, attempted):
+    """Check this image path under the existing permit and total probe budget."""
+    with capture_publisher_pacing() as pacing:
+        try:
+            if not robots_allowed(host, _robots_request_path(url), deadline_at=deadline):
+                return False
+            pace_publisher(host, deadline)
+        except PreviewError as error:
+            code = error.args[0] if error.args else None
+            wait = max(pacing['crawl_delay_seconds'], pacing['retry_after_seconds'])
+            # Media backoffs are bounded at one hour. Never shorten a published
+            # longer wait or treat a policy denial as permission to try a page.
+            if code in ('robots_denied', 'publisher_wait_requires_review') or pacing['wait_unbounded'] or wait > 3600:
+                return False
+            reason = {'source_fetch_deadline': 'deadline',
+                      'publisher_pacing_deferred': 'host_busy',
+                      'publisher_rate_limited': 'transient_http'}.get(code, 'network_error')
+            raise MediaDeferred(reason, host=host, retry_after_seconds=max(30, wait),
+                                attempted=attempted) from error
+    return True
+
+
 def probe_image(url: str, *, candidate_validator=None, deadline=None, clock=None,
-                host_limiter=None, session=None) -> tuple[str, str] | None:
+                host_limiter=None, session=None, respect_robots=False) -> tuple[str, str] | None:
     current = url
     clock = clock or monotonic
     deadline = min(deadline, clock() + PROBE_SECONDS) if deadline is not None else clock() + PROBE_SECONDS
@@ -129,6 +153,8 @@ def probe_image(url: str, *, candidate_validator=None, deadline=None, clock=None
             permit = host_limiter.request(host) if host_limiter is not None else nullcontext()
             try:
                 with permit:
+                    if respect_robots and not _native_image_access(current, host, deadline, attempted=attempted):
+                        return None
                     remaining = deadline - clock()
                     if remaining < 0.25:
                         raise MediaDeferred('deadline', attempted=attempted)
@@ -179,11 +205,13 @@ def resolve_photo(claim: dict, *, fetcher=None, probe=None, clock=None, deadline
     fetcher, clock = fetcher or fetch_page, clock or monotonic
     deadline = deadline if deadline is not None else clock() + 20
     candidate_validator = None
+    native_content = False
     from roomquest.registered_native_content import CAPABILITY, media_claim, image_candidate
     if CAPABILITY in claim:
         if not media_claim(claim):
             return None
         candidate_validator = image_candidate
+        native_content = True
     elif claim.get('candidate_only') is True:
         from roomquest.publisher_evidence import family, image_url
         if claim.get('source_key') and (publisher := family(claim['source_key'], claim['event_url'])):
@@ -217,7 +245,8 @@ def resolve_photo(claim: dict, *, fetcher=None, probe=None, clock=None, deadline
     verified = probe(candidate) if probe is not None else probe_image(
         candidate, candidate_validator=candidate_validator,
         deadline=deadline if strict_deadline else None,
-        clock=clock if strict_deadline else None, host_limiter=host_limiter, session=session)
+        clock=clock if strict_deadline else None, host_limiter=host_limiter, session=session,
+        respect_robots=native_content)
     if verified and candidate_validator is not None and not candidate_validator(verified[0]):
         return None
     return {'image_url': verified[0], 'mime_type': verified[1],

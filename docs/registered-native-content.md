@@ -37,7 +37,7 @@ claim signatures remain unchanged.
 | Source claim | Canonical `source_key`, exact `feed_url`, `kind=json`, `platform_adapter=wordpress` or `jsonld`, and integer capability 1 |
 | Description | The native `description` field only; the existing sanitizer removes navigation, scripts and known layout shortcodes. Preserve at most 12,000 Unicode characters after sanitization. A 12,001-character result fails collection before any staging; no silent truncation. Missing/URL-only text stays empty. |
 | Image | The native `image` field only, including bounded ImageObject/list/local-reference forms. Select at most the existing first five candidates; reject known tiny dimensions, empty/unresolved references, unsafe URLs and generic image paths. Missing or rejected images do not discard valid event facts. |
-| Event identity | Existing stable normalized ID, existing occurrence times and event URL. Event URL must be public HTTPS on the registered feed's hostname. |
+| Event identity | Existing stable normalized ID, existing occurrence times and event URL. Event URL must be public HTTPS on the same publisher host as the registered feed, using only the lowercase/single-leading-`www.` normalization described below. |
 | Staging | Existing RPC name `community_collector_record_staged_events` with the new non-default fourth argument `p_registered_native_content_version: 1`, including an empty event array. All records are validated before the first batch. The legacy three-argument call is unchanged for noncapable sources. |
 | Completion | Existing v3 preview receipt with `p_parser_capability=registered_native_content_v1`. Error receipts identify the protocol but never certify a completed snapshot. |
 
@@ -115,6 +115,21 @@ every hop, redirect targets, allowed image MIME/signature, size/deadline and hos
 limits, and reads only the existing 4 KiB prefix. A successful result uses the
 registered feed as evidence. Image availability remains optional to event facts.
 
+For native v1 claims only, the probe also checks the current image path and query
+against the existing cached publisher robots policy before each image GET,
+including redirect destinations. This adds an auxiliary `robots.txt` lookup when
+that host's policy is uncached. It uses the existing public-DNS/redirect policy,
+128,000-byte robots limit and at most five seconds of network time, all within
+the unchanged eight-second total image-probe budget. Policy and publisher pacing
+run inside the existing per-host permit. Legacy image probes do not opt in.
+
+Disallow, robots access denial and waits that cannot fit the existing one-hour
+media-backoff bound produce no approved image and no page or alternate-host
+fallback. Temporary policy/network/pacing failures use the existing closed media
+defer outcomes and bounded numeric waits. Event facts remain intact. A cold or
+slow policy lookup can consume the remaining probe budget; tests do not promise
+an image will be verified on that attempt.
+
 ## Compatibility and deployment order
 
 1. Review and deploy the companion backend contract first. It must include the
@@ -152,10 +167,17 @@ validation before staging, empty snapshots, access errors, legacy behavior,
 Unicode limits, optional images, candidate-only media and existing media guard
 tests.
 
-The final local and independent peer runs each passed 302 tests and 34 subtests.
+The pre-amendment local and independent peer runs each passed 302 tests and 34 subtests.
 The subsequent native-only host-parity amendment adds eight cases; the focused
 native module passes all 118 tests, including bare/`www.` equivalence, preserved
 URL/source proof and sibling/subdomain rejection.
+After the native image-policy amendment, the focused native/media modules pass
+179 tests and two subtests. The cases include denial before GET, redirect denial,
+exact path/query and host-permit placement, real cached robots parser/crawl-delay
+behavior, temporary errors, numeric waits and the unchanged probe budget.
+Independent review of the final combined code passes the full focused command
+below: **325 tests and 34 subtests**. No production timing or access inference is
+drawn from that controlled run.
 
 Run:
 
