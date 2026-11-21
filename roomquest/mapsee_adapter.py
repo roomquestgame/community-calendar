@@ -311,6 +311,8 @@ def within_collection_horizon(records, now=None):
             raise ValueError("invalid_event_time") from exc
         if begins.tzinfo is None or finishes.tzinfo is None:
             raise ValueError("timezone_unresolved")
+        if finishes < begins:
+            raise ValueError("invalid_event_end")
         if begins <= horizon and finishes >= now:
             kept.append(row)
     return kept
