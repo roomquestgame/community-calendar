@@ -132,6 +132,40 @@ def classify(url, payload, hint=None, endpoint_only=False, venue_website=False):
     return {'p_outcome': 'discovered', 'p_endpoint': endpoint, 'p_type': kind}
 
 
+def recover_html_feed(listing_url, listing_body, deadline):
+    """Only promote an actually fetched, normalized, reusable publisher feed.
+
+    The existing locator is capped at four extra same-host requests, observes
+    robots and publisher pacing, and may probe a documented TEC route only
+    when the HTML proves that CMS. It never publishes or grants source rights.
+    """
+    from roomquest.venue_calendar_locator import find_calendar
+
+    responses = {}
+
+    def fetch(target, accept, **kwargs):
+        # The original submitted selectors are authoritative. An unfiltered
+        # feed cannot silently replace a calendar scoped to one venue.
+        if (urlsplit(target).hostname != urlsplit(listing_url).hostname
+                or not scoped_endpoint(listing_url, target)):
+            raise PreviewError('calendar_filter_unverified')
+        body = fetch_publisher(target, accept, **kwargs)
+        responses[target] = body
+        return body
+
+    endpoint, kind = find_calendar(listing_body, listing_url, None, fetch, deadline,
+                                   require_unique_calendar_page=True)
+    if (kind not in {'ical', 'wordpress', 'squarespace'}
+            or endpoint not in responses
+            or not scoped_endpoint(listing_url, endpoint)):
+        return None
+    checked = classify(endpoint, responses[endpoint], endpoint_only=True)
+    if (checked.get('p_outcome') != 'verified' or checked.get('p_type') != kind
+            or not probe(endpoint, responses[endpoint], kind)):
+        return None
+    return {'p_outcome': 'discovered', 'p_endpoint': endpoint, 'p_type': kind}
+
+
 def register(ticket):
     args = {'p_ticket': ticket}
     candidate = supabase_rpc('community_collector_claim_registration', args, timeout=6)
@@ -187,6 +221,20 @@ def register(ticket):
                     raise
                 except (ValueError, KeyError, TypeError) as exc:
                     result = extraction_hold('html', exc)
+            if (not candidate.get('endpoint_only') and body
+                    and (url == candidate['url'] or (
+                        candidate.get('verified_venue_website')
+                        and urlsplit(url).hostname == urlsplit(candidate['url']).hostname
+                        and scoped_endpoint(candidate['url'], url)))
+                    and body.lstrip().lstrip(chr(0xfeff)).lstrip().startswith('<')
+                    and result.get('p_outcome') == 'review'
+                    and result.get('p_reason') in {
+                        'html_adapter_needed', 'no_reusable_calendar',
+                        'multiple_calendar_links', 'squarespace_collection_unverified',
+                    }):
+                recovered = recover_html_feed(url, body, deadline)
+                if recovered:
+                    result = recovered
             if result.get('p_type') == 'localist' and result['p_outcome'] == 'verified':
                 try:
                     records = localist_registration.collect(url, lambda target, accept: fetch_publisher(

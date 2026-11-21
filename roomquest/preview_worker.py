@@ -391,6 +391,17 @@ def pace_publisher(host: str, deadline: float, *, reserve=True) -> None:
         sleep(wait)
 
 
+def _html_declared_charset(payload: bytes) -> str | None:
+    """Accept only explicit, supported early HTML charset declarations."""
+    match = re.search(
+        rb"<meta\s+[^>]*charset\s*=\s*['\"]?([a-zA-Z0-9._-]+)",
+        payload[:4096], flags=re.I)
+    if not match:
+        return None
+    label = match.group(1).decode("ascii").lower()
+    return label if label in ("utf-8", "utf8", "windows-1252", "iso-8859-1") else None
+
+
 def fetch_publisher(url: str, accept: str, *, respect_robots: bool = False,
                     deadline_at: float | None = None, allowed_hosts=None,
                     follow_redirects: bool = True) -> str | bytes:
@@ -927,7 +938,13 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
                     chunks.append(chunk)
                 encoding = response.encoding or "utf-8-sig"
                 if respect_robots and "charset=" not in response.headers.get("Content-Type", "").lower():
+                    # An HTML document can declare its own legacy encoding even
+                    # when the HTTP server omits charset. Trust only a literal
+                    # publisher declaration, never a guessed lossy fallback.
+                    # The payload is already bounded; do not fetch a second time.
                     encoding = "utf-8-sig"
+                    if "html" in response.headers.get("Content-Type", "").lower():
+                        encoding = _html_declared_charset(b"".join(chunks)) or encoding
                 response.close()
                 if accept in ('image/jpeg', 'image/png'):
                     payload = b''.join(chunks)

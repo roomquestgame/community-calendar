@@ -129,3 +129,143 @@ def test_squarespace_hold_preserves_the_collector_reason():
     data = {'upcoming': [], 'pagination': {'nextPage': True}}
     result = classify(URL + '?format=json', json.dumps(data))
     assert result == {'p_outcome': 'review', 'p_type': 'squarespace', 'p_reason': 'pagination_requires_review'}
+
+
+def test_reviewed_html_follows_a_verified_tec_collection_once_not_ambiguous_ical_links():
+    import json
+    page = 'https://calendar.example.org/events'
+    endpoint = 'https://calendar.example.org/wp-json/tribe/events/v1/events'
+    html = ('<div class="tribe-events"><a href="/first.ics">Calendar A</a>'
+            '<a href="/second.ics">Calendar B</a></div>')
+    payload = json.dumps({'events': [{'id': 71, 'title': 'Public reading',
+                                       'start_date': '2027-03-04 10:00:00'}], 'total': 1})
+    with patch('roomquest.feed_registration.supabase_rpc',
+               side_effect=[{'url': page}, True]) as rpc, \
+         patch('roomquest.feed_registration.fetch_publisher',
+               side_effect=[html, payload]) as fetch, \
+         patch('roomquest.feed_registration.probe', return_value=True) as parse:
+        assert register('ticket') == {'outcome': 'discovered'}
+    receipt = rpc.call_args.args[1]
+    assert (receipt['p_outcome'], receipt['p_endpoint'], receipt['p_type']) == (
+        'discovered', endpoint, 'wordpress')
+    assert rpc.call_count == 2  # One claim and one finish; no per-link database reads.
+    assert fetch.call_count == 2  # Original HTML and one verified provider response.
+    assert [call.args[0] for call in fetch.call_args_list] == [page, endpoint]
+    assert all(call.kwargs['respect_robots'] for call in fetch.call_args_list)
+    assert fetch.call_args_list[1].kwargs['allowed_hosts'] == ('calendar.example.org',)
+    parse.assert_called_once_with(endpoint, payload, 'wordpress')
+
+
+def test_html_registration_does_not_select_arbitrary_calendar_or_parent_page():
+    page = 'https://calendar.example.org/'
+    html = ('<a href="/events">Upcoming events</a>'
+            '<a href="/calendar">Event calendar</a>')
+    with patch('roomquest.feed_registration.supabase_rpc',
+               side_effect=[{'url': page}, True]) as rpc, \
+         patch('roomquest.feed_registration.fetch_publisher', return_value=html) as fetch:
+        assert register('ticket') == {'outcome': 'review'}
+    assert rpc.call_args.args[1]['p_reason'] == 'no_reusable_calendar'
+    assert fetch.call_count == 1  # Conflicting index links do not trigger exploration.
+
+
+def test_html_registration_preserves_scope_instead_of_deriving_unfiltered_tec():
+    page = 'https://calendar.example.org/events?venue=East'
+    html = '<div class="tribe-events">Venue-specific dated events</div>'
+    with patch('roomquest.feed_registration.supabase_rpc',
+               side_effect=[{'url': page}, True]) as rpc, \
+         patch('roomquest.feed_registration.fetch_publisher', return_value=html) as fetch:
+        assert register('ticket') == {'outcome': 'review'}
+    assert rpc.call_args.args[1]['p_reason'] == 'html_adapter_needed'
+    assert fetch.call_count == 1  # A generic TEC API would drop the venue selector.
+
+
+def test_html_registration_does_not_register_a_zero_event_collection():
+    page = 'https://calendar.example.org/events'
+    html = '<div class="tribe-events">This venue has a calendar</div>'
+    empty = '{"events":[],"total":0}'
+    with patch('roomquest.feed_registration.supabase_rpc',
+               side_effect=[{'url': page}, True]) as rpc, \
+         patch('roomquest.feed_registration.fetch_publisher',
+               side_effect=[html, empty]) as fetch, \
+         patch('roomquest.feed_registration.probe', return_value=False):
+        assert register('ticket') == {'outcome': 'review'}
+    assert rpc.call_args.args[1]['p_reason'] == 'html_adapter_needed'
+    assert fetch.call_count == 2
+
+
+def test_html_registration_keeps_robots_denial_of_new_endpoint_on_hold():
+    page = 'https://calendar.example.org/events'
+    html = '<div class="tribe-events">Public calendar</div>'
+    with patch('roomquest.feed_registration.supabase_rpc',
+               side_effect=[{'url': page}, True]) as rpc, \
+         patch('roomquest.feed_registration.fetch_publisher',
+               side_effect=[html, PreviewError('robots_denied')]) as fetch:
+        assert register('ticket') == {'outcome': 'review'}
+    assert rpc.call_args.args[1]['p_reason'] == 'html_adapter_needed'
+    assert fetch.call_count == 2
+    assert fetch.call_args_list[1].kwargs['respect_robots'] is True
+
+
+def test_venue_locator_unique_page_guard_is_opt_in():
+    from roomquest.venue_calendar_locator import find_calendar
+    page = 'https://calendar.example.org/'
+    html = ('<a href="/events">Upcoming events</a>'
+            '<a href="/calendar">Event calendar</a>')
+    fetch = lambda *args, **kwargs: ''
+    assert find_calendar(html, page, None, fetch, 10, require_unique_calendar_page=True) == (
+        None, 'multiple_pages')
+    assert find_calendar(html, page, None, fetch, 10) == (None, 'none')
+
+
+
+def test_verified_venue_linked_html_calendar_can_recover_without_new_registration():
+    import json
+    venue = 'https://calendar.example.org/'
+    listing = 'https://calendar.example.org/events/'
+    endpoint = 'https://calendar.example.org/wp-json/tribe/events/v1/events'
+    root_html = '<a href="/events/">Upcoming events</a>'
+    listing_html = '<div class="tribe-events"><h1>Events</h1></div>'
+    payload = json.dumps({'events': [{'id': 72, 'title': 'Library workshop',
+                                       'start_date': '2027-03-09 12:00:00'}], 'total': 1})
+    with patch('roomquest.feed_registration.supabase_rpc',
+               side_effect=[{'url': venue, 'verified_venue_website': True}, True]) as rpc, \
+         patch('roomquest.feed_registration.fetch_publisher',
+               side_effect=[root_html, listing_html, payload]) as fetch, \
+         patch('roomquest.feed_registration.probe', return_value=True):
+        assert register('ticket') == {'outcome': 'discovered'}
+    receipt = rpc.call_args.args[1]
+    assert (receipt['p_outcome'], receipt['p_endpoint'], receipt['p_type']) == (
+        'discovered', endpoint, 'wordpress')
+    assert fetch.call_count == 3
+    assert [call.args[0] for call in fetch.call_args_list] == [venue, listing, endpoint]
+    assert rpc.call_count == 2
+    assert all(call.kwargs['respect_robots'] for call in fetch.call_args_list)
+
+
+def test_verified_venue_linked_html_with_no_verified_feed_retains_original_review_endpoint():
+    venue = 'https://calendar.example.org/'
+    listing = 'https://calendar.example.org/events/'
+    html = '<a href="/events/">Upcoming events</a>'
+    details = '<h1>Events</h1><a href="/events/first">First event</a>'
+    with patch('roomquest.feed_registration.supabase_rpc',
+               side_effect=[{'url': venue, 'verified_venue_website': True}, True]) as rpc, \
+         patch('roomquest.feed_registration.fetch_publisher',
+               side_effect=[html, details]) as fetch:
+        assert register('ticket') == {'outcome': 'review'}
+    result = rpc.call_args.args[1]
+    assert result['p_reason'] == 'html_adapter_needed'
+    assert result['p_endpoint'] == listing
+    assert fetch.call_count == 2
+
+
+
+
+def test_publisher_meta_charset_does_not_require_lossy_decoding():
+    from roomquest.preview_worker import _html_declared_charset
+    html = b'<html><head><meta charset="windows-1252"></head><body>caf\xe9</body></html>'
+    assert _html_declared_charset(html) == 'windows-1252'
+    assert 'café' in html.decode(_html_declared_charset(html), errors='strict')
+    assert _html_declared_charset(b'<meta charset="utf-8">') == 'utf-8'
+    assert _html_declared_charset(b'<meta charset="unknown-charset">') is None
+    assert _html_declared_charset(b'<html>no charset</html>') is None
+    assert _html_declared_charset(b' ' * 4096 + b'<meta charset="windows-1252">') is None
