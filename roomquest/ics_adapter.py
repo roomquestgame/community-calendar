@@ -657,6 +657,8 @@ def parse(payload, source, *, legacy=False, include_description=False):
             detail_urls[uid] = civicplus_detail_url(str(event.get('DESCRIPTION', '')), uid, source['url'])
 
     for e in result:
+        from roomquest.reviewed_venue_addresses import complete_address
+        complete_address(e, source)
         source_key = source.get('source_key')
         if source_key in PORTSMOUTH_VENUE_FEEDS and source.get('url') == PORTSMOUTH_VENUE_FEEDS[source_key]:
             _portsmouth_venue(e, source_key)
