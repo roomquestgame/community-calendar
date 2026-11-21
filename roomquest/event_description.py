@@ -1,5 +1,6 @@
 """Bound publisher narrative without copying site navigation or inventing prose."""
 import re
+from html import unescape
 from bs4 import BeautifulSoup
 
 
@@ -27,6 +28,15 @@ def description(value, *, limit=2000):
         raise ValueError('invalid_event_description')
     if _URL_ONLY.fullmatch(value.strip()):
         return ''
+    # TEC JSON-LD encodes the HTML narrative as entities. Decode before parsing,
+    # otherwise BeautifulSoup turns &lt;p&gt; into literal tags in its text output
+    # and the native-content validator correctly rejects the entire collection.
+    # Bound repeated publisher escaping; never execute the decoded markup.
+    for _ in range(3):
+        decoded = unescape(value)
+        if decoded == value:
+            break
+        value = decoded
     value = _VISUAL_COMPOSER_SHORTCODE.sub('\n', value)
     value = _DIVI_SHORTCODE.sub('\n', value)
     soup = BeautifulSoup(value, 'html.parser')
