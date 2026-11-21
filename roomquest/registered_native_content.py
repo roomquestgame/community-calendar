@@ -46,7 +46,8 @@ def native_url(value):
 
 def event_url_matches(source, link):
     return (native_url(link)
-            and urlsplit(link).hostname == urlsplit(source['feed_url']).hostname)
+            and urlsplit(link).hostname.lower().removeprefix('www.')
+            == urlsplit(source['feed_url']).hostname.lower().removeprefix('www.'))
 
 
 def event_identity(source, row):

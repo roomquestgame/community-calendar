@@ -48,6 +48,12 @@ routine Admin/data changes and post-release Events/Map acceptance.
   Exact remote-head identity remains a release gate. Initial fixture defects (a zero native ID, an
   always-present pagination continuation and an earlier existing URL guard)
   were corrected without weakening production validation.
+- Root's final cross-layer review identified the backend's existing bare/`www.`
+  publisher-host equivalence. The native helper now uses the same lowercase,
+  single-prefix normalization; it preserves original URLs and source hashes.
+  Eight focused cases cover both directions, case, unchanged proof and rejection
+  of sibling/other/double-`www.` subdomains. The native module passes 118 tests.
+  No legacy URL, transport or redirect rule changed.
 - A controlled before/after probe against the current-main base failed all
   five richer-contract expectations before the patch and passed all five
   afterward. It verifies both full descriptions, native image candidate,

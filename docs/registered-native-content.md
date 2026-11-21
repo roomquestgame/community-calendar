@@ -101,8 +101,13 @@ advertise integer `registered_native_content_version: 1`. The backend withholds
 native media work from older callers. Returned native claims include:
 
 - `source_key`, `feed_url`, `platform_adapter`, `kind=json` and exact integer version 1;
-- `candidate_only=true`, the same-host `event_url`, and the staged `candidate_url`;
+- `candidate_only=true`, the same-publisher `event_url`, and the staged `candidate_url`;
 - `extraction_url` exactly equal to the registered `feed_url`.
+
+Native event/feed host comparison matches the existing backend publisher-host
+normalization: lowercase and remove one leading `www.` only. Original URLs and
+the exact registered-feed source hash remain unchanged; sibling and other
+subdomains do not become equivalent.
 
 The worker checks those fields before any probe. Missing/invalid candidates never
 cause a fallback page fetch. The existing media probe still checks public DNS at
@@ -148,6 +153,9 @@ Unicode limits, optional images, candidate-only media and existing media guard
 tests.
 
 The final local and independent peer runs each passed 302 tests and 34 subtests.
+The subsequent native-only host-parity amendment adds eight cases; the focused
+native module passes all 118 tests, including bare/`www.` equivalence, preserved
+URL/source proof and sibling/subdomain rejection.
 
 Run:
 

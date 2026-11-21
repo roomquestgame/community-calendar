@@ -113,6 +113,39 @@ def test_positive_capability_cannot_enter_the_other_adapter():
     fetch.assert_not_called()
 
 
+@pytest.mark.parametrize('feed_host,event_host,accepted', [
+    ('venue.example.org', 'www.venue.example.org', True),
+    ('www.venue.example.org', 'venue.example.org', True),
+    ('WWW.VENUE.EXAMPLE.ORG', 'Venue.Example.Org', True),
+    ('www.venue.example.org', 'www.venue.example.org', True),
+    ('venue.example.org', 'events.venue.example.org', False),
+    ('events.venue.example.org', 'venue.example.org', False),
+    ('venue.example.org', 'other.example.org', False),
+    ('venue.example.org', 'www.www.venue.example.org', False),
+])
+def test_native_event_host_matches_backend_publisher_normalization(feed_host, event_host, accepted):
+    claim = source()
+    claim['feed_url'] = FEED.replace('venue.example.org', feed_host)
+    claim['source_key'] = source_key(claim['feed_url'])
+    original_feed, original_key = claim['feed_url'], claim['source_key']
+    raw = item()
+    raw['url'] = raw['url'].replace('venue.example.org', event_host)
+    if not accepted:
+        with pytest.raises(ValueError, match='registered_native_event_identity_invalid'):
+            collect([raw], claim)
+        assert not native.media_claim({**claim, 'candidate_only': True,
+            'extraction_url': claim['feed_url'], 'event_url': raw['url']})
+        return
+    row = collect([raw], claim)[0]
+    native.validate_record(row, claim)
+    assert row['event_url'] == raw['url']
+    assert row['registered_native_content']['feed_url'] == original_feed
+    assert row['registered_native_content']['source_key'] == original_key
+    assert claim['feed_url'] == original_feed and claim['source_key'] == original_key
+    assert native.media_claim({**claim, 'candidate_only': True,
+        'extraction_url': claim['feed_url'], 'event_url': raw['url']})
+
+
 def test_native_wordpress_keeps_full_sanitized_unicode_narrative_and_facts():
     prose = '🎨' * 5000
     raw = item(description='<nav>Menu</nav>[vc_row][vc_column_text]<p>' + prose
