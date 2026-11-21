@@ -222,7 +222,7 @@ def register(ticket):
                 except (ValueError, KeyError, TypeError) as exc:
                     result = extraction_hold('html', exc)
             if (url == candidate['url'] and not candidate.get('endpoint_only') and body
-                    and body.lstrip('\\ufeff \\t\\r\\n').startswith('<')
+                    and body.lstrip().lstrip(chr(0xfeff)).lstrip().startswith('<')
                     and result.get('p_outcome') == 'review'
                     and result.get('p_reason') in {
                         'html_adapter_needed', 'no_reusable_calendar',
