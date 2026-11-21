@@ -1,3 +1,35 @@
+## Publisher robots wildcard permissions — November 21, 2026 (prepared)
+
+The guarded publisher transport now interprets `*` and terminal `$` patterns,
+uses the longest matching Allow/Disallow rule with Allow winning ties, and
+merges equally specific user-agent groups. URI normalization preserves encoded
+reserved characters while equating unreserved escapes and UTF-8 spellings.
+The exact request target includes path parameters and query strings. Matching
+uses ordered literal searches, avoiding regex backtracking on publisher rules.
+
+This fixes Python's `RobotFileParser` treating Squarespace restrictions such as
+`Disallow:/*?format=json` literally. The shared policy captured from seven
+Lynchburg-area publishers applies these restrictions to `User-agent: *`, with no
+collector-specific permission exception. Registration and preview stop with `robots_denied`
+before an export request. Existing authenticated cache restores use the same
+parser. The Elfsight wildcard allowance is now interpreted directly rather
+than rewritten for the old parser.
+
+Focused local verification covers permission precedence, user-agent groups,
+percent encoding, the captured Squarespace policy, blocked registration and
+preview requests, cache restoration, transport failures and publisher pacing:
+
+```bash
+python -m pytest tests/test_publisher_robots_policy.py tests/test_publisher_robots_cache.py tests/test_publisher_robots_checkpoint.py tests/test_publisher_admission.py tests/test_feed_registration.py tests/test_preview_transport_errors.py -q
+```
+
+Deploy the collector only after review and authorization. This change does not
+release paused sources, alter publisher policy, register a replacement feed,
+or change database/publication gates. Existing restricted export sources must
+remain paused; an automatic registration is not evidence of permission. No
+database migration or new dependency is required. Routine GitHub diagnostics
+remain disabled under the owner policy in `AGENTS.md`.
+
 ## Omaha and Lincoln intake — November 11, 2026
 
 

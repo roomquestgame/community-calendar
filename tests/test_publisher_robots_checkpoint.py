@@ -154,6 +154,24 @@ def test_restored_policy_still_decides_every_path(monkeypatch, clock):
     assert calls == [] and session.get.call_count == 0
 
 
+@pytest.mark.parametrize("rule,path", [
+    ("/*?format=json", "/events?format=json"),
+    ("/events;private", "/events;private?offset=1"),
+    ("/events;", "/events;?offset=1"),
+])
+def test_restored_policy_honors_exact_request_target_without_export_request(monkeypatch, clock, rule, path):
+    calls, _, session = origin(monkeypatch, clock)
+    clock.now = 161
+    snapshot = signed_snapshot(raw=("User-agent: *\nDisallow: " + rule + "\nCrawl-delay: 60\n").encode())
+    assert worker._restore_checkpoint_robots(source(), snapshot)
+    assert worker.robots_allowed(cache.profile(source()), "/events")
+    with pytest.raises(worker.PreviewError, match="^robots_denied$"):
+        worker._checkpoint_publisher_ready(source(), "https://radegasthall.com" + path, 197)
+    with pytest.raises(worker.PreviewError, match="^robots_denied$"):
+        ordinary_fetch(source(), "https://radegasthall.com" + path, clock)
+    assert calls == [] and session.get.call_count == 0
+
+
 @pytest.mark.parametrize("elapsed", [300, 301, 3600])
 def test_expired_snapshot_fetches_changed_native_rules_and_denies(monkeypatch, clock, elapsed):
     snapshot = signed_snapshot()
