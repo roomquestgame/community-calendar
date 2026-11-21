@@ -394,7 +394,7 @@ def pace_publisher(host: str, deadline: float, *, reserve=True) -> None:
 def _html_declared_charset(payload: bytes) -> str | None:
     """Accept only explicit, supported early HTML charset declarations."""
     match = re.search(
-        rb'<meta\s+[^>]*charset\s*=\s*["\\']?([a-zA-Z0-9._-]+)',
+        rb"<meta\s+[^>]*charset\s*=\s*['\"]?([a-zA-Z0-9._-]+)",
         payload[:4096], flags=re.I)
     if not match:
         return None
