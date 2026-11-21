@@ -214,3 +214,44 @@ def test_existing_venue_locator_behavior_is_unchanged_without_unique_page_gate()
     fetch = lambda *args, **kwargs: ''
     assert find_calendar(html, page, None, fetch, 10, require_unique_calendar_page=True) == (
         None, 'multiple_pages')
+
+
+
+def test_verified_venue_linked_html_calendar_can_recover_without_new_registration():
+    import json
+    venue = 'https://calendar.example.org/'
+    listing = 'https://calendar.example.org/events/'
+    endpoint = 'https://calendar.example.org/wp-json/tribe/events/v1/events'
+    root_html = '<a href="/events/">Upcoming events</a>'
+    listing_html = '<div class="tribe-events"><h1>Events</h1></div>'
+    payload = json.dumps({'events': [{'id': 72, 'title': 'Library workshop',
+                                       'start_date': '2027-03-09 12:00:00'}], 'total': 1})
+    with patch('roomquest.feed_registration.supabase_rpc',
+               side_effect=[{'url': venue, 'verified_venue_website': True}, True]) as rpc, \
+         patch('roomquest.feed_registration.fetch_publisher',
+               side_effect=[root_html, listing_html, payload]) as fetch, \
+         patch('roomquest.feed_registration.probe', return_value=True):
+        assert register('ticket') == {'outcome': 'discovered'}
+    receipt = rpc.call_args.args[1]
+    assert (receipt['p_outcome'], receipt['p_endpoint'], receipt['p_type']) == (
+        'discovered', endpoint, 'wordpress')
+    assert fetch.call_count == 3
+    assert [call.args[0] for call in fetch.call_args_list] == [venue, listing, endpoint]
+    assert rpc.call_count == 2
+    assert all(call.kwargs['respect_robots'] for call in fetch.call_args_list)
+
+
+def test_verified_venue_linked_html_with_no_verified_feed_retains_original_review_endpoint():
+    venue = 'https://calendar.example.org/'
+    listing = 'https://calendar.example.org/events/'
+    html = '<a href="/events/">Upcoming events</a>'
+    details = '<h1>Events</h1><a href="/events/first">First event</a>'
+    with patch('roomquest.feed_registration.supabase_rpc',
+               side_effect=[{'url': venue, 'verified_venue_website': True}, True]) as rpc, \
+         patch('roomquest.feed_registration.fetch_publisher',
+               side_effect=[html, details]) as fetch:
+        assert register('ticket') == {'outcome': 'review'}
+    result = rpc.call_args.args[1]
+    assert result['p_reason'] == 'html_adapter_needed'
+    assert result['p_endpoint'] == listing
+    assert fetch.call_count == 2
