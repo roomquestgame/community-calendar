@@ -139,6 +139,10 @@ TRIBE_ZERO_OFFSET = re.compile(r"(?:UTC|GMT|Etc/(?:UTC|GMT)|UTC[+-]0{1,2}(?::?00
 # was confirmed from the publisher's own venue addresses (2026-11-09); only the
 # listed sources are reinterpreted, every other zero-offset event is held.
 TRIBE_UTC_DEFAULT_ZONES = {
+    # Froglife venue=26896, official response checked 2026-11-21: Hampton
+    # Nature Reserve, Nature's Way, Hampton, Peterborough PE7 8JG, UK.
+    # Scope is the exact registered venue-filtered endpoint, not all Froglife.
+    "municipal_db3ae161e8b365bbf5da68b2": "Europe/London",
     "municipal_mapsee_e4f0600735a6ef7191c25f5f": "America/New_York",  # MacDill AFB Library, FL
     "municipal_mapsee_42223f3cfcfe33208ed63601": "America/New_York",  # NC Museum of Art, Raleigh
     "municipal_mapsee_6b6a983c5d1ea8a1fe3fede2": "America/Chicago",   # BUILD, Chicago IL

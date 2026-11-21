@@ -85,12 +85,13 @@ def collection_evidence(url, body, obj=None):
 def probe(url, body, kind):
     """Use the same normalization as recurring collection before first activation."""
     from roomquest.ics_adapter import parse as parse_ical
-    from roomquest.mapsee_adapter import parse_tribe
+    from roomquest.mapsee_adapter import TRIBE_UTC_DEFAULT_ZONES, parse_tribe
     try:
         if kind == 'ical':
             rows = parse_ical(body, {'url': url, 'source_key': source_key(url)}, legacy=True)
         elif kind == 'wordpress':
-            rows = parse_tribe(json.loads(body), strict_public=True, retain_description=True)
+            rows = parse_tribe(json.loads(body), strict_public=True, retain_description=True,
+                               utc_default_zone=TRIBE_UTC_DEFAULT_ZONES.get(source_key(url)))
         else:
             return True  # collection_evidence already ran the family parser
         return bool(rows)
