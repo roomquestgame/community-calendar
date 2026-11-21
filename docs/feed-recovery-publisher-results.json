@@ -1,0 +1,1462 @@
+[
+  {
+    "id": 3,
+    "url": "https://residentculturebrewing.com/location/plaza-midwood/",
+    "reason": "no_reusable_calendar",
+    "detected_type": null,
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "4b248984dbfeafb204fb2a5613a2258139cf91cc2d89ab1e641e0f45cab00d8e",
+    "bytes": 234786,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "no_reusable_calendar",
+      "p_type": null
+    },
+    "observed": "no_reusable_calendar"
+  },
+  {
+    "id": 17,
+    "url": "https://www.veteranscenter.org/mtcarmel-events/",
+    "reason": "multiple_calendar_links",
+    "detected_type": null,
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "73c5bb657de7454154e235d964cfe461b2d61a8665beac0e3d8a655cc6f7c2c7",
+    "bytes": 1392946,
+    "classification": {
+      "p_outcome": "verified",
+      "p_endpoint": "https://www.veteranscenter.org/mtcarmel-events/",
+      "p_type": "jsonld"
+    },
+    "observed": "verified",
+    "normalized_probe": true
+  },
+  {
+    "id": 35,
+    "url": "https://www.boplex.com/our-venues/bojangles-coliseum",
+    "reason": "no_reusable_calendar",
+    "detected_type": null,
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "a90b7f17833aaacef25be6eb36bc46c62da01fef164ed425381d5dd595d658b6",
+    "bytes": 146039,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "no_reusable_calendar",
+      "p_type": null
+    },
+    "observed": "no_reusable_calendar"
+  },
+  {
+    "id": 36,
+    "url": "https://www.boplex.com/our-venues/ovens-auditorium",
+    "reason": "no_reusable_calendar",
+    "detected_type": null,
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "9ebf43f805eff4d2ca26ab69f89d0e5e7b2676228aec594a6acaa22296634cfb",
+    "bytes": 141118,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "no_reusable_calendar",
+      "p_type": null
+    },
+    "observed": "no_reusable_calendar"
+  },
+  {
+    "id": 45,
+    "url": "https://www.casanelvineyards.com/upcoming-events?format=json",
+    "reason": "venue_extraction_unavailable",
+    "detected_type": "squarespace",
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "observed": "robots_denied"
+  },
+  {
+    "id": 72,
+    "url": "https://casino.hardrock.com/en/tampa/events",
+    "reason": "html_adapter_needed",
+    "detected_type": "html",
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "301",
+    "observed": "publisher_http_301",
+    "transport_error": ""
+  },
+  {
+    "id": 74,
+    "url": "https://gasparsgrotto.com/",
+    "reason": "html_adapter_needed",
+    "detected_type": "html",
+    "endpoint": "https://gasparsgrotto.com/events/",
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "045a5f2daf54c674f26ded847c3c915c4aa99aa7a5b6a8f5a8ef787895697363",
+    "bytes": 171656,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "no_reusable_calendar",
+      "p_type": null
+    },
+    "observed": "no_reusable_calendar"
+  },
+  {
+    "id": 77,
+    "url": "https://motorcomusic.com/",
+    "reason": "html_adapter_needed",
+    "detected_type": "html",
+    "endpoint": "https://motorcomusic.com/calendar/",
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "463be97a36e5d6ad459c56455b4ee81b9b54ca8d6bbc8024070d2f19b5c1b96f",
+    "bytes": 121465,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "no_reusable_calendar",
+      "p_type": null
+    },
+    "observed": "no_reusable_calendar"
+  },
+  {
+    "id": 79,
+    "url": "https://lincolntheatre.com/events/",
+    "reason": "html_adapter_needed",
+    "detected_type": "html",
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "33788a7512000b932e4b54093387a95942f10f7d5893a8c47bea3b20e6b612bf",
+    "bytes": 389125,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "html_adapter_needed",
+      "p_type": "html"
+    },
+    "observed": "html_adapter_needed"
+  },
+  {
+    "id": 81,
+    "url": "https://slimsdivebar.com/",
+    "reason": "html_adapter_needed",
+    "detected_type": "html",
+    "endpoint": "https://slimsdivebar.com/events/",
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "c9b52de8036e26fa325f5fa3e0a51324b3822c34fda8771d75878bad77add5ad",
+    "bytes": 151809,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "no_reusable_calendar",
+      "p_type": null
+    },
+    "observed": "no_reusable_calendar"
+  },
+  {
+    "id": 85,
+    "url": "https://www.rhizomedc.org/?format=json",
+    "reason": "unrecognized_json",
+    "detected_type": null,
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "observed": "robots_denied"
+  },
+  {
+    "id": 86,
+    "url": "https://bonjourbooksdc.com/",
+    "reason": "unrecognized_json",
+    "detected_type": null,
+    "endpoint": "https://bonjourbooksdc.com/pages/events",
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "6cf070e324af89aaf0f51d5314c218da97506f46d8fbc734999dbd28a8c6177a",
+    "bytes": 353442,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "no_reusable_calendar",
+      "p_type": null
+    },
+    "observed": "no_reusable_calendar"
+  },
+  {
+    "id": 87,
+    "url": "https://www.punchlinecomedyclub.com/",
+    "reason": "html_adapter_needed",
+    "detected_type": "html",
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "49f1bdb1e4b4693989c12c499d63a34c62a5c4ae3a01f5d021d0ac6f534a2fc0",
+    "bytes": 588826,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "html_adapter_needed",
+      "p_type": "html"
+    },
+    "observed": "html_adapter_needed"
+  },
+  {
+    "id": 90,
+    "url": "https://telegraphhillbooks.com/",
+    "reason": "unrecognized_json",
+    "detected_type": null,
+    "endpoint": "https://telegraphhillbooks.com/pages/events",
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "3c26bb05c474b444dfb6d7d6a87df84224755979248fb713e33d33c793a4a3d0",
+    "bytes": 409220,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "no_reusable_calendar",
+      "p_type": null
+    },
+    "observed": "no_reusable_calendar"
+  },
+  {
+    "id": 91,
+    "url": "https://citylights.com/events/",
+    "reason": "html_adapter_needed",
+    "detected_type": "html",
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "377452a38537e107fc271ad71ad6e35de611ceb79a2138ca684b2714aaa1cfb3",
+    "bytes": 375335,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "html_adapter_needed",
+      "p_type": "html"
+    },
+    "observed": "html_adapter_needed"
+  },
+  {
+    "id": 93,
+    "url": "https://www.goldensardinesf.com/",
+    "reason": "html_adapter_needed",
+    "detected_type": "html",
+    "endpoint": "https://www.goldensardinesf.com/events",
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "ac62b0ca463f0a59d62758e00781fb1a6472d2b9ada5be2cc396a4fd07c9faa2",
+    "bytes": 21378,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "no_reusable_calendar",
+      "p_type": null
+    },
+    "observed": "no_reusable_calendar"
+  },
+  {
+    "id": 127,
+    "url": "https://www.dashecellars.com/events",
+    "reason": "html_adapter_needed",
+    "detected_type": "html",
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "6c6119c6d5d6027b7f9f1c86a20d975e56c67784bda0ecb97947d4a0cc0da3ae",
+    "bytes": 67716,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "html_adapter_needed",
+      "p_type": "html"
+    },
+    "observed": "html_adapter_needed"
+  },
+  {
+    "id": 129,
+    "url": "https://arts.duke.edu/places/duke-coffeehouse/",
+    "reason": "html_adapter_needed",
+    "detected_type": "html",
+    "endpoint": "https://arts.duke.edu/events/",
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "81c84033419de694b256426c20ae49a99f8cfb71db1af3fe47d19e225bc326a2",
+    "bytes": 66589,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "no_reusable_calendar",
+      "p_type": null
+    },
+    "observed": "no_reusable_calendar"
+  },
+  {
+    "id": 130,
+    "url": "https://yonderbarnc.com/",
+    "reason": "single_event_page",
+    "detected_type": "html",
+    "endpoint": "https://yonderbarnc.com/events/",
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "47cf51ae25fd83358bd64ab07a2aebc0d51ba734dcd2c207dfd8afd6ad8ad995",
+    "bytes": 108608,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "html_adapter_needed",
+      "p_type": "html"
+    },
+    "observed": "html_adapter_needed"
+  },
+  {
+    "id": 131,
+    "url": "https://standupny.com/upcoming-shows/",
+    "reason": "no_reusable_calendar",
+    "detected_type": null,
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "1ad1ccccce0007cfd591643feb9abdfce858c5006aeab2aa5636fcf1a0b1e18c",
+    "bytes": 157222,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "no_reusable_calendar",
+      "p_type": null
+    },
+    "observed": "no_reusable_calendar"
+  },
+  {
+    "id": 132,
+    "url": "https://www.symphonyspace.org/events",
+    "reason": "html_adapter_needed",
+    "detected_type": "html",
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "f6055c5a1672edd267d7db5a28c8ca7026e7391b6989a41a983d87233d5e6034",
+    "bytes": 61862,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "html_adapter_needed",
+      "p_type": "html"
+    },
+    "observed": "html_adapter_needed"
+  },
+  {
+    "id": 134,
+    "url": "https://www.albertine.com/events/",
+    "reason": "html_adapter_needed",
+    "detected_type": "html",
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "a726c68e9e1c81cbfed3aaaa2521295ae7fd97f1ccb1ff274a2bc8c789b310d0",
+    "bytes": 61246,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "html_adapter_needed",
+      "p_type": "html"
+    },
+    "observed": "html_adapter_needed"
+  },
+  {
+    "id": 138,
+    "url": "https://www.dcr.virginia.gov/state-parks/lake-anna",
+    "reason": "html_adapter_needed",
+    "detected_type": "html",
+    "endpoint": "https://www.dcr.virginia.gov/state-parks/events",
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "403",
+    "observed": "robots_unavailable"
+  },
+  {
+    "id": 198,
+    "url": "https://www.mythichall.com/games",
+    "reason": "no_reusable_calendar",
+    "detected_type": null,
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "6f2a3e3a878ed5b5866aba047d1b0a767fc3a070f01e03e38dab1d47e71c4dcb",
+    "bytes": 1766788,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "no_reusable_calendar",
+      "p_type": null
+    },
+    "observed": "no_reusable_calendar"
+  },
+  {
+    "id": 204,
+    "url": "https://thevirginianhotel.com/events?format=json",
+    "reason": "venue_extraction_unavailable",
+    "detected_type": "squarespace",
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "observed": "robots_denied"
+  },
+  {
+    "id": 208,
+    "url": "https://vector-space.org/events",
+    "reason": "html_adapter_needed",
+    "detected_type": "html",
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "42a6e4b913b0807945ded463620cc3e5b231d78ddff03dd52bb05bb9f562a8ab",
+    "bytes": 30847,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "html_adapter_needed",
+      "p_type": "html"
+    },
+    "observed": "html_adapter_needed"
+  },
+  {
+    "id": 209,
+    "url": "https://www.gravegarden.org/occevents/",
+    "reason": "no_reusable_calendar",
+    "detected_type": null,
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "b6a126da340792f8d3381acbcabb690c21fe2754f5872c7fe7dbb7af5e6e5ad2",
+    "bytes": 59450,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "no_reusable_calendar",
+      "p_type": null
+    },
+    "observed": "no_reusable_calendar"
+  },
+  {
+    "id": 213,
+    "url": "https://www.forestfarmersmarket.com/",
+    "reason": "no_reusable_calendar",
+    "detected_type": null,
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "554d9e3f5feb525b883d34ae024a83d6a601bf9cb63f33c4dbc4abbdd939ff09",
+    "bytes": 543218,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "no_reusable_calendar",
+      "p_type": null
+    },
+    "observed": "no_reusable_calendar"
+  },
+  {
+    "id": 217,
+    "url": "https://riversiderunners.com/events/",
+    "reason": "multiple_calendar_links",
+    "detected_type": "html",
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "32ea65a29bff72ebf32dbef9f5d8f5bbc196efb28a1c1e77fa9fa841f2e3ea73",
+    "bytes": 192823,
+    "classification": {
+      "p_outcome": "verified",
+      "p_endpoint": "https://riversiderunners.com/events/",
+      "p_type": "jsonld"
+    },
+    "observed": "verified",
+    "normalized_probe": true
+  },
+  {
+    "id": 221,
+    "url": "https://thesuperradarcade.com/all-events/",
+    "reason": "multiple_calendar_links",
+    "detected_type": "html",
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "afbc3cf0d6195ff32dbb3b1f9ec6e53217181483f8cb0cdfc8aa5dd668ca2680",
+    "bytes": 264626,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "multiple_calendar_links",
+      "p_type": "html"
+    },
+    "observed": "multiple_calendar_links"
+  },
+  {
+    "id": 222,
+    "url": "https://sbc.libcal.com/calendar/public-events",
+    "reason": "no_reusable_calendar",
+    "detected_type": null,
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "c08caec6db74e2e8953dfabda9f1c8e8e606465d3adb8f83267b3d18d46243bd",
+    "bytes": 91615,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "no_reusable_calendar",
+      "p_type": null
+    },
+    "observed": "no_reusable_calendar"
+  },
+  {
+    "id": 224,
+    "url": "https://lynchburg.librarycalendar.com/events/list",
+    "reason": "html_adapter_needed",
+    "detected_type": "html",
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "observed": "robots_denied"
+  },
+  {
+    "id": 225,
+    "url": "https://bedford.librarycalendar.com/events/list",
+    "reason": "html_adapter_needed",
+    "detected_type": "html",
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "observed": "robots_denied"
+  },
+  {
+    "id": 226,
+    "url": "https://business.lynchburgregion.org/events",
+    "reason": "html_adapter_needed",
+    "detected_type": "html",
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "187ab793352efd875c9f72f903b62fd6eee30f64501ff1e2cf9795fb850ccdac",
+    "bytes": 290893,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "html_adapter_needed",
+      "p_type": "html"
+    },
+    "observed": "html_adapter_needed"
+  },
+  {
+    "id": 227,
+    "url": "https://events.liberty.edu/",
+    "reason": "no_reusable_calendar",
+    "detected_type": null,
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "404",
+    "http": "200",
+    "sha256": "918dc4ae1507d742cf37467b3bbb5a0174671237c31e1d3002502b11047493e9",
+    "bytes": 33768,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "no_reusable_calendar",
+      "p_type": null
+    },
+    "observed": "no_reusable_calendar"
+  },
+  {
+    "id": 228,
+    "url": "https://historicappomattox.com/events-calendar-appomattox-virginia/",
+    "reason": "html_adapter_needed",
+    "detected_type": "html",
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "f49578bafb6bb6aee83471016b70f5c2f6d44b40561f0b69a21ef9d63957594a",
+    "bytes": 661762,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "html_adapter_needed",
+      "p_type": "html"
+    },
+    "observed": "html_adapter_needed"
+  },
+  {
+    "id": 230,
+    "url": "https://www.lynchburgva.gov/calendar.aspx",
+    "reason": "no_reusable_calendar",
+    "detected_type": null,
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "1729f0084cad2e4558fe131927aeee159f983d4f3b3d991d045a6720cb05096d",
+    "bytes": 122415,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "no_reusable_calendar",
+      "p_type": null
+    },
+    "observed": "no_reusable_calendar"
+  },
+  {
+    "id": 231,
+    "url": "https://www.lynchburgparksandrec.com/programs-and-activities/",
+    "reason": "no_reusable_calendar",
+    "detected_type": null,
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "observed": "publisher_crawl_delay_over_batch_budget"
+  },
+  {
+    "id": 245,
+    "url": "https://katytraildallas.org/events",
+    "reason": "html_adapter_needed",
+    "detected_type": "html",
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "30da551c7ef8f1798e45c83c8ef4756d88ba7abc34ba44704b0e79601afcaf9e",
+    "bytes": 23422,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "html_adapter_needed",
+      "p_type": "html"
+    },
+    "observed": "html_adapter_needed"
+  },
+  {
+    "id": 247,
+    "url": "https://www.klydewarrenpark.org/?format=json",
+    "reason": "unrecognized_json",
+    "detected_type": null,
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "observed": "robots_denied"
+  },
+  {
+    "id": 250,
+    "url": "https://www.indywinterfarmersmarket.org/",
+    "reason": "squarespace_collection_unverified",
+    "detected_type": "squarespace",
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "c2271733db71c4c3fce1d9aedfca05d1c53746d8a114b202d74f169687b270c9",
+    "bytes": 583081,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "squarespace_collection_unverified",
+      "p_type": "squarespace"
+    },
+    "observed": "squarespace_collection_unverified"
+  },
+  {
+    "id": 251,
+    "url": "https://www.americanairlinescenter.com/",
+    "reason": "html_adapter_needed",
+    "detected_type": "html",
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "0c7c878bd3d19427165ba147d3784647b3040b4908dc2c2071a96959abf70cc7",
+    "bytes": 9649,
+    "observed": "UnicodeDecodeError:'utf-8' codec can't decode byte 0x8b in position 1: invalid start byte"
+  },
+  {
+    "id": 252,
+    "url": "https://www.goosethemarket.com/events?format=json",
+    "reason": "venue_extraction_unavailable",
+    "detected_type": "squarespace",
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "observed": "robots_denied"
+  },
+  {
+    "id": 285,
+    "url": "https://www.indianamuseum.org/",
+    "reason": "html_adapter_needed",
+    "detected_type": "html",
+    "endpoint": "https://www.indianamuseum.org/things-to-do/events/",
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "39350ed993b97e773d25b96731fb1a71c04483c8ae6b84b6e63a94962c7f8756",
+    "bytes": 175728,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "html_adapter_needed",
+      "p_type": "html"
+    },
+    "observed": "html_adapter_needed"
+  },
+  {
+    "id": 286,
+    "url": "https://www.harrisoncenter.org/",
+    "reason": "html_adapter_needed",
+    "detected_type": "html",
+    "endpoint": "https://www.harrisoncenter.org/events",
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "a4f2a9d875411a1d6bc0ec53055956061cc6b1a6915f92323f16ed09c7a119ee",
+    "bytes": 489274,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "squarespace_collection_unverified",
+      "p_type": "squarespace"
+    },
+    "observed": "squarespace_collection_unverified"
+  },
+  {
+    "id": 289,
+    "url": "https://downtownindy.org/events",
+    "reason": "html_adapter_needed",
+    "detected_type": "html",
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "302",
+    "observed": "publisher_http_302",
+    "transport_error": ""
+  },
+  {
+    "id": 291,
+    "url": "https://www.cactusclubmilwaukee.com/",
+    "reason": "html_adapter_needed",
+    "detected_type": "html",
+    "endpoint": "https://www.cactusclubmilwaukee.com/events/",
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "20acdcb8ededc58deec78eff266b54f77525012453cd40413b5f8bd8834d92f9",
+    "bytes": 176922,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "html_adapter_needed",
+      "p_type": "html"
+    },
+    "observed": "html_adapter_needed"
+  },
+  {
+    "id": 302,
+    "url": "https://cambridgesouthhockeyclub.co.uk/matches/cshc_matches.ics",
+    "reason": "redirect_blocked",
+    "detected_type": null,
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "301",
+    "observed": "robots_unavailable"
+  },
+  {
+    "id": 326,
+    "url": "https://shankhall.com/",
+    "reason": "html_adapter_needed",
+    "detected_type": "html",
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "c2cf5a22ce8896e0fbb4544143161155eeb9a9f1896ed26e2169043907e15ac3",
+    "bytes": 61736,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "html_adapter_needed",
+      "p_type": "html"
+    },
+    "observed": "html_adapter_needed"
+  },
+  {
+    "id": 327,
+    "url": "https://anodynecoffee.com/",
+    "reason": "no_reusable_calendar",
+    "detected_type": null,
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "6bac04be699fc761cb5936f8bfecd0f6d15bf60dc41ecb8b66d0558b2ebb4a89",
+    "bytes": 345133,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "no_reusable_calendar",
+      "p_type": null
+    },
+    "observed": "no_reusable_calendar"
+  },
+  {
+    "id": 328,
+    "url": "https://www.pabsttheatergroup.com/events",
+    "reason": "html_adapter_needed",
+    "detected_type": "html",
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "c7f3e45db04f07e994cb3f5743434695b4001f9c37e07324ddf6c106da8222f8",
+    "bytes": 17055,
+    "observed": "UnicodeDecodeError:'utf-8' codec can't decode byte 0x8b in position 1: invalid start byte"
+  },
+  {
+    "id": 330,
+    "url": "https://cambridgeppf.org/events-list/",
+    "reason": "no_reusable_calendar",
+    "detected_type": null,
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "ec077b7ce438ad25a283c3162967c1b9b244b1a36f7cb62e46b65f36248166ac",
+    "bytes": 1025921,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "no_reusable_calendar",
+      "p_type": null
+    },
+    "observed": "no_reusable_calendar"
+  },
+  {
+    "id": 331,
+    "url": "https://localwineschool.com/cambridge/events/wine-tastings-and-courses/",
+    "reason": "html_adapter_needed",
+    "detected_type": "html",
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "404",
+    "http": "200",
+    "sha256": "0ccc05c951279cacc7f59bd903d01242ef0bf09b7845dcaa59560f52187edfdf",
+    "bytes": 309916,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "html_adapter_needed",
+      "p_type": "html"
+    },
+    "observed": "html_adapter_needed"
+  },
+  {
+    "id": 332,
+    "url": "https://www.cambridgewineacademy.com/wine-tastings/",
+    "reason": "no_reusable_calendar",
+    "detected_type": null,
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "314ded6bfdb51b40572d1af65db073b85c4b79b9370508019687e87e798eb4e6",
+    "bytes": 19808,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "no_reusable_calendar",
+      "p_type": null
+    },
+    "observed": "no_reusable_calendar"
+  },
+  {
+    "id": 333,
+    "url": "https://theboxroombgc.co.uk/events-1",
+    "reason": "no_reusable_calendar",
+    "detected_type": null,
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "b2fbb10bd9c9813c066dbf8b993d5b59bdb4adb05ec110ad19b65060a00e1ecd",
+    "bytes": 153854,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "no_reusable_calendar",
+      "p_type": null
+    },
+    "observed": "no_reusable_calendar"
+  },
+  {
+    "id": 334,
+    "url": "https://www.computinghistory.org.uk/pages/30677/What-s-On/",
+    "reason": "invalid_source_encoding",
+    "detected_type": null,
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "033b1b33f640d488756f963c23fcec7b95a64250a107b5f9e3018150a864de5e",
+    "bytes": 33898,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "no_reusable_calendar",
+      "p_type": null
+    },
+    "observed": "no_reusable_calendar"
+  },
+  {
+    "id": 336,
+    "url": "https://www.wildlifebcn.org/events",
+    "reason": "html_adapter_needed",
+    "detected_type": "html",
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "a504e12238a92f0386cdb99debcd7fb8d2b2cfcc5a1443dc90c1cb1479766501",
+    "bytes": 294120,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "html_adapter_needed",
+      "p_type": "html"
+    },
+    "observed": "html_adapter_needed"
+  },
+  {
+    "id": 337,
+    "url": "https://www.miltoncountrypark.org/whats-on",
+    "reason": "no_reusable_calendar",
+    "detected_type": null,
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "9541918d8ea16119c7673f78452523eb2d86fa7a9ffedee6ba051b2ae5a34cca",
+    "bytes": 1339662,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "no_reusable_calendar",
+      "p_type": null
+    },
+    "observed": "no_reusable_calendar"
+  },
+  {
+    "id": 338,
+    "url": "https://www.theechodallas.com/",
+    "reason": "html_adapter_needed",
+    "detected_type": "html",
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "3612763889062fc70f45442798618babf96719e607f5e8d4d87bb0c5f30f394d",
+    "bytes": 646575,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "html_adapter_needed",
+      "p_type": "html"
+    },
+    "observed": "html_adapter_needed"
+  },
+  {
+    "id": 346,
+    "url": "https://www.lucasoilstadium.com/",
+    "reason": "multiple_calendar_links",
+    "detected_type": "html",
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "aa157cefe4a0fb80b590899305ab47a907ccd4f854e69c992b37e0b5fe1ffd89",
+    "bytes": 263085,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "multiple_calendar_links",
+      "p_type": "html"
+    },
+    "observed": "multiple_calendar_links"
+  },
+  {
+    "id": 350,
+    "url": "https://www.froglife.org/wp-json/tribe/events/v1/events/?venue=26896",
+    "reason": "no_extractable_events",
+    "detected_type": "wordpress",
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "392c06f62dad31b1dc92aa851d9089915cb2ed1a6d79d2207129495c83a655bc",
+    "bytes": 31439,
+    "classification": {
+      "p_outcome": "verified",
+      "p_endpoint": "https://www.froglife.org/wp-json/tribe/events/v1/events/?venue=26896",
+      "p_type": "wordpress"
+    },
+    "observed": "verified",
+    "normalized_probe": false
+  },
+  {
+    "id": 399,
+    "url": "https://neofuturists.org/calendar/",
+    "reason": "html_adapter_needed",
+    "detected_type": "html",
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "c946cd0ccae74953e2b80df59fe3781a279eecc5759b4b41a04e084903d9b269",
+    "bytes": 548090,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "html_adapter_needed",
+      "p_type": "html"
+    },
+    "observed": "html_adapter_needed"
+  },
+  {
+    "id": 401,
+    "url": "https://carolspub.com/",
+    "reason": "html_adapter_needed",
+    "detected_type": "html",
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "bb5206499e3ae622543170684e252bd8c2641c9b8522b7b6342304d34e0c651a",
+    "bytes": 259768,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "html_adapter_needed",
+      "p_type": "html"
+    },
+    "observed": "html_adapter_needed"
+  },
+  {
+    "id": 439,
+    "url": "https://perkinsarts.org/",
+    "reason": "no_reusable_calendar",
+    "detected_type": null,
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "0a6206163ca093e46e62f4563157c2c32a2aede70144612b83d20f45dc04b6f3",
+    "bytes": 528976,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "no_reusable_calendar",
+      "p_type": null
+    },
+    "observed": "no_reusable_calendar"
+  },
+  {
+    "id": 440,
+    "url": "https://www.algonquinarts.org/",
+    "reason": "no_reusable_calendar",
+    "detected_type": null,
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "663fabc8a7ef3a9aa74c907fc0446876bc046c9ac9dfe1f3937d7a310daab78f",
+    "bytes": 41906,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "no_reusable_calendar",
+      "p_type": null
+    },
+    "observed": "no_reusable_calendar"
+  },
+  {
+    "id": 441,
+    "url": "https://www.fdrparkphilly.org/events",
+    "reason": "html_adapter_needed",
+    "detected_type": "html",
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "9047081f2aec6b718686f1eb3b55a63ebe3f8f0a1487a099f7a59f056de22905",
+    "bytes": 107699,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "html_adapter_needed",
+      "p_type": "html"
+    },
+    "observed": "html_adapter_needed"
+  },
+  {
+    "id": 444,
+    "url": "https://www.theivybookshop.com/",
+    "reason": "html_adapter_needed",
+    "detected_type": "html",
+    "endpoint": "https://www.theivybookshop.com/events/",
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "cdbe868238c4adcbc6813151b4594cf860bc7d0b724877275af02e94e555865f",
+    "bytes": 203226,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "no_reusable_calendar",
+      "p_type": null
+    },
+    "observed": "no_reusable_calendar"
+  },
+  {
+    "id": 445,
+    "url": "https://www.nps.gov/hamp/planyourvisit/calendar.htm",
+    "reason": "no_reusable_calendar",
+    "detected_type": null,
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "ba132703451f8ea90aa71198a8e591c7100ab137aa7cc5a6569823f5f60b4d51",
+    "bytes": 36059,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "no_reusable_calendar",
+      "p_type": null
+    },
+    "observed": "no_reusable_calendar"
+  },
+  {
+    "id": 446,
+    "url": "https://www.morgan.edu/",
+    "reason": "html_adapter_needed",
+    "detected_type": "html",
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "e526b4d6ea88d65be827acec223b057cc543928e0ee96c0be2c4dc3f1b4f1f75",
+    "bytes": 67180,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "html_adapter_needed",
+      "p_type": "html"
+    },
+    "observed": "html_adapter_needed"
+  },
+  {
+    "id": 447,
+    "url": "https://www.snugbooks.com/",
+    "reason": "html_adapter_needed",
+    "detected_type": "html",
+    "endpoint": "https://www.snugbooks.com/events",
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "404",
+    "http": "200",
+    "sha256": "a6f73667cd1d68a2508033aed3f3497d0dea63980f731b90fa83be0949cff0de",
+    "bytes": 168736,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "html_adapter_needed",
+      "p_type": "html"
+    },
+    "observed": "html_adapter_needed"
+  },
+  {
+    "id": 448,
+    "url": "https://www.mothersgrille.com/",
+    "reason": "html_adapter_needed",
+    "detected_type": "html",
+    "endpoint": "https://www.mothersgrille.com/events",
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "19e94ab8f4c8cff732c0a75682c17ff81be0bb0cb05e911680461c54e9875cfe",
+    "bytes": 266036,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "squarespace_collection_unverified",
+      "p_type": "squarespace"
+    },
+    "observed": "squarespace_collection_unverified"
+  },
+  {
+    "id": 451,
+    "url": "https://www.wickedsistershampden.com/",
+    "reason": "squarespace_collection_unverified",
+    "detected_type": "squarespace",
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "b389d7f50996f054c41c0a245ea7fc7fb32bf087412dd321b900955fc487c34a",
+    "bytes": 338596,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "squarespace_collection_unverified",
+      "p_type": "squarespace"
+    },
+    "observed": "squarespace_collection_unverified"
+  },
+  {
+    "id": 452,
+    "url": "https://papistacojoint.com/hampden",
+    "reason": "squarespace_collection_unverified",
+    "detected_type": "squarespace",
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "b66516b3dce138a8e16974e6dc28ae983dd92d32ee3754b232e31cdc3db4aad9",
+    "bytes": 97535,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "squarespace_collection_unverified",
+      "p_type": "squarespace"
+    },
+    "observed": "squarespace_collection_unverified"
+  },
+  {
+    "id": 455,
+    "url": "https://redemmas.org/events",
+    "reason": "html_adapter_needed",
+    "detected_type": "html",
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "404",
+    "http": "301",
+    "observed": "publisher_http_301",
+    "transport_error": ""
+  },
+  {
+    "id": 457,
+    "url": "https://atomicbooks.com/pages/upcoming-events",
+    "reason": "unrecognized_json",
+    "detected_type": null,
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "e2c9b7ba32d1d97004f0a0227540368edc1148df99b4c72289f4d88dd891675c",
+    "bytes": 201454,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "html_adapter_needed",
+      "p_type": "html"
+    },
+    "observed": "html_adapter_needed"
+  },
+  {
+    "id": 463,
+    "url": "https://www.illusionsmagicbar.com/",
+    "reason": "html_adapter_needed",
+    "detected_type": "html",
+    "endpoint": "https://www.illusionsmagicbar.com/calendar",
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "28964fae6a8ef6715123d8a92cb7f3af8619ad63576c7bb0685009486a5c0b88",
+    "bytes": 162275,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "squarespace_collection_unverified",
+      "p_type": "squarespace"
+    },
+    "observed": "squarespace_collection_unverified"
+  },
+  {
+    "id": 464,
+    "url": "https://www.aacounty.org/recreation-parks/parks/fort-smallwood-park",
+    "reason": "html_adapter_needed",
+    "detected_type": "html",
+    "endpoint": "https://www.aacounty.org/news-events/events",
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "9614b8205c74eb10b947d72b39b700220ba27a8aae2640f31fca06f1ebdbff85",
+    "bytes": 44893,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "html_adapter_needed",
+      "p_type": "html"
+    },
+    "observed": "html_adapter_needed"
+  },
+  {
+    "id": 477,
+    "url": "https://corduroylv.com/events",
+    "reason": "html_adapter_needed",
+    "detected_type": "html",
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "301",
+    "observed": "publisher_http_301",
+    "transport_error": ""
+  },
+  {
+    "id": 503,
+    "url": "https://www.z2ent.com/boulder-theater-venue",
+    "reason": "html_adapter_needed",
+    "detected_type": "html",
+    "endpoint": "https://www.z2ent.com/events",
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "301",
+    "observed": "publisher_http_301",
+    "transport_error": ""
+  },
+  {
+    "id": 504,
+    "url": "https://www.velvetelklounge.com/events/",
+    "reason": "html_adapter_needed",
+    "detected_type": "html",
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "3db184ba70c4dda4246f517a8f693adb75773f9a5b59e6a50d56523418cb47a9",
+    "bytes": 57916,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "html_adapter_needed",
+      "p_type": "html"
+    },
+    "observed": "html_adapter_needed"
+  },
+  {
+    "id": 506,
+    "url": "https://www.license1boulderado.com/",
+    "reason": "squarespace_collection_unverified",
+    "detected_type": "squarespace",
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "9416e1f84a370f8560af1da580ae5d2af212b6a115e18a6172eddb82e00dd4ac",
+    "bytes": 303609,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "squarespace_collection_unverified",
+      "p_type": "squarespace"
+    },
+    "observed": "squarespace_collection_unverified"
+  },
+  {
+    "id": 509,
+    "url": "https://nissis.com/shows/",
+    "reason": "html_adapter_needed",
+    "detected_type": "html",
+    "endpoint": null,
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "7cdb6fa8b010f635047f93df043e26f8a97aaf3816f3601d665dbf1ca4f0e2a3",
+    "bytes": 401791,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "html_adapter_needed",
+      "p_type": "html"
+    },
+    "observed": "html_adapter_needed"
+  },
+  {
+    "id": 515,
+    "url": "https://lincolntheatre.com/",
+    "reason": "html_adapter_needed",
+    "detected_type": "html",
+    "endpoint": "https://lincolntheatre.com/events/",
+    "source_id": null,
+    "endpoint_candidate": null,
+    "robots_http": "200",
+    "http": "200",
+    "sha256": "198b16cc091a120e30d67a831c94b220d7d6ea7c55e66d2c04e9efbfc187d96c",
+    "bytes": 309052,
+    "classification": {
+      "p_outcome": "review",
+      "p_reason": "html_adapter_needed",
+      "p_type": "html"
+    },
+    "observed": "html_adapter_needed"
+  }
+]
