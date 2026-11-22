@@ -15,6 +15,15 @@ COALITION_KEY = 'municipal_mapsee_8000fb8c18bf23f709b53465'
 COALITION_URL = 'https://calendar.richmondcultureworks.org/organizations/coalition-theater/'
 COALITION_VENUE = '8 W Broad St, Richmond, VA, 23220'
 
+# Venue-local schedules on these reviewed official calendars omit UTC offsets.
+# Match the event's own city/region as well as the exact calendar; never apply
+# the publisher's timezone to an offsite event. Reviewed 2026-11-21.
+REVIEWED_CALENDAR_ZONES = {
+    'https://www.punchlinecomedyclub.com/': ('San Francisco', 'CA', 'America/Los_Angeles'),
+    'https://www.theechodallas.com/': ('Dallas', 'TX', 'America/Chicago'),
+}
+
+
 SCRAP_RVA_URL = 'https://events.humanitix.com/host/scrap-rva'
 SCRAP_RVA_LOCATIONS = {
     '322 W Brookland Park Blvd, Richmond, VA 23222, USA': (
@@ -198,11 +207,39 @@ def parse(payload, base='', *, native_source=None):
             reviewed = SCRAP_RVA_LOCATIONS.get(a.get('streetAddress'))
             if reviewed:
                 street, lat, lng = reviewed
-        row = record(e.get('name'), e.get('startDate'), e.get('endDate'), v.get('name'),
+        start, end = e.get('startDate'), e.get('endDate')
+        # A calendar may mix timed performances with all-day/private placeholders.
+        # Do not manufacture midnight starts or let one untimed entry erase the
+        # valid timed collection. Date-only ends carry no trustworthy end clock.
+        if isinstance(start, str) and re.fullmatch(r'\d{4}-\d{2}-\d{2}', start):
+            date.fromisoformat(start)
+            continue
+        if isinstance(end, str) and re.fullmatch(r'\d{4}-\d{2}-\d{2}', end):
+            end_day = date.fromisoformat(end)
+            if isinstance(start, str) and end_day < datetime.fromisoformat(start).date():
+                raise ValueError('invalid_event_end')
+            end = None
+        zone = None
+        reviewed = REVIEWED_CALENDAR_ZONES.get(base)
+        if reviewed and isinstance(a, dict) and (
+                a.get('addressLocality'), a.get('addressRegion')) == reviewed[:2]:
+            zone = reviewed[2]
+        if (base == 'https://nissis.com/shows/'
+                and a == '1455 Coal Creek Dr. Lafayette, Co. 80026'):
+            zone = 'America/Denver'
+        if zone:
+            for value in (start, end):
+                if value:
+                    clock = datetime.fromisoformat(value.replace('Z', '+00:00'))
+                    if clock.tzinfo is not None and clock.utcoffset() != clock.astimezone(ZoneInfo(zone)).utcoffset():
+                        raise ValueError('publisher_schedule_conflict')
+        row = record(e.get('name'), start, end, v.get('name'),
             street, a.get('addressLocality', '') if isinstance(a, dict) else '',
             urljoin(base, link), e.get('@id') or e.get('url'), e.get('keywords', ''),
-            lat, lng)
+            lat, lng, tz=zone)
         if row:
+            if zone:
+                row['timezone'] = zone
             if native_source is not None:
                 from roomquest.registered_native_content import attach
                 image = e.get('image')
