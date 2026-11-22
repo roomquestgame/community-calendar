@@ -213,6 +213,12 @@ def _cache_robots(host, parser, *, raw=None, status=200):
 def _parse_robots_policy(host, raw):
     """One policy parser for fetched responses and authenticated fresh caches."""
     lines = raw.decode("utf-8-sig", errors="replace").splitlines()
+    # A soft-404 app shell or structured error is not an empty robots policy.
+    # Ignore actual robots comments, but never cache a recognizable HTML/XML/
+    # JSON document as permission. Keep ordinary empty and sitemap-only files.
+    if any(line.lstrip().startswith(("<", "{", "["))
+           for line in lines if line.strip() and not line.lstrip().startswith("#")):
+        raise PreviewError("robots_unavailable")
     parser = PublisherRobotsPolicy(lines)
     delay = robots_crawl_delay(lines, robots_checkpoint.PERMISSION_USER_AGENT)
     if host in ("nytransitmuseum.org", "www.nytransitmuseum.org"):
@@ -625,12 +631,40 @@ def read_raleigh_brewing_occurrences(*, event_id, offset, public_instance, deadl
         deadline_at=deadline_at, allowed_hosts=('www.raleighbrewing.com',), brewing_instance=public_instance)
 
 
+def read_liberty_public_action(*, script_url, script, getter, deadline_at=None):
+    """Read one of the current public calendar's two anonymous bootstrap getters.
+
+    The action is extracted from the page's fetched same-origin script, never
+    accepted as a caller-selected identifier. No body, headers or other action
+    names can be supplied. The transient response is excluded from checkpoints.
+    """
+    from roomquest import liberty_calendar as calendar
+    return _fetch_publisher_request(calendar.ORIGINAL, 'text/x-component', respect_robots=True,
+        deadline_at=deadline_at, allowed_hosts=(calendar.HOST,), follow_redirects=False,
+        liberty_action=(script_url, script, getter))
+
+
+def read_liberty_events(*, page, window_start, public_token, deadline_at=None):
+    """Read only the bounded published-events view with its anonymous token."""
+    from roomquest import liberty_calendar as calendar
+    if not calendar.valid_public_token(public_token):
+        raise PreviewError('invalid_liberty_events_request')
+    try:
+        url = calendar.events_url(page=page, window_start=window_start)
+    except ValueError:
+        raise PreviewError('invalid_liberty_events_request') from None
+    return _fetch_publisher_request(url, 'application/json', respect_robots=True,
+        deadline_at=deadline_at, allowed_hosts=(calendar.API_HOST,), follow_redirects=False,
+        liberty_token=public_token)
+
+
 def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = False,
                              deadline_at: float | None = None, allowed_hosts=None,
                              calendar_form=None, calendar_json=None, localhop_app_id=None,
                              cardboard_arena_calendar=False, visit_raleigh_api=False,
                              game_theory_key=None, chapel_calendar_body=None,
                              comedyworx_instance=None, brewing_instance=None,
+                             liberty_action=None, liberty_token=None,
                              follow_redirects: bool = True) -> str | bytes:
     """Use the shared bounded transport for approved HTTPS publisher content.
 
@@ -639,6 +673,26 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
     destination URLs still pass public-network checks before each GET redirect.
     Reviewed display-only POSTs are source scoped and never redirected.
     """
+    liberty_action_id = None
+    if liberty_action is not None or liberty_token is not None:
+        from roomquest import liberty_calendar as calendar
+        exclusive = (respect_robots and follow_redirects is False
+            and calendar_form is None and calendar_json is None and localhop_app_id is None
+            and cardboard_arena_calendar is False and visit_raleigh_api is False
+            and game_theory_key is None and chapel_calendar_body is None
+            and comedyworx_instance is None and brewing_instance is None)
+        if liberty_action is not None:
+            if (not exclusive or liberty_token is not None or url != calendar.ORIGINAL
+                    or accept != 'text/x-component' or allowed_hosts != (calendar.HOST,)
+                    or not isinstance(liberty_action, tuple) or len(liberty_action) != 3):
+                raise PreviewError('invalid_liberty_action_request')
+            try:
+                liberty_action_id = calendar.action_reference(*liberty_action)
+            except ValueError:
+                raise PreviewError('invalid_liberty_action_request') from None
+        elif (not exclusive or accept != 'application/json' or allowed_hosts != (calendar.API_HOST,)
+                or not calendar.valid_events_request(url, liberty_token)):
+            raise PreviewError('invalid_liberty_events_request')
     if brewing_instance is not None:
         from roomquest import raleigh_next_social as calendars
         if (not respect_robots or accept != 'application/json' or allowed_hosts != ('www.raleighbrewing.com',)
@@ -810,6 +864,12 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
         headers['Authorization'] = comedyworx_instance
     if brewing_instance is not None:
         headers['Authorization'] = brewing_instance
+    if liberty_action_id is not None:
+        headers['Content-Type'] = 'text/plain;charset=UTF-8'
+        headers['Next-Action'] = liberty_action_id
+        headers['Origin'] = 'https://events.liberty.edu'
+    if liberty_token is not None:
+        headers['Authorization'] = 'Bearer ' + liberty_token
     if cardboard_arena_calendar:
         # Public GenericEvents routing identity published in the store's SSR.
         # This is neither a credential nor an arbitrary caller-supplied header.
@@ -820,7 +880,8 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
     incremental = (current_snapshot() if calendar_form is None and calendar_json is None
                    and localhop_app_id is None and not cardboard_arena_calendar and not visit_raleigh_api
                    and game_theory_key is None and chapel_calendar_body is None
-                   and comedyworx_instance is None and brewing_instance is None else None)
+                   and comedyworx_instance is None and brewing_instance is None
+                   and liberty_action is None and liberty_token is None else None)
     current = url
     admission_deadline = deadline_at if deadline_at is not None else monotonic() + 18
     deadline = min(admission_deadline, monotonic() + 18)
@@ -857,7 +918,10 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
                 remaining = max(0.1, deadline - monotonic())
                 timeout = (min(3,remaining/2), min(7,remaining/2)) if respect_robots else (5,12)
                 activity_before_request(current, redirect=current != url)
-                if chapel_calendar_body is not None:
+                if liberty_action_id is not None:
+                    response = session.post(current, data=b'[]', headers=headers,
+                                            timeout=timeout, stream=True, allow_redirects=False)
+                elif chapel_calendar_body is not None:
                     response = session.post(current, data=chapel_calendar_body, headers=headers,
                                             timeout=timeout, stream=True, allow_redirects=False)
                 elif calendar_form is None and calendar_json is None:
@@ -913,6 +977,11 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
                     code = response.status_code
                     response.close()
                     raise PreviewError("publisher_http_" + str(code))
+                if ((liberty_action is not None or liberty_token is not None)
+                        and response.headers.get('Content-Type', '').split(';', 1)[0].strip().lower()
+                        != ('text/x-component' if liberty_action is not None else 'application/json')):
+                    response.close()
+                    raise PreviewError('invalid_liberty_content_type')
                 if (calendar_form is not None and
                         response.headers.get('Content-Type', '').split(';', 1)[0].strip().lower()
                         not in ({'application/json', 'text/html'} if (cfengage_form or boston_cares_form or artspace_form) else
@@ -934,6 +1003,8 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
                     raise PreviewError('invalid_publisher_image_content_type')
                 length = int(response.headers.get("Content-Length") or 0)
                 body_limit = _publisher_body_limit(current, accept, allowed_hosts, respect_robots)
+                if liberty_action is not None:
+                    body_limit = min(body_limit, calendar.MAX_ACTION_BYTES)
                 if length > body_limit:
                     response.close()
                     raise PreviewError("source_unavailable_or_oversized")
@@ -3430,16 +3501,19 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
     if source.get("platform_adapter") == "html" and source.get("kind") == "html":
         source_key = str(source.get("source_key", ""))
         html_budget = 36
+        html_fetch_options = {}
         from roomquest.raleigh_html import SOURCES as RALEIGH_SOURCES
         from roomquest.virginia_wix_events import SOURCES as VA_WIX_SOURCES
         from roomquest import maryland_public_calendars, maryland_park_programs
         from roomquest.nebraska_venues import SOURCES as NEBRASKA_VENUES
         from roomquest import nebraska_final, richmond_public_calendars
         from roomquest import gulf_recurring, gulf_seasonal, gulf_venues
-        from roomquest import registered_listings
+        from roomquest import liberty_calendar, registered_listings
         if source.get('feed_url') in registered_listings.URLS and source_key == registered_listings.source_key(source['feed_url']):
             collect_html = registered_listings.collect
-            allowed_hosts = (urlparse(source['feed_url']).hostname,)
+            allowed_hosts = registered_listings.allowed_hosts(source['feed_url'])
+            if source['feed_url'] == liberty_calendar.ORIGINAL:
+                html_fetch_options['follow_redirects'] = False
         elif source_key in gulf_recurring.SOURCES:
             collect_html = gulf_recurring.collect
             allowed_hosts = gulf_recurring.allowed_hosts(source_key)
@@ -3716,7 +3790,7 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
             records = collect_html(
                 source, lambda url, accept: fetch_publisher(
                     url, accept, respect_robots=True, deadline_at=deadline,
-                    allowed_hosts=allowed_hosts,
+                    allowed_hosts=allowed_hosts, **html_fetch_options,
                 ), deadline_at=deadline, **extra)
         except PreviewError:
             raise
