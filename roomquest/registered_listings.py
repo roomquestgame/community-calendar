@@ -15,7 +15,8 @@ BOPLEX = 'https://www.boplex.com/events'
 BROADWAY = 'https://www.broadwaycomedyclub.com/'
 RESIDENT = 'https://residentculturebrewing.com/events/'
 PLAZA = RESIDENT + '?fwp_event_location=plaza-midwood'
-URLS = (BOPLEX, BROADWAY, RESIDENT, PLAZA)
+INDY = 'https://www.indywinterfarmersmarket.org/'
+URLS = (BOPLEX, BROADWAY, RESIDENT, PLAZA, INDY)
 EASTERN = ZoneInfo('America/New_York')
 CLOCK = r'(?:1[0-2]|0?[1-9])(?::[0-5]\d)?\s*[ap]m'
 
@@ -148,6 +149,40 @@ def resident(soup, url, fetch, today):
                                    clock(bounds[2]), clock(bounds[4]), first, last)
 
 
+
+def seasonal_weekly_dates(first, last, weekday, excluded, today, horizon=60):
+    """Expand only an explicitly bounded publisher season and its closures."""
+    if last < first or (last-first).days > 370:
+        raise ValueError('season_bounds_unverified')
+    day = max(first, today)
+    day += timedelta(days=(weekday-day.weekday()) % 7)
+    while day <= min(last, today+timedelta(days=horizon)):
+        if day not in excluded:
+            yield day
+        day += timedelta(days=7)
+
+
+def indy(soup, today):
+    # A public HTML season, not the robots-disallowed Squarespace JSON endpoint.
+    # The footer must state all dates, hours, address and exception together.
+    footer = soup.find('footer')
+    text = footer.get_text(' ', strip=True) if footer else ''
+    season = re.search(r'EVERY SATURDAY ([A-Za-z]+ \d{1,2}, \d{4}) - ([A-Za-z]+ \d{1,2}, \d{4}) Closed on ([A-Za-z]+ \d{1,2}) 9 a\.m\. [—–-] 12:30 p\.m\.', text)
+    address = '1220 Waterway Blvd, Indianapolis, IN 46202'
+    if not season or ('Located at The AMP '+address) not in text:
+        raise ValueError('market_season_unverified')
+    first, last = [datetime.strptime(season[i], '%B %d, %Y').date() for i in (1,2)]
+    closed = [datetime.strptime(season[3]+' '+str(year), '%B %d %Y').date()
+              for year in range(first.year,last.year+1)]
+    closed = [day for day in closed if first <= day <= last]
+    if len(closed) != 1 or closed[0].weekday() != 5:
+        raise ValueError('market_closure_unverified')
+    for day in seasonal_weekly_dates(first,last,5,set(closed),today):
+        yield record('Indy Winter Farmers Market',datetime.combine(day,clock('9am')),
+                     datetime.combine(day,clock('12:30pm')),'The AMP',address,'Indianapolis',
+                     INDY,INDY,'Food & Coffee',tz='America/Indiana/Indianapolis')
+
+
 def collect(source, fetch, *, deadline_at=None, listing=None):
     url = source['feed_url']
     if url not in URLS or source.get('source_key') != source_key(url):
@@ -156,6 +191,8 @@ def collect(source, fetch, *, deadline_at=None, listing=None):
     today = datetime.now(EASTERN).date()
     if url == BOPLEX:
         rows = boplex(soup, fetch, today)
+    elif url == INDY:
+        rows = indy(soup, today)
     elif url == BROADWAY:
         rows = broadway(soup)
     else:
