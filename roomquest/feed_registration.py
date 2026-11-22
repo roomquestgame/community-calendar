@@ -17,6 +17,13 @@ DENIALS = {'robots_denied', 'publisher_http_401', 'publisher_http_403'}
 RETRYABLE = {'dns_unavailable', 'robots_unavailable', 'source_fetch_deadline', 'source_network_error',
              'publisher_pacing_deferred', 'publisher_rate_limited', 'publisher_http_408', 'publisher_http_429'}
 
+# Reviewed publisher navigation, not a guess based on a shared domain suffix.
+# Each destination must still occur in the submitted page and pass the normal
+# robots-aware fetch, collection detection and independent endpoint registration.
+PUBLISHER_CALENDAR_PAGES = {
+    'https://www.morgan.edu/': 'https://events.morgan.edu/',
+}
+
 
 def is_tec_collection(url):
     parts = urlsplit(url)
@@ -37,6 +44,7 @@ class CalendarLinks(HTMLParser):
         self.url = url
         self.links = {}
         self.calendar_pages = set()
+        self.publisher_calendar_pages = set()
 
     def handle_starttag(self, tag, attributes):
         if tag not in ('link', 'a', 'input'):
@@ -52,6 +60,8 @@ class CalendarLinks(HTMLParser):
             return
         parts = urlsplit(url)
         query = parse_qs(parts.query)
+        if tag == 'a' and PUBLISHER_CALENDAR_PAGES.get(self.url) == url:
+            self.publisher_calendar_pages.add(url)
         if (tag == 'a' and parts.hostname == urlsplit(self.url).hostname and not parts.query
                 and parts.path.rstrip('/').rsplit('/', 1)[-1].lower() in
                 ('events', 'calendar', 'events-calendar', 'event-calendar', 'upcoming-events', 'calendar.aspx')):
@@ -128,6 +138,8 @@ def classify(url, payload, hint=None, endpoint_only=False, venue_website=False):
         preferred = {url: kind for url, kind in links.items() if kind == hint}
         if preferred:
             links = preferred
+    if not links and len(parser.publisher_calendar_pages) == 1:
+        return {'calendar_page': next(iter(parser.publisher_calendar_pages))}
     if not links and venue_website and len(parser.calendar_pages) == 1 and scoped_endpoint(url, next(iter(parser.calendar_pages))):
         return {'calendar_page': next(iter(parser.calendar_pages))}
     if len(links) != 1:
