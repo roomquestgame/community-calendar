@@ -31,7 +31,7 @@ def test_mapsee_horizon_keeps_all_in_window_records_for_hard_limit():
 
 def test_mapsee_ics_prunes_only_provably_expired_standalone_uids():
     from icalendar import Calendar, Event
-    from roomquest.ics_adapter import _prune_mapsee_historical_singles
+    from roomquest.ics_adapter import _prune_mapsee_out_of_window_singles
     now = datetime(2026, 11, 21, tzinfo=timezone.utc)
     calendar = Calendar()
     calendar.add("version", "2.0")
@@ -48,17 +48,19 @@ def test_mapsee_ics_prunes_only_provably_expired_standalone_uids():
 
     add("old", now - timedelta(days=30), now - timedelta(days=29))
     add("future", now + timedelta(days=1), now + timedelta(days=2))
+    add("far-future", now + timedelta(days=90), now + timedelta(days=91))
     add("old-recurring", now - timedelta(days=30), now - timedelta(days=29), True)
     add("missing-end", now - timedelta(days=30))
     add("date-only", (now - timedelta(days=30)).date(), (now - timedelta(days=29)).date())
     add("duplicate", now - timedelta(days=30), now - timedelta(days=29))
     add("duplicate", now + timedelta(days=1), now + timedelta(days=2))
-    trimmed = _prune_mapsee_historical_singles(calendar, now)
+    trimmed = _prune_mapsee_out_of_window_singles(calendar, now)
     uids = [str(event.get("UID")) for event in trimmed.walk("VEVENT")]
     assert "old" not in uids
+    assert "far-future" not in uids
     assert uids.count("duplicate") == 2
     assert set(uids) == {"future", "old-recurring", "missing-end", "date-only", "duplicate"}
-    assert len(calendar.walk("VEVENT")) == 7
+    assert len(calendar.walk("VEVENT")) == 8
 
 
 
