@@ -31,9 +31,12 @@ def enabled(source, *, adapter=None):
         return False
     from roomquest.registration_formats import source_key
     feed = source.get('feed_url')
+    from roomquest import wildlife_trusts
+    wildlife = (source.get('kind') == 'html' and source.get('platform_adapter') == 'html'
+                and source.get('feed_url') in wildlife_trusts.URLS)
     family = ((source.get('kind') == 'json'
                and source.get('platform_adapter') in ('wordpress', 'jsonld'))
-              or html_details(source))
+              or html_details(source) or wildlife)
     if (not family
             or (adapter is not None and source.get('platform_adapter') != adapter)
             or not native_url(feed)
@@ -59,6 +62,13 @@ def native_url(value):
 def event_url_matches(source, link):
     if not native_url(link):
         return False
+    from roomquest import openactive, wildlife_trusts, failte_ireland
+    if openactive.enabled(source):
+        return openactive.event_url(source, link)
+    if source.get('feed_url') in wildlife_trusts.URLS:
+        return wildlife_trusts.event_url_matches(source, link)
+    if failte_ireland.is_source(source.get('feed_url')):
+        return failte_ireland.enabled(source) and failte_ireland.event_url_allowed(link)
     if html_details(source):
         # Detail pages were actually fetched under the exact listing host.
         # A www alias is not implicit permission to crawl another origin.
@@ -83,6 +93,19 @@ def event_identity(source, row):
     return (isinstance(identity, str) and 1 <= len(identity) <= 180
             and identity == identity.strip()
             and event_url_matches(source, row.get('event_url')))
+
+
+def description_field_allowed(source, field):
+    if field == 'description':
+        return True
+    if not html_details(source):
+        return False
+    if field == HTML_DESCRIPTION_FIELD:
+        return True
+    if field == 'forestry_event_description':
+        from roomquest.forestry_england import owns_url
+        return owns_url(source.get('feed_url'))
+    return False
 
 
 def image_candidate(value, base_url='', *, _depth=0):
@@ -117,8 +140,7 @@ def attach(row, source, *, description_value=None, image_value=None, evidence_ur
     if not event_identity(source, row):
         raise ValueError('registered_native_event_identity_invalid')
     detail = html_details(source)
-    if description_field != 'description' and not (
-            detail and description_field == HTML_DESCRIPTION_FIELD):
+    if not description_field_allowed(source, description_field):
         raise ValueError('registered_native_evidence_invalid')
     if ((detail and evidence_url != row['event_url'])
             or (not detail and evidence_url not in (None, source['feed_url']))):
@@ -155,13 +177,22 @@ def validate_record(row, source):
     """Reject missing or inconsistent proof before the first staging batch."""
     if not enabled(source):
         raise ValueError('registered_native_capability_required')
+    from roomquest import openactive, wildlife_trusts, failte_ireland
+    if openactive.enabled(source):
+        openactive.validate_native(row, source)
+        return
+    if source.get('feed_url') in wildlife_trusts.URLS:
+        wildlife_trusts.validate_native(row, source)
+        return
+    if failte_ireland.is_source(source.get('feed_url')):
+        failte_ireland.validate_native(row, source)
+        return
     if not isinstance(row, dict) or not event_identity(source, row):
         raise ValueError('registered_native_evidence_invalid')
     text, candidate = row.get('description'), row.get('image_url')
     proof = row.get('registered_native_content')
     field = proof.get('description_field') if isinstance(proof, dict) else None
-    if text and field != 'description' and not (
-            html_details(source) and field == HTML_DESCRIPTION_FIELD):
+    if text and not description_field_allowed(source, field):
         raise ValueError('registered_native_evidence_invalid')
     expected = {
         'version': 1, 'source_key': source['source_key'],
@@ -191,6 +222,17 @@ def validate_record(row, source):
 def media_claim(claim):
     """A native media claim authorizes only its staged candidate, never a crawl."""
     try:
+        from roomquest import openactive, wildlife_trusts, failte_ireland
+        if openactive.enabled(claim):
+            return (claim.get('candidate_only') is True and enabled(claim)
+                    and openactive.evidence_url(claim, claim.get('extraction_url'))
+                    and event_url_matches(claim, claim.get('event_url')))
+        if claim.get('feed_url') in wildlife_trusts.URLS:
+            return (claim.get('candidate_only') is True and enabled(claim)
+                    and claim.get('extraction_url') == claim.get('event_url')
+                    and event_url_matches(claim, claim.get('event_url')))
+        if failte_ireland.is_source(claim.get('feed_url')):
+            return False  # The published CSV has no licensed native image field.
         if (claim.get('candidate_only') is not True or not enabled(claim)
                 or claim.get('extraction_url') != (
                     claim.get('event_url') if html_details(claim) else claim['feed_url'])):

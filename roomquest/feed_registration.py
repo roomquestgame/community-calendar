@@ -6,7 +6,7 @@ from time import monotonic
 from urllib.parse import parse_qs, urldefrag, urljoin, urlsplit
 
 from icalendar import Calendar
-from roomquest import localist_registration, provider_registration
+from roomquest import localist_registration, provider_registration, openactive, wildlife_trusts, failte_ireland
 from roomquest.registration_formats import collection_evidence, probe, scoped_endpoint
 
 from roomquest.preview_worker import PreviewError, fetch_publisher, public_source_url, supabase_rpc
@@ -201,7 +201,7 @@ def recover_html_feed(listing_url, listing_body, deadline):
 
 def verify_html_calendar(listing_url, listing_body, deadline):
     """Probe the exact same linked-detail adapter used by scheduled collection."""
-    from roomquest import registered_html_calendar
+    from roomquest import registered_html_calendar, forestry_england
     from roomquest.registered_native_content import CAPABILITY, HTML_CAPABILITY
     from roomquest.registration_formats import source_key, extraction_hold
 
@@ -219,7 +219,10 @@ def verify_html_calendar(listing_url, listing_body, deadline):
     try:
         records = registered_html_calendar.collect(
             source, fetch_detail, deadline_at=deadline, listing=listing_body)
-        if not records:
+        # A fully checked official Forestry venue calendar remains a reusable
+        # source while empty. Other HTML publishers retain the event-evidence
+        # requirement; failed/incomplete Forestry captures still reach review.
+        if not records and not forestry_england.owns_url(listing_url):
             return review('no_extractable_events', 'html')
         from roomquest.registered_native_content import validate_record
         for row in records:
@@ -252,6 +255,37 @@ def register(ticket):
                                    if target != candidate['url'] else {})
                 if target == liberty_calendar.ORIGINAL:
                     initial_options.update(allowed_hosts=liberty_calendar.ALLOWED_HOSTS, follow_redirects=False)
+                if target in wildlife_trusts.CATALOG_URLS:
+                    return review('national_catalog_requires_regional_sources', 'html'), None
+                if openactive.profile(target) or target in wildlife_trusts.URLS:
+                    # Registration verifies protocol identity and complete RSS
+                    # discovery. It does not publish an RPDE bootstrap/detail
+                    # prefix as a successful event snapshot.
+                    body = fetch(target, ('text/html' if target == openactive.BETTER
+                                         else 'application/json' if openactive.profile(target) else ACCEPT))
+                    family = 'jsonld' if openactive.profile(target) else 'html'
+                    try:
+                        source = {'feed_url': target, 'source_key': source_key(target)}
+                        if family == 'jsonld':
+                            openactive.probe(source, fetch, body=body, deadline_at=deadline)
+                        else:
+                            wildlife_trusts.probe(source, fetch, listing=body, deadline_at=deadline)
+                        return {'p_outcome': 'verified', 'p_endpoint': target, 'p_type': family}, body
+                    except (ValueError, KeyError, TypeError) as exc:
+                        return extraction_hold(family, exc), body
+                if failte_ireland.is_source(target):
+                    body = fetch(target, failte_ireland.ACCEPT)
+                    try:
+                        records = failte_ireland.collect(
+                            failte_ireland.registration_source(), fetch, body=body, deadline_at=deadline)
+                        if records:
+                            return {'p_outcome': 'verified', 'p_endpoint': target, 'p_type': 'jsonld',
+                                    'p_reason': failte_ireland.VERSION}, body
+                        return review('no_extractable_events', 'jsonld'), body
+                    except PreviewError:
+                        raise
+                    except (ValueError, KeyError, TypeError, OverflowError) as exc:
+                        return extraction_hold('jsonld', exc), body
                 adapter = provider_registration.family(target)
                 body = None if adapter else fetch_publisher(
                     target, ACCEPT, respect_robots=True, deadline_at=deadline,

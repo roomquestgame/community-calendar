@@ -1,0 +1,2253 @@
+{
+  "format_version": 1,
+  "captured_date": "2026-11-22",
+  "replay_time_utc": "2026-11-22T22:00:00+00:00",
+  "capture_method": "Public exact observed URLs fetched with EventQuest-research/1.0; no sign-in, inferred URLs, or access failures. Original page bytes/hashes retained in this manifest.",
+  "reduction": "Canonical URL, Drupal body class, H1, complete calendar scope/pagination, Event JSON-LD identity/date/venue/image facts and visible event header retained. Unrelated layout, scripts, assets and all original narrative prose omitted. Event summary/body replaced by explicitly synthetic text, with synthetic schedule notes preserving the original eligibility restriction keywords. Trailing line whitespace normalized.",
+  "calendar_urls": [
+    "https://www.forestryengland.uk/kielder-water-and-forest-park/venue/events-kielder-water-and-forest-park",
+    "https://www.forestryengland.uk/new-forest/venue/events-the-new-forest",
+    "https://www.forestryengland.uk/haughmond-hill/venue/events-haughmond-hill",
+    "https://www.forestryengland.uk/forests-rothbury/venue/events-forests-rothbury",
+    "https://www.forestryengland.uk/guisborough-forest/venue/events-guisborough",
+    "https://www.forestryengland.uk/queen-elizabeth-country-park/venue/events-queen-elizabeth-country-park",
+    "https://www.forestryengland.uk/westonbirt/events",
+    "https://www.forestryengland.uk/beechenhurst/venue/events-beechenhurst",
+    "https://www.forestryengland.uk/haldon-forest-park/venue/events-haldon-forest-park",
+    "https://www.forestryengland.uk/cardinham-woods/venue/events-cardinham-woods",
+    "https://www.forestryengland.uk/thames-chase-forest-centre/venue/events-thames-chase",
+    "https://www.forestryengland.uk/sence-valley/venue/events-sence-valley",
+    "https://www.forestryengland.uk/moors-valley-country-park-and-forest/venue/events-moors-valley-country-park-and-forest",
+    "https://www.forestryengland.uk/drinkwater-park/venue/events-drinkwater-park",
+    "https://www.forestryengland.uk/blackwater/venue/events-blackwater",
+    "https://www.forestryengland.uk/the-old-reptiliary/venue/events-the-old-reptiliary",
+    "https://www.forestryengland.uk/bolderwood/venue/events-bolderwood",
+    "https://www.forestryengland.uk/knightwood-oak/venue/events-knightwood-oak",
+    "https://www.forestryengland.uk/anderwood/venue/events-anderwood",
+    "https://www.forestryengland.uk/whitefield-moor/venue/events-whitefield-moor",
+    "https://www.forestryengland.uk/hatchet-pond/venue/events-hatchet-pond",
+    "https://www.forestryengland.uk/new-park/venue/events-new-park",
+    "https://www.forestryengland.uk/verderers-hall/venue/events-verderers-hall",
+    "https://www.forestryengland.uk/boltons-bench/venue/events-boltons-bench",
+    "https://www.forestryengland.uk/jeskyns-community-woodland/venue/events-jeskyns",
+    "https://www.forestryengland.uk/bedgebury/events",
+    "https://www.forestryengland.uk/rendlesham-forest/venue/events-rendlesham-forest",
+    "https://www.forestryengland.uk/wendover-woods/venue/events-wendover-woods",
+    "https://www.forestryengland.uk/wilverley/venue/events-wilverley",
+    "https://www.forestryengland.uk/fritham-and-eyeworth-pond/venue/events-fritham",
+    "https://www.forestryengland.uk/tilery-road/venue/events-tilery-road",
+    "https://www.forestryengland.uk/beaulieu-road-pony-sale-yard/venue/events-beaulieu-road-pony-sale-yard",
+    "https://www.forestryengland.uk/alice-holt-forest/venue/events-alice-holt",
+    "https://www.forestryengland.uk/cannop-ponds/venue/events-cannop-ponds",
+    "https://www.forestryengland.uk/dalby-forest/venue/events-dalby-forest",
+    "https://www.forestryengland.uk/creech-woods/venue/events-creech-woods",
+    "https://www.forestryengland.uk/high-stand/venue/events-high-stand",
+    "https://www.forestryengland.uk/ennerdale/venue/events-ennerdale",
+    "https://www.forestryengland.uk/viridor-wood/venue/events-viridor-wood",
+    "https://www.forestryengland.uk/colliers-wood/venue/events-colliers-wood",
+    "https://www.forestryengland.uk/abbotts-wood-farnham/venue/events-abbotts-wood-farnham",
+    "https://www.forestryengland.uk/sefton-meadows/venue/events-sefton-meadows",
+    "https://www.forestryengland.uk/horrocks-wood/venue/events-horrocks-wood",
+    "https://www.forestryengland.uk/dimmingsdale/venue/events-dimmingsdale",
+    "https://www.forestryengland.uk/whinlatter-forest/venue/events-whinlatter",
+    "https://www.forestryengland.uk/grizedale/venue/events-grizedale",
+    "https://www.forestryengland.uk/hamsterley-forest/venue/events-hamsterley",
+    "https://www.forestryengland.uk/gisburn-forest-and-stocks/venue/events-gisburn-forest",
+    "https://www.forestryengland.uk/chopwell-wood/events",
+    "https://www.forestryengland.uk/salcey-forest/venue/events-salcey-forest",
+    "https://www.forestryengland.uk/sherwood-pines/venue/events-sherwood-pines",
+    "https://www.forestryengland.uk/friston-forest/venue/events-friston-forest",
+    "https://www.forestryengland.uk/delamere-forest/venue/events-delamere-forest",
+    "https://www.forestryengland.uk/fineshade-wood/venue/events-fineshade-wood",
+    "https://www.forestryengland.uk/west-walk/venue/events-west-walk",
+    "https://www.forestryengland.uk/wyre-forest/venue/events-wyre",
+    "https://www.forestryengland.uk/forest-dean-cycle-centre/venue/events-forest-dean-cycle-centre",
+    "https://www.forestryengland.uk/high-lodge/venue/events-high-lodge",
+    "https://www.forestryengland.uk/mallards-pike/venue/events-mallards-pike",
+    "https://www.forestryengland.uk/hole-farm-woodland/venue/events",
+    "https://www.forestryengland.uk/hicks-lodge/venue/events-hicks-lodge",
+    "https://www.forestryengland.uk/kielder-castle/venue/events-kielder-castle",
+    "https://www.forestryengland.uk/thetford-forest/venue/events-thetford-forest",
+    "https://www.forestryengland.uk/lynford-stag/venue/events-lynford-stag",
+    "https://www.forestryengland.uk/cannock-chase-forest/venue/events-cannock-chase-forest",
+    "https://www.forestryengland.uk/node/4636"
+  ],
+  "pages": [
+    {
+      "url": "https://www.forestryengland.uk/kielder-water-and-forest-park/venue/events-kielder-water-and-forest-park",
+      "file": "calendar-48c5fc427c25a89b.html",
+      "kind": "calendar",
+      "original_sha256": "8b8dd41cd41fb5d220e7a57b17667c58e3b441e378495514e4594bdd4034458b",
+      "original_bytes": 566615,
+      "fixture_sha256": "63054525e00fc0a4d4a282b63bd160a2e1400bd2173322cfa79084348cd0bbcd",
+      "fixture_bytes": 648,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/new-forest/venue/events-the-new-forest",
+      "file": "calendar-26b5e75da3e7809b.html",
+      "kind": "calendar",
+      "original_sha256": "fdd62b821044bc30c46f7cde1488ec0670afcbaf1160ec33678ef5c162f19aa7",
+      "original_bytes": 567926,
+      "fixture_sha256": "5214983fecd792d7a177e878b1e359e23ce8eb06e103b7d4ae62622ea23192a0",
+      "fixture_bytes": 434,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/haughmond-hill/venue/events-haughmond-hill",
+      "file": "calendar-d103fd679b64a55e.html",
+      "kind": "calendar",
+      "original_sha256": "93f54cfadaeb8c0017b9a8cb40922b6559fe8d8993d60ec0cc7516ef003b5b0c",
+      "original_bytes": 568847,
+      "fixture_sha256": "11d335ab45f3e782ac92738b510878b66c1e08a4a2f76896e8178c1b9c93e398",
+      "fixture_bytes": 603,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/forests-rothbury/venue/events-forests-rothbury",
+      "file": "calendar-1086923a699690a9.html",
+      "kind": "calendar",
+      "original_sha256": "9df944ecac72127132eca71ad707ec9ab5e7d0b6f89a06cb2c6f6bfe91ca6858",
+      "original_bytes": 566759,
+      "fixture_sha256": "305d27e2f4b6a97d676aa38f3df3277e6b42878cd6c9109ad2f033fa20403dd3",
+      "fixture_bytes": 612,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/guisborough-forest/venue/events-guisborough",
+      "file": "calendar-4351cde350143dd6.html",
+      "kind": "calendar",
+      "original_sha256": "da051ffac0fd8dd7aafa655600f4e2e37055e29f834bce90b000b9731c8319e2",
+      "original_bytes": 566710,
+      "fixture_sha256": "91bf9d6bd4543b7cb9b21bfea192f8726212eaf09daa4af9c361faa16497ef4f",
+      "fixture_bytes": 601,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/queen-elizabeth-country-park/venue/events-queen-elizabeth-country-park",
+      "file": "calendar-97f3ee44d680db72.html",
+      "kind": "calendar",
+      "original_sha256": "5ba70378a2733d87bbacda013c4a50ca3c07987e5a9f64c7cda0491f6118d773",
+      "original_bytes": 567347,
+      "fixture_sha256": "bd16ee575a26cbb9982c6e0eaef2908d30ea807fda16b45569dc179d2a68e859",
+      "fixture_bytes": 645,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/westonbirt/events",
+      "file": "calendar-c83eaa7632ed0eb8.html",
+      "kind": "calendar",
+      "original_sha256": "8e5d5845a60cdddf03ef8d87f63dae523b94189123c233549a59f3f2037e2b81",
+      "original_bytes": 586251,
+      "fixture_sha256": "ec105e1e92478b0c7d1d9a7e8713517fedd35bcfc80df393234f7e4815579b05",
+      "fixture_bytes": 12672,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/beechenhurst/venue/events-beechenhurst",
+      "file": "calendar-223c252a43ca3b52.html",
+      "kind": "calendar",
+      "original_sha256": "b29a630e57849a553fd226a8db9a31c6165bc88f0d3c86e65d83751577d46f83",
+      "original_bytes": 569156,
+      "fixture_sha256": "ef8eee9fe8106e0778e918523ae0bb9e16bde638161219153e04bef3142ebec2",
+      "fixture_bytes": 2586,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/haldon-forest-park/venue/events-haldon-forest-park",
+      "file": "calendar-0f7e2309151af985.html",
+      "kind": "calendar",
+      "original_sha256": "d1887028d92d2e43383de35eeacc1944e66e6122dc9341142a6ef3d4d47ddd66",
+      "original_bytes": 579311,
+      "fixture_sha256": "c24404ca8f06b070cbe41cc6084bf77a028e97e4a226f832cfbf463511f46734",
+      "fixture_bytes": 9829,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/cardinham-woods/venue/events-cardinham-woods",
+      "file": "calendar-fc676158861e8717.html",
+      "kind": "calendar",
+      "original_sha256": "484c183453a51c7fe2e51670763566493874b41af6660bae87efda8fbf23ebcf",
+      "original_bytes": 567832,
+      "fixture_sha256": "21567f951938625ab23ae0ad070e58207946f16cba56700f371213701718bb12",
+      "fixture_bytes": 1693,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/thames-chase-forest-centre/venue/events-thames-chase",
+      "file": "calendar-76e27b5578a50cf1.html",
+      "kind": "calendar",
+      "original_sha256": "53accfd0723f09d0dadc1fb6b4ca6257c87a83f0c075de300ff01093db907ef2",
+      "original_bytes": 566563,
+      "fixture_sha256": "f13d8138e2efa35f0a710af36fffe880063c7e43807e31dcfeff59abc98d66ac",
+      "fixture_bytes": 612,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/sence-valley/venue/events-sence-valley",
+      "file": "calendar-01dbcb1524292e07.html",
+      "kind": "calendar",
+      "original_sha256": "d96d7ede6e34bdcd50a05715b08b9d589031acb9fe70002f3cde6d69fd148838",
+      "original_bytes": 566290,
+      "fixture_sha256": "4248ef4f73d7b6d2807e3e14deb93323ea1d98ff7057dccfdcadfd13155efae6",
+      "fixture_bytes": 597,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/moors-valley-country-park-and-forest/venue/events-moors-valley-country-park-and-forest",
+      "file": "calendar-a223a61ff5a1278f.html",
+      "kind": "calendar",
+      "original_sha256": "aff0bab0cd873c5752f33963e10ba2813a91ea726f59d111bb09c41a364b9489",
+      "original_bytes": 568600,
+      "fixture_sha256": "4f96047a37fc28c3536b152bfcc7b5bf77153ea37a7347ae2c7af55c9aeb5178",
+      "fixture_bytes": 1743,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/drinkwater-park/venue/events-drinkwater-park",
+      "file": "calendar-37ba761ad8bcc831.html",
+      "kind": "calendar",
+      "original_sha256": "717c268ba1fadc476419289b9ead5a0f18d626b7f53508bceba13ffa09c96a9f",
+      "original_bytes": 566263,
+      "fixture_sha256": "401c19e12615911a777621bec1909fc28583570cee42d99b180f6e8c1c0a49ab",
+      "fixture_bytes": 607,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/blackwater/venue/events-blackwater",
+      "file": "calendar-05ffce8df010f083.html",
+      "kind": "calendar",
+      "original_sha256": "112f7db86392f1afef87ff1b90abe8e8660c732b0ac1d565528042bd1ab3015b",
+      "original_bytes": 565497,
+      "fixture_sha256": "861a415576b7282e6a6f64ad24d21ce00ef0adc8dbb9d8f30096ba561eaf54a2",
+      "fixture_bytes": 591,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/the-old-reptiliary/venue/events-the-old-reptiliary",
+      "file": "calendar-bc39216a88cb80e4.html",
+      "kind": "calendar",
+      "original_sha256": "c5c4d673d863c34146c02972fb9a3a02ef2017ca21aa6a7cec1eb09ad19a5641",
+      "original_bytes": 565926,
+      "fixture_sha256": "39b786d525120e1280b3fd1edf4ab9157684655bc08635fbd685c1b9bc759210",
+      "fixture_bytes": 615,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/bolderwood/venue/events-bolderwood",
+      "file": "calendar-69394e285b382fe5.html",
+      "kind": "calendar",
+      "original_sha256": "1961884fec2032b0c7a6d6e9081fdeb8b7883fea14e4392c950095e63fb1a1a1",
+      "original_bytes": 565642,
+      "fixture_sha256": "4044aac10760366381e1a39d9968adc45b0399488a772fe67d5b388edd1f6881",
+      "fixture_bytes": 591,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/knightwood-oak/venue/events-knightwood-oak",
+      "file": "calendar-162a6fce7dbc442a.html",
+      "kind": "calendar",
+      "original_sha256": "1ee855c368dd0d39c8e1788d6bb47d40b4fc0f800d3395d47f6910138fd5be73",
+      "original_bytes": 565452,
+      "fixture_sha256": "a008efb0db41dfe2977a0a46787c44823a9c00af6c314ef4832894084b59fb27",
+      "fixture_bytes": 603,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/anderwood/venue/events-anderwood",
+      "file": "calendar-d11c56c775789eef.html",
+      "kind": "calendar",
+      "original_sha256": "e833c3cdbc76dc605896a34edf4065eddd98a2e9573a5e531bf531279fb0271e",
+      "original_bytes": 565435,
+      "fixture_sha256": "db4036506a8bd53d5ea239659651b9613218825ad92f23d0ba70e6525b34b9e5",
+      "fixture_bytes": 588,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/whitefield-moor/venue/events-whitefield-moor",
+      "file": "calendar-ea2a772b3c868e09.html",
+      "kind": "calendar",
+      "original_sha256": "f23b1647e7f399f59e64e7193e5cddc697a0606b302216c69f56b6408f395263",
+      "original_bytes": 565691,
+      "fixture_sha256": "def631ec9da4ce70e92b82014bc9ed183a7c7f1e98b01bf96c6ed12f301ca0b9",
+      "fixture_bytes": 606,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/hatchet-pond/venue/events-hatchet-pond",
+      "file": "calendar-55566d6f359d1a03.html",
+      "kind": "calendar",
+      "original_sha256": "73bb74ba7f462e09717921d16d0bf11561813b955af35fd82a72a2589fbcaa89",
+      "original_bytes": 565594,
+      "fixture_sha256": "700b2ad46ea37428893dd97e22601fd7f32c25942427c6d89ee9bdaf77bfb712",
+      "fixture_bytes": 597,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/new-park/venue/events-new-park",
+      "file": "calendar-1d840bf3ec8a3c07.html",
+      "kind": "calendar",
+      "original_sha256": "01ce47cb516ed4a6f6b8959a3274f54dc2d619e4000b6d2c7a54aecc241ca980",
+      "original_bytes": 565676,
+      "fixture_sha256": "00a9dcbb480c8ded149b1e84d5c862740e4016ccbf948dc8ed87e8519b707678",
+      "fixture_bytes": 585,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/verderers-hall/venue/events-verderers-hall",
+      "file": "calendar-f9655c2ad3dfdf30.html",
+      "kind": "calendar",
+      "original_sha256": "e551b89b3d6c03c3ac86e7b511c5add1003ed1abcf61af4ec97a67c90785db89",
+      "original_bytes": 565622,
+      "fixture_sha256": "90b487e093696c1c87e60a02bf3b0ebabfbb6134a01322c7b4c5a833af444c01",
+      "fixture_bytes": 606,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/boltons-bench/venue/events-boltons-bench",
+      "file": "calendar-280b8c65d0680fc9.html",
+      "kind": "calendar",
+      "original_sha256": "0e72e3383b578869a5029df29c3e1e5c8a2c5c87f8904f57c59670f25ab04d11",
+      "original_bytes": 565736,
+      "fixture_sha256": "602ca7e7d152b37b1e98867921bbaedc17db78f32534effa09d4d7e4e6a8206f",
+      "fixture_bytes": 601,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/jeskyns-community-woodland/venue/events-jeskyns",
+      "file": "calendar-0a568d9cdc6f6e11.html",
+      "kind": "calendar",
+      "original_sha256": "ded912177e4450dd5da9022d6b2869f5ccfc1e0180d74402dbcc533cc200cf7d",
+      "original_bytes": 572044,
+      "fixture_sha256": "5a36f65eb7bbb1be7c92567da3e0c98444c87a55baf2a81293f1019bd77dc800",
+      "fixture_bytes": 4558,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/bedgebury/events",
+      "file": "calendar-60328f7d02573347.html",
+      "kind": "calendar",
+      "original_sha256": "974b9057c3fc206014cb03ae123ecf4a543faec4a380470274f1d03d3e13e5e2",
+      "original_bytes": 586797,
+      "fixture_sha256": "6885bc6090990a2ba074d71511b9b70f3ec3804b447050084c5f6a0eaf45e8ad",
+      "fixture_bytes": 13228,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/rendlesham-forest/venue/events-rendlesham-forest",
+      "file": "calendar-6b551ce6d469f743.html",
+      "kind": "calendar",
+      "original_sha256": "24b25773e91bec83e4e2193b648e92b195186cf14004649e176f71831a753738",
+      "original_bytes": 566822,
+      "fixture_sha256": "64fef21f8261764d154128dd9ecf6bc98ab3df3057d093b72c492ec889f18f83",
+      "fixture_bytes": 612,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/wendover-woods/venue/events-wendover-woods",
+      "file": "calendar-3c84c711c02637d7.html",
+      "kind": "calendar",
+      "original_sha256": "16ec6b96ff56818fc5e191c270d11772ddd7b9f656b2ba3266bfaea3255062af",
+      "original_bytes": 568541,
+      "fixture_sha256": "2d4216f7f98a4474b5b66a0f15fa51b7c402213fac4e81e4f3d3cd33e4d7e4e3",
+      "fixture_bytes": 2862,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/wilverley/venue/events-wilverley",
+      "file": "calendar-37e282e5c5648e53.html",
+      "kind": "calendar",
+      "original_sha256": "68a6c38567f5b2e15cfc685adaf59a84778b2990b52b5959182f6505338dfee7",
+      "original_bytes": 565393,
+      "fixture_sha256": "45ec6b245a62da94aea30f47d5001297ec51a2bdb404697bbb294b34e31fbe68",
+      "fixture_bytes": 588,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/fritham-and-eyeworth-pond/venue/events-fritham",
+      "file": "calendar-ed9427294153a567.html",
+      "kind": "calendar",
+      "original_sha256": "d66664f42e0fd7685c28fcc0c2776ce83394e1afd4d7c58e454c0ea70e2ced4c",
+      "original_bytes": 565211,
+      "fixture_sha256": "1d24910ff86296472a2be1b83bc956e440a8d16135a4538020863877e779ebc5",
+      "fixture_bytes": 600,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/tilery-road/venue/events-tilery-road",
+      "file": "calendar-c07fa56774973646.html",
+      "kind": "calendar",
+      "original_sha256": "e4ef5a1725d6dbc2c1651a3cd9d21ce20bc6550039ae9ce3234a5eb8e37bb3a3",
+      "original_bytes": 565574,
+      "fixture_sha256": "b6539bae3e692ded6f688a346727b43fbb0e04abcca603655563357af321f198",
+      "fixture_bytes": 594,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/beaulieu-road-pony-sale-yard/venue/events-beaulieu-road-pony-sale-yard",
+      "file": "calendar-6742556278d5ee4e.html",
+      "kind": "calendar",
+      "original_sha256": "bbb53eb84a9236451d24938560b30abf83754893cc50fd6ad7e6151a505bf7e2",
+      "original_bytes": 566264,
+      "fixture_sha256": "f8af73b948013b0aff2abc282d244c87a4e841bec4f76d7383f3573225fe2ac4",
+      "fixture_bytes": 645,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/alice-holt-forest/venue/events-alice-holt",
+      "file": "calendar-b2816cfeb508cbd0.html",
+      "kind": "calendar",
+      "original_sha256": "9128e7701750bc6130ec3c8fe9442a9ffadb9559993a68861a3e0099b555c7fe",
+      "original_bytes": 565482,
+      "fixture_sha256": "769543847f5c40a36d77f1ed9fc86f3176dc8a8ad22548c9a9a6f3c866d35766",
+      "fixture_bytes": 1608,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/cannop-ponds/venue/events-cannop-ponds",
+      "file": "calendar-19da630788498098.html",
+      "kind": "calendar",
+      "original_sha256": "cf5b2921f7643ded65aa3e7b4d2e60618a727c7b89cb8d88dc63e71067eedb98",
+      "original_bytes": 564385,
+      "fixture_sha256": "2dc8d565d2956101d5643fbde161ee4a31c18591790ea7224de4d87a6cdc0ad4",
+      "fixture_bytes": 597,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/dalby-forest/venue/events-dalby-forest",
+      "file": "calendar-b81535821fd499fa.html",
+      "kind": "calendar",
+      "original_sha256": "e9e00952f3ed4c01127c6759656c71975234d5c86325f3af22ec0d623b34fceb",
+      "original_bytes": 580140,
+      "fixture_sha256": "828ffadb55367b8415f5ac43f9a788ce5e5b6851cc2ce86ff9a22003a95f7470",
+      "fixture_bytes": 9762,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/creech-woods/venue/events-creech-woods",
+      "file": "calendar-0a3811b7e551b609.html",
+      "kind": "calendar",
+      "original_sha256": "a2f0f632c57b9cccb39261664269adfc78c39fda918b006a5b268ac3ffd9d0d5",
+      "original_bytes": 563679,
+      "fixture_sha256": "e54a4da5bb4826f8d6130a8ad6b8682930505bb94a1b30e45027bf8a4a9f70cc",
+      "fixture_bytes": 597,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/high-stand/venue/events-high-stand",
+      "file": "calendar-5f2e65beb051d8eb.html",
+      "kind": "calendar",
+      "original_sha256": "0e79f168242d4c1ef027051a2c04df55d66f61fb3ff0dc81c61d40bee91d652f",
+      "original_bytes": 564400,
+      "fixture_sha256": "cb38d3d3d406bbfde9a5f004396cbcb87affb3010c94d80b770870de25bc90fa",
+      "fixture_bytes": 591,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/ennerdale/venue/events-ennerdale",
+      "file": "calendar-611c5262a3979115.html",
+      "kind": "calendar",
+      "original_sha256": "50c7a78708effe6d0ee098219d70b7499c54b01ee93394a80a6aa26d3d3dc75f",
+      "original_bytes": 564310,
+      "fixture_sha256": "f9c58440c05fb8f5d2d7a4e0c65ef837d2560fb2be495d83ed9f83088a0d8e94",
+      "fixture_bytes": 588,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/viridor-wood/venue/events-viridor-wood",
+      "file": "calendar-971ae4ed09e8ddc7.html",
+      "kind": "calendar",
+      "original_sha256": "214920bcb450f816dd43c0e27d28fb745948d9295c8df147431bcfb21e296b36",
+      "original_bytes": 562532,
+      "fixture_sha256": "7b0afa4cc0e2a5dee5331cba6af8d876f5a94b5ea9837ab73ad6fadb31a78d5d",
+      "fixture_bytes": 597,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/colliers-wood/venue/events-colliers-wood",
+      "file": "calendar-9e3e77f219b022f3.html",
+      "kind": "calendar",
+      "original_sha256": "f01107e92d2285cbccb0dcf5dce4f1a8d4ba7e9e19c6b9793f8263f2abef1476",
+      "original_bytes": 563242,
+      "fixture_sha256": "1c76d7e1212ab78c205caca7cb50eb95ede0ed48575dd2f0378ec7eb6295d533",
+      "fixture_bytes": 600,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/abbotts-wood-farnham/venue/events-abbotts-wood-farnham",
+      "file": "calendar-045f878038057f4a.html",
+      "kind": "calendar",
+      "original_sha256": "cc81574efe3f55ba799b206eb9362fb5ceb08b6f4c7b9cd5f87e4d8b0e1751a3",
+      "original_bytes": 565021,
+      "fixture_sha256": "6bda4408e21101660181d360bdb4406b00938347d99b67a82434ac5427893aa0",
+      "fixture_bytes": 623,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/sefton-meadows/venue/events-sefton-meadows",
+      "file": "calendar-b834560fdd7414a9.html",
+      "kind": "calendar",
+      "original_sha256": "5acc1794486c01667144ef9df27a2899e2e698a16ac0de958d23554618902884",
+      "original_bytes": 566217,
+      "fixture_sha256": "c2c490b3187bc44d457a9d01ca3588a9d358970a2870741e3f80cdd075a64320",
+      "fixture_bytes": 603,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/horrocks-wood/venue/events-horrocks-wood",
+      "file": "calendar-a2520d0e838e4d1f.html",
+      "kind": "calendar",
+      "original_sha256": "f824f5704621f5ad741f22e0ff2ce73136ff07dbbcdcff41cafb4d07ccee9af9",
+      "original_bytes": 565494,
+      "fixture_sha256": "4c79083b76dcb30ebae0728edbcf5a2292cf0162282b9460f9f31d6dbe3b899b",
+      "fixture_bytes": 600,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/dimmingsdale/venue/events-dimmingsdale",
+      "file": "calendar-3bc703b152873eb3.html",
+      "kind": "calendar",
+      "original_sha256": "838344692c51c1b53126050ae0227890f45f51e5db496ffd4e143f7fa8c85e05",
+      "original_bytes": 565904,
+      "fixture_sha256": "9af43a76536acc6021a37b55860af4229d3c40a6736b1c98b9b54ad8a422e340",
+      "fixture_bytes": 598,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/whinlatter-forest/venue/events-whinlatter",
+      "file": "calendar-0879a37f2f3081e0.html",
+      "kind": "calendar",
+      "original_sha256": "1501da9095b0ef32d80347af0b40231324d11b98f30d95226047ed3ba838ea4c",
+      "original_bytes": 575954,
+      "fixture_sha256": "e4e6c7bde35e8b093b97ce36359f85ca0c37501cc12e3576be158ddc0f2d57d0",
+      "fixture_bytes": 5957,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/grizedale/venue/events-grizedale",
+      "file": "calendar-c07378df2f4b6bfe.html",
+      "kind": "calendar",
+      "original_sha256": "ac57a2db7c8fb1b602a4e5e597418350d94c49761b5bdf74cfed751fb4526770",
+      "original_bytes": 571013,
+      "fixture_sha256": "d0e833d81513d2c15ecad2df67b89d0fa830cbeaadcf1bb3deef933f06362ad2",
+      "fixture_bytes": 4128,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/hamsterley-forest/venue/events-hamsterley",
+      "file": "calendar-4547725dcbad9588.html",
+      "kind": "calendar",
+      "original_sha256": "3feb886d9744cb2ef8c4abd89e7e8a235c03294a37ef6d08547ce5b70271c0cc",
+      "original_bytes": 571051,
+      "fixture_sha256": "75b77b31d9830aad7a751de6cad8c23ecb0e7db0e7d03c0485d197a37c603ff6",
+      "fixture_bytes": 2731,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/gisburn-forest-and-stocks/venue/events-gisburn-forest",
+      "file": "calendar-fc9db922f47937fe.html",
+      "kind": "calendar",
+      "original_sha256": "8833e7d71d64eb7c41cca5c89f97dfc3c42870aa212e932c1d455a03777fc912",
+      "original_bytes": 566495,
+      "fixture_sha256": "613e197dc18d3b4409104798b6a2a9ca09785e6cc76eb801f80c96e85ca019c5",
+      "fixture_bytes": 614,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/chopwell-wood/events",
+      "file": "calendar-867f5b523a2c758d.html",
+      "kind": "calendar",
+      "original_sha256": "535219e0ebd3f708a9eb128dbf01cb29fe7589b97fc6855d826f6c0675715af3",
+      "original_bytes": 566469,
+      "fixture_sha256": "d5bdf265a9d60932d47712012c71f638d8543b3fc3f00af69976751ce42e9426",
+      "fixture_bytes": 580,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/salcey-forest/venue/events-salcey-forest",
+      "file": "calendar-dfae8958f0b1c3de.html",
+      "kind": "calendar",
+      "original_sha256": "4218c8eb4770d29e1f9bb19d6e471c820f9e2b797b17687e374d5e94a6c21903",
+      "original_bytes": 577712,
+      "fixture_sha256": "2661978eb922b1d5839096701bcd08736cfc16004708278ed6554e20fa6d7059",
+      "fixture_bytes": 8508,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/sherwood-pines/venue/events-sherwood-pines",
+      "file": "calendar-f6ebf557f95e0394.html",
+      "kind": "calendar",
+      "original_sha256": "2d071b705d2ab62f957daec5f2cdab47c8732d9c26e23516eb9dd83f42d7b11d",
+      "original_bytes": 573587,
+      "fixture_sha256": "7c0783fe25c18173183d2657c0ba64e2c6b758b58dfa29df9c86f0a7e4b9f120",
+      "fixture_bytes": 1739,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/friston-forest/venue/events-friston-forest",
+      "file": "calendar-8940406e6651cd62.html",
+      "kind": "calendar",
+      "original_sha256": "d3ce71d5b804194b399b6024cc2cf298f3c793019473ee03469602a8f464a4a3",
+      "original_bytes": 562689,
+      "fixture_sha256": "b743360cc350b22557cf70aa0485fac5063610aa6a457b8bb15907bf5d084f59",
+      "fixture_bytes": 603,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/delamere-forest/venue/events-delamere-forest",
+      "file": "calendar-d88e19c318532c1b.html",
+      "kind": "calendar",
+      "original_sha256": "68da68bf8372accbbbbfe26a2ef0be2c6cc120b93571cf90aef307bfc1f0d589",
+      "original_bytes": 578305,
+      "fixture_sha256": "e58a93d34ad5d246115ed7b5cc200e919bdb0740e01172951471d3e8ceec6575",
+      "fixture_bytes": 7936,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/fineshade-wood/venue/events-fineshade-wood",
+      "file": "calendar-c0f23b44f0af2cdf.html",
+      "kind": "calendar",
+      "original_sha256": "ed72b058f18c0f2b152e2199c14e403753a3ba4088db15e901a1dca5e213b32c",
+      "original_bytes": 567754,
+      "fixture_sha256": "1076ada93fbe8558cc541efbebd188035eae9263c83511b578b7aae17d78bd9f",
+      "fixture_bytes": 603,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/west-walk/venue/events-west-walk",
+      "file": "calendar-75c1ff896d493ba1.html",
+      "kind": "calendar",
+      "original_sha256": "39ce2d869aa78643875315f240c1362d73fcfdc10a9ba69db76b49fa99d6eb1d",
+      "original_bytes": 565964,
+      "fixture_sha256": "5ca4125818cbab8461af4a3c702cb9367b35190ffd5e5310dc99a790e2a9cef5",
+      "fixture_bytes": 588,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/wyre-forest/venue/events-wyre",
+      "file": "calendar-e8d286902dd98558.html",
+      "kind": "calendar",
+      "original_sha256": "f18205c0bfd0be3bce9e59b04665e3f38a566853cee9701fb9b3bd449450b6f1",
+      "original_bytes": 573268,
+      "fixture_sha256": "21c886e9666abbe7e408848ed4c918f51d5adaaf76232c1a2e1cacc22c39cdee",
+      "fixture_bytes": 4144,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-dean-cycle-centre/venue/events-forest-dean-cycle-centre",
+      "file": "calendar-758633995eb31c1a.html",
+      "kind": "calendar",
+      "original_sha256": "d6c6b610a32b294099bcff3b7e22b33216c0c9bdea8f6329dfe9dad47110a448",
+      "original_bytes": 569310,
+      "fixture_sha256": "1e61613449ee1a3102dd937f1859645b691d9754c4c9aa45c17cb8d56356846c",
+      "fixture_bytes": 2437,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/high-lodge/venue/events-high-lodge",
+      "file": "calendar-187440bf3cdb727f.html",
+      "kind": "calendar",
+      "original_sha256": "ce9c356fae18b5fbfdde0f2c33869347a75548ccfe32aa8379ed04be0aee7058",
+      "original_bytes": 584162,
+      "fixture_sha256": "c655541df72796a0b2df5e5d21ef3eb53f21d02925b441c0b65eb1fe7ff6321b",
+      "fixture_bytes": 12033,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/mallards-pike/venue/events-mallards-pike",
+      "file": "calendar-c353fc66e120b21e.html",
+      "kind": "calendar",
+      "original_sha256": "b11d6fc957d45b1f85f9df70309fdab9811fc145a39c069b3906d1cea551dbb7",
+      "original_bytes": 568968,
+      "fixture_sha256": "b8ff23431fcfe93270ce33d48543b7573d8b19f051ef5e5bd9ec7bda5f07ec82",
+      "fixture_bytes": 1761,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/hole-farm-woodland/venue/events",
+      "file": "calendar-b49becdfe9fea8d8.html",
+      "kind": "calendar",
+      "original_sha256": "b354e1acb38e8cab91609bd3a5a5bb2adfdf2e2d1ebcb8d9e3b7988c61a270a4",
+      "original_bytes": 568228,
+      "fixture_sha256": "5aa95eb315ea518b9da3c164b0c8f0a43f0ae8df603f7a3e2c8dc5145394e255",
+      "fixture_bytes": 1785,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/hicks-lodge/venue/events-hicks-lodge",
+      "file": "calendar-5acc8c6ab57e719f.html",
+      "kind": "calendar",
+      "original_sha256": "1935ef57cf710da580eb9c8f69e7f4c0f2d3a0cd1dd9f559f32f54e66c96c3f5",
+      "original_bytes": 570225,
+      "fixture_sha256": "294b54fd486b0720f9cdfe8fb0a40d03c456a10b485f3fe323c4e319fd2e3201",
+      "fixture_bytes": 3633,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/kielder-castle/venue/events-kielder-castle",
+      "file": "calendar-ad80b167414b53af.html",
+      "kind": "calendar",
+      "original_sha256": "7417f327086fe4ded09960d5be09c7ca8f6b521b21433e460925d3a334efff74",
+      "original_bytes": 566336,
+      "fixture_sha256": "5bd1a8f3c5c16b7332037880834489bea7cb8f511a4ab11967b32abf1f0ca369",
+      "fixture_bytes": 603,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/thetford-forest/venue/events-thetford-forest",
+      "file": "calendar-6796a8eebfe7cc07.html",
+      "kind": "calendar",
+      "original_sha256": "bea66c2a2af9a21a32b6f9e124193c5004c260faa9c71fbaa55f746974997217",
+      "original_bytes": 567233,
+      "fixture_sha256": "fe5b95e6198e04211c59d0edbfeeea43bd584612c891fe7f5d1943773ac55519",
+      "fixture_bytes": 595,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/lynford-stag/venue/events-lynford-stag",
+      "file": "calendar-dda717d96365fa8a.html",
+      "kind": "calendar",
+      "original_sha256": "82fcdca2e560e9da5f1528cbc6e1331d9e56ce57ada7f9fb42a19f0a586f2719",
+      "original_bytes": 565932,
+      "fixture_sha256": "20ad20b241845ba041c30e55fd655c0368ebc5ab8fc6e87d16e789fd3edafd5f",
+      "fixture_bytes": 597,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/cannock-chase-forest/venue/events-cannock-chase-forest",
+      "file": "calendar-1401c346be60eb2b.html",
+      "kind": "calendar",
+      "original_sha256": "2583ffe3150a0c9657412039f0e20c49a245f5ee88436d9a2aaa25777f60adf2",
+      "original_bytes": 579837,
+      "fixture_sha256": "4f56e09c6d00a750d83f28907284f6d15d6c259de81eb9e340b794901ba63f19",
+      "fixture_bytes": 8374,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/bedgebury/events?page=1",
+      "file": "calendar-8a5655d82b11806a.html",
+      "kind": "calendar",
+      "original_sha256": "66e83f1a1990a1df10c26eb16fc879a72a05d8bd82b6c6bc00f0ce77f479cfc3",
+      "original_bytes": 573739,
+      "fixture_sha256": "cdd8889bd01693b6eff3eb65f1600a1a154cfa9503cece7388c3c7b9085667f0",
+      "fixture_bytes": 3885,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/node/4636",
+      "file": "calendar-1c7d4a16cbbebba5.html",
+      "kind": "calendar",
+      "original_sha256": "e69fb65d6b816839357816dd541874b6f947c5eb8278e3247d9116ec797f2fee",
+      "original_bytes": 567482,
+      "fixture_sha256": "ecc388e28d99d636ea93010c450a2c78067a1a72f44eb28cd24525c730a5ab80",
+      "fixture_bytes": 1728,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/westonbirt/events?page=1",
+      "file": "calendar-bed8ce30d79cd5e9.html",
+      "kind": "calendar",
+      "original_sha256": "62f5652772d984eab251d45c349815a7c6bba5af6df5354400ac51b82be48747",
+      "original_bytes": 95136,
+      "fixture_sha256": "15993af3b7328f6ee516bbd0f1eaa8efbc9c7feb49a2075f49d16c1fd1673137",
+      "fixture_bytes": 14438,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/westonbirt/events?page=2",
+      "file": "calendar-d0d91dd612d6670c.html",
+      "kind": "calendar",
+      "original_sha256": "cedfcb5bc504ee5937923f540fc5feebe30e6408a8419f4822b0e7f63b9a8d50",
+      "original_bytes": 95368,
+      "fixture_sha256": "e1687f148470082ff48d6e1790438c3a57511245299eb21420c92711403d054b",
+      "fixture_bytes": 14196,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/westonbirt/events?page=3",
+      "file": "calendar-715824dbd9993733.html",
+      "kind": "calendar",
+      "original_sha256": "17ad8805e73838594f8d5617cb71d84eecca833864edd27ef1b9c8391aa8b802",
+      "original_bytes": 79716,
+      "fixture_sha256": "72cbfcc7966289c3fcbc352c5cdfba000561fa3d985a9d6f197e5cbdc654be4d",
+      "fixture_bytes": 3379,
+      "native_summary_original_chars": []
+    },
+    {
+      "url": "https://www.forestryengland.uk/bedgebury/christmas",
+      "file": "detail-a0afc2b4dc848e97.html",
+      "kind": "detail",
+      "original_sha256": "4dfdc0b05af4ed06a105f05f07249e95993080bd1f6ef8c32650ec67fea4067b",
+      "original_bytes": 606015,
+      "fixture_sha256": "73c46fbf689b525c5228b2209bdad4f3605185486e73051ec08ff6b723c89d5c",
+      "fixture_bytes": 3056,
+      "native_summary_original_chars": [
+        379
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/delamere-six",
+      "file": "detail-d6328cfcc697d23b.html",
+      "kind": "detail",
+      "original_sha256": "8fa48c39f7be1dcbe831eb6fcac5269d4f45adf8d35d58b6dbda2f8b0c10bcff",
+      "original_bytes": 580488,
+      "fixture_sha256": "94bb426a4f897cb82432b566167beccade5908fc032a571a0492bc2743b17983",
+      "fixture_bytes": 2354,
+      "native_summary_original_chars": [
+        405
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-alice-holt/this-woman-runs-alice-holt-forest",
+      "file": "detail-7f4b0e0f9e0013f1.html",
+      "kind": "detail",
+      "original_sha256": "2d2d74ed34b9aa83b514cb9b4d24cb027dd90d74916c7200305cd99bb9ab5dfc",
+      "original_bytes": 574303,
+      "fixture_sha256": "a9ef4f7c374b9b11e07ce925a42dc4c435e130cfaf71aa3de628cfeafcea6d60",
+      "fixture_bytes": 2835,
+      "native_summary_original_chars": [
+        459
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-bedgebury-national-pinetum-and-forest/ninas-dog-training-club",
+      "file": "detail-76b0076f36411e19.html",
+      "kind": "detail",
+      "original_sha256": "fd82cbab9c25fc4fcc525619dd7e13bb8aac4ff9761cc882a1e99961e0878531",
+      "original_bytes": 575314,
+      "fixture_sha256": "a730d9a4da74ec70d959730b0a0b8d0346c4c03de14e9447ba60259a6fe29b09",
+      "fixture_bytes": 3135,
+      "native_summary_original_chars": [
+        484
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-bedgebury/bedgebury-forest-half-marathon-and-10k",
+      "file": "detail-49941cd435d6ad4b.html",
+      "kind": "detail",
+      "original_sha256": "48bd6d322db32d514a65b323e656a2be1d282062ba266a1e7430896553126ae3",
+      "original_bytes": 571742,
+      "fixture_sha256": "ff05e4dfbac4d8ea111d873204e9d7db560e6e09224fc4fd4ef5d772cdee9e8e",
+      "fixture_bytes": 2652,
+      "native_summary_original_chars": [
+        510
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-bedgebury/behind-the-trees-guided-walk",
+      "file": "detail-6ddceb47abdf33e2.html",
+      "kind": "detail",
+      "original_sha256": "2458bbea6cfebf36e4108645bd032217af514a075850cb463a462ec5da30fe2f",
+      "original_bytes": 577061,
+      "fixture_sha256": "72b6a4328660f6e87de8a4295bf10f19e82ef56d4be5ae2a74b0d8fe50d14672",
+      "fixture_bytes": 3083,
+      "native_summary_original_chars": [
+        177
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-bedgebury/guided-walks",
+      "file": "detail-7e563beef557675e.html",
+      "kind": "detail",
+      "original_sha256": "5a6269f784fe7e3c53e286b6ff3818a631e9e4ab008c371c263bf6eb36186386",
+      "original_bytes": 575722,
+      "fixture_sha256": "4a5fadbb7bd8242511f48ac4725bd3288e9300fe5e556cb8ab0c5f9020f7393a",
+      "fixture_bytes": 2552,
+      "native_summary_original_chars": [
+        352
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-bedgebury/mantrailing-foundation-course",
+      "file": "detail-a7d61c33708a97a4.html",
+      "kind": "detail",
+      "original_sha256": "0a0f046aba5514d4b3a487f76103cd6ba5383c23bdf4f830546dd002ef9d46d6",
+      "original_bytes": 572446,
+      "fixture_sha256": "aeb90220ad6e4c619454d10591b1bbc2d51407ec8b63ade00da0a3ddec4a5198",
+      "fixture_bytes": 3047,
+      "native_summary_original_chars": [
+        537
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-bedgebury/orienteering-south-east-long-distance",
+      "file": "detail-9a57851f12f4bb18.html",
+      "kind": "detail",
+      "original_sha256": "f279db58e03c15b765c9a93662c905d6495524ab302f31102c34e523cc813368",
+      "original_bytes": 572788,
+      "fixture_sha256": "5953454759735b4e84cacc071e496eb6ddaf6acf1d0cdf3186eb16364ecef0a6",
+      "fixture_bytes": 3019,
+      "native_summary_original_chars": [
+        412
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-beechenhurst/forest-fit-eb-w-fitness",
+      "file": "detail-8ee65864afdb78b5.html",
+      "kind": "detail",
+      "original_sha256": "6f68779758ec6556e5f1b8c2e68ec1fbb53e3a7f15271f5f22c4953dc93bd6c2",
+      "original_bytes": 575183,
+      "fixture_sha256": "6aa0ba03cbabf9c3d0b20916ce21580954ff243bc33872444ff7939e3fda2a17",
+      "fixture_bytes": 2628,
+      "native_summary_original_chars": [
+        338
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-beechenhurst/winter-adventures-go-ape-beechenhurst",
+      "file": "detail-1ffd57f283052549.html",
+      "kind": "detail",
+      "original_sha256": "6005404806e569ac5f6b8c32d3065647393a20733716b294823df57da8a2edf7",
+      "original_bytes": 571389,
+      "fixture_sha256": "4744bba45043b19db9bcc37df1e6fe494a10fba592489903282ae0a85d1cbcc9",
+      "fixture_bytes": 3152,
+      "native_summary_original_chars": [
+        473
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-cannock-chase-forest/ladies-5k-trail-run",
+      "file": "detail-801a1f1238c24239.html",
+      "kind": "detail",
+      "original_sha256": "33c0c388662b3ca823e5a818b133c1a2f0c0686ac04871422c97fb7dacbc4310",
+      "original_bytes": 568118,
+      "fixture_sha256": "0fda62a332ac4e03afedaeee4b4d017d3b9d65d1154f563778712450e9dfa454",
+      "fixture_bytes": 2812,
+      "native_summary_original_chars": [
+        139
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-cannock-chase-forest/madness-cannock-chase-forest",
+      "file": "detail-6919a6260b1c25e1.html",
+      "kind": "detail",
+      "original_sha256": "989cc64e4616076f8f496406ee5c2ae67e19ba28b27c87719eb944b49550c92a",
+      "original_bytes": 586416,
+      "fixture_sha256": "18af7a19a8c1b8a95f56714440c68d4edf41c3f2e48582c1c10775deeb21e68a",
+      "fixture_bytes": 2952,
+      "native_summary_original_chars": [
+        543
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-cannock-chase-forest/pete-tong-ibiza-classics-cannock-chase-forest",
+      "file": "detail-6540085f35904054.html",
+      "kind": "detail",
+      "original_sha256": "6d725f4b6875ab4f514c5b73ac9ddef7c75e746bb1c03cd6c13ff2c1ee9a5695",
+      "original_bytes": 588677,
+      "fixture_sha256": "34f98fc1589b318446a6f48833b30354c032a0f5765e1e908bac14c2d6ef2d93",
+      "fixture_bytes": 3032,
+      "native_summary_original_chars": [
+        437
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-cannock-chase-forest/ronan-keating-blue-cannock-chase-forest",
+      "file": "detail-b75c03ae937e912d.html",
+      "kind": "detail",
+      "original_sha256": "215ec3b6baaddd0867847b14b03ca19fee5a354f7a5cbc66b08553945fbaabbe",
+      "original_bytes": 589082,
+      "fixture_sha256": "7b500b82da6f7e18409c4c6ffe07cabe703b8df982bdfa65cdb1ec77ab6eb240",
+      "fixture_bytes": 3013,
+      "native_summary_original_chars": [
+        245
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-cannock-chase-forest/rudimental-cannock-chase-forest",
+      "file": "detail-a57e0d15145b1c91.html",
+      "kind": "detail",
+      "original_sha256": "85c63bfcd7b1a3c44d6d8e4641f5c7f40e6998f49a559b2a39e8af5f5e78b0b8",
+      "original_bytes": 587921,
+      "fixture_sha256": "0df16410e9a81a70c3073e2cf0bb8380f28eb72a4457d8797a008134970c4d13",
+      "fixture_bytes": 2958,
+      "native_summary_original_chars": [
+        360
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-cannock-chase-forest/the-chase-0",
+      "file": "detail-05beabf9323b7b1e.html",
+      "kind": "detail",
+      "original_sha256": "d2aef89df6cc68cad9ecabb724768a65ebd5200ed6877c3573197daa43cc7894",
+      "original_bytes": 568518,
+      "fixture_sha256": "4f4e67003418d6f5897c3430e3cb3e681be07eca40dc7168aaa0206954c22819",
+      "fixture_bytes": 2773,
+      "native_summary_original_chars": [
+        259
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-cannock-chase-forest/tom-jones-cannock-chase-forest",
+      "file": "detail-674ad6c2751434c8.html",
+      "kind": "detail",
+      "original_sha256": "747886dab0466bd40c8aa4ac782ad7ac3b49c58f9c2c3af63c1f59e672f96724",
+      "original_bytes": 585817,
+      "fixture_sha256": "fc5528e99703a6ad1f73ca4baed348e6fabdc0b2b17621c0de00b8b1b7218463",
+      "fixture_bytes": 2953,
+      "native_summary_original_chars": [
+        338
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-cardinham-woods/fundraising-christmas-woodland-lantern-walk-badger-forest",
+      "file": "detail-ecf61076554259df.html",
+      "kind": "detail",
+      "original_sha256": "2ab4417fb020e70cca58b9ed21008bf289c988386337dc536ab99e4f1ab5fb81",
+      "original_bytes": 573486,
+      "fixture_sha256": "8e835979b324a042c53551670e5d056064e35c64fa399a6c47ec9e1f5e1eb7dd",
+      "fixture_bytes": 3078,
+      "native_summary_original_chars": [
+        343
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-dalby-forest/christmas-mosaic-workshop",
+      "file": "detail-4187390e6823df75.html",
+      "kind": "detail",
+      "original_sha256": "e5069f3e9ebfbf67395aa66b189d8e678d4a7998dc6a8522245fea2a7c389eda",
+      "original_bytes": 571044,
+      "fixture_sha256": "064784ddaf10c4cf0cc795ad7d481649d9901082009bf0aca2ed005b49f15fce",
+      "fixture_bytes": 2960,
+      "native_summary_original_chars": [
+        501
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-dalby-forest/indoor-forest-flow-sunday-sessions",
+      "file": "detail-c44e10ad4b0f0ccc.html",
+      "kind": "detail",
+      "original_sha256": "98fca9d229c5d76013a470927ddc73a109397b57f0e7e3e5cf786bbadf56d435",
+      "original_bytes": 569052,
+      "fixture_sha256": "e77d014131c9245ba0aa6f7b04fa4f2b32ea843adf4100d02cccfb2754458503",
+      "fixture_bytes": 2605,
+      "native_summary_original_chars": [
+        239
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-dalby-forest/landslide-crescent-arts-exhibition",
+      "file": "detail-dcdc9e725d65f9d7.html",
+      "kind": "detail",
+      "original_sha256": "ab5ea27041d2688f9c8ba4e1b319757046358980225fcb5b49f737dd78b2711c",
+      "original_bytes": 578297,
+      "fixture_sha256": "0b899644d8860c14e84e302c88f07fbefdd042781fb3e01ef5f008c9178a5e48",
+      "fixture_bytes": 2629,
+      "native_summary_original_chars": [
+        375
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-dalby-forest/malton-sculpture-trail-dalby-forest",
+      "file": "detail-e33c6229bfbb8078.html",
+      "kind": "detail",
+      "original_sha256": "17ab310a2bf592d5113e39d57f6e64985afeb04fc92421dbb98f697c149f8686",
+      "original_bytes": 579810,
+      "fixture_sha256": "3f37c6c68544597aaae91cb7cc1d3aea9277991f5c712b65be1c40dd8ee119be",
+      "fixture_bytes": 2687,
+      "native_summary_original_chars": [
+        425
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-dalby-forest/mental-elf-festive-run",
+      "file": "detail-67276f3ba0bedd5b.html",
+      "kind": "detail",
+      "original_sha256": "7ce2980aae3f7046dfef5e8df07c6abb2951cab11ecb38410b6cd333cf7e0c4b",
+      "original_bytes": 571360,
+      "fixture_sha256": "5d456eb3cddb3fbb9c9f7e0a64bb38526e9f0a0db85f43ad24a5a6dcfba38ac5",
+      "fixture_bytes": 2928,
+      "native_summary_original_chars": [
+        281
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-dalby-forest/metal-flower-making-workshop",
+      "file": "detail-8302c6e9d1c0f21f.html",
+      "kind": "detail",
+      "original_sha256": "db9e170d8f8d8a0124930059c76316f390a23a00ba4b8c80263b1b1bc86e7dce",
+      "original_bytes": 584740,
+      "fixture_sha256": "03e503266c8622616b5851ee36af3d38ba2ebdb8c634395253e485081217082f",
+      "fixture_bytes": 2813,
+      "native_summary_original_chars": [
+        202
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-dalby-forest/stargazing",
+      "file": "detail-bf7d30de1acf5221.html",
+      "kind": "detail",
+      "original_sha256": "2733c6f53a027656c1413b08c4dea7c1b4a61fb4fb8517ce2ae45e22d24d1b6e",
+      "original_bytes": 580051,
+      "fixture_sha256": "c06d8239db48333fb583def00599218a66a25b08a928ad4a5fad9c5f5bd8e1be",
+      "fixture_bytes": 2957,
+      "native_summary_original_chars": [
+        551
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-dalby-forest/winter-solstice-flow-restore-yoga-evening",
+      "file": "detail-ee55b4ee31c3d908.html",
+      "kind": "detail",
+      "original_sha256": "6e5a2e0527b22598e0aca3ff2f3f3df05cb0d2e6dd6b0dea226232fad8bfce05",
+      "original_bytes": 568818,
+      "fixture_sha256": "e0e421fa2a5428f094f4181b7bcec730edc0c2a9ca852ec44d63ddcc9e0eabca",
+      "fixture_bytes": 2646,
+      "native_summary_original_chars": [
+        224
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-dalby-forest/wreath-making-workshop-dalby-forest-0",
+      "file": "detail-d61bcea299a5682f.html",
+      "kind": "detail",
+      "original_sha256": "85c9736fc16531e9f7f82971371ac596f2381e78c461a4a412d6daa565932a54",
+      "original_bytes": 570170,
+      "fixture_sha256": "b505f364bbc805c72ffef54b709f9f8e8fdc7f6811b3765216b4707cc57f0c64",
+      "fixture_bytes": 3047,
+      "native_summary_original_chars": [
+        358
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-delamere-forest/delamere-forest-10k-21k-and-42k",
+      "file": "detail-89ce5d362b8b29cb.html",
+      "kind": "detail",
+      "original_sha256": "2c24b5b743a9006cb150958d8fd7bd0828abb89739e5016113ce7cd88ce2b093",
+      "original_bytes": 571482,
+      "fixture_sha256": "9e6c5e91b69fdf82469ea649388e034e34279760ac0f45206ff2744738364b8b",
+      "fixture_bytes": 3067,
+      "native_summary_original_chars": [
+        185
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-delamere-forest/madness-delamere-forest",
+      "file": "detail-815c7b9b7f38ec4a.html",
+      "kind": "detail",
+      "original_sha256": "e84faf7e0a04ea4e870da2f547a92625f249abf5273bed0b30c8a56b11cc1f09",
+      "original_bytes": 586473,
+      "fixture_sha256": "b2497c2215a0bf76269ca15c1fe5b582f00ffe4f32b33fc3b74e3d8f28f46bd6",
+      "fixture_bytes": 2878,
+      "native_summary_original_chars": [
+        543
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-delamere-forest/pete-tong-ibiza-classics-delamere-forest",
+      "file": "detail-12c2fe8db0a03ab2.html",
+      "kind": "detail",
+      "original_sha256": "f534c8ece2e97e50da1360c61c4646cb07a020259481c716d4564862465e3793",
+      "original_bytes": 588678,
+      "fixture_sha256": "44f2a2d95097e55b7713facd1769b530027732c001e481b254f4ca6041b970a4",
+      "fixture_bytes": 2954,
+      "native_summary_original_chars": [
+        437
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-delamere-forest/ronan-keating-blue-delamere-forest",
+      "file": "detail-33bbe381a86be0b4.html",
+      "kind": "detail",
+      "original_sha256": "6088d9343fcdd8047396a1d1ef7ca5e9dd6cdb86fcd79f77f3d7a52142d58b39",
+      "original_bytes": 589134,
+      "fixture_sha256": "3542ada763c05f6d2465a2dffc03a7875990c51fb0b9b1300ff65031e3378a09",
+      "fixture_bytes": 2939,
+      "native_summary_original_chars": [
+        245
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-delamere-forest/rudimental-delamere-forest",
+      "file": "detail-22dece7a127abb00.html",
+      "kind": "detail",
+      "original_sha256": "5902547c25730d943933cfdb406263c89224d2a3824e593269bb7d613e0fe4db",
+      "original_bytes": 588023,
+      "fixture_sha256": "5e4a0031269f010fcacb98b576c5fdbd0bab6466c96eef9a1e319b194a1628d9",
+      "fixture_bytes": 2888,
+      "native_summary_original_chars": [
+        360
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-delamere-forest/shed-seven-delamere-forest",
+      "file": "detail-29d263279ad4ee1a.html",
+      "kind": "detail",
+      "original_sha256": "43d1a0b149148decb9ea3d22412a6f7b033ad796dcc6129db69b730fa0d447ce",
+      "original_bytes": 589309,
+      "fixture_sha256": "27f9ec486c82c876a8d5b2f5361f3e5490052502897ac757d9c68395543ed9fd",
+      "fixture_bytes": 2887,
+      "native_summary_original_chars": [
+        342
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-dodd-wood/lakeland-paws-canicross-series-26-27",
+      "file": "detail-cdda8c058add6392.html",
+      "kind": "detail",
+      "original_sha256": "3682384ca4790d3650dec9876b6ece9f2ac700ecf945ddb2e0c9e9c5f9ca8776",
+      "original_bytes": 574204,
+      "fixture_sha256": "1bad6607df807f9bc2a69521fcd596468ffdac006fd7e993ab15354405f19b2f",
+      "fixture_bytes": 3049,
+      "native_summary_original_chars": [
+        483
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-forest-dean-cycle-centre/gbg-bikes-the-forest-dean-cycle-centre",
+      "file": "detail-ff36e037613ab4e3.html",
+      "kind": "detail",
+      "original_sha256": "0b6d6bb0687d1de0fd074ad5de7383c4216a158f78015d1621645814a0564f22",
+      "original_bytes": 572623,
+      "fixture_sha256": "045b49134ee50c02133c919b2f19386f510875064966106672864b3f5749b619",
+      "fixture_bytes": 2750,
+      "native_summary_original_chars": [
+        478
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-forest-dean-cycle-centre/volunteer-digs-dean-trail-volunteers",
+      "file": "detail-9e4933ae2b420770.html",
+      "kind": "detail",
+      "original_sha256": "adca1a4751a86a9d5635bc3d49fee28a2a0d1ee56c6613988695c78d7fa07d33",
+      "original_bytes": 575761,
+      "fixture_sha256": "9f94c60a5fa42c5bdf6d3140378652f66ee43e18dfa83d49d13766d2fe05bc87",
+      "fixture_bytes": 2779,
+      "native_summary_original_chars": [
+        469
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-grizedale/boc-trees-time-and-wisdom",
+      "file": "detail-62800e5a1978cd2e.html",
+      "kind": "detail",
+      "original_sha256": "2f64c6685f5404801bb2f6d960c050a7825ccaa91a7cb3a6c20b4b7eb7910b9c",
+      "original_bytes": 574064,
+      "fixture_sha256": "94a4be7e040afa3c1714f6e9550b1adf396f9386c5e01403496d266167e4501b",
+      "fixture_bytes": 2804,
+      "native_summary_original_chars": [
+        459
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-grizedale/lakeland-paws-canicross-series-26-27",
+      "file": "detail-d1d4587d150292bc.html",
+      "kind": "detail",
+      "original_sha256": "9eb3d129e0f82fff64353559a5feed46044e5998e1e6902bf0acf728e1065256",
+      "original_bytes": 574309,
+      "fixture_sha256": "5cc0075382d934591082e4ad0b290323f7aa38ea343c8a917c08170bd3d052ba",
+      "fixture_bytes": 3094,
+      "native_summary_original_chars": [
+        483
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-grizedale/wild-sauna-forest-plunge-nov-28-26",
+      "file": "detail-c5e128d709a3b2d0.html",
+      "kind": "detail",
+      "original_sha256": "d0f10b3bb7a62533e6a29141ea4e3b34386c3a775fd0d48da79f4d37038cdf24",
+      "original_bytes": 583699,
+      "fixture_sha256": "3b4ea42b729742a7bfb6b1a6e5aaeb5f695dafe4f8bf817afa7b85f424464acd",
+      "fixture_bytes": 3106,
+      "native_summary_original_chars": [
+        435
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-haldon-forest-park/forest-fitness",
+      "file": "detail-ecddcbfbc43b7997.html",
+      "kind": "detail",
+      "original_sha256": "d71f6742c06d20e8a3bc0746fcf06cbc78a15acc894c29e8c3828472845f6b65",
+      "original_bytes": 570699,
+      "fixture_sha256": "291c0175119498ffa86b3541f60f539c567d8cfe0270170b47f2a7918060ef5f",
+      "fixture_bytes": 2423,
+      "native_summary_original_chars": [
+        393
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-haldon-forest-park/go-ape-sundown-adventures-haldon-forest-park",
+      "file": "detail-3465d03273022819.html",
+      "kind": "detail",
+      "original_sha256": "44c9ea137e68492bedb940d54d345bba1ec134791843a6436ad3b3dba21fc64e",
+      "original_bytes": 572475,
+      "fixture_sha256": "caa72fc0885511c971b50217bc9fc28b4cd31f2c4f79b266f1b6c5d3819bab1d",
+      "fixture_bytes": 4072,
+      "native_summary_original_chars": [
+        328
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-haldon-forest-park/haldon-forest-bark",
+      "file": "detail-15133132995fb4b4.html",
+      "kind": "detail",
+      "original_sha256": "70b2ed26579a0a53414df37d06825634d37aef777a4eea01866c474b5c9ea15b",
+      "original_bytes": 576858,
+      "fixture_sha256": "bea6ee949a57d23382866925163648ceaae8e6cb964da7b8cc126841af377be6",
+      "fixture_bytes": 2800,
+      "native_summary_original_chars": [
+        77
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-haldon-forest-park/learn-nordic-walk-fiona-swan",
+      "file": "detail-5e1020d79f8d6887.html",
+      "kind": "detail",
+      "original_sha256": "d0994c8b43260065f32d2547e16900d9a31b5aa17bd88722ee10b406070fd3c2",
+      "original_bytes": 572268,
+      "fixture_sha256": "fc47c2738c88953237b9ed6cb7db98aedc037c7fe0bd3dca993806b120b70320",
+      "fixture_bytes": 2820,
+      "native_summary_original_chars": [
+        440
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-haldon-forest-park/nordic-fitness-walking",
+      "file": "detail-fa643cba02c96f04.html",
+      "kind": "detail",
+      "original_sha256": "eecbc09af56127a8a58915921f77bddceb60f533192d67d42944ea004269fe82",
+      "original_bytes": 574503,
+      "fixture_sha256": "30175c2b5455ab943443bb507e7b16cc41a95a664692f0d443f07aba67e6c23d",
+      "fixture_bytes": 2759,
+      "native_summary_original_chars": [
+        216
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-haldon-forest-park/parkrun-haldon-forest-park",
+      "file": "detail-dec1ae7d40a231e7.html",
+      "kind": "detail",
+      "original_sha256": "11fff1d439841e022f06d0fe324d11dcff1289d1210bda0f7961a0af3f1c1ba8",
+      "original_bytes": 573184,
+      "fixture_sha256": "feb1c95b5cef8a8e8c17f27422d423347c48253304149aaba7666979a2002545",
+      "fixture_bytes": 3127,
+      "native_summary_original_chars": [
+        344
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-haldon-forest-park/weekly-wellbeing-walk",
+      "file": "detail-f77d957a54d96f98.html",
+      "kind": "detail",
+      "original_sha256": "f989bb540eb903ded39dccc8c3444456f2efde79e2d90e1475ede5350ca9b406",
+      "original_bytes": 573835,
+      "fixture_sha256": "70577e1b7c1c6c968929b16f1bf648804b44957cba3c1d5ab8845e5e8130dc63",
+      "fixture_bytes": 2717,
+      "native_summary_original_chars": [
+        420
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-haldon-forest-park/winter-adventures-go-ape-haldon",
+      "file": "detail-f7c86438ef30107d.html",
+      "kind": "detail",
+      "original_sha256": "52b3d06d5481429567741a9c69d0617fa7ff89bcd52a6d2eab407cb0419dbb0e",
+      "original_bytes": 569580,
+      "fixture_sha256": "ef79d1774a1c3fe3960908283024356b02289928bd9238bbe5832edef61d032b",
+      "fixture_bytes": 3048,
+      "native_summary_original_chars": [
+        319
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-hamsterley/meet-santa-hamsterley-forest",
+      "file": "detail-645236a28016a8af.html",
+      "kind": "detail",
+      "original_sha256": "6d93903f2c9216ce9110ca0dc87c846ffa8eb36fbc399fee58aec8f4b48f4c98",
+      "original_bytes": 570607,
+      "fixture_sha256": "5b8bdaf2b15073e79f278edb0023872b2bc997b06d3269dbec679a4af7b792e8",
+      "fixture_bytes": 2937,
+      "native_summary_original_chars": [
+        386
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-hamsterley/wreath-making-hamsterley-forest",
+      "file": "detail-c691f2e42b7f2696.html",
+      "kind": "detail",
+      "original_sha256": "0ebcdc87c3c69f79f34c5cf2074015c83861f064c618808aa60604cd9c301cb5",
+      "original_bytes": 568901,
+      "fixture_sha256": "6bff4d7df7da5b9401833efb049fddd8ea138ea5bdfda19020f584a4e297beca",
+      "fixture_bytes": 2908,
+      "native_summary_original_chars": [
+        212
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-hicks-lodge/buggy-walks-hicks-lodge-active-mums-club",
+      "file": "detail-1c9e875370ccf962.html",
+      "kind": "detail",
+      "original_sha256": "cb16c8b3c10561b9667f14858cccdcef4af3d612009b46537ec492a412aeb287",
+      "original_bytes": 569749,
+      "fixture_sha256": "f99ef93dab119a511729fbd09b492e29601e9bf376b0b7d9b2b437f3318c0400",
+      "fixture_bytes": 3057,
+      "native_summary_original_chars": [
+        272
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-hicks-lodge/go-ride-club-hicks-lodge-0",
+      "file": "detail-af4ba4b09d119095.html",
+      "kind": "detail",
+      "original_sha256": "1fd24935cc6e7c8d4f323f891791903784b59266f79775c5569f9b849db942f5",
+      "original_bytes": 573852,
+      "fixture_sha256": "675d1534325cdaee675ee1bc6219be4d6064e0635588c360566cdf8c48f080d1",
+      "fixture_bytes": 2684,
+      "native_summary_original_chars": [
+        510
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-hicks-lodge/women-runs",
+      "file": "detail-356d43accf3f9a44.html",
+      "kind": "detail",
+      "original_sha256": "c0d4f656a8954d3337594299ee9a8c83f999e98b59cf052f993c3b150a2bfc1c",
+      "original_bytes": 570034,
+      "fixture_sha256": "c3c20b6adcc30559dff8edaad71e23449d3789d86bab1d661fde2fe53ba1e968",
+      "fixture_bytes": 2887,
+      "native_summary_original_chars": [
+        321
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-high-lodge/canicross-winter-series",
+      "file": "detail-a0610e0f84e14c31.html",
+      "kind": "detail",
+      "original_sha256": "f11be0a0d09a067c0a543e22a6d7f178635631241419b727a0018d2e57373ced",
+      "original_bytes": 569697,
+      "fixture_sha256": "a15ff31a2c65b7b7537bf38d2437deb715b8922aaf6432891f394ba3f2b7d39a",
+      "fixture_bytes": 2980,
+      "native_summary_original_chars": [
+        276
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-high-lodge/go-ape-sundown-adventures",
+      "file": "detail-14afa8055a185dff.html",
+      "kind": "detail",
+      "original_sha256": "37bf18c773beed707eff23bbe3ace95e65c5b4b5945b5c33091058a0abb302bc",
+      "original_bytes": 572191,
+      "fixture_sha256": "388a363ed7de187c1f4574c365b58b73fed5000f302dc2a96d67a0020920ea8e",
+      "fixture_bytes": 3069,
+      "native_summary_original_chars": [
+        461
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-high-lodge/james-blunt-thetford-forest",
+      "file": "detail-5bee453eb0cff6d7.html",
+      "kind": "detail",
+      "original_sha256": "271ea1803e4d278917220a4d4c8212b3450ff7042c764bb5158a2fbf0d39d655",
+      "original_bytes": 585836,
+      "fixture_sha256": "538aa1853666d4bac9d697d2c8e913e04f5595925f57f23529aa966ebc12f68d",
+      "fixture_bytes": 2851,
+      "native_summary_original_chars": [
+        346
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-high-lodge/madness-thetford-forest",
+      "file": "detail-2c72362337887f2c.html",
+      "kind": "detail",
+      "original_sha256": "8db9992c4bbc027177fe1fc7efab048218b341c83b85aaf1b16040386e591882",
+      "original_bytes": 586507,
+      "fixture_sha256": "11a4a30b554969406f82ccfd3c58019db6b01187771809ee4f39617eb32e3be0",
+      "fixture_bytes": 2836,
+      "native_summary_original_chars": [
+        543
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-high-lodge/pete-tong-ibiza-classics-thetford-forest",
+      "file": "detail-a469ab63e1118286.html",
+      "kind": "detail",
+      "original_sha256": "1e5155fb5538878484b36d5cc97a92819674758685679976324842b8f0a9d93f",
+      "original_bytes": 588679,
+      "fixture_sha256": "dd68ed0fd60863d9378875fc7baad270de9906ffba090ea9c3fc03e7fef7dde6",
+      "fixture_bytes": 2920,
+      "native_summary_original_chars": [
+        437
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-high-lodge/ronan-keating-blue-thetford-forest",
+      "file": "detail-3bff99c7e4715f55.html",
+      "kind": "detail",
+      "original_sha256": "b56070c801539dea5fed0a2da929d606270a36e5554c721a426cfe210e38ba91",
+      "original_bytes": 589174,
+      "fixture_sha256": "bcff74057fd85bb9cba0bb6f2143b91f820590849a25b2bbb702c5d5a46687d1",
+      "fixture_bytes": 2897,
+      "native_summary_original_chars": [
+        245
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-high-lodge/rudimental-thetford-forest",
+      "file": "detail-0601d17da9ba5ac9.html",
+      "kind": "detail",
+      "original_sha256": "7bbd790050492ee811c8aaa7208a09aa5732c67df7c52770675643f33110d63f",
+      "original_bytes": 588063,
+      "fixture_sha256": "ff3f393001e463ff7ca19735471b9e3e7aae4bf156ac430e9de69c0716bd6b5a",
+      "fixture_bytes": 2852,
+      "native_summary_original_chars": [
+        360
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-high-lodge/twas-the-run-christmas",
+      "file": "detail-d06b3e54cb210ddf.html",
+      "kind": "detail",
+      "original_sha256": "883d7e8e90da67c13b88b678bb5755999607723c7b0540aacf0a5e584a1cc6e4",
+      "original_bytes": 573207,
+      "fixture_sha256": "a949492adde6d9e74ce972c31abdfcc44db5d014061a8695bf97a44b2a3e3187",
+      "fixture_bytes": 3056,
+      "native_summary_original_chars": [
+        403
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-high-lodge/wild-deer-trail-run-5-10km-or-half-marathon",
+      "file": "detail-2c0de08cb57d0d43.html",
+      "kind": "detail",
+      "original_sha256": "d7d8ca4fde63e40a0fa6ff7de9e72a033eac84179d27bf00aeaea39c7bb0fad7",
+      "original_bytes": 571818,
+      "fixture_sha256": "e779ad129b42bd7d8da8e493c9468cf474963cecccd13d38d8a80293356bf947",
+      "fixture_bytes": 3182,
+      "native_summary_original_chars": [
+        459
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-high-lodge/wild-hybrid-solo-and-pairs",
+      "file": "detail-df697b67b8c4dc6a.html",
+      "kind": "detail",
+      "original_sha256": "5947bafe7113476887c3330f75df9baa36c0407e77c646f6a7e2683043c68713",
+      "original_bytes": 576298,
+      "fixture_sha256": "7efe70f80ee7fc2809741d6b21caeaa8a2d73e4591afa1e9a1d7149d0401c5ce",
+      "fixture_bytes": 3014,
+      "native_summary_original_chars": [
+        393
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-hole-farm-woodland/festive-community-tree-planting-day-hole-farm-woodland",
+      "file": "detail-61f77651ad82991c.html",
+      "kind": "detail",
+      "original_sha256": "f9e280b68973373ac6fa103480c47ad2c39be7164bacb383facb86c62ab157fd",
+      "original_bytes": 577684,
+      "fixture_sha256": "04130d78b31f40fb413a10077ff0337474621d8ebc4bd91bc64ef9347fcf7de6",
+      "fixture_bytes": 3178,
+      "native_summary_original_chars": [
+        528
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-jeskyns/british-landmark-series-10k-race-jeskyns",
+      "file": "detail-9f59cd556432e846.html",
+      "kind": "detail",
+      "original_sha256": "80e24a172d78fc0671e57e39b2cb26b6b975f96177b727aab11eecedf25c7719",
+      "original_bytes": 572656,
+      "fixture_sha256": "b9def85381825fbb6c06c5046368eb53bda65f0b7bf90fa4a26deef51b4a5b8a",
+      "fixture_bytes": 3140,
+      "native_summary_original_chars": [
+        434
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-jeskyns/christmas-market-jeskyns",
+      "file": "detail-677a206ea2df4bab.html",
+      "kind": "detail",
+      "original_sha256": "cf77e09c3e576aa29971ace4c0ff30374c10039a2759ff8f91b051de13f40482",
+      "original_bytes": 572534,
+      "fixture_sha256": "c4c157b7698bd2c25c58d6cc161ea3e79a89e4faa544bf7a634df263df56b9f1",
+      "fixture_bytes": 2561,
+      "native_summary_original_chars": [
+        439
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-jeskyns/forest-bathing-jeskyns",
+      "file": "detail-f7268ba5a76432ad.html",
+      "kind": "detail",
+      "original_sha256": "92e15721cb588163c93d09339d6a71eb6ed51227c318c87a756513723a4e312a",
+      "original_bytes": 576343,
+      "fixture_sha256": "f1ae9dd44fbd3caff1651637da4591db92b3bc28250decf55806e79234ae15c4",
+      "fixture_bytes": 3006,
+      "native_summary_original_chars": [
+        360
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-jeskyns/markets-jeskyns-community-woodlands",
+      "file": "detail-a887fb9650ddd10c.html",
+      "kind": "detail",
+      "original_sha256": "b8e7a4584d415552906141cbe2045f7e2c6e10fc8ec8a2332dc347314a799334",
+      "original_bytes": 572460,
+      "fixture_sha256": "3276e7c0daf6ff1713f9fe91979641434a7fb1308724b339a81689a20f6358ca",
+      "fixture_bytes": 2520,
+      "native_summary_original_chars": [
+        484
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-mallards-pike/winter-adventures-go-ape-mallards-pike",
+      "file": "detail-5b77d0f50ecf889c.html",
+      "kind": "detail",
+      "original_sha256": "27928945a17d8c0c83541e8cba66bdb118bf05cafec528728af91125b0890204",
+      "original_bytes": 571231,
+      "fixture_sha256": "3e508a879a40953fec3b8eddbfb119b8932244bb4c84d50de506cd89221f6a97",
+      "fixture_bytes": 3174,
+      "native_summary_original_chars": [
+        424
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-salcey-forest/forest-school-home-educated-children",
+      "file": "detail-858a1941adc8c97d.html",
+      "kind": "detail",
+      "original_sha256": "2fb800cde9bdb85dc8f92eef4030b5da15954d1175bdb94bd5a395a42629f909",
+      "original_bytes": 575438,
+      "fixture_sha256": "c627df30e06b3fac9fa008b42069a0d7824c30ee09d0021b3f91256ef440bdef",
+      "fixture_bytes": 2625,
+      "native_summary_original_chars": [
+        468
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-salcey-forest/forest-tots-stay-n-play",
+      "file": "detail-6bdfd90306e69c2b.html",
+      "kind": "detail",
+      "original_sha256": "e0d2e6c4dc879157e56066bba8565edb45f5342588b71ec2b7dc7ee5da6ea0cb",
+      "original_bytes": 574920,
+      "fixture_sha256": "1ffa5a657b4d53a87aa54f4277eb23d27974bfb9b7c9cfcd984a1dd5800b06b4",
+      "fixture_bytes": 2999,
+      "native_summary_original_chars": [
+        211
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-salcey-forest/nice-work-10k-5k-junior-run",
+      "file": "detail-65829765b6361785.html",
+      "kind": "detail",
+      "original_sha256": "3dcdc4f30a33a75e7d8ecb0dfc0ae1fff8960bd1f0c1c2fc25b61cc5a9a5d2bc",
+      "original_bytes": 570569,
+      "fixture_sha256": "635c5cc6aff8dc667eb8627a350ac8d47a294c46d1189ed611dd3c1348832c22",
+      "fixture_bytes": 3134,
+      "native_summary_original_chars": [
+        353
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-salcey-forest/sustainable-christmas-wreath-workshop",
+      "file": "detail-6fdb7998b9f9cee5.html",
+      "kind": "detail",
+      "original_sha256": "ca659f6720bc32511682fe9b5f93e4478f127c85db12886e08862d69c9489cdf",
+      "original_bytes": 569638,
+      "fixture_sha256": "4516ded848603a2a98e1ba7cc4a8f61d397aeef37a6f00034214e805e507e78b",
+      "fixture_bytes": 3175,
+      "native_summary_original_chars": [
+        244
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-salcey-forest/wild-deer-duathlons-trail-runs",
+      "file": "detail-c3ba4ad3e640c839.html",
+      "kind": "detail",
+      "original_sha256": "8873b8a4a6e4ceb45212d46c5e08a4ce3070e19a31a88ca060936e33aa060ac2",
+      "original_bytes": 570302,
+      "fixture_sha256": "7aedd7e395f4ed7fadd7fa3a5c1d84d24755f810f6dde0e0f4608cd81db5305f",
+      "fixture_bytes": 3157,
+      "native_summary_original_chars": [
+        350
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-salcey-forest/wilder-lives-forest-bathing-3",
+      "file": "detail-5f3aca4f07db0c1d.html",
+      "kind": "detail",
+      "original_sha256": "7254612c6aa5b1371a13f1ee347a450e4bc43b59e2efb32a526c8c12ec89a916",
+      "original_bytes": 572154,
+      "fixture_sha256": "c6982ca8d961f9b691fb350b67b14083ab7c67fe38a9ae48df2ec8834da3572d",
+      "fixture_bytes": 3142,
+      "native_summary_original_chars": [
+        101
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-salcey-forest/woman-runs",
+      "file": "detail-c9436e0c731f04f6.html",
+      "kind": "detail",
+      "original_sha256": "2ca7319f2ec4726ca63e08013145597fbbac539755c57f918306ee65ca57d518",
+      "original_bytes": 571104,
+      "fixture_sha256": "7ca9a0b766eaa0c10b625a278817a03c8cc92f6800bd626e4a429d4d24d09cfb",
+      "fixture_bytes": 2531,
+      "native_summary_original_chars": [
+        454
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-sherwood-pines/mental-elf-festive-fun-run",
+      "file": "detail-550560c1ddb6b193.html",
+      "kind": "detail",
+      "original_sha256": "34790977c9f59a20ed68faa983761cf4a441a7f176bce3d48fc2ff6e580aa649",
+      "original_bytes": 573487,
+      "fixture_sha256": "86181d1a4702236f89ae40c98fa05155f6a2b98c1989e2676cf400aa10e54744",
+      "fixture_bytes": 3076,
+      "native_summary_original_chars": [
+        502
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-wendover-woods/markets-wendover-woods",
+      "file": "detail-7318e00a585af5ca.html",
+      "kind": "detail",
+      "original_sha256": "6993a035156b8f27a7a532df85bcf63208b075486f36d07fa8c9da380c423a50",
+      "original_bytes": 573756,
+      "fixture_sha256": "f5321e26acda7fbfbdc3fee525d18b80a0effdc6d09dbab419b45c24e53578f3",
+      "fixture_bytes": 2820,
+      "native_summary_original_chars": [
+        519
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-wendover-woods/tai-chi",
+      "file": "detail-ee454da59f1ee1c3.html",
+      "kind": "detail",
+      "original_sha256": "aa9ca35c3174ea91a96cefd3f33039612bd5a08c1108d859fb3fd5b506833fc2",
+      "original_bytes": 573670,
+      "fixture_sha256": "65bdf8d7c86012def1bf78244651c1193606970cb387377ad62cb19fd8d920f4",
+      "fixture_bytes": 2992,
+      "native_summary_original_chars": [
+        411
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-westonbirt-the-national-arboretum/james-blunt-westonbirt-arboretum",
+      "file": "detail-e8d0cf90fc11f300.html",
+      "kind": "detail",
+      "original_sha256": "59a46b14d1ffa58cb7750c557126c3718a7d669625bb982b8b597652db7aceba",
+      "original_bytes": 585904,
+      "fixture_sha256": "13661e7f1199f19aa0e2efc3da9ffe72297b63a69f6567f9926161cbd704b665",
+      "fixture_bytes": 2980,
+      "native_summary_original_chars": [
+        356
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-westonbirt-the-national-arboretum/madness-westonbirt-arboretum",
+      "file": "detail-7eb18bb9fc884d6b.html",
+      "kind": "detail",
+      "original_sha256": "7fb2de041064dfeaa824cd4130d5aacf33bd849237655e0f194290af3bc68a1b",
+      "original_bytes": 586416,
+      "fixture_sha256": "7a61552b71f0bbe8d0cb14751fca5f6daa95fca82f2ef8da1621b00ac386610f",
+      "fixture_bytes": 2959,
+      "native_summary_original_chars": [
+        543
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-westonbirt-the-national-arboretum/pete-tong-ibiza-classics-westonbirt-arboretum",
+      "file": "detail-4889dca94067600d.html",
+      "kind": "detail",
+      "original_sha256": "100088fb460898f54cd23d760abe797eb9265ca2a0afc2617b58b46fe65776f3",
+      "original_bytes": 588737,
+      "fixture_sha256": "24291aa91d53b92cc52abb2afe30bdd1152e3d63c58694c21d931d94b36ba9fa",
+      "fixture_bytes": 3043,
+      "native_summary_original_chars": [
+        437
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-westonbirt-the-national-arboretum/ronan-keating-blue-westonbirt-arboretum",
+      "file": "detail-776c24216ff32d63.html",
+      "kind": "detail",
+      "original_sha256": "047e6e55dd29854e51266b75866c509f3faf9e1c7e37bdd73109391b77fa0365",
+      "original_bytes": 589086,
+      "fixture_sha256": "059c47d4748c8f4a142ba0b57b18a7b7b24482eaea97dd4e3f2460ff6ba2e96d",
+      "fixture_bytes": 3022,
+      "native_summary_original_chars": [
+        245
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-whinlatter/full-moon-womens-circle-beaver-moon-11-23-26",
+      "file": "detail-95503b5dc12e52be.html",
+      "kind": "detail",
+      "original_sha256": "c37c1da9171fae98ed0f8b1af759d0be4bc9678f33a84b31a95208aa80baf1e7",
+      "original_bytes": 581168,
+      "fixture_sha256": "f754fbe25f407384cca853119b587281c909c42a1fdadbf965dbae0b77ea0844",
+      "fixture_bytes": 3078,
+      "native_summary_original_chars": [
+        439
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-whinlatter/lakeland-paws-canicross-series-26-27",
+      "file": "detail-7d83d3f72ecda46b.html",
+      "kind": "detail",
+      "original_sha256": "5b613abba8fd8b5cedbf9dfe928176018bd1566d2906cf464a03518466fd3f6c",
+      "original_bytes": 574371,
+      "fixture_sha256": "f2d288a8bdb1f38c7f5c5b4ee38ab70078c888909fa362075a27b4ca8dec416d",
+      "fixture_bytes": 3131,
+      "native_summary_original_chars": [
+        483
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-whinlatter/landscape-photography-full-day-workshop-2026",
+      "file": "detail-fe4110d077c3360a.html",
+      "kind": "detail",
+      "original_sha256": "81aa35a7a6ec01ff315d8441424e18396a0590bfa0f5dfb25aaa9ab8984055a3",
+      "original_bytes": 575247,
+      "fixture_sha256": "64f67870cda46b4e5de74b28f6ccc92f5aa2636ff2ae072f5bf0513710aad1bc",
+      "fixture_bytes": 3088,
+      "native_summary_original_chars": [
+        270
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-whinlatter/wild-sauna-forest-plunge-nov-29-26",
+      "file": "detail-03b3db39f449cf97.html",
+      "kind": "detail",
+      "original_sha256": "4289c27cda82e2f7d4c46326931028ca3739eb8c91191439ce5de3e9eb0097c3",
+      "original_bytes": 587978,
+      "fixture_sha256": "34d07137596f1a0af0134e77ca263744b41071d2dbfa51f89d4a63afe42a91a8",
+      "fixture_bytes": 4009,
+      "native_summary_original_chars": [
+        450
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-wyre/free-family-christmas-crafts",
+      "file": "detail-68039ce0c59e201b.html",
+      "kind": "detail",
+      "original_sha256": "34c38e2cff61687e51d1f6becc8c9e5feb8be3bc37286731155102cef228949d",
+      "original_bytes": 568977,
+      "fixture_sha256": "2a4792e0e131eedfd5835310880d94efc18a77b3b1730371cb215842d4d05e73",
+      "fixture_bytes": 2737,
+      "native_summary_original_chars": [
+        341
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-wyre/wild-deer-wyre-forest-festive-trail",
+      "file": "detail-0b34c86b3d9b2ade.html",
+      "kind": "detail",
+      "original_sha256": "f1c0b127aeb4bf7edeb3bca208d79600fc5e340d294d14493cd602cfe62e0d6f",
+      "original_bytes": 574832,
+      "fixture_sha256": "0e47a34fc712b08f4bc4a7f4bb0bf942995d59ee21a8cb22a63fd27b56945c72",
+      "fixture_bytes": 3491,
+      "native_summary_original_chars": [
+        236
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/forest-event/events-wyre/woman-runs",
+      "file": "detail-3942d5b41e28f65c.html",
+      "kind": "detail",
+      "original_sha256": "89ddc40ff1a1cc0183028977b1343ba529d08ab8ca45738c2470dc96190ea6f8",
+      "original_bytes": 574202,
+      "fixture_sha256": "30151a07c79c98536eb27990bce18c973071541bde059010adc88aea3b715fb5",
+      "fixture_bytes": 2868,
+      "native_summary_original_chars": [
+        468
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/moors-valley-halloween",
+      "file": "detail-37f20183e75404a3.html",
+      "kind": "detail",
+      "original_sha256": "b07994968c06d12bf7092d67fb315b2b58609706a5f5e9908f9c116602ee5e8e",
+      "original_bytes": 613330,
+      "fixture_sha256": "319aaf32fcdf052baf9f022de887d1a4ed969914b348cb02c58b1ba5dec666e1",
+      "fixture_bytes": 3003,
+      "native_summary_original_chars": [
+        577
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/node/40471",
+      "file": "detail-4c2466da3e033176.html",
+      "kind": "detail",
+      "original_sha256": "0fc73f1bcbb3250b724923a13bd62dc42010b1cb31e79450360e840ec665c380",
+      "original_bytes": 573830,
+      "fixture_sha256": "18df7e6d072c1e396a73b02e5b7f8b55770d76ff7073d69ce9646651ba0ec069",
+      "fixture_bytes": 2816,
+      "native_summary_original_chars": [
+        380
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/node/40886",
+      "file": "detail-370b9443ce07a529.html",
+      "kind": "detail",
+      "original_sha256": "baf59e1b9c7bd342c786460eeae9f1aff2cda13541347f05ac8fcc0a21245e09",
+      "original_bytes": 570748,
+      "fixture_sha256": "6b9c329be866a1e5028f17bd4a8a93f2a8db4b7b268ce4869bb83a1333727cc2",
+      "fixture_bytes": 2801,
+      "native_summary_original_chars": [
+        389
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/node/42251",
+      "file": "detail-a0f9fb7a3f7986bd.html",
+      "kind": "detail",
+      "original_sha256": "4039b9deb0a7491775148cd0ed1234e2e799bda4c4a9dc084d876d7c66cd9033",
+      "original_bytes": 570275,
+      "fixture_sha256": "f4d5e56e2b4abd1577498a99b92689da9194bd12d7e787130c57e4bdbadf5d43",
+      "fixture_bytes": 2890,
+      "native_summary_original_chars": [
+        435
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/node/44141",
+      "file": "detail-5ef4c225d4e8ac33.html",
+      "kind": "detail",
+      "original_sha256": "8305bb85648e2092a7dcc8e67323fa405228bc3f675cdc835da84b77bfa50e52",
+      "original_bytes": 572529,
+      "fixture_sha256": "e6cd61a868980ce8205e206e189c971670abe6c14f116a02403f4dd1ec7bd441",
+      "fixture_bytes": 3014,
+      "native_summary_original_chars": [
+        512
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/node/45786",
+      "file": "detail-d1fc01961706fd56.html",
+      "kind": "detail",
+      "original_sha256": "ee00b4d1ffef962ca9edd237b9ef359e2ec864d92d0c6fa0a3f3d1bc9fb86be4",
+      "original_bytes": 570524,
+      "fixture_sha256": "2e71c02a6e7877a05fbd141a3b7cf9a843b9f50241b4c93bb84c434514df4f9c",
+      "fixture_bytes": 2888,
+      "native_summary_original_chars": [
+        383
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/node/49171",
+      "file": "detail-7f59bd2ca228b9af.html",
+      "kind": "detail",
+      "original_sha256": "e380f97ebb1bb158c2298286ebd6fed56cffedf819d6260f4ba691d1792af993",
+      "original_bytes": 571917,
+      "fixture_sha256": "885a14c51329d445ceb3faff8cec9d2455bc270c669f9cdb5efc8f6d3a6573bc",
+      "fixture_bytes": 2847,
+      "native_summary_original_chars": [
+        441
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/westonbirt-six",
+      "file": "detail-9dcbcdea5c6b19cb.html",
+      "kind": "detail",
+      "original_sha256": "210e43ef14cdf4a44a54da993875fe5facb14ed37770eab4d69a8ee598dff468",
+      "original_bytes": 581200,
+      "fixture_sha256": "445028cd367bd0d693aca32317c7e7a61da9c30a699981e38dd4636849f70ac4",
+      "fixture_bytes": 2377,
+      "native_summary_original_chars": [
+        405
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/westonbirt/arboretum-guided-walks",
+      "file": "detail-af28a13450d73136.html",
+      "kind": "detail",
+      "original_sha256": "e1810d7a43d213659713da22d40c48962ce7d6527e900b8c95c69e7556d02fc4",
+      "original_bytes": 574459,
+      "fixture_sha256": "1a857d17f0a15a822152325cfb0bd9dd914a34966be6dfcc066dff0c3f77556f",
+      "fixture_bytes": 2563,
+      "native_summary_original_chars": [
+        361
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/westonbirt/beekeeping",
+      "file": "detail-4d81c363c24bd143.html",
+      "kind": "detail",
+      "original_sha256": "e4ecdb13ec8fd7f2ebdae2a4bfe65ef871abe23518b01c067ad64f69de454d6f",
+      "original_bytes": 569964,
+      "fixture_sha256": "21cd6c1bc0837b7aedc3726f6bc83c9ad18203a605ba75d691489918149622da",
+      "fixture_bytes": 2917,
+      "native_summary_original_chars": [
+        413
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/westonbirt/charcoal",
+      "file": "detail-7509c5301452aceb.html",
+      "kind": "detail",
+      "original_sha256": "ea657a6708dd496dd5b09075171b115a542275bb8b4f4520280f21dca1cfc9f0",
+      "original_bytes": 572389,
+      "fixture_sha256": "e4438af4d3ac7133e90231d6fabf900c3388501d221242acfe8c2be5abfa13d2",
+      "fixture_bytes": 2472,
+      "native_summary_original_chars": [
+        452
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/westonbirt/christmas",
+      "file": "detail-a399f57346b9a69a.html",
+      "kind": "detail",
+      "original_sha256": "0cdc486441f875f6cf3952fa58a09858896ce706b87ce16fa5b1b9d0a4e996c7",
+      "original_bytes": 597515,
+      "fixture_sha256": "e0e8bcb4a839795c980b4e396977f5449872ce831876f60951fb7975ae868b92",
+      "fixture_bytes": 3025,
+      "native_summary_original_chars": [
+        449
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/westonbirt/christmas-crafts",
+      "file": "detail-d47d4a9c8c630c9b.html",
+      "kind": "detail",
+      "original_sha256": "7570861b06ba8116baf8151edc7a4c89131b7999a1f1cc5de8907f12392001b9",
+      "original_bytes": 569843,
+      "fixture_sha256": "13853da13019cc3d0376456624ee14e931bb9095bd538f132010aea06be565b0",
+      "fixture_bytes": 2797,
+      "native_summary_original_chars": [
+        360
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/westonbirt/christmas-wreath",
+      "file": "detail-d46fdf39ba21db1d.html",
+      "kind": "detail",
+      "original_sha256": "7b962c71bf23a60e07b73287cafb055903139491dfa212dc6722741d15552e23",
+      "original_bytes": 570503,
+      "fixture_sha256": "e0d3afea8c57d40fd338e6390e4aea04f049e70abee2b212cb74e3a55f3a3d32",
+      "fixture_bytes": 3023,
+      "native_summary_original_chars": [
+        468
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/westonbirt/creating-garden-plans",
+      "file": "detail-92b65acc779dbe11.html",
+      "kind": "detail",
+      "original_sha256": "5a6bfd241aa1c3fa8da706757fad00b886e3e862b10b52252def2a791b06b7ef",
+      "original_bytes": 571063,
+      "fixture_sha256": "6cb8b386d247ec34140066654091a8795b83470634c098e1108ec52fc5609143",
+      "fixture_bytes": 2950,
+      "native_summary_original_chars": [
+        483
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/westonbirt/discovery-walk",
+      "file": "detail-c3a0cd6610e00f05.html",
+      "kind": "detail",
+      "original_sha256": "230721c5b97bfafa4d8765cebd6c8fbc4643f48c1d0c17d7eaf13010fdb6a17f",
+      "original_bytes": 571692,
+      "fixture_sha256": "e87ba8d2d4f3fe317243ef881d60a5edae953897dfcd5628d85234f7f926a549",
+      "fixture_bytes": 2814,
+      "native_summary_original_chars": [
+        452
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/westonbirt/flower-arranging-taster",
+      "file": "detail-109b3bb3d21ab1be.html",
+      "kind": "detail",
+      "original_sha256": "e0b7b3d848ffc1f0f378a6d3e2b7890b724590603339b466e0a9ed8fb1846e0e",
+      "original_bytes": 571131,
+      "fixture_sha256": "96f935f4d50b5684bb7b48f44c6202777a90746136bee93583cd8f2f719a5daa",
+      "fixture_bytes": 2990,
+      "native_summary_original_chars": [
+        447
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/westonbirt/footstool-weaving",
+      "file": "detail-009d5fc6f93dc5ef.html",
+      "kind": "detail",
+      "original_sha256": "97a1f89e56617dc94511fd640a3bbe2a0e70275101a1484d8b6c0d559696ad2a",
+      "original_bytes": 573436,
+      "fixture_sha256": "9c4bed4993414a51a14861810afd0eaa2c6ba3565d791c2a8636c7595469a4e0",
+      "fixture_bytes": 2924,
+      "native_summary_original_chars": [
+        484
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/westonbirt/forest-bathing",
+      "file": "detail-b790fd22fe22700e.html",
+      "kind": "detail",
+      "original_sha256": "38afe12c7a2ef3756acc7c5f1a38d4c708f4157d964cf6cd396827be0e194ee6",
+      "original_bytes": 575026,
+      "fixture_sha256": "ea7a0a758f06ce14297fcc11d05a1fd648034395348c4766116d735556f57489",
+      "fixture_bytes": 2394,
+      "native_summary_original_chars": [
+        543
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/westonbirt/gilding-workshop",
+      "file": "detail-06efe684fbd241cf.html",
+      "kind": "detail",
+      "original_sha256": "ee9d8318c2343a59bbd9df11357ddd0b4d1623a7a7218062195390c5f716f67e",
+      "original_bytes": 574663,
+      "fixture_sha256": "d77ab319e84a8afab56a18030fd09353d395e89d9cbc236addf6852515263495",
+      "fixture_bytes": 2900,
+      "native_summary_original_chars": [
+        563
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/westonbirt/guided-walk",
+      "file": "detail-f8755956975f0767.html",
+      "kind": "detail",
+      "original_sha256": "e2eeff1f19de5881ac62a8d917a21f3768e0417a02fdc546ab4ffa93f5aaa976",
+      "original_bytes": 574340,
+      "fixture_sha256": "400f412232bb1e53d496f6d22b8280b596d677396ea9102dc13bdcc9506a5c8d",
+      "fixture_bytes": 2515,
+      "native_summary_original_chars": [
+        431
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/westonbirt/kintsugi",
+      "file": "detail-4f334084a2e599f4.html",
+      "kind": "detail",
+      "original_sha256": "115a50d9f4fcc8f6066f7fb20dd81a6d1f05d110e5da6737e507aa92aa43f2eb",
+      "original_bytes": 582457,
+      "fixture_sha256": "c068926ce0049803ecb65d42b5678f3ea004505d8ce9e07f233ee03b8d5c6968",
+      "fixture_bytes": 3270,
+      "native_summary_original_chars": [
+        495
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/westonbirt/nature-journaling-immersed",
+      "file": "detail-0fb47533f4181382.html",
+      "kind": "detail",
+      "original_sha256": "11b29d8929c948654b6270b38bcf78b0e5fda6a13cd8e997bdd967d29675f10f",
+      "original_bytes": 576056,
+      "fixture_sha256": "0f629ffa5f031559c483e5bad32a032645448b896f6617a659a954cf289929f7",
+      "fixture_bytes": 2896,
+      "native_summary_original_chars": [
+        404
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/westonbirt/needle-felt",
+      "file": "detail-c76a582d6c0d9793.html",
+      "kind": "detail",
+      "original_sha256": "9a0e8ee3d502480909b5e7e03b7fbe42440b3603b50867c2ae2216f270ba7f3f",
+      "original_bytes": 574993,
+      "fixture_sha256": "b1a9cf4c5fece2b2112b4b54dd01744333e8ecad3f9f10cf226cfa77c6bb0deb",
+      "fixture_bytes": 2458,
+      "native_summary_original_chars": [
+        417
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/westonbirt/nordic-walk",
+      "file": "detail-45a624d8c64a5ba5.html",
+      "kind": "detail",
+      "original_sha256": "0634476c1e2f91b83c7b318da5d6b8b03f68320d053ead35b3a550a5127da8b1",
+      "original_bytes": 572290,
+      "fixture_sha256": "dd3da4112be3da93f67322e890d635d3dcf7c23f625477cf514634431c2dee42",
+      "fixture_bytes": 2865,
+      "native_summary_original_chars": [
+        408
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/westonbirt/planning-planting",
+      "file": "detail-abc8580cab1185f6.html",
+      "kind": "detail",
+      "original_sha256": "f725399bbaa8d5752beb10f720c30dc169d8c8dced4bfb4f78c8bdff67b3fe81",
+      "original_bytes": 570464,
+      "fixture_sha256": "370ba9e529b29224629fe418e28d39dbca333ef4e1493be832cade0870ebdfde",
+      "fixture_bytes": 2926,
+      "native_summary_original_chars": [
+        497
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/westonbirt/sensing-nature-walks",
+      "file": "detail-35e12687caf7f5ab.html",
+      "kind": "detail",
+      "original_sha256": "0b6cd58fbe29948e78cedda3eb02a4402c2a0b4e725f1f9ba98b66558ec298c8",
+      "original_bytes": 576870,
+      "fixture_sha256": "a9d04c754953b9be95fcae221465e0b7ab1d2ddd29ed5e8c661643f1521c0873",
+      "fixture_bytes": 2581,
+      "native_summary_original_chars": [
+        527
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/westonbirt/slow-stitch",
+      "file": "detail-390ede9f07930e41.html",
+      "kind": "detail",
+      "original_sha256": "4f3946ab94e28342d81f1f2cbbf5481937b47a89149aea642fd7dbe98da6370f",
+      "original_bytes": 574725,
+      "fixture_sha256": "e7fc27aec307f0818da5262d8be905fb632965abc01f3fafc0a74fb768621da3",
+      "fixture_bytes": 2989,
+      "native_summary_original_chars": [
+        488
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/westonbirt/summer-vase-arrangement",
+      "file": "detail-56e7c556a14319ff.html",
+      "kind": "detail",
+      "original_sha256": "2ad36b2dd113bfccc742c5ad0f6b8182ffe62a9c7a1c59fb086b4a5d6c0a95f6",
+      "original_bytes": 573288,
+      "fixture_sha256": "324ada079e947bdcafdf56d1ef3bae18968ffb9c481afba3101f9d3bc0cbfa80",
+      "fixture_bytes": 3007,
+      "native_summary_original_chars": [
+        252
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/westonbirt/time-with-a-tree",
+      "file": "detail-6b232f0497695ce7.html",
+      "kind": "detail",
+      "original_sha256": "476727c65aea1db71429159c3aeeda975eb8c7309503982c413decb77d14ad9f",
+      "original_bytes": 579788,
+      "fixture_sha256": "1cc0c4677eeff5ede0cc03b71e10ab559d223acf46f239d420c025888294446e",
+      "fixture_bytes": 2909,
+      "native_summary_original_chars": [
+        149
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/westonbirt/understanding-woodlands",
+      "file": "detail-c3850af71f5c0c7d.html",
+      "kind": "detail",
+      "original_sha256": "d3b9b59d8435fe1981aa28f5c74dbfab65db63c8e476315be3dbb081b0ad2f55",
+      "original_bytes": 576473,
+      "fixture_sha256": "025d622ecf88741f1b106a62fad76ef8b7c66642f0842e45f92264bcaa1930b2",
+      "fixture_bytes": 3015,
+      "native_summary_original_chars": [
+        150
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/westonbirt/wild-about-bees",
+      "file": "detail-7503ef6b45ae9045.html",
+      "kind": "detail",
+      "original_sha256": "70dfff96a11b44dcbd61f60f382f4e5cc13317f5b700e8f95d35f0325759f70d",
+      "original_bytes": 571940,
+      "fixture_sha256": "37815cb4f832a962bde13858fba8ed477b2e8edc6810405272f2f7b8ac067fdf",
+      "fixture_bytes": 2737,
+      "native_summary_original_chars": [
+        427
+      ]
+    },
+    {
+      "url": "https://www.forestryengland.uk/westonbirt/willow-sculpture",
+      "file": "detail-8aca1e5d7dd5e37c.html",
+      "kind": "detail",
+      "original_sha256": "1b233dfc1bb71823b952b6f67140234673c05d98527c4667739a73b99dff9be8",
+      "original_bytes": 572827,
+      "fixture_sha256": "fd94d3c0bd59f9ef2cabaaefb091379c2ab52a22b5fba25c460239bcaff86018",
+      "fixture_bytes": 3077,
+      "native_summary_original_chars": [
+        497
+      ]
+    }
+  ]
+}

@@ -80,6 +80,14 @@ def _publisher_body_limit(url, accept, allowed_hosts, respect_robots):
     if atlantic_city_pdf_programs.reviewed_large_document(
             url, accept, allowed_hosts, respect_robots):
         return atlantic_city_pdf_programs.MAX_PDF
+    # The reviewed Better SessionSeries default500-item page is3.76MB, partly
+    # due to large descriptive PartialSchedule arrays. Keep this8MB bound exact
+    # to that public RPDE path/cursors, normal robots checks and its sole host.
+    from roomquest import openactive
+    if (respect_robots and accept == 'application/json'
+            and allowed_hosts == ('better-admin.org.uk',)
+            and openactive.page_url(url, openactive.BETTER + '/session-series')):
+        return 8_000_000
     return MAX_BODY
 
 
@@ -1360,6 +1368,11 @@ SUPPORTED = {"ical", "jsonld", "growthzone", "wordpress", "squarespace"}
 
 
 def preview_source(source: dict, *, deadline_at=None) -> dict:
+    from roomquest import national_feed_worker
+    if national_feed_worker.handles(source):
+        # Shared RPDE bootstrap and regional RSS detail capture require the
+        # source-bound durable category lease, never a manual prefix preview.
+        raise PreviewError('publisher_checkpoint_required')
     from roomquest import maryland_sources, nebraska_library_ics
     from roomquest import holly_hill_sources, omaha_lincoln
     from roomquest import nebraska_public_calendars
@@ -3916,8 +3929,12 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
             raise PreviewError("unregistered_jsonld_source")
         deadline = min(monotonic() + 20, deadline_at - 8 if deadline_at is not None else float("inf"))
         try:
-            from roomquest import eventon
-            if source['feed_url'] == eventon.CALENDAR:
+            from roomquest import eventon, failte_ireland
+            if failte_ireland.is_source(source['feed_url']):
+                records = failte_ireland.collect(source, lambda url, accept: fetch_publisher(
+                    url, accept, respect_robots=True, deadline_at=deadline,
+                    allowed_hosts=(failte_ireland.HOST,)), deadline_at=deadline)
+            elif source['feed_url'] == eventon.CALENDAR:
                 page = fetch_publisher(eventon.CALENDAR, 'text/html', respect_robots=True,
                                        deadline_at=deadline, allowed_hosts=(eventon.HOST,))
                 body = _fetch_publisher_request(
@@ -4116,6 +4133,7 @@ def supabase_rpc(path: str, payload: dict, *, timeout: float = 4):
                "community_collector_claim_api_venue_discovery", "community_collector_finish_api_venue_discovery",
                "community_collector_claim_category", "community_collector_publish_category", "community_collector_finish_category", "community_collector_claim_previews", "community_collector_claim_demand_preview", "community_collector_claim_chambermaster", "community_collector_record_preview", "community_collector_record_preview_v2", "community_collector_record_preview_v3",
                "community_collector_read_fetch_checkpoint", "community_collector_write_fetch_checkpoint",
+               "community_collector_openactive_state",
                "community_collector_stage_incremental", "community_collector_complete_incremental",
                "community_collector_record_staged_events", "community_collector_geocoder", "community_collector_geocoder_claim", "community_collector_geocoder_claim_v2",
                "community_collector_venues", "community_collector_media", "community_collector_media_demand",
@@ -4137,7 +4155,8 @@ def supabase_rpc(path: str, payload: dict, *, timeout: float = 4):
         with urllib.request.urlopen(request, timeout=timeout) as response:
             # Only the private, fenced fetch checkpoint may contain the complete
             # bounded aggregate. All other RPCs retain their existing limit.
-            maximum = 920_000 if path == "community_collector_read_fetch_checkpoint" else 150_000
+            maximum = (1_500_000 if path == "community_collector_openactive_state"
+                       else 920_000 if path == "community_collector_read_fetch_checkpoint" else 150_000)
             raw = response.read(maximum + 1)
             if len(raw) > maximum:
                 raise PreviewError("database_unavailable")
@@ -4752,6 +4771,10 @@ def _stage_incremental_events(snapshot, plan, *, native_content, deadline, obser
 
 def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, publisher_handoff=None,
                                        observe_phase=None, collection_context=None):
+    from roomquest import national_feed_worker
+    if national_feed_worker.handles(source):
+        return national_feed_worker.process(source, pacing, collection_context=collection_context,
+            deadline_at=deadline_at, publisher_handoff=publisher_handoff, observe_phase=observe_phase)
     if source.get('source_key') == 'visit_raleigh_nc':
         return _process_visit_raleigh(source, pacing, collection_context=collection_context,
             deadline_at=deadline_at, publisher_handoff=publisher_handoff, observe_phase=observe_phase)

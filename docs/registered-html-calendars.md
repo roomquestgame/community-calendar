@@ -56,6 +56,14 @@ schedule data, detail limits and deadline exhaustion. No timezone, date,
 recurrence, venue address or coordinates are inferred from the source's city.
 The existing shared event normalizer owns eligibility and the date horizon.
 
+The reviewed Forestry England Drupal venue layout uses the same negotiated
+HTML/native protocol with its own complete pagination and visible-schedule
+contract. It covers all discovered forest calendars, supports explicit empty
+views, suppresses unlicensed image candidates and retains full native event
+bodies. Its publisher-specific bounds and eligibility diagnostics are described
+in [Forestry England calendars](forestry-england-calendars.md); other generic
+HTML limits and recognition rules are unchanged.
+
 ## Negotiated registration and content contract
 
 Only an exact integer `registered_html_calendar_version: 1` on the backend's
