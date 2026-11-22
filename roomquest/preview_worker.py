@@ -66,6 +66,13 @@ class PreviewError(ValueError):
     """Expected, safely reportable source failure."""
 
 
+def _robots_denied(detail):
+    """Fail closed with the shared code; carry a bounded diagnostic detail."""
+    error = PreviewError("robots_denied")
+    error.robots_detail = detail
+    return error
+
+
 def _publisher_body_limit(url, accept, allowed_hosts, respect_robots):
     # Two reviewed current calendar PDFs are 12.8/15.9MB. Keep the ordinary limit
     # everywhere else, including redirects to a different object on this CDN.
@@ -111,6 +118,18 @@ class ReviewedRobotsRedirects(RejectRedirects):
                 and newurl == 'https://omaharun.org/?robots=1'
                 and code in (301, 302, 303, 307, 308)):
             validate_public_dns('omaharun.org')
+            activity_before_request(newurl, auxiliary=True, redirect=True)
+            return Request(newurl, headers={
+                'User-Agent': 'RoomQuestCommunityCalendar/0.1 (community-event research)'
+            }, method='GET')
+        # Observed November 22: South Hill's .org host permanently redirects
+        # robots.txt to its reviewed .gov host, whose robots.txt is absent (404).
+        # Both hosts are in the reviewed Things To Do publisher inventory. The
+        # original is rechecked every cache window, so new rules still bind.
+        if (request.full_url == 'https://www.southhillva.org/robots.txt'
+                and newurl == 'https://www.southhillva.gov/robots.txt'
+                and code == 301 and request.get_method() == 'GET'):
+            validate_public_dns('www.southhillva.gov')
             activity_before_request(newurl, auxiliary=True, redirect=True)
             return Request(newurl, headers={
                 'User-Agent': 'RoomQuestCommunityCalendar/0.1 (community-event research)'
@@ -301,7 +320,7 @@ def _checkpoint_publisher_ready(source, url, deadline):
     validate_public_dns(host)
     path = _robots_request_path(url)
     if not robots_allowed(host, path, deadline_at=deadline):
-        raise PreviewError("robots_denied")
+        raise _robots_denied("path_disallowed")
     try:
         # Leave the existing twelve-second adapter guard for the calendar GET.
         # This admission does not reserve a request that has not occurred.
@@ -361,7 +380,7 @@ def _robots_rules(host: str, *, deadline_at: float | None = None):
             _robots_delays[host] = 1
             return _cache_robots(host, None, raw=b"", status=exc.code)
         if exc.code in (401, 403):
-            raise PreviewError("robots_denied") from exc
+            raise _robots_denied("access_http_%d" % exc.code) from exc
         if exc.code == 429:
             raise PreviewError("publisher_rate_limited") from exc
         raise PreviewError("robots_unavailable") from exc
@@ -901,7 +920,7 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
             if respect_robots and not robots_allowed(
                     parsed.netloc, _robots_request_path(current),
                     deadline_at=current_deadline):
-                raise PreviewError("robots_denied")
+                raise _robots_denied("path_disallowed")
             if respect_robots and monotonic() >= current_deadline:
                 raise PreviewError("source_fetch_deadline")
             if respect_robots:
