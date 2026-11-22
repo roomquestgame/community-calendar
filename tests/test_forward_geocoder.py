@@ -8,11 +8,14 @@ from pathlib import Path
 import unittest
 from unittest.mock import MagicMock, patch
 from urllib.error import HTTPError, URLError
+from urllib.parse import parse_qs, urlparse
 
 from api.geocode import handler
 from roomquest import forward_geocoder as g
+from roomquest import preview_worker
 
 ADDRESS = "11 w jones st,raleigh,nc"
+GB_ADDRESS = "Park Street,Cambridge,CB5 8AS"
 ENV = {"VERCEL_ENV": "production", "FORWARD_GEOCODER_ENABLED": "true",
        "GEOCODIO_API_KEY": "fixture-only"}
 
@@ -29,6 +32,20 @@ def response(**changes):
 def reservation():
     return {"allowed": True, "request_id": "request-fixture",
             "valid_until": (datetime.now(timezone.utc) + timedelta(seconds=15)).isoformat()}
+
+
+def gb_response(**changes):
+    # Synthetic provider fixture; these coordinates are never used in production.
+    row = {"accuracy": .67, "accuracy_type": "street_center",
+           "location": {"lat": 52.2, "lng": .1},
+           "address_components": {"street": "Park", "suffix": "St", "city": "Cambridge",
+                                  "nation": "England", "country": "GB", "postal_code": "CB5 8AS"}}
+    row.update(changes)
+    return {"results": [row]}
+
+
+def gb_reservation(address=GB_ADDRESS):
+    return {**reservation(), "country_code": "GB", "query_text": address}
 
 
 class ValidationTests(unittest.TestCase):
@@ -227,6 +244,231 @@ class ValidationTests(unittest.TestCase):
             opener.assert_called_once()
 
 
+class GreatBritainValidationTests(unittest.TestCase):
+    def test_full_postcode_normalization_and_standard_shapes(self):
+        cases = {" cb58as ": "CB5 8AS", "m11ae": "M1 1AE", "B33 8TH": "B33 8TH",
+                 "cr2  6xh": "CR2 6XH", "DN551PT": "DN55 1PT", "w1a0ax": "W1A 0AX",
+                 "ec1a1bb": "EC1A 1BB", "gir0aa": "GIR 0AA"}
+        for value, expected in cases.items():
+            with self.subTest(value=value):
+                self.assertEqual(g.normalize_gb_postcode(value), expected)
+        for value in (None, "", "CB5", "CB5 8A", "27601", "CB5-8AS", "CB5 8AS, UK", "CB5 8AAS"):
+            with self.subTest(value=value):
+                self.assertEqual(g.normalize_gb_postcode(value), "")
+
+    def test_uk_components_keep_postcode_letters_and_do_not_require_us_state(self):
+        self.assertEqual(g.expected_address_parts(GB_ADDRESS, "GB"),
+                         ("park st", "cambridge", "", "CB5 8AS"))
+        self.assertEqual(g.result_address_parts(gb_response()["results"][0], "GB"),
+                         ("park st", "cambridge", "england", "CB5 8AS"))
+        self.assertIsNotNone(g.verify(gb_response(), GB_ADDRESS, "GB"))
+        for address in ("Park Street,Cambridge,CB5", "Park Street,Cambridge,27601",
+                        "Park Street,Cambridge,CB5 8AS,GB", "Park Street,,CB5 8AS"):
+            with self.subTest(address=address):
+                self.assertIsNone(g.verify(gb_response(), address, "GB"))
+
+    def test_reviewed_gb_parts_match_database_normalization_and_reject_nonphysical_inputs(self):
+        self.assertEqual(g.gb_address_part("  ST. IVES  "), "st. ives")
+        self.assertEqual(g.gb_address_part("  West Orchard Close  ", street=True), "west orchard cl")
+        for value in ("", "A", "12", "Online room", "PO Box 12", "https://example.test",
+                      "12/14 Park Street", "Park\nStreet", "<Park>", "Park,Street"):
+            with self.subTest(value=value):
+                self.assertEqual(g.gb_address_part(value, street=True), "")
+        payload = gb_response(accuracy_type="point")
+        payload["results"][0]["address_components"].update(number="12A", street="Orchard", suffix="Cl")
+        self.assertIsNotNone(g.verify(payload, "12a Orchard Close Unit 4,Cambridge,CB5 8AS", "GB"))
+
+    def test_country_is_explicit_and_cannot_cross_us_gb_or_unknown_boundaries(self):
+        self.assertIsNone(g.verify(gb_response(), GB_ADDRESS))
+        for country in (None, "", "US", "USA", "UK", "CA", {"name": "GB"}):
+            payload = gb_response()
+            payload["results"][0]["address_components"]["country"] = country
+            with self.subTest(country=country):
+                self.assertIsNone(g.verify(payload, GB_ADDRESS, "GB"))
+        for country in (None, "", "UK", "CA"):
+            with self.subTest(expected_country=country):
+                self.assertIsNone(g.verify(gb_response(), GB_ADDRESS, country))
+
+    def test_precise_points_bind_provided_number_street_and_nonconflicting_postcode(self):
+        address = "12 Park Street,Cambridge,CB5 8AS"
+        for kind in ("rooftop", "point"):
+            payload = gb_response(accuracy_type=kind)
+            payload["results"][0]["address_components"]["number"] = "12"
+            self.assertIsNotNone(g.verify(payload, address, "GB"))
+            for field, value in (("number", "13"), ("number", ""), ("street", "Garden"),
+                                 ("postal_code", "CB5 8AT"), ("postal_code", "27601")):
+                rejected = copy.deepcopy(payload)
+                rejected["results"][0]["address_components"][field] = value
+                with self.subTest(kind=kind, field=field, value=value):
+                    self.assertIsNone(g.verify(rejected, address, "GB"))
+            payload["results"][0]["address_components"]["postal_code"] = ""
+            self.assertIsNotNone(g.verify(payload, address, "GB"))
+
+    def test_street_approximations_preserve_existing_provider_precision_policy(self):
+        for kind in ("street_center", "range_interpolation", "nearest_rooftop_match"):
+            for postal in ("", "CB5 8AT", "CB5 8AS"):
+                payload = gb_response(accuracy=.12, accuracy_type=kind)
+                payload["results"][0]["address_components"]["postal_code"] = postal
+                with self.subTest(kind=kind, postal=postal):
+                    self.assertIsNotNone(g.verify(payload, GB_ADDRESS, "GB"))
+                    payload["results"][0]["address_components"]["street"] = "Pavilion"
+                    self.assertIsNone(g.verify(payload, GB_ADDRESS, "GB"))
+
+    def test_postcode_allows_postal_town_alias_but_never_a_different_street(self):
+        payload = gb_response()
+        components = payload["results"][0]["address_components"]
+        components["city"] = "Postal Town Alias"
+        components["postal_code"] = "cb58as"
+        self.assertIsNotNone(g.verify(payload, GB_ADDRESS, "GB"))
+        components["street"] = "Pavilion"
+        self.assertIsNone(g.verify(payload, GB_ADDRESS, "GB"))
+        components["street"] = "Park"
+        for postal in ("", "CB5 8AT", "CB5"):
+            components["postal_code"] = postal
+            self.assertIsNone(g.verify(payload, GB_ADDRESS, "GB"))
+
+    def test_place_and_intersection_require_town_even_with_exact_postcode(self):
+        for kind in ("place", "intersection"):
+            for postal in ("", "CB5 8AT", "CB5 8AS"):
+                payload = gb_response(accuracy=.1, accuracy_type=kind)
+                payload["results"][0]["address_components"].update(street="", suffix="", postal_code=postal)
+                with self.subTest(kind=kind, postal=postal):
+                    self.assertIsNotNone(g.verify(payload, GB_ADDRESS, "GB"))
+                    payload["results"][0]["address_components"]["city"] = "Ely"
+                    self.assertIsNone(g.verify(payload, GB_ADDRESS, "GB"))
+        for kind in ("county", "state"):
+            self.assertIsNone(g.verify(gb_response(accuracy_type=kind), GB_ADDRESS, "GB"))
+
+    def test_uk_request_uses_reserved_identity_country_and_normalized_postcode(self):
+        address = "Park Street, Cambridge, cb58as"
+        opener = MagicMock(return_value=io.BytesIO(json.dumps(gb_response()).encode()))
+        accepted = g.geocode(address, "fixture-only", reservation=gb_reservation(address),
+                             country_code="GB", opener=opener)
+        self.assertIsNotNone(accepted)
+        request = opener.call_args.args[0]
+        self.assertEqual(parse_qs(urlparse(request.full_url).query),
+                         {"q": ["Park Street,Cambridge,CB5 8AS"], "country": ["GB"], "limit": ["2"]})
+        self.assertEqual(request.get_header("Authorization"), "Bearer fixture-only")
+        self.assertEqual(opener.call_args.kwargs["timeout"], 8)
+        self.assertNotIn("fixture-only", request.full_url)
+        opener.assert_called_once()
+
+    def test_uk_reservation_must_echo_exact_country_and_query_before_request(self):
+        for reserved in (reservation(), {**gb_reservation(), "country_code": "US"},
+                         {**gb_reservation(), "query_text": "Pavilion Street,Cambridge,CB5 8AS"}):
+            opener = MagicMock()
+            with self.subTest(reserved=reserved), self.assertRaisesRegex(g.GeocodeFailure, "^invalid_reservation$"):
+                g.geocode(GB_ADDRESS, "fixture-only", reservation=reserved, country_code="GB", opener=opener)
+            opener.assert_not_called()
+        opener = MagicMock()
+        address = "Park Street,Cambridge,CB5"
+        with self.assertRaisesRegex(g.GeocodeFailure, "^invalid_request$"):
+            g.geocode(address, "fixture-only", reservation=gb_reservation(address),
+                      country_code="GB", opener=opener)
+        opener.assert_not_called()
+
+    def test_uk_authentication_and_country_access_errors_are_distinct_and_not_retried(self):
+        for status, reason in ((401, "provider_auth"), (403, "provider_country_access")):
+            opener = MagicMock(side_effect=HTTPError("https://example", status, "secret-sentinel", {}, None))
+            with self.subTest(status=status), self.assertRaisesRegex(g.GeocodeFailure, "^" + reason + "$"):
+                g.geocode(GB_ADDRESS, "fixture-only", reservation=gb_reservation(),
+                          country_code="GB", opener=opener)
+            opener.assert_called_once()
+
+
+class CountryBoundWorkerTests(unittest.TestCase):
+    def setUp(self):
+        self.calls = []
+        self.claim = {"venue_key": "key", "lease_id": "lease", "query_text": GB_ADDRESS,
+                      "country_code": "GB"}
+        self.reserved = gb_reservation()
+
+    def db(self, action, payload):
+        self.calls.append((action, copy.deepcopy(payload)))
+        if action == "claim":
+            return [self.claim]
+        if action == "reserve":
+            return self.reserved
+        if action == "submit":
+            return {"resolved": True, "events_updated": 1}
+        return {"recorded": True}
+
+    def test_v2_claim_rpc_is_token_authenticated_and_allowlisted(self):
+        env = {"SUPABASE_URL": preview_worker.ROOMQUEST_DB,
+               "SUPABASE_PUBLISHABLE_KEY": "fixture-only", "ROOMQUEST_COLLECTOR_TOKEN": "t" * 64}
+        with patch.dict(os.environ, env), redirect_stdout(io.StringIO()):
+            with patch("urllib.request.urlopen", return_value=io.BytesIO(b"[]")) as transport:
+                self.assertEqual(g.rpc("claim", {"limit": 1}), [])
+        request = transport.call_args.args[0]
+        self.assertTrue(request.full_url.endswith("/rpc/community_collector_geocoder_claim_v2"))
+        self.assertEqual(json.loads(request.data), {"p_limit": 1, "p_token": "t" * 64})
+        self.assertEqual(transport.call_args.kwargs["timeout"], 12)
+
+    def test_country_binds_claim_reservation_provider_and_submit(self):
+        provider = MagicMock(return_value=gb_response())
+        with patch.dict(os.environ, ENV):
+            result = g.run_batch(max_requests=1, database=self.db, provider=provider)
+        self.assertEqual((result["attempted"], result["resolved"], result["events_updated"]), (1, 1, 1))
+        self.assertEqual([action for action, _ in self.calls], ["claim", "reserve", "submit"])
+        for _, payload in self.calls[1:]:
+            self.assertEqual(payload["country_code"], "GB")
+            self.assertEqual(payload["query_text"], GB_ADDRESS)
+            self.assertEqual(payload["venue_key"], self.claim["venue_key"])
+            self.assertEqual(payload["lease_id"], self.claim["lease_id"])
+        provider.assert_called_once_with(GB_ADDRESS, "fixture-only", reservation=self.reserved, country_code="GB")
+
+    def test_missing_unknown_country_and_malformed_country_address_never_reserve(self):
+        cases = [{"country_code": None}, {"country_code": "UK"}, {"country_code": []},
+                 {"country_code": "US"}, {"query_text": "Park Street,Cambridge,CB5"},
+                 {"query_text": "Park Street,Cambridge,CB5 8AS,UK"}]
+        for changes in cases:
+            self.setUp()
+            self.claim.update(changes)
+            provider = MagicMock()
+            with self.subTest(changes=changes), patch.dict(os.environ, ENV):
+                result = g.run_batch(database=self.db, provider=provider)
+            self.assertEqual(result["stop_reason"], "invalid_claim")
+            self.assertEqual(result["attempted"], 0)
+            self.assertEqual([action for action, _ in self.calls], ["claim"])
+            provider.assert_not_called()
+
+    def test_unbound_reservation_never_reaches_provider_or_submit(self):
+        for reserved in (reservation(), {**gb_reservation(), "country_code": "US"},
+                         {**gb_reservation(), "query_text": "Garden,Cambridge,CB5 8AS"}):
+            self.setUp()
+            self.reserved = reserved
+            provider = MagicMock()
+            with self.subTest(reserved=reserved), patch.dict(os.environ, ENV):
+                result = g.run_batch(database=self.db, provider=provider)
+            self.assertEqual(result["stop_reason"], "invalid_reservation")
+            self.assertEqual(result["attempted"], 0)
+            self.assertEqual([action for action, _ in self.calls], ["claim", "reserve"])
+            provider.assert_not_called()
+
+    def test_uk_access_denial_records_country_bound_hold_and_stops_batch(self):
+        provider = MagicMock(side_effect=g.GeocodeFailure("provider_country_access"))
+        with patch.dict(os.environ, ENV):
+            result = g.run_batch(max_requests=10, database=self.db, provider=provider)
+        self.assertEqual(result["stop_reason"], "provider_country_access")
+        self.assertEqual((result["attempted"], result["errors"]), (1, 1))
+        self.assertEqual([action for action, _ in self.calls], ["claim", "reserve", "fail"])
+        self.assertEqual(self.calls[-1][1]["country_code"], "GB")
+        self.assertEqual(self.calls[-1][1]["query_text"], GB_ADDRESS)
+        self.assertEqual(self.calls[-1][1]["reason"], "provider_country_access")
+        provider.assert_called_once()
+
+    def test_uk_submit_diagnostic_retains_only_country_aware_validity_flags(self):
+        diagnostic = g._submit_failure_diagnostic(
+            {**self.claim, "request_id": "request-secret-sentinel"}, GB_ADDRESS, gb_response(),
+            g.PreviewError("secret-sentinel"))
+        self.assertTrue(diagnostic["country_valid"])
+        self.assertTrue(diagnostic["postal_match"])
+        self.assertTrue(diagnostic["street_match"])
+        self.assertNotIn("sentinel", json.dumps(diagnostic))
+        self.assertNotIn("Cambridge", json.dumps(diagnostic))
+        self.assertNotIn("CB5", json.dumps(diagnostic))
+
+
 class WorkerTests(unittest.TestCase):
     def test_production_cron_route_and_execution_budget(self):
         config = json.loads((Path(__file__).parents[1] / "vercel.json").read_text())
@@ -237,7 +479,8 @@ class WorkerTests(unittest.TestCase):
     def db(self, action, payload):
         self.calls.append((action, payload))
         if action == "claim":
-            return [{"venue_key": "key", "lease_id": "lease", "query_text": ADDRESS}]
+            return [{"venue_key": "key", "lease_id": "lease", "query_text": ADDRESS,
+                     "country_code": "US"}]
         if action == "reserve":
             return reservation()
         if action == "submit":
@@ -317,8 +560,9 @@ class SubmitFailureTests(unittest.TestCase):
         self.failure = g.PreviewError("sensitive-exception-sentinel")
         self.provider = MagicMock(side_effect=self.provide)
 
-    def provide(self, address, key, *, reservation):
+    def provide(self, address, key, *, reservation, country_code):
         self.assertEqual(self.calls[-1][0], "reserve")
+        self.assertEqual(country_code, "US")
         result = response()
         result["results"][0]["address_components"]["number"] = address.split()[0]
         return result
@@ -329,6 +573,7 @@ class SubmitFailureTests(unittest.TestCase):
             self.claim_count += 1
             return [{"venue_key": f"{self.claim_count:032x}",
                      "lease_id": f"lease-sensitive-sentinel-{self.claim_count}",
+                     "country_code": "US",
                      "query_text": f"{10 + self.claim_count} w jones st,raleigh,nc"}]
         if action == "reserve":
             return {**reservation(),
@@ -350,7 +595,8 @@ class SubmitFailureTests(unittest.TestCase):
         self.assertNotEqual(self.provider.call_args_list[0].args[0], self.provider.call_args_list[1].args[0])
         for start in (0, 3):
             reserved, submitted = self.calls[start + 1][1], self.calls[start + 2][1]
-            self.assertEqual(reserved, {name: submitted[name] for name in ("venue_key", "lease_id")})
+            self.assertEqual(reserved, {name: submitted[name] for name in
+                                       ("venue_key", "lease_id", "country_code")})
         lines = output.getvalue().splitlines()
         self.assertEqual(len(lines), 1)
         diagnostic = json.loads(lines[0])
@@ -432,6 +678,7 @@ class SubmitFailureTests(unittest.TestCase):
         match["results"][0]["address_components"].update(
             street="street-sentinel", city="sensitive city sentinel", predirectional="", postdirectional="")
         claim = {"venue_key": f"{1:032x}", "lease_id": "lease-sensitive-sentinel",
+                 "country_code": "US",
                  "query_text": "11 street-sentinel st,sensitivecitysentinel,nc"}
         reserved = {**reservation(), "request_id": "00000000-0000-0000-0000-000000000001"}
         output = io.StringIO()
