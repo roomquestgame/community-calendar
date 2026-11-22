@@ -1,0 +1,15 @@
+{
+  "alias": "workshop",
+  "page_title": "Workshops",
+  "isHomePage": false,
+  "parameters": {
+    "InitialPageAlias": "workshop",
+    "InitialDynamicItem": null,
+    "IsCurrentHomePage": false,
+    "pageType": "FROM_SCRATCH",
+    "CurrentPageUrl": ""
+  },
+  "css": "*#dm *.dmBody div.u_1430304269\n{\n\tline-height:150% !important;\n}",
+  "headsection": "<meta content=\"https://www.batterseabloem.com/workshop\" property=\"og:url\"/>",
+  "content": "<div class=\"dmBody u_dmStyle_template_workshop\"><h1 class=\"u_1645481310 dmNewParagraph\" data-element-type=\"paragraph\" id=\"1645481310\" style=\"transition: none 0s ease 0s; display: block;\"><span class=\"m-font-size-36 lh-1 font-size-72\" style=\"\"><font class=\"m-font-size-36 lh-1\" style=\"color: rgb(255, 255, 255);\"><span class=\"m-font-size-36 lh-1 font-size-60\"> </span><span class=\"m-font-size-36 lh-1 font-size-60\" style=\"font-weight:400;font-family:'Dancing Script', 'Dancing Script Fallback';\">Botanical Workshops</span></font>\n<span class=\"m-font-size-36 lh-1 font-size-60\" style=\"\"></span>\n<font class=\"m-font-size-36 lh-1\" style=\"color: rgb(255, 255, 255);\"> </font></span><br/></h1><a class=\"u_1481594311 align-center dmButtonLink dmWidget dmWwr default dmOnlyButton dmDefaultGradient\" data-buttonstyle=\"ROUND_SIDES\" data-display-type=\"block\" data-element-type=\"dButtonLinkId\" file=\"false\" href=\"https://battersea-bloem.square.site/\" id=\"1481594311\" target=\"_blank\"> <span class=\"iconBg\" id=\"1103281544\"> <span class=\"icon hasFontIcon icon-star\" id=\"1753989549\"></span>\n</span>\n<span class=\"text\" id=\"1197807741\">Buy Gift Vouchers</span>\n</a></div>"
+}

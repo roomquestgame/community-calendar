@@ -1,7 +1,8 @@
 """Reviewed UK HTML calendars, using only publisher-visible dates and venues.
 
-Transport remains the registration/preview worker's robots-aware fetch.  No
-calendar APIs, image OCR, inferred weekly schedules or geocoder calls are used.
+Transport remains the registration/preview worker's robots-aware fetch. Linked
+public booking data uses exact source adapters; image OCR, inferred weekly
+schedules and geocoder calls are not used.
 """
 from datetime import datetime, timedelta
 import re
@@ -12,13 +13,13 @@ from zoneinfo import ZoneInfo
 from bs4 import BeautifulSoup
 
 from roomquest.event_description import description
-from roomquest import designmynight_listing, eventin_listing
+from roomquest import battersea_bloem, designmynight_listing, eventin_listing
 from roomquest.mapsee_adapter import record
 from roomquest.registration_formats import source_key
 
 WINE = 'https://www.cambridgewineacademy.com/wine-tastings/'
 MILTON = 'https://www.miltoncountrypark.org/whats-on'
-URLS = (WINE, MILTON, eventin_listing.URL, designmynight_listing.URL)
+URLS = (WINE, MILTON, eventin_listing.URL, designmynight_listing.URL, battersea_bloem.URL)
 LONDON = ZoneInfo('Europe/London')
 MAX_DETAILS = 12
 MAX_CARDS = 100
@@ -57,6 +58,8 @@ def allowed_hosts(url):
     if url not in URLS:
         raise ValueError('unregistered_html_source')
     hosts = (urlsplit(url).hostname,)
+    if url == battersea_bloem.URL:
+        return hosts + (urlsplit(battersea_bloem.STORE).hostname,)
     return hosts + ('www.designmynight.com',) if url == designmynight_listing.URL else hosts
 
 
@@ -217,6 +220,8 @@ def collect(source, fetch, *, deadline_at=None, listing=None):
     if url not in URLS or source.get('source_key') != source_key(url):
         raise ValueError('unregistered_html_source')
     deadline_check(deadline_at)
+    if url == battersea_bloem.URL:
+        return battersea_bloem.collect(source, fetch, deadline_at=deadline_at, listing=listing)
     soup = BeautifulSoup(listing if listing is not None else fetch(url, 'text/html'), 'html.parser')
     today = datetime.now(LONDON).date()
     if url == WINE:
