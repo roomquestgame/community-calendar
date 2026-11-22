@@ -296,8 +296,12 @@ def register(ticket):
                                            allowed_hosts=registered_listings.allowed_hosts(url),
                                            **({'follow_redirects': False} if url == liberty_calendar.ORIGINAL else {}))
                 try:
-                    registered_listings.collect({'source_key': source_key(url), 'feed_url': url}, fetch_detail,
-                                                listing=body, deadline_at=deadline)
+                    records = registered_listings.collect({'source_key': source_key(url), 'feed_url': url}, fetch_detail,
+                                                          listing=body, deadline_at=deadline)
+                    # A complete recurring snapshot can be empty after its last
+                    # dated event. Initial registration still needs an event.
+                    if not records:
+                        raise ValueError('no_extractable_events')
                     result = {'p_outcome': 'verified' if url == candidate['url'] else 'discovered',
                               'p_type': 'html', 'p_endpoint': url}
                 except PreviewError:

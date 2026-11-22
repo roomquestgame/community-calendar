@@ -13,13 +13,13 @@ from zoneinfo import ZoneInfo
 from bs4 import BeautifulSoup
 
 from roomquest.event_description import description
-from roomquest import battersea_bloem, designmynight_listing, eventin_listing
+from roomquest import battersea_bloem, designmynight_listing, eventin_listing, sustainable_ow
 from roomquest.mapsee_adapter import record
 from roomquest.registration_formats import source_key
 
 WINE = 'https://www.cambridgewineacademy.com/wine-tastings/'
 MILTON = 'https://www.miltoncountrypark.org/whats-on'
-URLS = (WINE, MILTON, eventin_listing.URL, designmynight_listing.URL, battersea_bloem.URL)
+URLS = (WINE, MILTON, eventin_listing.URL, designmynight_listing.URL, battersea_bloem.URL, sustainable_ow.URL)
 LONDON = ZoneInfo('Europe/London')
 MAX_DETAILS = 12
 MAX_CARDS = 100
@@ -222,6 +222,8 @@ def collect(source, fetch, *, deadline_at=None, listing=None):
     deadline_check(deadline_at)
     if url == battersea_bloem.URL:
         return battersea_bloem.collect(source, fetch, deadline_at=deadline_at, listing=listing)
+    if url == sustainable_ow.URL:
+        return sustainable_ow.collect(source, fetch, deadline_at=deadline_at, listing=listing)
     soup = BeautifulSoup(listing if listing is not None else fetch(url, 'text/html'), 'html.parser')
     today = datetime.now(LONDON).date()
     if url == WINE:
