@@ -2931,7 +2931,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
             samples.pop()
         return {'p_source_key':source_key,'p_samples':samples,
                 'p_future_count':len(records),'p_venue_count':0,
-                'p_error':None,'p_events':records}
+                'p_error':None,'p_events':records,
+                'p_parser_capability':'publisher_event_candidates_v1'}
     from roomquest import santa_cruz_fabrica
     if source_key == santa_cruz_fabrica.KEY:
         deadline = min(monotonic()+39, deadline_at-6 if deadline_at is not None else float('inf'))

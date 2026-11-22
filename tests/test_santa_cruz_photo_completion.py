@@ -1,4 +1,4 @@
-"""Offline completion-contract regressions for six already enrolled publishers.
+"""Offline completion-contract regressions for seven already enrolled publishers.
 
 Run the real dedicated parsers and worker against their existing HTML fixtures.
 The RPC double models the deployed v3 photo receipt's count/observation checks;
@@ -16,6 +16,7 @@ import test_santa_cruz_downtown as downtown
 import test_santa_cruz_fabrica as fabrica
 import test_santa_cruz_goat_fitness as goat
 import test_santa_cruz_hotel_holidays as hotels
+import test_santa_cruz_art_league as art_league
 
 
 NOW = datetime(2026, 11, 19, 12, tzinfo=timezone.utc)
@@ -23,6 +24,8 @@ STAGE = "community_collector_record_staged_events"
 COMPLETE = "community_collector_record_preview_v3"
 CASES = [
     pytest.param(5859, fabrica.f, fabrica.SOURCE, fabrica.fixtures, 1, id="fabrica"),
+    pytest.param(5860, art_league.m, art_league.SOURCE, art_league.fixture, 1,
+                 id="art-league"),
     pytest.param(5861, hotels.h, hotels.src(hotels.h.CHAMINADE), hotels.fetch, 3,
                  id="chaminade"),
     pytest.param(5862, hotels.h, hotels.src(hotels.h.DREAM_INN), hotels.fetch, 1,
