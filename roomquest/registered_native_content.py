@@ -7,8 +7,18 @@ import re
 from urllib.parse import urlsplit
 
 VERSION = 'registered_native_content_v1'
+HTML_VERSION = 'registered_html_jsonld_v1'
+HTML_CAPABILITY = 'registered_html_calendar_version'
+HTML_DESCRIPTION_FIELD = 'rockhouse_event_description'
 MAX_DESCRIPTION = 12000
 CAPABILITY = 'registered_native_content_version'
+
+
+def html_details(source):
+    """The separately negotiated HTML adapter carries per-detail evidence."""
+    return (source.get('kind') == 'html' and source.get('platform_adapter') == 'html'
+            and type(source.get(HTML_CAPABILITY)) is int
+            and source[HTML_CAPABILITY] == 1)
 
 
 def enabled(source, *, adapter=None):
@@ -21,8 +31,10 @@ def enabled(source, *, adapter=None):
         return False
     from roomquest.registration_formats import source_key
     feed = source.get('feed_url')
-    if (source.get('kind') != 'json'
-            or source.get('platform_adapter') not in ('wordpress', 'jsonld')
+    family = ((source.get('kind') == 'json'
+               and source.get('platform_adapter') in ('wordpress', 'jsonld'))
+              or html_details(source))
+    if (not family
             or (adapter is not None and source.get('platform_adapter') != adapter)
             or not native_url(feed)
             or source.get('source_key') != source_key(feed)):
@@ -47,6 +59,11 @@ def native_url(value):
 def event_url_matches(source, link):
     if not native_url(link):
         return False
+    if html_details(source):
+        # Detail pages were actually fetched under the exact listing host.
+        # A www alias is not implicit permission to crawl another origin.
+        return (link != source['feed_url']
+                and urlsplit(link).netloc == urlsplit(source['feed_url']).netloc)
     if (urlsplit(link).hostname.lower().removeprefix('www.')
             == urlsplit(source['feed_url']).hostname.lower().removeprefix('www.')):
         return True
@@ -93,32 +110,44 @@ def image_candidate(value, base_url='', *, _depth=0):
     return candidate if native_url(candidate) else None
 
 
-def attach(row, source, *, description_value=None, image_value=None):
+def attach(row, source, *, description_value=None, image_value=None, evidence_url=None,
+           description_field='description'):
     if not enabled(source):
         raise ValueError('registered_native_capability_required')
     if not event_identity(source, row):
         raise ValueError('registered_native_event_identity_invalid')
+    detail = html_details(source)
+    if description_field != 'description' and not (
+            detail and description_field == HTML_DESCRIPTION_FIELD):
+        raise ValueError('registered_native_evidence_invalid')
+    if ((detail and evidence_url != row['event_url'])
+            or (not detail and evidence_url not in (None, source['feed_url']))):
+        raise ValueError('registered_native_evidence_invalid')
+    evidence = evidence_url if detail else source['feed_url']
     from roomquest.event_description import description
     # One extra character detects overflow after the existing sanitizer, without
     # silently truncating the native narrative or counting UTF-8 bytes as text.
     text = description(description_value, limit=MAX_DESCRIPTION + 1)
     if len(text) > MAX_DESCRIPTION:
         raise ValueError('registered_native_description_too_long')
-    candidate = image_candidate(image_value, source['feed_url'])
+    candidate = image_candidate(image_value, evidence)
     row['description'] = text
     row['registered_native_content'] = {
         'version': 1, 'source_key': source['source_key'],
         'feed_url': source['feed_url'], 'adapter': source['platform_adapter'],
         'event_id': row['id'], 'event_url': row['event_url'],
-        'description_field': 'description' if text else None,
+        'description_field': description_field if text else None,
         'image_field': 'image' if candidate else None,
     }
+    if detail:
+        row['registered_native_content'].update(
+            evidence_url=evidence, extraction=HTML_VERSION)
     row['image_extractor_version'] = VERSION
     for field in ('image_url', 'image_provenance', 'image_evidence_url'):
         row.pop(field, None)
     if candidate:
         row.update(image_url=candidate, image_provenance=VERSION,
-                   image_evidence_url=source['feed_url'])
+                   image_evidence_url=evidence)
     return row
 
 
@@ -130,13 +159,21 @@ def validate_record(row, source):
         raise ValueError('registered_native_evidence_invalid')
     text, candidate = row.get('description'), row.get('image_url')
     proof = row.get('registered_native_content')
+    field = proof.get('description_field') if isinstance(proof, dict) else None
+    if text and field != 'description' and not (
+            html_details(source) and field == HTML_DESCRIPTION_FIELD):
+        raise ValueError('registered_native_evidence_invalid')
     expected = {
         'version': 1, 'source_key': source['source_key'],
         'feed_url': source['feed_url'], 'adapter': source['platform_adapter'],
         'event_id': row['id'], 'event_url': row['event_url'],
-        'description_field': 'description' if text else None,
+        'description_field': field if text else None,
         'image_field': 'image' if candidate else None,
     }
+    evidence = source['feed_url']
+    if html_details(source):
+        evidence = row['event_url']
+        expected.update(evidence_url=evidence, extraction=HTML_VERSION)
     if (not isinstance(text, str) or len(text) > MAX_DESCRIPTION
             or re.search(r'<[^>]+>', text)
             or not isinstance(proof, dict) or type(proof.get('version')) is not int
@@ -145,7 +182,7 @@ def validate_record(row, source):
                 not isinstance(candidate, str) or not candidate
                 or image_candidate(candidate) != candidate
                 or row.get('image_provenance') != VERSION
-                or row.get('image_evidence_url') != source['feed_url']))
+                or row.get('image_evidence_url') != evidence))
             or (candidate is None and any(row.get(field) is not None
                 for field in ('image_provenance', 'image_evidence_url')))):
         raise ValueError('registered_native_evidence_invalid')
@@ -155,7 +192,8 @@ def media_claim(claim):
     """A native media claim authorizes only its staged candidate, never a crawl."""
     try:
         if (claim.get('candidate_only') is not True or not enabled(claim)
-                or claim.get('extraction_url') != claim['feed_url']):
+                or claim.get('extraction_url') != (
+                    claim.get('event_url') if html_details(claim) else claim['feed_url'])):
             return False
         # Media claims identify the same event URL; the backend owns occurrence
         # identity and the media lease, which this helper does not manufacture.
