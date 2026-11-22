@@ -45,9 +45,20 @@ def native_url(value):
 
 
 def event_url_matches(source, link):
-    return (native_url(link)
-            and urlsplit(link).hostname.lower().removeprefix('www.')
-            == urlsplit(source['feed_url']).hostname.lower().removeprefix('www.'))
+    if not native_url(link):
+        return False
+    if (urlsplit(link).hostname.lower().removeprefix('www.')
+            == urlsplit(source['feed_url']).hostname.lower().removeprefix('www.')):
+        return True
+    # These exact calendars publish Ticketmaster URLs in their Event JSON-LD.
+    # This is identity evidence from the fetched calendar, not fetch permission.
+    return (source.get('platform_adapter') == 'jsonld' and enabled(source)
+            and source['feed_url'] in (
+                'https://www.punchlinecomedyclub.com/',
+                'https://www.theechodallas.com/',
+            )
+            and re.fullmatch(r'https://www\.ticketmaster\.com/[^/?#]+/event/[0-9A-F]{16}', link)
+            is not None)
 
 
 def event_identity(source, row):
