@@ -461,7 +461,8 @@ def test_native_media_claim_is_candidate_only_capability_bound_and_evidence_scop
 
 def test_registration_keeps_original_urls_and_does_not_read_partial_events(monkeypatch):
     from roomquest import feed_registration as intake
-    for original, expected in ((oa.BETTER, 'jsonld'), (wildlife.BCN, 'html')):
+    for original, expected in ((oa.BETTER, 'jsonld'), (wildlife.BCN, 'html'),
+                               (wildlife.BCN + '/rss.xml', 'html')):
         calls = []
         def rpc(operation, payload, **kwargs):
             calls.append((operation, payload))
@@ -469,6 +470,13 @@ def test_registration_keeps_original_urls_and_does_not_read_partial_events(monke
                 return {'url': original}
             if operation == 'community_collector_finish_registration':
                 assert payload['p_endpoint'] == original and payload['p_type'] == expected
+                # These regional URLs are not legacy reviewed_listing_url
+                # entries. apply_feed_registration requires this exact native
+                # receipt for HTML admission and subsequent native capability.
+                if expected == 'html':
+                    assert payload.get('p_reason') == native.HTML_VERSION == 'registered_html_jsonld_v1'
+                else:
+                    assert 'p_reason' not in payload
                 return True
             pytest.fail(operation)
         def fetch(url, accept, **kwargs):
