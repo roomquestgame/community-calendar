@@ -101,3 +101,33 @@ publication/hold readback. Old captured fixtures are never fresh evidence.
 Only this existing-source canary is planned. The other five sources, source 6059,
 new registrations and broader database queue repairs are outside this canary.
 Code/test completion is not production or user-interface acceptance.
+
+## Verified PR #433 release and Dream Inn canary — November 22
+
+[PR #433](https://github.com/roomquestgame/community-calendar/pull/433) merged as
+`1bcd62c80a54aea45af076b080c53893dbca289b`. Existing production deployment
+`dpl_FX6c4tjQYdwXa8xFHri8HN3fcZJD` reached READY at **13:30:05.963 UTC**.
+The normal Admin Review → Queue preview action for existing Dream Inn source 5862
+was accepted at **13:32:58.922 UTC**. This was one source request, not a bulk retry.
+
+The new collection completed successfully at **13:33:02.607 UTC**: preview
+`complete`, error NULL, health `ok`, failure_count=0, future_count=1 and staged_count=1.
+The current staged observation at **13:33:02.436 UTC** contains the expected
+“Dream Inn Presents Breakfast with Santa,” December 12 17:00–20:00 UTC, at
+175 W Cliff Dr, Santa Cruz, CA 95060 and the approved original event URL.
+`image_extractor_version=publisher_event_candidates_v1` and
+`image_observed_at=last_seen_at`; the image candidate is honestly NULL.
+The v3 photo snapshot timestamp equals the successful completion timestamp.
+
+At **13:34:21 UTC**, no published event was present; the stage remained included
+with NULL coordinates, the existing publication request remained, and normal
+worker eligibility was false because ordinary demand had expired. Validation
+interest was present until 14:02:58 UTC. This proves the collection, staging and
+completion handshake recovery; geocoding/publication and public UI acceptance
+were not claimed. Rights and approval remained unchanged. The other five sources
+were not individually requested by this canary.
+
+Source 5860 Art League's separate verified street-normalization blocker and
+success-capability follow-up are documented in
+[its validation repair](santa-cruz-art-league-validation-20261122.md). The six-source
+receipt above does not imply Art League has been collected or published.
