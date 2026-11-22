@@ -50,9 +50,9 @@ def run_batch(*, rpc=None, deadline_seconds=45):
             "p_action": action, "p_payload": payload,
         })
 
-    # Initializing dependencies before claiming prevents import failures from
-    # taking a lease. Existing venue and event results live in Postgres.
-    finder()
+    # resolve() loads the offline dataset only when a claim needs a lookup.
+    # Empty claims can still have cached results to apply to new events below.
+    # Failed lookups leave their leases to expire without caching a negative.
     claims = call("claim", {"version": RESOLVER_VERSION})
     stats = {"resolved": 0, "unresolved": 0, "applied": 0}
     for claim in claims:
