@@ -34,10 +34,27 @@ def test_claims_only_and_stores_results():
  assert calls[1][1]['p_payload']=={'lat':35.7796,'lng':-78.6382,'lease_id':'lease','zone':'America/New_York','version':RESOLVER_VERSION}
  assert [p['p_action'] for _,p in calls]==['claim','finish','apply']
 
-def test_empty_claim_does_not_lookup():
- with patch('roomquest.coordinate_timezone.resolve') as lookup:
-  run_batch(rpc=lambda path,p: [] if p['p_action']=='claim' else 0)
+def test_empty_claim_applies_cached_results_without_loading_resolver():
+ calls=[]
+ def rpc(path,payload):
+  calls.append(payload['p_action'])
+  return [] if payload['p_action']=='claim' else 3
+ with patch('roomquest.coordinate_timezone.finder') as load, patch('roomquest.coordinate_timezone.resolve') as lookup:
+  result=run_batch(rpc=rpc)
+  load.assert_not_called()
   lookup.assert_not_called()
+ assert calls==['claim','apply']
+ assert result=={'resolved':0,'unresolved':0,'applied':3}
+
+def test_resolver_failure_does_not_cache_a_negative_result():
+ calls=[]
+ def rpc(path,payload):
+  calls.append(payload['p_action'])
+  return [{'lat':35.7796,'lng':-78.6382,'lease_id':'lease'}]
+ with patch('roomquest.coordinate_timezone.finder',side_effect=ImportError('resolver unavailable')):
+  with pytest.raises(ImportError):
+   run_batch(rpc=rpc)
+ assert calls==['claim']
 
 def test_overlapping_boundaries_are_unresolved():
  with patch('roomquest.coordinate_timezone.finder') as f:
