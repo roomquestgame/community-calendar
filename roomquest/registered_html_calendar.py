@@ -247,6 +247,9 @@ def _listing_shape(url, soup, links, *, collection_url=None):
 
 def supports_listing(url, body):
     """Read-only scope evidence; final acceptance still runs every detail."""
+    from roomquest import forestry_england
+    if forestry_england.owns_url(url):
+        return forestry_england.supports_listing(url, body)
     try:
         if _public_url(url, url) != url:
             return False
@@ -595,6 +598,9 @@ def collect(source, fetch, *, deadline_at=None, listing=None):
 
     check_deadline()
     payload = listing if listing is not None else fetch(url, 'text/html,application/xhtml+xml')
+    from roomquest import forestry_england
+    if forestry_england.owns_url(url):
+        return forestry_england.collect(source, fetch, deadline_at=deadline_at, listing=payload)
     links = {}
     pages = []
     inventories = set()

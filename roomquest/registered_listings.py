@@ -11,7 +11,7 @@ from roomquest.event_description import description
 from roomquest.mapsee_adapter import record
 from roomquest.registration_formats import source_key
 from roomquest import registered_schedule_calendars as schedules
-from roomquest import liberty_calendar, uk_registered_listings, wix_embedded_calendar
+from roomquest import liberty_calendar, uk_registered_listings, wix_embedded_calendar, wildlife_trusts
 
 BOPLEX = 'https://www.boplex.com/events'
 BROADWAY = 'https://www.broadwaycomedyclub.com/'
@@ -19,7 +19,8 @@ RESIDENT = 'https://residentculturebrewing.com/events/'
 PLAZA = RESIDENT + '?fwp_event_location=plaza-midwood'
 INDY = 'https://www.indywinterfarmersmarket.org/'
 URLS = ((BOPLEX, BROADWAY, RESIDENT, PLAZA, INDY) + schedules.URLS
-        + uk_registered_listings.URLS + wix_embedded_calendar.URLS + (liberty_calendar.ORIGINAL,))
+        + uk_registered_listings.URLS + wix_embedded_calendar.URLS + wildlife_trusts.URLS
+        + (liberty_calendar.ORIGINAL,))
 EASTERN = ZoneInfo('America/New_York')
 CLOCK = r'(?:1[0-2]|0?[1-9])(?::[0-5]\d)?\s*[ap]m'
 
@@ -30,6 +31,8 @@ def allowed_hosts(url):
         raise ValueError('unregistered_html_source')
     if url in uk_registered_listings.URLS:
         return uk_registered_listings.allowed_hosts(url)
+    if url in wildlife_trusts.URLS:
+        return wildlife_trusts.allowed_hosts(url)
     return (urlsplit(url).hostname,)
 
 
@@ -201,6 +204,8 @@ def collect(source, fetch, *, deadline_at=None, listing=None):
         raise ValueError('unregistered_html_source')
     if url == liberty_calendar.ORIGINAL:
         return liberty_calendar.collect(source, fetch, deadline_at=deadline_at, listing=listing)
+    if url in wildlife_trusts.URLS:
+        return wildlife_trusts.collect(source, fetch, deadline_at=deadline_at, listing=listing)
     if url in uk_registered_listings.URLS:
         return uk_registered_listings.collect(source, fetch, deadline_at=deadline_at, listing=listing)
     soup = BeautifulSoup(listing if listing is not None else fetch(url, 'text/html'), 'html.parser')

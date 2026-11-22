@@ -1,0 +1,17 @@
+{
+  "items": [{
+    "state": "updated", "kind": "ScheduledSession", "id": "session-1", "modified": 200,
+    "data": {
+      "@context": ["https://openactive.io/", "https://openactive.io/ns-beta"],
+      "@type": "ScheduledSession",
+      "@id": "https://better-admin.org.uk/api/openactive/better/scheduled-sessions/session-1",
+      "superEvent": "https://better-admin.org.uk/api/openactive/better/session-series/series-1",
+      "url": "https://bookings.better.org.uk/location/example-centre/fitness-classes-c/2026-11-23/by-time/class/session-1",
+      "startDate": "2026-11-23T10:00:00+00:00",
+      "endDate": "2026-11-23T11:00:00+00:00",
+      "eventStatus": "https://schema.org/EventScheduled"
+    }
+  }],
+  "next": "https://better-admin.org.uk/api/openactive/better/scheduled-sessions?afterTimestamp=200&afterId=session-1",
+  "license": "https://creativecommons.org/licenses/by/4.0/"
+}

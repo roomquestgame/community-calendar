@@ -1,0 +1,23 @@
+{
+  "items": [{
+    "state": "updated", "kind": "SessionSeries", "id": "series-1", "modified": 100,
+    "data": {
+      "@context": ["https://openactive.io/", "https://openactive.io/ns-beta"],
+      "@type": "SessionSeries",
+      "@id": "https://better-admin.org.uk/api/openactive/better/session-series/series-1",
+      "name": "Community fitness session",
+      "description": "A welcoming supervised community fitness class. Bring water and comfortable clothing.",
+      "url": "https://bookings.better.org.uk/location/example-centre/fitness-classes-c",
+      "image": [{"@type": "ImageObject", "url": "https://images.example.org/community-fitness.jpg", "width": 1280, "height": 720}],
+      "location": {
+        "@type": "Place", "name": "Example Leisure Centre",
+        "address": {"@type": "PostalAddress", "streetAddress": "42 Example Road", "addressLocality": "Cambridge", "postalCode": "CB1 1AA", "addressCountry": "GB"},
+        "geo": {"@type": "GeoCoordinates", "latitude": 52.2, "longitude": 0.12}
+      },
+      "activity": [{"@type": "Concept", "prefLabel": "Group Exercise"}],
+      "eventSchedule": [{"@type": "PartialSchedule", "repeatFrequency": "P7D", "byDay": ["https://schema.org/Monday"], "startTime": "10:00:00", "endTime": "11:00:00", "scheduleTimezone": "Europe/London"}]
+    }
+  }],
+  "next": "https://better-admin.org.uk/api/openactive/better/session-series?afterTimestamp=100&afterId=series-1",
+  "license": "https://creativecommons.org/licenses/by/4.0/"
+}

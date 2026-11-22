@@ -16,6 +16,7 @@ from roomquest.atlantic_city_studio import CHECKPOINT_KEYS as ATLANTIC_STUDIO_CH
 from roomquest.atlantic_city_cardboard_arena import CHECKPOINT_KEYS as ATLANTIC_CARDBOARD_CHECKPOINT_KEYS
 from roomquest.atlantic_city_local_venues import CHECKPOINT_KEYS as ATLANTIC_LOCAL_VENUE_CHECKPOINT_KEYS
 from roomquest.preview_worker import PreviewError, supabase_rpc, _process_claimed_source
+from roomquest import national_feed_worker
 
 CATEGORIES = frozenset(('ical', 'wordpress', 'jsonld', 'squarespace', 'library',
                         'rss', 'localist', 'socrata', 'chambermaster', 'chambermate', 'parks', 'html', 'revize'))
@@ -47,6 +48,7 @@ _PHASES = frozenset(('dispatch', 'claim', 'fetch', 'stage', 'record', 'publish',
 _OPERATIONS = frozenset(('community_collector_claim_category',
                          'community_collector_read_fetch_checkpoint',
                          'community_collector_write_fetch_checkpoint',
+                         'community_collector_openactive_state',
                          'community_collector_record_staged_events',
                          'community_collector_stage_incremental',
                          'community_collector_complete_incremental',
@@ -607,6 +609,9 @@ def collect_category(category, ticket):
                                 'observe_phase': diagnostics.observe}
                 if isinstance(source.get('incremental_snapshot'), dict):
                     process_args['collection_context'] = args
+                if national_feed_worker.handles(source):
+                    process_args['collection_context'] = args
+                    process_args['publisher_handoff'] = publisher_handoff
                 if category == 'html':
                     process_args['publisher_handoff'] = publisher_handoff
                     if ((source.get('source_key') in ('discover_halifax_va', 'visit_atlantic_city_nj', 'noyes_arts_atlantic_city_nj', 'atlantic_city_municipal_nj', 'greatday_atlantic_city_nj', 'visit_raleigh_nc')
