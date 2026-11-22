@@ -126,8 +126,8 @@ def _aware(value):
     return isinstance(value, datetime) and value.tzinfo is not None
 
 
-def _prune_mapsee_historical_singles(calendar, now):
-    """Remove only definitely ended, standalone Mapsee VEVENTs.
+def _prune_mapsee_out_of_window_singles(calendar, now):
+    """Remove only definitely out-of-window standalone Mapsee VEVENTs.
 
     This is a conservative preprocessing step, not a truncation: keep entire
     UID groups if any recurrence, exception, missing time or uncertain end is
@@ -137,6 +137,7 @@ def _prune_mapsee_historical_singles(calendar, now):
     for event in calendar.walk('VEVENT'):
         groups[str(event.get('UID', ''))].append(event)
     cutoff = now - timedelta(days=2)
+    far_future = now + timedelta(days=61)
     removable = set()
     for uid, group in groups.items():
         if not uid or len(group) != 1:
@@ -152,7 +153,7 @@ def _prune_mapsee_historical_singles(calendar, now):
             continue
         if not (_aware(start) and _aware(end)) or end < start:
             continue
-        if end < cutoff:
+        if end < cutoff or start > far_future:
             removable.add(uid)
     if not removable:
         return calendar
@@ -639,9 +640,9 @@ def parse(payload, source, *, legacy=False, include_description=False):
         payload = cal.to_ical().decode()
     if (source.get('source_key', '').startswith('municipal_mapsee_')
             and original_event_count > 1000):
-        # Validate the original payload first. Prune only historical,
-        # nonrecurring, timed UID groups before the legacy 1000-item parser.
-        cal = _prune_mapsee_historical_singles(cal, datetime.now(timezone.utc))
+        # Validate the original payload first. Prune only provably
+        # out-of-window nonrecurring timed UID groups before the legacy parser.
+        cal = _prune_mapsee_out_of_window_singles(cal, datetime.now(timezone.utc))
         events = cal.walk('VEVENT')
         payload = cal.to_ical().decode()
     # Udell's recurrence expander intentionally returns None on a malformed
