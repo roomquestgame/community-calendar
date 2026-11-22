@@ -2776,7 +2776,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         while len(json.dumps(samples,ensure_ascii=False))>18_000:samples.pop()
         return {'p_source_key':source_key,'p_samples':samples,
                 'p_future_count':len(records),'p_venue_count':0,
-                'p_error':None,'p_events':records}
+                'p_error':None,'p_events':records,
+                'p_parser_capability':'publisher_event_candidates_v1'}
     from roomquest import santa_cruz_chess_club
     if source_key == santa_cruz_chess_club.KEY:
         deadline = min(monotonic()+40, deadline_at-6 if deadline_at is not None else float('inf'))
@@ -2827,7 +2828,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
             samples.pop()
         return {'p_source_key':source_key,'p_samples':samples,
                 'p_future_count':len(records),'p_venue_count':0,
-                'p_error':None,'p_events':records}
+                'p_error':None,'p_events':records,
+                'p_parser_capability':'publisher_event_candidates_v1'}
     from roomquest import santa_cruz_hotel_holidays
     if source_key in santa_cruz_hotel_holidays.SOURCES:
         deadline = min(monotonic()+39, deadline_at-6 if deadline_at is not None else float('inf'))
@@ -2853,7 +2855,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
             samples.pop()
         return {'p_source_key':source_key,'p_samples':samples,
                 'p_future_count':len(records),'p_venue_count':0,
-                'p_error':None,'p_events':records}
+                'p_error':None,'p_events':records,
+                'p_parser_capability':'publisher_event_candidates_v1'}
     from roomquest import santa_cruz_watsonville_taiko
     if source_key == santa_cruz_watsonville_taiko.KEY:
         deadline = min(monotonic()+35, deadline_at-6 if deadline_at is not None else float('inf'))
@@ -2901,7 +2904,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         while len(json.dumps(samples,ensure_ascii=False))>18_000:samples.pop()
         return {'p_source_key':source_key,'p_samples':samples,
                 'p_future_count':len(records),'p_venue_count':0,
-                'p_error':None,'p_events':records}
+                'p_error':None,'p_events':records,
+                'p_parser_capability':'publisher_event_candidates_v1'}
     from roomquest import santa_cruz_art_league
     if source_key == santa_cruz_art_league.KEY:
         deadline = min(monotonic()+39, deadline_at-6 if deadline_at is not None else float('inf'))
@@ -2953,7 +2957,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
             samples.pop()
         return {'p_source_key':source_key,'p_samples':samples,
                 'p_future_count':len(records),'p_venue_count':0,
-                'p_error':None,'p_events':records}
+                'p_error':None,'p_events':records,
+                'p_parser_capability':'publisher_event_candidates_v1'}
     from roomquest import santa_cruz_landing
     if source_key == santa_cruz_landing.KEY:
         deadline=min(monotonic()+37,deadline_at-6 if deadline_at is not None else float('inf'))
