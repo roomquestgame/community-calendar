@@ -270,7 +270,11 @@ def register(ticket):
                             openactive.probe(source, fetch, body=body, deadline_at=deadline)
                         else:
                             wildlife_trusts.probe(source, fetch, listing=body, deadline_at=deadline)
-                        return {'p_outcome': 'verified', 'p_endpoint': target, 'p_type': family}, body
+                        result = {'p_outcome': 'verified', 'p_endpoint': target, 'p_type': family}
+                        if family == 'html':
+                            from roomquest.registered_native_content import HTML_VERSION
+                            result['p_reason'] = HTML_VERSION
+                        return result, body
                     except (ValueError, KeyError, TypeError) as exc:
                         return extraction_hold(family, exc), body
                 if failte_ireland.is_source(target):
