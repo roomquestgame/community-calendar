@@ -1,5 +1,10 @@
 # Redacted forward-geocoder failure evidence — EVE-150
 
+November 22 follow-up: [private US candidate review](geocoder-private-candidate-20261122.md)
+adds a bounded, unaccepted candidate only to the authenticated database payload.
+Console diagnostics remain flags only. The release/handoff below describes the
+original flags-only rollout; the linked follow-up defines the narrow exception.
+
 The first actual Admin-reviewed ADC Theatre request completed as `ambiguous`
 without coordinates. The existing collector used that same outcome for an HTTP
 400/422 rejection and every unusable HTTP-success response. Its receipt therefore
@@ -10,8 +15,8 @@ reconstructed by this change.
 ## Bounded additive diagnostics
 
 The collector retains existing failure outcomes and adds `diagnostic` to its
-ordinary, country/query-bound `fail` payload. It also emits the same sanitized
-object in a structured failure log with validated queue/request identifiers.
+ordinary, country/query-bound `fail` payload. It also emits the sanitized
+flags (excluding any private candidate) in a structured failure log with validated queue/request identifiers.
 The companion database repair independently allowlists this evidence for Admin.
 
 | Observation | Existing outcome | Diagnostic cause |
@@ -34,8 +39,9 @@ Evidence accepts only version 1; a fixed cause; an observed integer HTTP status
 between 100 and 599; an integer result count clipped to 3 (meaning three or more);
 fixed error classes; and boolean shape, field-presence, validity, and match flags.
 Unknown keys, invalid enums, and wrong types are dropped before RPC or logging.
-No raw provider body, request URL, API key, address, venue name, coordinate, or
-exception text is copied into diagnostics. The pre-existing exact query in the
+No raw provider body, request URL, API key, address, venue name, or exception
+text is copied into diagnostics. Coordinates are excluded from console logs;
+the later private US candidate exception is bounded by the linked follow-up. The pre-existing exact query in the
 authenticated lifecycle payload is unchanged and is not added to logs.
 
 An HTTP error body is read once, capped at 4,097 bytes. Only a complete body of
@@ -77,3 +83,4 @@ routine GitHub test workflow is required.
 
 Endpoint v2 and explicit `country=GB` remain correct. This diagnostic release is
 not a successful geocode, a published event, or additional Cambridge coverage.
+
