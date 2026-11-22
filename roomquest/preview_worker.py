@@ -4092,7 +4092,7 @@ def supabase_rpc(path: str, payload: dict, *, timeout: float = 4):
                "community_collector_claim_category", "community_collector_publish_category", "community_collector_finish_category", "community_collector_claim_previews", "community_collector_claim_demand_preview", "community_collector_claim_chambermaster", "community_collector_record_preview", "community_collector_record_preview_v2", "community_collector_record_preview_v3",
                "community_collector_read_fetch_checkpoint", "community_collector_write_fetch_checkpoint",
                "community_collector_stage_incremental", "community_collector_complete_incremental",
-               "community_collector_record_staged_events", "community_collector_geocoder", "community_collector_geocoder_claim",
+               "community_collector_record_staged_events", "community_collector_geocoder", "community_collector_geocoder_claim", "community_collector_geocoder_claim_v2",
                "community_collector_venues", "community_collector_media", "community_collector_media_demand",
                "community_collector_things_to_do", "community_collector_activity_discovery",
                "community_collector_timezones"}
