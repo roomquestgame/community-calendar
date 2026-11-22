@@ -69,9 +69,17 @@ def address(value):
     if not isinstance(value, dict):
         return ""
     region = value.get("addressRegion") or value.get("state") or value.get("region")
+    country = value.get("addressCountry") or value.get("country")
+    if isinstance(country, dict):
+        country = country.get("name")
+    country = plain(country) if isinstance(country, str) else ""
+    # Retain publisher country evidence for international addresses. Keep the
+    # established US address identity unchanged for existing geocoding caches.
+    if country.casefold() in ("us", "usa", "united states", "united states of america"):
+        country = ""
     return ", ".join(plain(v) for v in (value.get("streetAddress") or value.get("street"),
                        value.get("addressLocality") or value.get("city"), region,
-                       value.get("postalCode") or value.get("zip")) if v)
+                       value.get("postalCode") or value.get("zip"), country) if v)
 
 
 def record(title, start, end, venue, street, city, url, identity, category="", lat=None, lng=None, tz=None, *, publisher_geo=False, retain_until_end=False):
@@ -230,7 +238,7 @@ def parse_tribe(data, *, strict_public=False, retain_description=False, utc_defa
             start=parsed["dtstart"].isoformat();end=parsed["dtend"].isoformat() if parsed.get("dtend") else None
         venue=e.get("venue") or {}; venue=venue if isinstance(venue,dict) else {}
         if strict_public and re.search(r"\b(zoom|online|virtual)\b", plain(venue.get("venue")), re.I):continue
-        street=address({"street":venue.get("address"),"city":venue.get("city"),"state":venue.get("state") or venue.get("stateprovince") or venue.get("province"),"zip":venue.get("zip")})
+        street=address({"street":venue.get("address"),"city":venue.get("city"),"state":venue.get("state") or venue.get("stateprovince") or venue.get("province"),"zip":venue.get("zip"),"country":venue.get("country")})
         r=record(e.get("title"),start,end,venue.get("venue"),street,venue.get("city"),e.get("url"),e.get("id"),
                  ", ".join(x.get("name","") for x in e.get("categories",[]) if isinstance(x,dict)),venue.get("geo_lat"),venue.get("geo_lng"),tz, publisher_geo=strict_public)
         if r:

@@ -220,13 +220,20 @@ def parse(payload, base='', *, native_source=None):
                 raise ValueError('invalid_event_end')
             end = None
         zone = None
+        city = a.get('addressLocality', '') if isinstance(a, dict) else ''
         reviewed = REVIEWED_CALENDAR_ZONES.get(base)
         if reviewed and isinstance(a, dict) and (
                 a.get('addressLocality'), a.get('addressRegion')) == reviewed[:2]:
             zone = reviewed[2]
+        if (base == 'https://www.veteranscenter.org/mtcarmel-events/'
+                and isinstance(a, dict) and a.get('addressRegion') == 'CO'
+                and city in ('Colorado Springs', 'Pueblo')):
+            zone = 'America/Denver'
         if (base == 'https://nissis.com/shows/'
                 and a == '1455 Coal Creek Dr. Lafayette, Co. 80026'):
             zone = 'America/Denver'
+            street = '1455 Coal Creek Dr., Lafayette, CO 80026'
+            city = 'Lafayette'
         if zone:
             for value in (start, end):
                 if value:
@@ -234,7 +241,7 @@ def parse(payload, base='', *, native_source=None):
                     if clock.tzinfo is not None and clock.utcoffset() != clock.astimezone(ZoneInfo(zone)).utcoffset():
                         raise ValueError('publisher_schedule_conflict')
         row = record(e.get('name'), start, end, v.get('name'),
-            street, a.get('addressLocality', '') if isinstance(a, dict) else '',
+            street, city,
             urljoin(base, link), e.get('@id') or e.get('url'), e.get('keywords', ''),
             lat, lng, tz=zone)
         if row:
