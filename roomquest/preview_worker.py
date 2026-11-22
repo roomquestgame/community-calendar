@@ -84,6 +84,17 @@ class RejectRedirects(HTTPRedirectHandler):
 class ReviewedRobotsRedirects(RejectRedirects):
     """Allow only reviewed robots redirects."""
     def redirect_request(self, request, fp, code, msg, headers, newurl):
+        # Reviewed Nov 21: Django appends a slash to this absent robots route,
+        # whose destination returns an ordinary 404. Recheck the original every
+        # cache window; newly published rules and access denials remain binding.
+        if (request.full_url == 'https://cambridgesouthhockeyclub.co.uk/robots.txt'
+                and newurl == 'https://cambridgesouthhockeyclub.co.uk/robots.txt/'
+                and code == 301 and request.get_method() == 'GET'):
+            validate_public_dns('cambridgesouthhockeyclub.co.uk')
+            activity_before_request(newurl, auxiliary=True, redirect=True)
+            return Request(newurl, headers={
+                'User-Agent': 'RoomQuestCommunityCalendar/0.1 (community-event research)'
+            }, method='GET')
         # Observed November 6: this API host routes a nonexistent robots file
         # to its vendor's explicit 404 endpoint. Recheck the original each
         # cache window so newly published rules are still authoritative.
