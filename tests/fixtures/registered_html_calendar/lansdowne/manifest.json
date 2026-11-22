@@ -1,0 +1,310 @@
+{
+  "format_version": 1,
+  "capture_method": "Public publisher pages fetched through roomquest.preview_worker.fetch_publisher with respect_robots=True and same-host detail restrictions.",
+  "replay_time_utc": "2026-11-22T12:00:00+00:00",
+  "reduction": "Factual Event JSON-LD, canonical URLs, event headings, visible calendar dates/Show times, complete link inventory, navigation ancestor structure, and pagination metadata are retained. Nonessential attributes and unrelated prose are removed. Metadata descriptions and native event biographies are replaced with explicitly synthetic text; these are structural fixtures, not verbatim publisher narratives. Original raw hashes, capture times, and observed native narrative lengths remain recorded separately.",
+  "homepage": "https://thelansdownetheater.com/",
+  "listing": "https://thelansdownetheater.com/events",
+  "homepage_omits": [
+    "https://thelansdownetheater.com/event/the-fab-four-3/lansdowne-theater/lansdowne-pennsylvania/",
+    "https://thelansdownetheater.com/event/best-of-the-eagles/lansdowne-theater/lansdowne-pennsylvania/",
+    "https://thelansdownetheater.com/event/the-magical-music-of-harry-potter-live-in-concert/lansdowne-theater/lansdowne-pennsylvania/",
+    "https://thelansdownetheater.com/event/the-music-of-hans-zimmer-others-live-in-concert/lansdowne-theater/lansdowne-pennsylvania/"
+  ],
+  "detail_links": [
+    "https://thelansdownetheater.com/event/love-laughter-case-keke-wyatt-h-town/lansdowne-theater/lansdowne-pennsylvania/",
+    "https://thelansdownetheater.com/event/tommy-james-the-shondells-2/lansdowne-theater/lansdowne-pennsylvania/",
+    "https://thelansdownetheater.com/event/dave-koz-friends-christmas-tour-2/lansdowne-theater/lansdowne-pennsylvania/",
+    "https://thelansdownetheater.com/event/david-brightons-space-oddity/lansdowne-theater/lansdowne-pennsylvania/",
+    "https://thelansdownetheater.com/event/richard-thompson-band/lansdowne-theater/lansdowne-pennsylvania/",
+    "https://thelansdownetheater.com/event/marshall-charloff-purple-xperience/lansdowne-theater/lansdowne-pennsylvania/",
+    "https://thelansdownetheater.com/event/the-marshall-tucker-band/lansdowne-theater/lansdowne-pennsylvania/",
+    "https://thelansdownetheater.com/event/dominique-hammons-soul-sessions/lansdowne-theater/lansdowne-pennsylvania/",
+    "https://thelansdownetheater.com/event/the-princess-proms-concert/lansdowne-theater/lansdowne-pennsylvania/",
+    "https://thelansdownetheater.com/event/steve-hackett-3/lansdowne-theater/lansdowne-pennsylvania/",
+    "https://thelansdownetheater.com/event/whose-live-anyway-2/lansdowne-theater/lansdowne-pennsylvania/",
+    "https://thelansdownetheater.com/event/the-fab-four-3/lansdowne-theater/lansdowne-pennsylvania/",
+    "https://thelansdownetheater.com/event/best-of-the-eagles/lansdowne-theater/lansdowne-pennsylvania/",
+    "https://thelansdownetheater.com/event/the-magical-music-of-harry-potter-live-in-concert/lansdowne-theater/lansdowne-pennsylvania/",
+    "https://thelansdownetheater.com/event/the-music-of-hans-zimmer-others-live-in-concert/lansdowne-theater/lansdowne-pennsylvania/"
+  ],
+  "pages": [
+    {
+      "url": "https://thelansdownetheater.com/",
+      "file": "lansdowne-listing.html",
+      "captured_at_utc": "2026-11-22T12:32:15.852228+00:00",
+      "original_sha256": "a2a5b484ee298ebdecfcf05922cb9d3d820bbfbba0de04e02cbc488c57393b36",
+      "original_bytes": 260897,
+      "fixture_sha256": "505e28fb2879e9203eaaf43021afefd2c1d2298e2188e65a7e13356e0ad5453c",
+      "fixture_bytes": 98305,
+      "native_description_original_chars": [],
+      "native_description_replaced": false,
+      "observed_next": []
+    },
+    {
+      "url": "https://thelansdownetheater.com/events",
+      "file": "lansdowne-full-calendar.html",
+      "captured_at_utc": "2026-11-22T12:44:49.969429+00:00",
+      "original_sha256": "28670a2882178d609d8edbc58db79f41dfe9d0eeb986aedccb4df1a6c39c500e",
+      "original_bytes": 220936,
+      "fixture_sha256": "e99bca943ead37e51417980e60d50e6eda8db9a77b73749ff7e0ee080af09ee8",
+      "fixture_bytes": 80757,
+      "native_description_original_chars": [],
+      "native_description_replaced": false,
+      "observed_next": [
+        "https://thelansdownetheater.com/events/page/2/"
+      ]
+    },
+    {
+      "url": "https://thelansdownetheater.com/event/richard-thompson-band/lansdowne-theater/lansdowne-pennsylvania/",
+      "file": "lansdowne-detail-1.html",
+      "captured_at_utc": "2026-11-22T12:32:16.839372+00:00",
+      "original_sha256": "aeebdc1c7eaada34a62ea39e2f06c2384de94b31a7b808be7492a2be6aaef4df",
+      "original_bytes": 145853,
+      "fixture_sha256": "da221574add299aeb95b3320372360773fe23ae88a3d763f3938eff85ec22943",
+      "fixture_bytes": 6465,
+      "native_description_original_chars": [
+        1844
+      ],
+      "native_description_replaced": true,
+      "observed_next": []
+    },
+    {
+      "url": "https://thelansdownetheater.com/event/whose-live-anyway-2/lansdowne-theater/lansdowne-pennsylvania/",
+      "file": "lansdowne-detail-2.html",
+      "captured_at_utc": "2026-11-22T12:32:17.839293+00:00",
+      "original_sha256": "7cc38ef2080551b0e85db79b61844c780cd1d39c25955977af42b52638fa0360",
+      "original_bytes": 142348,
+      "fixture_sha256": "33763537e6854f8dc3cae3ac2f7a896aaf1a1a5c80cb504720227e96951b49cf",
+      "fixture_bytes": 5477,
+      "native_description_original_chars": [
+        1148
+      ],
+      "native_description_replaced": true,
+      "observed_next": []
+    },
+    {
+      "url": "https://thelansdownetheater.com/event/the-marshall-tucker-band/lansdowne-theater/lansdowne-pennsylvania/",
+      "file": "lansdowne-detail-3.html",
+      "captured_at_utc": "2026-11-22T12:37:55.664643+00:00",
+      "original_sha256": "effe571137390403d6694dbb4a2e14e07bff8890da390e703b745a699a547d94",
+      "original_bytes": 154768,
+      "fixture_sha256": "ab891811f84e946cdd045686a7d4b5821930f69f08302be854a12bc438a0b495",
+      "fixture_bytes": 6215,
+      "native_description_original_chars": [
+        6670
+      ],
+      "native_description_replaced": true,
+      "observed_next": []
+    },
+    {
+      "url": "https://thelansdownetheater.com/event/steve-hackett-3/lansdowne-theater/lansdowne-pennsylvania/",
+      "file": "lansdowne-detail-4.html",
+      "captured_at_utc": "2026-11-22T12:37:56.663640+00:00",
+      "original_sha256": "e4b85fcf25a167eb3d0ddd89450fcefa4f78fcb3da77afac3a6b02b0b57f6209",
+      "original_bytes": 142910,
+      "fixture_sha256": "18ae626619c32f144606e301feb802229569c8a4a0ee468602f02e52ba528500",
+      "fixture_bytes": 5358,
+      "native_description_original_chars": [
+        1606
+      ],
+      "native_description_replaced": true,
+      "observed_next": []
+    },
+    {
+      "url": "https://thelansdownetheater.com/event/love-laughter-case-keke-wyatt-h-town/lansdowne-theater/lansdowne-pennsylvania/",
+      "file": "lansdowne-detail-5.html",
+      "captured_at_utc": "2026-11-22T12:37:57.661300+00:00",
+      "original_sha256": "10e982c669a97c192fbbcc12cd19ef1173ef0a989e6e123208a663ac2c8a9779",
+      "original_bytes": 154940,
+      "fixture_sha256": "053f79c1c07bbcfbab61541f4601989db3378b5f79684b5d1c72eb95e43b6a3f",
+      "fixture_bytes": 8078,
+      "native_description_original_chars": [
+        289
+      ],
+      "native_description_replaced": true,
+      "observed_next": []
+    },
+    {
+      "url": "https://thelansdownetheater.com/event/tommy-james-the-shondells-2/lansdowne-theater/lansdowne-pennsylvania/",
+      "file": "lansdowne-detail-6.html",
+      "captured_at_utc": "2026-11-22T12:37:58.666241+00:00",
+      "original_sha256": "01af5eba6327246f47dbbf47a2baedeff8d560a5b3d3963de1059bec6ed059dd",
+      "original_bytes": 148261,
+      "fixture_sha256": "4469121e856c42ad8357723f0f8362e51a007e3005afb6d70672371bbfc4329f",
+      "fixture_bytes": 6985,
+      "native_description_original_chars": [
+        2061
+      ],
+      "native_description_replaced": true,
+      "observed_next": []
+    },
+    {
+      "url": "https://thelansdownetheater.com/event/dave-koz-friends-christmas-tour-2/lansdowne-theater/lansdowne-pennsylvania/",
+      "file": "lansdowne-detail-7.html",
+      "captured_at_utc": "2026-11-22T12:37:59.663921+00:00",
+      "original_sha256": "45aefa14f433370809d64bbcdd679dedec125ece5ae6c5f827e78d549b4d85dc",
+      "original_bytes": 176979,
+      "fixture_sha256": "aa7edb1b49591a091e27ef733d89abc3ae95687a06bfd090b278ccb770ce84f3",
+      "fixture_bytes": 13059,
+      "native_description_original_chars": [
+        1417
+      ],
+      "native_description_replaced": true,
+      "observed_next": []
+    },
+    {
+      "url": "https://thelansdownetheater.com/event/david-brightons-space-oddity/lansdowne-theater/lansdowne-pennsylvania/",
+      "file": "lansdowne-detail-8.html",
+      "captured_at_utc": "2026-11-22T12:38:00.656149+00:00",
+      "original_sha256": "ae778b51e11dbf30e74aeff6eeec40db5e8d96ca486761155a67079dec43f6dd",
+      "original_bytes": 142841,
+      "fixture_sha256": "2d60059c3845db37367a09b7ecb403a8ed5ee6e5afbec86029b31e4c268bcbef",
+      "fixture_bytes": 5219,
+      "native_description_original_chars": [
+        2323
+      ],
+      "native_description_replaced": true,
+      "observed_next": []
+    },
+    {
+      "url": "https://thelansdownetheater.com/event/marshall-charloff-purple-xperience/lansdowne-theater/lansdowne-pennsylvania/",
+      "file": "lansdowne-detail-9.html",
+      "captured_at_utc": "2026-11-22T12:38:01.664810+00:00",
+      "original_sha256": "abbb11ce45a4500e46f3535359e754e73b2f57b6413d49cb35ea896bb574ef6e",
+      "original_bytes": 151567,
+      "fixture_sha256": "2f408701a97f80599622ca81699bc51aa824815abba67d312c16ecb83502dd31",
+      "fixture_bytes": 6917,
+      "native_description_original_chars": [
+        3549
+      ],
+      "native_description_replaced": true,
+      "observed_next": []
+    },
+    {
+      "url": "https://thelansdownetheater.com/event/dominique-hammons-soul-sessions/lansdowne-theater/lansdowne-pennsylvania/",
+      "file": "lansdowne-detail-10.html",
+      "captured_at_utc": "2026-11-22T12:38:02.659191+00:00",
+      "original_sha256": "6d55ace5224340b6d4c27cc8e2192b4799c1a1ff41cd4d20311042a477667a81",
+      "original_bytes": 141144,
+      "fixture_sha256": "3d0927887d80fabfcb8138b3a2a1b2817eef4395b1f1c763bcbc551d88916b8c",
+      "fixture_bytes": 4866,
+      "native_description_original_chars": [
+        2109
+      ],
+      "native_description_replaced": true,
+      "observed_next": []
+    },
+    {
+      "url": "https://thelansdownetheater.com/event/the-princess-proms-concert/lansdowne-theater/lansdowne-pennsylvania/",
+      "file": "lansdowne-detail-11.html",
+      "captured_at_utc": "2026-11-22T12:38:03.661355+00:00",
+      "original_sha256": "45fd1be06cb20f67db70c7552793e8eb08c17c0dac6a87f76b454edc6e3e2103",
+      "original_bytes": 137391,
+      "fixture_sha256": "a318898db18e22883415e6e937e263191addfd11a175fe3cc6d674bbcdd8fac2",
+      "fixture_bytes": 3862,
+      "native_description_original_chars": [
+        2019
+      ],
+      "native_description_replaced": true,
+      "observed_next": []
+    },
+    {
+      "url": "https://thelansdownetheater.com/event/the-fab-four-3/lansdowne-theater/lansdowne-pennsylvania/",
+      "file": "lansdowne-detail-12.html",
+      "captured_at_utc": "2026-11-22T12:45:39.693328+00:00",
+      "original_sha256": "bb41a3b1f67d2e92a188061f36c41adec83d383cbf5562aaa8a7f282e981bdd6",
+      "original_bytes": 142052,
+      "fixture_sha256": "76df504d5b4e0dba0af543f44efe716c7c63e3f08f56eecbfa332b41542aa282",
+      "fixture_bytes": 5035,
+      "native_description_original_chars": [
+        1132
+      ],
+      "native_description_replaced": true,
+      "observed_next": []
+    },
+    {
+      "url": "https://thelansdownetheater.com/event/best-of-the-eagles/lansdowne-theater/lansdowne-pennsylvania/",
+      "file": "lansdowne-detail-13.html",
+      "captured_at_utc": "2026-11-22T12:45:40.692324+00:00",
+      "original_sha256": "8b3646f29a563d2b7f3b2288d74c29ceddb027fb8c5c4dc66bd78e2c7abbc3c1",
+      "original_bytes": 140649,
+      "fixture_sha256": "8f7c80a56ceee46c627a2d1b4316f3604389a625ff6200a376d8301b2c1544cd",
+      "fixture_bytes": 4011,
+      "native_description_original_chars": [
+        1338
+      ],
+      "native_description_replaced": true,
+      "observed_next": []
+    },
+    {
+      "url": "https://thelansdownetheater.com/event/the-magical-music-of-harry-potter-live-in-concert/lansdowne-theater/lansdowne-pennsylvania/",
+      "file": "lansdowne-detail-14.html",
+      "captured_at_utc": "2026-11-22T12:45:41.691578+00:00",
+      "original_sha256": "9c9d935371b3997d0e926008d701b96cba241e5e2ba904dd5ba2406a3f42a594",
+      "original_bytes": 136402,
+      "fixture_sha256": "7bd1f617c55f742e0ab98e0e07d86aef4bed70665051dad163165d5f05149f7f",
+      "fixture_bytes": 4356,
+      "native_description_original_chars": [
+        1356
+      ],
+      "native_description_replaced": true,
+      "observed_next": []
+    },
+    {
+      "url": "https://thelansdownetheater.com/event/the-music-of-hans-zimmer-others-live-in-concert/lansdowne-theater/lansdowne-pennsylvania/",
+      "file": "lansdowne-detail-15.html",
+      "captured_at_utc": "2026-11-22T12:45:42.690452+00:00",
+      "original_sha256": "a61b61cfb8c77ae7979bb450447ab4cff25b5232287e33287ec06ebe1d356623",
+      "original_bytes": 136754,
+      "fixture_sha256": "1e40a271142366cd78f86ae4bc417360d1b5becc7aefe55b17fc12bbeca70679",
+      "fixture_bytes": 4352,
+      "native_description_original_chars": [
+        1786
+      ],
+      "native_description_replaced": true,
+      "observed_next": []
+    }
+  ],
+  "platform_evidence": {
+    "contract": "unfiltered Rockhouse archive List widget",
+    "frontend": {
+      "url": "https://thelansdownetheater.com/wp-content/plugins/rhp-events/views/assets/js/eventsCommon.js?ver=1790002234",
+      "bytes": 40610,
+      "sha256": "92ef9c4eaa370a82c75d325a5ede893657e3377a164a8105900931f180e8ba94",
+      "captured_at": "2026-11-22T12:57:17.860395+00:00"
+    },
+    "observations": [
+      "The publisher frontend uses rhp_paged for event-widget navigation and filters.",
+      "Search-suggestion pagination is separate from the event archive widget.",
+      "Referenced CTA code decorates existing ticket links; referenced month code is FullCalendar. No main-list append/infinite loader was observed in reviewed dependencies.",
+      "The captured archive declares isEventsArchivePage=true, desktop/mobile List, no active hidden filters/search, one generalView with explicit month/year groups, and no native pager/loader.",
+      "Document SEO rel=next URLs /events/page/2/ and /events/page/3/ repeated the same 15 event links, separate from the widget query contract."
+    ],
+    "document_pagination_observation": {
+      "url": "https://thelansdownetheater.com/events/page/2/",
+      "captured_at_utc": "2026-11-22T12:48:00.105295+00:00",
+      "original_sha256": "2a087da75ddb52b4352d0936344579eb58a5ef95bfa171ac7ed3b26dc6572a66",
+      "original_bytes": 221017,
+      "distinct_event_links": 15,
+      "same_event_inventory_as_origin_events": true,
+      "document_navigation": [
+        {
+          "tag": "link",
+          "rel": [
+            "prev"
+          ],
+          "href": "https://thelansdownetheater.com/events/"
+        },
+        {
+          "tag": "link",
+          "rel": [
+            "next"
+          ],
+          "href": "https://thelansdownetheater.com/events/page/3/"
+        }
+      ],
+      "capture_timestamp_basis": "Original capture file written immediately after guarded publisher fetch."
+    }
+  }
+}

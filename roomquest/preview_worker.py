@@ -3497,7 +3497,7 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                 "p_venue_count": sum(1 for row in records if row["lat"] is not None),
                 "p_error": None, "p_events": records,
                 "p_parser_capability": "publisher_event_candidates_v1"}
-    # Independent HTML family with explicit, publisher-specific dispatch.
+    # HTML calendars use reviewed adapters or a negotiated linked-detail parser.
     if source.get("platform_adapter") == "html" and source.get("kind") == "html":
         source_key = str(source.get("source_key", ""))
         html_budget = 36
@@ -3509,7 +3509,14 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         from roomquest import nebraska_final, richmond_public_calendars
         from roomquest import gulf_recurring, gulf_seasonal, gulf_venues
         from roomquest import liberty_calendar, registered_listings
-        if source.get('feed_url') in registered_listings.URLS and source_key == registered_listings.source_key(source['feed_url']):
+        if (type(source.get('registered_html_calendar_version')) is int
+                and source['registered_html_calendar_version'] == 1):
+            from roomquest.registered_native_content import enabled as native_enabled
+            if not native_enabled(source, adapter='html'):
+                raise PreviewError('registered_native_capability_required')
+            from roomquest.registered_html_calendar import collect as collect_html
+            allowed_hosts = (urlparse(source['feed_url']).hostname,)
+        elif source.get('feed_url') in registered_listings.URLS and source_key == registered_listings.source_key(source['feed_url']):
             collect_html = registered_listings.collect
             allowed_hosts = registered_listings.allowed_hosts(source['feed_url'])
             if source['feed_url'] == liberty_calendar.ORIGINAL:
@@ -3806,7 +3813,10 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                   "p_error": None, "p_events": records}
         if source_key in maryland_public_calendars.SOURCES or source_key in maryland_park_programs.SOURCES:
             return result  # These public facts use the v2 preview RPC without media evidence.
-        if source_key.startswith("virginia_state_parks_"):
+        from roomquest.registered_native_content import enabled as native_enabled, VERSION as NATIVE_VERSION
+        if native_enabled(source, adapter='html'):
+            result["p_parser_capability"] = NATIVE_VERSION
+        elif source_key.startswith("virginia_state_parks_"):
             # Capability evidence also accompanies successful empty results.
             result["p_parser_capability"] = IMAGE_EXTRACTOR_VERSION
         else:
