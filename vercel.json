@@ -142,10 +142,6 @@
   ],
   "crons": [
     {
-      "path": "/api/things-to-do-pilot",
-      "schedule": "*/5 * * * *"
-    },
-    {
       "path": "/api/geocode",
       "schedule": "* * * * *"
     },
