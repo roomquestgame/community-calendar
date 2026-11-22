@@ -1,0 +1,588 @@
+{
+  "data": [
+    {
+      "id": "2THLH7MU7MK7SV2IZFY3XMHY",
+      "owner_id": "139773107",
+      "merchant_id": "ML3YRNCESREJB",
+      "site_id": "282506720780254463",
+      "site_product_id": "2THLH7MU7MK7SV2IZFY3XMHY",
+      "visibility": "visible",
+      "name": "Christmas Wreath Workshop 27 Nov 20:00 -22:30",
+      "product_type": "event",
+      "product_type_details": {
+        "end_date": "2026-11-27",
+        "start_time": "8:00 PM",
+        "location_name": "",
+        "address": {
+          "country_code": "GB",
+          "country_code_full_name": "United Kingdom",
+          "city": "Cambridge",
+          "street": "10",
+          "country_code_cca2": "GB",
+          "street2": "Hamilton road",
+          "postal_code": "CB4 1BP",
+          "region_code_full_name": "England",
+          "region_code": "ENG",
+          "region_code_cca2": "ENG"
+        },
+        "timezone_info": {
+          "utc_offset_string": "+00:00",
+          "name": "Europe/London",
+          "utc_offset_minutes": 0,
+          "current_time_24_format": "19:25"
+        },
+        "location_types": [
+          "IN_PERSON"
+        ],
+        "timezone": "Europe/London",
+        "join_event_online_link": "",
+        "geocode": {
+          "lat": null,
+          "long": null
+        },
+        "end_time": "10:30 PM",
+        "has_no_end_time": "0",
+        "start_date": "2026-11-27"
+      },
+      "site_link": "product/christmas-wreath-workshop-27-nov-20-00-22-30/2THLH7MU7MK7SV2IZFY3XMHY",
+      "absolute_site_link": "https://battersea-bloem.square.site/product/christmas-wreath-workshop-27-nov-20-00-22-30/2THLH7MU7MK7SV2IZFY3XMHY",
+      "badges": {
+        "out_of_stock": false,
+        "low_stock": true,
+        "on_sale": false
+      },
+      "price": {
+        "low": 48.5,
+        "high": 48.5,
+        "low_subunits": 4850,
+        "high_subunits": 4850,
+        "low_formatted": "£48.50",
+        "high_formatted": "£48.50"
+      },
+      "thumbnail": {
+        "data": {
+          "owner_id": "139773107",
+          "site_id": "282506720780254463",
+          "absolute_url": "https://139773107.cdn6.editmysite.com/uploads/1/3/9/7/139773107/PC6G65N627AVD225XRNF6RQL.jpeg",
+          "width": 2560,
+          "height": 2560
+        }
+      },
+      "inventory": {
+        "total": 4,
+        "all_variations_sold_out": false,
+        "marked_sold_out_at_all_existing_locations": false,
+        "marked_sold_out_skus_count": 0,
+        "all_inventory_total": 4,
+        "lowest": 4,
+        "enabled": false,
+        "some_variations_sold_out": false,
+        "has_location_not_tracking": false
+      },
+      "created_date": "2026-09-15T09:14:54+00:00",
+      "short_description": "<p>Synthetic fixture narrative for workshop 1.</p><p>Materials included.</p>"
+    },
+    {
+      "id": "T6ONKISLEPFRJ3YZDFUA77ZM",
+      "owner_id": "139773107",
+      "merchant_id": "ML3YRNCESREJB",
+      "site_id": "282506720780254463",
+      "site_product_id": "88",
+      "visibility": "visible",
+      "name": "Christmas Wreath Workshop 28 Nov 15:00 start",
+      "product_type": "event",
+      "product_type_details": {
+        "end_date": "2026-11-28",
+        "start_time": "3:00 PM",
+        "location_name": "",
+        "address": {
+          "country_code": "GB",
+          "country_code_full_name": "United Kingdom",
+          "city": "Cambridge",
+          "street": "10",
+          "country_code_cca2": "GB",
+          "street2": "Hamilton road",
+          "postal_code": "CB4 1BP",
+          "region_code_full_name": "England",
+          "region_code": "ENG",
+          "region_code_cca2": "ENG"
+        },
+        "timezone_info": {
+          "utc_offset_string": "+00:00",
+          "name": "Europe/London",
+          "utc_offset_minutes": 0,
+          "current_time_24_format": "09:35"
+        },
+        "location_types": [
+          "IN_PERSON"
+        ],
+        "timezone": "Europe/London",
+        "join_event_online_link": "",
+        "geocode": {
+          "lat": null,
+          "long": null
+        },
+        "end_time": "5:30 PM",
+        "has_no_end_time": "0",
+        "start_date": "2026-11-28"
+      },
+      "site_link": "product/christmas-wreath-workshop-28-nov-15-00-start/88",
+      "absolute_site_link": "https://battersea-bloem.square.site/product/christmas-wreath-workshop-28-nov-15-00-start/88",
+      "badges": {
+        "out_of_stock": true,
+        "low_stock": false,
+        "on_sale": false
+      },
+      "price": {
+        "low": 48.5,
+        "high": 48.5,
+        "low_subunits": 4850,
+        "high_subunits": 4850,
+        "low_formatted": "£48.50",
+        "high_formatted": "£48.50"
+      },
+      "thumbnail": {
+        "data": {
+          "owner_id": "139773107",
+          "site_id": "282506720780254463",
+          "absolute_url": "https://139773107.cdn6.editmysite.com/uploads/1/3/9/7/139773107/PC6G65N627AVD225XRNF6RQL.jpeg",
+          "width": 2560,
+          "height": 2560
+        }
+      },
+      "inventory": {
+        "total": 0,
+        "all_variations_sold_out": true,
+        "marked_sold_out_at_all_existing_locations": true,
+        "marked_sold_out_skus_count": 1,
+        "all_inventory_total": 0,
+        "lowest": 0,
+        "enabled": false,
+        "some_variations_sold_out": true,
+        "has_location_not_tracking": false
+      },
+      "created_date": "2023-09-18T13:33:48+00:00",
+      "short_description": "<p>Synthetic fixture narrative for workshop 2.</p><p>Materials included.</p>"
+    },
+    {
+      "id": "6Q6UA5W3CUQ3KJQVKJNAAPJB",
+      "owner_id": "139773107",
+      "merchant_id": "ML3YRNCESREJB",
+      "site_id": "282506720780254463",
+      "site_product_id": "6Q6UA5W3CUQ3KJQVKJNAAPJB",
+      "visibility": "visible",
+      "name": "Christmas Wreath Workshop 29 November 10:30 - 13:00",
+      "product_type": "event",
+      "product_type_details": {
+        "end_date": "2026-11-29",
+        "start_time": "10:30 AM",
+        "location_name": "",
+        "address": {
+          "country_code": "GB",
+          "country_code_full_name": "United Kingdom",
+          "city": "Cambridge",
+          "street": "CB4 1BP",
+          "country_code_cca2": "GB",
+          "street2": "10 Hamilton Road",
+          "postal_code": "CB4 1BP",
+          "region_code_full_name": "England",
+          "region_code": "ENG",
+          "region_code_cca2": "ENG"
+        },
+        "timezone_info": {
+          "utc_offset_string": "+01:00",
+          "name": "Europe/London",
+          "utc_offset_minutes": 60,
+          "current_time_24_format": "09:59"
+        },
+        "location_types": [
+          "IN_PERSON"
+        ],
+        "timezone": "Europe/London",
+        "join_event_online_link": "",
+        "geocode": {
+          "lat": null,
+          "long": null
+        },
+        "end_time": "1:00 PM",
+        "has_no_end_time": "0",
+        "start_date": "2026-11-29"
+      },
+      "site_link": "product/wreathworkshop/6Q6UA5W3CUQ3KJQVKJNAAPJB",
+      "absolute_site_link": "https://battersea-bloem.square.site/product/wreathworkshop/6Q6UA5W3CUQ3KJQVKJNAAPJB",
+      "badges": {
+        "out_of_stock": false,
+        "low_stock": true,
+        "on_sale": false
+      },
+      "price": {
+        "low": 48.5,
+        "high": 48.5,
+        "low_subunits": 4850,
+        "high_subunits": 4850,
+        "low_formatted": "£48.50",
+        "high_formatted": "£48.50"
+      },
+      "thumbnail": {
+        "data": {
+          "owner_id": "139773107",
+          "site_id": "282506720780254463",
+          "absolute_url": "https://139773107.cdn6.editmysite.com/uploads/1/3/9/7/139773107/TRJT4VXM4QFBLP2HU5PW43Y2.jpeg",
+          "width": 2560,
+          "height": 2560
+        }
+      },
+      "inventory": {
+        "total": 4,
+        "all_variations_sold_out": false,
+        "marked_sold_out_at_all_existing_locations": false,
+        "marked_sold_out_skus_count": 0,
+        "all_inventory_total": 4,
+        "lowest": 4,
+        "enabled": false,
+        "some_variations_sold_out": false,
+        "has_location_not_tracking": false
+      },
+      "created_date": "2025-11-17T09:40:10+00:00",
+      "short_description": "<p>Synthetic fixture narrative for workshop 3.</p><p>Materials included.</p>"
+    },
+    {
+      "id": "NDLKAIHSMGK2KT3OJKLKC3O7",
+      "owner_id": "139773107",
+      "merchant_id": "ML3YRNCESREJB",
+      "site_id": "282506720780254463",
+      "site_product_id": "130",
+      "visibility": "visible",
+      "name": "Christmas Wreath Workshop 29 Nov 15:00 - 17:30",
+      "product_type": "event",
+      "product_type_details": {
+        "end_date": "2026-11-29",
+        "start_time": "3:00 PM",
+        "location_name": "",
+        "address": {
+          "country_code": "GB",
+          "country_code_full_name": "United Kingdom",
+          "city": "Cambridge",
+          "street": "CB4 1BP",
+          "country_code_cca2": "GB",
+          "street2": "10 Hamilton Road",
+          "postal_code": "CB4 1BP",
+          "region_code_full_name": "England",
+          "region_code": "ENG",
+          "region_code_cca2": "ENG"
+        },
+        "timezone_info": {
+          "utc_offset_string": "+01:00",
+          "name": "Europe/London",
+          "utc_offset_minutes": 60,
+          "current_time_24_format": "17:12"
+        },
+        "location_types": [
+          "IN_PERSON"
+        ],
+        "timezone": "Europe/London",
+        "join_event_online_link": "",
+        "geocode": {
+          "lat": null,
+          "long": null
+        },
+        "end_time": "5:30 PM",
+        "has_no_end_time": "0",
+        "start_date": "2026-11-29"
+      },
+      "site_link": "product/wreathworkshop/130",
+      "absolute_site_link": "https://battersea-bloem.square.site/product/wreathworkshop/130",
+      "badges": {
+        "out_of_stock": true,
+        "low_stock": false,
+        "on_sale": false
+      },
+      "price": {
+        "low": 48.5,
+        "high": 48.5,
+        "low_subunits": 4850,
+        "high_subunits": 4850,
+        "low_formatted": "£48.50",
+        "high_formatted": "£48.50"
+      },
+      "thumbnail": {
+        "data": {
+          "owner_id": "139773107",
+          "site_id": "282506720780254463",
+          "absolute_url": "https://139773107.cdn6.editmysite.com/uploads/1/3/9/7/139773107/TRJT4VXM4QFBLP2HU5PW43Y2.jpeg",
+          "width": 2560,
+          "height": 2560
+        }
+      },
+      "inventory": {
+        "total": 0,
+        "all_variations_sold_out": true,
+        "marked_sold_out_at_all_existing_locations": true,
+        "marked_sold_out_skus_count": 1,
+        "all_inventory_total": 0,
+        "lowest": 0,
+        "enabled": false,
+        "some_variations_sold_out": true,
+        "has_location_not_tracking": false
+      },
+      "created_date": "2024-09-13T08:46:46+00:00",
+      "short_description": "<p>Synthetic fixture narrative for workshop 4.</p><p>Materials included.</p>"
+    },
+    {
+      "id": "ULW5X4F6ILEIXBVG2E7GNYCO",
+      "owner_id": "139773107",
+      "merchant_id": "ML3YRNCESREJB",
+      "site_id": "282506720780254463",
+      "site_product_id": "ULW5X4F6ILEIXBVG2E7GNYCO",
+      "visibility": "visible",
+      "name": "Christmas Wreath Workshop 4 Dec 20:00-22:30",
+      "product_type": "event",
+      "product_type_details": {
+        "end_date": "2026-12-04",
+        "start_time": "8:00 PM",
+        "location_name": "",
+        "address": {
+          "country_code": "GB",
+          "country_code_full_name": "United Kingdom",
+          "city": "Cambridge",
+          "street": "10",
+          "country_code_cca2": "GB",
+          "street2": "Hamilton road",
+          "postal_code": "CB4 1BP",
+          "region_code_full_name": "England",
+          "region_code": "ENG",
+          "region_code_cca2": "ENG"
+        },
+        "timezone_info": {
+          "utc_offset_string": "+00:00",
+          "name": "Europe/London",
+          "utc_offset_minutes": 0,
+          "current_time_24_format": "11:55"
+        },
+        "location_types": [
+          "IN_PERSON"
+        ],
+        "timezone": "Europe/London",
+        "join_event_online_link": "",
+        "geocode": {
+          "lat": null,
+          "long": null
+        },
+        "end_time": "10:30 PM",
+        "has_no_end_time": "0",
+        "start_date": "2026-12-04"
+      },
+      "site_link": "product/christmas-wreath-workshop-4-dec-20-00-22-30/ULW5X4F6ILEIXBVG2E7GNYCO",
+      "absolute_site_link": "https://battersea-bloem.square.site/product/christmas-wreath-workshop-4-dec-20-00-22-30/ULW5X4F6ILEIXBVG2E7GNYCO",
+      "badges": {
+        "out_of_stock": true,
+        "low_stock": false,
+        "on_sale": false
+      },
+      "price": {
+        "low": 48.5,
+        "high": 48.5,
+        "low_subunits": 4850,
+        "high_subunits": 4850,
+        "low_formatted": "£48.50",
+        "high_formatted": "£48.50"
+      },
+      "thumbnail": {
+        "data": {
+          "owner_id": "139773107",
+          "site_id": "282506720780254463",
+          "absolute_url": "https://139773107.cdn6.editmysite.com/uploads/1/3/9/7/139773107/PC6G65N627AVD225XRNF6RQL.jpeg",
+          "width": 2560,
+          "height": 2560
+        }
+      },
+      "inventory": {
+        "total": 0,
+        "all_variations_sold_out": true,
+        "marked_sold_out_at_all_existing_locations": true,
+        "marked_sold_out_skus_count": 1,
+        "all_inventory_total": 0,
+        "lowest": 0,
+        "enabled": false,
+        "some_variations_sold_out": true,
+        "has_location_not_tracking": false
+      },
+      "created_date": "2026-09-15T09:17:39+00:00",
+      "short_description": "<p>Synthetic fixture narrative for workshop 5.</p><p>Materials included.</p>"
+    },
+    {
+      "id": "2CJYQ7RO4GNPZDDOBVBGXIYZ",
+      "owner_id": "139773107",
+      "merchant_id": "ML3YRNCESREJB",
+      "site_id": "282506720780254463",
+      "site_product_id": "2CJYQ7RO4GNPZDDOBVBGXIYZ",
+      "visibility": "visible",
+      "name": "Christmas Wreath Workshop 5 Dec 15:00 - 17:30",
+      "product_type": "event",
+      "product_type_details": {
+        "end_date": "2026-12-05",
+        "start_time": "3:00 PM",
+        "location_name": "",
+        "address": {
+          "country_code": "GB",
+          "country_code_full_name": "United Kingdom",
+          "city": "Cambridge",
+          "street": "CB4 1BP",
+          "country_code_cca2": "GB",
+          "street2": "10 Hamilton Road",
+          "postal_code": "CB4 1BP",
+          "region_code_full_name": "England",
+          "region_code": "ENG",
+          "region_code_cca2": "ENG"
+        },
+        "timezone_info": {
+          "utc_offset_string": "+01:00",
+          "name": "Europe/London",
+          "utc_offset_minutes": 60,
+          "current_time_24_format": "19:41"
+        },
+        "location_types": [
+          "IN_PERSON"
+        ],
+        "timezone": "Europe/London",
+        "join_event_online_link": "",
+        "geocode": {
+          "lat": null,
+          "long": null
+        },
+        "end_time": "5:30 PM",
+        "has_no_end_time": "0",
+        "start_date": "2026-12-05"
+      },
+      "site_link": "product/wreathworkshop/2CJYQ7RO4GNPZDDOBVBGXIYZ",
+      "absolute_site_link": "https://battersea-bloem.square.site/product/wreathworkshop/2CJYQ7RO4GNPZDDOBVBGXIYZ",
+      "badges": {
+        "out_of_stock": true,
+        "low_stock": false,
+        "on_sale": false
+      },
+      "price": {
+        "low": 48.5,
+        "high": 48.5,
+        "low_subunits": 4850,
+        "high_subunits": 4850,
+        "low_formatted": "£48.50",
+        "high_formatted": "£48.50"
+      },
+      "thumbnail": {
+        "data": {
+          "owner_id": "139773107",
+          "site_id": "282506720780254463",
+          "absolute_url": "https://139773107.cdn6.editmysite.com/uploads/1/3/9/7/139773107/TRJT4VXM4QFBLP2HU5PW43Y2.jpeg",
+          "width": 2560,
+          "height": 2560
+        }
+      },
+      "inventory": {
+        "total": 0,
+        "all_variations_sold_out": true,
+        "marked_sold_out_at_all_existing_locations": true,
+        "marked_sold_out_skus_count": 1,
+        "all_inventory_total": 0,
+        "lowest": 0,
+        "enabled": false,
+        "some_variations_sold_out": true,
+        "has_location_not_tracking": false
+      },
+      "created_date": "2026-09-15T16:22:41+00:00",
+      "short_description": "<p>Synthetic fixture narrative for workshop 6.</p><p>Materials included.</p>"
+    },
+    {
+      "id": "SL4RDANTHE6WYBCWSKJU5YWI",
+      "owner_id": "139773107",
+      "merchant_id": "ML3YRNCESREJB",
+      "site_id": "282506720780254463",
+      "site_product_id": "90",
+      "visibility": "visible",
+      "name": "Christmas Table Arrangement 17 December",
+      "product_type": "event",
+      "product_type_details": {
+        "end_date": "2026-12-17",
+        "start_time": "8:00 PM",
+        "location_name": "",
+        "address": {
+          "country_code": "GB",
+          "country_code_full_name": "United Kingdom",
+          "city": "Cambridge",
+          "street": "10",
+          "country_code_cca2": "GB",
+          "street2": "Hamilton road",
+          "postal_code": "CB4 1BP",
+          "region_code_full_name": "England",
+          "region_code": "ENG",
+          "region_code_cca2": "ENG"
+        },
+        "timezone_info": {
+          "utc_offset_string": "+00:00",
+          "name": "Europe/London",
+          "utc_offset_minutes": 0,
+          "current_time_24_format": "09:27"
+        },
+        "location_types": [
+          "IN_PERSON"
+        ],
+        "timezone": "Europe/London",
+        "join_event_online_link": "",
+        "geocode": {
+          "lat": null,
+          "long": null
+        },
+        "end_time": "10:00 PM",
+        "has_no_end_time": "0",
+        "start_date": "2026-12-17"
+      },
+      "site_link": "product/christmastablarrangement/90",
+      "absolute_site_link": "https://battersea-bloem.square.site/product/christmastablarrangement/90",
+      "badges": {
+        "out_of_stock": false,
+        "low_stock": false,
+        "on_sale": false
+      },
+      "price": {
+        "low": 37.5,
+        "high": 37.5,
+        "low_subunits": 3750,
+        "high_subunits": 3750,
+        "low_formatted": "£37.50",
+        "high_formatted": "£37.50"
+      },
+      "thumbnail": {
+        "data": {
+          "owner_id": "139773107",
+          "site_id": "282506720780254463",
+          "absolute_url": "https://139773107.cdn6.editmysite.com/uploads/1/3/9/7/139773107/KLP42D43VCUZLPDMVPV3G6G6.jpeg",
+          "width": 2560,
+          "height": 2560
+        }
+      },
+      "inventory": {
+        "total": 7,
+        "all_variations_sold_out": false,
+        "marked_sold_out_at_all_existing_locations": false,
+        "marked_sold_out_skus_count": 0,
+        "all_inventory_total": 7,
+        "lowest": 7,
+        "enabled": false,
+        "some_variations_sold_out": false,
+        "has_location_not_tracking": false
+      },
+      "created_date": "2023-09-18T14:29:34+00:00",
+      "short_description": "<p>Synthetic fixture narrative for workshop 7.</p><p>Materials included.</p>"
+    }
+  ],
+  "meta": {
+    "pagination": {
+      "total": 7,
+      "count": 7,
+      "per_page": 7,
+      "current_page": 1,
+      "total_pages": 1,
+      "links": []
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "captured_date": "2026-11-22",
+  "source_files": [
+    {
+      "name": "workshop-response.txt",
+      "url": "https://www.batterseabloem.com/workshop",
+      "bytes": 192178,
+      "sha256": "005fd189e12b559938ebe231d0a2dbd809b170669850f6dec1af04081c13c859"
+    },
+    {
+      "name": "workshop-html-accept.txt",
+      "url": "https://www.batterseabloem.com/workshop",
+      "bytes": 125647,
+      "sha256": "5814c2ca03a118ca2aaa6ccbfcad6e83ec03d4c6f21624e293bf9f8ef54698e1"
+    },
+    {
+      "name": "square-home.txt",
+      "url": "https://battersea-bloem.square.site/",
+      "bytes": 50623,
+      "sha256": "faf462948c571e750d4a6821d84efcaa7e17bd6adeacafc501cfb472b770e6bd"
+    },
+    {
+      "name": "square-featured-events.json",
+      "url": "https://battersea-bloem.square.site/app/store/api/v28/editor/users/139773107/sites/282506720780254463/products?page=1&per_page=7&product_type=event&ids%5B%5D=2THLH7MU7MK7SV2IZFY3XMHY&ids%5B%5D=88&ids%5B%5D=6Q6UA5W3CUQ3KJQVKJNAAPJB&ids%5B%5D=130&ids%5B%5D=ULW5X4F6ILEIXBVG2E7GNYCO&ids%5B%5D=2CJYQ7RO4GNPZDDOBVBGXIYZ&ids%5B%5D=90",
+      "bytes": 54571,
+      "sha256": "8a992569cf962363dcf520bfdbb52627560587ce8d854185e6be407945d2f8f3"
+    }
+  ],
+  "fixture_note": "Deterministic reductions of captured public responses. Product dates, identities, addresses, price, stock flags, URLs and image dimensions are retained. All long product narratives replaced with marked synthetic text. CSS and unrelated page/widget/store state omitted."
+}
