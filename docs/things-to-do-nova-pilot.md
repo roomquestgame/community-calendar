@@ -159,3 +159,20 @@ inventory and scheduler results.
 
 The current refresh decision and its release evidence are tracked in
 `docs/journal/2026-11-15-things-to-do-refresh-21-days.md` in RoomQuestGame.
+
+## 2026-11-22 evergreen-v2 compatibility and robots diagnostics
+
+Owner-approved (Ben): the database adds an `evergreen-v2` autonomous policy
+beside the finished `evergreen-v1` canary. The worker treats both policy
+versions as autonomous (`AUTONOMOUS_POLICIES`); any other value is refused
+before a fetch. This collector change must be deployed before the database
+migration activates v2.
+
+A robots denial keeps the shared `robots_denied` code and fail-closed outcome.
+It now carries a bounded diagnostic, `robots_detail`: `access_http_401`,
+`access_http_403` (the robots.txt request itself was refused) or
+`path_disallowed` (a rule disallows the path). Only those values reach the run
+receipt. One exact robots redirect is reviewed:
+`https://www.southhillva.org/robots.txt` → `https://www.southhillva.gov/robots.txt`
+(301 GET; both hosts are in the reviewed inventory; the destination currently
+returns 404, meaning no rules). Every other robots redirect stays blocked.

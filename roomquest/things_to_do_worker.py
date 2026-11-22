@@ -27,6 +27,10 @@ HOST = "www.novaparks.com"
 PARENT_EVIDENCE_PARK = "meadowlark-botanical-gardens"
 PARENT_EVIDENCE_URL = "https://" + HOST + "/parks/" + PARENT_EVIDENCE_PARK
 MAX_RECORDS = 40
+# Database-owned autonomous policies. evergreen-v1 is the finished canary;
+# evergreen-v2 is the owner-approved successor (2026-11-22).
+AUTONOMOUS_POLICIES = frozenset({'evergreen-v1', 'evergreen-v2'})
+ROBOTS_DETAILS = frozenset({'access_http_401', 'access_http_403', 'path_disallowed'})
 MAX_CLAIM_SECONDS = 1.5
 IDLE_STATUSES = frozenset({
     "busy", "cooldown", "paused_load", "paused_telemetry", "publisher_hold",
@@ -46,7 +50,7 @@ def _valid_claim(claim):
         UUID(claim["lease_token"])
     except (KeyError, ValueError, TypeError, AttributeError):
         return False
-    if claim.get('policy_version') == 'evergreen-v1':
+    if claim.get('policy_version') in AUTONOMOUS_POLICIES:
         scope = claim.get('scope')
         if not isinstance(scope, dict) or scope.get('source_key') != claim.get('source_key'):
             return False
@@ -82,7 +86,7 @@ def _fetch(url, *, deadline_at):
 
 
 def _finish(database, claim, outcome, *, pacing=None, activities=None, links=None,
-            content_hash=None, error_code=None):
+            content_hash=None, error_code=None, robots_detail=None):
     pacing = pacing or {}
     payload = {
         "job_id": claim["job_id"], "lease_token": claim["lease_token"],
@@ -93,6 +97,10 @@ def _finish(database, claim, outcome, *, pacing=None, activities=None, links=Non
         "publisher_retry_after_seconds": pacing.get("retry_after_seconds", 0),
         "publisher_wait_unbounded": pacing.get("wait_unbounded", False),
     }
+    if error_code == "robots_denied" and robots_detail in ROBOTS_DETAILS:
+        # Diagnostic only: distinguishes a robots.txt access denial from a
+        # disallow rule. The shared error code and fail-closed outcome stay.
+        payload["robots_detail"] = robots_detail
     try:
         result = database("finish", payload)
     except Exception:
@@ -139,7 +147,7 @@ def run_batch(*, database=None, fetch=None, parse=None, discover=None, clock=Non
     if elapsed > MAX_CLAIM_SECONDS:
         return _finish(database, claim, "paused", error_code="slow_database_admission")
 
-    autonomous = claim.get('policy_version') == 'evergreen-v1'
+    autonomous = claim.get('policy_version') in AUTONOMOUS_POLICIES
     context = claim['park_context']
     if autonomous and claim['scope']['parser'] == 'general':
         from roomquest.things_to_do_extract import parse_page, discover_links
@@ -211,7 +219,8 @@ def run_batch(*, database=None, fetch=None, parse=None, discover=None, clock=Non
                 outcome = 'paused'
             if details["error_kind"] == "pacing":
                 outcome = "paused"
-            return _finish(database, claim, outcome, pacing=pacing, error_code=code)
+            return _finish(database, claim, outcome, pacing=pacing, error_code=code,
+                           robots_detail=getattr(exc, 'robots_detail', None))
         except Exception:
             return _finish(database, claim, "held", pacing=pacing,
                            error_code="things_to_do_parser_unexpected")
