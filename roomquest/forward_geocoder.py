@@ -458,9 +458,12 @@ def geocode(address: str, key: str, *, reservation: dict, country_code: str = "U
 def rpc(action: str, payload: dict | None = None):
     try:
         if action == "claim":
-            result = supabase_rpc("community_collector_geocoder_claim_v2",
-                                  {"p_limit": (payload or {}).get("limit", 1)},
-                                  timeout=12)
+            if (payload or {}).get("gb_provider") == "geoapify":
+                result = supabase_rpc(RPC, {"p_action": "claim_v2", "p_payload": payload}, timeout=12)
+            else:
+                result = supabase_rpc("community_collector_geocoder_claim_v2",
+                                      {"p_limit": (payload or {}).get("limit", 1)},
+                                      timeout=12)
         else:
             result = supabase_rpc(RPC, {"p_action": action, "p_payload": payload or {}}, timeout=12)
         print("geocoder_rpc_ok", action)
@@ -476,6 +479,21 @@ def rpc(action: str, payload: dict | None = None):
 def _submit_failure_diagnostic(identity: dict, address: str, match: dict,
                                error: Exception) -> dict:
     """Report only fixed validation flags and well-formed queue identifiers."""
+    if identity.get("provider") == "geoapify":
+        from roomquest.geoapify_geocoder import result_diagnostic
+        def safe_id(name, pattern):
+            value = identity.get(name)
+            return value if isinstance(value, str) and re.fullmatch(pattern, value) else None
+        return {
+            "event": "geocoder_submit_failed", "provider": "geoapify",
+            "venue_key": safe_id("venue_key", r"[0-9a-f]{32}"),
+            "request_id": safe_id("request_id", r"[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}"),
+            "error_type": next((kind.__name__ for kind in
+                                (PreviewError, HTTPError, URLError, TimeoutError, ConnectionError)
+                                if isinstance(error, kind)), "unknown"),
+            "validation": {name: value for name, value in result_diagnostic(match, address).items()
+                           if name not in {"version", "cause"}},
+        }
     rows = match.get("results") if isinstance(match, dict) else None
     rows = rows if isinstance(rows, list) else []
     first = rows[0] if rows and isinstance(rows[0], dict) else {}
@@ -558,19 +576,26 @@ def _record_failure(database, identity: dict, reason: str, diagnostic=None):
 def run_batch(*, max_requests: int = 10, deadline_seconds: int = 45,
               database=None, provider=None, clock=None) -> dict:
     """Claim one at a time and leave 20 seconds for reserve/provider/result I/O."""
-    database, provider, clock = database or rpc, provider or geocode, clock or monotonic
+    database, clock = database or rpc, clock or monotonic
     stats = dict(attempted=0, resolved=0, ambiguous=0, errors=0,
                  events_updated=0, quota_exhausted=False, stop_reason="batch_complete")
-    key = os.environ.get("GEOCODIO_API_KEY", "")
+    keys = {"geocodio": os.environ.get("GEOCODIO_API_KEY", ""),
+            "geoapify": os.environ.get("GEOAPIFY_API_KEY", "")}
     if (os.environ.get("FORWARD_GEOCODER_ENABLED") != "true"
-            or os.environ.get("VERCEL_ENV") != "production" or not key):
+            or os.environ.get("VERCEL_ENV") != "production" or not any(keys.values())):
         return {**stats, "stop_reason": "disabled"}
+    gb_provider = os.environ.get("GB_GEOCODER_PROVIDER", "geocodio")
+    if gb_provider not in keys:
+        return {**stats, "stop_reason": "invalid_provider_configuration"}
     deadline = clock() + min(45, max(1, deadline_seconds))
     for _ in range(min(10, max(1, max_requests))):
         if clock() + 20 > deadline:
             stats["stop_reason"] = "deadline"
             break
-        claims = database("claim", {"limit": 1}) or []
+        claim_options = {"limit": 1}
+        if gb_provider == "geoapify":
+            claim_options["gb_provider"] = gb_provider
+        claims = database("claim", claim_options) or []
         if not claims:
             stats["stop_reason"] = "queue_empty_or_paused"
             break
@@ -582,23 +607,39 @@ def run_batch(*, max_requests: int = 10, deadline_seconds: int = 45,
             stats["stop_reason"] = "invalid_claim"
             break
         country_code = claim["country_code"]
+        provider_name = gb_provider if country_code == "GB" else "geocodio"
+        key = keys[provider_name]
+        if not key:
+            # No budget reservation or provider attempt when configuration is
+            # incomplete. The ordinary lease expiry makes this claim eligible.
+            stats["errors"] += 1
+            stats["stop_reason"] = "provider_not_configured"
+            break
+        if provider_name == "geoapify":
+            from roomquest.geoapify_geocoder import geocode as geoapify_geocode
+            request_provider = provider or geoapify_geocode
+        else:
+            request_provider = provider or geocode
         identity = {k: claim[k] for k in ("venue_key", "lease_id", "country_code")}
         if country_code == "GB":
             identity["query_text"] = claim["query_text"]
+        if provider_name == "geoapify":
+            identity["provider"] = provider_name
         reserved = database("reserve", identity)
         if not reserved.get("allowed"):
             stats["quota_exhausted"] = reserved.get("reason") == "quota_exhausted"
             stats["stop_reason"] = reserved.get("reason", "paused")
             break
-        if not reservation_matches(reserved, claim["query_text"], country_code):
+        if (not reservation_matches(reserved, claim["query_text"], country_code)
+                or (provider_name == "geoapify" and reserved.get("provider") != provider_name)):
             stats["errors"] += 1
             stats["stop_reason"] = "invalid_reservation"
             break
         stats["attempted"] += 1
         identity["request_id"] = reserved["request_id"]
         try:
-            match = provider(claim["query_text"], key, reservation=reserved,
-                             country_code=country_code)
+            match = request_provider(claim["query_text"], key, reservation=reserved,
+                                     country_code=country_code)
         except GeocodeFailure as exc:
             reason = str(exc)
             if reason not in {"provider_error", "provider_auth", "provider_country_access", "rate_limited",
@@ -625,6 +666,14 @@ def run_batch(*, max_requests: int = 10, deadline_seconds: int = 45,
                     identity, claim["query_text"], match, exc), sort_keys=True,
                     separators=(",", ":")))
                 continue
+            if (provider_name == "geoapify"
+                    and (not isinstance(result, dict) or result.get("resolved") is not True)):
+                # The database independently validates the native payload. An
+                # HTTP success alone cannot claim its coordinates were saved.
+                # Do not replace its outcome with fail or repeat the request.
+                stats["errors"] += 1
+                stats["stop_reason"] = "submit_not_resolved"
+                break
             stats["resolved"] += 1
             stats["events_updated"] += int(result.get("events_updated", 0))
     return stats

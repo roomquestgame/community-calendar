@@ -1,0 +1,104 @@
+{
+  "description": "Projection of Geoapify responses observed on 2026-11-22 for the seven reviewed Cambridge-area venue queries. Common fields below appeared in the successful responses. Only matching, coordinates, native precision and attribution fields are retained. Test data only; production always obtains coordinates from a fresh reserved provider request or an existing verified cache entry.",
+  "provider": "geoapify",
+  "request_options": {"filter": "countrycode:gb", "format": "json", "limit": 2},
+  "common_fields": {
+    "country": "United Kingdom",
+    "country_code": "gb",
+    "rank": {"confidence": 1, "confidence_city_level": 1, "confidence_street_level": 1},
+    "datasource": {
+      "sourcename": "openstreetmap",
+      "attribution": "© OpenStreetMap contributors",
+      "license": "Open Database License",
+      "url": "https://www.openstreetmap.org/copyright"
+    }
+  },
+  "cases": [
+    {
+      "venue": "The Box Room Board Game Cafe",
+      "query_text": "58 regent st,cambridge,CB2 1DP",
+      "accepted": true,
+      "results": [{
+        "name": "The Box Room Board Game Cafe", "city": "Cambridge", "postcode": "CB2 1DP",
+        "street": "Regent Street", "housenumber": "58", "lat": 52.2008334, "lon": 0.1257614,
+        "result_type": "amenity", "rank": {"match_type": "inner_part", "confidence_building_level": 1}
+      }]
+    },
+    {
+      "venue": "The Wine Rooms",
+      "query_text": "57 hills rd,cambridge,CB2 1NT",
+      "accepted": true,
+      "results": [{
+        "name": "The Wine Rooms", "city": "Cambridge", "postcode": "CB2 1NT", "street": "Hills Road",
+        "housenumber": "57", "lat": 52.1953117, "lon": 0.1311753, "result_type": "amenity",
+        "rank": {"match_type": "inner_part", "confidence_building_level": 1}
+      }]
+    },
+    {
+      "venue": "Cambridge Wine Merchants",
+      "query_text": "163 cherry hinton rd,cambridge,CB1 7BX",
+      "accepted": true,
+      "results": [{
+        "name": "Cambridge Wine Merchants", "city": "Cambridge", "postcode": "CB1 7BX",
+        "street": "Cherry Hinton Road", "housenumber": "163", "lat": 52.1882426, "lon": 0.1443246,
+        "result_type": "amenity", "rank": {"match_type": "inner_part", "confidence_building_level": 1}
+      }]
+    },
+    {
+      "venue": "Coton Countryside Reserve",
+      "query_text": "grantchester rd,cambridge,CB23 7PY",
+      "accepted": true,
+      "results": [{
+        "name": "Grantchester Road", "street": "Grantchester Road", "city": "South Cambridgeshire",
+        "village": "Coton", "postcode": "CB23 7PY", "lat": 52.2053721, "lon": 0.0654791,
+        "result_type": "street", "rank": {"match_type": "full_match"}
+      }]
+    },
+    {
+      "venue": "Leper Chapel",
+      "query_text": "newmarket rd,cambridge,CB5 8JJ",
+      "accepted": true,
+      "results": [{
+        "name": "Newmarket Road", "street": "Newmarket Road", "city": "Cambridge", "postcode": "CB5 8JJ",
+        "lat": 52.2095152, "lon": 0.1437474, "result_type": "street", "rank": {"match_type": "full_match"}
+      }]
+    },
+    {
+      "venue": "Milton Country Park",
+      "query_text": "cambridge rd,milton,CB24 6AZ",
+      "accepted": true,
+      "results": [{
+        "name": "Cambridge Road", "street": "Cambridge Road", "city": "South Cambridgeshire", "village": "Milton",
+        "postcode": "CB24 6AZ", "lat": 52.2397563, "lon": 0.1581657, "result_type": "street",
+        "rank": {"match_type": "full_match"}
+      }]
+    },
+    {
+      "venue": "Wandlebury Country Park",
+      "query_text": "wandlebury ring,cambridge,CB22 3AE",
+      "accepted": true,
+      "results": [
+        {
+          "name": "Wandlebury Ring (Iron Age Hill Fort)", "street": "Wandlebury", "city": "Stapleford",
+          "village": "Stapleford", "postcode": "CB22 3AE", "lat": 52.158789, "lon": 0.181637,
+          "result_type": "amenity", "rank": {"match_type": "inner_part"}
+        },
+        {
+          "name": "Wandlebury Hill", "city": "South Cambridgeshire", "village": "Stapleford",
+          "postcode": "CB22 3AE", "lat": 52.1578117, "lon": 0.183484,
+          "result_type": "amenity", "rank": {"match_type": "inner_part"}
+        }
+      ]
+    },
+    {
+      "venue": "Wrong nearby Gog Magog Hills peak",
+      "description": "Negative projection of the nearby peak returned for an earlier, longer raw Wandlebury address. Name, postcode, coordinates, result type and confidence 1 were observed; remaining fields use the common successful-response metadata plus inner_part to test rejection on identity itself. Applying it to the reviewed canonical Wandlebury identity must reject it even at confidence 1 and the same postcode.",
+      "query_text": "wandlebury ring,cambridge,CB22 3AE",
+      "accepted": false,
+      "results": [{
+        "name": "Gog Magog Hills", "postcode": "CB22 3AE", "lat": 52.1623604, "lon": 0.1844819,
+        "result_type": "amenity", "rank": {"match_type": "inner_part"}
+      }]
+    }
+  ]
+}
