@@ -376,6 +376,196 @@ class GreatBritainValidationTests(unittest.TestCase):
             opener.assert_called_once()
 
 
+class ProviderDiagnosticTests(unittest.TestCase):
+    def rejected_response(self, payload, *, raw=None, country="GB", status=200):
+        body = io.BytesIO(json.dumps(payload).encode() if raw is None else raw)
+        body.status = status
+        opener = MagicMock(return_value=body)
+        with self.assertRaises(g.GeocodeFailure) as caught:
+            g.geocode(GB_ADDRESS if country == "GB" else ADDRESS, "key-secret-sentinel",
+                      reservation=gb_reservation() if country == "GB" else reservation(),
+                      country_code=country, opener=opener)
+        opener.assert_called_once()
+        self.assertEqual(opener.call_args.kwargs["timeout"], 8)
+        return caught.exception
+
+    def test_http_rejection_preserves_outcomes_and_reports_status_without_body(self):
+        for country in ("US", "GB"):
+            for status, reason in ((400, "ambiguous"), (422, "ambiguous"),
+                                   (401, "provider_auth"), (429, "rate_limited"),
+                                   (500, "provider_error"),
+                                   (403, "provider_country_access" if country == "GB" else "provider_auth")):
+                raw = json.dumps({"error": "body-secret-sentinel", "query": GB_ADDRESS,
+                                  "api_key": "key-secret-sentinel"}).encode()
+                opener = MagicMock(side_effect=HTTPError(
+                    "https://secret-sentinel.invalid/?q=" + GB_ADDRESS, status,
+                    "message-secret-sentinel", {}, io.BytesIO(raw)))
+                with self.subTest(country=country, status=status), self.assertRaises(g.GeocodeFailure) as caught:
+                    g.geocode(GB_ADDRESS if country == "GB" else ADDRESS, "key-secret-sentinel",
+                              reservation=gb_reservation() if country == "GB" else reservation(),
+                              country_code=country, opener=opener)
+                self.assertEqual(str(caught.exception), reason)
+                self.assertEqual(caught.exception.diagnostic, {
+                    "version": 1, "cause": "http_rejected", "http_status": status,
+                    "error_class": "unclassified"})
+                self.assertNotIn("sentinel", json.dumps(caught.exception.diagnostic))
+                opener.assert_called_once()
+
+    def test_error_classes_require_explicit_whitelisted_provider_text(self):
+        cases = [
+            ("Could not geocode address, zip code or city/state are required", "missing_locality"),
+            ("You can't make this request as it is above your daily maximum. You can configure billing at https://dash.geocod.io", "usage_limit"),
+            ("This API key does not have permission to access this feature. API key permissions can be changed in the dashboard.", "key_permission"),
+            ("Your account does not have access to UK data.", "uk_access_denied"),
+            ("This account does not have access to United Kingdom data.", "uk_access_denied"),
+            ("Your account has access to UK data.", "unclassified"),
+            ("The query says: your account does not have access to UK data.", "unclassified"),
+            ("403 forbidden", "unclassified"), ("422 invalid input", "unclassified"),
+            ("key-secret-sentinel", "unclassified"), (None, "unclassified"),
+            ({"error": "permission"}, "unclassified"), ("x" * 1025, "unclassified"),
+        ]
+        for message, expected in cases:
+            with self.subTest(expected=expected):
+                self.assertEqual(g._provider_error_class(message), expected)
+
+    def test_error_body_read_is_bounded_and_invalid_bodies_stay_unclassified(self):
+        for raw in (b"not-json-secret-sentinel", b"[]", b'{"error":[]}', b"x" * (g.MAX_ERROR_RESPONSE + 20)):
+            stream = MagicMock(wraps=io.BytesIO(raw))
+            error = HTTPError("https://secret-sentinel.invalid", 422, "secret-sentinel", {}, stream)
+            diagnostic = g._http_failure_diagnostic(error)
+            stream.read.assert_called_once_with(g.MAX_ERROR_RESPONSE + 1)
+            stream.close.assert_called_once()
+            self.assertEqual(diagnostic["error_class"], "unclassified")
+            self.assertNotIn("sentinel", json.dumps(diagnostic))
+        stream = MagicMock()
+        stream.read.side_effect = TimeoutError("secret-sentinel")
+        stream.close.side_effect = OSError("secret-sentinel")
+        diagnostic = g._http_failure_diagnostic(HTTPError("https://secret.invalid", 403, "secret", {}, stream))
+        self.assertEqual(diagnostic["http_status"], 403)
+        self.assertEqual(diagnostic["error_class"], "unclassified")
+
+    def test_documented_error_class_is_read_from_json_without_retaining_error_text(self):
+        error = HTTPError("https://secret-sentinel.invalid", 422, "secret-sentinel", {}, io.BytesIO(
+            json.dumps({"error": "Could not geocode address, zip code or city/state are required",
+                        "query": GB_ADDRESS, "api_key": "secret-sentinel"}).encode()))
+        opener = MagicMock(side_effect=error)
+        with self.assertRaises(g.GeocodeFailure) as caught:
+            g.geocode(GB_ADDRESS, "secret-sentinel", reservation=gb_reservation(),
+                      country_code="GB", opener=opener)
+        self.assertEqual(str(caught.exception), "ambiguous")
+        self.assertEqual(caught.exception.diagnostic, {"version": 1, "cause": "http_rejected",
+                                                     "http_status": 422, "error_class": "missing_locality"})
+        self.assertNotIn("sentinel", json.dumps(caught.exception.diagnostic))
+        self.assertNotIn("Cambridge", json.dumps(caught.exception.diagnostic))
+        opener.assert_called_once()
+
+    def test_empty_and_malformed_result_shapes_remain_ambiguous_with_distinct_causes(self):
+        cases = [({"results": []}, "empty_results", 0), (None, "invalid_results", 0),
+                 ({}, "invalid_results", 0), ({"results": "secret-sentinel"}, "invalid_results", 0),
+                 ({"results": [None]}, "invalid_results", 1),
+                 ({"results": [{}, {}, {}, {}]}, "invalid_results", 3),
+                 ({"results": [{}]}, "invalid_result", 1)]
+        for payload, cause, count in cases:
+            with self.subTest(cause=cause):
+                failure = self.rejected_response(payload)
+                self.assertEqual(str(failure), "ambiguous")
+                self.assertEqual(failure.diagnostic["cause"], cause)
+                self.assertEqual(failure.diagnostic["result_count"], count)
+                self.assertEqual(failure.diagnostic["http_status"], 200)
+                self.assertNotIn("sentinel", json.dumps(failure.diagnostic))
+
+    def test_invalid_json_and_response_size_keep_invalid_response_outcome(self):
+        for raw, cause in ((b"<html>secret-sentinel</html>", "invalid_json"),
+                           (b"x" * (g.MAX_RESPONSE + 1), "response_too_large")):
+            failure = self.rejected_response(None, raw=raw)
+            self.assertEqual(str(failure), "invalid_response")
+            self.assertEqual(failure.diagnostic, {"version": 1, "cause": cause, "http_status": 200})
+
+    def test_result_validation_and_identity_mismatches_have_redacted_flags(self):
+        cases = [
+            ({"location": {"lat": 999, "lng": .1}}, {}, "invalid_result", "coordinates_valid"),
+            ({"accuracy": "score-secret-sentinel"}, {}, "invalid_result", "score_valid"),
+            ({"address_components": []}, None, "invalid_result", "components_object"),
+            ({"accuracy_type": "county"}, {}, "result_mismatch", "accuracy_type_valid"),
+            ({"accuracy_type": ["secret-sentinel"]}, {}, "result_mismatch", "accuracy_type_valid"),
+            ({}, {"country": "US"}, "result_mismatch", "country_valid"),
+            ({}, {"street": "Garden"}, "result_mismatch", "street_match"),
+            ({}, {"city": "Other town", "postal_code": "CB1 1AA"}, "result_mismatch", "town_match"),
+            ({"accuracy_type": "point"}, {"postal_code": "CB1 1AA"}, "result_mismatch", "postcode_match"),
+        ]
+        for fields, components, cause, flag in cases:
+            payload = gb_response(**fields)
+            if components:
+                payload["results"][0]["address_components"].update(components)
+            with self.subTest(cause=cause, flag=flag):
+                failure = self.rejected_response(payload)
+                self.assertEqual(str(failure), "ambiguous")
+                self.assertEqual(failure.diagnostic["cause"], cause)
+                self.assertFalse(failure.diagnostic[flag])
+                for secret in ("sentinel", "Cambridge", "Garden", "CB5", "52.2", "Other town"):
+                    self.assertNotIn(secret, json.dumps(failure.diagnostic))
+
+    def test_existing_accepted_results_and_precision_are_unchanged(self):
+        for country, address, make_response, reserve in (
+                ("US", ADDRESS, response, reservation), ("GB", GB_ADDRESS, gb_response, gb_reservation)):
+            for precision in sorted(g.ACCEPTED_ACCURACY_TYPES):
+                payload = make_response(accuracy_type=precision, accuracy=.25)
+                expected = g.verify(payload, address, country)
+                self.assertIsNotNone(expected)
+                opener = MagicMock(return_value=io.BytesIO(json.dumps(payload).encode()))
+                with self.subTest(country=country, precision=precision):
+                    actual = g.geocode(address, "fixture-only", reservation=reserve(),
+                                       country_code=country, opener=opener)
+                    self.assertEqual(actual, expected)
+                    opener.assert_called_once()
+
+    def test_sanitizer_drops_unknown_keys_wrong_types_and_unbounded_values(self):
+        value = {"version": 1, "cause": "result_mismatch", "http_status": 200, "result_count": 2,
+                 "country_valid": False, "address_match": True, "error_class": "unclassified",
+                 "body": "secret-sentinel", "query_text": GB_ADDRESS, "location": {"lat": 52.2}}
+        self.assertEqual(g.sanitize_diagnostic(value), {
+            "version": 1, "cause": "result_mismatch", "http_status": 200, "result_count": 2,
+            "country_valid": False, "address_match": True, "error_class": "unclassified"})
+        for invalid in (None, [], {"version": True, "cause": "http_rejected"},
+                        {"version": 1, "cause": []}, {"version": 1, "cause": "secret-sentinel"}):
+            self.assertEqual(g.sanitize_diagnostic(invalid), {})
+        for fields in ({"http_status": True, "result_count": -1},
+                       {"http_status": 600, "result_count": 4},
+                       {"country_valid": "secret-sentinel", "error_class": []}):
+            self.assertEqual(g.sanitize_diagnostic({"version": 1, "cause": "unclassified", **fields}),
+                             {"version": 1, "cause": "unclassified"})
+
+    def test_worker_binds_and_persists_only_sanitized_diagnostic_without_retry(self):
+        calls = []
+        claim = {"venue_key": "a" * 32, "lease_id": "lease", "query_text": GB_ADDRESS, "country_code": "GB"}
+        reserved = {**gb_reservation(), "request_id": "00000000-0000-0000-0000-000000000001"}
+        def database(action, payload):
+            calls.append((action, copy.deepcopy(payload)))
+            return [claim] if action == "claim" else reserved if action == "reserve" else {"recorded": True}
+        failure = g.GeocodeFailure("ambiguous", diagnostic={"version": 1, "cause": "http_rejected",
+                                   "http_status": 422, "error_class": "missing_locality"})
+        failure.diagnostic["raw_error"] = "secret-sentinel"
+        provider = MagicMock(side_effect=failure)
+        output = io.StringIO()
+        with patch.dict(os.environ, ENV), redirect_stdout(output):
+            stats = g.run_batch(max_requests=1, database=database, provider=provider)
+        self.assertEqual([action for action, _ in calls], ["claim", "reserve", "fail"])
+        sent = calls[-1][1]
+        self.assertEqual(sent["country_code"], "GB")
+        self.assertEqual(sent["query_text"], GB_ADDRESS)
+        self.assertEqual(sent["lease_id"], "lease")
+        self.assertEqual(sent["request_id"], reserved["request_id"])
+        self.assertEqual(sent["reason"], "ambiguous")
+        self.assertEqual(sent["diagnostic"], {"version": 1, "cause": "http_rejected",
+                                            "http_status": 422, "error_class": "missing_locality"})
+        self.assertEqual((stats["attempted"], stats["ambiguous"], stats["resolved"]), (1, 1, 0))
+        provider.assert_called_once()
+        logged = json.loads(output.getvalue())
+        self.assertEqual(logged["request_id"], reserved["request_id"])
+        for secret in ("secret-sentinel", "Cambridge", "CB5", "fixture-only", "query_text", "lease"):
+            self.assertNotIn(secret, output.getvalue())
+
+
 class CountryBoundWorkerTests(unittest.TestCase):
     def setUp(self):
         self.calls = []

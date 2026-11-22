@@ -21,6 +21,21 @@ ENDPOINT = "https://api.geocod.io/v2/geocode"
 RPC = "community_collector_geocoder"
 TIMEOUT = 8
 MAX_RESPONSE = 30_000
+MAX_ERROR_RESPONSE = 4_096
+DIAGNOSTIC_CAUSES = frozenset({
+    "http_rejected", "empty_results", "invalid_results", "invalid_result",
+    "result_mismatch", "invalid_json", "response_too_large", "transport_error",
+    "redirect_refused", "unclassified",
+})
+DIAGNOSTIC_ERROR_CLASSES = frozenset({
+    "unclassified", "missing_locality", "usage_limit", "key_permission", "uk_access_denied",
+})
+DIAGNOSTIC_FLAGS = frozenset({
+    "results_array", "candidate_object", "components_object", "coordinates_valid",
+    "score_valid", "accuracy_type_valid", "country_valid", "address_match",
+    "town_match", "street_match", "postcode_match", "country_present",
+    "town_present", "street_present", "postcode_present",
+})
 SUPPORTED_COUNTRIES = frozenset({"US", "GB"})
 GB_POSTCODE = re.compile(r"(?:GIR0AA|[A-Z]{1,2}[0-9][A-Z0-9]?[0-9][A-Z]{2})")
 GB_STREET_WORDS = {
@@ -38,10 +53,31 @@ WORDS = {
 class GeocodeFailure(Exception):
     """Only fixed reason codes may leave the provider boundary."""
 
+    def __init__(self, reason: str, *, diagnostic: dict | None = None):
+        super().__init__(reason)
+        self.diagnostic = sanitize_diagnostic(diagnostic)
+
 
 class NoRedirects(HTTPRedirectHandler):
     def redirect_request(self, *args, **kwargs):
-        raise GeocodeFailure("provider_error")
+        raise GeocodeFailure("provider_error", diagnostic={"version": 1, "cause": "redirect_refused"})
+
+
+def sanitize_diagnostic(value: dict | None) -> dict:
+    """Allow only bounded enums/counts/booleans, including at the RPC boundary."""
+    if (not isinstance(value, dict) or type(value.get("version")) is not int
+            or value["version"] != 1 or not isinstance(value.get("cause"), str)
+            or value["cause"] not in DIAGNOSTIC_CAUSES):
+        return {}
+    clean = {"version": 1, "cause": value["cause"]}
+    for name, minimum, maximum in (("http_status", 100, 599), ("result_count", 0, 3)):
+        if type(value.get(name)) is int and minimum <= value[name] <= maximum:
+            clean[name] = value[name]
+    error_class = value.get("error_class")
+    if isinstance(error_class, str) and error_class in DIAGNOSTIC_ERROR_CLASSES:
+        clean["error_class"] = error_class
+    clean.update({name: value[name] for name in DIAGNOSTIC_FLAGS if type(value.get(name)) is bool})
+    return clean
 
 
 def canonical(value: str) -> str:
@@ -268,6 +304,105 @@ def reservation_matches(reservation: dict, address: str, country_code: str) -> b
     return True
 
 
+def _result_diagnostic(payload: dict, address: str, country_code: str, http_status=None) -> dict:
+    """Explain rejection using the existing verifier, without retaining its data."""
+    rows = payload.get("results") if isinstance(payload, dict) else None
+    is_array = isinstance(rows, list)
+    first = rows[0] if is_array and rows else None
+    is_candidate = isinstance(first, dict)
+    first = first if is_candidate else {}
+    raw_components = first.get("address_components")
+    components = raw_components if isinstance(raw_components, dict) else {}
+    try:
+        coordinates(first)
+        coordinates_valid = True
+    except (TypeError, ValueError, AttributeError, GeocodeFailure, OverflowError):
+        coordinates_valid = False
+    try:
+        score = float(first.get("accuracy"))
+        score_valid = math.isfinite(score) and 0 <= score <= 1
+    except (TypeError, ValueError, OverflowError):
+        score_valid = False
+    try:
+        address_match = address_matches(first, address, country_code)
+    except (TypeError, ValueError, AttributeError, OverflowError):
+        address_match = False
+    _, town, _, postcode = result_address_parts({"address_components": components}, country_code)
+    expected_street, expected_town, _, expected_postcode = expected_address_parts(address, country_code)
+    raw_street = " ".join(str(components.get(k) or "") for k in
+                          ("predirectional", "street", "suffix", "postdirectional")).strip()
+    if country_code == "GB":
+        street = gb_address_part(raw_street, street=True)
+        expected_core = re.sub(r"^[0-9][a-z0-9-]*\s+", "", expected_street)
+        expected_core = re.sub(r"\s+(?:ste|suite|unit|apt|apartment|#)\s+[a-z0-9-]+$", "", expected_core)
+    else:
+        street, expected_core = canonical(raw_street), _street_without_number_and_unit(expected_street)
+
+    def present(name):
+        return isinstance(components.get(name), str) and bool(components[name].strip())
+
+    if is_array and not rows:
+        cause = "empty_results"
+    elif not is_array or not 1 <= len(rows) <= 2 or not is_candidate:
+        cause = "invalid_results"
+    elif not coordinates_valid or not score_valid or not isinstance(raw_components, dict):
+        cause = "invalid_result"
+    else:
+        cause = "result_mismatch"
+    return sanitize_diagnostic({
+        "version": 1, "cause": cause, "http_status": http_status,
+        "result_count": min(len(rows), 3) if is_array else 0,
+        "results_array": is_array, "candidate_object": is_candidate,
+        "components_object": isinstance(raw_components, dict),
+        "coordinates_valid": coordinates_valid, "score_valid": score_valid,
+        "accuracy_type_valid": (isinstance(first.get("accuracy_type"), str)
+                                and first["accuracy_type"] in ACCEPTED_ACCURACY_TYPES),
+        "country_valid": country_matches(components.get("country"), country_code),
+        "address_match": address_match,
+        "town_match": bool(town and expected_town and town == expected_town),
+        "street_match": bool(street and expected_core and street == expected_core),
+        "postcode_match": bool(postcode and expected_postcode and postcode == expected_postcode),
+        "country_present": present("country"), "town_present": present("city"),
+        "street_present": present("street"),
+        "postcode_present": present("postal_code") or (country_code == "US" and present("zip")),
+    })
+
+
+def _provider_error_class(message) -> str:
+    """Classify only explicit documented error phrases; never infer a plan."""
+    if not isinstance(message, str) or len(message) > 1_024:
+        return "unclassified"
+    message = re.sub(r"\s+", " ", message.strip()).casefold()
+    if message.rstrip(".") == "could not geocode address, zip code or city/state are required":
+        return "missing_locality"
+    if message.startswith("you can't make this request as it is above your daily maximum."):
+        return "usage_limit"
+    if message.startswith("this api key does not have permission to access this feature."):
+        return "key_permission"
+    if re.match(r"^(?:your|this) account does not have access to (?:uk|united kingdom) data(?:[.! ]|$)", message):
+        return "uk_access_denied"
+    return "unclassified"
+
+
+def _http_failure_diagnostic(error: HTTPError) -> dict:
+    diagnostic = {"version": 1, "cause": "http_rejected", "http_status": error.code,
+                  "error_class": "unclassified"}
+    try:
+        raw = error.read(MAX_ERROR_RESPONSE + 1)
+        if len(raw) <= MAX_ERROR_RESPONSE:
+            payload = json.loads(raw)
+            if isinstance(payload, dict):
+                diagnostic["error_class"] = _provider_error_class(payload.get("error"))
+    except (AttributeError, OSError, TypeError, ValueError, UnicodeError):
+        pass
+    finally:
+        try:
+            error.close()
+        except (AttributeError, OSError, ValueError):
+            pass
+    return sanitize_diagnostic(diagnostic)
+
+
 def geocode(address: str, key: str, *, reservation: dict, country_code: str = "US",
             opener=None) -> dict | None:
     """A fresh SQL reservation is mandatory; never resend on a network failure."""
@@ -293,22 +428,31 @@ def geocode(address: str, key: str, *, reservation: dict, country_code: str = "U
                       headers={"Authorization": "Bearer " + key,
                                "User-Agent": "RoomQuest-Forward-Geocoder/1.0",
                                "Accept": "application/json"})
+    http_status = None
     try:
         with (opener or build_opener(NoRedirects()).open)(request, timeout=TIMEOUT) as response:
+            http_status = getattr(response, "status", None)
             raw = response.read(MAX_RESPONSE + 1)
             if len(raw) > MAX_RESPONSE:
-                raise GeocodeFailure("invalid_response")
-            return verify(json.loads(raw), address, country_code)
+                raise GeocodeFailure("invalid_response", diagnostic={
+                    "version": 1, "cause": "response_too_large", "http_status": http_status})
+            payload = json.loads(raw)
+            match = verify(payload, address, country_code)
+            if match is None:
+                raise GeocodeFailure("ambiguous", diagnostic=_result_diagnostic(
+                    payload, address, country_code, http_status))
+            return match
     except HTTPError as exc:
         reason = ("rate_limited" if exc.code == 429 else
                   ("provider_country_access" if country_code == "GB" and exc.code == 403 else "provider_auth")
                   if exc.code in (401, 403) else
                   "ambiguous" if exc.code in (400, 422) else "provider_error")
-        raise GeocodeFailure(reason) from None
+        raise GeocodeFailure(reason, diagnostic=_http_failure_diagnostic(exc)) from None
     except (URLError, TimeoutError, OSError):
-        raise GeocodeFailure("provider_error") from None
+        raise GeocodeFailure("provider_error", diagnostic={"version": 1, "cause": "transport_error"}) from None
     except (ValueError, UnicodeError):
-        raise GeocodeFailure("invalid_response") from None
+        raise GeocodeFailure("invalid_response", diagnostic={
+            "version": 1, "cause": "invalid_json", "http_status": http_status}) from None
 
 
 def rpc(action: str, payload: dict | None = None):
@@ -396,6 +540,21 @@ def valid_claim(claim: dict) -> bool:
     return bool(street and city and re.fullmatch(r"[a-z]{2}", state))
 
 
+def _record_failure(database, identity: dict, reason: str, diagnostic=None):
+    clean = sanitize_diagnostic(diagnostic) or {"version": 1, "cause": "unclassified"}
+    database("fail", {**identity, "reason": reason, "diagnostic": clean})
+
+    def identifier(name, pattern):
+        value = identity.get(name)
+        return value if isinstance(value, str) and re.fullmatch(pattern, value) else None
+
+    print(json.dumps({
+        "event": "geocoder_provider_failed", "reason": reason, "diagnostic": clean,
+        "venue_key": identifier("venue_key", r"[0-9a-f]{32}"),
+        "request_id": identifier("request_id", r"[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}"),
+    }, sort_keys=True, separators=(",", ":")))
+
+
 def run_batch(*, max_requests: int = 10, deadline_seconds: int = 45,
               database=None, provider=None, clock=None) -> dict:
     """Claim one at a time and leave 20 seconds for reserve/provider/result I/O."""
@@ -445,14 +604,14 @@ def run_batch(*, max_requests: int = 10, deadline_seconds: int = 45,
             if reason not in {"provider_error", "provider_auth", "provider_country_access", "rate_limited",
                               "invalid_response", "ambiguous"}:
                 reason = "provider_error"
-            database("fail", {**identity, "reason": reason})
+            _record_failure(database, identity, reason, exc.diagnostic)
             stats["ambiguous" if reason == "ambiguous" else "errors"] += 1
             if reason in {"provider_auth", "provider_country_access", "rate_limited"}:
                 stats["stop_reason"] = reason
                 break
             continue
         if match is None:
-            database("fail", {**identity, "reason": "ambiguous"})
+            _record_failure(database, identity, "ambiguous")
             stats["ambiguous"] += 1
         else:
             try:
