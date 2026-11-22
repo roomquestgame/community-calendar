@@ -256,8 +256,20 @@ def run_pipeline() -> dict:
     from datetime import datetime, timezone
 
     start = monotonic()
+    # The HTTP route has a 60-second cap. Budget optional work against 55s to
+    # allow response headroom; existing I/O deadlines remain cooperative. A slow
+    # geocoder must not start a fresh venue/photo budget near the request's end.
+    deadline = start + 55
     phase = int(datetime.now(timezone.utc).timestamp() // 60) % 3
     result = {"phase": ("photos" if phase == 2 else "venues" if phase == 1 else "geocoder")}
+
+    def optional_stage(worker, work_seconds, completion_seconds):
+        remaining = deadline - monotonic() - completion_seconds
+        # Keep the full existing work allowance. Shrinking it after a claim
+        # could turn an unfinished lookup into needs_review/no_event_image.
+        if remaining < work_seconds:
+            return {"stop_reason": "deadline"}
+        return worker(deadline_seconds=min(work_seconds, remaining))
 
     # Geocoding is the critical path. Keep it first and isolate failures so an
     # optional worker cannot turn the entire cron request into a 503.
@@ -270,13 +282,21 @@ def run_pipeline() -> dict:
 
     if phase == 2:
         try:
-            result["photos"] = ({"stop_reason": "dedicated_worker"} if dedicated_media_ready()
-                                else photo_batch())
+            if deadline - monotonic() < 4:  # Capability RPC timeout.
+                result["photos"] = {"stop_reason": "deadline"}
+            elif dedicated_media_ready():
+                result["photos"] = {"stop_reason": "dedicated_worker"}
+            else:
+                # Recheck after the capability RPC, reserving up to three
+                # four-second completion RPCs for the legacy batch.
+                result["photos"] = optional_stage(photo_batch, 38, 12)
         except Exception:
             result["photos"] = {"stop_reason": "stage_failed"}
     elif phase == 1:
         try:
-            result["venues"] = run_batch()
+            # One four-second completion RPC, plus an eight-second page fetch
+            # and final five-second read beyond the six-second admission guard.
+            result["venues"] = optional_stage(run_batch, 15, 11)
         except Exception:
             result["venues"] = {"stop_reason": "stage_failed"}
 

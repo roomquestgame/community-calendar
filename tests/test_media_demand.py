@@ -362,6 +362,7 @@ class DeploymentCompatibilityTests(unittest.TestCase):
         from roomquest import forward_geocoder, venue_resolver
         for ready in (False, True):
             with patch('datetime.datetime') as date, \
+                    patch.object(venue_resolver, 'monotonic', return_value=100), \
                     patch.object(forward_geocoder, 'run_batch', return_value={'claimed': 1}) as geocode, \
                     patch.object(images, 'dedicated_media_ready', return_value=ready), \
                     patch.object(images, 'run_batch', return_value={'claimed': 3}) as legacy:
@@ -373,7 +374,7 @@ class DeploymentCompatibilityTests(unittest.TestCase):
                 legacy.assert_not_called()
                 self.assertEqual(answer['photos']['stop_reason'], 'dedicated_worker')
             else:
-                legacy.assert_called_once_with()
+                legacy.assert_called_once_with(deadline_seconds=38)
                 self.assertEqual(answer['photos'], {'claimed': 3})
 
 
