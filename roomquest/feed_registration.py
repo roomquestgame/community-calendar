@@ -21,6 +21,8 @@ RETRYABLE = {'dns_unavailable', 'robots_unavailable', 'source_fetch_deadline', '
 # Each destination must still occur in the submitted page and pass the normal
 # robots-aware fetch, collection detection and independent endpoint registration.
 PUBLISHER_CALENDAR_PAGES = {
+    'https://www.boplex.com/our-venues/bojangles-coliseum': 'https://www.boplex.com/events',
+    'https://www.boplex.com/our-venues/ovens-auditorium': 'https://www.boplex.com/events',
     'https://www.morgan.edu/': 'https://events.morgan.edu/',
     'https://residentculturebrewing.com/location/plaza-midwood/':
         'https://residentculturebrewing.com/events/?fwp_event_location=plaza-midwood',
