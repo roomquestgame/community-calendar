@@ -145,7 +145,9 @@ def classify(url, payload, hint=None, endpoint_only=False, venue_website=False):
             links = preferred
     if not links and len(parser.publisher_calendar_pages) == 1:
         return {'calendar_page': next(iter(parser.publisher_calendar_pages))}
-    if not links and venue_website and len(parser.calendar_pages) == 1 and scoped_endpoint(url, next(iter(parser.calendar_pages))):
+    if (not links and venue_website and urlsplit(url).path in ('', '/')
+            and len(parser.calendar_pages) == 1
+            and scoped_endpoint(url, next(iter(parser.calendar_pages)))):
         return {'calendar_page': next(iter(parser.calendar_pages))}
     if len(links) != 1:
         return review('multiple_calendar_links', 'html') if links else evidence or review('no_reusable_calendar')
@@ -161,6 +163,16 @@ def recover_html_feed(listing_url, listing_body, deadline):
     when the HTML proves that CMS. It never publishes or grants source rights.
     """
     from roomquest.venue_calendar_locator import find_calendar
+    from roomquest.registered_html_calendar import CALENDAR_NAMES
+
+    # A venue or department can be encoded in the path rather than a query.
+    # Exploratory navigation/API recovery cannot prove that path's scope maps
+    # to a publisher-wide feed. Explicit feeds and reviewed navigation were
+    # already handled by classify; keep this fallback to root collections.
+    path = [part for part in urlsplit(listing_url).path.split('/') if part]
+    if path and (len(path) != 1 or path[0].lower() not in
+                 CALENDAR_NAMES | {'calendar.aspx', 'calendar.php'}):
+        return None
 
     responses = {}
 
@@ -185,6 +197,39 @@ def recover_html_feed(listing_url, listing_body, deadline):
             or not probe(endpoint, responses[endpoint], kind)):
         return None
     return {'p_outcome': 'discovered', 'p_endpoint': endpoint, 'p_type': kind}
+
+
+def verify_html_calendar(listing_url, listing_body, deadline):
+    """Probe the exact same linked-detail adapter used by scheduled collection."""
+    from roomquest import registered_html_calendar
+    from roomquest.registered_native_content import CAPABILITY, HTML_CAPABILITY
+    from roomquest.registration_formats import source_key, extraction_hold
+
+    if not registered_html_calendar.supports_listing(listing_url, listing_body):
+        return None
+    source = {'source_key': source_key(listing_url), 'feed_url': listing_url,
+              'kind': 'html', 'platform_adapter': 'html',
+              CAPABILITY: 1, HTML_CAPABILITY: 1}
+
+    def fetch_detail(target, accept):
+        return fetch_publisher(target, accept, respect_robots=True,
+                               deadline_at=deadline,
+                               allowed_hosts=(urlsplit(listing_url).hostname,))
+
+    try:
+        records = registered_html_calendar.collect(
+            source, fetch_detail, deadline_at=deadline, listing=listing_body)
+        if not records:
+            return review('no_extractable_events', 'html')
+        from roomquest.registered_native_content import validate_record
+        for row in records:
+            validate_record(row, source)
+    except PreviewError:
+        raise
+    except (ValueError, KeyError, TypeError, OverflowError) as exc:
+        return extraction_hold('html', exc)
+    return {'p_outcome': 'verified', 'p_endpoint': listing_url,
+            'p_type': 'html', 'p_reason': registered_html_calendar.VERSION}
 
 
 def register(ticket):
@@ -228,6 +273,16 @@ def register(ticket):
 
             result, body = check(url, candidate.get('endpoint_only', False),
                                  candidate.get('verified_venue_website', False))
+            if (type(candidate.get('registered_html_calendar_version')) is int
+                    and candidate['registered_html_calendar_version'] == 1
+                    and not candidate.get('endpoint_only')
+                    and result.get('p_outcome') == 'review'
+                    and result.get('p_reason') in {'html_adapter_needed', 'no_reusable_calendar',
+                                                  'collection_scope_unverified'}):
+                from roomquest.registered_html_calendar import calendar_destination
+                destination = calendar_destination(url, body)
+                if destination and scoped_endpoint(url, destination):
+                    result = {'calendar_page': destination}
             if 'calendar_page' in result:
                 url = result['calendar_page']
                 result, body = check(url)
@@ -263,6 +318,19 @@ def register(ticket):
                 recovered = recover_html_feed(url, body, deadline)
                 if recovered:
                     result = recovered
+            if (type(candidate.get('registered_html_calendar_version')) is int
+                    and candidate['registered_html_calendar_version'] == 1
+                    and body and body.lstrip().lstrip(chr(0xfeff)).lstrip().startswith('<')
+                    and result.get('p_outcome') == 'review'
+                    and result.get('p_reason') in {
+                        'html_adapter_needed', 'no_reusable_calendar',
+                        'collection_scope_unverified',
+                    }):
+                verified_html = verify_html_calendar(url, body, deadline)
+                if verified_html:
+                    result = verified_html
+                    if url != candidate['url'] and result['p_outcome'] == 'verified':
+                        result = dict(result, p_outcome='discovered')
             if result.get('p_type') == 'localist' and result['p_outcome'] == 'verified':
                 try:
                     records = localist_registration.collect(url, lambda target, accept: fetch_publisher(

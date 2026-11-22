@@ -3,6 +3,11 @@
 Prepared for EVE-150 on 21 November 2026. Release and live source acceptance are
 separate from the local tests described here.
 
+The separately negotiated HTML detail extension is described in
+[registered-html-calendars.md](registered-html-calendars.md). It adds a checked
+HTML registration receipt and actual per-event detail evidence; the original
+JSON-feed contract below remains unchanged for WordPress and JSON-LD feeds.
+
 ## Purpose and scope
 
 Direct registered WordPress Events Calendar and JSON-LD collections currently
