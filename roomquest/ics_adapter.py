@@ -515,6 +515,38 @@ def richmond_venues(records, url):
     return records
 
 
+def apply_declared_calendar_timezone(calendar):
+    """Use the publisher's IANA default for finite floating event timestamps.
+
+    Explicit TZIDs/offsets and DATE values retain their existing meaning.
+    Floating recurrence rules require a separate recurrence contract.
+    """
+    declared = calendar.get('X-WR-TIMEZONE')
+    if declared is None:
+        return False
+    floating = [(event, key, event.get(key)) for event in calendar.walk('VEVENT')
+                for key in ('DTSTART', 'DTEND')
+                if isinstance(getattr(event.get(key), 'dt', None), datetime)
+                and event.get(key).dt.tzinfo is None and not event.get(key).params.get('TZID')]
+    if not floating:
+        return False
+    if isinstance(declared, list):
+        raise ValueError('calendar_timezone_conflict')
+    try:
+        zone = ZoneInfo(str(declared).strip())
+    except (ValueError, KeyError) as exc:
+        raise ValueError('calendar_timezone_unresolved') from exc
+    from roomquest.mapsee_adapter import timestamp
+    changed = False
+    for event, key, value in floating:
+        if any(event.get(k) for k in ('RRULE', 'RDATE', 'EXDATE', 'RECURRENCE-ID', 'EXRULE')):
+            continue  # Preserve the existing unresolved recurrence behavior.
+        value.dt = timestamp(value.dt.isoformat(), zone.key)
+        value.params['TZID'] = zone.key
+        changed = True
+    return changed
+
+
 def parse(payload, source, *, legacy=False, include_description=False):
     from icalendar import Calendar
     from roomquest import odu_campusgroups
@@ -535,6 +567,8 @@ def parse(payload, source, *, legacy=False, include_description=False):
         header = re.sub(r'(?m)^(REFRESH-INTERVAL|X-PUBLISHED-TTL):P15M(?=\r?$)', r'\1:PT15M', header)
         payload = header + separator + body
     cal=Calendar.from_ical(payload)
+    if apply_declared_calendar_timezone(cal):
+        payload = cal.to_ical().decode()
     odu_addresses = odu_campusgroups.filter_snapshot(cal, source) if odu else {}
     if odu:
         payload = cal.to_ical().decode()

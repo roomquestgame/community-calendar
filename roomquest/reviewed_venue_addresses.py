@@ -21,6 +21,18 @@ SWEET_BRIAR_VENUES = {
 
 
 def complete_address(row, source):
+    # CSHC publishes the complete venue/street/town/postcode in LOCATION.
+    # The legacy normalizer only recognizes numbered US addresses. Retain this
+    # publisher street evidence without assigning a venue point or guessing one.
+    hockey = 'https://cambridgesouthhockeyclub.co.uk/matches/cshc_matches.ics'
+    if (source.get('url', source.get('feed_url')) == hockey
+            and source.get('source_key') == 'municipal_' + md5(('feed_registration:' + hockey).encode()).hexdigest()[:24]
+            and not row.get('venue_address')):
+        import re
+        location = str(row.get('venue_name') or '').strip()
+        if location.count(',') >= 2 and re.search(r',\s*[A-Z]{1,2}[0-9][A-Z0-9]?\s+[0-9][A-Z]{2}$', location):
+            row['venue_address'] = location
+        return
     if (source.get('url', source.get('feed_url')) != SWEET_BRIAR
             or source.get('source_key') != SWEET_BRIAR_KEY):
         return
