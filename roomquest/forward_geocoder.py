@@ -77,7 +77,36 @@ def sanitize_diagnostic(value: dict | None) -> dict:
     if isinstance(error_class, str) and error_class in DIAGNOSTIC_ERROR_CLASSES:
         clean["error_class"] = error_class
     clean.update({name: value[name] for name in DIAGNOSTIC_FLAGS if type(value.get(name)) is bool})
+    candidate = sanitize_us_candidate(value.get("candidate"))
+    if value["cause"] == "result_mismatch" and candidate is not None:
+        clean["candidate"] = candidate
     return clean
+
+
+def sanitize_us_candidate(value: dict | None) -> dict | None:
+    """Keep a rejected public-venue point for private review, never a raw response.
+
+    This does not accept the point or alter geocoding. The database independently
+    validates the shape and requires active approved staged-address demand before
+    retaining it. Addresses, arbitrary provider text and response fields are omitted.
+    """
+    if not isinstance(value, dict) or value.get("country_code") != "US":
+        return None
+    lat, lng, score = (value.get(name) for name in ("latitude", "longitude", "accuracy"))
+    try:
+        valid_numbers = all(type(number) in (int, float) and math.isfinite(number)
+                            for number in (lat, lng, score))
+    except (OverflowError, TypeError, ValueError):
+        valid_numbers = False
+    if (not valid_numbers or not -90 <= lat <= 90 or not -180 <= lng <= 180 or not 0 <= score <= 1
+            or not isinstance(value.get("accuracy_type"), str)
+            or value["accuracy_type"] not in ACCEPTED_ACCURACY_TYPES
+            or not isinstance(value.get("state_code"), str)
+            or re.fullmatch(r"[A-Z]{2}", value["state_code"]) is None):
+        return None
+    return {"latitude": lat, "longitude": lng, "accuracy": score,
+            "accuracy_type": value["accuracy_type"], "country_code": "US",
+            "state_code": value["state_code"]}
 
 
 def canonical(value: str) -> str:
@@ -349,6 +378,17 @@ def _result_diagnostic(payload: dict, address: str, country_code: str, http_stat
         cause = "invalid_result"
     else:
         cause = "result_mismatch"
+    # Only the first provider-ranked US candidate is retained privately. No
+    # fabricated midpoint, lower-ranked replacement, address, or provider text.
+    candidate = None
+    if (country_code == "US" and components.get("country") in ("US", "USA")
+            and coordinates_valid and score_valid):
+        latitude, longitude = coordinates(first)
+        candidate = sanitize_us_candidate({
+            "latitude": latitude, "longitude": longitude, "accuracy": score,
+            "accuracy_type": first.get("accuracy_type"), "country_code": "US",
+            "state_code": components.get("state_province"),
+        })
     return sanitize_diagnostic({
         "version": 1, "cause": cause, "http_status": http_status,
         "result_count": min(len(rows), 3) if is_array else 0,
@@ -365,6 +405,7 @@ def _result_diagnostic(payload: dict, address: str, country_code: str, http_stat
         "country_present": present("country"), "town_present": present("city"),
         "street_present": present("street"),
         "postcode_present": present("postal_code") or (country_code == "US" and present("zip")),
+        "candidate": candidate,
     })
 
 
@@ -567,7 +608,8 @@ def _record_failure(database, identity: dict, reason: str, diagnostic=None):
         return value if isinstance(value, str) and re.fullmatch(pattern, value) else None
 
     print(json.dumps({
-        "event": "geocoder_provider_failed", "reason": reason, "diagnostic": clean,
+        "event": "geocoder_provider_failed", "reason": reason,
+        "diagnostic": {name: value for name, value in clean.items() if name != "candidate"},
         "venue_key": identifier("venue_key", r"[0-9a-f]{32}"),
         "request_id": identifier("request_id", r"[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}"),
     }, sort_keys=True, separators=(",", ":")))
@@ -677,3 +719,4 @@ def run_batch(*, max_requests: int = 10, deadline_seconds: int = 45,
             stats["resolved"] += 1
             stats["events_updated"] += int(result.get("events_updated", 0))
     return stats
+
