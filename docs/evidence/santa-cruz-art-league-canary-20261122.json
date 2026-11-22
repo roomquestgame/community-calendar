@@ -1,0 +1,90 @@
+{
+  "schema": 1,
+  "source": {
+    "id": 5860,
+    "source_key": "santa_cruz_art_league_receptions_ca",
+    "feed_url": "https://scal.org/first-friday"
+  },
+  "collector_release": {
+    "repository": "roomquestgame/community-calendar",
+    "pull_request": 435,
+    "sha": "69eed0bc1f28f28064351adaae566e9502392d0e",
+    "deployment_id": "dpl_AuH71PrELFesFeDQa4NchChmVygK",
+    "canonical_alias": "https://roomquest-community-collector.vercel.app",
+    "state": "READY",
+    "ready_at": "2026-11-22T13:53:05.935Z",
+    "canonical_verified_at": "2026-11-22T13:54:01Z"
+  },
+  "backend_release": {
+    "repository": "roomquestgame/RoomQuestGame",
+    "pull_request": 1667,
+    "sha": "453edacfc4da962243636daa28c14d1c543ef635",
+    "migration": "20261206184400_verified_santa_cruz_art_league_street",
+    "workflow_id": 45029101069,
+    "conclusion": "success",
+    "live_function_md5": "d80ffdae83f6b4e1222c60d793e9a248",
+    "production_postconditions_passed": 13
+  },
+  "canary_action": {
+    "action": "Existing source Admin Review → Queue preview",
+    "source_id": 5860,
+    "clicked_at": "2026-11-22T13:56:33.524Z",
+    "ui_confirmed_at": "2026-11-22T13:56:33.907Z",
+    "database_requested_at": "2026-11-22 13:56:33.687584+00",
+    "count": 1
+  },
+  "completion": {
+    "observed_at": "2026-11-22 13:57:54.322871+00",
+    "completed_at": "2026-11-22 13:56:39.855809+00",
+    "health": "ok",
+    "preview_status": "complete",
+    "preview_error": null,
+    "failure_count": 0,
+    "future_count": 1,
+    "stage_count": 1,
+    "stage_checked_at": "2026-11-22 13:56:39.367908+00",
+    "photo_snapshot_at": "2026-11-22 13:56:39.855809+00",
+    "extractor_version": "publisher_event_candidates_v1",
+    "run": {
+      "completed_at": "2026-11-22 13:56:39.855809+00",
+      "outcome": "success",
+      "future_count": 1,
+      "staged_count": 1,
+      "error_code": null
+    }
+  },
+  "staged_event": {
+    "id": 415428,
+    "title": "Simple Pleasures — Santa Cruz Art League First Friday Reception",
+    "starts_at": "2026-12-05 01:00:00+00",
+    "ends_at": "2026-12-05 03:30:00+00",
+    "venue_address": "526 Broadway, Santa Cruz, CA 95060",
+    "event_url": "https://scal.org/members-show-2026",
+    "image_candidate_url": null,
+    "image_extractor_version": "publisher_event_candidates_v1",
+    "image_observed_at": "2026-11-22 13:56:39.367908+00",
+    "last_seen_at": "2026-11-22 13:56:39.367908+00",
+    "expires_at": "2026-12-19 03:30:00+00",
+    "lat": null,
+    "lng": null,
+    "decision": "include",
+    "reason": null,
+    "override_decision": null
+  },
+  "publication": {
+    "public_event_count": 0,
+    "normal_worker_eligible": false,
+    "demand_until": "2026-11-22 02:45:24.249168+00",
+    "validation_until": "2026-11-22 14:26:33.687584+00",
+    "existing_publication_request_present": true,
+    "disposition": "The ordinary Admin preview validation completed successfully. No public external_event exists yet. Normal worker eligibility is false: previous area demand expired at 02:45:24 UTC, while this Admin action grants validation through 14:26:33 UTC. The completed source is awaiting normal active demand for publication; this receipt does not claim public publication or a geocoder outage.",
+    "eligibility_observed_at": "2026-11-22 13:58:14.514823+00"
+  },
+  "scope": {
+    "single_existing_source_queue_action": true,
+    "additional_sources_queued": 0,
+    "rights_or_review_changes": 0,
+    "manual_publication": false,
+    "expired_source_clocks_reused_or_reset": false
+  }
+}
