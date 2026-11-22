@@ -1,0 +1,19 @@
+User-agent: *
+Allow: /
+Allow: /code/
+Allow: /css/
+Allow: /images/
+Allow: /img/
+Allow: /includes/
+Allow: /js/
+Allow: /pdf/
+Disallow: /phpmailer/
+Disallow: /plugins/
+
+Sitemap: https://www.algonquinarts.org/sitemap.xml
+
+# Created 25-January-2015
+# Updated 10-September-2017
+# Updated 02-February-2018
+# Updated 29-July-2020
+# Updated 26-July-2026

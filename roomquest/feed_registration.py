@@ -21,6 +21,7 @@ RETRYABLE = {'dns_unavailable', 'robots_unavailable', 'source_fetch_deadline', '
 # Each destination must still occur in the submitted page and pass the normal
 # robots-aware fetch, collection detection and independent endpoint registration.
 PUBLISHER_CALENDAR_PAGES = {
+    'https://www.algonquinarts.org/': 'https://www.algonquinarts.org/calendar.php',
     'https://www.boplex.com/our-venues/bojangles-coliseum': 'https://www.boplex.com/events',
     'https://www.boplex.com/our-venues/ovens-auditorium': 'https://www.boplex.com/events',
     'https://www.morgan.edu/': 'https://events.morgan.edu/',
@@ -192,7 +193,7 @@ def register(ticket):
     if not candidate:
         return {'outcome': 'idle'}
     url = candidate['url']
-    from roomquest import registered_listings
+    from roomquest import liberty_calendar, registered_listings
     from roomquest.registration_formats import source_key, extraction_hold
     with capture_publisher_pacing() as pacing:
         try:
@@ -200,11 +201,16 @@ def register(ticket):
             def check(target, endpoint_only=False, venue_website=False):
                 def fetch(resource, accept):
                     return fetch_publisher(resource, accept, respect_robots=True, deadline_at=deadline,
-                                           allowed_hosts=(urlsplit(target).hostname,))
+                                           allowed_hosts=(urlsplit(target).hostname,),
+                                           **({'follow_redirects': False} if target == liberty_calendar.ORIGINAL else {}))
+                initial_options = ({'allowed_hosts': (urlsplit(target).hostname,)}
+                                   if target != candidate['url'] else {})
+                if target == liberty_calendar.ORIGINAL:
+                    initial_options.update(allowed_hosts=liberty_calendar.ALLOWED_HOSTS, follow_redirects=False)
                 adapter = provider_registration.family(target)
                 body = None if adapter else fetch_publisher(
                     target, ACCEPT, respect_robots=True, deadline_at=deadline,
-                    **({'allowed_hosts': (urlsplit(target).hostname,)} if target != candidate['url'] else {}))
+                    **initial_options)
                 adapter = adapter or provider_registration.family(target, body)
                 if adapter:
                     try:
@@ -232,9 +238,11 @@ def register(ticket):
             if url in registered_listings.URLS and result.get('p_outcome') == 'review':
                 def fetch_detail(target, accept):
                     return fetch_publisher(target, accept, respect_robots=True, deadline_at=deadline,
-                                           allowed_hosts=(urlsplit(url).hostname,))
+                                           allowed_hosts=registered_listings.allowed_hosts(url),
+                                           **({'follow_redirects': False} if url == liberty_calendar.ORIGINAL else {}))
                 try:
-                    registered_listings.collect({'source_key': source_key(url), 'feed_url': url}, fetch_detail, listing=body)
+                    registered_listings.collect({'source_key': source_key(url), 'feed_url': url}, fetch_detail,
+                                                listing=body, deadline_at=deadline)
                     result = {'p_outcome': 'verified' if url == candidate['url'] else 'discovered',
                               'p_type': 'html', 'p_endpoint': url}
                 except PreviewError:

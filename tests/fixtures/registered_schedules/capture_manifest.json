@@ -1,0 +1,80 @@
+{
+  "purpose": "Minimal DOM subtrees from observed public publisher pages; no scripts, cookies or ticketing requests.",
+  "publisher_user_agent": "RoomQuestCommunityCalendar/0.2 (+https://roomquestapp.vercel.app/)",
+  "robots_user_agent": "RoomQuestCommunityCalendar/0.1 (community-event research)",
+  "transport_note": "Local collector DNS validation cannot resolve external names in this proxied execution environment. Evidence captured by curl through the existing environment proxy after manual robots evaluation. Production DNS/SSRF/robots controls are unchanged.",
+  "pages": [
+    {
+      "url": "https://www.forestfarmersmarket.com/",
+      "status": 200,
+      "date_header": "Sun, 22 Nov 2026 11:49:19 GMT",
+      "original_sha256": "757b1dd0fcb5ebdf437e5941ee401f4db7d10635320e03cac64ff62a37512218",
+      "fixture": "forest.html",
+      "fixture_sha256": "6cc9c231c32b547df22900e94dc925d47ae9773e0e6d19c3cb8b40142a4bd4b2"
+    },
+    {
+      "url": "https://www.algonquinarts.org/calendar.php",
+      "status": 200,
+      "date_header": "Sun, 22 Nov 2026 11:49:43 GMT",
+      "original_sha256": "ee644d8039b748c5b6d34940e48e1aaac25d91eb4675e670603f3049e34f6fae",
+      "fixture": "algonquin-listing.html",
+      "fixture_sha256": "8d31b46a8adb7ea835a91d917f689f5811ad876f61eec9ebf1ddbfb9019ee7b3"
+    },
+    {
+      "url": "https://www.algonquinarts.org/calendar.php?id=424",
+      "status": 200,
+      "date_header": "Sun, 22 Nov 2026 11:50:03 GMT",
+      "original_sha256": "554c90b753133ae3168875de324144122207e769195e54c95aa90187870941b7",
+      "fixture": "algonquin-424.html",
+      "fixture_sha256": "7b4958c6884659cd38ca292d4f33123b5010f91b25f243a4023544db213a8931"
+    },
+    {
+      "url": "https://www.algonquinarts.org/calendar.php?id=407",
+      "status": 200,
+      "date_header": "Sun, 22 Nov 2026 11:50:26 GMT",
+      "original_sha256": "34a64b3dbb2c7efb42c6903d3336a65cce8ed6fda6c4a2aacead77044a20bbc2",
+      "fixture": "algonquin-407.html",
+      "fixture_sha256": "0f052e10d0009a506e65ef862e765a71676fc881a802dbbf10ae1afe78ca25e0"
+    },
+    {
+      "url": "https://www.algonquinarts.org/calendar.php?id=441",
+      "status": 200,
+      "date_header": "Sun, 22 Nov 2026 11:51:22 GMT",
+      "original_sha256": "f676e0f04b525b3b593607545efb51d7bb4dc9455a29374871662dbb656c70b1",
+      "fixture": "algonquin-441.html",
+      "fixture_sha256": "0eaf6d82cbf1b66b0b170106a96adc3d816b2066029c00c839e9a42d9cd477a3"
+    },
+    {
+      "url": "https://www.algonquinarts.org/calendar.php?id=425",
+      "status": 200,
+      "date_header": "Sun, 22 Nov 2026 11:51:25 GMT",
+      "original_sha256": "79460efc77c3cb4bd1e0a5c8e799ffb07d01c72972e6dc16783f70a025d3a7c1",
+      "fixture": "algonquin-425.html",
+      "fixture_sha256": "646db257fdfd5ac5de108ab95eb0a88eb053bb166160c3089b285542c0007a6d"
+    },
+    {
+      "url": "https://www.algonquinarts.org/calendar.php?id=416",
+      "status": 200,
+      "date_header": "Sun, 22 Nov 2026 11:51:29 GMT",
+      "original_sha256": "aea383012b180be30e1b52a9001bd6d1937e5df86cf44e39df9d74ba38794554",
+      "fixture": "algonquin-416.html",
+      "fixture_sha256": "b67f77b08a7f1a5b51f571f2b328681c47dfda3662a0802ed8b4048a3894ee44"
+    },
+    {
+      "url": "https://www.algonquinarts.org/calendar.php?id=408",
+      "status": 200,
+      "date_header": "Sun, 22 Nov 2026 11:51:33 GMT",
+      "original_sha256": "2dfd408b8e4ac70e45ca330d6a6d1fa68f0ffd8387a9bbab154d5707162c561f",
+      "fixture": "algonquin-408.html",
+      "fixture_sha256": "6bf1fb75986f6caa0fe79b1831a1e7e90c6b516e11a35e9f1d50c9b1d41da2ea"
+    },
+    {
+      "url": "https://www.gravegarden.org/occevents/",
+      "status": 200,
+      "date_header": "Sun, 22 Nov 2026 11:53:56 GMT",
+      "original_sha256": "515b177d0fe3cb5069f9c03c011dc0b15a0877f746a213a8991618df1ab3e3d6",
+      "fixture": "gravegarden.html",
+      "fixture_sha256": "475ea0f2fdfd4ea663edd334afa1d01fd3696ec72931906ce489ba235b61c18d"
+    }
+  ]
+}

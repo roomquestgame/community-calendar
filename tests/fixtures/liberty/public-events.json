@@ -1,0 +1,346 @@
+{
+  "queryInfo": {
+    "totalResults": 7,
+    "totalPages": 1,
+    "pageIndex": 1
+  },
+  "events": [
+    {
+      "eventId": 17701,
+      "eventName": "MD3 Hockey vs University of Virginia",
+      "slug": "md3-hockey-vs-university-of-virginia",
+      "published": 1,
+      "visibility": "Public",
+      "eventDescription": "<p>Men's D3 Hockey vs University of Virginia at 5:45PM!</p>",
+      "occurrences": [
+        {
+          "occurrenceId": 36303,
+          "startTime": {
+            "year": 2026,
+            "month": 11,
+            "day": 22,
+            "hour": 15,
+            "minute": 0,
+            "second": 0,
+            "timezone": 0,
+            "timeString": "2026-11-22T15:00"
+          },
+          "endTime": {
+            "year": 2026,
+            "month": 11,
+            "day": 22,
+            "hour": 17,
+            "minute": 15,
+            "second": 0,
+            "timezone": 0,
+            "timeString": "2026-11-22T17:15"
+          }
+        }
+      ],
+      "locations": [
+        {
+          "locationId": 6246,
+          "locationFormalName": "LaHaye Ice Center - Ice Rink"
+        }
+      ]
+    },
+    {
+      "eventId": 8675,
+      "eventName": "Thanksgiving",
+      "slug": "thanksgiving-8675",
+      "published": 1,
+      "visibility": "Public",
+      "eventDescription": "<p>Happy Thanksgiving</p>",
+      "occurrences": [
+        {
+          "occurrenceId": 19008,
+          "startTime": {
+            "year": 2026,
+            "month": 11,
+            "day": 26,
+            "hour": 0,
+            "minute": 0,
+            "second": 0,
+            "timezone": 0,
+            "timeString": "2026-11-26T00:00"
+          },
+          "endTime": {
+            "year": 2026,
+            "month": 11,
+            "day": 26,
+            "hour": 23,
+            "minute": 59,
+            "second": 0,
+            "timezone": 0,
+            "timeString": "2026-11-26T23:59"
+          }
+        }
+      ],
+      "locations": [
+        {
+          "locationId": 5914,
+          "locationFormalName": "Liberty University"
+        }
+      ]
+    },
+    {
+      "eventId": 17107,
+      "eventName": "Bestie BOGO",
+      "slug": "bestie-bogo-17107",
+      "published": 1,
+      "visibility": "Public",
+      "eventDescription": "<p>Come as a pair: You bowl, they bowl &mdash; one pays, both play!<br />Buy one game and shoe rental, and your bestie gets theirs FREE.</p>",
+      "occurrences": [
+        {
+          "occurrenceId": 33920,
+          "startTime": {
+            "year": 2026,
+            "month": 11,
+            "day": 29,
+            "hour": 18,
+            "minute": 0,
+            "second": 0,
+            "timezone": 0,
+            "timeString": "2026-11-29T18:00"
+          },
+          "endTime": {
+            "year": 2026,
+            "month": 11,
+            "day": 29,
+            "hour": 23,
+            "minute": 0,
+            "second": 0,
+            "timezone": 0,
+            "timeString": "2026-11-29T23:00"
+          }
+        }
+      ],
+      "locations": [
+        {
+          "locationId": 6068,
+          "locationFormalName": "Montview Student Union - Bowling Alley Front Desk - B110"
+        },
+        {
+          "locationId": 6070,
+          "locationFormalName": "Montview Student Union - Bowling Alley Lounge - B130"
+        },
+        {
+          "locationId": 6072,
+          "locationFormalName": "Montview Student Union - Bowling Alley Lanes - B140"
+        },
+        {
+          "locationId": 6058,
+          "locationFormalName": "Montview Student Union - Bowling Alley All Locations"
+        },
+        {
+          "locationId": 6071,
+          "locationFormalName": "Montview Student Union - Bowling Alley Lane 1"
+        },
+        {
+          "locationId": 6077,
+          "locationFormalName": "Montview Student Union - Bowling Alley Lane 2"
+        },
+        {
+          "locationId": 6076,
+          "locationFormalName": "Montview Student Union - Bowling Alley Lane 3"
+        },
+        {
+          "locationId": 6080,
+          "locationFormalName": "Montview Student Union - Bowling Alley Lane 4"
+        },
+        {
+          "locationId": 6081,
+          "locationFormalName": "Montview Student Union - Bowling Alley Lane 5"
+        },
+        {
+          "locationId": 6082,
+          "locationFormalName": "Montview Student Union - Bowling Alley Lane 6"
+        },
+        {
+          "locationId": 6079,
+          "locationFormalName": "Montview Student Union - Bowling Alley Lane 7"
+        },
+        {
+          "locationId": 6084,
+          "locationFormalName": "Montview Student Union - Bowling Alley Lane 8"
+        }
+      ]
+    },
+    {
+      "eventId": 17421,
+      "eventName": "Monday Meetups at the Library",
+      "slug": "monday-meetups-at-the-library",
+      "published": 1,
+      "visibility": "Public",
+      "eventDescription": "<h1><span data-olk-copy-source=\"MessageBody\">Monday Meetups at the Library</span></h1>\n<p class=\"x_ms-outlook-mobile-reference-message\"><span data-ogsc=\"black\">Meetup at the library every other Monday morning between 10:30-11:30! Bring your friends or make new ones as we explore new activities every other week. Activities change weekly and may include: coloring, crafts, puzzles, pruning and plant care, crocheting, journaling, board games, and more! Follow the library on Instagram @libertyulibrary for updates.</span></p>\n<ul type=\"disc\">\n<li class=\"x_MsoNormal\" data-ogsc=\"black\">Aug. 31</li>\n<li class=\"x_MsoNormal\" data-ogsc=\"black\">Sept. 14 &amp; 28</li>\n<li class=\"x_MsoNormal\" data-ogsc=\"black\">Oct. 12 &amp; 26</li>\n<li class=\"x_MsoNormal\" data-ogsc=\"black\">Nov. 9 &amp; 30</li>\n<li class=\"x_MsoNormal\" data-ogsc=\"black\">Dec. 14</li>\n<li class=\"x_MsoNormal\" data-ogsc=\"black\">Jan. 25</li>\n<li class=\"x_MsoNormal\" data-ogsc=\"black\">Feb. 8 &amp; 22</li>\n<li class=\"x_MsoNormal\" data-ogsc=\"black\">March 8 &amp; 22</li>\n<li class=\"x_MsoNormal\" data-ogsc=\"black\">April 12 &amp; 26</li>\n</ul>\n<p class=\"x_ms-outlook-mobile-reference-message\"><strong><span data-ogsc=\"black\">08/31/2026 - 10:30-11:30 a.m.</span></strong></p>\n<p class=\"x_ms-outlook-mobile-reference-message\"><strong><span data-ogsc=\"black\">Location:&nbsp;</span></strong><span data-ogsc=\"black\">JFL Upper Atrium</span></p>\n<p class=\"x_MsoNormal\"><span data-ogsc=\"black\"><a title=\"Original URL: https://www.liberty.edu/library/events/monday-meetups-at-the-library/. Click or tap if you trust this link.\" href=\"https://nam04.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.liberty.edu%2Flibrary%2Fevents%2Fmonday-meetups-at-the-library%2F&amp;data=05%7C02%7Cevents%40liberty.edu%7C2ebdde4df9e8417e5fa108deffb53835%7Cbaf8218eb3024465a9934a39c97251b2%7C0%7C0%7C639229350956090155%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&amp;sdata=gWHlZjop7%2BEl6UCHXY7nbfsJB1h125yBMM9Md%2FAGMXw%3D&amp;reserved=0\" data-auth=\"NotApplicable\" data-linkindex=\"0\" data-ogsc=\"\">https://www.liberty.edu/library/events/monday-meetups-at-the-library/</a></span></p>",
+      "occurrences": [
+        {
+          "occurrenceId": 34926,
+          "startTime": {
+            "year": 2026,
+            "month": 11,
+            "day": 30,
+            "hour": 10,
+            "minute": 30,
+            "second": 0,
+            "timezone": 0,
+            "timeString": "2026-11-30T10:30"
+          },
+          "endTime": {
+            "year": 2026,
+            "month": 11,
+            "day": 30,
+            "hour": 11,
+            "minute": 30,
+            "second": 0,
+            "timezone": 0,
+            "timeString": "2026-11-30T11:30"
+          }
+        }
+      ],
+      "locations": [
+        {
+          "locationId": 7040,
+          "locationFormalName": "JF Library Esbenshade Atrium - Lower"
+        },
+        {
+          "locationId": 7082,
+          "locationFormalName": "JF Library Esbenshade Atrium - Upper"
+        }
+      ]
+    },
+    {
+      "eventId": 17249,
+      "eventName": "Liberty Students for Life Tabling",
+      "slug": "liberty-students-for-life-tabling",
+      "published": 1,
+      "visibility": "Public",
+      "eventDescription": "<p>Liberty Students for Life will be hosting tables for club recruitment, election outreach, pro-life education, and the Letters of Hope initiative.</p>",
+      "occurrences": [
+        {
+          "occurrenceId": 34143,
+          "startTime": {
+            "year": 2026,
+            "month": 11,
+            "day": 30,
+            "hour": 12,
+            "minute": 0,
+            "second": 0,
+            "timezone": 0,
+            "timeString": "2026-11-30T12:00"
+          },
+          "endTime": {
+            "year": 2026,
+            "month": 11,
+            "day": 30,
+            "hour": 14,
+            "minute": 30,
+            "second": 0,
+            "timezone": 0,
+            "timeString": "2026-11-30T14:30"
+          }
+        }
+      ],
+      "locations": [
+        {
+          "locationId": 6087,
+          "locationFormalName": "Montview Student Union Tabling 10 - Near 1st Floor Elevators"
+        },
+        {
+          "locationId": 6102,
+          "locationFormalName": "Montview Student Union Tabling 8 - Near 1st Floor Elevators"
+        }
+      ]
+    },
+    {
+      "eventId": 16777,
+      "eventName": "Telos Book Club",
+      "slug": "telos-book-club",
+      "published": 1,
+      "visibility": "Public",
+      "eventDescription": "<p>The Telos Book Club exists to explore life's big questions of meaning and purpose through discussion of classic literature.</p>",
+      "occurrences": [
+        {
+          "occurrenceId": 33507,
+          "startTime": {
+            "year": 2026,
+            "month": 12,
+            "day": 1,
+            "hour": 16,
+            "minute": 0,
+            "second": 0,
+            "timezone": 0,
+            "timeString": "2026-12-01T16:00"
+          },
+          "endTime": {
+            "year": 2026,
+            "month": 12,
+            "day": 1,
+            "hour": 17,
+            "minute": 0,
+            "second": 0,
+            "timezone": 0,
+            "timeString": "2026-12-01T17:00"
+          }
+        }
+      ],
+      "locations": [
+        {
+          "locationId": 7027,
+          "locationFormalName": "JF Library Terrace Conference Room A"
+        },
+        {
+          "locationId": 7026,
+          "locationFormalName": "JF Library Terrace Conference Room"
+        },
+        {
+          "locationId": 7025,
+          "locationFormalName": "JF Library Terrace Conference Room B"
+        }
+      ]
+    },
+    {
+      "eventId": 16218,
+      "eventName": "Men's Small Group RUF",
+      "slug": "men-s-small-group-ruf",
+      "published": 1,
+      "visibility": "Public",
+      "eventDescription": "<p>A time of fellowship, discussion, and mentorship.</p>",
+      "occurrences": [
+        {
+          "occurrenceId": 32766,
+          "startTime": {
+            "year": 2026,
+            "month": 12,
+            "day": 2,
+            "hour": 18,
+            "minute": 0,
+            "second": 0,
+            "timezone": 0,
+            "timeString": "2026-12-02T18:00"
+          },
+          "endTime": {
+            "year": 2026,
+            "month": 12,
+            "day": 2,
+            "hour": 19,
+            "minute": 0,
+            "second": 0,
+            "timezone": 0,
+            "timeString": "2026-12-02T19:00"
+          }
+        }
+      ],
+      "locations": [
+        {
+          "locationId": 6005,
+          "locationFormalName": "Montview Student Union Starbucks Lounge - 2610"
+        },
+        {
+          "locationId": 2739,
+          "locationFormalName": "DeMoss Hall School of Education Classroom - 1336"
+        }
+      ]
+    }
+  ]
+}

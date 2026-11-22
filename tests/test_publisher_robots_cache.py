@@ -156,6 +156,36 @@ def test_oversized_rules_fail_closed(monkeypatch):
         worker.robots_allowed(HOST, "/public/event")
 
 
+@pytest.mark.parametrize("body", [
+    b'<!DOCTYPE html><html><body><div id="app"></div></body></html>',
+    b'\xef\xbb\xbf \n<!-- app fallback -->\n<html><body>Calendar</body></html>',
+    b'# upstream response\n  {"error":"unavailable"}',
+    b'[{"message":"not found"}]',
+    b'<?xml version="1.0"?><Error>unavailable</Error>',
+    b'User-agent: *\nAllow: /\n<html>gateway error</html>',
+])
+def test_success_status_document_is_not_cached_as_permission(monkeypatch, body):
+    calls, _ = transport(monkeypatch, body, b'User-agent: *\nDisallow: /public/\n')
+    monkeypatch.setattr(worker, "monotonic", lambda: 100.0)
+    with pytest.raises(worker.PreviewError, match="^robots_unavailable$"):
+        worker.robots_allowed(HOST, "/public/event")
+    assert HOST not in worker._robots_cache
+    assert worker.robots_allowed(HOST, "/public/event") is False
+    assert len(calls) == 2
+
+
+@pytest.mark.parametrize("body", [
+    b'', b'# Empty policy; <html> is only an explanatory comment.\n',
+    b'Sitemap: https://publisher.example/sitemap.xml\n',
+    b'User-agent: *\nDisallow: /<private>\n',
+])
+def test_empty_or_sitemap_only_policy_is_still_valid(monkeypatch, body):
+    calls, _ = transport(monkeypatch, body)
+    assert worker.robots_allowed(HOST, "/public/event") is True
+    assert worker.robots_allowed(HOST, "/public/another") is True
+    assert len(calls) == 1
+
+
 def test_private_dns_does_not_fetch_or_allow(monkeypatch):
     calls, _dns_checks = transport(monkeypatch)
 
