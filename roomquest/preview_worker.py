@@ -32,6 +32,7 @@ from roomquest.publisher_robots_policy import PublisherRobotsPolicy
 from roomquest.publisher_pacing import (capture_publisher_pacing, observe_crawl_delay,
                                        observe_retry_after, pacing_rpc_fields, robots_crawl_delay)
 from roomquest.incremental_snapshot import capture_snapshot, current_snapshot
+from roomquest import ical_conditional_cache
 
 MAX_BODY = 3_000_000
 MAX_PREVIEWS = 10
@@ -961,6 +962,8 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
                 elif calendar_form is None and calendar_json is None:
                     conditional = (incremental.conditional_headers(current, accept)
                                    if incremental is not None and current not in unconditional else {})
+                    if incremental is not None and current not in unconditional:
+                        conditional.update(ical_conditional_cache.conditional_headers(current, accept))
                     response = session.get(current, headers={**headers, **conditional}, timeout=timeout,
                                            stream=True, allow_redirects=False)
                 elif calendar_json is not None:
@@ -990,6 +993,11 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
                     current = urljoin(current, location)
                     continue
                 if response.status_code == 304 and incremental is not None:
+                    cached_ical = (ical_conditional_cache.not_modified(
+                        current, accept, response.headers) if conditional else None)
+                    if cached_ical is not None:
+                        response.close()
+                        return cached_ical
                     response_encoding = response.encoding or "utf-8-sig"
                     if respect_robots and "charset=" not in response.headers.get("Content-Type", "").lower():
                         response_encoding = "utf-8-sig"
@@ -1079,6 +1087,8 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
                     if incremental is not None:
                         reused = incremental.record_body(current, accept, payload, response.headers,
                             encoding=encoding, errors="strict" if respect_robots else "replace")
+                        ical_conditional_cache.record_body(current, accept, payload, response.headers,
+                                                           encoding=encoding)
                         if reused is not None:
                             return reused
                     return decoded
@@ -4149,6 +4159,7 @@ def supabase_rpc(path: str, payload: dict, *, timeout: float = 4):
                "community_collector_read_fetch_checkpoint", "community_collector_write_fetch_checkpoint",
                "community_collector_openactive_state",
                "community_collector_stage_incremental", "community_collector_complete_incremental",
+               "community_collector_read_ical_cache", "community_collector_save_ical_cache",
                "community_collector_record_staged_events", "community_collector_geocoder", "community_collector_geocoder_claim", "community_collector_geocoder_claim_v2",
                "community_collector_venues", "community_collector_media", "community_collector_media_demand",
                "community_collector_things_to_do", "community_collector_activity_discovery",
@@ -4170,7 +4181,9 @@ def supabase_rpc(path: str, payload: dict, *, timeout: float = 4):
             # Only the private, fenced fetch checkpoint may contain the complete
             # bounded aggregate. All other RPCs retain their existing limit.
             maximum = (1_500_000 if path == "community_collector_openactive_state"
-                       else 920_000 if path == "community_collector_read_fetch_checkpoint" else 150_000)
+                       else 920_000 if path == "community_collector_read_fetch_checkpoint"
+                       else 240_000 if path == "community_collector_read_ical_cache"
+                       else 150_000)
             raw = response.read(maximum + 1)
             if len(raw) > maximum:
                 raise PreviewError("database_unavailable")
@@ -4191,10 +4204,11 @@ def _observe_collection_phase(observer, phase, *, operation=None, error=None):
 def _process_claimed_source(source: dict, *, deadline_at=None, publisher_handoff=None,
                             observe_phase=None, collection_context=None) -> dict:
     """Process a single claimed feed with the existing private staging contract."""
-    with capture_publisher_pacing() as pacing, capture_snapshot(source, collection_context):
-        return _process_claimed_source_with_pacing(
-            source, pacing, deadline_at=deadline_at, publisher_handoff=publisher_handoff,
-            observe_phase=observe_phase, collection_context=collection_context)
+    with capture_publisher_pacing() as pacing, capture_snapshot(source, collection_context) as snapshot:
+        with ical_conditional_cache.capture(source, snapshot, collection_context, supabase_rpc):
+            return _process_claimed_source_with_pacing(
+                source, pacing, deadline_at=deadline_at, publisher_handoff=publisher_handoff,
+                observe_phase=observe_phase, collection_context=collection_context)
 
 
 def _process_visit_raleigh(source, pacing, *, collection_context, deadline_at,
@@ -5047,6 +5061,7 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
                 if publisher_handoff is not None and not pacing["wait_unbounded"]:
                     publisher_handoff["ready_at"] = monotonic() + max(
                         1, pacing["crawl_delay_seconds"], pacing["retry_after_seconds"])
+                ical_conditional_cache.save_after_success(deadline_at=deadline)
                 return {"complete": 1, "failed": 0, "staged": staged,
                         "publication_required": result["publication_required"]}
             else:

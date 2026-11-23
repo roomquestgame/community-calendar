@@ -92,6 +92,9 @@ jobs:
         if: github.event_name != 'workflow_dispatch' || !(inputs.south_hill_expansion_live || inputs.south_hill_recovery_live || inputs.civic_live || inputs.mecklenburg_live || inputs.mecklenburg_batch3_live || (inputs.holly_hill_live || inputs.holly_hill_recovery_live))
         run: node --test scripts/vercel-ignore.test.mjs
       - run: pip install -r requirements-dev.txt
+      - name: Check bounded iCalendar conditional HTTP cache
+        if: github.event_name == 'workflow_dispatch'
+        run: python -m pytest tests/test_ical_conditional_cache.py -q
       - name: Check Omaha and Lincoln intake
         if: github.event_name != 'workflow_dispatch' || inputs.omaha_lincoln_batch != ''
         run: python -m pytest tests/test_omaha_lincoln.py -q
