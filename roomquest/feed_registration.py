@@ -53,7 +53,7 @@ def _wrapped_ical_subscription(page_url, wrapper):
     """
     try:
         parts = urlsplit(wrapper)
-        if parts.hostname != 'calendar.google.com' or parts.path != '/calendar/render':
+        if parts.hostname not in ('calendar.google.com', 'www.google.com') or parts.path != '/calendar/render':
             return None
         values = parse_qs(parts.query).get('cid', [])
         if len(values) != 1:
