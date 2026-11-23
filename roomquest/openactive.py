@@ -237,8 +237,11 @@ def parse_page(payload, requested, stream, *, previous=None, license_url=None):
         if len(json.dumps(row, ensure_ascii=False).encode()) > MAX_ITEM_BYTES:
             raise ValueError('openactive_item_size_limit')
         result.append(row)
-    tail = not data['items'] and _same_cursor(data['next'], requested)
-    if data['items'] and _same_cursor(data['next'], requested):
+    same_position = (_same_cursor(data['next'], requested)
+                     if stream == BETTER + '/session-series'
+                     else data['next'] == requested)
+    tail = not data['items'] and same_position
+    if data['items'] and same_position:
         raise ValueError('openactive_cursor_stalled')
     outgoing = _cursor(data['next'])
     incoming = _cursor(requested)
