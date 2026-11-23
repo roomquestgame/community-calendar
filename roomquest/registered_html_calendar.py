@@ -21,7 +21,7 @@ from roomquest.registration_formats import document_kind, source_key
 VERSION = 'registered_html_jsonld_v1'
 CAPABILITY = 'registered_html_calendar_version'
 MAX_HTML_BYTES = 3_000_000
-MAX_DETAILS = 20
+MAX_DETAILS = 40
 MAX_LISTING_PAGES = 3
 MAX_NODES = 5000
 MAX_EVENTS = 500
@@ -318,6 +318,11 @@ def _pagination(soup, url, *, collection_url=None, previous_pages=()):
     # current page can identify a next-page URL without rel=next.
     for pager in root.select('nav.pagination,nav[aria-label*="pagination" i]'):
         active = pager.select('[aria-current="page"]')
+        if not active:
+            # An unlinked numbered span within a genuine numbered pager may
+            # identify the current page, unlike a random nav number.
+            active = [node for node in pager.select('.pagination > li > span')
+                      if node.get_text(' ', strip=True).isdigit()]
         if len(active) != 1 or not active[0].get_text(' ', strip=True).isdigit():
             continue
         current_number = int(active[0].get_text(' ', strip=True))
@@ -361,6 +366,18 @@ def _pagination(soup, url, *, collection_url=None, previous_pages=()):
         if pagination and node.get('aria-current') != 'page':
             if not node.get('href') or not target:
                 _fail('html_calendar_pagination_needed')
+            # Treat /events?page=1 as the publisher's already visited
+            # canonical /events root, preserving all original query selectors.
+            first_page = urlsplit(collection_url or '')
+            candidate_page = urlsplit(target)
+            if (collection_url and _url_key(collection_url) in previous
+                    and candidate_page.scheme == first_page.scheme
+                    and candidate_page.netloc == first_page.netloc
+                    and candidate_page.path.rstrip('/') == first_page.path.rstrip('/')
+                    and Counter((k, v) for k, v in parse_qsl(candidate_page.query)
+                                if k != 'page') == Counter(parse_qsl(first_page.query))
+                    and [v for k, v in parse_qsl(candidate_page.query) if k == 'page'] == ['1']):
+                continue
             if _url_key(target) not in previous | {_url_key(url)}:
                 if not collection_url or not _page_in_scope(target, collection_url):
                     _fail('html_calendar_pagination_needed')
@@ -603,10 +620,15 @@ def _detail(source, payload, url):
             if prior is None or jsonld_adapter.definition_contains(node, prior):
                 images[identity] = node
     if not candidates:
-        if any(_event(node) for node in nodes):
+        from roomquest.registered_date_only_clock import date_only_event_with_clock
+        completed = date_only_event_with_clock(nodes, soup, url, _event)
+        if completed:
+            candidates.append(completed)
+        elif any(_event(node) for node in nodes):
             _fail('html_calendar_detail_identity_conflict')
-        from roomquest.registered_event_microdata import parse_event_microdata
-        return parse_event_microdata(source, soup, url)
+        else:
+            from roomquest.registered_event_microdata import parse_event_microdata
+            return parse_event_microdata(source, soup, url)
     if len(candidates) > MAX_EVENTS:
         _fail('html_calendar_event_limit')
 
