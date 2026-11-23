@@ -54,6 +54,15 @@ class PhotoTests(unittest.TestCase):
             self.assertIsNone(result)
             fetch.assert_not_called(); probe.assert_not_called()
 
+    def test_candidate_only_accepts_permitted_unrecognized_source_after_probe(self):
+        fetch = MagicMock(); probe = MagicMock(return_value=(PHOTO, 'image/jpeg'))
+        result = m.resolve_photo({**CLAIM, 'source_key': 'newly_registered_publisher',
+                                  'candidate_only': True, 'candidate_url': PHOTO},
+                                 fetcher=fetch, probe=probe, clock=lambda: 0, deadline=30)
+        fetch.assert_not_called(); probe.assert_called_once_with(PHOTO)
+        self.assertEqual(result, {'image_url': PHOTO, 'mime_type': 'image/jpeg',
+                                  'evidence_url': CLAIM['event_url']})
+
     def test_candidate_only_requires_successful_byte_probe(self):
         fetch = MagicMock(); probe = MagicMock(return_value=None)
         result = m.resolve_photo({**CLAIM, 'candidate_only': True, 'candidate_url': PHOTO},

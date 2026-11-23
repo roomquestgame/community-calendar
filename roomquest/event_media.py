@@ -214,15 +214,18 @@ def resolve_photo(claim: dict, *, fetcher=None, probe=None, clock=None, deadline
         native_content = True
     elif claim.get('candidate_only') is True:
         from roomquest.publisher_evidence import family, image_url
-        if claim.get('source_key') and (publisher := family(claim['source_key'], claim['event_url'])):
+        source_key = claim.get('source_key') or ''
+        if source_key and (publisher := family(source_key, claim['event_url'])):
             candidate_validator = lambda url, *_: image_url(url, publisher)
-        else:
-            # Legacy claims are Virginia-only. Never turn an unrecognized new
-            # publisher claim into permission to probe arbitrary candidates.
-            if claim.get('source_key') and not claim['source_key'].startswith('virginia_state_parks_'):
-                return None
+        elif source_key.startswith('virginia_state_parks_'):
             from roomquest.virginia_state_parks import event_photo_url
             candidate_validator = event_photo_url
+        else:
+            # The backend releases candidate-only work only after registration
+            # records explicit publisher-photo permission. Keep platform-specific
+            # validators when available, otherwise apply the generic URL, DNS,
+            # redirect, MIME, byte-signature, and size checks below.
+            candidate_validator = event_image
     raw_candidate = claim.get('candidate_url')
     if isinstance(raw_candidate, str):
         raw_candidate = raw_candidate.strip() or None
