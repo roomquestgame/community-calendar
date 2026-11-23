@@ -106,9 +106,13 @@ def test_first_snapshot_has_bounded_changed_batches_and_full_membership():
     assert all(payload["p_ticket"] == TICKET["p_ticket"] for _, payload in db.calls)
 
 
-def test_edit_addition_and_withdrawal_preserve_complete_membership():
+@pytest.mark.parametrize("changes", [
+    {"venue_address": "2 Changed St", "description": "Updated"},
+    {"event_url": "https://events.thelibrarydistrict.org/event/17130479"},
+])
+def test_edit_addition_and_withdrawal_preserve_complete_membership(changes):
     old = [event("same"), event("edit"), event("withdrawn")]
-    rows = [old[0], {**old[1], "venue_address": "2 Changed St", "description": "Updated"}, event("new")]
+    rows = [old[0], {**old[1], **changes}, event("new")]
     result, db = process(accepted_baseline(source(), old), rows)
     assert result["staged"] == 2
     assert {item["event"]["id"] for item in db.changed} == {"edit", "new"}

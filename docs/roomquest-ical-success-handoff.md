@@ -1,5 +1,15 @@
 # iCal pacing before successful worker handoff
 
+## November 23, 2026 — Communico source-link correction
+
+The shared ICS adapter now resolves a proven Communico numeric event identity
+to its normal event page instead of using a downloadable feed as the public
+source link. All eleven Library District feed groups are covered, with explicit
+event URLs and occurrence identities preserved. The focused parser and
+incremental suites pass 133 tests; no additional publisher fetch is introduced.
+Release and normal Admin Preview/publication acceptance remain parent-owned.
+See the [diagnosis, scope and exact validation](journal/2026-11-23-communico-event-links.md).
+
 Generic sources with both `kind = 'ical'` and `platform_adapter = 'ical'`
 now record their preview through `community_collector_record_preview_v2`.
 The existing publisher-media `community_collector_record_preview_v3` route
