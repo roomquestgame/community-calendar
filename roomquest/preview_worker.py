@@ -4160,6 +4160,7 @@ def supabase_rpc(path: str, payload: dict, *, timeout: float = 4):
                "community_collector_openactive_state",
                "community_collector_stage_incremental", "community_collector_complete_incremental",
                "community_collector_read_ical_cache", "community_collector_save_ical_cache",
+               "community_collector_touch_ical_cache",
                "community_collector_record_ical_http_metric",
                "community_collector_record_staged_events", "community_collector_geocoder", "community_collector_geocoder_claim", "community_collector_geocoder_claim_v2",
                "community_collector_venues", "community_collector_media", "community_collector_media_demand",

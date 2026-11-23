@@ -172,20 +172,41 @@ class ConditionalCache:
             if monotonic() > deadline_at - 2:
                 return
         if self.candidate is not None:
-            try:
-                self.rpc("community_collector_save_ical_cache", {
-                    **self.context, "p_source_key": self.source["source_key"],
-                    "p_policy_context": self.snapshot.policy_context,
-                    "p_context_hash": self.snapshot.context_hash,
-                    "p_request_hash": self.request_hash,
-                    "p_body": self.candidate["body"],
-                    "p_body_hash": self.candidate["body_hash"],
-                    "p_content_type": self.candidate["content_type"],
-                    "p_etag": self.candidate["etag"],
-                    "p_last_modified": self.candidate["last_modified"],
-                }, timeout=4)
-            except Exception:
-                _LOG.warning("Optional iCalendar conditional cache save failed")
+            params = {
+                **self.context, "p_source_key": self.source["source_key"],
+                "p_policy_context": self.snapshot.policy_context,
+                "p_context_hash": self.snapshot.context_hash,
+                "p_request_hash": self.request_hash,
+                "p_body_hash": self.candidate["body_hash"],
+                "p_content_type": self.candidate["content_type"],
+                "p_etag": self.candidate["etag"],
+                "p_last_modified": self.candidate["last_modified"],
+            }
+            touched = False
+            # A validated 304, or a 200 with the same SHA-256 bytes, needs
+            # only the new accepted snapshot/ETag clock. Do not send the
+            # unchanged 128-KB-bounded ICS body to Supabase again.
+            if self.cached is not None and self.cached["body_hash"] == self.candidate["body_hash"]:
+                try:
+                    result = self.rpc("community_collector_touch_ical_cache", params, timeout=3)
+                    touched = isinstance(result, dict) and result.get("touched") is True
+                except Exception:
+                    _LOG.warning("Optional iCalendar unchanged-body cache touch failed")
+            if not touched:
+                # Reuse is optional. If the metadata-only update cannot be
+                # verified, use the existing full-body cache save as fallback.
+                if deadline_at is None:
+                    enough_time = True
+                else:
+                    from time import monotonic
+                    enough_time = monotonic() <= deadline_at - 2
+                if enough_time:
+                    try:
+                        self.rpc("community_collector_save_ical_cache", {
+                            **params, "p_body": self.candidate["body"],
+                        }, timeout=4)
+                    except Exception:
+                        _LOG.warning("Optional iCalendar conditional cache save failed")
         outcome = self._completed_outcome()
         if outcome is None:
             return
