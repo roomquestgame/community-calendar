@@ -41,7 +41,8 @@ def is_event_export(url):
     parts = urlsplit(url)
     keys = {key.lower() for key in parse_qs(parts.query)}
     return bool({'eventid', 'event_id', 'eid', 'tribe_event_id'} & keys or
-                re.search(r'/(?:event|events/(?:event|detail)|wp-json/tribe/events/v1/events)/[^/]+', parts.path, re.I))
+                re.search(r'/(?:event|events/(?:event|detail)|wp-json/tribe/events/v1/events)/[^/]+', parts.path, re.I)
+                or ('ical' in keys and re.search(r'/events/[1-9][0-9]{2,}/?$', parts.path, re.I)))
 
 def _wrapped_ical_subscription(page_url, wrapper):
     """Decode a publisher-linked Google Calendar subscription, not an event.

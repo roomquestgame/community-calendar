@@ -314,6 +314,29 @@ def _pagination(soup, url, *, collection_url=None, previous_pages=()):
             forward.setdefault(_url_key(target), target)
     if len(forward) > 1:
         _fail('html_calendar_pagination_ambiguous')
+    # Only a real numbered pagination navigation with exactly one declared
+    # current page can identify a next-page URL without rel=next.
+    for pager in root.select('nav.pagination,nav[aria-label*="pagination" i]'):
+        active = pager.select('[aria-current="page"]')
+        if len(active) != 1 or not active[0].get_text(' ', strip=True).isdigit():
+            continue
+        current_number = int(active[0].get_text(' ', strip=True))
+        if current_number != len(previous_pages) + 1:
+            _fail('html_calendar_pagination_scope_conflict')
+        next_links = []
+        for node in pager.select('a[href]'):
+            label = node.get_text(' ', strip=True)
+            if label.isdigit() and int(label) == current_number + 1:
+                target = _public_url(node['href'], url)
+                if not target or not collection_url or not _page_in_scope(target, collection_url):
+                    _fail('html_calendar_pagination_scope_conflict')
+                next_links.append(target)
+        if len(set(next_links)) > 1:
+            _fail('html_calendar_pagination_ambiguous')
+        if next_links:
+            forward.setdefault(_url_key(next_links[0]), next_links[0])
+    if len(forward) > 1:
+        _fail('html_calendar_pagination_ambiguous')
     for node in root.select('a[href],button,[role="button"]'):
         label = node.get('aria-label') or node.get_text(' ', strip=True)
         classes = ' '.join(node.get('class') or [])
@@ -580,7 +603,10 @@ def _detail(source, payload, url):
             if prior is None or jsonld_adapter.definition_contains(node, prior):
                 images[identity] = node
     if not candidates:
-        _fail('html_calendar_event_jsonld_missing')
+        if any(_event(node) for node in nodes):
+            _fail('html_calendar_detail_identity_conflict')
+        from roomquest.registered_event_microdata import parse_event_microdata
+        return parse_event_microdata(source, soup, url)
     if len(candidates) > MAX_EVENTS:
         _fail('html_calendar_event_limit')
 
