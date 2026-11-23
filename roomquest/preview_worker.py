@@ -1113,6 +1113,13 @@ def _future_datetime(value) -> datetime | None:
 def _preview(title, start, end, venue, lat, lng, url, identity="",
              category="", address="", city="", image=None, *, allow_ongoing=False,
              retain_until_end=False):
+    # Some calendars repeat the start when no finish is advertised. Match the
+    # community publisher's unverified-end contract without inventing a finish.
+    # Compare instants: equal wall clocks across a DST fold can have a duration.
+    if (isinstance(start, datetime) and isinstance(end, datetime)
+            and start.utcoffset() is not None and end.utcoffset() is not None
+            and start.astimezone(timezone.utc) == end.astimezone(timezone.utc)):
+        end = None
     future = _future_datetime(start)
     if future is None and allow_ongoing and retain_until_end and isinstance(start, datetime) and start.tzinfo:
         now = datetime.now(timezone.utc)
