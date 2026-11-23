@@ -75,6 +75,21 @@ def test_microdata_must_be_uniquely_scoped_offset_aware_and_located(kwargs):
         calendar.collect(source(), fetch, listing=index([ONE]))
 
 
+def test_conflicting_jsonld_identity_cannot_be_overridden_by_microdata():
+    import json
+    foreign = {
+        "@context": "https://schema.org", "@type": "Event",
+        "@id": "https://publisher.example.org/event/other", "url": "https://publisher.example.org/event/other",
+        "name": "Conflicting record", "startDate": "2027-01-20T12:00:00+00:00",
+        "location": {"@type": "Place", "name": "Other"}
+    }
+    payload = detail(ONE).replace(
+        "</head>", '<script type="application/ld+json">' +
+        json.dumps(foreign) + '</script></head>')
+    with pytest.raises(ValueError, match="html_calendar_detail_identity_conflict"):
+        calendar.collect(source(), fetcher({ONE: payload}), listing=index([ONE]))
+
+
 def test_unstructured_prose_does_not_create_an_event():
     prose = ('<html><main><h1>Concert on December 5</h1>'
              '<p>12 Main St. Come see us at 7 pm.</p></main></html>')
