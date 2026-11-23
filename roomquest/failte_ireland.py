@@ -24,7 +24,7 @@ HOST = 'failteireland.azure-api.net'
 ZONE = 'Europe/Dublin'
 VERSION = 'registered_failte_csv_v1'
 ACCEPT = 'text/csv,text/plain;q=0.9'
-MAX_BYTES = 3_000_000
+MAX_BYTES = 8_000_000
 MAX_ROWS = 10_000
 MAX_EVENTS = 5_000
 MAX_DESCRIPTION = 12_000
@@ -119,6 +119,14 @@ def validate_native(row, source):
 def _date(value, *, optional=False):
     if optional and not value:
         return None
+    # The current official CSV publishes DD/MM/YYYY. This is an explicit
+    # publisher format, never locale guessing or a month-first fallback.
+    if re.fullmatch(r'\d{2}/\d{2}/\d{4}', value):
+        day, month, year = map(int, value.split('/'))
+        try:
+            return date(year, month, day)
+        except ValueError as exc:
+            raise ValueError('failte_date_unverified') from exc
     if not re.fullmatch(r'\d{4}-\d{2}-\d{2}(?:T00:00:00)?', value):
         _fail('date_unverified')
     try:
@@ -189,7 +197,10 @@ def parse(payload, source, *, deadline_at=None, diagnostics=None):
     records = {}
     try:
         headers = next(reader, None)
-        if not headers or len(headers) != len(FIELDS) or set(headers) != set(FIELDS):
+        # The live schema adds Image to the historical nineteen fields. It is
+        # accepted only as an ignored column; no image rights/proof are granted.
+        if (not headers or len(headers) != len(set(headers))
+                or set(headers) not in (set(FIELDS), set(FIELDS) | {'Image'})):
             _fail('csv_schema_unverified')
         for values in reader:
             deadline()

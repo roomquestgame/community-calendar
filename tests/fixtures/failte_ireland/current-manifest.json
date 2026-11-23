@@ -1,0 +1,75 @@
+{
+  "captured_at_utc": "2026-11-23T00:01:24.950081+00:00",
+  "source": "https://failteireland.azure-api.net/opendata-api/v2/events/csv",
+  "request_count": 1,
+  "http_status": 200,
+  "source_bytes": 4855334,
+  "source_sha256": "a7a115f7be1397032a4c814fa5f47dc2aefee795485493c4d5802f0d806ad7f1",
+  "response_headers": {
+    "date": "Mon, 23 Nov 2026 00:01:30 GMT",
+    "content-length": "4855334",
+    "content-type": "application/octet-stream",
+    "last-modified": "Sun, 22 Nov 2026 00:10:03 GMT",
+    "etag": "0x8DF482CF532A9A8"
+  },
+  "download_seconds": 7.9939,
+  "fields": [
+    "Name",
+    "Event Type",
+    "Description",
+    "Image",
+    "Contact URL",
+    "Booking URL",
+    "Contact Phone Number",
+    "Booking Phone Number",
+    "Venue Name",
+    "Address",
+    "County",
+    "Latitude",
+    "Longitude",
+    "Is Free To Visit",
+    "Price",
+    "Start Date",
+    "End Date",
+    "Start Time",
+    "End Time",
+    "Recurring Dates"
+  ],
+  "source_rows": 3955,
+  "source_date_range": [
+    "2025-11-11",
+    "2027-10-30"
+  ],
+  "source_start_year_counts": {
+    "2025": 1,
+    "2026": 3146,
+    "2027": 808
+  },
+  "source_rows_with_explicit_start_time": 13,
+  "source_rows_missing_start_time": 3942,
+  "date_only_or_timed_rows_in_next_60_days": 2450,
+  "accepted_upcoming_occurrences": 6,
+  "accepted_county": "Wexford",
+  "accepted_unique_venues": 1,
+  "held_or_excluded": {
+    "outside_collection_window": 7,
+    "missing_start_time": 3942
+  },
+  "fixture": "current-schema.csv",
+  "fixture_rows": 3,
+  "fixture_sha256": "5e2efecf42fab18903d82b2d7f28201a0013f1c8a39df72dbdf4f88bb4de9b8d",
+  "reduction": "Current official headers and three published example occurrences. Description and Image values replaced with synthetic text/URLs; phone fields blanked. No dates or start clocks invented. Full publisher body not committed. Fixture CSV line endings normalized to LF.",
+  "offline_measurement": {
+    "parse_seconds": 0.152847,
+    "staging_batches": 1,
+    "staging_batch_rows": [
+      6
+    ],
+    "stage_batch_utf8_bytes": [
+      10904
+    ],
+    "mocked_worker_cpu_seconds": 0.186971,
+    "live_database_calls": 0,
+    "caveat": "Saved-body worker validates CPU/batch shape only. The ~8s live GET and one native staging batch leave substantial budget within39s; actual claim/robots/pacing/RPC timings and successful Admin preview remain unverified."
+  }
+}

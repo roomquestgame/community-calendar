@@ -88,6 +88,13 @@ def _publisher_body_limit(url, accept, allowed_hosts, respect_robots):
             and allowed_hosts == ('better-admin.org.uk',)
             and openactive.page_url(url, openactive.BETTER + '/session-series')):
         return 8_000_000
+    # The fresh official CSV is 4.86MB. Keep this bound exact to the supported
+    # Fáilte endpoint and normal guarded intake; other URLs retain their limit.
+    from roomquest import failte_ireland
+    if (respect_robots and accept == failte_ireland.ACCEPT
+            and allowed_hosts == (failte_ireland.HOST,)
+            and failte_ireland.is_source(url)):
+        return failte_ireland.MAX_BYTES
     return MAX_BODY
 
 

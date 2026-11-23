@@ -33,8 +33,9 @@ hold, with no mirror fallback or retry within the collection.
 
 ## Explicit date, time and venue facts
 
-The complete response must contain exactly the 19 documented columns, in any
-order:
+The complete response must contain the 19 documented columns below, in any
+order, and may additionally contain the current official `Image` column. No
+other extra or duplicate columns are accepted. `Image` is ignored:
 
 ```text
 Name, Event Type, Description, Contact URL, Booking URL,
@@ -43,12 +44,16 @@ Latitude, Longitude, Is Free To Visit, Price, Start Date, End Date,
 Start Time, End Time, Recurring Dates
 ```
 
-The official historical mirror has one row per occurrence. Its `Recurring
+The official CSV has one row per occurrence. Its `Recurring
 Dates` column is `Yes`/`No`, not an RRULE or a list of dates. The collector never
 expands that flag. The date and clock come from the separate published columns;
 `T00:00:00` in a date field does not establish an event start time. Local clocks
 use `Europe/Dublin` for the occurrence date, including daylight saving rules.
 Ambiguous or nonexistent local clocks hold collection.
+
+Current published dates use strict `DD/MM/YYYY`; for example, `05/12/2026`
+means 5 December. The historical `YYYY-MM-DD` and `YYYY-MM-DDT00:00:00` forms
+remain supported. There is no US month/day fallback or locale guessing.
 
 Missing start clocks are ineligible, with a diagnostic count. Missing end
 clocks stay null. Equal start/end clocks also leave the end unknown and record
@@ -101,18 +106,23 @@ not a contact page that was never fetched, is the evidence URL. The normal
 native extractor version remains `registered_native_content_v1`. The validator
 checks the exact proof, source identity and occurrence ID before staging.
 
-The CSV contains no native image field. Image candidates, provenance and media
-claims are always absent/rejected for this profile. The official catalogue
+The current CSV's `Image` column does not grant this profile image reuse.
+Image candidates, provenance and media claims remain absent/rejected. The official catalogue
 identifies the dataset as CC BY 4.0; source-rights acceptance remains part of
 normal Admin review and is not inferred from registration success. This parser
 does not extend the dataset licence to images on linked websites.
 
 ## Complete capture and staging
 
-The parser accepts at most 3,000,000 UTF-8 bytes, 10,000 nonempty input rows and
+The parser accepts at most 8,000,000 UTF-8 bytes, 10,000 nonempty input rows and
 5,000 eligible occurrences. It parses and validates the entire CSV before
 returning records. A malformed final row, conflicting duplicate, exceeded bound
 or elapsed deadline cannot certify an earlier valid prefix.
+
+The HTTP reader grants the same 8 MB allowance only to the exact CSV URL,
+expected CSV Accept header, sole allowed Fáilte host, and normal robots-aware
+fetch. Query aliases, sibling paths, redirects to another object and ordinary
+sources retain their existing limits. The ordinary default remains 3 MB.
 
 The existing worker's small incremental-snapshot optimization is optional. A
 larger set falls back to complete native staging; it is not sliced to 500 rows.
@@ -149,7 +159,39 @@ provenance, full descriptions, scope/capability guards, 600-row worker staging,
 last-row failures, deadlines and bounds. They do not prove current publisher
 availability or deployed database acceptance.
 
-The publisher's live CSV was previously observed to return a daily bandwidth
-quota denial. No repeat request was made during that known hold. A fresh
-successful response after the reset, the paired backend release, and normal
-Admin registration/preview receipts are still required for live acceptance.
+### Fresh post-reset check: 23 November 2026
+
+One actual GET to the exact endpoint started at 00:01:24 UTC, after the prior
+daily bandwidth hold. It returned HTTP 200 with a complete 4,855,334-byte body
+in 7.994 seconds. The response's Last-Modified was 22 November 2026 00:10:03 UTC.
+No second publisher request was used for analysis. The former 3 MB limit,
+nineteen-column-only schema and ISO-only date parser could not accept this
+current response.
+
+The saved body contains 3,955 rows spanning 11 November 2025 to 30 October
+2027. At the check time, 2,450 rows had dates in the next 60 days, but only 13
+rows in the entire file supplied a start clock. The corrected parser holds
+3,942 rows for missing start time and excludes seven timed rows outside its
+window. It returns six explicit upcoming occurrences, all at the National
+Opera House in Wexford, on 23–26 November and 2–3 December 2026. All six retain
+their published address, coordinates, full native description and selected
+public event URL. This capture does not establish timed coverage across all
+the counties represented in the catalogue.
+
+The corrected code parsed the entire saved body in 0.153 seconds. Native
+validation and batching took about 0.002 seconds, producing one six-row,
+10,904-byte staging batch. The ordinary worker processed that same saved body
+in 0.187 seconds with HTTP and database calls replaced by local test doubles;
+it requested one native staging write and one v3 completion for six rows.
+Combined with the observed roughly eight-second download, this is a practical
+fit for the normal 39-second category budget. Actual claim, robots, publisher
+pacing and database latency still require the normal Admin preview receipt;
+these offline measurements do not certify a deployed end-to-end capture.
+Durable continuation is unnecessary for the measured six-row projection.
+
+`tests/fixtures/failte_ireland/current-schema.csv` preserves the current header
+and three reduced example rows. Descriptions and Image values are synthetic;
+phone fields are removed. `current-manifest.json` records the original response
+hash, exact headers, counts and reduced fixture provenance. The full 4.85 MB
+publisher response is not committed. Registration, rights review and live
+preview remain normal Admin actions.
