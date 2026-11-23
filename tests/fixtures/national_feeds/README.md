@@ -32,3 +32,29 @@ guarded network reader could not resolve the publisher. This fixture proves
 the clock-syntax regression and preserves datetime/date corroboration; it
 does not establish a successful live Lincolnshire capture or explain the
 Northumberland zero-output capture.
+
+## Northumberland date-only template
+
+`wildlife-nwt-date-clock.html` preserves the exact Event root attributes and
+the reduced date/time DOM observed by the parent agent in the official
+Northumberland event page on 23 November 2026:
+
+https://www.nwt.org.uk/events/2026-11-25-wansbeck-natural-history-group-update-on-beavers-and-other-animals-wallington
+
+The publisher's startDate is exactly `2026-11-25`. Its separate native
+`field--name-field-event-time` field reads `19:00 - 20:15`; it does not use
+BCN's `field--name-field-event-time-value` field. The date is not a midnight
+or noon event time. The parser combines only this strict calendar date with
+its independently published explicit clock in Europe/London.
+
+The publisher Place metadata was observed as Middleton Village Hall,
+Middleton, Morpeth, NE61 4RA, with point 55.160758, -1.908005. The fixture's
+location wrapper is reduced to the existing verified field shape using those
+values. Its title, summary and two About paragraphs are explicitly synthetic
+controls, not a copy of the publisher narrative. The exact date/time snippets
+and root attributes are unchanged.
+
+Regression cases retain aware-datetime corroboration, reject conflicting
+duplicate clock fields, incomplete clocks, RSS/date conflicts, date spans,
+invalid points and ambiguous/nonexistent London wall times. They also verify
+that complete native prose, evidence identity and coordinates survive.

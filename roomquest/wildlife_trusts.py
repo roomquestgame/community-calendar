@@ -200,6 +200,24 @@ def _clock(value):
     raise ValueError('wildlife_event_clock_unresolved')
 
 
+def _event_clocks(node):
+    """Read only the two observed native fields and reject disagreement."""
+    values = []
+    clock = r'([0-9]{1,2}(?:[.:][0-9]{2})?\s*(?:[ap]\.?m\.?)?)'
+    for field in node.select('.field--name-field-event-time-value, .field--name-field-event-time'):
+        clone = BeautifulSoup(str(field), 'html.parser')
+        for label in clone.select('.field__label'):
+            label.decompose()
+        match = re.fullmatch(r'\s*' + clock + r'\s*(?:(?:[-–—]|to)\s*' + clock + r')?\s*',
+                             clone.get_text(' ', strip=True), re.I)
+        if not match:
+            raise ValueError('wildlife_event_clock_unresolved')
+        values.append((_clock(match[1]), _clock(match[2]) if match[2] else None))
+    if not values or any(value != values[0] for value in values[1:]):
+        raise ValueError('wildlife_event_clock_unresolved')
+    return values[0]
+
+
 def parse_detail(payload, item, *, source):
     """Return a dated occurrence or a specific reason to hold this item."""
     soup = BeautifulSoup(payload, 'html.parser')
@@ -225,20 +243,33 @@ def parse_detail(payload, item, *, source):
     if len(starts) != 1 or len(ends) > 1:
         return [], 'wildlife_event_dates_unresolved'
     try:
-        start = timestamp(starts[0]['datetime'])
-        end = timestamp(ends[0]['datetime']) if ends else None
-        if start.tzinfo is None or end is not None and end.tzinfo is None:
+        start_clock, end_clock = _event_clocks(node)
+        start_value = starts[0]['datetime']
+        # NWT publishes a calendar date plus a separate explicit native clock.
+        # Only strict date-only metadata may be composed; an aware datetime
+        # remains independent evidence and must agree with the visible clock.
+        if re.fullmatch(r'[0-9]{4}-[0-9]{2}-[0-9]{2}', start_value):
+            start = timestamp(start_value + 'T' + start_clock.isoformat(), LONDON.key)
+        else:
+            start = timestamp(start_value)
+        if start is None or start.tzinfo is None:
             raise ValueError
         local = start.astimezone(LONDON)
+        end_value = ends[0]['datetime'] if ends else None
+        if end_value and re.fullmatch(r'[0-9]{4}-[0-9]{2}-[0-9]{2}', end_value):
+            end_date = datetime.fromisoformat(end_value).date()
+            if end_date != local.date():
+                return [], 'wildlife_multiple_dates_unresolved'
+            if end_clock is None:
+                raise ValueError
+            end = timestamp(datetime.combine(end_date, end_clock).isoformat(), LONDON.key)
+        else:
+            end = timestamp(end_value)
+        if end is not None and end.tzinfo is None:
+            raise ValueError
         if not item['start'] <= local.date().isoformat() <= item['end']:
             return [], 'wildlife_detail_date_conflict'
-        # Drupal's date-only presentation may contain a synthetic noon. Require
-        # its separately published event clock to corroborate the datetime.
-        clocks = _field(node, 'event-time-value')
-        clock = r'([0-9]{1,2}(?:[.:][0-9]{2})?\s*(?:[ap]\.?m\.?)?)'
-        match = re.fullmatch(r'\s*' + clock + r'\s*(?:(?:[-–—]|to)\s*' + clock + r')?\s*',
-                             clocks, re.I)
-        if not match or _clock(match[1]) != local.time().replace(tzinfo=None):
+        if start_clock != local.time().replace(tzinfo=None):
             return [], 'wildlife_event_clock_unresolved'
         if end and end.astimezone(LONDON).date() != local.date():
             # A date span may describe separate sessions. Never turn it into a
@@ -246,8 +277,8 @@ def parse_detail(payload, item, *, source):
             return [], 'wildlife_multiple_dates_unresolved'
         if item['start'] != item['end']:
             return [], 'wildlife_multiple_dates_unresolved'
-        if match[2]:
-            declared_end = timestamp(datetime.combine(local.date(), _clock(match[2])).isoformat(), LONDON.key)
+        if end_clock is not None:
+            declared_end = timestamp(datetime.combine(local.date(), end_clock).isoformat(), LONDON.key)
             if declared_end <= start or end and declared_end != end:
                 return [], 'wildlife_detail_time_conflict'
             end = declared_end
