@@ -44,8 +44,22 @@ def pages():
     return result
 
 
-def test_registration_probes_details_before_certifying_generic_html():
+@pytest.mark.filterwarnings('error::bs4.XMLParsedAsHTMLWarning')
+@pytest.mark.parametrize('document', ['html', 'xhtml', 'custom-wrapper'])
+def test_registration_probes_details_before_certifying_generic_html(document):
     responses = pages()
+    if document == 'custom-wrapper':
+        responses = {url: body.replace('<html>', '<event-calendar>').replace('</html>', '</event-calendar>')
+                     for url, body in responses.items()}
+    elif document == 'xhtml':
+        from xml.etree import ElementTree
+        responses = {url: '<?xml version="1.0"?>' + body.replace(
+            '<html>', '<html xmlns="http://www.w3.org/1999/xhtml">').replace(
+            'href="' + url + '">', 'href="' + url + '"/>').replace(
+            '<p>Meet the artists and explore their work.</p>', 'Meet the artists and explore their work.')
+            for url, body in responses.items()}
+        assert all(ElementTree.fromstring(body).tag == '{http://www.w3.org/1999/xhtml}html'
+                   for body in responses.values())
     with patch.object(feed_registration, 'fetch_publisher',
                       side_effect=lambda url, *_args, **_kwargs: responses[url]) as fetch, \
             patch.object(feed_registration, 'supabase_rpc',

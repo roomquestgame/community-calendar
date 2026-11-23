@@ -1,3 +1,17 @@
+## XML/feed detection before generic HTML — November 22, 2026 (EST; prepared)
+
+A bounded lexical document-prefix check now keeps positively identified XML,
+RSS, Atom and RDF envelopes out of generic HTML calendar discovery and
+BeautifulSoup's HTML parser. Ordinary HTML, XHTML and ambiguous custom-element
+wrappers retain their existing extraction and source-scope checks. Known
+Wildlife RSS aliases, Sustainable Oakington and provider XML adapters keep their
+existing dispatch and receipt contracts; no new feed/source admission is added.
+
+Read the [routing contract and local validation handoff](../docs/journal/2026-11-22-xml-before-html-routing.md)
+for the 65,536-character prefix bound, dedicated-adapter precedence, review
+reason, fixtures and focused command. This preparation entry is not a deployment
+receipt or a measured production CPU saving. Routine CI remains disabled.
+
 ## Incremental collection snapshots — November 21, 2026 (implemented; awaiting deployment)
 
 Category claims may negotiate `incremental_snapshot.version: 1` for iCal,

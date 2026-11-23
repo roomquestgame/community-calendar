@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Synthetic calendar feed</title>
+  <id>https://venue.example.org/feed</id>
+  <updated>2026-11-23T00:00:00Z</updated>
+  <entry>
+    <title>Synthetic event</title>
+    <id>https://venue.example.org/events/one</id>
+    <updated>2026-11-23T00:00:00Z</updated>
+    <content type="xhtml">
+      <div xmlns="http://www.w3.org/1999/xhtml">
+        <h1>Upcoming Events</h1>
+        <a href="/events/one">One</a>
+        <a href="/events/two">Two</a>
+        <a href="/calendar.ics" type="text/calendar">Subscribe</a>
+      </div>
+    </content>
+  </entry>
+</feed>

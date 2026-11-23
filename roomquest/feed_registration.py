@@ -7,7 +7,7 @@ from urllib.parse import parse_qs, urldefrag, urljoin, urlsplit
 
 from icalendar import Calendar
 from roomquest import localist_registration, provider_registration, openactive, wildlife_trusts, failte_ireland
-from roomquest.registration_formats import collection_evidence, probe, scoped_endpoint
+from roomquest.registration_formats import collection_evidence, document_kind, probe, scoped_endpoint
 
 from roomquest.preview_worker import PreviewError, fetch_publisher, public_source_url, supabase_rpc
 from roomquest.publisher_pacing import capture_publisher_pacing
@@ -125,6 +125,8 @@ def classify(url, payload, hint=None, endpoint_only=False, venue_website=False):
         return collection_evidence(url, body, obj) or review('unrecognized_json')
     if not body.startswith('<'):
         return review('no_reusable_calendar')
+    if document_kind(body) == 'xml':
+        return review('xml_adapter_needed')
     parser = CalendarLinks(url)
     parser.feed(body)
     evidence = collection_evidence(url, body)
@@ -164,6 +166,9 @@ def recover_html_feed(listing_url, listing_body, deadline):
     """
     from roomquest.venue_calendar_locator import find_calendar
     from roomquest.registered_html_calendar import CALENDAR_NAMES
+
+    if document_kind(listing_body) == 'xml':
+        return None
 
     # A venue or department can be encoded in the path rather than a query.
     # Exploratory navigation/API recovery cannot prove that path's scope maps
@@ -352,6 +357,7 @@ def register(ticket):
                         and urlsplit(url).hostname == urlsplit(candidate['url']).hostname
                         and scoped_endpoint(candidate['url'], url)))
                     and body.lstrip().lstrip(chr(0xfeff)).lstrip().startswith('<')
+                    and document_kind(body) != 'xml'
                     and result.get('p_outcome') == 'review'
                     and result.get('p_reason') in {
                         'html_adapter_needed', 'no_reusable_calendar',
@@ -363,6 +369,7 @@ def register(ticket):
             if (type(candidate.get('registered_html_calendar_version')) is int
                     and candidate['registered_html_calendar_version'] == 1
                     and body and body.lstrip().lstrip(chr(0xfeff)).lstrip().startswith('<')
+                    and document_kind(body) != 'xml'
                     and result.get('p_outcome') == 'review'
                     and result.get('p_reason') in {
                         'html_adapter_needed', 'no_reusable_calendar',
