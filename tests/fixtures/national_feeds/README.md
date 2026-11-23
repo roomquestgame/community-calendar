@@ -58,3 +58,38 @@ Regression cases retain aware-datetime corroboration, reject conflicting
 duplicate clock fields, incomplete clocks, RSS/date conflicts, date spans,
 invalid points and ambiguous/nonexistent London wall times. They also verify
 that complete native prose, evidence identity and coordinates survive.
+
+## Lincolnshire primary event boundaries and reserve Place
+
+The following reduced fixtures use structural DOM evidence observed on the
+two canonical Lincolnshire pages on 23 November 2026. They are not raw HTTP
+captures. Both original pages had exactly one full schema.org/Event root.
+
+- `wildlife-linc-related-cards.html`:
+  https://www.lincstrust.org.uk/events/2026-11-28-crochet-christmas-trees-workshop
+- `wildlife-linc-reserve-place.html`:
+  https://www.lincstrust.org.uk/events/2026-12-02-talk-boothby-wildland-nature-recovery-lincolnshire
+
+The Crochet fixture preserves the main `node__header` / `node__content`
+boundary, templated main date and clock ancestry, and all three observed
+related-card wrappers, date values and clock strings. The related cards are
+under the main article's `field--name-field-further-content`, an event-feed
+paragraph, and `node__related__wrapper`; they do not declare Event itemtypes.
+Broad descendant selectors consequently saw four startDate nodes and clocks.
+Only this reviewed related-card boundary is excluded. A real duplicate main
+date or clock, an unreviewed wrapper, or an additional Event root still holds.
+
+The main and related location wrappers follow the observed ancestry and use
+the observed Far Ings name/address/point. Related cards had an empty postal
+address, their own images and no summary/about fields. Fixture titles,
+description paragraphs, link labels and image filenames are synthetic controls.
+Tests add deliberately conflicting related data to ensure it cannot supply the
+main event's status, description, venue or image.
+
+The reserve fixture preserves the observed Gibraltar Point Place outerHTML
+(blank-line whitespace normalized), including its `node--type-reserve node--view-mode-address-string`
+classes, native h3 name, PostalAddress reserve fields and both GPS values.
+Its date/time fields are exact observed snippets; surrounding narrative/title
+are synthetic controls. This variant requires one unambiguous native Place,
+name, address and complete valid publisher point. It cannot borrow fields
+from elsewhere in the Event or infer a venue.
