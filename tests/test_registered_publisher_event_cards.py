@@ -27,7 +27,7 @@ def source(url):
 
 
 def dated_uk(title='Man in the Mirror', date='25 November, 2026',
-             clock='19:30', start='2026-11-25', country='UK'):
+             clock='19:30', start='2026-11-25', country='UK', url=UK_EVENT):
     item = {'@context': 'https://schema.org', '@type': 'Event',
             'name': title, 'startDate': start,
             'location': [{'@type': 'Place', 'name': 'Cambridge Corn Exchange',
@@ -36,7 +36,7 @@ def dated_uk(title='Man in the Mirror', date='25 November, 2026',
                                       'addressLocality': 'Cambridge',
                                       'postalCode': 'CB2 3QB',
                                       'addressCountry': country}}]}
-    return ('<html><head><link rel="canonical" href="' + UK_EVENT + '">'
+    return ('<html><head><link rel="canonical" href="' + url + '">'
             '<script type="application/ld+json">' + json.dumps(item) +
             '</script></head><main><h1>' + title + '</h1>'
             '<div class="event-details__item--date"><dd>' + date + '</dd></div>'
@@ -85,21 +85,23 @@ def us_detail(day='December 5', venue='Fairfax', stamp='2026-12-05'):
 def test_uk_real_numbered_span_pager_follows_all_pages_before_details():
     next_page = UK + '?page=2'
     first = listing_with_pager(next_page=next_page, urls=[UK_EVENT])
-    second = listing_with_pager(current=2, urls=[])
+    second_url = UK + '/publisher-second-event'
+    second = listing_with_pager(current=2, urls=[second_url])
     calls = Mock(side_effect=lambda u, accept: {
-        next_page: second, UK_EVENT: dated_uk()}[u])
+        next_page: second, UK_EVENT: dated_uk(),
+        second_url: dated_uk(url=second_url,title='Second Event')}[u])
     rows = calendar.collect(source(UK), calls, listing=first)
-    assert len(rows) == 1
+    assert len(rows) == 2
     assert rows[0]['venue_address'].endswith('Cambridge, CB2 3QB, UK')
     assert str(rows[0]['starts_at']).startswith('2026-11-25T19:30')
-    assert [x.args[0] for x in calls.call_args_list] == [next_page, UK_EVENT]
+    assert [x.args[0] for x in calls.call_args_list] == [next_page, UK_EVENT, second_url]
 
 
 @pytest.mark.parametrize('date,clock,title,country', [
     ('24 November, 2026', '19:30', 'Man in the Mirror', 'UK'),
     ('25 November, 2026', '19:30', 'Wrong title', 'GB'),
     ('25 November, 2026', '19:30', 'Man in the Mirror', 'US'),
-    ('25 November, 2026', '01:30', 'Man in the Mirror', 'UK'),
+    ('25 November, 2026', '25:30', 'Man in the Mirror', 'UK'),
 ])
 def test_uk_event_requires_matching_publisher_date_title_country(date, clock, title, country):
     url = UK_EVENT
