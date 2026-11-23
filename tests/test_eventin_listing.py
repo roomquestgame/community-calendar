@@ -224,3 +224,36 @@ def test_eventin_never_extracts_photo_from_unfetched_timed_card():
     rows = collect(body)
     assert len(rows) == 1
     assert rows[0].get('image_url') is None
+
+
+def test_eventin_ordinary_wordpress_figure_exposes_original_walking_photo():
+    slug = 'healthy-walking-at-wandlebury-2/healthy-walking-at-wandlebury-5'
+    body = card(slug, 'Healthy Walking at Wandlebury', 'November 26, 2026', PARK, WALK)
+    page = detail('Healthy Walking at Wandlebury', PARK,
+                  '2026-11-26T10:00', '2026-11-26T11:00', WALK_DETAIL)
+    page += ('<main><figure class="wp-block-image"><img src="'
+             'https://cambridgeppf.org/wp-content/uploads/2025/09/'
+             'healthy-walkers-square.jpg"></figure></main>')
+    rows = collect(body, Mock(return_value=page))
+    assert len(rows) == 2
+    assert {row.get('image_url') for row in rows} == {CAMBRIDGE_WALK_IMAGE}
+    assert all(row.get('image_evidence_url', '').endswith('/' + slug + '/')
+               for row in rows)
+
+
+@pytest.mark.parametrize('wrapper', [
+    '<aside>{}</aside>',
+    '<nav>{}</nav>',
+    '<div class="related-events">{}</div>',
+    '<div class="sidebar">{}</div>',
+    '<div class="recommended-events">{}</div>',
+])
+def test_eventin_general_fallback_rejects_secondary_event_artwork(wrapper):
+    slug = 'healthy-walking-at-wandlebury-2/healthy-walking-at-wandlebury-5'
+    body = card(slug, 'Healthy Walking at Wandlebury', 'November 26, 2026', PARK, WALK)
+    photo = '<img src="' + CAMBRIDGE_WALK_IMAGE + '">'
+    page = detail('Healthy Walking at Wandlebury', PARK,
+                  '2026-11-26T10:00', '2026-11-26T11:00', WALK_DETAIL)
+    rows = collect(body, Mock(return_value=page + wrapper.format(photo)))
+    assert len(rows) == 2
+    assert all(row.get('image_url') is None for row in rows)
