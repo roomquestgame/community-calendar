@@ -218,6 +218,36 @@ def _event_clocks(node):
     return values[0]
 
 
+def _place_fields(place):
+    """Read one native Place's observed location or reserve address template."""
+    reserve = 'node--type-reserve' in place.get('class', [])
+    if reserve:
+        if ('node--view-mode-address-string' not in place.get('class', [])
+                or place.get('itemtype') not in ('http://schema.org/Place', 'https://schema.org/Place')):
+            raise ValueError('wildlife_event_location_unresolved')
+        names = place.select('[itemprop="name"]')
+        addresses = place.select('[itemprop="address"]')
+        if (len(names) != 1 or names[0].name != 'h3' or 'node__title' not in names[0].get('class', [])
+                or len(addresses) != 1 or addresses[0].get('itemtype') not in (
+                    'http://schema.org/PostalAddress', 'https://schema.org/PostalAddress')):
+            raise ValueError('wildlife_event_location_unresolved')
+        venue = names[0].get_text(' ', strip=True).strip(' ,')
+        field_root, prefix = addresses[0], 'reserve'
+    else:
+        if len(place.select('.field--name-field-location-name')) != 1:
+            raise ValueError('wildlife_event_location_unresolved')
+        venue = _field(place, 'location-name')
+        field_root, prefix = place, 'location'
+    values = {}
+    for suffix in ('address', 'town', 'county', 'postcode'):
+        name = prefix + '-' + suffix
+        if len(field_root.select('.field--name-field-' + name)) > 1:
+            raise ValueError('wildlife_event_location_unresolved')
+        values[suffix] = _field(field_root, name)
+    street = ', '.join(value for value in values.values() if value)
+    return venue, street, values['town'], reserve
+
+
 def parse_detail(payload, item, *, source):
     """Return a dated occurrence or a specific reason to hold this item."""
     soup = BeautifulSoup(payload, 'html.parser')
@@ -225,6 +255,14 @@ def parse_detail(payload, item, *, source):
     if len(roots) != 1:
         return [], 'wildlife_detail_template_unreviewed'
     node = roots[0]
+    # Lincoln embeds separately linked event cards without Event microdata
+    # scopes. Exclude only their observed "further content" boundary; true
+    # duplicate primary fields and unreviewed nested events still hold.
+    for card in node.select(
+            ':scope > .node__content > .field--name-field-further-content > '
+            '.paragraph--card-feed.paragraph--type--event-feed.paragraph--view-mode--default '
+            '.node__related__wrapper > article.node.node--type-event.node--view-mode-event-card.card'):
+        card.decompose()
     canonical = soup.select_one('link[rel="canonical"][href]')
     if canonical and canonical['href'].rstrip('/') != item['url'].rstrip('/'):
         return [], 'wildlife_detail_identity_changed'
@@ -284,17 +322,18 @@ def parse_detail(payload, item, *, source):
             end = declared_end
     except (ValueError, TypeError, KeyError):
         return [], 'wildlife_event_clock_unresolved'
-    place = node.select_one('.field--name-field-event-location [itemprop="location"]')
-    if place is None:
+    places = node.select('.field--name-field-event-location [itemprop="location"]')
+    if len(places) != 1:
         return [], 'wildlife_event_location_unresolved'
-    venue = _field(place, 'location-name')
-    city = _field(place, 'location-town')
-    street = ', '.join(v for v in (_field(place, 'location-address'), city,
-                      _field(place, 'location-county'), _field(place, 'location-postcode')) if v)
-    lat_node, lng_node = place.select_one('[itemprop="latitude"]'), place.select_one('[itemprop="longitude"]')
+    place = places[0]
     try:
-        lat = float(lat_node['content']) if lat_node else None
-        lng = float(lng_node['content']) if lng_node else None
+        venue, street, city, reserve = _place_fields(place)
+        lat_nodes, lng_nodes = place.select('[itemprop="latitude"]'), place.select('[itemprop="longitude"]')
+        if (len(lat_nodes) > 1 or len(lng_nodes) > 1
+                or reserve and (len(lat_nodes) != 1 or len(lng_nodes) != 1)):
+            raise ValueError
+        lat = float(lat_nodes[0]['content']) if lat_nodes else None
+        lng = float(lng_nodes[0]['content']) if lng_nodes else None
     except (ValueError, TypeError, KeyError):
         return [], 'wildlife_event_location_unresolved'
     if not venue or not street or (lat is not None and not -90 <= lat <= 90) or (lng is not None and not -180 <= lng <= 180):
