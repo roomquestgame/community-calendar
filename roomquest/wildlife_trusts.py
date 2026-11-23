@@ -322,12 +322,15 @@ def parse_detail(payload, item, *, source):
             end = declared_end
     except (ValueError, TypeError, KeyError):
         return [], 'wildlife_event_clock_unresolved'
-    places = node.select('.field--name-field-event-location [itemprop="location"]')
+    places = node.select('.field--name-field-event-location [itemprop="location"], '
+                         '.field--name-field-event-reserve [itemprop="location"]')
     if len(places) != 1:
         return [], 'wildlife_event_location_unresolved'
     place = places[0]
     try:
         venue, street, city, reserve = _place_fields(place)
+        if place.find_parent(class_='field--name-field-event-reserve') and not reserve:
+            raise ValueError('wildlife_event_location_unresolved')
         lat_nodes, lng_nodes = place.select('[itemprop="latitude"]'), place.select('[itemprop="longitude"]')
         if (len(lat_nodes) > 1 or len(lng_nodes) > 1
                 or reserve and (len(lat_nodes) != 1 or len(lng_nodes) != 1)):
