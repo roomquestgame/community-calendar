@@ -282,6 +282,8 @@ def rows(soup, fetch, today, deadline_at):
             if row:
                 row['description'] = description(narrative)
                 if intervals is not None and (walking or url in details) and photo:
-                    row.update(image_url=photo, image_provenance='publisher_event_candidates_v1',
+                    row.update(image_url=photo,
+                               image_extractor_version='publisher_event_candidates_v1',
+                               image_provenance='publisher_event_candidates_v1',
                                image_evidence_url=url)
                 yield row
