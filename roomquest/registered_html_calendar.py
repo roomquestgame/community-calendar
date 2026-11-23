@@ -560,6 +560,508 @@ def _cambridge_featured_image(source, soup, url, title):
     return next(iter(matches)) if len(matches) == 1 else None
 
 
+def _microdata_detail(source, soup, url):
+    """One publisher-declared Event microdata object, never inferred prose.
+
+    The existing Event JSON-LD parser remains preferred. This conservative
+    fallback is for pages with explicit Schema.org Event item scopes and ISO
+    timestamps containing a UTC offset, a unique event name and a complete
+    publisher-stated street address. A plain date paragraph is not evidence.
+    """
+    roots = [node for node in soup.select('[itemscope][itemtype]')
+             if re.search(r'(?:schema[.]org/|schema[.]org#)(?:[A-Za-z]*Event)
+    soup = _html(payload)
+    _canonical(soup, url)
+    nodes = _document(payload)
+    candidates = []
+    references = []
+    images = {}
+    for node in nodes:
+        if _event(node):
+            link = _public_url(node.get('url') or node.get('@id'), url)
+            if link and _url_key(link) == _url_key(url):
+                candidates.append(node)
+        elif node.get('@id') and len(node) > 1:
+            clean = _without_events(node)
+            references.append(clean)
+            identity = node['@id']
+            prior = images.get(identity)
+            if prior is None or jsonld_adapter.definition_contains(node, prior):
+                images[identity] = node
+    if not candidates:
+        return _microdata_detail(source, soup, url)
+    if len(candidates) > MAX_EVENTS:
+        _fail('html_calendar_event_limit')
+
+    def image_value(value):
+        if isinstance(value, dict) and set(value) == {'@id'}:
+            return images.get(value['@id'], value)
+        if isinstance(value, list):
+            return [image_value(item) for item in value[:5]]
+        return value
+
+    records = []
+    for original in candidates:
+        event = deepcopy(original)
+        # Resolve page-local Event IDs against their actual fetched document.
+        # Two /event/... pages commonly both publish the local ID '#event'.
+        identity = event.get('@id') or event.get('url')
+        if not isinstance(identity, str) or not identity:
+            _fail('html_calendar_event_identity_missing')
+        identity = urljoin(url, identity)
+        if len(identity) > 180:
+            _fail('html_calendar_event_identity_limit')
+        event['@id'] = identity
+        # Candidate matching already established exact identity apart from a
+        # trailing slash/fragment. Bind the record to the document fetched so
+        # its native-content evidence names that same actual publisher URL.
+        event['url'] = url
+        # Parse only this detail's matching Event, retaining local Place/Image
+        # references. Sidebar recommendations are not part of this occurrence.
+        for key, value in list(event.items()):
+            if isinstance(value, (dict, list)):
+                event[key] = _without_events(value)
+        graph = json.dumps({'@graph': [event, *references]})
+        rows = jsonld_adapter.parse(graph, url)
+        for row in rows:
+            if _url_key(row['event_url']) != _url_key(url):
+                _fail('html_calendar_detail_identity_conflict')
+            from roomquest.registered_native_content import attach
+            description_value, description_field = _description(soup, original, row)
+            extra = ({'description_field': description_field}
+                     if description_field != 'description' else {})
+            primary_image = image_value(original.get('image'))
+            from roomquest.registered_native_content import image_candidate
+            if not image_candidate(primary_image, url):
+                primary_image = _cambridge_featured_image(source, soup, url, row['title'])
+            attach(row, source, description_value=description_value,
+                   image_value=primary_image, evidence_url=url, **extra)
+            records.append(row)
+    return records
+
+
+def collect(source, fetch, *, deadline_at=None, listing=None):
+    """Complete one bounded registered listing; never return a partial prefix."""
+    from roomquest.registered_native_content import CAPABILITY as native_capability
+    url = source.get('feed_url')
+    if (not isinstance(url, str) or _public_url(url, url) != url
+            or source.get('source_key') != source_key(url)
+            or source.get('kind') != 'html' or source.get('platform_adapter') != 'html'
+            or type(source.get(CAPABILITY)) is not int or source[CAPABILITY] != 1
+            or type(source.get(native_capability)) is not int or source[native_capability] != 1):
+        _fail('unregistered_html_calendar')
+
+    def check_deadline():
+        if deadline_at is not None and monotonic() >= deadline_at:
+            _fail('collection_deadline')
+
+    check_deadline()
+    payload = listing if listing is not None else fetch(url, 'text/html,application/xhtml+xml')
+    from roomquest import forestry_england
+    if forestry_england.owns_url(url):
+        return forestry_england.collect(source, fetch, deadline_at=deadline_at, listing=payload)
+    links = {}
+    pages = []
+    inventories = set()
+    required_pages = set()
+    current = url
+    while True:
+        check_deadline()
+        soup = _html(payload)
+        observed = _links(current, soup)
+        if not _listing_shape(current, soup, observed, collection_url=url if pages else None):
+            _fail('html_calendar_scope_unverified')
+        archive = _rockhouse_archive(current, soup)
+        navigation = soup
+        if archive:
+            navigation, observed = archive
+        next_page, required = _pagination(navigation, current, collection_url=url, previous_pages=pages)
+        inventory = frozenset(_url_key(link) for link in observed)
+        if inventory in inventories:
+            _fail('html_calendar_pagination_stalled')
+        inventories.add(inventory)
+        for link in observed:
+            links.setdefault(_url_key(link), link)
+        if len(links) > MAX_DETAILS:
+            _fail('html_calendar_detail_limit')
+        pages.append(current)
+        visited = {_url_key(page) for page in pages}
+        required_pages.update(required)
+        if not next_page:
+            if not required_pages.issubset(visited):
+                _fail('html_calendar_pagination_needed')
+            break
+        if _url_key(next_page) in visited:
+            _fail('html_calendar_pagination_cycle')
+        if len(pages) >= MAX_LISTING_PAGES:
+            _fail('html_calendar_pagination_limit')
+        check_deadline()
+        payload = fetch(next_page, 'text/html,application/xhtml+xml')
+        current = next_page
+    records = {}
+    for detail_url in links.values():
+        check_deadline()
+        body = fetch(detail_url, 'text/html,application/ld+json')
+        check_deadline()
+        for row in _detail(source, body, detail_url):
+            key = (row['id'], row['starts_at'])
+            if key in records and records[key] != row:
+                _fail('conflicting_event_occurrence')
+            records[key] = row
+            if len(records) > MAX_EVENTS:
+                _fail('html_calendar_event_limit')
+        check_deadline()
+    return sorted(records.values(), key=lambda row: (row['starts_at'], row['id']))
+,
+                          node.get('itemtype', ''), re.I)]
+    if len(roots) != 1:
+        _fail('html_calendar_event_jsonld_missing')
+    root = roots[0]
+
+    def property_node(holder, prop):
+        matches = []
+        for node in holder.select('[itemprop]'):
+            if prop not in node.get('itemprop', '').split():
+                continue
+            scope = node.find_parent(attrs={'itemscope': True})
+            if scope is holder:
+                matches.append(node)
+        if len(matches) != 1:
+            _fail('html_calendar_event_microdata_ambiguous')
+        return matches[0]
+
+    def value(holder, prop):
+        node = property_node(holder, prop)
+        return (node.get('content') or node.get('datetime') or
+                node.get_text(' ', strip=True)).strip()
+
+    name = value(root, 'name')
+    start = value(root, 'startDate')
+    moment = datetime.fromisoformat(start.replace('Z', '+00:00'))
+    if moment.tzinfo is None or moment.utcoffset() is None or not name:
+        _fail('html_calendar_event_microdata_ambiguous')
+    end = None
+    if root.select('[itemprop="endDate"]'):
+        end = value(root, 'endDate')
+        end_time = datetime.fromisoformat(end.replace('Z', '+00:00'))
+        if end_time.tzinfo is None or end_time.utcoffset() is None or end_time < moment:
+            _fail('html_calendar_event_microdata_ambiguous')
+
+    place = property_node(root, 'location')
+    if not place.has_attr('itemscope') or not re.search(
+            r'(?:schema[.]org/|schema[.]org#)Place
+    soup = _html(payload)
+    _canonical(soup, url)
+    nodes = _document(payload)
+    candidates = []
+    references = []
+    images = {}
+    for node in nodes:
+        if _event(node):
+            link = _public_url(node.get('url') or node.get('@id'), url)
+            if link and _url_key(link) == _url_key(url):
+                candidates.append(node)
+        elif node.get('@id') and len(node) > 1:
+            clean = _without_events(node)
+            references.append(clean)
+            identity = node['@id']
+            prior = images.get(identity)
+            if prior is None or jsonld_adapter.definition_contains(node, prior):
+                images[identity] = node
+    if not candidates:
+        _fail('html_calendar_event_jsonld_missing')
+    if len(candidates) > MAX_EVENTS:
+        _fail('html_calendar_event_limit')
+
+    def image_value(value):
+        if isinstance(value, dict) and set(value) == {'@id'}:
+            return images.get(value['@id'], value)
+        if isinstance(value, list):
+            return [image_value(item) for item in value[:5]]
+        return value
+
+    records = []
+    for original in candidates:
+        event = deepcopy(original)
+        # Resolve page-local Event IDs against their actual fetched document.
+        # Two /event/... pages commonly both publish the local ID '#event'.
+        identity = event.get('@id') or event.get('url')
+        if not isinstance(identity, str) or not identity:
+            _fail('html_calendar_event_identity_missing')
+        identity = urljoin(url, identity)
+        if len(identity) > 180:
+            _fail('html_calendar_event_identity_limit')
+        event['@id'] = identity
+        # Candidate matching already established exact identity apart from a
+        # trailing slash/fragment. Bind the record to the document fetched so
+        # its native-content evidence names that same actual publisher URL.
+        event['url'] = url
+        # Parse only this detail's matching Event, retaining local Place/Image
+        # references. Sidebar recommendations are not part of this occurrence.
+        for key, value in list(event.items()):
+            if isinstance(value, (dict, list)):
+                event[key] = _without_events(value)
+        graph = json.dumps({'@graph': [event, *references]})
+        rows = jsonld_adapter.parse(graph, url)
+        for row in rows:
+            if _url_key(row['event_url']) != _url_key(url):
+                _fail('html_calendar_detail_identity_conflict')
+            from roomquest.registered_native_content import attach
+            description_value, description_field = _description(soup, original, row)
+            extra = ({'description_field': description_field}
+                     if description_field != 'description' else {})
+            primary_image = image_value(original.get('image'))
+            from roomquest.registered_native_content import image_candidate
+            if not image_candidate(primary_image, url):
+                primary_image = _cambridge_featured_image(source, soup, url, row['title'])
+            attach(row, source, description_value=description_value,
+                   image_value=primary_image, evidence_url=url, **extra)
+            records.append(row)
+    return records
+
+
+def collect(source, fetch, *, deadline_at=None, listing=None):
+    """Complete one bounded registered listing; never return a partial prefix."""
+    from roomquest.registered_native_content import CAPABILITY as native_capability
+    url = source.get('feed_url')
+    if (not isinstance(url, str) or _public_url(url, url) != url
+            or source.get('source_key') != source_key(url)
+            or source.get('kind') != 'html' or source.get('platform_adapter') != 'html'
+            or type(source.get(CAPABILITY)) is not int or source[CAPABILITY] != 1
+            or type(source.get(native_capability)) is not int or source[native_capability] != 1):
+        _fail('unregistered_html_calendar')
+
+    def check_deadline():
+        if deadline_at is not None and monotonic() >= deadline_at:
+            _fail('collection_deadline')
+
+    check_deadline()
+    payload = listing if listing is not None else fetch(url, 'text/html,application/xhtml+xml')
+    from roomquest import forestry_england
+    if forestry_england.owns_url(url):
+        return forestry_england.collect(source, fetch, deadline_at=deadline_at, listing=payload)
+    links = {}
+    pages = []
+    inventories = set()
+    required_pages = set()
+    current = url
+    while True:
+        check_deadline()
+        soup = _html(payload)
+        observed = _links(current, soup)
+        if not _listing_shape(current, soup, observed, collection_url=url if pages else None):
+            _fail('html_calendar_scope_unverified')
+        archive = _rockhouse_archive(current, soup)
+        navigation = soup
+        if archive:
+            navigation, observed = archive
+        next_page, required = _pagination(navigation, current, collection_url=url, previous_pages=pages)
+        inventory = frozenset(_url_key(link) for link in observed)
+        if inventory in inventories:
+            _fail('html_calendar_pagination_stalled')
+        inventories.add(inventory)
+        for link in observed:
+            links.setdefault(_url_key(link), link)
+        if len(links) > MAX_DETAILS:
+            _fail('html_calendar_detail_limit')
+        pages.append(current)
+        visited = {_url_key(page) for page in pages}
+        required_pages.update(required)
+        if not next_page:
+            if not required_pages.issubset(visited):
+                _fail('html_calendar_pagination_needed')
+            break
+        if _url_key(next_page) in visited:
+            _fail('html_calendar_pagination_cycle')
+        if len(pages) >= MAX_LISTING_PAGES:
+            _fail('html_calendar_pagination_limit')
+        check_deadline()
+        payload = fetch(next_page, 'text/html,application/xhtml+xml')
+        current = next_page
+    records = {}
+    for detail_url in links.values():
+        check_deadline()
+        body = fetch(detail_url, 'text/html,application/ld+json')
+        check_deadline()
+        for row in _detail(source, body, detail_url):
+            key = (row['id'], row['starts_at'])
+            if key in records and records[key] != row:
+                _fail('conflicting_event_occurrence')
+            records[key] = row
+            if len(records) > MAX_EVENTS:
+                _fail('html_calendar_event_limit')
+        check_deadline()
+    return sorted(records.values(), key=lambda row: (row['starts_at'], row['id']))
+,
+            place.get('itemtype', ''), re.I):
+        _fail('html_calendar_event_microdata_ambiguous')
+    address = property_node(place, 'address')
+    if not address.has_attr('itemscope') or not re.search(
+            r'(?:schema[.]org/|schema[.]org#)PostalAddress
+    soup = _html(payload)
+    _canonical(soup, url)
+    nodes = _document(payload)
+    candidates = []
+    references = []
+    images = {}
+    for node in nodes:
+        if _event(node):
+            link = _public_url(node.get('url') or node.get('@id'), url)
+            if link and _url_key(link) == _url_key(url):
+                candidates.append(node)
+        elif node.get('@id') and len(node) > 1:
+            clean = _without_events(node)
+            references.append(clean)
+            identity = node['@id']
+            prior = images.get(identity)
+            if prior is None or jsonld_adapter.definition_contains(node, prior):
+                images[identity] = node
+    if not candidates:
+        _fail('html_calendar_event_jsonld_missing')
+    if len(candidates) > MAX_EVENTS:
+        _fail('html_calendar_event_limit')
+
+    def image_value(value):
+        if isinstance(value, dict) and set(value) == {'@id'}:
+            return images.get(value['@id'], value)
+        if isinstance(value, list):
+            return [image_value(item) for item in value[:5]]
+        return value
+
+    records = []
+    for original in candidates:
+        event = deepcopy(original)
+        # Resolve page-local Event IDs against their actual fetched document.
+        # Two /event/... pages commonly both publish the local ID '#event'.
+        identity = event.get('@id') or event.get('url')
+        if not isinstance(identity, str) or not identity:
+            _fail('html_calendar_event_identity_missing')
+        identity = urljoin(url, identity)
+        if len(identity) > 180:
+            _fail('html_calendar_event_identity_limit')
+        event['@id'] = identity
+        # Candidate matching already established exact identity apart from a
+        # trailing slash/fragment. Bind the record to the document fetched so
+        # its native-content evidence names that same actual publisher URL.
+        event['url'] = url
+        # Parse only this detail's matching Event, retaining local Place/Image
+        # references. Sidebar recommendations are not part of this occurrence.
+        for key, value in list(event.items()):
+            if isinstance(value, (dict, list)):
+                event[key] = _without_events(value)
+        graph = json.dumps({'@graph': [event, *references]})
+        rows = jsonld_adapter.parse(graph, url)
+        for row in rows:
+            if _url_key(row['event_url']) != _url_key(url):
+                _fail('html_calendar_detail_identity_conflict')
+            from roomquest.registered_native_content import attach
+            description_value, description_field = _description(soup, original, row)
+            extra = ({'description_field': description_field}
+                     if description_field != 'description' else {})
+            primary_image = image_value(original.get('image'))
+            from roomquest.registered_native_content import image_candidate
+            if not image_candidate(primary_image, url):
+                primary_image = _cambridge_featured_image(source, soup, url, row['title'])
+            attach(row, source, description_value=description_value,
+                   image_value=primary_image, evidence_url=url, **extra)
+            records.append(row)
+    return records
+
+
+def collect(source, fetch, *, deadline_at=None, listing=None):
+    """Complete one bounded registered listing; never return a partial prefix."""
+    from roomquest.registered_native_content import CAPABILITY as native_capability
+    url = source.get('feed_url')
+    if (not isinstance(url, str) or _public_url(url, url) != url
+            or source.get('source_key') != source_key(url)
+            or source.get('kind') != 'html' or source.get('platform_adapter') != 'html'
+            or type(source.get(CAPABILITY)) is not int or source[CAPABILITY] != 1
+            or type(source.get(native_capability)) is not int or source[native_capability] != 1):
+        _fail('unregistered_html_calendar')
+
+    def check_deadline():
+        if deadline_at is not None and monotonic() >= deadline_at:
+            _fail('collection_deadline')
+
+    check_deadline()
+    payload = listing if listing is not None else fetch(url, 'text/html,application/xhtml+xml')
+    from roomquest import forestry_england
+    if forestry_england.owns_url(url):
+        return forestry_england.collect(source, fetch, deadline_at=deadline_at, listing=payload)
+    links = {}
+    pages = []
+    inventories = set()
+    required_pages = set()
+    current = url
+    while True:
+        check_deadline()
+        soup = _html(payload)
+        observed = _links(current, soup)
+        if not _listing_shape(current, soup, observed, collection_url=url if pages else None):
+            _fail('html_calendar_scope_unverified')
+        archive = _rockhouse_archive(current, soup)
+        navigation = soup
+        if archive:
+            navigation, observed = archive
+        next_page, required = _pagination(navigation, current, collection_url=url, previous_pages=pages)
+        inventory = frozenset(_url_key(link) for link in observed)
+        if inventory in inventories:
+            _fail('html_calendar_pagination_stalled')
+        inventories.add(inventory)
+        for link in observed:
+            links.setdefault(_url_key(link), link)
+        if len(links) > MAX_DETAILS:
+            _fail('html_calendar_detail_limit')
+        pages.append(current)
+        visited = {_url_key(page) for page in pages}
+        required_pages.update(required)
+        if not next_page:
+            if not required_pages.issubset(visited):
+                _fail('html_calendar_pagination_needed')
+            break
+        if _url_key(next_page) in visited:
+            _fail('html_calendar_pagination_cycle')
+        if len(pages) >= MAX_LISTING_PAGES:
+            _fail('html_calendar_pagination_limit')
+        check_deadline()
+        payload = fetch(next_page, 'text/html,application/xhtml+xml')
+        current = next_page
+    records = {}
+    for detail_url in links.values():
+        check_deadline()
+        body = fetch(detail_url, 'text/html,application/ld+json')
+        check_deadline()
+        for row in _detail(source, body, detail_url):
+            key = (row['id'], row['starts_at'])
+            if key in records and records[key] != row:
+                _fail('conflicting_event_occurrence')
+            records[key] = row
+            if len(records) > MAX_EVENTS:
+                _fail('html_calendar_event_limit')
+        check_deadline()
+    return sorted(records.values(), key=lambda row: (row['starts_at'], row['id']))
+,
+            address.get('itemtype', ''), re.I):
+        _fail('html_calendar_event_microdata_ambiguous')
+    street, city, region, postcode = [value(address, key) for key in (
+        'streetAddress', 'addressLocality', 'addressRegion', 'postalCode')]
+    if not all((street, city, region, postcode)) or len(name) > 250:
+        _fail('html_calendar_event_microdata_ambiguous')
+    venue = value(place, 'name')
+    from roomquest.mapsee_adapter import record
+    row = record(name, start, end, venue,
+                 ', '.join((street, city, region + ' ' + postcode)), city,
+                 url, url + '#microdata-event')
+    if row is None:
+        return []
+    description = None
+    if root.select('[itemprop="description"]'):
+        description = value(root, 'description')
+    from roomquest.registered_native_content import attach
+    attach(row, source, description_value=description, evidence_url=url)
+    return [row]
+
+
 def _detail(source, payload, url):
     soup = _html(payload)
     _canonical(soup, url)
