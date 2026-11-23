@@ -195,6 +195,7 @@ def test_wandlebury_eventin_detail_image_reused_across_explicit_sessions_and_dat
     assert len(rows) == 4
     assert all(row['image_url'] == CAMBRIDGE_WALK_IMAGE for row in rows)
     assert all(row['image_provenance'] == 'publisher_event_candidates_v1' for row in rows)
+    assert all(row['image_extractor_version'] == 'publisher_event_candidates_v1' for row in rows)
     assert all(row['image_evidence_url'].startswith('https://cambridgeppf.org/etn/')
                for row in rows)
     fetch.assert_called_once()
