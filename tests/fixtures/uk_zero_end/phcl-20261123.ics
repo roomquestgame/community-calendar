@@ -1,0 +1,58 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//wp-events-plugin.com//7.6//EN
+TZID:Europe/London
+X-WR-TIMEZONE:Europe/London
+BEGIN:VEVENT
+UID:8625@phcl.org
+DTSTART;TZID=Europe/London:20261123T110000
+DTEND;TZID=Europe/London:20261123T113000
+DTSTAMP:20251204T133134Z
+URL:https://www.phcl.org/events/monday-rhyme-time-5-2026-01-05-2026-01-12-2026-01-19-2026-01-26-2026-02-02-2026-02-09-2026-02-16-2026-02-23-2026-03-02-2026-03-09-2026-03-16-2026-03-23-2026-03-30-2026-04-06-2026-04-13-2-16-2026-11-23/
+SUMMARY:Monday Rhyme Time
+DESCRIPTION:Calling all babies and toddlers\, come and join us for songs and stories at Primrose Hill Community Library\n\nSuggested Donation: £2
+ATTACH;FMTTYPE=image/jpeg:https://www.phcl.org/wp-content/uploads/2020/01/pexels-leeloo-thefirst-7307953.jpg
+CATEGORIES:Events for kids
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Library\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Community Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:8911@phcl.org
+DTSTART;TZID=Europe/London:20261128T110000
+DTEND;TZID=Europe/London:20261128T110000
+DTSTAMP:20260602T141637Z
+URL:https://www.phcl.org/events/interactive-fun-storytelling-3-2026-11-28/
+SUMMARY:Interactive & Fun Storytelling
+DESCRIPTION:With over 30 years of experience\, Tales with Tracey offers a fun and educational experience for your little ones. Each session features a well-loved children's book\, enhanced with props\, expressive character voices\, and interactive storytelling.\n\nAlongside the story\, children will enjoy singing\, rhymes\, and lively verbal exchanges that encourage them to learn new words\, improve language skills\, and boost their imagination.\n\n£3\, 11am on Saturdays.
+ATTACH;FMTTYPE=image/jpeg:https://www.phcl.org/wp-content/uploads/2026/03/TWT-e1780409237705.png
+CATEGORIES:Events for kids
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Library\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Community Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:8912@phcl.org
+DTSTART;TZID=Europe/London:20261205T110000
+DTEND;TZID=Europe/London:20261205T110000
+DTSTAMP:20260602T141637Z
+URL:https://www.phcl.org/events/interactive-fun-storytelling-3-2026-12-05/
+SUMMARY:Interactive & Fun Storytelling
+DESCRIPTION:With over 30 years of experience\, Tales with Tracey offers a fun and educational experience for your little ones. Each session features a well-loved children's book\, enhanced with props\, expressive character voices\, and interactive storytelling.\n\nAlongside the story\, children will enjoy singing\, rhymes\, and lively verbal exchanges that encourage them to learn new words\, improve language skills\, and boost their imagination.\n\n£3\, 11am on Saturdays.
+ATTACH;FMTTYPE=image/jpeg:https://www.phcl.org/wp-content/uploads/2026/03/TWT-e1780409237705.png
+CATEGORIES:Events for kids
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Library\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Community Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:8913@phcl.org
+DTSTART;TZID=Europe/London:20261212T110000
+DTEND;TZID=Europe/London:20261212T110000
+DTSTAMP:20260602T141637Z
+URL:https://www.phcl.org/events/interactive-fun-storytelling-3-2026-12-12/
+SUMMARY:Interactive & Fun Storytelling
+DESCRIPTION:With over 30 years of experience\, Tales with Tracey offers a fun and educational experience for your little ones. Each session features a well-loved children's book\, enhanced with props\, expressive character voices\, and interactive storytelling.\n\nAlongside the story\, children will enjoy singing\, rhymes\, and lively verbal exchanges that encourage them to learn new words\, improve language skills\, and boost their imagination.\n\n£3\, 11am on Saturdays.
+ATTACH;FMTTYPE=image/jpeg:https://www.phcl.org/wp-content/uploads/2026/03/TWT-e1780409237705.png
+CATEGORIES:Events for kids
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Library\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Community Library:geo:0,0
+END:VEVENT
+END:VCALENDAR

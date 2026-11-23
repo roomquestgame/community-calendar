@@ -1,0 +1,138 @@
+{
+  "events": [
+    {
+      "id": 5012,
+      "status": "publish",
+      "url": "https://www.rhts.co.uk/event/santa-special-2/",
+      "title": "Santa Special",
+      "all_day": false,
+      "start_date": "2026-12-05 11:00:00",
+      "end_date": "2026-12-06 16:00:00",
+      "utc_start_date": "2026-12-05 11:00:00",
+      "utc_end_date": "2026-12-06 16:00:00",
+      "timezone": "Europe/London",
+      "hide_from_listings": false,
+      "categories": [
+        {
+          "name": "Event, Heritage Railway"
+        }
+      ],
+      "venue": {
+        "id": 4987,
+        "venue": "Rushden Railway Station",
+        "address": "Station Approach",
+        "city": "RUSHDEN",
+        "country": "United Kingdom",
+        "province": "Northamptonshire",
+        "zip": "NN10 0AW",
+        "stateprovince": "Northamptonshire"
+      }
+    },
+    {
+      "id": 5668,
+      "status": "publish",
+      "url": "https://www.rhts.co.uk/event/brunch-with-santa/",
+      "title": "Brunch with Santa",
+      "all_day": false,
+      "start_date": "2026-12-19 11:00:00",
+      "end_date": "2026-12-19 11:00:00",
+      "utc_start_date": "2026-12-19 11:00:00",
+      "utc_end_date": "2026-12-19 11:00:00",
+      "timezone": "Europe/London",
+      "hide_from_listings": false,
+      "categories": [
+        {
+          "name": "Event, Heritage Railway"
+        }
+      ],
+      "venue": {
+        "id": 4987,
+        "venue": "Rushden Railway Station",
+        "address": "Station Approach",
+        "city": "RUSHDEN",
+        "country": "United Kingdom",
+        "province": "Northamptonshire",
+        "zip": "NN10 0AW",
+        "stateprovince": "Northamptonshire"
+      }
+    },
+    {
+      "id": 5674,
+      "status": "publish",
+      "url": "https://www.rhts.co.uk/event/autism-sensory-friendly-brunch-with-santa/",
+      "title": "Autism &amp; Sensory Friendly Brunch with Santa",
+      "all_day": false,
+      "start_date": "2026-12-19 14:00:00",
+      "end_date": "2026-12-19 16:00:00",
+      "utc_start_date": "2026-12-19 14:00:00",
+      "utc_end_date": "2026-12-19 16:00:00",
+      "timezone": "Europe/London",
+      "hide_from_listings": false,
+      "categories": [
+        {
+          "name": "Event, Heritage Railway"
+        }
+      ],
+      "venue": {
+        "id": 4987,
+        "venue": "Rushden Railway Station",
+        "address": "Station Approach",
+        "city": "RUSHDEN",
+        "country": "United Kingdom",
+        "province": "Northamptonshire",
+        "zip": "NN10 0AW",
+        "stateprovince": "Northamptonshire"
+      }
+    },
+    {
+      "id": 5659,
+      "status": "publish",
+      "url": "https://www.rhts.co.uk/event/christmas-afternoon-tea/",
+      "title": "Christmas Afternoon Tea",
+      "all_day": false,
+      "start_date": "2026-12-20 15:00:00",
+      "end_date": "2026-12-20 16:00:00",
+      "utc_start_date": "2026-12-20 15:00:00",
+      "utc_end_date": "2026-12-20 16:00:00",
+      "timezone": "Europe/London",
+      "hide_from_listings": false,
+      "categories": [],
+      "venue": {
+        "id": 2389,
+        "venue": "Buffet Carriage",
+        "address": "Station Approach",
+        "city": "RUSHDEN",
+        "country": "United Kingdom",
+        "province": "Northamptonshire",
+        "zip": "NN10 0AW",
+        "stateprovince": "Northamptonshire"
+      }
+    },
+    {
+      "id": 6956,
+      "status": "publish",
+      "url": "https://www.rhts.co.uk/event/christmas-carol-night-with-dr-busker/",
+      "title": "Festive Sing Along with Dr Busker",
+      "all_day": false,
+      "start_date": "2026-12-21 19:00:00",
+      "end_date": "2026-12-21 23:00:00",
+      "utc_start_date": "2026-12-21 19:00:00",
+      "utc_end_date": "2026-12-21 23:00:00",
+      "timezone": "Europe/London",
+      "hide_from_listings": false,
+      "categories": [],
+      "venue": {
+        "id": 4664,
+        "venue": "Station Bar",
+        "address": "Station Approach",
+        "city": "RUSHDEN",
+        "country": "United Kingdom",
+        "province": "Northamptonshire",
+        "zip": "NN10 0AW",
+        "stateprovince": "Northamptonshire"
+      }
+    }
+  ],
+  "total": 5,
+  "total_pages": 1
+}
