@@ -43,12 +43,38 @@ def is_event_export(url):
     return bool({'eventid', 'event_id', 'eid', 'tribe_event_id'} & keys or
                 re.search(r'/(?:event|events/(?:event|detail)|wp-json/tribe/events/v1/events)/[^/]+', parts.path, re.I))
 
+def _wrapped_ical_subscription(page_url, wrapper):
+    """Decode a publisher-linked Google Calendar subscription, not an event.
+
+    Google Calendar's public subscribe URL contains the publisher's original
+    webcal:// URL in the cid query parameter. It is *not* the feed itself.
+    Only an exact single value hosted by the current publisher may be used.
+    Existing robots/SSRF/collection checks still apply to the recovered URL.
+    """
+    host = urlsplit(wrapper).hostname
+    parts = urlsplit(wrapper)
+    if host != 'calendar.google.com' or parts.path != '/calendar/render':
+        return None
+    values = parse_qs(parts.query).get('cid', [])
+    if len(values) != 1:
+        return None
+    raw = values[0]
+    if not raw.lower().startswith('webcal://') or len(raw) > 1000:
+        return None
+    candidate = 'https://' + raw[len('webcal://'):]
+    parsed = urlsplit(candidate)
+    if (parsed.hostname != urlsplit(page_url).hostname or parsed.username or parsed.password
+            or not public_source_url(candidate) or is_event_export(candidate)):
+        return None
+    return candidate
+
 
 class CalendarLinks(HTMLParser):
     def __init__(self, url):
         super().__init__(convert_charrefs=True)
         self.url = url
         self.links = {}
+        self.wrapped_links = {}
         self.calendar_pages = set()
         self.publisher_calendar_pages = set()
         self.growthzone_details = set()
@@ -66,6 +92,10 @@ class CalendarLinks(HTMLParser):
         if not public_source_url(url) or url == self.url or is_event_export(url):
             return
         parts = urlsplit(url)
+        if tag == 'a':
+            subscription = _wrapped_ical_subscription(self.url, url)
+            if subscription:
+                self.wrapped_links[subscription] = 'ical'
         if (tag == 'a' and parts.hostname == urlsplit(self.url).hostname
                 and not parts.query and re.fullmatch(
                     r'/events/details/[a-z0-9][a-z0-9-]*-[1-9][0-9]*', parts.path, re.I)):
@@ -164,7 +194,13 @@ def classify(url, payload, hint=None, endpoint_only=False, venue_website=False):
     if libcal:
         parser.links[libcal] = 'ical'
     links = {target: kind for target, kind in parser.links.items() if scoped_endpoint(url, target)}
-    if parser.links and not links:
+    # Prefer a first-party subscription when one is explicitly present. Google
+    # Calendar links are merely subscription wrappers; never create two source
+    # identities for equivalent direct and wrapped calendar choices.
+    if not links:
+        links = {target: kind for target, kind in parser.wrapped_links.items()
+                 if scoped_endpoint(url, target)}
+    if (parser.links or parser.wrapped_links) and not links:
         return evidence or review('calendar_filter_unverified', 'html')
     if len(links) > 1 and hint:
         preferred = {url: kind for url, kind in links.items() if kind == hint}
@@ -172,6 +208,15 @@ def classify(url, payload, hint=None, endpoint_only=False, venue_website=False):
             links = preferred
     if not links and len(parser.publisher_calendar_pages) == 1:
         return {'calendar_page': next(iter(parser.publisher_calendar_pages))}
+    # A publisher's unfiltered /upcoming-events landing page can explicitly
+    # link its one full /events index. The target is fetched and independently
+    # checked; never broaden a query-filtered or venue-scoped calendar.
+    if (not links and not urlsplit(url).query
+            and urlsplit(url).path.rstrip('/') == '/upcoming-events'
+            and len(parser.calendar_pages) == 1
+            and urlsplit(next(iter(parser.calendar_pages))).path.rstrip('/') == '/events'
+            and scoped_endpoint(url, next(iter(parser.calendar_pages)))):
+        return {'calendar_page': next(iter(parser.calendar_pages))}
     if (not links and venue_website and urlsplit(url).path in ('', '/')
             and len(parser.calendar_pages) == 1
             and scoped_endpoint(url, next(iter(parser.calendar_pages)))):
