@@ -56,10 +56,15 @@ def _run(profile=True, deny=False):
             return XML
         raise AssertionError("Unexpected publisher URL: " + url)
 
+    def collect_native(url, adapter, fetcher, *, deadline, profile=None, body=None):
+        if not profile or not profile.get("timezone"):
+            raise ValueError("source_timezone_required")
+        return [{"event_url": PAGE + "/details/community-gala-100"}]
+
     with patch("roomquest.feed_registration.supabase_rpc", side_effect=rpc), \
          patch("roomquest.feed_registration.fetch_publisher", side_effect=fetch), \
          patch("roomquest.feed_registration.provider_registration.collect",
-               return_value=[{"event_url": PAGE + "/details/community-gala-100"}]) as native:
+               side_effect=collect_native) as native:
         status = register("fixture-ticket")
     return status, receipts, urls, native.call_count
 
