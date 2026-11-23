@@ -1,5 +1,6 @@
 """Evidence for recurring collections at the submitted URL."""
 from collections import Counter
+from html.parser import HTMLParser
 import json
 import re
 from hashlib import md5
@@ -8,6 +9,71 @@ from urllib.parse import urlsplit, parse_qsl, urlunsplit
 from bs4 import BeautifulSoup
 
 EVENT_LINK = re.compile(r'/(?:events?|shows?|performances?|concerts?)/(?:detail/)?[^/?#]+', re.I)
+MAX_DOCUMENT_PREFIX = 64 * 1024
+XHTML_NAMESPACE = 'http://www.w3.org/1999/xhtml'
+XML_ROOTS = {'rss', 'feed', 'rdf', 'urlset', 'sitemapindex', 'arrayofeventdisplay'}
+
+
+class _DocumentRootFound(Exception):
+    pass
+
+
+class _DocumentStart(HTMLParser):
+    """Read only lexical document identity, without a DOM or XML entities."""
+    def __init__(self):
+        super().__init__(convert_charrefs=False)
+        self.root = None
+        self.attributes = {}
+        self.xml_declaration = False
+        self.xml_doctype = False
+
+    def handle_pi(self, data):
+        parts = data.split(None, 1)
+        self.xml_declaration |= bool(parts) and parts[0].rstrip('?').lower() == 'xml'
+
+    def handle_decl(self, declaration):
+        parts = declaration.split(None, 2)
+        if len(parts) >= 2 and parts[0].lower() == 'doctype':
+            self.xml_doctype |= parts[1].lower() != 'html'
+
+    def handle_starttag(self, tag, attributes):
+        self.root, self.attributes = tag, dict(attributes)
+        raise _DocumentRootFound
+
+
+def document_kind(payload):
+    """Separate declared XML/feeds from HTML before generic calendar discovery.
+
+    This bounded prefix check grants no parser/source capability. Known XML
+    adapters keep their own validation; an HTML root keeps XHTML compatible.
+    """
+    if not isinstance(payload, str):
+        return None
+    prefix = payload[:MAX_DOCUMENT_PREFIX].lstrip('\ufeff \t\r\n')
+    if prefix.startswith(('{', '[')):
+        return 'json'
+    if not prefix.startswith('<'):
+        return None
+    reader = _DocumentStart()
+    try:
+        reader.feed(prefix)
+    except _DocumentRootFound:
+        pass
+    except (AssertionError, ValueError):
+        return 'xml' if reader.xml_declaration or reader.xml_doctype else 'html'
+    root = reader.root
+    if root is None:
+        return 'xml' if reader.xml_declaration or reader.xml_doctype else 'html'
+    namespace = reader.attributes.get('xmlns')
+    if (root == 'html' and not reader.xml_doctype
+            and namespace in (None, '', XHTML_NAMESPACE)):
+        return 'html'
+    if (reader.xml_declaration or reader.xml_doctype or ':' in root
+            or root in XML_ROOTS or namespace not in (None, '', XHTML_NAMESPACE)):
+        return 'xml'
+    # Undeclared custom roots may be ordinary HTML component/fragment wrappers.
+    # Preserve that path; the existing collection checks still decide admission.
+    return 'html'
 
 
 def source_key(url):
@@ -41,7 +107,7 @@ def collection_evidence(url, body, obj=None):
         if rows:
             return {'p_outcome': 'verified', 'p_endpoint': url, 'p_type': 'squarespace'}
         return {'p_outcome': 'review', 'p_reason': 'no_extractable_events', 'p_type': 'squarespace'}
-    html = obj is None
+    html = obj is None and document_kind(body) != 'xml'
     soup = BeautifulSoup(body, 'html.parser') if html else None
     if html and soup.find('meta', attrs={'property': 'og:type', 'content': re.compile(r'^(?:event|event\.event)$', re.I)}):
         return {'p_outcome': 'review', 'p_reason': 'single_event_page', 'p_type': 'html'}

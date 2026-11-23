@@ -352,8 +352,8 @@ def test_deadline_is_checked_before_and_after_the_single_read(monkeypatch):
     assert fetch.call_count == 1
 
 
-def test_generic_classifier_and_other_source_scope_are_unchanged():
+def test_generic_classifier_keeps_rss_on_review_and_other_source_scope_is_unchanged():
     result = registration.classify(sow.URL, FIXTURE.read_text())
-    assert result['p_outcome'] == 'review' and result['p_reason'] == 'no_reusable_calendar'
+    assert result['p_outcome'] == 'review' and result['p_reason'] == 'xml_adapter_needed'
     assert LATEST not in listings.URLS
     assert not any('onlinesales.admin.cam.ac.uk' in value for value in listings.URLS)

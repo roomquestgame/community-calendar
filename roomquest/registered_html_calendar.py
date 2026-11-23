@@ -16,7 +16,7 @@ from urllib.parse import parse_qsl, urldefrag, urljoin, urlsplit, urlunsplit
 from bs4 import BeautifulSoup
 
 from roomquest import jsonld_adapter
-from roomquest.registration_formats import source_key
+from roomquest.registration_formats import document_kind, source_key
 
 VERSION = 'registered_html_jsonld_v1'
 CAPABILITY = 'registered_html_calendar_version'
@@ -57,6 +57,8 @@ def _html(payload):
         _fail('html_calendar_payload_invalid')
     if len(payload.encode('utf-8')) > MAX_HTML_BYTES:
         _fail('html_calendar_payload_limit')
+    if document_kind(payload) == 'xml':
+        _fail('html_calendar_payload_invalid')
     return BeautifulSoup(payload, 'html.parser')
 
 
