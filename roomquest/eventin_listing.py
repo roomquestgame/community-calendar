@@ -150,6 +150,24 @@ def event_photo(soup, title, event_url):
             continue
         if value := candidate(node.get('src')):
             matches.add(value)
+    # Eventin templates can render the event's featured image in an ordinary
+    # WordPress figure outside the plugin's known image wrappers. Fall back to
+    # the actual fetched detail's images, never a different page or a new fetch.
+    # The same exact publisher host, upload path, title stems and unique
+    # candidate rules above still apply. Exclude related/suggested event cards.
+    if not matches:
+        for node in soup.select('img[src]')[:60]:
+            if node.find_parent(['nav', 'aside', 'footer', 'header']):
+                continue
+            if any(
+                'related' in ' '.join(parent.get('class') or []).casefold()
+                or 'sidebar' in ' '.join(parent.get('class') or []).casefold()
+                or 'recommend' in ' '.join(parent.get('class') or []).casefold()
+                for parent in node.parents if getattr(parent, 'attrs', None)
+            ):
+                continue
+            if value := candidate(node.get('src')):
+                matches.add(value)
     return next(iter(matches)) if len(matches) == 1 else None
 
 
