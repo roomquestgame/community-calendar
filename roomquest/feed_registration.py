@@ -11,6 +11,7 @@ from roomquest.registration_formats import collection_evidence, document_kind, p
 
 from roomquest.preview_worker import PreviewError, fetch_publisher, public_source_url, supabase_rpc
 from roomquest.publisher_pacing import capture_publisher_pacing
+from roomquest.registration_auto_defer import auto_defer_nonactionable
 
 ACCEPT = 'text/calendar, application/json, application/xml, text/xml, text/html;q=0.8'
 DENIALS = {'robots_denied', 'publisher_http_401', 'publisher_http_403'}
@@ -453,5 +454,8 @@ def register(ticket):
                 result = review(reason if re.fullmatch(r'[a-z0-9_]{1,100}', reason) else 'publisher_check_failed')
     if url != candidate['url']:
         result.setdefault('p_endpoint', url)
+    # Do not label a source as requiring human review just because it is
+    # empty or lacks a supported extraction adapter today.
+    result = auto_defer_nonactionable(result)
     recorded = supabase_rpc('community_collector_finish_registration', {**args, **result}, timeout=8)
     return {'outcome': result['p_outcome'] if recorded else 'lease_expired'}
