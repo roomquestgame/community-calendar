@@ -26,7 +26,10 @@ CANDIDATE_VERSION = 'publisher_event_html_v2'
 MAX_CONCURRENCY = 10
 MAX_PER_HOST = 3
 RUN_SECONDS = 40
-CLAIM_TIMEOUT = 3
+# Queue claims can scan across many approved publishers. Give the database
+# enough time to select a bounded wave instead of turning a healthy backlog
+# into repeated three-second dispatch failures.
+CLAIM_TIMEOUT = 8
 RESULT_TIMEOUT = 3
 FINISH_TIMEOUT = 5
 # A fresh claim must have time for its entire bounded probe and result RPC.
