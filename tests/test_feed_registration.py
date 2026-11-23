@@ -242,7 +242,7 @@ def test_verified_venue_linked_html_calendar_can_recover_without_new_registratio
     assert all(call.kwargs['respect_robots'] for call in fetch.call_args_list)
 
 
-def test_verified_venue_linked_html_with_no_verified_feed_retains_original_retry_endpoint():
+def test_verified_venue_linked_html_without_verified_feed_does_not_promote_endpoint():
     venue = 'https://calendar.example.org/'
     listing = 'https://calendar.example.org/events/'
     html = '<a href="/events/">Upcoming events</a>'
@@ -254,7 +254,7 @@ def test_verified_venue_linked_html_with_no_verified_feed_retains_original_retry
         assert register('ticket') == {'outcome': 'retry'}
     result = rpc.call_args.args[1]
     assert result['p_reason'] == 'html_adapter_needed'
-    assert result['p_endpoint'] == listing
+    assert 'p_endpoint' not in result  # Never persist an unverified child URL as a feed.
     assert fetch.call_count == 2
 
 
