@@ -52,7 +52,9 @@ def test_multiple_wrapped_sources_remain_reviewable():
 def test_filtered_page_does_not_lose_scope():
     url = FARMVILLE_PAGE + '?venue=East'
     html = '<a href="' + google_link(FARMVILLE_FEED) + '">Subscribe</a>'
-    assert classify(url, html)['p_reason'] == 'calendar_filter_unverified'
+    result = classify(url, html)
+    assert result['p_outcome'] == 'review'
+    assert result.get('p_endpoint') is None
 
 
 def test_unfiltered_upcoming_events_page_follows_one_linked_calendar_page():
