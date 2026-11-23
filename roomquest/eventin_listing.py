@@ -107,6 +107,52 @@ def cards(soup, today):
     return result
 
 
+
+def event_photo(soup, title, event_url):
+    """Select one event-specific Eventin photograph from the fetched detail.
+
+    The caller has already verified title, venue, timezone and calendar-link
+    identity. Avoid branding/related-event photos and do not fetch extra URLs.
+    """
+    from roomquest.registered_native_content import image_candidate
+    from urllib.parse import urljoin
+    expected = [part for part in re.findall(r'[a-z0-9]+', title.casefold())
+                if len(part) >= 4 and part not in ('with', 'from', 'this', 'that')]
+    if len(expected) < 2:
+        return None
+
+    def candidate(raw):
+        if not isinstance(raw, str) or not raw.strip():
+            return None
+        value = urljoin(event_url, raw.strip())
+        parsed = urlsplit(value)
+        if (parsed.scheme != 'https' or parsed.netloc != 'cambridgeppf.org'
+                or '/wp-content/uploads/' not in parsed.path
+                or not re.search(r'\\.(?:jpe?g|png|webp)(?:$)', parsed.path, re.I)
+                or image_candidate(value) != value):
+            return None
+        stem = parsed.path.rsplit('/', 1)[-1].rsplit('.', 1)[0]
+        parts = [part for part in re.findall(r'[a-z0-9]+', stem.casefold())
+                 if len(part) >= 4]
+        # "Healthy Walking" may appear as "healthy-walkers-square.jpg".
+        return value if sum(any(part[:4] == term[:4] for part in parts)
+                            for term in expected) >= 2 else None
+
+    matches = set()
+    for node in soup.select('meta[property="og:image"],meta[name="twitter:image"]')[:3]:
+        if value := candidate(node.get('content')):
+            matches.add(value)
+    for node in soup.select('.etn-event-thumb img[src],.etn-event-image img[src],'
+                            '.etn-event-content-body img[src],'
+                            '.etn-event-single-content img[src],'
+                            'img.wp-post-image[src]')[:12]:
+        if node.find_parent(['nav', 'aside', 'footer', 'header']):
+            continue
+        if value := candidate(node.get('src')):
+            matches.add(value)
+    return next(iter(matches)) if len(matches) == 1 else None
+
+
 def detail(payload, expected):
     soup = BeautifulSoup(payload, 'html.parser')
     if (text(soup, '.etn-event-entry-title') != expected['title']
@@ -144,7 +190,7 @@ def detail(payload, expected):
             or (clock(hours[1]), clock(hours[2])) != (start.time(), end.time())
             or not timedelta(0) < end - start <= timedelta(days=60)):
         raise ValueError('eventin_schedule_conflict')
-    return start, end, text(soup, '.etn-event-content-body')
+    return start, end, text(soup, '.etn-event-content-body'), event_photo(soup, expected['title'], expected['url'])
 
 
 def family_slots(start, end, narrative):
@@ -173,6 +219,7 @@ def rows(soup, fetch, today, deadline_at):
             continue  # Includes the publisher's explicitly undecided location.
         venue, street = VENUES[item['location']]
         narrative = item['narrative']
+        photo = None
         intervals = timed_ranges(item['day'], narrative)
         walking = (item['title'] == 'Healthy Walking at Wandlebury'
                    and item['location'] == 'Wandlebury Country Park, Cambridge, CB22 3AE'
@@ -185,12 +232,13 @@ def rows(soup, fetch, today, deadline_at):
             intervals = [(datetime.combine(item['day'], first), datetime.combine(item['day'], last), '')
                          for first, last in series[0]]
             narrative = series[1]
+            photo = series[2]
         elif intervals is None:
             if len(details) >= MAX_DETAILS:
                 raise ValueError('eventin_calendar_detail_limit')
             if deadline_at is not None and monotonic() >= deadline_at:
                 raise ValueError('collection_deadline')
-            start, end, narrative = detail(fetch(url, 'text/html'), item)
+            start, end, narrative, photo = detail(fetch(url, 'text/html'), {**item, 'url': url})
             details[url] = True
             if walking:
                 # The detail explicitly says EVERY Thursday and names both
@@ -202,7 +250,7 @@ def rows(soup, fetch, today, deadline_at):
                         or (start.time(), end.time()) != (clock('10am'), clock('11am'))
                         or item['day'].weekday() != 3):
                     raise ValueError('eventin_series_schedule_unverified')
-                series = ([(clock('10am'), clock('11am')), (clock('10.30am'), clock('11am'))], narrative)
+                series = ([(clock('10am'), clock('11am')), (clock('10.30am'), clock('11am'))], narrative, photo)
                 intervals = [(datetime.combine(item['day'], first), datetime.combine(item['day'], last), '')
                              for first, last in series[0]]
             else:
@@ -215,4 +263,7 @@ def rows(soup, fetch, today, deadline_at):
                          tz='Europe/London', retain_until_end=True)
             if row:
                 row['description'] = description(narrative)
+                if intervals is not None and (walking or url in details) and photo:
+                    row.update(image_url=photo, image_provenance='publisher_event_candidates_v1',
+                               image_evidence_url=url)
                 yield row

@@ -28,6 +28,12 @@ ROSEMONT_REVIEWED_FEATURED_IMAGE = (
 def family(source_key, event_url):
     """Bind an enrolled publisher family to its own canonical event link."""
     try:
+        # This exact registered Cambridge Eventin HTML calendar has owner-approved
+        # publisher photographs and distinct, already verified event detail URLs.
+        if source_key == 'municipal_bd1475b981e559e2d1bcf128':
+            return ('cambridge_ppf_eventin' if re.fullmatch(
+                r'https://cambridgeppf[.]org/etn/[a-z0-9-]+(?:/[a-z0-9-]+)?/',
+                event_url or '') else None)
         # Direct publisher check before unrelated optional collector imports.
         if source_key == "the_landing_scotts_valley_ca":
             from roomquest.santa_cruz_landing import event_url as landing_event_url
@@ -350,6 +356,15 @@ def image_url(value, publisher):
         return None
     if isinstance(publisher, str) and publisher.startswith('hall_ga_civic:'):
         return None  # Calendar supplies no event photos; no extra rights inferred.
+    if publisher == 'cambridge_ppf_eventin':
+        # Strict first-party WordPress image path and filename, no arbitrary CDN.
+        # The trusted Eventin parser already bound this to a specific detail.
+        return value if re.fullmatch(
+            r'https://cambridgeppf[.]org/wp-content/uploads/[0-9]{4}/[0-9]{2}/'
+            r'[A-Za-z0-9][A-Za-z0-9_-]{2,180}[.](?:jpe?g|png|webp)', value, re.I
+        ) and not re.search(
+            r'(?:^|[-_/])(?:logo|favicon|avatar|pixel|tracking)(?:[-_.]|$)', value, re.I
+        ) else None
     if publisher == "save_our_shores":
         from roomquest.santa_cruz_save_our_shores import photo_url
         return photo_url(value)  # Owner image candidate; normal downstream rights/byte gates apply.
