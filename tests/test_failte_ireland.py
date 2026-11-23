@@ -76,6 +76,89 @@ def test_explicit_csv_facts_keep_full_native_description_and_exact_link_provenan
     native.validate_record(row, failte.registration_source())
 
 
+def test_current_official_schema_keeps_explicit_clocks_and_ignores_images():
+    diagnostics = {}
+    rows = failte.parse((FIXTURES / 'current-schema.csv').read_text(),
+                       failte.registration_source(), diagnostics=diagnostics)
+    assert [row['starts_at'] for row in rows] == [
+        '2026-11-23T19:30:00+00:00', '2026-12-02T19:30:00+00:00']
+    assert diagnostics['rows'] == 3
+    assert diagnostics['omitted'] == [{'csv_record': 3, 'reason': 'missing_start_time'}]
+    assert all(row['lat'] is not None and row['lng'] is not None for row in rows)
+    for row in rows:
+        native.validate_record(row, failte.registration_source())
+        assert row['registered_native_content']['image_field'] is None
+        assert not any(key in row for key in failte.IMAGE_FIELDS)
+
+
+def test_day_month_dates_are_not_guessed_as_us_month_day():
+    [row] = parse([item(**{'Start Date': '05/12/2026', 'End Date': '05/12/2026'})])
+    assert row['starts_at'] == '2026-12-05T19:00:00+00:00'
+    assert parse([item(**{'Start Date': '12/05/2026', 'End Date': '12/05/2026'})]) == []
+
+
+@pytest.mark.parametrize('value', ['12/31/2026', '31/02/2026', '5/12/2026', '05/12/26'])
+def test_invalid_or_unreviewed_date_shapes_do_not_certify_valid_prefix(value):
+    with pytest.raises(ValueError, match='failte_date_unverified'):
+        parse([item(), item(**{'Start Date': value})])
+
+
+@pytest.mark.parametrize('fields', [failte.FIELDS + ('image',),
+                                  failte.FIELDS + ('Image', 'Image'),
+                                  failte.FIELDS + ('Image', 'Unreviewed Field')])
+def test_optional_image_is_not_an_open_ended_schema_exception(fields):
+    with pytest.raises(ValueError, match='failte_csv_schema_unverified'):
+        failte.parse(payload([item()], fields=fields), failte.registration_source())
+
+
+def test_current_schema_still_uses_single_normal_native_staging_batch(monkeypatch):
+    body = (FIXTURES / 'current-schema.csv').read_text()
+    fetch = Mock(return_value=body)
+    database = Mock(side_effect=lambda operation, args, **kwargs:
+                    len(args['p_events']) if operation == 'community_collector_record_staged_events' else True)
+    monkeypatch.setattr(preview_worker, 'fetch_publisher', fetch)
+    monkeypatch.setattr(preview_worker, 'supabase_rpc', database)
+    monkeypatch.setattr(preview_worker, 'current_snapshot', lambda: None)
+    with preview_worker.capture_publisher_pacing() as pacing:
+        result = preview_worker._process_claimed_source_with_pacing(failte.registration_source(), pacing)
+    assert result['complete'] == 1 and result['staged'] == 2
+    assert fetch.call_count == 1
+    writes = [call.args[1] for call in database.call_args_list
+              if call.args[0] == 'community_collector_record_staged_events']
+    assert len(writes) == 1 and len(writes[0]['p_events']) == 2
+    assert writes[0]['p_registered_native_content_version'] == 1
+    assert database.call_args.args[0] == 'community_collector_record_preview_v3'
+    assert database.call_args.args[1]['p_future_count'] == 2
+
+
+def test_complete_csv_above_ordinary_three_mb_limit_is_parsed_without_prefix_loss():
+    date_only = item(**{'Description': 'Synthetic source narrative. ' * 60,
+                        'Start Date': '05/12/2026', 'End Date': '05/12/2026',
+                        'Start Time': '', 'End Time': ''})
+    body = payload([date_only] * 2000 + [item()])
+    assert 3_000_000 < len(body.encode()) < failte.MAX_BYTES
+    diagnostics = {}
+    assert len(failte.parse(body, failte.registration_source(), diagnostics=diagnostics)) == 1
+    assert diagnostics['rows'] == 2001 and len(diagnostics['omitted']) == 2000
+
+
+def test_large_response_allowance_requires_exact_guarded_failte_endpoint():
+    limit = preview_worker._publisher_body_limit
+    assert limit(failte.URL, failte.ACCEPT, (failte.HOST,), True) == 8_000_000
+    cases = [
+        (failte.URL + '?limit=1000', failte.ACCEPT, (failte.HOST,), True),
+        (failte.URL + '/', failte.ACCEPT, (failte.HOST,), True),
+        (failte.URL.replace('/csv', '/json'), failte.ACCEPT, (failte.HOST,), True),
+        ('https://other.example.ie/events/csv', failte.ACCEPT, (failte.HOST,), True),
+        (failte.URL, 'text/html', (failte.HOST,), True),
+        (failte.URL, failte.ACCEPT, None, True),
+        (failte.URL, failte.ACCEPT, (failte.HOST, 'other.example.ie'), True),
+        (failte.URL, failte.ACCEPT, (failte.HOST,), False),
+    ]
+    for args in cases:
+        assert limit(*args) == 3_000_000
+
+
 def test_recurring_flag_does_not_generate_unpublished_dates_or_repeat_csv_rows():
     a = item(**{'Recurring Dates': 'Yes'})
     b = item(**{'Recurring Dates': 'Yes', 'Start Date': '2026-12-12T00:00:00',

@@ -1,4 +1,4 @@
-# Fáilte Ireland historical schema fixture
+# Fáilte Ireland CSV schema fixtures
 
 `historical-schema.csv` is derived from the official CKAN datastore response
 recorded in `manifest.json`. It is **not** a fresh response from the live CSV
@@ -14,3 +14,17 @@ shifted to manufacture current publisher evidence.
 
 The manifest records the original response SHA-256, fixture SHA-256 and field
 schema so the reduced fixture can be distinguished from the source capture.
+
+## Current official CSV
+
+`current-schema.csv` is a three-row reduction of the single successful exact
+CSV request made after the quota reset on 23 November 2026. The current twenty
+headers include optional `Image`; dates use strict `DD/MM/YYYY`. Two published
+clock-bearing examples retain their dates, venue facts and event URLs. A third
+example lacks a start time and must remain omitted. Descriptions and Image
+values are explicitly synthetic, and phone fields are blanked. The fixture does
+not grant image reuse or manufacture missing times.
+
+`current-manifest.json` records the original body's hash and the reduced
+fixture hash, fresh response metadata and complete-capture counts. The full
+4.85 MB publisher response is intentionally not stored in this repository.
