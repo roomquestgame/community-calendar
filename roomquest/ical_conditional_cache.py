@@ -17,6 +17,16 @@ from roomquest.incremental_snapshot import _cacheable, _validator, request_hash
 _LOG = logging.getLogger(__name__)
 _current = ContextVar("eq_ical_conditional_cache", default=None)
 _MAX_BYTES = 131072
+# Mirror the five exact database pilot source keys to avoid adding a read RPC
+# to every iCalendar worker. The database still validates source ID, lease,
+# approval, rights and exact source_key before returning cached bytes.
+_PILOT_SOURCE_KEYS = frozenset({
+    "municipal_mapsee_48489e8f5c906f7610d30197",
+    "municipal_df6fb09e5e9df3f197946372",
+    "municipal_mapsee_c3384b4db5c0226f2d7dc0bb",
+    "municipal_mapsee_a4d675992e7b41375e3f0672",
+    "municipal_mapsee_ed3b97dd2d6526767fe2da5f",
+})
 
 
 def _valid_ical(text):
@@ -157,6 +167,7 @@ def capture(source, snapshot, collection_context, rpc):
     if (snapshot is not None and isinstance(collection_context, dict)
             and collection_context.get("p_category") == "ical"
             and source.get("kind") == "ical" and source.get("platform_adapter") == "ical"
+            and source.get("source_key") in _PILOT_SOURCE_KEYS
             and isinstance(source.get("feed_url"), str)):
         cache = ConditionalCache(source, snapshot, collection_context, rpc)
         cache.initialize()
