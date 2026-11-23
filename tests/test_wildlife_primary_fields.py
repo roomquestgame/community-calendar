@@ -132,7 +132,8 @@ def test_related_status_description_location_and_photo_cannot_supply_main_fields
 @pytest.mark.parametrize('kind', ['crochet', 'reserve'])
 def test_multiple_main_location_entities_remain_ambiguous(kind):
     def duplicate(soup):
-        field = soup.select_one('.node__header .field--name-field-event-location')
+        field = soup.select_one('.node__header .field--name-field-event-location, '
+                                '.node__header .field--name-field-event-reserve')
         field.append(fragment(str(field.select_one('[itemprop="location"]'))))
     assert parse(kind, mutate(kind, duplicate)) == ([], 'wildlife_event_location_unresolved')
 
@@ -204,3 +205,39 @@ def test_required_reserve_identity_and_native_point_cannot_be_absent(selector):
         soup.select_one('.node__header ' + selector).decompose()
     assert parse('reserve', mutate('reserve', remove)) == (
         [], 'wildlife_event_location_unresolved')
+
+
+@pytest.mark.parametrize('kind', ['crochet', 'reserve'])
+def test_places_in_both_native_wrappers_remain_ambiguous(kind):
+    def add_other(soup):
+        other_kind = 'reserve' if kind == 'crochet' else 'crochet'
+        other = BeautifulSoup(BODIES[other_kind], 'html.parser')
+        field = other.select_one('.node__header .field--name-field-event-location, '
+                                 '.node__header .field--name-field-event-reserve')
+        soup.select_one('.node__header .node__event-location').append(fragment(str(field)))
+    assert parse(kind, mutate(kind, add_other)) == ([], 'wildlife_event_location_unresolved')
+
+
+def test_related_reserve_wrapper_cannot_supply_or_override_the_primary_venue():
+    def add_related_reserve(soup):
+        other = BeautifulSoup(BODIES['reserve'], 'html.parser')
+        field = other.select_one('.field--name-field-event-reserve')
+        soup.select_one('.node__related__wrapper > article').append(fragment(str(field)))
+    body = mutate('crochet', add_related_reserve)
+    [row], reason = parse(body=body)
+    assert reason == 'included' and row['venue_name'] == 'Far Ings Visitor Centre'
+    soup = BeautifulSoup(body, 'html.parser')
+    soup.select_one('.node__header .field--name-field-event-location').decompose()
+    assert parse(body=str(soup)) == ([], 'wildlife_event_location_unresolved')
+
+
+def test_reserve_alias_does_not_accept_an_unreviewed_generic_place():
+    body = BODIES['crochet'].replace('field--name-field-event-location',
+                                   'field--name-field-event-reserve', 1)
+    assert parse(body=body) == ([], 'wildlife_event_location_unresolved')
+
+
+def test_unknown_outer_place_fields_remain_unreviewed():
+    body = BODIES['reserve'].replace('field--name-field-event-reserve',
+                                   'field--name-field-unreviewed-reserve')
+    assert parse('reserve', body) == ([], 'wildlife_event_location_unresolved')

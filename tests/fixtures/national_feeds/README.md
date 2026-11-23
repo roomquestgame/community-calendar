@@ -93,3 +93,17 @@ Its date/time fields are exact observed snippets; surrounding narrative/title
 are synthetic controls. This variant requires one unambiguous native Place,
 name, address and complete valid publisher point. It cannot borrow fields
 from elsewhere in the Event or infer a venue.
+
+A subsequent one-page live check found that Boothby's enclosing venue field
+is `field--name-field-event-reserve`, under
+`node__header > node__header_inner > node__event-location`, with a native
+`Location:` label. The initial reduced fixture had copied the Place internals
+but assumed the generic `event-location` outer field. It therefore did not
+prove that this particular reserve event was reachable in the live parser.
+The fixture now preserves the observed outer field too, and reproduces the
+failure before the alias correction.
+
+Only the observed reserve alias is added. The parser still requires exactly
+one main Place across both wrappers, and the new wrapper must use the strict
+reserve/address-string validation. Tests reject duplicate cross-wrapper
+places, generic or unknown reserve shapes, and related-card reserve leakage.
