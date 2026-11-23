@@ -128,7 +128,7 @@ def event_photo(soup, title, event_url):
         parsed = urlsplit(value)
         if (parsed.scheme != 'https' or parsed.netloc != 'cambridgeppf.org'
                 or '/wp-content/uploads/' not in parsed.path
-                or not re.search(r'\\.(?:jpe?g|png|webp)(?:$)', parsed.path, re.I)
+                or not re.search(r'\.(?:jpe?g|png|webp)(?:$)', parsed.path, re.I)
                 or image_candidate(value) != value):
             return None
         stem = parsed.path.rsplit('/', 1)[-1].rsplit('.', 1)[0]
