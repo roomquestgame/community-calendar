@@ -258,3 +258,28 @@ def test_eventin_general_fallback_rejects_secondary_event_artwork(wrapper):
     rows = collect(body, Mock(return_value=page + wrapper.format(photo)))
     assert len(rows) == 2
     assert all(row.get('image_url') is None for row in rows)
+
+
+
+def test_actual_cambridge_walking_jpg_filename_matches_image_parser():
+    """Regression for incorrect double escaping of the image-extension regex."""
+    from bs4 import BeautifulSoup
+    url = ('https://cambridgeppf.org/etn/healthy-walking-at-wandlebury-2/'
+           'healthy-walking-at-wandlebury-5/')
+    html = ('<main><h2 class="etn-event-entry-title">Healthy Walking at Wandlebury</h2>'
+            '<figure><img src="https://cambridgeppf.org/wp-content/uploads/'
+            '2025/09/healthy-walkers-square.jpg"></figure></main>')
+    result = etn.event_photo(BeautifulSoup(html, 'html.parser'),
+                             'Healthy Walking at Wandlebury', url)
+    assert result == CAMBRIDGE_WALK_IMAGE
+
+
+def test_real_jpg_path_guard_excludes_unrelated_uploads():
+    from bs4 import BeautifulSoup
+    url = ('https://cambridgeppf.org/etn/healthy-walking-at-wandlebury-2/'
+           'healthy-walking-at-wandlebury-5/')
+    for name in ('logo.jpg', 'healthy-walkers-square.svg', 'walking-festival.jpg'):
+        html = ('<main><figure><img src="https://cambridgeppf.org/'
+                'wp-content/uploads/2025/09/' + name + '"></figure></main>')
+        assert etn.event_photo(BeautifulSoup(html, 'html.parser'),
+                               'Healthy Walking at Wandlebury', url) is None
