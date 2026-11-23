@@ -103,6 +103,30 @@ def test_four_pages_complete_before_details_and_horizon_filter_keeps_original_sc
     assert len(urls) == 19  # Fits the normal 35-second registration budget at ordinary pacing.
     assert all(row['registered_native_content']['feed_url'] == WESTONBIRT for row in rows)
     assert all(row['event_url'] not in diagnostics['outside_horizon'] for row in rows)
+    assert {row['venue_name'] for row in rows} == {'Westonbirt, The National Arboretum'}
+
+
+def test_array_venue_name_preserves_full_name_and_occurrence_identity(pages):
+    url = BASE + '/westonbirt/nordic-walk'
+    soup = BeautifulSoup(pages[url], 'html.parser')
+    event = json.loads(soup.select_one('script[type="application/ld+json"]').string)['@graph'][0]
+    venue = deepcopy(event['location'])
+    assert venue['name'] == ['Westonbirt', 'The National Arboretum']
+    rows = forestry.detail(source(WESTONBIRT), pages[url], url, diagnostics=audit())
+    venue['name'] = 'Westonbirt, The National Arboretum'
+    equivalent_text = change_event(pages[url], location=venue)
+    assert rows
+    assert rows == forestry.detail(source(WESTONBIRT), equivalent_text, url, diagnostics=audit())
+
+
+@pytest.mark.parametrize('name', [[], ['Westonbirt', ' '], ['Westonbirt', {'name': 'Unknown'}]])
+def test_invalid_array_venue_name_is_not_stringified(pages, name):
+    url = BASE + '/westonbirt/nordic-walk'
+    soup = BeautifulSoup(pages[url], 'html.parser')
+    venue = json.loads(soup.select_one('script[type="application/ld+json"]').string)['@graph'][0]['location']
+    venue['name'] = name
+    with pytest.raises(ValueError, match='forestry_venue_facts_unverified'):
+        forestry.detail(source(WESTONBIRT), change_event(pages[url], location=venue), url, diagnostics=audit())
 
 
 def test_registration_and_recurring_worker_share_the_same_html_native_contract(pages, monkeypatch):

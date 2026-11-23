@@ -403,7 +403,14 @@ def _bounds(event):
 
 def _venue(event, base, scope):
     venue = event.get('location')
-    if (not isinstance(venue, dict) or not plain(venue.get('name'))
+    name = venue.get('name') if isinstance(venue, dict) else None
+    if isinstance(name, list):
+        # Drupal publishes compound place names as ordered text components.
+        # Preserve every component without rendering Python list syntax.
+        if not name or not all(isinstance(part, str) and plain(part) for part in name):
+            _fail('venue_facts_unverified')
+        name = ', '.join(plain(part) for part in name)
+    if (not isinstance(venue, dict) or not isinstance(name, str) or not plain(name)
             or _key(_target(venue.get('url'), base)) != _key(scope)):
         _fail('venue_scope_conflict')
     facts = venue.get('address')
@@ -425,7 +432,7 @@ def _venue(event, base, scope):
             _fail('venue_facts_unverified')
     except (TypeError, KeyError, ValueError):
         _fail('venue_facts_unverified')
-    return plain(venue['name']), address(facts), plain(facts.get('addressLocality')), lat, lng
+    return plain(name), address(facts), plain(facts.get('addressLocality')), lat, lng
 
 
 def _description(soup, event):

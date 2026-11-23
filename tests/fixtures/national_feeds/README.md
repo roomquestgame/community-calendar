@@ -16,3 +16,19 @@ its own date/time/status. Both feeds use RPDE items/next/license, including
 updates and tombstones. Bookwhen uses the same separate-stream shape; its
 PartialSchedule must never be extrapolated. Tests synthesize pagination tails,
 outages, late deletion, cursor escapes and transactional replay explicitly.
+
+## Published Wildlife clock syntax
+
+`wildlife-published-clocks.json` preserves the exact visible `Time` strings
+from two official Lincolnshire event pages inspected on 23 November 2026:
+`1pm to 3.30pm` and `1.30pm to 2.30pm`. The source URLs and visible dates are
+recorded alongside them. Tests insert those strings into the existing
+synthetic Drupal fixture; the fixture's venue remains synthetic test data.
+
+The expected datetimes are explicit test controls derived from the visible
+date and time, not a fresh capture of the publisher's hidden datetime
+attributes. The web extraction did not expose raw attributes, and the local
+guarded network reader could not resolve the publisher. This fixture proves
+the clock-syntax regression and preserves datetime/date corroboration; it
+does not establish a successful live Lincolnshire capture or explain the
+Northumberland zero-output capture.
