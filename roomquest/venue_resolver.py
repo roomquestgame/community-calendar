@@ -18,6 +18,7 @@ import requests
 
 from roomquest.preview_worker import (
     PreviewError, public_source_url, validate_public_dns, supabase_rpc,
+    fetch_publisher,
 )
 
 RPC = "community_collector_venues"
@@ -161,45 +162,27 @@ def next_links(html: str, url: str, claim: dict) -> list[str]:
 
 
 def fetch_page(url: str) -> str:
-    """Bound all redirects, DNS destinations, response bytes and HTTP time."""
-    current = url
-    deadline = monotonic() + 8
-    with requests.Session() as session:
-        for _ in range(3):
-            remaining = deadline - monotonic()
-            if remaining < 1:
-                raise PreviewError("venue_page_timeout")
-            if not public_source_url(current):
-                raise PreviewError("invalid_venue_url")
-            validate_public_dns(urlparse(current).hostname or "")
-            with session.get(current, timeout=(min(2, remaining), min(TIMEOUT, remaining)), stream=True, allow_redirects=False,
-                             headers={"User-Agent": "RoomQuestCommunityCalendar/0.2",
-                                      "Accept": "text/html,application/ld+json"}) as response:
-                if response.status_code in (301, 302, 303, 307, 308):
-                    redirected = urljoin(current, response.headers.get("Location", ""))
-                    if urlparse(redirected).hostname != urlparse(current).hostname:
-                        # www/non-www canonicalization is the only host change.
-                        hosts = {(urlparse(u).hostname or "").removeprefix("www.")
-                                 for u in (current, redirected)}
-                        if len(hosts) != 1:
-                            raise PreviewError("venue_redirect_host")
-                    current = redirected
-                    continue
-                if response.status_code != 200:
-                    raise PreviewError("venue_page_unavailable")
-                if int(response.headers.get("Content-Length") or 0) > MAX_BODY:
-                    raise PreviewError("venue_page_oversized")
-                body, size = [], 0
-                for chunk in response.iter_content(16384):
-                    if monotonic() >= deadline:
-                        raise PreviewError("venue_page_timeout")
-                    size += len(chunk)
-                    if size > MAX_BODY:
-                        raise PreviewError("venue_page_oversized")
-                    body.append(chunk)
-                return b"".join(body).decode(response.encoding or "utf-8", errors="replace")
-    raise PreviewError("venue_redirect_limit")
+    """Use the registration collector's robots-aware bounded transport.
 
+    Venue lookup must not bypass robots/crawl delay merely because an event
+    source is registered. The shared publisher transport checks DNS, redirects,
+    policies, deadlines and per-host pacing before returning a public page.
+    """
+    if not public_source_url(url):
+        raise PreviewError("invalid_venue_url")
+    host = urlparse(url).hostname or ""
+    validate_public_dns(host)
+    raw = fetch_publisher(
+        url, "text/html,application/ld+json", respect_robots=True,
+        deadline_at=monotonic() + 8, allowed_hosts=(host,),
+    )
+    if isinstance(raw, bytes):
+        raw = raw.decode("utf-8", errors="replace")
+    if not isinstance(raw, str):
+        raise PreviewError("venue_page_unavailable")
+    if len(raw.encode("utf-8")) > MAX_BODY:
+        raise PreviewError("venue_page_oversized")
+    return raw
 
 def resolve(claim: dict, *, fetcher=None, clock=None, deadline=None) -> dict | None:
     fetcher, clock = fetcher or fetch_page, clock or monotonic
@@ -243,7 +226,16 @@ def run_batch(*, database=None, resolver=None, clock=None, deadline_seconds=15) 
             else:
                 database("fail", {**identity, "reason": "needs_review"})
                 stats["review"] += 1
-        except (PreviewError, requests.RequestException, ValueError, OSError):
+        except PreviewError as exc:
+            # Publisher deny/robots restrictions are review holds, not
+            # retryable generic network outages; never test a bypass URL.
+            blocked = str(exc) in {
+                "robots_denied", "publisher_http_401", "publisher_http_403",
+            }
+            database("fail", {**identity, "reason":
+                              "needs_review" if blocked else "page_unavailable"})
+            stats["review" if blocked else "errors"] += 1
+        except (requests.RequestException, ValueError, OSError):
             database("fail", {**identity, "reason": "page_unavailable"})
             stats["errors"] += 1
     return stats
