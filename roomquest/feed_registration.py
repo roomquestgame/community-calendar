@@ -51,22 +51,24 @@ def _wrapped_ical_subscription(page_url, wrapper):
     Only an exact single value hosted by the current publisher may be used.
     Existing robots/SSRF/collection checks still apply to the recovered URL.
     """
-    host = urlsplit(wrapper).hostname
-    parts = urlsplit(wrapper)
-    if host != 'calendar.google.com' or parts.path != '/calendar/render':
+    try:
+        parts = urlsplit(wrapper)
+        if parts.hostname != 'calendar.google.com' or parts.path != '/calendar/render':
+            return None
+        values = parse_qs(parts.query).get('cid', [])
+        if len(values) != 1:
+            return None
+        raw = values[0]
+        if not raw.lower().startswith('webcal://') or len(raw) > 1000:
+            return None
+        candidate = 'https://' + raw[len('webcal://'):]
+        parsed = urlsplit(candidate)
+        if (parsed.hostname != urlsplit(page_url).hostname or parsed.username or parsed.password
+                or not public_source_url(candidate) or is_event_export(candidate)):
+            return None
+        return candidate
+    except ValueError:
         return None
-    values = parse_qs(parts.query).get('cid', [])
-    if len(values) != 1:
-        return None
-    raw = values[0]
-    if not raw.lower().startswith('webcal://') or len(raw) > 1000:
-        return None
-    candidate = 'https://' + raw[len('webcal://'):]
-    parsed = urlsplit(candidate)
-    if (parsed.hostname != urlsplit(page_url).hostname or parsed.username or parsed.password
-            or not public_source_url(candidate) or is_event_export(candidate)):
-        return None
-    return candidate
 
 
 class CalendarLinks(HTMLParser):
