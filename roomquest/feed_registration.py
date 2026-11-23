@@ -50,6 +50,7 @@ class CalendarLinks(HTMLParser):
         self.links = {}
         self.calendar_pages = set()
         self.publisher_calendar_pages = set()
+        self.growthzone_details = set()
 
     def handle_starttag(self, tag, attributes):
         if tag not in ('link', 'a', 'input'):
@@ -64,6 +65,10 @@ class CalendarLinks(HTMLParser):
         if not public_source_url(url) or url == self.url or is_event_export(url):
             return
         parts = urlsplit(url)
+        if (tag == 'a' and parts.hostname == urlsplit(self.url).hostname
+                and not parts.query and re.fullmatch(
+                    r'/events/details/[a-z0-9][a-z0-9-]*-[1-9][0-9]*', parts.path, re.I)):
+            self.growthzone_details.add(url)
         query = parse_qs(parts.query)
         if tag == 'a' and PUBLISHER_CALENDAR_PAGES.get(self.url) == url:
             self.publisher_calendar_pages.add(url)
@@ -77,6 +82,25 @@ class CalendarLinks(HTMLParser):
               or query.get('ical') == ['1'] or (parts.path.lower().endswith('/icalendar.aspx')
               and query.get('feed') == ['calendar']) or parts.path.lower().endswith('/ical_subscribe.php')):
             self.links[url] = 'ical'
+
+
+def growthzone_calendar_candidate(url, body):
+    """Evidence-gated, same-host native endpoint candidate; never a verified feed.
+
+    The public Events Calendar must actually link at least two separate
+    GrowthZone-style details. Its canonical unfiltered /events page alone can
+    suggest /api/events; the caller must fetch and validate XML, permissions,
+    source-specific timezone and the full provider collection before admitting it.
+    """
+    parts = urlsplit(url)
+    if (parts.path.rstrip('/').lower() != '/events' or parts.query or parts.fragment
+            or not re.search(r'\bEvents Calendar\b', body, re.I)):
+        return None
+    parser = CalendarLinks(url)
+    parser.feed(body)
+    if len(parser.growthzone_details) < 2:
+        return None
+    return urljoin(url, '/api/events')
 
 
 def review(reason, collector=None):
@@ -351,6 +375,30 @@ def register(ticket):
                     raise
                 except (ValueError, KeyError, TypeError) as exc:
                     result = extraction_hold('html', exc)
+            # GrowthZone calendars expose event-detail links on their public
+            # listing, while the reusable XML lives at a separate first-party
+            # endpoint. Verify that endpoint using the *existing* provider
+            # collector, not a new HTML parser or a guessed timezone. Keep the
+            # original review hold on a denied, incomplete or unprofiled feed.
+            if (not candidate.get('endpoint_only') and body
+                    and result.get('p_outcome') == 'review'
+                    and result.get('p_reason') in {'html_adapter_needed', 'no_reusable_calendar'}
+                    and body.lstrip().lstrip(chr(0xfeff)).lstrip().startswith('<')
+                    and document_kind(body) != 'xml'):
+                growthzone_endpoint = growthzone_calendar_candidate(url, body)
+                if growthzone_endpoint:
+                    try:
+                        native_result, _ = check(growthzone_endpoint, endpoint_only=True)
+                    except PreviewError:
+                        # A blocked discovered endpoint is not an invitation to
+                        # bypass publisher policy or disable the accessible page.
+                        pass
+                    else:
+                        if (native_result.get('p_outcome') == 'verified'
+                                and native_result.get('p_type') == 'growthzone'):
+                            result = {'p_outcome': 'discovered',
+                                      'p_endpoint': growthzone_endpoint,
+                                      'p_type': 'growthzone'}
             if (not candidate.get('endpoint_only') and body
                     and (url == candidate['url'] or (
                         candidate.get('verified_venue_website')
