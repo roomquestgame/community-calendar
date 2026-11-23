@@ -27,7 +27,7 @@ class Snapshot:
 
 def source():
     return {"kind": "ical", "platform_adapter": "ical",
-            "source_key": "approved_fixture", "feed_url": URL}
+            "source_key": "municipal_mapsee_48489e8f5c906f7610d30197", "feed_url": URL}
 
 
 def context():
@@ -151,6 +151,12 @@ def test_capture_resets_context_and_non_ical_sources_cannot_cache():
     with cache.capture(bad, snapshot, context(), rpc) as state:
         assert state is None
         assert cache.conditional_headers(URL, "text/calendar") == {}
+    calls_before = len(rpc.calls)
+    unapproved = {**source(), "source_key": "not_an_approved_pilot"}
+    with cache.capture(unapproved, snapshot, context(), rpc) as state:
+        assert state is None
+        assert cache.conditional_headers(URL, "text/calendar") == {}
+    assert len(rpc.calls) == calls_before  # No extra DB call for non-pilot ICS
 
 
 def test_optional_rpc_failure_falls_back_without_blocking_collector():
