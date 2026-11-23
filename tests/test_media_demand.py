@@ -41,6 +41,7 @@ class Database:
         self.raise_action = None
         self.after_claim = None
         self.capacity_violations = []
+        self.claim_active_counts = []
 
     def __call__(self, action, payload, *, timeout=4):
         with self.lock:
@@ -52,6 +53,7 @@ class Database:
             assert payload['ticket'] == TICKET
             assert payload['worker_lease_id'] == WORKER_LEASE
             if action == 'claim':
+                self.claim_active_counts.append(len(self.active))
                 capacity = min(10, self.config['concurrency']) - len(self.active)
                 if not 0 < payload['limit'] <= capacity:
                     self.capacity_violations.append((payload['limit'], capacity))
@@ -105,6 +107,7 @@ class WorkerTests(unittest.TestCase):
         self.assertEqual(stats['peak_inflight'], 5)
         self.assertEqual(state['peak'], 5)
         self.assertEqual(db.capacity_violations, [])
+        self.assertTrue(all(active == 0 for active in db.claim_active_counts))
         self.assertGreater(len([c for c in db.calls if c[0] == 'claim']), 1)
         self.assertEqual(db.calls[0][1], {'ticket': TICKET, 'worker_version': 'media_demand_v1',
                                         'candidate_only_version': 'publisher_event_html_v2',
