@@ -201,6 +201,7 @@ class ConditionalCache:
         except Exception:
             _LOG.warning("Optional iCalendar conditional outcome metric failed")
 
+
 @contextmanager
 def capture(source, snapshot, collection_context, rpc):
     cache = None
