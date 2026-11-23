@@ -177,3 +177,109 @@ def test_detail_budget_stops_before_ninth_fetch():
     with pytest.raises(ValueError, match='eventin_calendar_detail_limit'):
         collect(body, fetch)
     assert fetch.call_count == 8
+
+
+CAMBRIDGE_WALK_IMAGE = 'https://cambridgeppf.org/wp-content/uploads/2025/09/healthy-walkers-square.jpg'
+
+
+def test_wandlebury_eventin_detail_image_reused_across_explicit_sessions_and_dates():
+    first_slug = 'healthy-walking-at-wandlebury-2/healthy-walking-at-wandlebury-5'
+    second_slug = 'healthy-walking-at-wandlebury-2/healthy-walking-at-wandlebury-6'
+    body = (card(first_slug, 'Healthy Walking at Wandlebury', 'November 26, 2026', PARK, WALK)
+            + card(second_slug, 'Healthy Walking at Wandlebury', 'December 3, 2026', PARK, WALK))
+    page = detail('Healthy Walking at Wandlebury', PARK,
+                  '2026-11-26T10:00', '2026-11-26T11:00', WALK_DETAIL)
+    page += '<div class="etn-event-thumb"><img src="' + CAMBRIDGE_WALK_IMAGE + '"></div>'
+    fetch = Mock(return_value=page)
+    rows = collect(body, fetch)
+    assert len(rows) == 4
+    assert all(row['image_url'] == CAMBRIDGE_WALK_IMAGE for row in rows)
+    assert all(row['image_provenance'] == 'publisher_event_candidates_v1' for row in rows)
+    assert all(row['image_extractor_version'] == 'publisher_event_candidates_v1' for row in rows)
+    assert all(row['image_evidence_url'].startswith('https://cambridgeppf.org/etn/')
+               for row in rows)
+    fetch.assert_called_once()
+
+
+@pytest.mark.parametrize('image_html', [
+    '<div class="etn-event-thumb"><img src="https://other.example.com/wp-content/uploads/healthy-walkers-square.jpg"></div>',
+    '<div class="etn-event-thumb"><img src="/wp-content/uploads/2025/09/logo.jpg"></div>',
+    '<aside><img class="wp-post-image" src="/wp-content/uploads/2025/09/healthy-walkers-square.jpg"></aside>',
+    '<div class="etn-event-thumb"><img src="/wp-content/uploads/2025/09/healthy-walkers-square.jpg">'
+    '<img src="/wp-content/uploads/2025/09/healthy-walking-poster.jpg"></div>',
+    '<div class="etn-event-thumb"><img src="/wp-content/uploads/2025/09/sponsor-poster.jpg"></div>',
+])
+def test_eventin_rejects_offsite_brand_related_or_ambiguous_images(image_html):
+    slug = 'healthy-walking-at-wandlebury-2/healthy-walking-at-wandlebury-5'
+    body = card(slug, 'Healthy Walking at Wandlebury', 'November 26, 2026', PARK, WALK)
+    page = detail('Healthy Walking at Wandlebury', PARK,
+                  '2026-11-26T10:00', '2026-11-26T11:00', WALK_DETAIL) + image_html
+    rows = collect(body, Mock(return_value=page))
+    assert len(rows) == 2
+    assert all(row.get('image_url') is None for row in rows)
+
+
+def test_eventin_never_extracts_photo_from_unfetched_timed_card():
+    body = card('work', 'Volunteer Work Party', 'November 24, 2026', COTON,
+                'Tue 24 Nov, 10.30am – 1.30pm Help care for the reserve.')
+    rows = collect(body)
+    assert len(rows) == 1
+    assert rows[0].get('image_url') is None
+
+
+def test_eventin_ordinary_wordpress_figure_exposes_original_walking_photo():
+    slug = 'healthy-walking-at-wandlebury-2/healthy-walking-at-wandlebury-5'
+    body = card(slug, 'Healthy Walking at Wandlebury', 'November 26, 2026', PARK, WALK)
+    page = detail('Healthy Walking at Wandlebury', PARK,
+                  '2026-11-26T10:00', '2026-11-26T11:00', WALK_DETAIL)
+    page += ('<main><figure class="wp-block-image"><img src="'
+             'https://cambridgeppf.org/wp-content/uploads/2025/09/'
+             'healthy-walkers-square.jpg"></figure></main>')
+    rows = collect(body, Mock(return_value=page))
+    assert len(rows) == 2
+    assert {row.get('image_url') for row in rows} == {CAMBRIDGE_WALK_IMAGE}
+    assert all(row.get('image_evidence_url', '').endswith('/' + slug + '/')
+               for row in rows)
+
+
+@pytest.mark.parametrize('wrapper', [
+    '<aside>{}</aside>',
+    '<nav>{}</nav>',
+    '<div class="related-events">{}</div>',
+    '<div class="sidebar">{}</div>',
+    '<div class="recommended-events">{}</div>',
+])
+def test_eventin_general_fallback_rejects_secondary_event_artwork(wrapper):
+    slug = 'healthy-walking-at-wandlebury-2/healthy-walking-at-wandlebury-5'
+    body = card(slug, 'Healthy Walking at Wandlebury', 'November 26, 2026', PARK, WALK)
+    photo = '<img src="' + CAMBRIDGE_WALK_IMAGE + '">'
+    page = detail('Healthy Walking at Wandlebury', PARK,
+                  '2026-11-26T10:00', '2026-11-26T11:00', WALK_DETAIL)
+    rows = collect(body, Mock(return_value=page + wrapper.format(photo)))
+    assert len(rows) == 2
+    assert all(row.get('image_url') is None for row in rows)
+
+
+
+def test_actual_cambridge_walking_jpg_filename_matches_image_parser():
+    """Regression for incorrect double escaping of the image-extension regex."""
+    from bs4 import BeautifulSoup
+    url = ('https://cambridgeppf.org/etn/healthy-walking-at-wandlebury-2/'
+           'healthy-walking-at-wandlebury-5/')
+    html = ('<main><h2 class="etn-event-entry-title">Healthy Walking at Wandlebury</h2>'
+            '<figure><img src="https://cambridgeppf.org/wp-content/uploads/'
+            '2025/09/healthy-walkers-square.jpg"></figure></main>')
+    result = etn.event_photo(BeautifulSoup(html, 'html.parser'),
+                             'Healthy Walking at Wandlebury', url)
+    assert result == CAMBRIDGE_WALK_IMAGE
+
+
+def test_real_jpg_path_guard_excludes_unrelated_uploads():
+    from bs4 import BeautifulSoup
+    url = ('https://cambridgeppf.org/etn/healthy-walking-at-wandlebury-2/'
+           'healthy-walking-at-wandlebury-5/')
+    for name in ('logo.jpg', 'healthy-walkers-square.svg', 'walking-festival.jpg'):
+        html = ('<main><figure><img src="https://cambridgeppf.org/'
+                'wp-content/uploads/2025/09/' + name + '"></figure></main>')
+        assert etn.event_photo(BeautifulSoup(html, 'html.parser'),
+                               'Healthy Walking at Wandlebury', url) is None
