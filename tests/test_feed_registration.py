@@ -120,7 +120,7 @@ def test_squarespace_listing_preserves_all_selectors_for_probe():
 def test_empty_calendar_cannot_activate_without_a_collected_event():
     with patch('roomquest.feed_registration.supabase_rpc', side_effect=[{'url': URL}, True]) as rpc, \
          patch('roomquest.feed_registration.fetch_publisher', return_value=EMPTY):
-        assert register('ticket')['outcome'] == 'review'
+        assert register('ticket')['outcome'] == 'retry'
         assert rpc.call_args.args[1]['p_reason'] == 'no_extractable_events'
 
 
@@ -163,7 +163,7 @@ def test_html_registration_does_not_select_arbitrary_calendar_or_parent_page():
     with patch('roomquest.feed_registration.supabase_rpc',
                side_effect=[{'url': page}, True]) as rpc, \
          patch('roomquest.feed_registration.fetch_publisher', return_value=html) as fetch:
-        assert register('ticket') == {'outcome': 'review'}
+        assert register('ticket') == {'outcome': 'retry'}
     assert rpc.call_args.args[1]['p_reason'] == 'no_reusable_calendar'
     assert fetch.call_count == 1  # Conflicting index links do not trigger exploration.
 
@@ -174,7 +174,7 @@ def test_html_registration_preserves_scope_instead_of_deriving_unfiltered_tec():
     with patch('roomquest.feed_registration.supabase_rpc',
                side_effect=[{'url': page}, True]) as rpc, \
          patch('roomquest.feed_registration.fetch_publisher', return_value=html) as fetch:
-        assert register('ticket') == {'outcome': 'review'}
+        assert register('ticket') == {'outcome': 'retry'}
     assert rpc.call_args.args[1]['p_reason'] == 'html_adapter_needed'
     assert fetch.call_count == 1  # A generic TEC API would drop the venue selector.
 
@@ -188,7 +188,7 @@ def test_html_registration_does_not_register_a_zero_event_collection():
          patch('roomquest.feed_registration.fetch_publisher',
                side_effect=[html, empty]) as fetch, \
          patch('roomquest.feed_registration.probe', return_value=False):
-        assert register('ticket') == {'outcome': 'review'}
+        assert register('ticket') == {'outcome': 'retry'}
     assert rpc.call_args.args[1]['p_reason'] == 'html_adapter_needed'
     assert fetch.call_count == 2
 
@@ -200,7 +200,7 @@ def test_html_registration_keeps_robots_denial_of_new_endpoint_on_hold():
                side_effect=[{'url': page}, True]) as rpc, \
          patch('roomquest.feed_registration.fetch_publisher',
                side_effect=[html, PreviewError('robots_denied')]) as fetch:
-        assert register('ticket') == {'outcome': 'review'}
+        assert register('ticket') == {'outcome': 'retry'}
     assert rpc.call_args.args[1]['p_reason'] == 'html_adapter_needed'
     assert fetch.call_count == 2
     assert fetch.call_args_list[1].kwargs['respect_robots'] is True
@@ -242,7 +242,7 @@ def test_verified_venue_linked_html_calendar_can_recover_without_new_registratio
     assert all(call.kwargs['respect_robots'] for call in fetch.call_args_list)
 
 
-def test_verified_venue_linked_html_with_no_verified_feed_retains_original_review_endpoint():
+def test_verified_venue_linked_html_with_no_verified_feed_retains_original_retry_endpoint():
     venue = 'https://calendar.example.org/'
     listing = 'https://calendar.example.org/events/'
     html = '<a href="/events/">Upcoming events</a>'
@@ -251,7 +251,7 @@ def test_verified_venue_linked_html_with_no_verified_feed_retains_original_revie
                side_effect=[{'url': venue, 'verified_venue_website': True}, True]) as rpc, \
          patch('roomquest.feed_registration.fetch_publisher',
                side_effect=[html, details]) as fetch:
-        assert register('ticket') == {'outcome': 'review'}
+        assert register('ticket') == {'outcome': 'retry'}
     result = rpc.call_args.args[1]
     assert result['p_reason'] == 'html_adapter_needed'
     assert result['p_endpoint'] == listing
