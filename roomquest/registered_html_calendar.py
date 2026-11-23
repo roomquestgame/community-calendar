@@ -556,7 +556,7 @@ def _event_detail_featured_image(source, soup, url, title):
         return re.findall(r'[a-z0-9]+', (value or '').casefold())
 
     if not any(words(node.get_text(' ', strip=True)) == words(title)
-               for node in root.select('h1')):
+               for node in soup.select('h1')):
         return None
     meaningful = [term for term in words(title)
                   if len(term) >= 4 and term not in {'with', 'from', 'this', 'that'}]
