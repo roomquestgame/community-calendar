@@ -36,6 +36,11 @@ def test_month_scoped_ics_does_not_register_as_complete_calendar():
         'p_type': 'ical'}
 
 
+def test_www_google_com_calendar_wrapper_has_same_strict_scope():
+    wrapper = google_link(FARMVILLE_FEED).replace('calendar.google.com', 'www.google.com')
+    assert _wrapped_ical_subscription(FARMVILLE_PAGE, wrapper) == FARMVILLE_FEED
+
+
 def test_one_full_first_party_ics_wins_over_google_wrapper():
     page = 'https://publisher.example/events'
     full = 'https://publisher.example/calendar.ics'
