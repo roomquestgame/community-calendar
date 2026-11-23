@@ -1,3 +1,13 @@
+## 2026-11-23 — Review-hold batch of 10 and reusable GrowthZone intake detector
+
+Owner approved investigating ten of the existing feed-registration review holds while improving the registration automation, rather than bulk resetting all 73 eligible receipts. Original IDs **77, 79, 91, 129, 226, 328, 331, 441, 561, 878** remain unchanged in production. The linked ten-source audit and **source-status distinction** are in [the batch journal](journal/2026-11-23-held-registration-batch01.md).
+
+The collector change recognizes a native GrowthZone candidate only from a real unfiltered publisher Events Calendar with two distinct same-host detail links, then uses the existing native XML adapter and its configured source-specific timezone to verify complete importability. Missing profile, invalid XML and disallowed publisher requests retain the review hold. It is **not** permission to register generic HTML or guess publisher metadata.
+
+Important dedupe lessons: #561 has a malformed long ICS encoding but the correct Las Vegas Library calendar is **already approved at source #3228**; #878's single article is superseded by an approved collecting official full-content publisher feed **#6212**. Neither should be re-registered or blindly rechecked. The other source-specific holds require complete bounded collection evidence and venue scope validation.
+
+**Prepared only:** a code branch, focused tests and evidence journal. Local tests and browser/collector acceptance have not run, and there is no PR merge, production deployment, Admin recheck, new source approval or newly published event receipt. A signed-in EventQuest Admin browser context is needed to submit future review-approved recheck CSVs. Maintain the owner's no-routine-CI policy.
+
 # Automatic registration repair handoff — 2026-11-23
 
 ## UK packed LOCATION address follow-up
