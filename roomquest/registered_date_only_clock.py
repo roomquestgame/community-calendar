@@ -16,6 +16,12 @@ def date_only_event_with_clock(nodes, soup, url, is_event):
     if len(events) != 1:
         return None
     original = events[0]
+    title = str(original.get('name') or '')
+    # Publisher sells this item as merchandise only, explicitly requiring
+    # separate performance tickets; it is not an event occurrence.
+    if (re.search(r'\bmerch(?:andise)?\s+add[\s-]?on\s+only\b', title, re.I)
+            and 'performance tickets must be bought separately' in title.casefold()):
+        return []
     start = original.get('startDate')
     if not isinstance(start, str) or not re.fullmatch(r'20[0-9]{2}-[01][0-9]-[0-3][0-9]', start):
         return None
