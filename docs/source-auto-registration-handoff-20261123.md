@@ -1,5 +1,28 @@
 # Automatic registration repair handoff — 2026-11-23
 
+## UK packed LOCATION address follow-up
+
+The normal PHCL acceptance preview exposed a separate address-contract gap:
+47 exact default venue matches had verified points but no separate street
+address because the registered-iCal extractor recognized US formats only.
+The bounded UK extension preserves native venue names and all existing review
+and point gates. It requires an explicit UK country, full postcode, a unique
+numbered street and locality; it infers no coordinates or postal town.
+
+The exact 50-event fixture and existing US/equal-end checks pass: 61 tests.
+The new output adds 49 native address fields, keeps the 47 exact default bindings,
+leaves the film URL untouched, and changes no other emitted fact or occurrence
+identity. Seven manual timing Holds remain Admin decisions. The two chess venue
+reviews may require a normal re-save after their native address is populated.
+See the [address journal](journal/2026-11-23-uk-ical-location-addresses.md).
+
+This branch is reconciled with current main
+`e3ad75cfcc32ad416bea2d5047e1d5e0bf359666`, retaining deployed PR #451 merge
+`2e8930101da138a44ad5ff6ef8fa840eed3571bf`. Parent-controlled PR/deployment and
+ordinary source/public acceptance remain pending for this follow-up. The app's
+reviewed-geocode classification fix is already deployed via
+[PR #1753](https://github.com/roomquestgame/RoomQuestGame/pull/1753).
+
 ## Collector change ready for review
 
 Branch: `fix/uk-venue-auto-registration-20261123`, updated onto main `6f1b4fc`

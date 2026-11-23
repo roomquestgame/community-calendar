@@ -1,4 +1,4 @@
-"""Extract physical US addresses from the LOCATION text of a registered calendar."""
+"""Retain bounded physical street evidence from registered-calendar LOCATION."""
 
 import re
 from collections import defaultdict
@@ -34,6 +34,55 @@ _STATE_NAME_END = re.compile(r'\b(?:' + '|'.join(sorted(_STATE_CODES, key=len, r
 _UNUSABLE = re.compile(r'[<>;|@]|https?://|\b(?:online|virtual|zoom|webinar|P\.?\s*O\.?\s+box)\b', re.I)
 _NUMBER = re.compile(r"(?<![\w-])\d{1,7}[A-Za-z]?\s+(?=[A-Za-z]|[0-9]+(?:st|nd|rd|th)\b)", re.I)
 _REPEAT_LOCALITY = re.compile(rf'\b(?P<local>{_CITY}\s+(?:{US_STATES})\s+{_ZIP})\s+(?P=local)$', re.I)
+_GB_COUNTRY = re.compile(r'(?:United Kingdom|Great Britain|UK|GB)', re.I)
+_GB_STREET = re.compile(
+    r"\d{1,6}[A-Za-z]?(?:\s?[-–—]\s?\d{1,6}[A-Za-z]?)?\s+"
+    r"[A-Za-z][A-Za-z0-9 .'’\-]{1,72}\b"
+    r'(?:street|st|road|rd|avenue|ave|lane|ln|drive|dr|close|cl|court|ct|'
+    r'place|pl|terrace|ter|way|crescent|square|gardens|mews|row|walk|hill|green)\.?',
+    re.I)
+_GB_LOCALITY = re.compile(r"[A-Za-z][A-Za-z .'’\-]{1,55}")
+
+
+def _gb_address(raw):
+    """An explicit UK postal address is evidence, not a verified map point.
+
+    Keep the source's exact LOCATION in venue_name for default-venue binding.
+    A parsed address never supplies coordinates or resolves an unknown venue.
+    Reject truncated names and require country, postcode, one numbered street,
+    and locality in the publisher's own comma/newline-separated text.
+    """
+    if not raw or len(raw) >= 160 or _UNUSABLE.search(raw):
+        return None
+    text = re.sub(r'\s+', ' ', raw.replace('\n', ', ')).strip(' ,')
+    if re.search(r'[\x00-\x1f\x7f/]|\b(?:unknown|tbd|tba)\b|to be (?:announced|confirmed)', text, re.I):
+        return None
+    parts = [part.strip() for part in text.split(',')]
+    if len(parts) < 4 or any(not part for part in parts) or not _GB_COUNTRY.fullmatch(parts[-1]):
+        return None
+    # Reuse the reviewed GB geocoder's postcode-shape validator. This function
+    # does not invoke transport or convert a native suffix into a reviewed query.
+    from roomquest.forward_geocoder import GB_POSTCODE, normalize_gb_postcode
+    postcode = normalize_gb_postcode(parts[-2])
+    if not postcode:
+        return None
+    body = parts[:-2]
+    streets = [index for index, part in enumerate(body) if _GB_STREET.fullmatch(part)]
+    if len(streets) != 1:
+        return None
+    street = streets[0]
+    # Do not discard another address merely because its street spelling/layout
+    # is outside our grammar. Numbered prefixes and additional postcode evidence
+    # are ambiguous; the text-only venue prefixes in a normal LOCATION are safe.
+    if (any(re.search(r'\b\d', part) for part in body[:street])
+            or any(GB_POSTCODE.search(re.sub(r'\s+', '', part).upper()) for part in body)):
+        return None
+    localities = body[street + 1:]
+    if (not 1 <= len(localities) <= 4
+            or any(not _GB_LOCALITY.fullmatch(part) for part in localities)
+            or re.search(r'\b(?:or|and)\s+\d', body[street], re.I)):
+        return None
+    return ', '.join([*body[street:], postcode, parts[-1]])
 
 
 def _parts(raw):
@@ -63,6 +112,14 @@ def _parts(raw):
 
 def extract_venue_addresses(rows):
     """A damaged state needs a unique complete match within this same snapshot."""
+    for row in rows:
+        raw = row.get('venue_name') or ''
+        if row.get('venue_address') in (None, '', raw):
+            address = _gb_address(raw)
+            if address:
+                row['venue_address'] = address
+                # Keep locality components in the address rather than guessing
+                # which neighbourhood/county is the publisher's postal town.
     parsed = {}
     states = defaultdict(set)
     for row in rows:
