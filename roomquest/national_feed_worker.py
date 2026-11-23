@@ -145,7 +145,8 @@ def process(source, pacing, *, collection_context, deadline_at=None,
                         break
                     observe('fetch')
                     requested = stream['next']
-                    payload = worker.fetch_publisher(requested, 'application/json', respect_robots=True,
+                    payload = worker.fetch_publisher(openactive.bounded_request_url(requested, stream['url']),
+                        'application/json', respect_robots=True,
                         deadline_at=deadline - 10, allowed_hosts=openactive.allowed_hosts(source['feed_url']))
                     previous = ((stream['last_modified'], stream['last_id'])
                                 if stream['last_modified'] is not None else None)

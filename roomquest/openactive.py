@@ -9,7 +9,7 @@ from datetime import datetime, timedelta, timezone
 import hashlib
 import json
 import re
-from urllib.parse import parse_qsl, urlsplit
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from bs4 import BeautifulSoup
@@ -85,6 +85,37 @@ def page_url(value, stream):
             and all(v and len(v) <= 500 for _, v in fields)
             and ('afterTimestamp' in names) == ('afterId' in names)
             and not ('afterChangeNumber' in names and 'afterId' in names))
+
+
+# Better's published 500-item SessionSeries pages can exceed the guarded
+# decompressed transport ceiling. RPDE 1.0 documents an optional page limit.
+# Apply it only to the exact reviewed stream, never to another publisher or
+# to ScheduledSession. The publisher remains authoritative for the next cursor.
+BETTER_SERIES_PAGE_LIMIT = 100
+
+
+def bounded_request_url(requested, stream):
+    if not page_url(requested, stream):
+        raise ValueError('openactive_cursor_scope')
+    if stream != BETTER + '/session-series':
+        return requested
+    parts = urlsplit(requested)
+    fields = [(key, value) for key, value in parse_qsl(parts.query, keep_blank_values=True)
+              if key != 'limit']
+    fields.append(('limit', str(BETTER_SERIES_PAGE_LIMIT)))
+    return urlunsplit(parts._replace(query=urlencode(fields)))
+
+
+def _same_cursor(left, right):
+    # Some RPDE publishers omit the optional limit from their next link.
+    # Compare the unchanged publisher cursor; never allow a changed position
+    # to certify the terminal page merely because a limit was omitted.
+    a, b = urlsplit(left), urlsplit(right)
+    def without_limit(parts):
+        return sorted((key, val) for key, val in parse_qsl(parts.query)
+                      if key != 'limit')
+    return ((a.scheme, a.netloc, a.path) == (b.scheme, b.netloc, b.path)
+            and without_limit(a) == without_limit(b))
 
 
 def evidence_url(source, value):
@@ -206,8 +237,8 @@ def parse_page(payload, requested, stream, *, previous=None, license_url=None):
         if len(json.dumps(row, ensure_ascii=False).encode()) > MAX_ITEM_BYTES:
             raise ValueError('openactive_item_size_limit')
         result.append(row)
-    tail = not data['items'] and data['next'] == requested
-    if data['items'] and data['next'] == requested:
+    tail = not data['items'] and _same_cursor(data['next'], requested)
+    if data['items'] and _same_cursor(data['next'], requested):
         raise ValueError('openactive_cursor_stalled')
     outgoing = _cursor(data['next'])
     incoming = _cursor(requested)
