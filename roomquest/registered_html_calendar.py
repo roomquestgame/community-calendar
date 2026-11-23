@@ -540,19 +540,17 @@ def _description(soup, original, row):
 
 
 
-def _cambridge_featured_image(source, soup, url, title):
-    """Use only an unambiguous same-event upload on the approved Eventin site.
+def _event_detail_featured_image(source, soup, url, title):
+    """Find an unambiguous event-titled image on the canonical detail page.
 
-    Other HTML publishers and pages keep their existing JSON-LD-only behavior.
-    A missing image remains missing rather than selecting site chrome.
+    The source-specific media permission remains enforced downstream.
     """
-    if (source.get('feed_url') != 'https://cambridgeppf.org/events-list/'
-            or urlsplit(url).hostname != 'cambridgeppf.org'
-            or not urlsplit(url).path.startswith('/etn/')):
+    # Only use a photograph from the already-fetched, canonical event detail.
+    # Candidate publication is still governed by the source's existing photo
+    # permission; this helper never fetches or validates image bytes.
+    if not source.get('feed_url') or urlsplit(url).hostname != urlsplit(source['feed_url']).hostname:
         return None
-    root = soup.find('main')
-    if root is None:
-        return None
+    root = soup.find('main') or soup.find('article') or soup
 
     def words(value):
         return re.findall(r'[a-z0-9]+', (value or '').casefold())
@@ -650,7 +648,7 @@ def _detail(source, payload, url):
             primary_image = image_value(original.get('image'))
             from roomquest.registered_native_content import image_candidate
             if not image_candidate(primary_image, url):
-                primary_image = _cambridge_featured_image(source, soup, url, row['title'])
+                primary_image = _event_detail_featured_image(source, soup, url, row['title'])
             attach(row, source, description_value=description_value,
                    image_value=primary_image, evidence_url=url, **extra)
             records.append(row)
