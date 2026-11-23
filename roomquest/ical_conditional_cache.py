@@ -47,6 +47,10 @@ class ConditionalCache:
         self.enabled = False
         self.cached = None
         self.candidate = None
+        self._conditional_sent = False
+        self._saw_200 = False
+        self._invalid_304 = False
+        self._reused_304 = False
 
     def initialize(self):
         try:
@@ -83,12 +87,18 @@ class ConditionalCache:
     def headers(self, url, accept):
         if not self.enabled or self.cached is None or (url, accept) != (self.url, "text/calendar"):
             return {}
+        self._conditional_sent = True
         if self.cached["etag"] is not None:
             return {"If-None-Match": self.cached["etag"]}
         return {"If-Modified-Since": self.cached["last_modified"]}
 
     def not_modified(self, url, accept, headers):
-        if not self.headers(url, accept) or not _cacheable(headers):
+        if not self.headers(url, accept):
+            return None
+        # The existing transport retries a full GET if this 304 cannot be
+        # trusted. Record that fallback only if the resulting fetch succeeds.
+        self._invalid_304 = True
+        if not _cacheable(headers):
             return None
         prior = self.cached
         # If the server supplies a contradictory representation/validator,
@@ -110,11 +120,16 @@ class ConditionalCache:
         self.snapshot.record_body(url, accept, body.encode("utf-8"), receipt_headers,
                                   encoding="utf-8", errors="strict")
         self.candidate = dict(prior)
+        self._invalid_304 = False
+        self._reused_304 = True
         return body
 
     def record_body(self, url, accept, payload, headers, *, encoding):
         if not self.enabled or (url, accept) != (self.url, "text/calendar"):
             return
+        # Only this exact pilot feed's successfully decoded HTTP 200 body
+        # counts. A non-cacheable 200 is still a full download.
+        self._saw_200 = True
         if not isinstance(payload, bytes) or len(payload) > _MAX_BYTES or not _cacheable(headers):
             return
         try:
@@ -136,30 +151,55 @@ class ConditionalCache:
             "content_type": content_type,
         }
 
+    def _completed_outcome(self):
+        # At most one source-scope observation per *successful* collection.
+        # Do not call this from failed transport/parse/partial publication.
+        if self._reused_304:
+            return "reused_304"
+        if not self._saw_200:
+            return None
+        if self._invalid_304:
+            return "fallback_200"
+        return "conditional_200" if self._conditional_sent else "full_200"
+
     def save_after_success(self, deadline_at=None):
-        if self.candidate is None or not self.enabled:
+        if not self.enabled:
             return
-        # Cache is strictly optional. Do not jeopardize a valid publication
-        # or consume its remaining deadline with a telemetry/metadata write.
+        # Optional telemetry must not delay completion or affect an accepted
+        # source snapshot. Only pilot sources reach this method.
         if deadline_at is not None:
             from time import monotonic
             if monotonic() > deadline_at - 2:
                 return
+        if self.candidate is not None:
+            try:
+                self.rpc("community_collector_save_ical_cache", {
+                    **self.context, "p_source_key": self.source["source_key"],
+                    "p_policy_context": self.snapshot.policy_context,
+                    "p_context_hash": self.snapshot.context_hash,
+                    "p_request_hash": self.request_hash,
+                    "p_body": self.candidate["body"],
+                    "p_body_hash": self.candidate["body_hash"],
+                    "p_content_type": self.candidate["content_type"],
+                    "p_etag": self.candidate["etag"],
+                    "p_last_modified": self.candidate["last_modified"],
+                }, timeout=4)
+            except Exception:
+                _LOG.warning("Optional iCalendar conditional cache save failed")
+        outcome = self._completed_outcome()
+        if outcome is None:
+            return
+        if deadline_at is not None:
+            from time import monotonic
+            if monotonic() > deadline_at - 1:
+                return
         try:
-            self.rpc("community_collector_save_ical_cache", {
+            self.rpc("community_collector_record_ical_http_metric", {
                 **self.context, "p_source_key": self.source["source_key"],
-                "p_policy_context": self.snapshot.policy_context,
-                "p_context_hash": self.snapshot.context_hash,
-                "p_request_hash": self.request_hash,
-                "p_body": self.candidate["body"],
-                "p_body_hash": self.candidate["body_hash"],
-                "p_content_type": self.candidate["content_type"],
-                "p_etag": self.candidate["etag"],
-                "p_last_modified": self.candidate["last_modified"],
-            }, timeout=4)
+                "p_outcome": outcome,
+            }, timeout=3)
         except Exception:
-            _LOG.warning("Optional iCalendar conditional cache save failed")
-
+            _LOG.warning("Optional iCalendar conditional outcome metric failed")
 
 @contextmanager
 def capture(source, snapshot, collection_context, rpc):
