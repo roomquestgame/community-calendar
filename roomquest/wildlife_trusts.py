@@ -188,7 +188,10 @@ def _field(node, name):
 
 
 def _clock(value):
-    cleaned = value.lower().replace('.', '').replace(' ', '')
+    cleaned = re.sub(r'\s+', '', value.lower())
+    # Lincolnshire publishes minute separators such as "1.30pm". Keep those
+    # minutes distinct from the punctuation in "p.m." before normalizing it.
+    cleaned = re.sub(r'(?<=\d)\.(?=\d)', ':', cleaned).replace('.', '')
     for fmt in ('%I:%M%p', '%I%p', '%H:%M'):
         try:
             return datetime.strptime(cleaned, fmt).time()
@@ -232,8 +235,9 @@ def parse_detail(payload, item, *, source):
         # Drupal's date-only presentation may contain a synthetic noon. Require
         # its separately published event clock to corroborate the datetime.
         clocks = _field(node, 'event-time-value')
-        match = re.fullmatch(r'\s*([0-9]{1,2}(?::[0-9]{2})?\s*(?:[ap]\.?m\.?)?)\s*'
-                             r'(?:[-–—]\s*([0-9]{1,2}(?::[0-9]{2})?\s*(?:[ap]\.?m\.?)?))?\s*', clocks, re.I)
+        clock = r'([0-9]{1,2}(?:[.:][0-9]{2})?\s*(?:[ap]\.?m\.?)?)'
+        match = re.fullmatch(r'\s*' + clock + r'\s*(?:(?:[-–—]|to)\s*' + clock + r')?\s*',
+                             clocks, re.I)
         if not match or _clock(match[1]) != local.time().replace(tzinfo=None):
             return [], 'wildlife_event_clock_unresolved'
         if end and end.astimezone(LONDON).date() != local.date():
