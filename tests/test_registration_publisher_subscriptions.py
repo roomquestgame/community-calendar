@@ -24,12 +24,25 @@ def test_farmville_google_calendar_wrapper_recovers_same_host_ical():
         'p_outcome': 'discovered', 'p_endpoint': FARMVILLE_FEED, 'p_type': 'ical'}
 
 
-def test_direct_first_party_ics_wins_over_google_and_outlook_wrappers():
+def test_month_scoped_ics_does_not_register_as_complete_calendar():
+    # Publisher observations: the LCVA calendar's month export contained only
+    # three older VEVENTs, despite the listing exposing many dated entries.
     html = ('<a href="' + google_link('https://lcva.longwood.edu/?post_type=tribe_events&ical=1')
             + '">Google</a>'
             '<a href="' + LCVA_DIRECT + '">Export Events</a>')
     assert classify(LCVA_PAGE, html) == {
-        'p_outcome': 'discovered', 'p_endpoint': LCVA_DIRECT, 'p_type': 'ical'}
+        'p_outcome': 'review',
+        'p_reason': 'calendar_period_scope_unverified',
+        'p_type': 'ical'}
+
+
+def test_one_full_first_party_ics_wins_over_google_wrapper():
+    page = 'https://publisher.example/events'
+    full = 'https://publisher.example/calendar.ics'
+    html = ('<a href="' + google_link('https://publisher.example/alternative.ics')
+            + '">Google</a><a href="/calendar.ics">Calendar</a>')
+    assert classify(page, html) == {
+        'p_outcome': 'discovered', 'p_endpoint': full, 'p_type': 'ical'}
 
 
 @pytest.mark.parametrize('feed', [
