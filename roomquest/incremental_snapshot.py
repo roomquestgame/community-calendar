@@ -150,9 +150,8 @@ def _scoped_ical_parser_digest(root):
             and isinstance(node.value, ast.BoolOp)
             and "platform_adapter" in ast.dump(node.value))
         tail = source.body[tail_start:]
-        if not any(isinstance(node, ast.If) and
-                '"ical"' in ast.dump(node.test) for node in ast.walk(
-                    ast.Module(body=tail, type_ignores=[]))):
+        if not any(isinstance(node, ast.Constant) and node.value == "ical"
+                   for entry in tail for node in ast.walk(entry)):
             return None
         digest = sha256(b"eventquest-ical-parser-scope-v1\0")
         digest.update(b"LOOKAHEAD_DAYS=60\0MAX_PREVIEWS=10\0")
