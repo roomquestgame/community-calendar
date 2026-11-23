@@ -49,6 +49,8 @@ class RPC:
         self.calls.append((name, args))
         if name == "community_collector_read_ical_cache":
             return self.response
+        if name == "community_collector_touch_ical_cache":
+            return {"touched": True}
         return {"cached": True}
 
 
@@ -72,8 +74,9 @@ def test_etag_precedes_last_modified_and_304_replays_complete_body():
     # no previous recurrence/occurrence list is returned by this cache.
     assert "RRULE" not in state.candidate["body"]
     state.save_after_success()
-    assert rpc.calls[-2][0] == "community_collector_save_ical_cache"
+    assert rpc.calls[-2][0] == "community_collector_touch_ical_cache"
     assert rpc.calls[-2][1]["p_body_hash"] == sha256(BODY.encode()).hexdigest()
+    assert "p_body" not in rpc.calls[-2][1]
     assert rpc.calls[-1][0] == "community_collector_record_ical_http_metric"
     assert rpc.calls[-1][1]["p_outcome"] == "reused_304"
 
@@ -190,6 +193,82 @@ def test_metric_rpc_failures_do_not_change_accepted_collection():
     }, encoding="utf-8")
     state.save_after_success()
     assert any(name == "community_collector_save_ical_cache" for name, _ in rpc.calls)
+
+
+
+def test_identical_200_refreshes_validator_without_resending_body():
+    state, _, rpc = make_state(saved())
+    assert state.headers(URL, "text/calendar") == {"If-None-Match": '"v1"'}
+    state.record_body(URL, "text/calendar", BODY.encode("utf-8"), {
+        "ETag": '"v2"', "Content-Type": "text/calendar; charset=utf-8",
+    }, encoding="utf-8")
+    state.save_after_success()
+    assert [name for name, _ in rpc.calls] == [
+        "community_collector_read_ical_cache",
+        "community_collector_touch_ical_cache",
+        "community_collector_record_ical_http_metric",
+    ]
+    assert rpc.calls[1][1]["p_etag"] == '"v2"'
+    assert "p_body" not in rpc.calls[1][1]
+
+
+def test_changed_200_sends_new_body_once():
+    state, _, rpc = make_state(saved())
+    changed = BODY.replace("Community art workshop", "Changed community workshop")
+    state.record_body(URL, "text/calendar", changed.encode("utf-8"), {
+        "ETag": '"v3"', "Content-Type": "text/calendar; charset=utf-8",
+    }, encoding="utf-8")
+    state.save_after_success()
+    assert [name for name, _ in rpc.calls] == [
+        "community_collector_read_ical_cache",
+        "community_collector_save_ical_cache",
+        "community_collector_record_ical_http_metric",
+    ]
+    assert rpc.calls[1][1]["p_body"] == changed
+
+
+def test_rejected_metadata_touch_falls_back_to_full_save():
+    class RejectedTouchRPC(RPC):
+        def __call__(self, name, args, **kwargs):
+            if name == "community_collector_touch_ical_cache":
+                self.calls.append((name, args))
+                return {"touched": False}
+            return super().__call__(name, args, **kwargs)
+
+    rpc = RejectedTouchRPC(saved())
+    state = cache.ConditionalCache(source(), Snapshot(), context(), rpc)
+    state.initialize()
+    state.headers(URL, "text/calendar")
+    assert state.not_modified(URL, "text/calendar", {}) == BODY
+    state.save_after_success()
+    assert [name for name, _ in rpc.calls] == [
+        "community_collector_read_ical_cache",
+        "community_collector_touch_ical_cache",
+        "community_collector_save_ical_cache",
+        "community_collector_record_ical_http_metric",
+    ]
+    assert rpc.calls[2][1]["p_body"] == BODY
+
+
+def test_failed_metadata_touch_is_optional_and_falls_back():
+    class FailingTouchRPC(RPC):
+        def __call__(self, name, args, **kwargs):
+            if name == "community_collector_touch_ical_cache":
+                raise RuntimeError("stale metadata lease")
+            return super().__call__(name, args, **kwargs)
+
+    rpc = FailingTouchRPC(saved())
+    state = cache.ConditionalCache(source(), Snapshot(), context(), rpc)
+    state.initialize()
+    state.headers(URL, "text/calendar")
+    assert state.not_modified(URL, "text/calendar", {}) == BODY
+    state.save_after_success()
+    assert [name for name, _ in rpc.calls] == [
+        "community_collector_read_ical_cache",
+        "community_collector_save_ical_cache",
+        "community_collector_record_ical_http_metric",
+    ]
+
 
 
 def test_capture_resets_context_and_non_ical_sources_cannot_cache():
