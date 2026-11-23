@@ -575,3 +575,57 @@ def test_description_length_limit_cannot_drop_native_evidence_silently():
     item = event(description='x' * (native.MAX_DESCRIPTION + 1))
     with pytest.raises(ValueError, match='registered_native_description_too_long'):
         calendar.collect(source(), fetcher({ONE: detail(item)}), listing=listing((ONE,)))
+
+
+# Publisher image regression: event metadata is preferred, and an unambiguous
+# same-event WordPress upload is a narrowly scoped fallback for Cambridge PPF.
+CAMBRIDGE_FEED = 'https://cambridgeppf.org/events-list/'
+CAMBRIDGE_DETAIL = ('https://cambridgeppf.org/etn/healthy-walking-at-wandlebury-2/'
+                    'healthy-walking-at-wandlebury-5/')
+CAMBRIDGE_PHOTO = 'https://cambridgeppf.org/wp-content/uploads/2025/09/healthy-walkers-square.jpg'
+
+
+def cambridge_detail(*, art='', image=None, title='Healthy Walking at Wandlebury'):
+    payload = event(CAMBRIDGE_DETAIL, name=title, image=image)
+    return (detail(payload).replace('</html>',
+            '<body><main><h1>' + title + '</h1>' + art +
+            '</main><aside><img src="/wp-content/uploads/2025/09/healthy-walkers-square.jpg"></aside>'
+            '</body></html>'))
+
+
+def test_cambridge_featured_photo_is_attached_to_existing_event_identity():
+    page = cambridge_detail(art='<figure><img src="' + CAMBRIDGE_PHOTO + '"></figure>')
+    [row] = calendar._detail(source(CAMBRIDGE_FEED), page, CAMBRIDGE_DETAIL)
+    assert row['image_url'] == CAMBRIDGE_PHOTO
+    assert row['image_evidence_url'] == CAMBRIDGE_DETAIL
+    assert row['registered_native_content']['image_field'] == 'image'
+    native.validate_record(row, source(CAMBRIDGE_FEED))
+
+
+def test_cambridge_jsonld_event_image_takes_precedence():
+    explicit = 'https://cambridgeppf.org/wp-content/uploads/2026/11/healthy-walking-poster.jpg'
+    page = cambridge_detail(art='<img src="' + CAMBRIDGE_PHOTO + '">', image=explicit)
+    [row] = calendar._detail(source(CAMBRIDGE_FEED), page, CAMBRIDGE_DETAIL)
+    assert row['image_url'] == explicit
+
+
+@pytest.mark.parametrize('art,title', [
+    ('<img src="/wp-content/uploads/2025/09/park-logo.jpg">', 'Healthy Walking at Wandlebury'),
+    ('<nav><img src="/wp-content/uploads/2025/09/healthy-walkers-square.jpg"></nav>', 'Healthy Walking at Wandlebury'),
+    ('<img src="https://other.example.org/wp-content/uploads/healthy-walkers-square.jpg">', 'Healthy Walking at Wandlebury'),
+    ('<img src="/wp-content/uploads/2025/09/healthy-walkers-square.jpg">'
+     '<img src="/wp-content/uploads/2025/09/healthy-walking-poster.jpg">', 'Healthy Walking at Wandlebury'),
+    ('<img src="/wp-content/uploads/2025/09/healthy-walkers-square.jpg">', 'Unrelated River Concert'),
+])
+def test_cambridge_rejects_ambiguous_unrelated_or_unsafe_art(art, title):
+    page = cambridge_detail(art=art, title=title)
+    [row] = calendar._detail(source(CAMBRIDGE_FEED), page, CAMBRIDGE_DETAIL)
+    assert row.get('image_url') is None
+    native.validate_record(row, source(CAMBRIDGE_FEED))
+
+
+def test_cambridge_featured_fallback_does_not_apply_to_other_publishers():
+    html = cambridge_detail(art='<img src="' + CAMBRIDGE_PHOTO + '">')
+    [row] = calendar._detail(source(FEED), html.replace(CAMBRIDGE_DETAIL, ONE), ONE)
+    assert row.get('image_url') is None
+
