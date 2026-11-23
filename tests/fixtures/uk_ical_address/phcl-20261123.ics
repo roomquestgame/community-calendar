@@ -1,0 +1,1313 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//wp-events-plugin.com//7.6//EN
+TZID:Europe/London
+X-WR-TIMEZONE:Europe/London
+BEGIN:VEVENT
+UID:8625@phcl.org
+DTSTART;TZID=Europe/London:20261123T110000
+DTEND;TZID=Europe/London:20261123T113000
+DTSTAMP:20251204T133134Z
+URL:https://www.phcl.org/events/monday-rhyme-time-5-2026-01-05-2026-01-12-
+ 2026-01-19-2026-01-26-2026-02-02-2026-02-09-2026-02-16-2026-02-23-2026-03-
+ 02-2026-03-09-2026-03-16-2026-03-23-2026-03-30-2026-04-06-2026-04-13-2-16-
+ 2026-11-23/
+SUMMARY:Monday Rhyme Time
+DESCRIPTION:Calling all babies and toddlers\, come and join us for songs an
+ d stories at Primrose Hill Community Library\n\nSuggested Donation: £2
+ATTACH;FMTTYPE=image/jpeg:https://www.phcl.org/wp-content/uploads/2020/01/
+ pexels-leeloo-thefirst-7307953.jpg
+CATEGORIES:Events for kids
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\
+ , 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8
+ YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Lib
+ rary\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, 
+ NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Communit
+ y Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:9253@phcl.org
+DTSTART;TZID=Europe/London:20261123T180000
+DTEND;TZID=Europe/London:20261123T200000
+DTSTAMP:20260507T135248Z
+URL:https://www.phcl.org/events/board-games-4-2026-01-12-2026-01-19-2026-0
+ 1-26-2026-02-02-2026-02-09-2026-02-16-2026-02-23-2026-03-02-2026-03-09-202
+ 6-03-16-2026-03-23-2026-03-30-2026-04-06-2026-04-13-2026-04-20-2026-04-16-
+ 2026-11-23/
+SUMMARY:Board Games
+DESCRIPTION:Come along to the library for our board game evening. Feel free
+  to bring your own to introduce to the group or join in with one that we h
+ ave.\n\nFree\, all welcome
+ATTACH;FMTTYPE=image/jpeg:https://www.phcl.org/wp-content/uploads/2023/01/
+ pexels-pavel-danilyuk-8111357.jpg
+CATEGORIES:Social
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\
+ , 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8
+ YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Lib
+ rary\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, 
+ NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Communit
+ y Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:9569@phcl.org
+DTSTART;TZID=Europe/London:20261123T193000
+DTEND;TZID=Europe/London:20261123T210000
+DTSTAMP:20260507T135854Z
+URL:https://www.phcl.org/events/voices-on-the-hill-7-2026-11-23/
+SUMMARY:Voices On The Hill Choir
+DESCRIPTION:A community choir meeting for the joy of singing\, connection\,
+  expert input\, mix of music\, interaction\, learning\, charity gigs.\n\nS
+ inging: soul\, blues\, pop\, jazz\, classics.\n\nEveryone welcome.\n\nMond
+ ays 7.30-9pm\, £10 per sessions\n\nContact voicesonthehillchoir@gmail.com
+  for more information.
+CATEGORIES:Events for adults
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\
+ , 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8
+ YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Lib
+ rary\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, 
+ NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Communit
+ y Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:9924@phcl.org
+DTSTART;TZID=Europe/London:20261123T193000
+DTEND;TZID=Europe/London:20261123T203000
+DTSTAMP:20261028T164010Z
+URL:https://www.phcl.org/events/chess-club-8-2026-11-23/
+SUMMARY:Chess Club
+DESCRIPTION:\n\n\n\nEvery other Monday 7.30pm\, free and open to all abilit
+ ies.\n\n\n\n
+ATTACH;FMTTYPE=image/jpeg:https://www.phcl.org/wp-content/uploads/2026/10/
+ Chess-Club-2026-2nd.png
+CATEGORIES:Events for adults,Events for kids
+LOCATION:Primrose Hill Library\, 11-16 Sharples Hall Street\, London \, NW1
+  8YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=11-16 Sharples Hall Street\
+ , London \, NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose H
+ ill Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:8524@phcl.org
+DTSTART;TZID=Europe/London:20261124T100000
+DTEND;TZID=Europe/London:20261124T103000
+DTSTAMP:20251204T132637Z
+URL:https://www.phcl.org/events/ballet-class-6-2026-01-13-2026-01-20-2026-
+ 01-27-2026-02-03-2026-02-10-2026-02-17-2026-02-24-2026-03-03-2026-03-10-20
+ 26-03-17-2026-03-24-2026-03-31-2026-04-07-2026-04-14-2026-04-21-2026-0-17-
+ 2026-11-24/
+SUMMARY:Ballet Class
+DESCRIPTION:The ballet class will be fun and creative\, whilst still encour
+ aging correct technique and learning the basics of Ballet. Imagery and sto
+ ry play are key parts of the process. The children will learn to express t
+ hemselves through movement\, whilst gaining flexibility and fantastic post
+ ure\n\nPlease wear comfortable clothing. If you have tutus and leotards fa
+ ntastic. Not to worry if not.\n\nSuggested donation £2. For more informat
+ ion get in touch with lilykourakou@hotmail.com.
+ATTACH;FMTTYPE=image/jpeg:https://www.phcl.org/wp-content/uploads/2023/01/
+ pexels-cottonbro-studio-6753535.jpg
+CATEGORIES:Events for kids
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\
+ , 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8
+ YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Lib
+ rary\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, 
+ NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Communit
+ y Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:8322@phcl.org
+DTSTART;TZID=Europe/London:20261124T101500
+DTEND;TZID=Europe/London:20261124T110000
+DTSTAMP:20251125T132822Z
+URL:https://www.phcl.org/events/dynamic-pilates-class-7-2026-01-06-2026-01
+ -13-2026-01-20-2026-01-27-2026-02-03-2026-02-10-2026-02-17-2026-02-24-2026
+ -03-03-2026-03-10-2026-03-17-2026-03-24-2026-03-31-2026-04-07-2026-04-17-2
+ 026-11-24/
+SUMMARY:Dynamic Pilates Class
+DESCRIPTION:Pilates at Primrose Hill Community Library on Tuesdays\n\nClass
+ es are £15\, or 10 classes for £120\n\nFor more information contact Patr
+ icia on 07944 652557 or email patricia-pilates@outlook.com.\n\n&nbsp\;
+CATEGORIES:Events for adults,Fitness
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\
+ , 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8
+ YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Lib
+ rary\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, 
+ NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Communit
+ y Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:8423@phcl.org
+DTSTART;TZID=Europe/London:20261124T113000
+DTEND;TZID=Europe/London:20261124T121500
+DTSTAMP:20251125T132854Z
+URL:https://www.phcl.org/events/gentle-pilates-class-7-2026-01-06-2026-01-
+ 13-2026-01-20-2026-01-27-2026-02-03-2026-02-10-2026-02-17-2026-02-24-2026-
+ 03-03-2026-03-10-2026-03-17-2026-03-24-2026-03-31-2026-04-07-2026-04-1-17-
+ 2026-11-24/
+SUMMARY:Gentle Pilates Class
+DESCRIPTION:Pilates at Primrose Hill Community Library on Tuesdays\n\nClass
+ es are £15\, or 10 classes for £120\n\nFor more information contact Patr
+ icia at patricia-pilates@outlook.com.\n\n&nbsp\;
+ATTACH;FMTTYPE=image/jpeg:https://www.phcl.org/wp-content/uploads/2021/07/
+ junseong-lee-G9H5edUL0T8-unsplash-scaled.jpg
+CATEGORIES:Events for adults,Fitness
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\
+ , 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8
+ YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Lib
+ rary\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, 
+ NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Communit
+ y Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:9617@phcl.org
+DTSTART;TZID=Europe/London:20261124T193000
+DTEND;TZID=Europe/London:20261124T210000
+DTSTAMP:20260507T140013Z
+URL:https://www.phcl.org/events/fellows-singers-5-2026-05-05-2026-05-12-20
+ 26-05-19-2026-05-26-2026-06-02-2026-06-09-2026-06-16-2026-06-23-2026-06-30
+ -2026-07-07-2026-07-14-2026-07-21-2026-07-28-2026-08-04-2026-08-11-202-17-
+ 2026-11-24/
+SUMMARY:Fellows Singers
+DESCRIPTION:The Fellows Singers is a local chamber choir founded in 2017. F
+ rom September\, Jonathan Darbourne\, Artistic Director of Vache Baroque\, 
+ becomes its Director of Music. The range of music covered is broad from ea
+ rly English madrigals to classic pop via old English folk songs and operat
+ ic choruses. Concerts take place three times a year and in addition there 
+ are opportunities for solos for those who wish to sing them. The choir als
+ o leads the carol service at St Saviours Chruch\, Eton Road.\n\nThey are a
+  friendly community of amateur singers at various levels of experience\, a
+ lthough some experience of singing in choirs is desirable. The Fellows Sin
+ gers are looking for new members\, especially male voices.\n\nRehearsals t
+ ake place on Tuesday evenings\, mostly in the Primrose Hill Community Libr
+ ary\, starting on 24 September. Approximate costs per term (10 sessions pl
+ us concert) are £120 including room hire and fee to the music director (d
+ epending on numbers in the choir). An additional fee for an accompanist at
+  the concert\, which takes place at St Saviours Church\, would be about £
+ 10 per person. Please contact Jeremy Lewison on 07901 555 785\, jeremy@jer
+ emylewison.co.uk for further information.
+CATEGORIES:Events for adults
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\
+ , 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8
+ YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Lib
+ rary\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, 
+ NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Communit
+ y Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:9152@phcl.org
+DTSTART;TZID=Europe/London:20261125T191500
+DTEND;TZID=Europe/London:20261125T211500
+DTSTAMP:20260507T125105Z
+URL:https://www.phcl.org/events/london-sound-project-7-2026-04-08-2026-04-
+ 15-2026-04-22-2026-04-29-2026-05-06-2026-05-13-2026-05-20-2026-05-27-2026-
+ 06-03-2026-06-10-2026-06-17-2026-06-24-2026-07-01-2026-07-08-2026-07-1-18-
+ 2026-11-25/
+SUMMARY:London Sound Project
+DESCRIPTION:London Sound Project is a friendly community-led choir in North
+  London\, performing contemporary songs with a pro-band. Anyone can join\,
+  there are no auditions and you do not need to be able to read music.\n\nI
+ f you’d like to know more or join for a free trial session\, please visi
+ t ldnsoundproject.co.uk or contact ldnsoundproject@gmail.com\n\n18 yrs +\,
+  Wednesday evenings 7.15-9.15pm
+CATEGORIES:Events for adults
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\
+ , 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8
+ YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Lib
+ rary\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, 
+ NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Communit
+ y Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:9745@phcl.org
+DTSTART;TZID=Europe/London:20261126T100000
+DTEND;TZID=Europe/London:20261126T150000
+DTSTAMP:20260702T122343Z
+URL:https://www.phcl.org/events/a-day-of-discovery-2-2026-08-27-2026-09-24
+ -2026-10-29-2026-11-26/
+SUMMARY:A Day of Discovery
+DESCRIPTION:A Day of Discovery\n\nJoin the specialists from Sworders Fine A
+ rt Auctioneers for a complimentary valuation day at Primrose Hill Communit
+ y Library the last Thursday of every month. Whether you’re considering s
+ elling or are simply curious\, bring along your items to receive expert au
+ ction advice\, learn more about your treasured pieces and explore their po
+ tential in today’s market.\n\nThe specialists can assist with valuations
+  in the following areas: Art\, Antiques\, Jewellery\, Watches\, Design (sp
+ an a wide range of movements from the mid-nineteenth century to the presen
+ t day)\, Collectables\, Books\, Maps\, Asian and Indian works of art\, coi
+ ns\, medals and silver\n\nSpecialists will be on hand to conduct valuation
+ s from:\n\n10am - 3pm\n\nFor advance enquiries\, please contact london@swo
+ rder.co.uk or call 020 3971 2500.\n\nHome valuation visits are also availa
+ ble upon request.
+ATTACH;FMTTYPE=image/jpeg:https://www.phcl.org/wp-content/uploads/2026/03/
+ Valuation.png
+CATEGORIES:Events for adults
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\
+ , 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8
+ YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Lib
+ rary\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, 
+ NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Communit
+ y Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:10034@phcl.org
+DTSTART;TZID=Europe/London:20261126T102500
+DTEND;TZID=Europe/London:20261126T111000
+DTSTAMP:20261029T093043Z
+URL:https://www.phcl.org/events/mini-mozart-20-2026-11-26/
+SUMMARY:Mini Mozart
+DESCRIPTION:Mini Mozart is a fun filled interactive class sandwiching parac
+ hutes\, props and bubbles with classical music and nursery rhymes. Each cl
+ ass is based on a different fable and will feature at least two live music
+ ians.\nThe main difference between Mini Mozart and other music classes is 
+ that we only use Live Music and at least 2 musicians perform and interact 
+ with the children at every class.\n\n NO QUIBBLE GUARANTEE!  If Mini Moza
+ rt isn’t THE BEST thing you do with your little one all week (apart from
+  snuggles - we can’t compete with that) we’ll give you your money back
+ . Or if a nursery place comes up.  Or if you move.  Or if naptime change
+ s.  No problem.\n\nAdvanced booking required at www.minimozart.com\n\n&nb
+ sp\;
+ATTACH;FMTTYPE=image/jpeg:https://www.phcl.org/wp-content/uploads/2021/07/
+ Toddler_playing_trumpet.jpg
+CATEGORIES:Events for kids,Events for parents
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\
+ , 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8
+ YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Lib
+ rary\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, 
+ NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Communit
+ y Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:9351@phcl.org
+DTSTART;TZID=Europe/London:20261126T153000
+DTEND;TZID=Europe/London:20261126T180000
+DTSTAMP:20260507T135347Z
+URL:https://www.phcl.org/events/first-class-learning-maths-and-english-lea
+ rning-centre-6-2026-01-15-2026-01-22-2026-01-29-2026-02-05-2026-02-12-2026
+ -02-19-2026-02-26-2026-03-05-2026-03-12-2026-03-19-2026-03-26-2026-04-19-2
+ 026-11-26/
+SUMMARY:First Class Learning Maths and English Learning Centre
+DESCRIPTION:First Class Learning is a worksheet based programme in line wit
+ h the National Curriculum\, helping to boost confidence\, fill gaps\, ensu
+ ring fluency and long term retention with independence. We have been worki
+ ng with children from the age of 4 to 16 with both maths and English tuiti
+ on. We cater for learners from Early Years and primary through to GCSE an
+ d adult students. Our tuition centre incorporates First Class Learning\, S
+ ATS\, 11+\, 13+ and GCSE worksheets.\n\n&nbsp\;\n\nOur programme is based 
+ on:\n\n 	10-15 minutes of daily homework with step-by-step approach\n 	Tel
+ ephone support Monday to Friday\, 10am to 6pm\, if needed\n 	Aligned to th
+ e National Curriculum\n\n&nbsp\;\n\nWe believe in 1% steps to 100% success
+  and we are here to help your child achieve that! We are operational every
+  Thursday\, from 3.45 pm to 6.00 pm at\n\nPrimrose Hill Community Library\
+ n\nSharpleshall Street\n\nNW1 8YN\n\nLondon\n\n&nbsp\;\n\nCall us now on 
+ +44 7966484568 and book your child for a FREE assessment!
+CATEGORIES:Learning
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\
+ , 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8
+ YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Lib
+ rary\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, 
+ NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Communit
+ y Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:9906@phcl.org
+DTSTART;TZID=Europe/London:20261126T170000
+DTEND;TZID=Europe/London:20261126T180000
+DTSTAMP:20260903T120905Z
+URL:https://www.phcl.org/events/art-and-expression-after-school-art-club-2
+ 026-09-24-2026-10-01-2026-10-08-2026-10-15-2026-10-22-2026-10-29-2026-11-0
+ 5-2026-11-12-2026-11-19-2026-11-26/
+SUMMARY:Art and Expression: After School Art Club
+DESCRIPTION:\n10 sessions\, Thursdays\, 5-6 pm\n24th September - 3rd Decemb
+ er\nHalf-term break: 29th October\nFor more information and bookings:\nIns
+ tagram: @artandperception\nwww.artandperception.co.uk\nWhatsApp: 07397 060
+ 559\n\n\nMap\n
+ATTACH;FMTTYPE=image/jpeg:https://www.phcl.org/wp-content/uploads/2026/09/
+ Art-and-Expression-scaled.jpg
+CATEGORIES:Events for kids
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\
+ , 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8
+ YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Lib
+ rary\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, 
+ NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Communit
+ y Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:9673@phcl.org
+DTSTART;TZID=Europe/London:20261127T103000
+DTEND;TZID=Europe/London:20261127T113000
+DTSTAMP:20260602T141551Z
+URL:https://www.phcl.org/events/interactive-fun-storytelling-4-2026-01-09-
+ 2026-01-16-2026-01-23-2026-01-30-2026-02-06-2026-02-13-2026-02-20-2026-02-
+ 27-2026-03-06-2026-03-13-2026-03-20-2026-03-27-2026-04-03-2026-04-10-2-20-
+ 2026-11-27/
+SUMMARY:Interactive & Fun Storytelling
+DESCRIPTION:With over 30 years of experience\, Tales with Tracey offers a f
+ un and educational experience for your little ones. Each session features 
+ a well-loved children's book\, enhanced with props\, expressive character 
+ voices\, and interactive storytelling.\n\nAlongside the story\, children w
+ ill enjoy singing\, rhymes\, and lively verbal exchanges that encourage th
+ em to learn new words\, improve language skills\, and boost their imaginat
+ ion.\n\n£3\n\n10.30am on Fridays | 11am on Saturdays.
+ATTACH;FMTTYPE=image/jpeg:https://www.phcl.org/wp-content/uploads/2026/03/
+ TWT-e1780409237705.png
+CATEGORIES:Events for kids
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\
+ , 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8
+ YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Lib
+ rary\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, 
+ NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Communit
+ y Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:8911@phcl.org
+DTSTART;TZID=Europe/London:20261128T110000
+DTEND;TZID=Europe/London:20261128T110000
+DTSTAMP:20260602T141637Z
+URL:https://www.phcl.org/events/interactive-fun-storytelling-3-2026-11-28/
+SUMMARY:Interactive & Fun Storytelling
+DESCRIPTION:With over 30 years of experience\, Tales with Tracey offers a f
+ un and educational experience for your little ones. Each session features 
+ a well-loved children's book\, enhanced with props\, expressive character 
+ voices\, and interactive storytelling.\n\nAlongside the story\, children w
+ ill enjoy singing\, rhymes\, and lively verbal exchanges that encourage th
+ em to learn new words\, improve language skills\, and boost their imaginat
+ ion.\n\n£3\, 11am on Saturdays.
+ATTACH;FMTTYPE=image/jpeg:https://www.phcl.org/wp-content/uploads/2026/03/
+ TWT-e1780409237705.png
+CATEGORIES:Events for kids
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\
+ , 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8
+ YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Lib
+ rary\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, 
+ NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Communit
+ y Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:9918@phcl.org
+DTSTART;TZID=Europe/London:20261129T100000
+DTEND;TZID=Europe/London:20261129T170000
+DTSTAMP:20261022T102318Z
+URL:https://www.phcl.org/events/craft-fair-and-book-and-cake-sale-2026/
+SUMMARY:Craft Fair and Book and Cake Sale 2026
+DESCRIPTION:\n\nThe annual Primrose Hill Community Library Craft Fair and B
+ ook and Cake Sale will take place on Sunday 29 November. Come along for:\n
+ \n 	Handmade crafts from local businesses\n 	Warm drinks\n 	Mulled wine\n 
+ 	Second-hand books\n\nWe are currently seeking donations of good quality 
+ books for both children and adults in English. Please bring them in during
+  our opening hours.\n\n&nbsp\;
+ATTACH;FMTTYPE=image/jpeg:https://www.phcl.org/wp-content/uploads/2026/09/
+ 2026-Craft-Fair-Book-Sale-Homemade-cakes.png
+CATEGORIES:Events for adults,Events for kids
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\
+ , 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8
+ YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Lib
+ rary\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, 
+ NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Communit
+ y Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:8626@phcl.org
+DTSTART;TZID=Europe/London:20261130T110000
+DTEND;TZID=Europe/London:20261130T113000
+DTSTAMP:20251204T133134Z
+URL:https://www.phcl.org/events/monday-rhyme-time-5-2026-01-05-2026-01-12-
+ 2026-01-19-2026-01-26-2026-02-02-2026-02-09-2026-02-16-2026-02-23-2026-03-
+ 02-2026-03-09-2026-03-16-2026-03-23-2026-03-30-2026-04-06-2026-04-13-2-23-
+ 2026-11-30/
+SUMMARY:Monday Rhyme Time
+DESCRIPTION:Calling all babies and toddlers\, come and join us for songs an
+ d stories at Primrose Hill Community Library\n\nSuggested Donation: £2
+ATTACH;FMTTYPE=image/jpeg:https://www.phcl.org/wp-content/uploads/2020/01/
+ pexels-leeloo-thefirst-7307953.jpg
+CATEGORIES:Events for kids
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\
+ , 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8
+ YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Lib
+ rary\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, 
+ NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Communit
+ y Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:9254@phcl.org
+DTSTART;TZID=Europe/London:20261130T180000
+DTEND;TZID=Europe/London:20261130T200000
+DTSTAMP:20260507T135248Z
+URL:https://www.phcl.org/events/board-games-4-2026-01-12-2026-01-19-2026-0
+ 1-26-2026-02-02-2026-02-09-2026-02-16-2026-02-23-2026-03-02-2026-03-09-202
+ 6-03-16-2026-03-23-2026-03-30-2026-04-06-2026-04-13-2026-04-20-2026-04-23-
+ 2026-11-30/
+SUMMARY:Board Games
+DESCRIPTION:Come along to the library for our board game evening. Feel free
+  to bring your own to introduce to the group or join in with one that we h
+ ave.\n\nFree\, all welcome
+ATTACH;FMTTYPE=image/jpeg:https://www.phcl.org/wp-content/uploads/2023/01/
+ pexels-pavel-danilyuk-8111357.jpg
+CATEGORIES:Social
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\
+ , 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8
+ YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Lib
+ rary\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, 
+ NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Communit
+ y Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:9570@phcl.org
+DTSTART;TZID=Europe/London:20261130T193000
+DTEND;TZID=Europe/London:20261130T210000
+DTSTAMP:20260507T135854Z
+URL:https://www.phcl.org/events/voices-on-the-hill-7-2026-11-30/
+SUMMARY:Voices On The Hill Choir
+DESCRIPTION:A community choir meeting for the joy of singing\, connection\,
+  expert input\, mix of music\, interaction\, learning\, charity gigs.\n\nS
+ inging: soul\, blues\, pop\, jazz\, classics.\n\nEveryone welcome.\n\nMond
+ ays 7.30-9pm\, £10 per sessions\n\nContact voicesonthehillchoir@gmail.com
+  for more information.
+CATEGORIES:Events for adults
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\
+ , 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8
+ YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Lib
+ rary\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, 
+ NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Communit
+ y Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:8525@phcl.org
+DTSTART;TZID=Europe/London:20261201T100000
+DTEND;TZID=Europe/London:20261201T103000
+DTSTAMP:20251204T132637Z
+URL:https://www.phcl.org/events/ballet-class-6-2026-01-13-2026-01-20-2026-
+ 01-27-2026-02-03-2026-02-10-2026-02-17-2026-02-24-2026-03-03-2026-03-10-20
+ 26-03-17-2026-03-24-2026-03-31-2026-04-07-2026-04-14-2026-04-21-2026-0-24-
+ 2026-12-01/
+SUMMARY:Ballet Class
+DESCRIPTION:The ballet class will be fun and creative\, whilst still encour
+ aging correct technique and learning the basics of Ballet. Imagery and sto
+ ry play are key parts of the process. The children will learn to express t
+ hemselves through movement\, whilst gaining flexibility and fantastic post
+ ure\n\nPlease wear comfortable clothing. If you have tutus and leotards fa
+ ntastic. Not to worry if not.\n\nSuggested donation £2. For more informat
+ ion get in touch with lilykourakou@hotmail.com.
+ATTACH;FMTTYPE=image/jpeg:https://www.phcl.org/wp-content/uploads/2023/01/
+ pexels-cottonbro-studio-6753535.jpg
+CATEGORIES:Events for kids
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\
+ , 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8
+ YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Lib
+ rary\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, 
+ NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Communit
+ y Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:8323@phcl.org
+DTSTART;TZID=Europe/London:20261201T101500
+DTEND;TZID=Europe/London:20261201T110000
+DTSTAMP:20251125T132822Z
+URL:https://www.phcl.org/events/dynamic-pilates-class-7-2026-01-06-2026-01
+ -13-2026-01-20-2026-01-27-2026-02-03-2026-02-10-2026-02-17-2026-02-24-2026
+ -03-03-2026-03-10-2026-03-17-2026-03-24-2026-03-31-2026-04-07-2026-04-24-2
+ 026-12-01/
+SUMMARY:Dynamic Pilates Class
+DESCRIPTION:Pilates at Primrose Hill Community Library on Tuesdays\n\nClass
+ es are £15\, or 10 classes for £120\n\nFor more information contact Patr
+ icia on 07944 652557 or email patricia-pilates@outlook.com.\n\n&nbsp\;
+CATEGORIES:Events for adults,Fitness
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\
+ , 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8
+ YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Lib
+ rary\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, 
+ NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Communit
+ y Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:8424@phcl.org
+DTSTART;TZID=Europe/London:20261201T113000
+DTEND;TZID=Europe/London:20261201T121500
+DTSTAMP:20251125T132854Z
+URL:https://www.phcl.org/events/gentle-pilates-class-7-2026-01-06-2026-01-
+ 13-2026-01-20-2026-01-27-2026-02-03-2026-02-10-2026-02-17-2026-02-24-2026-
+ 03-03-2026-03-10-2026-03-17-2026-03-24-2026-03-31-2026-04-07-2026-04-1-24-
+ 2026-12-01/
+SUMMARY:Gentle Pilates Class
+DESCRIPTION:Pilates at Primrose Hill Community Library on Tuesdays\n\nClass
+ es are £15\, or 10 classes for £120\n\nFor more information contact Patr
+ icia at patricia-pilates@outlook.com.\n\n&nbsp\;
+ATTACH;FMTTYPE=image/jpeg:https://www.phcl.org/wp-content/uploads/2021/07/
+ junseong-lee-G9H5edUL0T8-unsplash-scaled.jpg
+CATEGORIES:Events for adults,Fitness
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\
+ , 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8
+ YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Lib
+ rary\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, 
+ NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Communit
+ y Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:10089@phcl.org
+DTSTART;TZID=Europe/London:20261201T191500
+DTEND;TZID=Europe/London:20261201T220000
+DTSTAMP:20261104T081449Z
+URL:https://www.phcl.org/events/film-show-mamma-mia/
+SUMMARY:Film Show: Mamma Mia
+DESCRIPTION:Doors: 7.15pm • Introduction: 7.45pm • Film: 8.00pm\n\n2008
+  • Musical/Comedy • 1h 48m • 12\n\nDirected by: Phyllida Lloyd\n\nS
+ tarring: Meryl Streep\, Amanda Seyfried\, Pierce Brosnan &amp\; Colin Firt
+ h\n\nGet ready for sunshine\, romance and an irresistible collection of AB
+ BA classics with Mamma Mia!\, the hugely popular musical comedy directed b
+ y Phyllida Lloyd. Set against the stunning backdrop of a Greek island\, th
+ is feel-good film is bursting with infectious energy\, laugh-out-loud mome
+ nts and much-loved songs that will have you singing along.\n\nThe story ce
+ ntres on Sophie Sheridan\, played by Amanda Seyfried\, a young woman prepa
+ ring for her wedding who has one big wish: to discover the identity of her
+  father before she walks down the aisle. Without telling her mother\, Donn
+ a\, a spirited former singer played by Meryl Streep\, Sophie secretly invi
+ tes three men from Donna's past to the island. Enter Sam (Pierce Brosnan)\
+ , Bill (Stellan Skarsgård) and Harry (Colin Firth)\, whose unexpected arr
+ ival sets in motion a wonderfully chaotic series of revelations\, romantic
+  entanglements and family surprises.\n\nWith a fantastic supporting cast i
+ ncluding Julie Walters and Christine Baranski as Donna's lifelong friends\
+ , and a soundtrack packed with ABBA favourites such as Dancing Queen\, The
+  Winner Takes It All and Gimme! Gimme! Gimme!\, the film is a joyous celeb
+ ration of friendship\, family and second chances.\n\nAn irresistible slice
+  of escapism\, Mamma Mia! is the perfect big-screen treat\, guaranteed to 
+ lift your spirits and leave you humming all the way home.\n\n\n\nTickets\n
+ [tt-event url='https://www.tickettailor.com/checkout/new-session/id/939678
+ 2/chk/20a4a35a9d8e248ad11997bb2bcf75c9/?ref=website_widget&amp\;show_event
+ _filter=false' minimal='true' bg_fill='false' show_logo='false' inherit_re
+ f_from_url_param='' ref='website_widget']\n\nThe Film Show often sells out
+ \, so please book early.\n\nIf you’re unable to buy tickets online\, you
+  can purchase them in advance at the Library. Will or Cheuk will be happy 
+ to help.\n\nA very limited number of tickets will be available at the Libr
+ ary on the night\, first come first served\, but availability is not guara
+ nteed.\n\nPlease note: tickets are non-refundable\, seating is unreserved\
+ , and latecomers may not be admitted\; their seats may be given to another
+  guest.\n\n\n\nMap\n
+ATTACH;FMTTYPE=image/jpeg:https://www.phcl.org/wp-content/uploads/2026/10/
+ mamma-mia-before-after-071123-tout-fe96a39e80fe4af88ac4ecf2a0ff6ab7.jpg
+CATEGORIES:Film Show
+LOCATION:https://goo.gl/maps/vdiRTuBHU8PBzVLy8
+END:VEVENT
+BEGIN:VEVENT
+UID:9153@phcl.org
+DTSTART;TZID=Europe/London:20261202T191500
+DTEND;TZID=Europe/London:20261202T211500
+DTSTAMP:20260507T125105Z
+URL:https://www.phcl.org/events/london-sound-project-7-2026-04-08-2026-04-
+ 15-2026-04-22-2026-04-29-2026-05-06-2026-05-13-2026-05-20-2026-05-27-2026-
+ 06-03-2026-06-10-2026-06-17-2026-06-24-2026-07-01-2026-07-08-2026-07-1-25-
+ 2026-12-02/
+SUMMARY:London Sound Project
+DESCRIPTION:London Sound Project is a friendly community-led choir in North
+  London\, performing contemporary songs with a pro-band. Anyone can join\,
+  there are no auditions and you do not need to be able to read music.\n\nI
+ f you’d like to know more or join for a free trial session\, please visi
+ t ldnsoundproject.co.uk or contact ldnsoundproject@gmail.com\n\n18 yrs +\,
+  Wednesday evenings 7.15-9.15pm
+CATEGORIES:Events for adults
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\
+ , 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8
+ YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Lib
+ rary\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, 
+ NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Communit
+ y Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:10035@phcl.org
+DTSTART;TZID=Europe/London:20261203T102500
+DTEND;TZID=Europe/London:20261203T111000
+DTSTAMP:20261029T093043Z
+URL:https://www.phcl.org/events/mini-mozart-20-2026-12-03/
+SUMMARY:Mini Mozart
+DESCRIPTION:Mini Mozart is a fun filled interactive class sandwiching parac
+ hutes\, props and bubbles with classical music and nursery rhymes. Each cl
+ ass is based on a different fable and will feature at least two live music
+ ians.\nThe main difference between Mini Mozart and other music classes is 
+ that we only use Live Music and at least 2 musicians perform and interact 
+ with the children at every class.\n\n NO QUIBBLE GUARANTEE!  If Mini Moza
+ rt isn’t THE BEST thing you do with your little one all week (apart from
+  snuggles - we can’t compete with that) we’ll give you your money back
+ . Or if a nursery place comes up.  Or if you move.  Or if naptime change
+ s.  No problem.\n\nAdvanced booking required at www.minimozart.com\n\n&nb
+ sp\;
+ATTACH;FMTTYPE=image/jpeg:https://www.phcl.org/wp-content/uploads/2021/07/
+ Toddler_playing_trumpet.jpg
+CATEGORIES:Events for kids,Events for parents
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\
+ , 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8
+ YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Lib
+ rary\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, 
+ NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Communit
+ y Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:9352@phcl.org
+DTSTART;TZID=Europe/London:20261203T153000
+DTEND;TZID=Europe/London:20261203T180000
+DTSTAMP:20260507T135347Z
+URL:https://www.phcl.org/events/first-class-learning-maths-and-english-lea
+ rning-centre-6-2026-01-15-2026-01-22-2026-01-29-2026-02-05-2026-02-12-2026
+ -02-19-2026-02-26-2026-03-05-2026-03-12-2026-03-19-2026-03-26-2026-04-26-2
+ 026-12-03/
+SUMMARY:First Class Learning Maths and English Learning Centre
+DESCRIPTION:First Class Learning is a worksheet based programme in line wit
+ h the National Curriculum\, helping to boost confidence\, fill gaps\, ensu
+ ring fluency and long term retention with independence. We have been worki
+ ng with children from the age of 4 to 16 with both maths and English tuiti
+ on. We cater for learners from Early Years and primary through to GCSE an
+ d adult students. Our tuition centre incorporates First Class Learning\, S
+ ATS\, 11+\, 13+ and GCSE worksheets.\n\n&nbsp\;\n\nOur programme is based 
+ on:\n\n 	10-15 minutes of daily homework with step-by-step approach\n 	Tel
+ ephone support Monday to Friday\, 10am to 6pm\, if needed\n 	Aligned to th
+ e National Curriculum\n\n&nbsp\;\n\nWe believe in 1% steps to 100% success
+  and we are here to help your child achieve that! We are operational every
+  Thursday\, from 3.45 pm to 6.00 pm at\n\nPrimrose Hill Community Library\
+ n\nSharpleshall Street\n\nNW1 8YN\n\nLondon\n\n&nbsp\;\n\nCall us now on 
+ +44 7966484568 and book your child for a FREE assessment!
+CATEGORIES:Learning
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\
+ , 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8
+ YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Lib
+ rary\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, 
+ NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Communit
+ y Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:9907@phcl.org
+DTSTART;TZID=Europe/London:20261203T170000
+DTEND;TZID=Europe/London:20261203T180000
+DTSTAMP:20260903T120905Z
+URL:https://www.phcl.org/events/art-and-expression-after-school-art-club-2
+ 026-09-24-2026-10-01-2026-10-08-2026-10-15-2026-10-22-2026-10-29-2026-11-0
+ 5-2026-11-12-2026-11-19-2026-11-26-2026-12-03/
+SUMMARY:Art and Expression: After School Art Club
+DESCRIPTION:\n10 sessions\, Thursdays\, 5-6 pm\n24th September - 3rd Decemb
+ er\nHalf-term break: 29th October\nFor more information and bookings:\nIns
+ tagram: @artandperception\nwww.artandperception.co.uk\nWhatsApp: 07397 060
+ 559\n\n\nMap\n
+ATTACH;FMTTYPE=image/jpeg:https://www.phcl.org/wp-content/uploads/2026/09/
+ Art-and-Expression-scaled.jpg
+CATEGORIES:Events for kids
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\
+ , 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8
+ YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Lib
+ rary\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, 
+ NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Communit
+ y Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:9674@phcl.org
+DTSTART;TZID=Europe/London:20261204T103000
+DTEND;TZID=Europe/London:20261204T113000
+DTSTAMP:20260602T141551Z
+URL:https://www.phcl.org/events/interactive-fun-storytelling-4-2026-01-09-
+ 2026-01-16-2026-01-23-2026-01-30-2026-02-06-2026-02-13-2026-02-20-2026-02-
+ 27-2026-03-06-2026-03-13-2026-03-20-2026-03-27-2026-04-03-2026-04-10-2-27-
+ 2026-12-04/
+SUMMARY:Interactive & Fun Storytelling
+DESCRIPTION:With over 30 years of experience\, Tales with Tracey offers a f
+ un and educational experience for your little ones. Each session features 
+ a well-loved children's book\, enhanced with props\, expressive character 
+ voices\, and interactive storytelling.\n\nAlongside the story\, children w
+ ill enjoy singing\, rhymes\, and lively verbal exchanges that encourage th
+ em to learn new words\, improve language skills\, and boost their imaginat
+ ion.\n\n£3\n\n10.30am on Fridays | 11am on Saturdays.
+ATTACH;FMTTYPE=image/jpeg:https://www.phcl.org/wp-content/uploads/2026/03/
+ TWT-e1780409237705.png
+CATEGORIES:Events for kids
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\
+ , 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8
+ YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Lib
+ rary\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, 
+ NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Communit
+ y Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:9853@phcl.org
+DTSTART;TZID=Europe/London:20261205T100000
+DTEND;TZID=Europe/London:20261205T113000
+DTSTAMP:20260720T093743Z
+URL:https://www.phcl.org/events/councillor-surgery-3-2026-12-05/
+SUMMARY:Councillor Surgery
+DESCRIPTION:Every 2nd Saturday of the month. 10am to 11am.
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\
+ , 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8
+ YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Lib
+ rary\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, 
+ NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Communit
+ y Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:9916@phcl.org
+DTSTART;TZID=Europe/London:20261205T100000
+DTEND;TZID=Europe/London:20261205T110000
+DTSTAMP:20260915T125221Z
+URL:https://www.phcl.org/events/childrens-event-paper-trails-by-amelia-tho
+ rne/
+SUMMARY:Young Readers' Author Event — Paper Trails by Amelia Thorne
+DESCRIPTION:Author Amelia Thorne will be talking about her coming-of-age hi
+ storical novel\, Paper Trails\, at the library at 10am on 5 December.\n\nP
+ erfect for readers aged 12-18 and crossover YA fans | All welcome | Drop i
+ n\nAbout the Book\nIt’s 1989 in London\, the Cold War between East and W
+ est is finally coming to an end\, and thirteen-year-old Milly has a school
+  project to find out about her family history. But all she knows is that h
+ er grandad was a doorman at the Savoy – and that\, long ago\, he was sup
+ posedly a Russian prince\, back when Russia still had princes. Could that 
+ really be true?\nSo\, when she discovers an old diary written in Russian\,
+  she enlists the help of her schoolfriend Ilya\, whose family has fled the
+  Soviet Union\, to unravel Nicolai’s story.\nAs they piece together the 
+ unbelievable details of his escape from the Red Army and the hardships\, l
+ ove and kindness he encountered as he made his way across Europe\, Milly s
+ ees an opportunity to heal the tragedies of the past – with unexpected c
+ onsequences.\nAbout the Author\nAmelia Thorne has written for Think Equal\
+ , an organisation working with schools globally to promote social and emot
+ ional education\, and for Apple Press\, set up to provide material for chi
+ ldren without access to technology during the pandemic. She was part of th
+ e creative team behind Mr Glue Stories\, an interactive story app. She rec
+ ently published a middle-grade novel\, A Leap of Hope\n\n
+ATTACH;FMTTYPE=image/jpeg:https://www.phcl.org/wp-content/uploads/2026/09/
+ Amelia-Thorne.png
+CATEGORIES:Events for kids
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\
+ , 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8
+ YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Lib
+ rary\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, 
+ NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Communit
+ y Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:8912@phcl.org
+DTSTART;TZID=Europe/London:20261205T110000
+DTEND;TZID=Europe/London:20261205T110000
+DTSTAMP:20260602T141637Z
+URL:https://www.phcl.org/events/interactive-fun-storytelling-3-2026-12-05/
+SUMMARY:Interactive & Fun Storytelling
+DESCRIPTION:With over 30 years of experience\, Tales with Tracey offers a f
+ un and educational experience for your little ones. Each session features 
+ a well-loved children's book\, enhanced with props\, expressive character 
+ voices\, and interactive storytelling.\n\nAlongside the story\, children w
+ ill enjoy singing\, rhymes\, and lively verbal exchanges that encourage th
+ em to learn new words\, improve language skills\, and boost their imaginat
+ ion.\n\n£3\, 11am on Saturdays.
+ATTACH;FMTTYPE=image/jpeg:https://www.phcl.org/wp-content/uploads/2026/03/
+ TWT-e1780409237705.png
+CATEGORIES:Events for kids
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\
+ , 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8
+ YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Lib
+ rary\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, 
+ NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Communit
+ y Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:8627@phcl.org
+DTSTART;TZID=Europe/London:20261207T110000
+DTEND;TZID=Europe/London:20261207T113000
+DTSTAMP:20251204T133134Z
+URL:https://www.phcl.org/events/monday-rhyme-time-5-2026-01-05-2026-01-12-
+ 2026-01-19-2026-01-26-2026-02-02-2026-02-09-2026-02-16-2026-02-23-2026-03-
+ 02-2026-03-09-2026-03-16-2026-03-23-2026-03-30-2026-04-06-2026-04-13-2-30-
+ 2026-12-07/
+SUMMARY:Monday Rhyme Time
+DESCRIPTION:Calling all babies and toddlers\, come and join us for songs an
+ d stories at Primrose Hill Community Library\n\nSuggested Donation: £2
+ATTACH;FMTTYPE=image/jpeg:https://www.phcl.org/wp-content/uploads/2020/01/
+ pexels-leeloo-thefirst-7307953.jpg
+CATEGORIES:Events for kids
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\
+ , 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8
+ YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Lib
+ rary\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, 
+ NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Communit
+ y Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:9255@phcl.org
+DTSTART;TZID=Europe/London:20261207T180000
+DTEND;TZID=Europe/London:20261207T200000
+DTSTAMP:20260507T135248Z
+URL:https://www.phcl.org/events/board-games-4-2026-01-12-2026-01-19-2026-0
+ 1-26-2026-02-02-2026-02-09-2026-02-16-2026-02-23-2026-03-02-2026-03-09-202
+ 6-03-16-2026-03-23-2026-03-30-2026-04-06-2026-04-13-2026-04-20-2026-04-30-
+ 2026-12-07/
+SUMMARY:Board Games
+DESCRIPTION:Come along to the library for our board game evening. Feel free
+  to bring your own to introduce to the group or join in with one that we h
+ ave.\n\nFree\, all welcome
+ATTACH;FMTTYPE=image/jpeg:https://www.phcl.org/wp-content/uploads/2023/01/
+ pexels-pavel-danilyuk-8111357.jpg
+CATEGORIES:Social
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\
+ , 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8
+ YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Lib
+ rary\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, 
+ NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Communit
+ y Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:9571@phcl.org
+DTSTART;TZID=Europe/London:20261207T193000
+DTEND;TZID=Europe/London:20261207T210000
+DTSTAMP:20260507T135854Z
+URL:https://www.phcl.org/events/voices-on-the-hill-7-2026-12-07/
+SUMMARY:Voices On The Hill Choir
+DESCRIPTION:A community choir meeting for the joy of singing\, connection\,
+  expert input\, mix of music\, interaction\, learning\, charity gigs.\n\nS
+ inging: soul\, blues\, pop\, jazz\, classics.\n\nEveryone welcome.\n\nMond
+ ays 7.30-9pm\, £10 per sessions\n\nContact voicesonthehillchoir@gmail.com
+  for more information.
+CATEGORIES:Events for adults
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\
+ , 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8
+ YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Lib
+ rary\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, 
+ NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Communit
+ y Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:9925@phcl.org
+DTSTART;TZID=Europe/London:20261207T193000
+DTEND;TZID=Europe/London:20261207T203000
+DTSTAMP:20261028T164010Z
+URL:https://www.phcl.org/events/chess-club-8-2026-12-07/
+SUMMARY:Chess Club
+DESCRIPTION:\n\n\n\nEvery other Monday 7.30pm\, free and open to all abilit
+ ies.\n\n\n\n
+ATTACH;FMTTYPE=image/jpeg:https://www.phcl.org/wp-content/uploads/2026/10/
+ Chess-Club-2026-2nd.png
+CATEGORIES:Events for adults,Events for kids
+LOCATION:Primrose Hill Library\, 11-16 Sharples Hall Street\, London \, NW1
+  8YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=11-16 Sharples Hall Street\
+ , London \, NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose H
+ ill Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:8526@phcl.org
+DTSTART;TZID=Europe/London:20261208T100000
+DTEND;TZID=Europe/London:20261208T103000
+DTSTAMP:20251204T132637Z
+URL:https://www.phcl.org/events/ballet-class-6-2026-01-13-2026-01-20-2026-
+ 01-27-2026-02-03-2026-02-10-2026-02-17-2026-02-24-2026-03-03-2026-03-10-20
+ 26-03-17-2026-03-24-2026-03-31-2026-04-07-2026-04-14-2026-04-21-2026-0-01-
+ 2026-12-08/
+SUMMARY:Ballet Class
+DESCRIPTION:The ballet class will be fun and creative\, whilst still encour
+ aging correct technique and learning the basics of Ballet. Imagery and sto
+ ry play are key parts of the process. The children will learn to express t
+ hemselves through movement\, whilst gaining flexibility and fantastic post
+ ure\n\nPlease wear comfortable clothing. If you have tutus and leotards fa
+ ntastic. Not to worry if not.\n\nSuggested donation £2. For more informat
+ ion get in touch with lilykourakou@hotmail.com.
+ATTACH;FMTTYPE=image/jpeg:https://www.phcl.org/wp-content/uploads/2023/01/
+ pexels-cottonbro-studio-6753535.jpg
+CATEGORIES:Events for kids
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\
+ , 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8
+ YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Lib
+ rary\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, 
+ NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Communit
+ y Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:8324@phcl.org
+DTSTART;TZID=Europe/London:20261208T101500
+DTEND;TZID=Europe/London:20261208T110000
+DTSTAMP:20251125T132822Z
+URL:https://www.phcl.org/events/dynamic-pilates-class-7-2026-01-06-2026-01
+ -13-2026-01-20-2026-01-27-2026-02-03-2026-02-10-2026-02-17-2026-02-24-2026
+ -03-03-2026-03-10-2026-03-17-2026-03-24-2026-03-31-2026-04-07-2026-04-01-2
+ 026-12-08/
+SUMMARY:Dynamic Pilates Class
+DESCRIPTION:Pilates at Primrose Hill Community Library on Tuesdays\n\nClass
+ es are £15\, or 10 classes for £120\n\nFor more information contact Patr
+ icia on 07944 652557 or email patricia-pilates@outlook.com.\n\n&nbsp\;
+CATEGORIES:Events for adults,Fitness
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\
+ , 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8
+ YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Lib
+ rary\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, 
+ NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Communit
+ y Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:8425@phcl.org
+DTSTART;TZID=Europe/London:20261208T113000
+DTEND;TZID=Europe/London:20261208T121500
+DTSTAMP:20251125T132854Z
+URL:https://www.phcl.org/events/gentle-pilates-class-7-2026-01-06-2026-01-
+ 13-2026-01-20-2026-01-27-2026-02-03-2026-02-10-2026-02-17-2026-02-24-2026-
+ 03-03-2026-03-10-2026-03-17-2026-03-24-2026-03-31-2026-04-07-2026-04-1-01-
+ 2026-12-08/
+SUMMARY:Gentle Pilates Class
+DESCRIPTION:Pilates at Primrose Hill Community Library on Tuesdays\n\nClass
+ es are £15\, or 10 classes for £120\n\nFor more information contact Patr
+ icia at patricia-pilates@outlook.com.\n\n&nbsp\;
+ATTACH;FMTTYPE=image/jpeg:https://www.phcl.org/wp-content/uploads/2021/07/
+ junseong-lee-G9H5edUL0T8-unsplash-scaled.jpg
+CATEGORIES:Events for adults,Fitness
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\
+ , 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8
+ YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Lib
+ rary\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, 
+ NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Communit
+ y Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:9619@phcl.org
+DTSTART;TZID=Europe/London:20261208T193000
+DTEND;TZID=Europe/London:20261208T210000
+DTSTAMP:20260507T140013Z
+URL:https://www.phcl.org/events/fellows-singers-5-2026-05-05-2026-05-12-20
+ 26-05-19-2026-05-26-2026-06-02-2026-06-09-2026-06-16-2026-06-23-2026-06-30
+ -2026-07-07-2026-07-14-2026-07-21-2026-07-28-2026-08-04-2026-08-11-202-01-
+ 2026-12-08/
+SUMMARY:Fellows Singers
+DESCRIPTION:The Fellows Singers is a local chamber choir founded in 2017. F
+ rom September\, Jonathan Darbourne\, Artistic Director of Vache Baroque\, 
+ becomes its Director of Music. The range of music covered is broad from ea
+ rly English madrigals to classic pop via old English folk songs and operat
+ ic choruses. Concerts take place three times a year and in addition there 
+ are opportunities for solos for those who wish to sing them. The choir als
+ o leads the carol service at St Saviours Chruch\, Eton Road.\n\nThey are a
+  friendly community of amateur singers at various levels of experience\, a
+ lthough some experience of singing in choirs is desirable. The Fellows Sin
+ gers are looking for new members\, especially male voices.\n\nRehearsals t
+ ake place on Tuesday evenings\, mostly in the Primrose Hill Community Libr
+ ary\, starting on 24 September. Approximate costs per term (10 sessions pl
+ us concert) are £120 including room hire and fee to the music director (d
+ epending on numbers in the choir). An additional fee for an accompanist at
+  the concert\, which takes place at St Saviours Church\, would be about £
+ 10 per person. Please contact Jeremy Lewison on 07901 555 785\, jeremy@jer
+ emylewison.co.uk for further information.
+CATEGORIES:Events for adults
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\
+ , 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8
+ YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Lib
+ rary\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, 
+ NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Communit
+ y Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:9154@phcl.org
+DTSTART;TZID=Europe/London:20261209T191500
+DTEND;TZID=Europe/London:20261209T211500
+DTSTAMP:20260507T125105Z
+URL:https://www.phcl.org/events/london-sound-project-7-2026-04-08-2026-04-
+ 15-2026-04-22-2026-04-29-2026-05-06-2026-05-13-2026-05-20-2026-05-27-2026-
+ 06-03-2026-06-10-2026-06-17-2026-06-24-2026-07-01-2026-07-08-2026-07-1-02-
+ 2026-12-09/
+SUMMARY:London Sound Project
+DESCRIPTION:London Sound Project is a friendly community-led choir in North
+  London\, performing contemporary songs with a pro-band. Anyone can join\,
+  there are no auditions and you do not need to be able to read music.\n\nI
+ f you’d like to know more or join for a free trial session\, please visi
+ t ldnsoundproject.co.uk or contact ldnsoundproject@gmail.com\n\n18 yrs +\,
+  Wednesday evenings 7.15-9.15pm
+CATEGORIES:Events for adults
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\
+ , 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8
+ YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Lib
+ rary\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, 
+ NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Communit
+ y Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:10036@phcl.org
+DTSTART;TZID=Europe/London:20261210T102500
+DTEND;TZID=Europe/London:20261210T111000
+DTSTAMP:20261029T093043Z
+URL:https://www.phcl.org/events/mini-mozart-20-2026-12-10/
+SUMMARY:Mini Mozart
+DESCRIPTION:Mini Mozart is a fun filled interactive class sandwiching parac
+ hutes\, props and bubbles with classical music and nursery rhymes. Each cl
+ ass is based on a different fable and will feature at least two live music
+ ians.\nThe main difference between Mini Mozart and other music classes is 
+ that we only use Live Music and at least 2 musicians perform and interact 
+ with the children at every class.\n\n NO QUIBBLE GUARANTEE!  If Mini Moza
+ rt isn’t THE BEST thing you do with your little one all week (apart from
+  snuggles - we can’t compete with that) we’ll give you your money back
+ . Or if a nursery place comes up.  Or if you move.  Or if naptime change
+ s.  No problem.\n\nAdvanced booking required at www.minimozart.com\n\n&nb
+ sp\;
+ATTACH;FMTTYPE=image/jpeg:https://www.phcl.org/wp-content/uploads/2021/07/
+ Toddler_playing_trumpet.jpg
+CATEGORIES:Events for kids,Events for parents
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\
+ , 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8
+ YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Lib
+ rary\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, 
+ NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Communit
+ y Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:9353@phcl.org
+DTSTART;TZID=Europe/London:20261210T153000
+DTEND;TZID=Europe/London:20261210T180000
+DTSTAMP:20260507T135347Z
+URL:https://www.phcl.org/events/first-class-learning-maths-and-english-lea
+ rning-centre-6-2026-01-15-2026-01-22-2026-01-29-2026-02-05-2026-02-12-2026
+ -02-19-2026-02-26-2026-03-05-2026-03-12-2026-03-19-2026-03-26-2026-04-03-2
+ 026-12-10/
+SUMMARY:First Class Learning Maths and English Learning Centre
+DESCRIPTION:First Class Learning is a worksheet based programme in line wit
+ h the National Curriculum\, helping to boost confidence\, fill gaps\, ensu
+ ring fluency and long term retention with independence. We have been worki
+ ng with children from the age of 4 to 16 with both maths and English tuiti
+ on. We cater for learners from Early Years and primary through to GCSE an
+ d adult students. Our tuition centre incorporates First Class Learning\, S
+ ATS\, 11+\, 13+ and GCSE worksheets.\n\n&nbsp\;\n\nOur programme is based 
+ on:\n\n 	10-15 minutes of daily homework with step-by-step approach\n 	Tel
+ ephone support Monday to Friday\, 10am to 6pm\, if needed\n 	Aligned to th
+ e National Curriculum\n\n&nbsp\;\n\nWe believe in 1% steps to 100% success
+  and we are here to help your child achieve that! We are operational every
+  Thursday\, from 3.45 pm to 6.00 pm at\n\nPrimrose Hill Community Library\
+ n\nSharpleshall Street\n\nNW1 8YN\n\nLondon\n\n&nbsp\;\n\nCall us now on 
+ +44 7966484568 and book your child for a FREE assessment!
+CATEGORIES:Learning
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\
+ , 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8
+ YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Lib
+ rary\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, 
+ NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Communit
+ y Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:9675@phcl.org
+DTSTART;TZID=Europe/London:20261211T103000
+DTEND;TZID=Europe/London:20261211T113000
+DTSTAMP:20260602T141551Z
+URL:https://www.phcl.org/events/interactive-fun-storytelling-4-2026-01-09-
+ 2026-01-16-2026-01-23-2026-01-30-2026-02-06-2026-02-13-2026-02-20-2026-02-
+ 27-2026-03-06-2026-03-13-2026-03-20-2026-03-27-2026-04-03-2026-04-10-2-04-
+ 2026-12-11/
+SUMMARY:Interactive & Fun Storytelling
+DESCRIPTION:With over 30 years of experience\, Tales with Tracey offers a f
+ un and educational experience for your little ones. Each session features 
+ a well-loved children's book\, enhanced with props\, expressive character 
+ voices\, and interactive storytelling.\n\nAlongside the story\, children w
+ ill enjoy singing\, rhymes\, and lively verbal exchanges that encourage th
+ em to learn new words\, improve language skills\, and boost their imaginat
+ ion.\n\n£3\n\n10.30am on Fridays | 11am on Saturdays.
+ATTACH;FMTTYPE=image/jpeg:https://www.phcl.org/wp-content/uploads/2026/03/
+ TWT-e1780409237705.png
+CATEGORIES:Events for kids
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\
+ , 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8
+ YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Lib
+ rary\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, 
+ NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Communit
+ y Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:8913@phcl.org
+DTSTART;TZID=Europe/London:20261212T110000
+DTEND;TZID=Europe/London:20261212T110000
+DTSTAMP:20260602T141637Z
+URL:https://www.phcl.org/events/interactive-fun-storytelling-3-2026-12-12/
+SUMMARY:Interactive & Fun Storytelling
+DESCRIPTION:With over 30 years of experience\, Tales with Tracey offers a f
+ un and educational experience for your little ones. Each session features 
+ a well-loved children's book\, enhanced with props\, expressive character 
+ voices\, and interactive storytelling.\n\nAlongside the story\, children w
+ ill enjoy singing\, rhymes\, and lively verbal exchanges that encourage th
+ em to learn new words\, improve language skills\, and boost their imaginat
+ ion.\n\n£3\, 11am on Saturdays.
+ATTACH;FMTTYPE=image/jpeg:https://www.phcl.org/wp-content/uploads/2026/03/
+ TWT-e1780409237705.png
+CATEGORIES:Events for kids
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\
+ , 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8
+ YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Lib
+ rary\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, 
+ NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Communit
+ y Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:8628@phcl.org
+DTSTART;TZID=Europe/London:20261214T110000
+DTEND;TZID=Europe/London:20261214T113000
+DTSTAMP:20251204T133134Z
+URL:https://www.phcl.org/events/monday-rhyme-time-5-2026-01-05-2026-01-12-
+ 2026-01-19-2026-01-26-2026-02-02-2026-02-09-2026-02-16-2026-02-23-2026-03-
+ 02-2026-03-09-2026-03-16-2026-03-23-2026-03-30-2026-04-06-2026-04-13-2-07-
+ 2026-12-14/
+SUMMARY:Monday Rhyme Time
+DESCRIPTION:Calling all babies and toddlers\, come and join us for songs an
+ d stories at Primrose Hill Community Library\n\nSuggested Donation: £2
+ATTACH;FMTTYPE=image/jpeg:https://www.phcl.org/wp-content/uploads/2020/01/
+ pexels-leeloo-thefirst-7307953.jpg
+CATEGORIES:Events for kids
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\
+ , 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8
+ YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Lib
+ rary\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, 
+ NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Communit
+ y Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:10088@phcl.org
+DTSTART;TZID=Europe/London:20261214T180000
+DTEND;TZID=Europe/London:20261214T200000
+DTSTAMP:20261030T122341Z
+URL:https://www.phcl.org/events/board-games/
+SUMMARY:Board Games
+DESCRIPTION:Come along to the library for our board game evening. Feel free
+  to bring your own to introduce to the group or join in with one that we h
+ ave.\n\nFree\, all welcome
+ATTACH;FMTTYPE=image/jpeg:https://www.phcl.org/wp-content/uploads/2023/01/
+ pexels-pavel-danilyuk-8111357.jpg
+CATEGORIES:Social
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\
+ , 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8
+ YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Lib
+ rary\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, 
+ NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Communit
+ y Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:9572@phcl.org
+DTSTART;TZID=Europe/London:20261214T193000
+DTEND;TZID=Europe/London:20261214T210000
+DTSTAMP:20260507T135854Z
+URL:https://www.phcl.org/events/voices-on-the-hill-7-2026-12-14/
+SUMMARY:Voices On The Hill Choir
+DESCRIPTION:A community choir meeting for the joy of singing\, connection\,
+  expert input\, mix of music\, interaction\, learning\, charity gigs.\n\nS
+ inging: soul\, blues\, pop\, jazz\, classics.\n\nEveryone welcome.\n\nMond
+ ays 7.30-9pm\, £10 per sessions\n\nContact voicesonthehillchoir@gmail.com
+  for more information.
+CATEGORIES:Events for adults
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\
+ , 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8
+ YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Lib
+ rary\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, 
+ NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Communit
+ y Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:8527@phcl.org
+DTSTART;TZID=Europe/London:20261215T100000
+DTEND;TZID=Europe/London:20261215T103000
+DTSTAMP:20251204T132637Z
+URL:https://www.phcl.org/events/ballet-class-6-2026-01-13-2026-01-20-2026-
+ 01-27-2026-02-03-2026-02-10-2026-02-17-2026-02-24-2026-03-03-2026-03-10-20
+ 26-03-17-2026-03-24-2026-03-31-2026-04-07-2026-04-14-2026-04-21-2026-0-08-
+ 2026-12-15/
+SUMMARY:Ballet Class
+DESCRIPTION:The ballet class will be fun and creative\, whilst still encour
+ aging correct technique and learning the basics of Ballet. Imagery and sto
+ ry play are key parts of the process. The children will learn to express t
+ hemselves through movement\, whilst gaining flexibility and fantastic post
+ ure\n\nPlease wear comfortable clothing. If you have tutus and leotards fa
+ ntastic. Not to worry if not.\n\nSuggested donation £2. For more informat
+ ion get in touch with lilykourakou@hotmail.com.
+ATTACH;FMTTYPE=image/jpeg:https://www.phcl.org/wp-content/uploads/2023/01/
+ pexels-cottonbro-studio-6753535.jpg
+CATEGORIES:Events for kids
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\
+ , 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8
+ YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Lib
+ rary\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, 
+ NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Communit
+ y Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:8325@phcl.org
+DTSTART;TZID=Europe/London:20261215T101500
+DTEND;TZID=Europe/London:20261215T110000
+DTSTAMP:20251125T132822Z
+URL:https://www.phcl.org/events/dynamic-pilates-class-7-2026-01-06-2026-01
+ -13-2026-01-20-2026-01-27-2026-02-03-2026-02-10-2026-02-17-2026-02-24-2026
+ -03-03-2026-03-10-2026-03-17-2026-03-24-2026-03-31-2026-04-07-2026-04-08-2
+ 026-12-15/
+SUMMARY:Dynamic Pilates Class
+DESCRIPTION:Pilates at Primrose Hill Community Library on Tuesdays\n\nClass
+ es are £15\, or 10 classes for £120\n\nFor more information contact Patr
+ icia on 07944 652557 or email patricia-pilates@outlook.com.\n\n&nbsp\;
+CATEGORIES:Events for adults,Fitness
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\
+ , 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8
+ YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Lib
+ rary\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, 
+ NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Communit
+ y Library:geo:0,0
+END:VEVENT
+BEGIN:VEVENT
+UID:8426@phcl.org
+DTSTART;TZID=Europe/London:20261215T113000
+DTEND;TZID=Europe/London:20261215T121500
+DTSTAMP:20251125T132854Z
+URL:https://www.phcl.org/events/gentle-pilates-class-7-2026-01-06-2026-01-
+ 13-2026-01-20-2026-01-27-2026-02-03-2026-02-10-2026-02-17-2026-02-24-2026-
+ 03-03-2026-03-10-2026-03-17-2026-03-24-2026-03-31-2026-04-07-2026-04-1-08-
+ 2026-12-15/
+SUMMARY:Gentle Pilates Class
+DESCRIPTION:Pilates at Primrose Hill Community Library on Tuesdays\n\nClass
+ es are £15\, or 10 classes for £120\n\nFor more information contact Patr
+ icia at patricia-pilates@outlook.com.\n\n&nbsp\;
+ATTACH;FMTTYPE=image/jpeg:https://www.phcl.org/wp-content/uploads/2021/07/
+ junseong-lee-G9H5edUL0T8-unsplash-scaled.jpg
+CATEGORIES:Events for adults,Fitness
+LOCATION:Primrose Hill Community Library\, Primrose Hill Community Library\
+ , 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, NW1 8
+ YN\, United Kingdom
+X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS=Primrose Hill Community Lib
+ rary\, 11-16 Sharples Hall St\, Primrose Hill\, London\, Greater London\, 
+ NW1 8YN\, United Kingdom;X-APPLE-RADIUS=100;X-TITLE=Primrose Hill Communit
+ y Library:geo:0,0
+END:VEVENT
+BEGIN:VTIMEZONE
+TZID:Europe/London
+X-LIC-LOCATION:Europe/London
+BEGIN:STANDARD
+DTSTART:20261025T010000
+TZOFFSETFROM:+0100
+TZOFFSETTO:+0000
+TZNAME:GMT
+END:STANDARD
+END:VTIMEZONE
+END:VCALENDAR
