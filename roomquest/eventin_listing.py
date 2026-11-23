@@ -219,6 +219,7 @@ def rows(soup, fetch, today, deadline_at):
             continue  # Includes the publisher's explicitly undecided location.
         venue, street = VENUES[item['location']]
         narrative = item['narrative']
+        photo = None
         intervals = timed_ranges(item['day'], narrative)
         walking = (item['title'] == 'Healthy Walking at Wandlebury'
                    and item['location'] == 'Wandlebury Country Park, Cambridge, CB22 3AE'
