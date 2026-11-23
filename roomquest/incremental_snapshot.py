@@ -7,6 +7,7 @@ detail has a narrower, independently revalidated identity and can reuse its
 bounded normalized evidence after an exact-request 304 or identical body.
 """
 from contextlib import contextmanager
+import ast
 from contextvars import ContextVar
 import codecs
 from dataclasses import dataclass
@@ -57,7 +58,7 @@ def _identity(item):
 
 
 @lru_cache(maxsize=1)
-def parser_context():
+def _global_parser_context():
     """Invalidate normalized evidence when any deployed adapter/config changes.
 
     Reading the small source package once avoids an error-prone manually bumped
@@ -90,6 +91,109 @@ def parser_context():
             installed = "absent"
         digest.update((dependency + "=" + installed + "\0").encode("utf-8"))
     return digest.hexdigest()
+
+
+
+# Exactly the same approved five-source pilot as the bounded HTTP cache.
+# Leave non-pilot and source-specific parser routes on the existing broad
+# fallback until their dependencies can be reviewed independently.
+_SCOPED_ICAL_KEYS = frozenset({
+    "municipal_mapsee_48489e8f5c906f7610d30197",
+    "municipal_df6fb09e5e9df3f197946372",
+    "municipal_mapsee_c3384b4db5c0226f2d7dc0bb",
+    "municipal_mapsee_a4d675992e7b41375e3f0672",
+    "municipal_mapsee_ed3b97dd2d6526767fe2da5f",
+})
+
+# The shared/normal iCalendar path invokes ics_adapter.parse, which in turn
+# calls the preview normalizer, recurrence expander, address, event URL and
+# description helpers. Hash whole relevant modules for conservative
+# dependency coverage. The large multi-provider preview_worker is captured
+# by the exact generic-ICS control-flow tail and its normalization functions.
+_SCOPED_ICAL_FILES = (
+    "roomquest/ics_adapter.py",
+    "roomquest/event_description.py",
+    "roomquest/reviewed_venue_addresses.py",
+    "roomquest/communico_links.py",
+    "roomquest/mapsee_adapter.py",
+    "roomquest/odu_campusgroups.py",
+    "roomquest/registered_native_content.py",
+    "roomquest/incremental_snapshot.py",
+    "scripts/combine_ics.py",
+)
+_SCOPED_ICAL_PREVIEW_FUNCTIONS = (
+    "_future_datetime", "_location", "_preview", "public_source_url",
+    "parse_ics_preview", "calendar_image", "event_image",
+    "calendar_categories",
+)
+_SCOPED_ICAL_DEPENDENCIES = (
+    "icalendar", "recurring-ical-events", "python-dateutil",
+    "tzdata", "x-wr-timezone", "beautifulsoup4",
+    "pytz", "timezonefinder", "timezonefinder-data",
+)
+
+
+def _scoped_ical_parser_digest(root):
+    """Hash only the proven shared ICS processing route; fail closed to broad."""
+    try:
+        tree = ast.parse((root / "roomquest/preview_worker.py").read_text("utf-8"))
+        functions = {node.name: node for node in tree.body
+                     if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))}
+        required = [functions[name] for name in _SCOPED_ICAL_PREVIEW_FUNCTIONS]
+        source = functions["preview_source"]
+        # Generic adapter dispatch sits at the very end of preview_source.
+        # Missing/moved dispatch must invalidate rather than claim equivalence.
+        tail_start = next(i for i, node in enumerate(source.body)
+            if isinstance(node, ast.Assign)
+            and any(isinstance(t, ast.Name) and t.id == "adapter"
+                    for t in node.targets)
+            and isinstance(node.value, ast.BoolOp)
+            and "platform_adapter" in ast.dump(node.value))
+        tail = source.body[tail_start:]
+        if not any(isinstance(node, ast.Constant) and node.value == "ical"
+                   for entry in tail for node in ast.walk(entry)):
+            return None
+        digest = sha256(b"eventquest-ical-parser-scope-v1\0")
+        digest.update(b"LOOKAHEAD_DAYS=60\0MAX_PREVIEWS=10\0")
+        for name, node in zip(_SCOPED_ICAL_PREVIEW_FUNCTIONS, required):
+            digest.update(name.encode("utf-8") + b"\0")
+            digest.update(ast.dump(node, include_attributes=False).encode("utf-8"))
+            digest.update(b"\0")
+        digest.update(b"preview_source.generic_ical_route\0")
+        digest.update(ast.dump(ast.Module(body=tail, type_ignores=[]),
+                               include_attributes=False).encode("utf-8"))
+        for name in _SCOPED_ICAL_FILES:
+            path = root / name
+            digest.update(name.encode("utf-8") + b"\0")
+            digest.update(path.read_bytes())
+            digest.update(b"\0")
+        for name in _SCOPED_ICAL_DEPENDENCIES:
+            try:
+                installed = version(name)
+            except PackageNotFoundError:
+                installed = "absent"
+            digest.update((name + "=" + installed + "\0").encode("utf-8"))
+        return digest.hexdigest()
+    except (OSError, ValueError, SyntaxError, KeyError, StopIteration, TypeError):
+        return None
+
+
+@lru_cache(maxsize=1)
+def _scoped_ical_parser_context():
+    return _scoped_ical_parser_digest(Path(__file__).resolve().parent.parent)
+
+
+def parser_context(source=None):
+    if (isinstance(source, dict)
+            and source.get("source_key") in _SCOPED_ICAL_KEYS
+            and source.get("kind") == "ical"
+            and source.get("platform_adapter") == "ical"):
+        scoped = _scoped_ical_parser_context()
+        if scoped is not None:
+            return scoped
+    # The full prior fingerprint remains unchanged for every other source,
+    # as well as when the scoped parser's imports/functions cannot be proven.
+    return _global_parser_context()
 
 
 def request_hash(url, accept):
@@ -165,7 +269,7 @@ class Snapshot:
         self.collection_context = dict(collection_context)
         self.policy_context = claim["policy_context"]
         self.context_hash = fingerprint({
-            "version": VERSION, "parser": parser_context(),
+            "version": VERSION, "parser": parser_context(source),
             "source": {key: value for key, value in source.items()
                        if key not in ("incremental_snapshot", "action")},
         })
