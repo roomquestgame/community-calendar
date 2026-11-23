@@ -120,6 +120,12 @@ def test_uk_range_with_one_fixed_time_uses_only_jsonld_first_day():
     assert rows[0]['starts_at'].startswith('2026-11-25T19:30')
 
 
+def test_merchandise_add_on_only_is_not_registered_as_an_event():
+    title = ('Ocean Colour Scene - Merch Add On ONLY - '
+             'PERFORMANCE TICKETS MUST BE BOUGHT SEPARATELY')
+    assert calendar._detail(source(UK), dated_uk(title=title), UK_EVENT) == []
+
+
 def test_uk_variable_time_performance_never_invents_occurrences():
     assert calendar._detail(source(UK),
         dated_uk(date='25 - 26 November, 2026', clock='Times vary by date'),
