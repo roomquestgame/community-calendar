@@ -135,3 +135,31 @@ def test_event_specific_sc_narrative_image_is_supported_without_a_new_fetch():
     assert details({'name': 'Birding'}, html)[3] == 'https://southcarolinaparks.com/assets/bird.jpg'
     with pytest.raises(ValueError, match='identity_mismatch'):
         details({'name': 'Different Event'}, html)
+
+
+def test_cambridge_eventin_media_claim_is_bound_to_first_party_event_and_image():
+    from roomquest.registration_formats import source_key
+    from roomquest.event_media import resolve_photo
+    feed = 'https://cambridgeppf.org/events-list/'
+    source = source_key(feed)
+    event = ('https://cambridgeppf.org/etn/healthy-walking-at-wandlebury-2/'
+             'healthy-walking-at-wandlebury-5/')
+    image = 'https://cambridgeppf.org/wp-content/uploads/2025/09/healthy-walkers-square.jpg'
+    assert source == 'municipal_bd1475b981e559e2d1bcf128'
+    assert family(source, event) == 'cambridge_ppf_eventin'
+    assert image_url(image, 'cambridge_ppf_eventin') == image
+    assert family(source, feed) is None
+    assert family(source, event + '?track=1') is None
+    assert family(source, 'https://other.example.org/etn/event/') is None
+    for candidate in (
+        'https://other.example.org/wp-content/uploads/2025/09/healthy-walkers-square.jpg',
+        'http://cambridgeppf.org/wp-content/uploads/2025/09/healthy-walkers-square.jpg',
+        'https://cambridgeppf.org/wp-content/uploads/2025/09/logo.jpg',
+        'https://cambridgeppf.org/wp-content/uploads/2025/09/healthy-walkers-square.jpg?width=900',
+    ):
+        assert image_url(candidate, 'cambridge_ppf_eventin') is None
+    claim = {'source_key': source, 'event_url': event, 'candidate_url': image,
+             'candidate_only': True, 'title': 'Healthy Walking at Wandlebury'}
+    result = resolve_photo(claim, probe=lambda candidate: (candidate, 'image/jpeg'))
+    assert result == {'image_url': image, 'mime_type': 'image/jpeg', 'evidence_url': event}
+
