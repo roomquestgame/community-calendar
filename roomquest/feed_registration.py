@@ -193,7 +193,17 @@ def classify(url, payload, hint=None, endpoint_only=False, venue_website=False):
     libcal = subscription(url, body)
     if libcal:
         parser.links[libcal] = 'ical'
-    links = {target: kind for target, kind in parser.links.items() if scoped_endpoint(url, target)}
+    # A monthly/weekly/daily calendar export is not evidence of a complete
+    # recurring source. Never silently choose it over a publisher-wide feed.
+    # For example, a TEC /events/month/?ical=1 export can contain only past
+    # records from one displayed month, even while its page shows many events.
+    period_links = {target for target, kind in parser.links.items()
+                    if kind == 'ical' and re.search(
+                        r'/(?:month|week|day)(?:/|$)', urlsplit(target).path, re.I)}
+    links = {target: kind for target, kind in parser.links.items()
+             if target not in period_links and scoped_endpoint(url, target)}
+    if not links and period_links:
+        return review('calendar_period_scope_unverified', 'ical')
     # Prefer a first-party subscription when one is explicitly present. Google
     # Calendar links are merely subscription wrappers; never create two source
     # identities for equivalent direct and wrapped calendar choices.
