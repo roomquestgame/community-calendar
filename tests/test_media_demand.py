@@ -229,6 +229,25 @@ class WorkerTests(unittest.TestCase):
         self.assertEqual(db.active, {})
         self.assertFalse(any(action == 'fail' for action, _, _ in db.calls))
 
+    def test_later_claim_failure_preserves_settled_wave_and_continues(self):
+        db = Database(count=6, concurrency=5)
+        claim_calls = [0]
+        def flaky(action, payload, *, timeout=4):
+            if action == 'claim':
+                claim_calls[0] += 1
+                if claim_calls[0] == 2:
+                    raise PreviewError('database_unavailable')
+            return db(action, payload, timeout=timeout)
+        stats = worker.collect_media(TICKET, database=flaky,
+                                     resolver=lambda item, **kw: result(item), clock=lambda: 0)
+        self.assertEqual(stats['claimed'], 5)
+        self.assertEqual(stats['ready'], 5)
+        self.assertEqual(stats['outcome'], 'budget')
+        self.assertEqual(stats['stop_reason'], 'claim_deferred')
+        self.assertEqual(stats['errors'], 1)
+        self.assertEqual(db.calls[-1][0], 'finish')
+        self.assertEqual(db.active, {})
+
     def test_claim_failure_still_releases_the_worker_once(self):
         db = Database()
         db.raise_action = 'claim'

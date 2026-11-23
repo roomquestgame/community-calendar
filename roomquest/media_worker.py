@@ -224,9 +224,20 @@ def collect_media(ticket, *, database=None, resolver=None, clock=None):
                 # a falsely failed invocation.
                 if can_admit and not claims_blocked and not futures:
                     free = concurrency
-                    claims = database('claim', {**common, 'limit': free,
-                                                'registered_native_content_version': 1,
-                                                'exclude_hosts': limiter.excluded_hosts()}, timeout=CLAIM_TIMEOUT) or []
+                    try:
+                        claims = database('claim', {**common, 'limit': free,
+                                                    'registered_native_content_version': 1,
+                                                    'exclude_hosts': limiter.excluded_hosts()}, timeout=CLAIM_TIMEOUT) or []
+                    except (PreviewError, requests.RequestException, ValueError, OSError):
+                        # An initial claim failure means the dispatch could not
+                        # start. After a settled wave, preserve that progress and
+                        # let the backend schedule a clean continuation.
+                        if not stats['claimed']:
+                            raise
+                        stats['errors'] += 1
+                        outcome = 'budget'
+                        stats['stop_reason'] = 'claim_deferred'
+                        break
                     if not isinstance(claims, list) or len(claims) > free:
                         raise PreviewError('invalid_media_claim')
                     claims_blocked = not claims
