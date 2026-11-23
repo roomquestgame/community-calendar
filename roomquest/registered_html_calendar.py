@@ -622,6 +622,8 @@ def _detail(source, payload, url):
     if not candidates:
         from roomquest.registered_date_only_clock import date_only_event_with_clock
         completed = date_only_event_with_clock(nodes, soup, url, _event)
+        if completed == []:
+            return []  # Explicitly variable performance times; do not invent one.
         if completed:
             candidates.append(completed)
         elif any(_event(node) for node in nodes):
