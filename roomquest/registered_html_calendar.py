@@ -314,6 +314,33 @@ def _pagination(soup, url, *, collection_url=None, previous_pages=()):
             forward.setdefault(_url_key(target), target)
     if len(forward) > 1:
         _fail('html_calendar_pagination_ambiguous')
+    # A publisher's explicit numbered pagination navigation is equivalent to
+    # an HTML rel=next only when the active page and its unique successor are
+    # declared in the same control. A bare "?page=2" link is not proof.
+    pagers = root.select('nav.pagination,nav[aria-label*="pagination" i]')
+    for pager in pagers:
+        active = pager.select('[aria-current="page"]')
+        if len(active) != 1 or not active[0].get_text(' ', strip=True).isdigit():
+            continue
+        current_number = int(active[0].get_text(' ', strip=True))
+        expected = len(previous_pages) + 1
+        if current_number != expected:
+            _fail('html_calendar_pagination_scope_conflict')
+        successors = []
+        for item in pager.select('a[href]'):
+            label = item.get_text(' ', strip=True)
+            if not label.isdigit() or int(label) != current_number + 1:
+                continue
+            candidate = _public_url(item['href'], url)
+            if not candidate or not collection_url or not _page_in_scope(candidate, collection_url):
+                _fail('html_calendar_pagination_scope_conflict')
+            successors.append(candidate)
+        if len(set(successors)) > 1:
+            _fail('html_calendar_pagination_ambiguous')
+        if successors:
+            forward.setdefault(_url_key(successors[0]), successors[0])
+    if len(forward) > 1:
+        _fail('html_calendar_pagination_ambiguous')
     for node in root.select('a[href],button,[role="button"]'):
         label = node.get('aria-label') or node.get_text(' ', strip=True)
         classes = ' '.join(node.get('class') or [])
