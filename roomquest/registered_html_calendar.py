@@ -564,11 +564,12 @@ def _event_detail_featured_image(source, soup, url, title):
         return None
     from roomquest.registered_native_content import image_candidate
     matches = set()
-    for img in root.select('img[src]')[:35]:
+    for img in root.select('img[src], img[data-src], img[data-lazy-src]')[:35]:
         if img.find_parent(['aside', 'nav', 'footer', 'header']):
             continue
-        candidate = _public_url(img.get('src', ''), url)
-        if not candidate or '/wp-content/uploads/' not in urlsplit(candidate).path:
+        candidate = _public_url(img.get('data-src') or img.get('data-lazy-src') or img.get('src', ''), url)
+        if (not candidate or urlsplit(candidate).hostname != urlsplit(url).hostname
+                or '/wp-content/uploads/' not in urlsplit(candidate).path):
             continue
         if not image_candidate(candidate, url):
             continue
