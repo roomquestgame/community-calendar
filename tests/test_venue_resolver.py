@@ -91,6 +91,30 @@ class EvidenceTests(unittest.TestCase):
                     v.fetch_page(url)
                 session.return_value.__enter__.return_value.get.assert_not_called()
 
+    def test_native_venue_page_uses_shared_robots_paced_transport(self):
+        html = '<h1>Official venue page</h1>'
+        with patch.object(v, 'validate_public_dns') as dns, \
+             patch.object(v, 'fetch_publisher', return_value=html) as publisher:
+            self.assertEqual(v.fetch_page('https://example.org/venue'), html)
+        dns.assert_called_once_with('example.org')
+        publisher.assert_called_once()
+        args, kwargs = publisher.call_args
+        self.assertEqual(args[0], 'https://example.org/venue')
+        self.assertTrue(kwargs['respect_robots'])
+        self.assertEqual(kwargs['allowed_hosts'], ('example.org',))
+        self.assertIsNotNone(kwargs['deadline_at'])
+
+    def test_native_venue_fetch_denials_and_oversized_pages_fail_closed(self):
+        from roomquest.preview_worker import PreviewError
+        with patch.object(v, 'validate_public_dns'), \
+             patch.object(v, 'fetch_publisher', side_effect=PreviewError('robots_denied')):
+            with self.assertRaisesRegex(PreviewError, 'robots_denied'):
+                v.fetch_page('https://example.org/venue')
+        with patch.object(v, 'validate_public_dns'), \
+             patch.object(v, 'fetch_publisher', return_value='x' * (v.MAX_BODY + 1)):
+            with self.assertRaisesRegex(PreviewError, 'venue_page_oversized'):
+                v.fetch_page('https://example.org/venue')
+
     def test_json_graph_and_wrong_event_footer(self):
         graph = {"@graph": [{"@type": "Organization", "name": "Unrelated Publisher", "address": PLACE["address"]}, PLACE]}
         self.assertEqual(len(v.extract_candidates(page(graph), CLAIM["event_url"], CLAIM)), 1)
@@ -118,6 +142,16 @@ class WorkerTests(unittest.TestCase):
         self.assertEqual(result['resolved'], 1)
         self.assertEqual([x[0] for x in self.calls], ['claim','submit'])
         self.assertEqual(self.calls[-1][1]['lease_id'], CLAIM['lease_id'])
+
+    def test_publisher_robots_denial_is_a_non_retryable_review(self):
+        from roomquest.preview_worker import PreviewError
+        with patch.dict(os.environ, {'VERCEL_ENV': 'production', 'FORWARD_GEOCODER_ENABLED': 'true'}):
+            result = v.run_batch(database=self.database,
+                                 resolver=lambda *args, **kwargs: (_ for _ in ()).throw(
+                                     PreviewError('robots_denied')))
+        self.assertEqual(result['review'], 1)
+        self.assertEqual(result['errors'], 0)
+        self.assertEqual(self.calls[-1][1]['reason'], 'needs_review')
 
     def test_uncertain_result_is_reviewed_without_geocoder_request(self):
         with patch.dict(os.environ, {"VERCEL_ENV": "production", "FORWARD_GEOCODER_ENABLED": "true"}):
