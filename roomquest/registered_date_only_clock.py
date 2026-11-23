@@ -40,11 +40,24 @@ def date_only_event_with_clock(nodes, soup, url, is_event):
     if len(dates) != 1 or len(times) != 1:
         return None
     try:
-        published_date = datetime.strptime(dates[0].get_text(' ', strip=True), '%d %B, %Y').date()
+        date_label = dates[0].get_text(' ', strip=True)
         jsonld_date = date.fromisoformat(start)
+        # A publisher date range may describe several performances. Only its
+        # independently declared JSON-LD first day has a dated identity here.
+        # Never fabricate the remaining days from a shared start-time label.
+        range_match = re.fullmatch(r'([0-3]?[0-9])\s*[-–]\s*([0-3]?[0-9])\s+'
+                                    r'([A-Za-z]+),?\s+(20[0-9]{2})', date_label)
+        first_label = (range_match[1] + ' ' + range_match[3] + ', ' + range_match[4]
+                       if range_match else date_label)
+        published_date = datetime.strptime(first_label, '%d %B, %Y').date()
         if published_date != jsonld_date:
             return None
-        local_time = datetime.strptime(times[0].get_text(' ', strip=True), '%H:%M').time()
+        clock_label = times[0].get_text(' ', strip=True)
+        if range_match and clock_label.casefold() == 'times vary by date':
+            # The public page itself declines to specify an occurrence time.
+            # This one detail was inspected, but no event can be timestamped.
+            return []
+        local_time = datetime.strptime(clock_label, '%H:%M').time()
         local = datetime.combine(jsonld_date, local_time).replace(tzinfo=ZoneInfo('Europe/London'))
         if (local.utcoffset() != local.replace(fold=1).utcoffset()
                 or local.astimezone(timezone.utc).astimezone(local.tzinfo) != local):
