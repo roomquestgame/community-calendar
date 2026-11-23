@@ -72,8 +72,10 @@ def test_etag_precedes_last_modified_and_304_replays_complete_body():
     # no previous recurrence/occurrence list is returned by this cache.
     assert "RRULE" not in state.candidate["body"]
     state.save_after_success()
-    assert rpc.calls[-1][0] == "community_collector_save_ical_cache"
-    assert rpc.calls[-1][1]["p_body_hash"] == sha256(BODY.encode()).hexdigest()
+    assert rpc.calls[-2][0] == "community_collector_save_ical_cache"
+    assert rpc.calls[-2][1]["p_body_hash"] == sha256(BODY.encode()).hexdigest()
+    assert rpc.calls[-1][0] == "community_collector_record_ical_http_metric"
+    assert rpc.calls[-1][1]["p_outcome"] == "reused_304"
 
 
 def test_last_modified_fallback():
@@ -120,8 +122,10 @@ def test_200_stages_cache_metadata_without_committing_before_success():
     assert state.candidate is not None
     assert len(rpc.calls) == 1  # Only the first read, no premature write
     state.save_after_success()
-    assert len(rpc.calls) == 2
-    assert rpc.calls[-1][1]["p_etag"] == '"v2"'
+    assert len(rpc.calls) == 3
+    assert rpc.calls[-2][1]["p_etag"] == '"v2"'
+    assert rpc.calls[-1][0] == "community_collector_record_ical_http_metric"
+    assert rpc.calls[-1][1]["p_outcome"] == "full_200"
 
 
 def test_unusable_body_and_unsupported_cache_control_stay_uncached():
@@ -131,12 +135,61 @@ def test_unusable_body_and_unsupported_cache_control_stay_uncached():
                        "Content-Type": "text/calendar"}, encoding="utf-8")
     assert state.candidate is None
     state.save_after_success()
-    assert len(rpc.calls) == 1
+    # A successful full download can be counted even if Cache-Control
+    # prevents storage of its body. No cache-save RPC should be attempted.
+    assert len(rpc.calls) == 2
+    assert rpc.calls[-1][0] == "community_collector_record_ical_http_metric"
+    assert rpc.calls[-1][1]["p_outcome"] == "full_200"
     state.record_body(URL, "text/calendar", b"\xff\xfe",
                       {"ETag": '"v2"', "Content-Type": "text/calendar"},
                       encoding="utf-8")
     assert state.candidate is None
 
+
+
+def test_conditional_200_is_download_not_a_304():
+    state, _, rpc = make_state(saved())
+    assert state.headers(URL, "text/calendar") == {"If-None-Match": '"v1"'}
+    state.record_body(URL, "text/calendar", BODY.encode("utf-8"), {
+        "ETag": '"v2"', "Content-Type": "text/calendar; charset=utf-8",
+    }, encoding="utf-8")
+    state.save_after_success()
+    assert rpc.calls[-1][1]["p_outcome"] == "conditional_200"
+
+
+def test_unusable_304_then_full_200_counts_only_fallback():
+    state, _, rpc = make_state(saved())
+    assert state.headers(URL, "text/calendar") == {"If-None-Match": '"v1"'}
+    assert state.not_modified(URL, "text/calendar", {"ETag": '"changed"'}) is None
+    state.record_body(URL, "text/calendar", BODY.encode("utf-8"), {
+        "ETag": '"changed"', "Content-Type": "text/calendar; charset=utf-8",
+    }, encoding="utf-8")
+    state.save_after_success()
+    assert rpc.calls[-1][0] == "community_collector_record_ical_http_metric"
+    assert rpc.calls[-1][1]["p_outcome"] == "fallback_200"
+
+
+def test_no_http_response_is_not_falsely_counted():
+    state, _, rpc = make_state(saved())
+    state.save_after_success()
+    assert len(rpc.calls) == 1
+
+
+def test_metric_rpc_failures_do_not_change_accepted_collection():
+    snapshot = Snapshot()
+    class MetricFails(RPC):
+        def __call__(self, name, args, **kwargs):
+            if name == "community_collector_record_ical_http_metric":
+                raise RuntimeError("metrics temporarily unavailable")
+            return super().__call__(name, args, **kwargs)
+    rpc = MetricFails({"enabled": True})
+    state = cache.ConditionalCache(source(), snapshot, context(), rpc)
+    state.initialize()
+    state.record_body(URL, "text/calendar", BODY.encode("utf-8"), {
+        "ETag": '"v1"', "Content-Type": "text/calendar; charset=utf-8",
+    }, encoding="utf-8")
+    state.save_after_success()
+    assert any(name == "community_collector_save_ical_cache" for name, _ in rpc.calls)
 
 def test_capture_resets_context_and_non_ical_sources_cannot_cache():
     snapshot = Snapshot()
