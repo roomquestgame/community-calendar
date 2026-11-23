@@ -285,6 +285,28 @@ def _page_in_scope(target, collection_url):
 
 def _pagination(soup, url, *, collection_url=None, previous_pages=()):
     root = _content(soup)
+    # A FacetWP template with an otherwise empty client-side pager can be
+    # certified complete only when its publisher preload says there is exactly
+    # one page and its rendered card count equals the full declared total.
+    if root.select_one('#events-feed .facetwp-pager'):
+        configs = []
+        for script in soup.select('script'):
+            raw = script.string or ''
+            match = re.search(r'\b(?:window[.])?FWP_JSON\s*=\s*', raw)
+            if match:
+                try:
+                    configs.append(json.JSONDecoder().raw_decode(raw[match.end():])[0])
+                except (ValueError, TypeError):
+                    _fail('html_calendar_pagination_needed')
+        if len(configs) != 1 or not isinstance(configs[0], dict):
+            _fail('html_calendar_pagination_needed')
+        pager = configs[0].get('preload_data', {}).get('settings', {}).get('pager', {})
+        visible = len(root.select('#events-feed .facetwp-template[data-name="events"] .excerpt-box'))
+        if (not isinstance(pager, dict) or pager.get('page') != 1
+                or pager.get('total_pages') != 1
+                or type(pager.get('total_rows')) is not int
+                or pager['total_rows'] != visible or not visible):
+            _fail('html_calendar_pagination_needed')
     # FacetWP renders these controls client-side. A captured Swallow Hill page
     # had empty pager divs while its preload declared 45 rows over 5 pages; lack
     # of visible buttons does not make the initial 9 a complete calendar.
@@ -629,6 +651,10 @@ def _detail(source, payload, url):
         elif any(_event(node) for node in nodes):
             _fail('html_calendar_detail_identity_conflict')
         else:
+            from roomquest.registered_venue_event_card import read as read_venue_card
+            outcome = read_venue_card(source, soup, url)
+            if outcome is not None:
+                return outcome
             from roomquest.registered_event_microdata import parse_event_microdata
             return parse_event_microdata(source, soup, url)
     if len(candidates) > MAX_EVENTS:
