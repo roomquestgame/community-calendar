@@ -1,7 +1,7 @@
 """Shared bounded ICS validation; existing recurrence/VEVENT normalizer retained.
 
 Legacy output fields and media stay intact to preserve venue-cache identity.
-Missing event links use the validated actual feed URL across both paths.
+Missing event links use a proven publisher identity, then the validated feed URL.
 Venue-address fallback stays on its existing normalization path.
 """
 from collections import defaultdict
@@ -660,8 +660,9 @@ def parse(payload, source, *, legacy=False, include_description=False):
         for row in result:
             row['description'] = description(row.get('description'))
     if not result and not date_notices and unsupported:raise ValueError(unsupported[0])
-    # A feed URL is an actual publisher link when its VEVENT omits URL. Never
-    # fabricate a detail URL, venue, publisher host, description or image.
+    # Known native publisher identities may supply an event page when URL is
+    # absent. Otherwise retain the validated actual feed fallback. Never guess a
+    # detail URL from a title/date or alter venue, description or image facts.
     # Retain the actual publisher labels separately from the legacy single text
     # category. VEVENT CATEGORIES can be a multi-valued vCategory or repeated.
     # Bound the labels before they enter our JSON staging contract.
@@ -673,6 +674,8 @@ def parse(payload, source, *, legacy=False, include_description=False):
         result = [row for row in result if not re.search(r'\s[-–—]\s*cancell?ed\s*$', row['title'], re.I)]
     categories = {}
     detail_urls = {}
+    communico_urls = {}
+    from roomquest.communico_links import detail_url as communico_detail_url
     for event in events:
         labels = []
         raw = event.get("CATEGORIES")
@@ -686,6 +689,9 @@ def parse(payload, source, *, legacy=False, include_description=False):
                 if len(labels) >= 20:
                     break
         categories[str(event.get("UID", ""))] = labels
+        uid = str(event.get('UID', ''))
+        if candidate := communico_detail_url(source_url, uid):
+            communico_urls[uid] = candidate
         if direct_civicplus or (include_description and source.get('source_key') == 'independence_ia_library_family'):
             uid = str(event.get('UID', ''))
             detail_urls[uid] = civicplus_detail_url(str(event.get('DESCRIPTION', '')), uid, source['url'])
@@ -707,6 +713,9 @@ def parse(payload, source, *, legacy=False, include_description=False):
             e['event_url'] = detail_urls[uid]
         if direct_civicplus and not e.get('event_url'):
             e['event_url'] = detail_urls.get(e['id'].split('__', 1)[0])
+        uid = e['id'].split('__', 1)[0]
+        if uid in communico_urls and communico_detail_url(source_url, uid, e.get('event_url')):
+            e['event_url'] = communico_urls[uid]
         if not e.get("event_url"):
             feed_url = source.get("url")
             if not isinstance(feed_url, str) or not public_source_url(feed_url):
