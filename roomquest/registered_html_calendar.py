@@ -516,6 +516,50 @@ def _description(soup, original, row):
     return body, 'rockhouse_event_description'
 
 
+
+def _cambridge_featured_image(source, soup, url, title):
+    """Use only an unambiguous same-event upload on the approved Eventin site.
+
+    Other HTML publishers and pages keep their existing JSON-LD-only behavior.
+    A missing image remains missing rather than selecting site chrome.
+    """
+    if (source.get('feed_url') != 'https://cambridgeppf.org/events-list/'
+            or urlsplit(url).hostname != 'cambridgeppf.org'
+            or not urlsplit(url).path.startswith('/etn/')):
+        return None
+    root = soup.find('main')
+    if root is None:
+        return None
+
+    def words(value):
+        return re.findall(r'[a-z0-9]+', (value or '').casefold())
+
+    if not any(words(node.get_text(' ', strip=True)) == words(title)
+               for node in root.select('h1')):
+        return None
+    meaningful = [term for term in words(title)
+                  if len(term) >= 4 and term not in {'with', 'from', 'this', 'that'}]
+    if len(meaningful) < 2:
+        return None
+    from roomquest.registered_native_content import image_candidate
+    matches = set()
+    for img in root.select('img[src]')[:35]:
+        if img.find_parent(['aside', 'nav', 'footer', 'header']):
+            continue
+        candidate = _public_url(img.get('src', ''), url)
+        if not candidate or '/wp-content/uploads/' not in urlsplit(candidate).path:
+            continue
+        if not image_candidate(candidate, url):
+            continue
+        filename = urlsplit(candidate).path.rsplit('/', 1)[-1].rsplit('.', 1)[0]
+        parts = words(filename)
+        if sum(any(a[:4] == b[:4] for b in parts if len(b) >= 4)
+               for a in meaningful) < 2:
+            continue
+        matches.add(candidate)
+    return next(iter(matches)) if len(matches) == 1 else None
+
+
 def _detail(source, payload, url):
     soup = _html(payload)
     _canonical(soup, url)
@@ -577,8 +621,12 @@ def _detail(source, payload, url):
             description_value, description_field = _description(soup, original, row)
             extra = ({'description_field': description_field}
                      if description_field != 'description' else {})
+            primary_image = image_value(original.get('image'))
+            from roomquest.registered_native_content import image_candidate
+            if not image_candidate(primary_image, url):
+                primary_image = _cambridge_featured_image(source, soup, url, row['title'])
             attach(row, source, description_value=description_value,
-                   image_value=image_value(original.get('image')), evidence_url=url, **extra)
+                   image_value=primary_image, evidence_url=url, **extra)
             records.append(row)
     return records
 
