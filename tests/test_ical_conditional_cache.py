@@ -191,6 +191,7 @@ def test_metric_rpc_failures_do_not_change_accepted_collection():
     state.save_after_success()
     assert any(name == "community_collector_save_ical_cache" for name, _ in rpc.calls)
 
+
 def test_capture_resets_context_and_non_ical_sources_cannot_cache():
     snapshot = Snapshot()
     rpc = RPC(saved())
