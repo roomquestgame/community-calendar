@@ -616,6 +616,10 @@ def _microdata_detail(source, soup, url):
             if prior is None or jsonld_adapter.definition_contains(node, prior):
                 images[identity] = node
     if not candidates:
+        # A JSON-LD Event belonging to another URL is conflicting publisher
+        # identity evidence, not a reason to fall back to another representation.
+        if any(_event(node) for node in nodes):
+            _fail('html_calendar_detail_identity_conflict')
         return _microdata_detail(source, soup, url)
     if len(candidates) > MAX_EVENTS:
         _fail('html_calendar_event_limit')
