@@ -218,8 +218,12 @@ def collect_media(ticket, *, database=None, resolver=None, clock=None):
         with ThreadPoolExecutor(max_workers=concurrency, thread_name_prefix='media') as pool:
             while True:
                 can_admit = not fatal and clock() + ADMISSION_HEADROOM < deadline
-                if can_admit and not claims_blocked and len(futures) < concurrency:
-                    free = concurrency - len(futures)
+                # Claim in complete waves. Claim RPCs share the same backend
+                # singleton as result acknowledgements, so topping up while a
+                # previous wave is submitting can turn successful probes into
+                # a falsely failed invocation.
+                if can_admit and not claims_blocked and not futures:
+                    free = concurrency
                     claims = database('claim', {**common, 'limit': free,
                                                 'registered_native_content_version': 1,
                                                 'exclude_hosts': limiter.excluded_hosts()}, timeout=CLAIM_TIMEOUT) or []
