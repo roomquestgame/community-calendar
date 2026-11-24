@@ -190,5 +190,5 @@ def extract(profile, html, start, end):
             'image_url': photo, 'wix_public_adapter_version': 1,
         }
         result[row['id']] = row
-    return {'complete': True, 'widget_count': len(events),
+    return {'complete': True, 'inventory_count': len(events),
             'events': sorted(result.values(), key=lambda row: (row['starts_at'], row['id']))}
