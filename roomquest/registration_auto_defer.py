@@ -14,6 +14,18 @@ AUTO_DEFER_REASONS = frozenset({
     "html_adapter_needed",
     "xml_adapter_needed",
     "no_reusable_calendar",
+    "spektrix_adapter_needed",
+    "fullcalendar_adapter_needed",
+    "elfsight_adapter_needed",
+    "tockify_adapter_needed",
+    "wordpress_calendar_adapter_needed",
+    "events_manager_adapter_needed",
+    "event_organiser_adapter_needed",
+    "mec_adapter_needed",
+    "eventon_adapter_needed",
+    "wp_event_manager_adapter_needed",
+    "ai1ec_adapter_needed",
+    "wordpress_legacy_json_adapter_needed",
     "no_extractable_events",
 })
 

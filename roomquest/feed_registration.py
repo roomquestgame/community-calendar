@@ -332,6 +332,7 @@ def register(ticket):
     from roomquest import liberty_calendar, registered_listings
     from roomquest.registration_formats import source_key, extraction_hold
     with capture_publisher_pacing() as pacing:
+        body = None  # Fetch failure can occur before a response was collected.
         try:
             deadline = monotonic() + 35
             def check(target, endpoint_only=False, venue_website=False):
@@ -512,6 +513,14 @@ def register(ticket):
                 result = review(reason if re.fullmatch(r'[a-z0-9_]{1,100}', reason) else 'publisher_check_failed')
     if url != candidate['url']:
         result.setdefault('p_endpoint', url)
+    # Annotate *only* the unsupported HTML result after all existing native,
+    # subscribed-feed and complete HTML collector recovery has been attempted.
+    # Fingerprints must never displace a working supported collector.
+    if (not candidate.get('endpoint_only') and isinstance(body, str)
+            and result.get('p_outcome') == 'review'
+            and result.get('p_reason') in {'html_adapter_needed', 'no_reusable_calendar'}):
+        from roomquest.calendar_profile_signals import annotate_unsupported
+        result = annotate_unsupported(result, body)
     # Do not label a source as requiring human review just because it is
     # empty or lacks a supported extraction adapter today.
     result = auto_defer_nonactionable(result)
