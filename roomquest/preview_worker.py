@@ -4158,6 +4158,8 @@ def supabase_rpc(path: str, payload: dict, *, timeout: float = 4):
                "community_collector_claim_category", "community_collector_publish_category", "community_collector_finish_category", "community_collector_claim_previews", "community_collector_claim_demand_preview", "community_collector_claim_chambermaster", "community_collector_record_preview", "community_collector_record_preview_v2", "community_collector_record_preview_v3",
                "community_collector_read_fetch_checkpoint", "community_collector_write_fetch_checkpoint",
                "community_collector_openactive_state",
+               "community_collector_feedzilla_capture_read", "community_collector_feedzilla_capture_write",
+               "community_collector_feedzilla_capture_stage",
                "community_collector_stage_incremental", "community_collector_complete_incremental",
                "community_collector_read_ical_cache", "community_collector_save_ical_cache",
                "community_collector_touch_ical_cache",
@@ -4183,7 +4185,8 @@ def supabase_rpc(path: str, payload: dict, *, timeout: float = 4):
             # Only the private, fenced fetch checkpoint may contain the complete
             # bounded aggregate. All other RPCs retain their existing limit.
             maximum = (1_500_000 if path == "community_collector_openactive_state"
-                       else 920_000 if path == "community_collector_read_fetch_checkpoint"
+                       else 920_000 if path in ("community_collector_read_fetch_checkpoint",
+                                                  "community_collector_feedzilla_capture_read")
                        else 240_000 if path == "community_collector_read_ical_cache"
                        else 150_000)
             raw = response.read(maximum + 1)
