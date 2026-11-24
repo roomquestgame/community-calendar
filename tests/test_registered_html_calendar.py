@@ -446,6 +446,50 @@ def test_loadomatic_rejects_multiple_control_containers():
     fetch.assert_not_called()
 
 
+def hnm_page(urls, *, next_page=None, config=False):
+    cards = '<div class="whatson-events-listing">' + ''.join(
+        '<article><a href="' + url + '">Details</a></article>' for url in urls
+    ) + '</div>'
+    pager = (('<div class="paginate"><a class="btn btn-load" href="" '
+              'data-container="whatson-events-listing" data-next-page="'
+              + str(next_page) + '"><span>Load more</span></a></div>')
+             if next_page else '')
+    declared = (('<script>var HNM = {"ajaxurl":"' + BASE
+                 + '/wp-admin/admin-ajax.php","baseurl":"' + BASE
+                 + '"};</script><script src="' + BASE
+                 + '/wp-content/themes/horniman-theme/assets/js/main.min.js?ver=1"></script>')
+                if config else '')
+    return '<html><body><main><h1>What\'s On</h1>' + cards + pager + declared + '</main></body></html>'
+
+
+def test_hnm_ajax_theme_contract_collects_terminal_unfiltered_page():
+    endpoint = BASE + '/wp-admin/admin-ajax.php?action=getEvents&page=2'
+    first = hnm_page((ONE,), next_page=2, config=True)
+    last = hnm_page((TWO,))
+    fetch = fetcher({endpoint: last, ONE: detail(event()), TWO: detail(event(TWO))})
+    rows = calendar.collect(source(), fetch, listing=first)
+    assert len(rows) == 2
+    assert [call.args[0] for call in fetch.call_args_list] == [endpoint, ONE, TWO]
+
+
+@pytest.mark.parametrize('mutation', ['foreign_ajax', 'filtered', 'wrong_next', 'missing_theme'])
+def test_hnm_ajax_theme_contract_rejects_ambiguous_or_filtered_controls(mutation):
+    body = hnm_page((ONE,), next_page=3 if mutation == 'wrong_next' else 2, config=True)
+    feed = FEED
+    if mutation == 'foreign_ajax':
+        body = body.replace(BASE + '/wp-admin/admin-ajax.php',
+                            'https://other.example.org/wp-admin/admin-ajax.php')
+    elif mutation == 'filtered':
+        feed += '?category=music'
+    elif mutation == 'missing_theme':
+        body = body.replace('/wp-content/themes/horniman-theme/assets/js/main.min.js',
+                            '/wp-content/themes/other/assets/js/main.min.js')
+    fetch = Mock()
+    with pytest.raises(ValueError, match='html_calendar_pagination_(?:needed|scope_conflict)'):
+        calendar.collect(source(feed), fetch, listing=body)
+    fetch.assert_not_called()
+
+
 @pytest.mark.parametrize('next_page', [FEED + '/page/2/', FEED + '?page=2'])
 def test_observed_next_pages_complete_before_any_detail_is_fetched(next_page):
     first = listing((ONE,), extra='<a rel="next" href="' + next_page + '">Next</a>')
