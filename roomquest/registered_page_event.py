@@ -1,14 +1,14 @@
-"""Bind an otherwise unidentified Event to its own publisher detail document.
+"""Bind one Event to its own publisher detail document.
 
-This fallback is invoked only after the normal explicit URL/@id match and
-existing date-only recovery have failed. No foreign identity is overwritten.
-Time repair requires exact independently displayed schedule facts.
+Unidentified Events require agreeing canonical/OG metadata. An explicitly
+linked Event must already name the fetched document. No foreign identity is
+overwritten. Time repair requires exact independently displayed schedule facts.
 """
 from copy import deepcopy
 from datetime import datetime, date, timedelta, timezone
 from html import unescape
 import re
-from urllib.parse import urlsplit
+from urllib.parse import urljoin, urlsplit
 from zoneinfo import ZoneInfo
 
 ZONE = ZoneInfo('Europe/London')
@@ -200,15 +200,18 @@ def candidates(nodes, soup, url, is_event, public_url, url_key):
     if len(events) != 1:
         return None
     event = events[0]
-    if event.get('url') not in (None, '') or event.get('@id') not in (None, ''):
-        return None
+    explicit = [event.get(key) for key in ('url', '@id')
+                if event.get(key) not in (None, '')]
+    if explicit and any(not (link := public_url(raw, url))
+                        or url_key(link) != url_key(url) for raw in explicit):
+        raise ValueError('html_calendar_detail_identity_conflict')
     # Both metadata families, if supplied, must agree with the actual fetch.
     # No URL is inferred from the H1 or the source's domain.
     metadata = [node.get('href') for node in soup.select('link[rel="canonical"]')]
     metadata += [node.get('content') for node in soup.select('meta[property="og:url"]')]
-    if not metadata:
+    if not explicit and not metadata:
         return None
-    if any(not (link := public_url(raw, url)) or url_key(link) != url_key(url)
+    if metadata and any(not (link := public_url(raw, url)) or url_key(link) != url_key(url)
            for raw in metadata):
         raise ValueError('html_calendar_detail_identity_conflict')
     root = soup.find('main') or soup.find(attrs={'role': 'main'}) or soup.body
@@ -221,7 +224,8 @@ def candidates(nodes, soup, url, is_event, public_url, url_key):
         return None
     fixed = deepcopy(event)
     fixed['url'] = url
-    fixed['@id'] = url + '#event'
+    fixed['@id'] = (urljoin(url, str(event['@id']).strip())
+                    if event.get('@id') not in (None, '') else url + '#event')
     if len(fixed['@id']) > 180:
         raise ValueError('html_calendar_event_identity_limit')
     # Explicit cancellation/online evidence remains authoritative in the
