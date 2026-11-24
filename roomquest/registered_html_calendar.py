@@ -731,8 +731,7 @@ def _detail(source, payload, url):
     return records
 
 
-def collect(source, fetch, *, deadline_at=None, listing=None):
-    """Complete one bounded registered listing; never return a partial prefix."""
+def _registered_url(source):
     from roomquest.registered_native_content import CAPABILITY as native_capability
     url = source.get('feed_url')
     if (not isinstance(url, str) or _public_url(url, url) != url
@@ -742,20 +741,31 @@ def collect(source, fetch, *, deadline_at=None, listing=None):
             or type(source.get(native_capability)) is not int or source[native_capability] != 1):
         _fail('unregistered_html_calendar')
 
+    return url
+
+
+def _deadline_check(deadline_at):
+    if deadline_at is not None and monotonic() >= deadline_at:
+        _fail('collection_deadline')
+
+
+def _request_stream(source, url, *, deadline_at, page_limit, detail_limit, total_limit=None):
+    """One parser and traversal for both ordinary and checkpointed collectors.
+
+    Yield only the exact next publisher-evidenced URL/Accept pair. The caller
+    supplies the successful response through send(); it owns guarded transport,
+    leases, pacing and receipt persistence. Return records only at completion.
+    """
     def check_deadline():
-        if deadline_at is not None and monotonic() >= deadline_at:
-            _fail('collection_deadline')
+        _deadline_check(deadline_at)
 
     check_deadline()
-    payload = listing if listing is not None else fetch(url, 'text/html,application/xhtml+xml')
-    from roomquest import forestry_england
-    if forestry_england.owns_url(url):
-        return forestry_england.collect(source, fetch, deadline_at=deadline_at, listing=payload)
     links = {}
     pages = []
     inventories = set()
     required_pages = set()
     current = url
+    payload = yield (url, 'text/html,application/xhtml+xml')
     while True:
         check_deadline()
         soup = _html(payload)
@@ -773,9 +783,11 @@ def collect(source, fetch, *, deadline_at=None, listing=None):
         inventories.add(inventory)
         for link in observed:
             links.setdefault(_url_key(link), link)
-        if len(links) > MAX_DETAILS:
+        if len(links) > detail_limit:
             _fail('html_calendar_detail_limit')
         pages.append(current)
+        if total_limit is not None and len(pages) + len(links) > total_limit:
+            _fail('html_calendar_request_limit')
         visited = {_url_key(page) for page in pages}
         required_pages.update(required)
         if not next_page:
@@ -784,15 +796,17 @@ def collect(source, fetch, *, deadline_at=None, listing=None):
             break
         if _url_key(next_page) in visited:
             _fail('html_calendar_pagination_cycle')
-        if len(pages) >= MAX_LISTING_PAGES:
+        if len(pages) >= page_limit:
             _fail('html_calendar_pagination_limit')
         check_deadline()
-        payload = fetch(next_page, 'text/html,application/xhtml+xml')
+        if total_limit is not None and len(pages) + len(links) >= total_limit:
+            _fail('html_calendar_request_limit')
+        payload = yield (next_page, 'text/html,application/xhtml+xml')
         current = next_page
     records = {}
     for detail_url in links.values():
         check_deadline()
-        body = fetch(detail_url, 'text/html,application/ld+json')
+        body = yield (detail_url, 'text/html,application/ld+json')
         check_deadline()
         for row in _detail(source, body, detail_url):
             key = (row['id'], row['starts_at'])
@@ -803,3 +817,70 @@ def collect(source, fetch, *, deadline_at=None, listing=None):
                 _fail('html_calendar_event_limit')
         check_deadline()
     return sorted(records.values(), key=lambda row: (row['starts_at'], row['id']))
+
+
+
+def resume_capture(source, captured_pages, *, deadline_at=None):
+    """Replay a shared, already authenticated ordered fetch-only prefix once.
+
+    Returns (stream, next_request, records). When next_request is not None,
+    records is None; send the exact successful body to stream after the ordinary
+    transport/receipt checks. StopIteration.value is the complete projection.
+    At claim restore the shared checkpoint owner must first verify source,
+    context, lease, expiry, CAS revision, response hashes and byte ceilings.
+    This function performs no network, storage, staging or publication. Use
+    the existing shared task/expanded-body bounds, not an independent queue.
+    """
+    from roomquest.feedzilla_pagination_checkpoint import MAX_TASKS
+    from roomquest.national_feed_checkpoint import MAX_EXPANDED
+    from roomquest import forestry_england
+
+    url = _registered_url(source)
+    # The reviewed Forestry path has a distinct collection contract.
+    if forestry_england.owns_url(url):
+        _fail('html_calendar_capture_unsupported')
+    if not isinstance(captured_pages, list) or len(captured_pages) > MAX_TASKS:
+        _fail('html_calendar_capture_invalid')
+    size = 0
+    for page in captured_pages:
+        if (not isinstance(page, dict) or set(page) != {'url', 'body'}
+                or not isinstance(page['url'], str) or not isinstance(page['body'], str)):
+            _fail('html_calendar_capture_invalid')
+        body_size = len(page['body'].encode('utf-8'))
+        size += body_size
+        if body_size > MAX_HTML_BYTES or size > MAX_EXPANDED:
+            _fail('html_calendar_capture_limit')
+    stream = _request_stream(source, url, deadline_at=deadline_at,
+                             page_limit=MAX_TASKS, detail_limit=MAX_TASKS, total_limit=MAX_TASKS)
+    request = next(stream)
+    for i, page in enumerate(captured_pages):
+        _deadline_check(deadline_at)
+        if page['url'] != request[0]:
+            _fail('html_calendar_capture_order_conflict')
+        try:
+            request = stream.send(page['body'])
+        except StopIteration as finished:
+            if i + 1 != len(captured_pages):
+                _fail('html_calendar_capture_order_conflict')
+            return None, None, finished.value
+    return stream, request, None
+
+
+def collect(source, fetch, *, deadline_at=None, listing=None):
+    """Complete one bounded registered listing; never return a partial prefix."""
+    url = _registered_url(source)
+    _deadline_check(deadline_at)
+    payload = listing if listing is not None else fetch(url, 'text/html,application/xhtml+xml')
+    from roomquest import forestry_england
+    if forestry_england.owns_url(url):
+        return forestry_england.collect(source, fetch, deadline_at=deadline_at, listing=payload)
+    stream = _request_stream(source, url, deadline_at=deadline_at,
+                             page_limit=MAX_LISTING_PAGES, detail_limit=MAX_DETAILS)
+    request = next(stream)
+    while True:
+        try:
+            request = stream.send(payload)
+        except StopIteration as finished:
+            return finished.value
+        _deadline_check(deadline_at)
+        payload = fetch(*request)
