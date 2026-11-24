@@ -38,6 +38,10 @@ CALENDAR_NAMES = {
 INDEX_SEGMENTS = {
     'calendar', 'category', 'categories', 'tag', 'tags', 'page', 'month',
     'week', 'day', 'past', 'upcoming', 'all', 'venues', 'locations',
+    # /whats-on/ frequently contains nested filtering/category pages.
+    # They are not single event detail pages and may show unrelated cards.
+    'events', 'shows', 'exhibitions', 'collections', 'festivals',
+    'filters', 'past-events', 'view-past-events',
 }
 # Venue event sections vary by publisher. The collection path itself is
 # not a detail; only a non-index child can be followed as a candidate.
