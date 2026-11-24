@@ -23,7 +23,6 @@ from roomquest.forward_geocoder import (
 PROVIDER = "geoapify"
 ENDPOINT = "https://api.geoapify.com/v1/geocode/search"
 ACCEPTED_RESULT_TYPES = frozenset({"building", "amenity", "street"})
-MIN_CONFIDENCE = 0.8
 MATCH_TYPES = frozenset({"full_match", "inner_part", "match_by_building", "match_by_street"})
 TEXT_LIMITS = {
     "country": 100, "country_code": 2, "state": 180, "county": 180,
@@ -106,7 +105,12 @@ def _datasource(value) -> dict | None:
 
 
 def verify(payload: dict, address: str) -> dict | None:
-    """Retain only the first provider-ranked, validated street/building result."""
+    """Trust the first matching provider point at its reported precision.
+
+    The owner explicitly accepts low-confidence Geocodio and Geoapify
+    results. Confidence is metadata, not a minimum admission threshold.
+    Keep existing result identity, numeric shape and attribution checks.
+    """
     try:
         rows = payload.get("results")
         if not isinstance(rows, list) or not 1 <= len(rows) <= 2:
@@ -118,7 +122,6 @@ def verify(payload: dict, address: str) -> dict | None:
         if (first.get("country_code") != "gb" or not valid_coordinates(first)
                 or first.get("result_type") not in ACCEPTED_RESULT_TYPES
                 or not isinstance(rank, dict) or not _score(rank.get("confidence"))
-                or rank["confidence"] < MIN_CONFIDENCE
                 or rank.get("match_type") not in MATCH_TYPES
                 or any(name in rank and not _score(rank[name]) for name in RANK_FIELDS)
                 or not address_matches(first, address)):
@@ -155,7 +158,7 @@ def result_diagnostic(payload, address: str, http_status=None) -> dict:
         "http_status": http_status, "result_count": min(len(rows), 3) if is_array else 0,
         "results_array": is_array, "candidate_object": bool(first),
         "coordinates_valid": valid_coordinates(first),
-        "score_valid": _score(rank.get("confidence")) and rank.get("confidence", 0) >= MIN_CONFIDENCE,
+        "score_valid": _score(rank.get("confidence")),
         "accuracy_type_valid": isinstance(first.get("result_type"), str)
                                and first["result_type"] in ACCEPTED_RESULT_TYPES,
         "country_valid": first.get("country_code") == "gb", "address_match": address_match,
