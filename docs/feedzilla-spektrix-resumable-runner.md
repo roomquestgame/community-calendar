@@ -64,3 +64,12 @@ not be reused until the corresponding source-bound continuation and
 publish guards exist. Keep existing providers, approval and Admin registration
 unchanged. No London #1217–1226 rechecks until all four approved capabilities
 have been implemented and verified. See EVE-159.
+
+
+## November 24 — sealed transport v2 and publisher access blocker
+
+Version 2 requires a complete fetch receipt manifest plus ordered exact staged occurrence membership before the first stage batch. The transport sends successful publisher pacing on checkpoint writes, separately persists interrupted-request pacing, invokes the dedicated source-bound yield (never legacy OpenActive finish), and verifies the database's independent expected/staged counts. The runner refuses the current 500-member common preview limit rather than truncating. No active category dispatcher, approval, completion or publication route.
+
+**17/17 focused standard-library tests passed** using ten exact GitHub source blobs in network-denied Vercel sandbox sbx_Fw04txaKma3JlAIhzGUVWCfEWLRR (stopped). Actual database active-source stage and publish not exercised; test-only atomic backend is not a live ingestion receipt. Paired restamped inactive DB migration branch feature/eve-159-capture-completion-20261124 passed independent rollback-only manifest, pacing, permissions and invalid-token checks. Combined old profile DDL attempt hit lock timeout; nothing committed. All new RPCs remain absent in production.
+
+**Publisher policy hold:** Restricted read-only Bristol Old Vic shadow sandbox sbx_IGqx8NBRKvKrh1DWbxefr81gDugq (stopped). On November 24 the central Spektrix host returned HTTP 200 robots.txt containing User-agent: * / Disallow: /. Existing exact robots policy rejected the first API URL; zero publisher event pages requested, zero local rows, incomplete 19-page plan for November 24–January 22. Robots-only evaluation of bristololdvic, cambridgelive, adctheatre, thealbany and richmix denied their events, instances and venues URLs. Historical successful API probes do not override current policy. Do not bypass, enable central API collection, retry original London receipts, or change existing working sources. Preserve dormant code for future permitted integrations; prioritize independent first-party calendar and Wix/custom WordPress evidence. No routine Actions, no new production release claim.
