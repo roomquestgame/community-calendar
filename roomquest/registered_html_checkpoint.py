@@ -33,6 +33,86 @@ def context_hash(source):
                         'adapter': 'html'})
 
 
+# BEGIN EVE159_PREDECESSOR_CONTEXT
+def _dispatch_predecessor_context(source):
+    """Recognize captures from the immediately preceding dispatcher-only release.
+
+    This is NOT a hash bypass. Reconstruct the previous package fingerprint
+    using only these two reviewed, reversible control-flow edits. Every other
+    deployed source/config file and dependency version must still match the
+    captured fingerprint. Old response bytes are replayed by the current
+    complete traversal and ordinary native record validator.
+    """
+    from hashlib import sha1
+    from importlib.metadata import PackageNotFoundError, version
+    from pathlib import Path
+    from roomquest.incremental_snapshot import fingerprint
+
+    def strip_block(data, name, replacement=b''):
+        # Markers are full lines, not arbitrary substrings in code or text.
+        lines = data.splitlines(keepends=True)
+        start = [i for i, line in enumerate(lines)
+                 if line.strip() == ('# BEGIN ' + name).encode()]
+        end = [i for i, line in enumerate(lines)
+               if line.strip() == ('# END ' + name).encode()]
+        if len(start) != 1 or len(end) != 1 or start[0] >= end[0]:
+            raise ValueError('invalid_dispatch_compatibility')
+        return b''.join(lines[:start[0]]) + replacement + b''.join(lines[end[0]+1:])
+
+    def git_blob(data):
+        return sha1(('blob %d\0' % len(data)).encode() + data).hexdigest()
+
+    try:
+        package = Path(__file__).resolve().parent
+        root = package.parent
+        paths = [p for p in package.rglob('*')
+                 if p.is_file() and p.suffix in ('.py', '.json')
+                 and 'catalogs' not in p.relative_to(package).parts]
+        paths.extend(p for p in (root / 'scripts/combine_ics.py',
+                                 root / 'scrapers/growthzone.py',
+                                 root / 'scrapers/lib/jsonld.py',
+                                 root / 'scrapers/lib/base.py',
+                                 root / 'scrapers/lib/utils.py',
+                                 root / 'scrapers/lib/tribe_events.py',
+                                 root / 'source_priority.json',
+                                 root / 'requirements.txt') if p.is_file())
+        digest = sha256()
+        restored = set()
+        for path in sorted(paths):
+            name = path.relative_to(root).as_posix()
+            data = path.read_bytes()
+            if name == 'roomquest/category_worker.py':
+                data = strip_block(data, 'EVE159_DISPATCH_CONTEXT')
+                if git_blob(data) != '14f449eb0e9a4d5de30fd53c7ba6f1bc7f392300':
+                    return None
+                restored.add(name)
+            elif name == 'roomquest/registered_html_checkpoint.py':
+                data = strip_block(data, 'EVE159_PREDECESSOR_CONTEXT')
+                data = strip_block(data, 'EVE159_PREDECESSOR_DECODE',
+                                   b'        state = _decode(source, checkpoint, context, at=at)\n')
+                if git_blob(data) != 'e2be0a2b358916d6633643920858b637f373b268':
+                    return None
+                restored.add(name)
+            digest.update(name.encode('utf-8') + b'\0')
+            digest.update(data)
+            digest.update(b'\0')
+        if len(restored) != 2:
+            return None
+        for dependency in ('icalendar', 'recurring-ical-events', 'python-dateutil',
+                           'beautifulsoup4', 'feedparser', 'lxml', 'tzdata', 'x-wr-timezone'):
+            try:
+                installed = version(dependency)
+            except PackageNotFoundError:
+                installed = 'absent'
+            digest.update((dependency + '=' + installed + '\0').encode('utf-8'))
+        return fingerprint({'version': CONTEXT_VERSION, 'parser': digest.hexdigest(),
+                            'source_key': source['source_key'],
+                            'feed_url': source['feed_url'], 'adapter': 'html'})
+    except (OSError, ValueError, KeyError, TypeError):
+        return None
+
+
+# END EVE159_PREDECESSOR_CONTEXT
 def _source(source):
     if not enabled(source):
         raise ValueError('html_calendar_capture_not_admitted')
@@ -77,7 +157,17 @@ def collect_chunk(source, fetch, *, checkpoint=None, listing=None,
         raise ValueError('html_calendar_capture_invalid')
     context = context_hash(source)
     if checkpoint is not None:
-        state = _decode(source, checkpoint, context, at=at)
+        # BEGIN EVE159_PREDECESSOR_DECODE
+        try:
+            state = _decode(source, checkpoint, context, at=at)
+        except ValueError as exc:
+            if str(exc) != 'html_calendar_capture_context_changed':
+                raise
+            previous = _dispatch_predecessor_context(source)
+            if previous is None:
+                raise
+            state = _decode(source, checkpoint, previous, at=at)
+        # END EVE159_PREDECESSOR_DECODE
     else:
         start = codec.now(at).date()
         plan = progress.new(source['source_key'], url, 'html', [url],
