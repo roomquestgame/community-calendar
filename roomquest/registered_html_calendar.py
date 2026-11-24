@@ -754,6 +754,19 @@ def _detail(source, payload, url):
             prior = images.get(identity)
             if prior is None or jsonld_adapter.definition_contains(node, prior):
                 images[identity] = node
+    # An explicit Event URL proves page identity but does not make a naive
+    # publisher clock timezone-aware. Reuse the same independently displayed
+    # schedule proof used for otherwise unidentified Events before the ordinary
+    # JSON-LD parser rejects that clock. Exact offset timestamps stay on the
+    # established path.
+    if len(candidates) == 1:
+        from roomquest.registered_page_event import (
+            LOCAL_STAMP, UTC_STAMP, candidates as page_candidates)
+        raw = candidates[0].get('startDate')
+        if isinstance(raw, str) and (LOCAL_STAMP.fullmatch(raw) or UTC_STAMP.fullmatch(raw)):
+            repaired = page_candidates(nodes, soup, url, _event, _public_url, _url_key)
+            if repaired is not None:
+                candidates = repaired
     if not candidates:
         from roomquest.registered_date_only_clock import date_only_event_with_clock
         completed = date_only_event_with_clock(nodes, soup, url, _event)
