@@ -101,7 +101,9 @@ def _payload(value):
 
 def _items(payload, maximum, name):
     payload = _payload(payload)
-    if not isinstance(payload, list) or len(payload) > maximum:
+    # A response at our ceiling could itself have been truncated by the
+    # upstream API; never certify that as a complete calendar.
+    if not isinstance(payload, list) or len(payload) >= maximum:
         _fail('spektrix_' + name + '_invalid')
     if any(not isinstance(item, dict) for item in payload):
         _fail('spektrix_' + name + '_invalid')
@@ -118,7 +120,16 @@ def _merge(entries, rows, label, limit):
         if not _id(key):
             _fail('spektrix_' + label + '_invalid')
         if key in entries and entries[key] != row:
-            _fail('spektrix_' + label + '_conflict')
+            # A recurring production may be returned by several consecutive
+            # 7-day windows. The first/last instance *range* is window-relative;
+            # title, public attributes and the event's real ID must still agree.
+            transient = {'firstInstanceDateTime', 'lastInstanceDateTime',
+                         'firstInstanceDateTimeUtc', 'lastInstanceDateTimeUtc',
+                         'instanceDates'}
+            previous = {k: v for k, v in entries[key].items() if k not in transient}
+            current = {k: v for k, v in row.items() if k not in transient}
+            if label != 'events' or previous != current:
+                _fail('spektrix_' + label + '_conflict')
         entries[key] = row
         if len(entries) > limit:
             _fail('spektrix_' + label + '_limit')
