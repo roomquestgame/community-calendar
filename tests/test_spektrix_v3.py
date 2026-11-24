@@ -18,6 +18,7 @@ def profile(**overrides):
     return {
         'client': 'thealbany',
         'publisher_url': 'https://www.thealbany.org.uk/events',
+        'country': 'GB',
         'timezone': 'Europe/London',
         'home_city': 'London',
         **overrides,
@@ -132,7 +133,7 @@ def test_venue_api_missing_address_requires_verified_override():
     source = profile(verified_venues={
         VENUE: {'address': '35-47 Bethnal Green Road, London E1 6LA',
                 'city': 'London', 'timezone': 'Europe/London',
-                'evidence_url': 'https://richmix.org.uk/visit-us'}})
+                'evidence_url': 'https://www.thealbany.org.uk/visit-us'}})
     row = api.project(source, [event()], [instance()], [plan()], [blank],
                       START, STOP)['events'][0]
     assert 'Bethnal Green' in row['venue_address']
