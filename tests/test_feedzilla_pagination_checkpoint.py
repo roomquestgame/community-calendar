@@ -76,7 +76,8 @@ def test_resume_rejects_other_source_other_adapter_and_modified_plan():
     for key in ('source_key', 'feed_url', 'adapter', 'plan_sha256', 'window_end'):
         modified = dict(s, **{key: 'bad'})
         with pytest.raises(ValueError, match='feedzilla_checkpoint_invalid'):
-            cp.validate(modified, at=STAMP)
+            cp.validate(modified, source_key='municipal_001', feed_url=URL,
+                        adapter='spektrix', at=STAMP)
     with pytest.raises(ValueError, match='feedzilla_checkpoint_invalid'):
         cp.validate(s, source_key='municipal_002', at=STAMP)
 
