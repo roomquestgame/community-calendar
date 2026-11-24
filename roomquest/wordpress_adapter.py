@@ -249,7 +249,11 @@ class _RegisteredTECInventory:
         self.started = False
 
     def page(self, payload, number):
-        totals_present = 'total' in payload and 'total_pages' in payload
+        has_total = 'total' in payload
+        has_pages = 'total_pages' in payload
+        if has_total != has_pages:
+            raise ValueError('wordpress_pagination_changed' if self.started else 'invalid_wordpress_pagination')
+        totals_present = has_total and has_pages
         if not self.started:
             self.started = True
             if not totals_present:
@@ -263,6 +267,8 @@ class _RegisteredTECInventory:
                 raise ValueError('pagination_limit')
             self.totals = total, pages
         if self.totals is None:
+            if totals_present:
+                raise ValueError('wordpress_pagination_changed')
             return
         total, pages = self.totals
         if (not totals_present or type(payload['total']) is not int
