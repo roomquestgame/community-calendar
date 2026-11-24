@@ -7,6 +7,7 @@ def test_embedded_profiles_require_strong_two_part_signals():
     assert unsupported_calendar_profile('''<html><script src="https://elfsightcdn.com/platform.js"></script>
       <div class="elfsight-app-example"></div></html>''') == 'elfsight_adapter_needed'
     assert unsupported_calendar_profile('''<html><script src="https://system.spektrix.com/example/api/v3/events"></script></html>''') == 'spektrix_adapter_needed'
+    assert unsupported_calendar_profile('''<html><div data-tockify-calendar="spirited"></div><script src="https://public.tockify.com/browser/embed.js"></script></html>''') == 'tockify_adapter_needed'
     assert unsupported_calendar_profile('''<html><script>new FullCalendar.Calendar(el, {events: '/events-feed'})</script></html>''') == 'fullcalendar_adapter_needed'
 
 
@@ -23,7 +24,7 @@ def test_footer_signals_in_large_documents():
 
 
 def test_new_signals_stay_on_existing_monthly_auto_defer_path():
-    for reason in ('elfsight_adapter_needed', 'spektrix_adapter_needed', 'fullcalendar_adapter_needed'):
+    for reason in ('elfsight_adapter_needed', 'spektrix_adapter_needed', 'fullcalendar_adapter_needed', 'tockify_adapter_needed'):
         assert auto_defer_nonactionable({'p_outcome': 'review', 'p_reason': reason, 'p_type': 'html'}) == {
             'p_outcome': 'retry', 'p_reason': reason, 'p_retry_seconds': MONTH_SECONDS,
         }
