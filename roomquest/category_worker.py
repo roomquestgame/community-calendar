@@ -57,6 +57,8 @@ _OPERATIONS = frozenset(('community_collector_claim_category',
                          'community_collector_record_preview_v3',
                          'community_collector_publish_category',
                          'community_collector_finish_category'))
+
+
 def _observe_incremental_completion(source, observation):
     """Log exact count-only pilot evidence without affecting collection."""
     try:
