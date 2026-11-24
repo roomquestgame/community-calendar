@@ -256,7 +256,8 @@ class _RegisteredTECInventory:
                 return
             total, pages = payload['total'], payload['total_pages']
             if (type(total) is not int or type(pages) is not int
-                    or total < 0 or pages < 0 or (total == 0) != (pages == 0)):
+                    or total < 0 or pages < 0 or (total == 0 and pages not in (0, 1))
+                    or (total > 0 and pages == 0)):
                 raise ValueError('invalid_wordpress_pagination')
             if pages > MAX_PAGES:
                 raise ValueError('pagination_limit')
