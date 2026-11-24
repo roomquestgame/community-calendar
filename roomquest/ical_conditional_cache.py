@@ -17,16 +17,11 @@ from roomquest.incremental_snapshot import _cacheable, _validator, request_hash
 _LOG = logging.getLogger(__name__)
 _current = ContextVar("eq_ical_conditional_cache", default=None)
 _MAX_BYTES = 131072
-# Mirror the five exact database pilot source keys to avoid adding a read RPC
-# to every iCalendar worker. The database still validates source ID, lease,
-# approval, rights and exact source_key before returning cached bytes.
-_PILOT_SOURCE_KEYS = frozenset({
-    "municipal_mapsee_48489e8f5c906f7610d30197",
-    "municipal_df6fb09e5e9df3f197946372",
-    "municipal_mapsee_c3384b4db5c0226f2d7dc0bb",
-    "municipal_mapsee_a4d675992e7b41375e3f0672",
-    "municipal_mapsee_ed3b97dd2d6526767fe2da5f",
-})
+# The claim RPC now advertises enrollment only for source IDs explicitly
+# approved in the private database rollout table. All other iCalendar feeds
+# take the old no-cache path without an extra database read or HTTP request.
+# The cache RPC still independently checks source ID/key, lease, policy,
+# rights, exact URL and the published snapshot (never trust this flag alone).
 
 
 def _valid_ical(text):
@@ -166,7 +161,7 @@ class ConditionalCache:
         if not self.enabled:
             return
         # Optional telemetry must not delay completion or affect an accepted
-        # source snapshot. Only pilot sources reach this method.
+        # source snapshot. Only database-enrolled sources reach this method.
         if deadline_at is not None:
             from time import monotonic
             if monotonic() > deadline_at - 2:
@@ -229,7 +224,8 @@ def capture(source, snapshot, collection_context, rpc):
     if (snapshot is not None and isinstance(collection_context, dict)
             and collection_context.get("p_category") == "ical"
             and source.get("kind") == "ical" and source.get("platform_adapter") == "ical"
-            and source.get("source_key") in _PILOT_SOURCE_KEYS
+            and source.get("ical_optimization_enabled") is True
+            and isinstance(source.get("source_key"), str)
             and isinstance(source.get("feed_url"), str)):
         cache = ConditionalCache(source, snapshot, collection_context, rpc)
         cache.initialize()
