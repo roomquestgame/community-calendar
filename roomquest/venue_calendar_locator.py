@@ -261,8 +261,15 @@ def _wp_candidate(html, site):
     text = html[:MAX_SOURCE_BYTES].lower()
     if not any(token in text for token in TEC_HINTS):
         return None
-    # This path is a documented TEC endpoint, but still MUST be fetched and
-    # validated. Website technology evidence alone cannot register a feed.
+    # First respect the REST root advertised by WordPress itself, including
+    # subdirectory installs and the older ?rest_route=/ permalink mode.
+    # The candidate is NEVER registered without the normal parser probe.
+    from roomquest.wordpress_capabilities import advertised_rest_root, rest_route_url
+    root = advertised_rest_root(site, html)
+    if root:
+        return rest_route_url(root, '/tribe/events/v1/events')
+    # Legacy installations may expose the TEC markers but no API discovery
+    # link. Preserve the existing documented endpoint probe as a fallback.
     return urlunsplit((urlsplit(site).scheme, urlsplit(site).netloc,
                        "/wp-json/tribe/events/v1/events", "", ""))
 
