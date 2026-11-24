@@ -159,10 +159,17 @@ def _physical_place(soup, where):
         candidates.append(where)
     # The footer can complete a room-only location label, but must identify
     # that exact publisher/venue by name and state London + a UK postcode.
+    # Some themes place the venue name in a separate copyright line instead
+    # of repeating it inside the semantic address. Keep the proof bounded to
+    # the same single footer and require the publisher name there either way.
     if not postal and site_name and site_name.casefold() in where.casefold():
+        footer = soup.find('footer')
+        footer_text = _plain(footer.get_text(' ', strip=True)) if footer else ''
         for node in soup.select('footer address,footer [itemprop="address"],footer .contact-address'):
             value = _plain(node.get_text(' ', strip=True))
-            if (site_name.casefold() in value.casefold() and UK_POSTCODE.search(value)
+            if ((site_name.casefold() in value.casefold()
+                    or site_name.casefold() in footer_text.casefold())
+                    and UK_POSTCODE.search(value)
                     and re.search(r'\bLondon\b', value, re.I)):
                 candidates.append(value)
     if len(candidates) != 1:

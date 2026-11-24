@@ -181,6 +181,24 @@ def test_wordpress_old_h2_title_and_labeled_details_are_supported_when_footer_ag
     native.validate_record(row, source())
 
 
+def test_wordpress_footer_can_name_venue_outside_its_semantic_address():
+    day = (datetime.now(timezone.utc) + timedelta(days=17)).date()
+    label = day.strftime('%B %d, %Y')
+    event_url = BASE + '/event/friday-jazz-' + day.isoformat()
+    html = ('<html><head><meta property="og:title" content="Friday Jazz - Oxford House">'
+            '<meta property="og:site_name" content="Oxford House"></head><body>'
+            '<main><h2>Welcome to live music</h2><h2>Friday Jazz</h2>'
+            '<p><strong>Dates</strong> ' + label + ' - ' + label + '</p>'
+            '<p><strong>Times</strong> 5:00 pm - 6:00 pm</p>'
+            '<p><strong>Location</strong> Oxford House, Café</p></main>'
+            '<footer><address>Derbyshire Street, Bethnal Green, London E2 6HG, UK'
+            '</address><p>Oxford House by Bethnal Green © 2026</p></footer></body></html>')
+    [row] = calendar._detail(source(), html, event_url)
+    assert row['venue_name'] == 'Oxford House, Café'
+    assert 'Derbyshire Street' in row['venue_address']
+    native.validate_record(row, source())
+
+
 @pytest.mark.parametrize('dates,times,venue', [
     ('27 November 2026 - 4 December 2026', '5pm - 6pm', 'Studio - 136 Kingsland Road, London E2 8EA'),
     ('27 November 2026', 'Times vary', 'Studio - 136 Kingsland Road, London E2 8EA'),
