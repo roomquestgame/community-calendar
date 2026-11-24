@@ -1,3 +1,35 @@
+# November 24, 11:09 ET — follow-up publisher evidence
+
+- St James's Church, Paddington: `https://stjamespaddington.org.uk/events/`.
+  No matching live registrations or sources by domain. Read-only Vercel
+  diagnostic with the collector's exact robots policy, user agents,
+  crawl-delay handling, public DNS checks, bounded responses and no redirects.
+  Robots 200, delay 1 second; listing advertises WordPress REST index,
+  index advertises native TEC event route. Four requests total. 60-day
+  window Nov 24–Jan 23, per_page=100: total=17, total_pages=1, 17 raw
+  members with publish status and publisher address, Europe/London.
+  Patched inventory guard accepted the complete one-page inventory.
+  This is not an eligibility or end-to-end publication result.
+- Sample venue street `Sussex Gardens, Paddington,`, locality London,
+  postcode W2 3UD, country United Kingdom. Read-only production
+  `shared_gb_raw_street` returned NULL for the composed literal and
+  punctuation-cleaned address. Littleport control returned its expected
+  street query. This candidate is not a clean automatic address-only
+  geocode canary; route the address shape to shared venue-resolution
+  ownership, do not change shared code or invent a street number.
+- Community Links (www.community-links.org): no matching registrations
+  or sources by domain. Robots 200, crawl delay 10 seconds. Diagnostic
+  intentionally deferred before listing retrieval (local diagnostic
+  delay budget <=5 seconds); not denied or invalid. A future paced run
+  must honor the publisher's full delay. Both sandboxes stopped.
+- No original receipts retried, no new registration, no publication,
+  no live mutations, no added infrastructure. Still need real multi-page
+  native inventory and a fresh normal Admin canary after Littleport
+  publication proves the existing path. Draft #490 stays unmerged
+  pending coordination with EVE-170 and shared venue ownership.
+
+---
+
 ## November 24 — resume checkpoint: incomplete native TEC count declarations
 
 Live readback 16:04 UTC: original London #1217–1226 remain seven review,
