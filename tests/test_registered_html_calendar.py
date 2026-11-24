@@ -129,15 +129,6 @@ def test_explicit_itemlist_supports_publisher_permalink_shapes():
     assert row['event_url'] == url
 
 
-@pytest.mark.parametrize('url,body', [
-    (ONE, listing()),
-    (BASE + '/article/editorial', listing((ONE,), heading='Our favorites')),
-    (BASE + '/', listing((ONE,))),
-    (FEED, '<main><h1>Events</h1><p>Check back soon.</p></main>'),
-    (FEED, '<main><h1>Events</h1><a href="https://other.example.org/event/a">A</a></main>'),
-    (FEED, '<h1>Events</h1><nav><a href="/event/a">A</a><a href="/event/b">B</a></nav>'),
-])
-
 def test_whats_on_and_whatson_venues_use_same_complete_linked_detail_collector():
     date = (datetime.now(timezone.utc) + timedelta(days=14)).date()
     label = date.strftime('%B %d, %Y')
@@ -196,6 +187,14 @@ def test_visible_event_fallback_never_invents_clock_recurrence_or_venue(dates, t
         calendar._detail(source(), html, BASE + '/event/community-talk')
 
 
+@pytest.mark.parametrize('url,body', [
+    (ONE, listing()),
+    (BASE + '/article/editorial', listing((ONE,), heading='Our favorites')),
+    (BASE + '/', listing((ONE,))),
+    (FEED, '<main><h1>Events</h1><p>Check back soon.</p></main>'),
+    (FEED, '<main><h1>Events</h1><a href="https://other.example.org/event/a">A</a></main>'),
+    (FEED, '<h1>Events</h1><nav><a href="/event/a">A</a><a href="/event/b">B</a></nav>'),
+])
 def test_calendar_scope_cannot_come_from_single_events_or_navigation(url, body):
     assert not calendar.supports_listing(url, body)
 
