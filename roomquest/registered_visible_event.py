@@ -8,6 +8,7 @@ This extractor is intentionally narrower than general natural-language dates.
 """
 from datetime import datetime, timezone
 import re
+from urllib.parse import urljoin, urlsplit
 from zoneinfo import ZoneInfo
 
 from roomquest.mapsee_adapter import record
@@ -187,6 +188,110 @@ def _physical_place(soup, where):
                          + ', United Kingdom')
 
 
+def _hnm_theme_event(source, soup, main, url, title):
+    """Read finite HNM-theme events and classify non-discrete schedules.
+
+    The same theme contract owns pagination and its public detail widget.
+    Only fully dated, timed ranges become rows. Explicit daily/weekly or
+    variable-time programs complete as intentional non-discrete exclusions.
+    """
+    scripts = []
+    for node in soup.select('script[src]'):
+        target = urljoin(url, node.get('src', ''))
+        if urlsplit(target).path.endswith(
+                '/wp-content/themes/horniman-theme/assets/js/main.min.js'):
+            scripts.append(target)
+    widgets = main.select('.event-details-widget')
+    if (len(scripts) != 1 or len(widgets) != 1
+            or not re.fullmatch(r'/event/[^/]+/', urlsplit(url).path)):
+        return None
+    fields = {}
+    for row in widgets[0].select(':scope > .event-details-row'):
+        labels = row.select(':scope > .h3')
+        values = row.select(':scope > .event-details-line')
+        if len(labels) != 1 or len(values) != 1:
+            return None
+        label = _plain(labels[0].get_text(' ', strip=True)).casefold()
+        value = _plain(values[0].get_text(' ', strip=True))
+        if label in fields or not value:
+            return None
+        fields[label] = value
+    if not all(fields.get(key) for key in ('dates', 'times', 'location')):
+        return None
+    dates, times = fields['dates'], fields['times']
+    # These are genuine programs/displays, but not one safely enumerable
+    # occurrence. Complete them explicitly instead of inventing recurrence.
+    if (CONTAMINATION.search(dates) or CONTAMINATION.search(times)
+            or not re.search(r'\b20\d{2}\b', dates)
+            or re.search(r'\b(?:daily|weekly|monthly|every|sundays?|mondays?|tuesdays?'
+                         r'|wednesdays?|thursdays?|fridays?|saturdays?)\b', dates, re.I)):
+        return []
+    start_day = end_day = _date_piece(dates)
+    if start_day is None:
+        pairs = []
+        for separator in (' - ', ' – ', ' — '):
+            if separator in dates:
+                left, right = dates.split(separator, 1)
+                pairs.append((_date_piece(left), _date_piece(right)))
+        if len(pairs) != 1 or None in pairs[0]:
+            return None
+        start_day, end_day = pairs[0]
+    normalized_times = times.replace('.', ':')
+    match = re.fullmatch(r'(' + CLOCK + r')\s*[-–—]\s*(' + CLOCK + r')',
+                         normalized_times, re.I)
+    if not match:
+        return None
+    try:
+        def clock(raw):
+            compact = _plain(raw).replace(' ', '').upper()
+            return datetime.strptime(compact, '%I:%M%p' if ':' in compact else '%I%p').time()
+        zone = ZoneInfo('Europe/London')
+        start = datetime.combine(start_day, clock(match[1])).replace(tzinfo=zone)
+        end = datetime.combine(end_day, clock(match[2])).replace(tzinfo=zone)
+    except (ValueError, OverflowError):
+        return None
+    if end <= start:
+        return None
+    for item in (start, end):
+        if (item.utcoffset() != item.replace(fold=1).utcoffset()
+                or item.astimezone(timezone.utc).astimezone(zone) != item):
+            return None
+
+    sites = soup.select('meta[property="og:site_name"][content]')
+    if len(sites) != 1:
+        return None
+    site = _plain(sites[0]['content'])
+    venue_candidates = []
+    for column in soup.select('footer .footer-col'):
+        names = column.select(':scope > .h5')
+        addresses = column.select(':scope > .footer-address')
+        if len(names) != 1 or len(addresses) != 1:
+            continue
+        published_name = _plain(names[0].get_text(' ', strip=True))
+        comparable = lambda value: _plain(value).replace('&', 'and').casefold()
+        if comparable(published_name) == comparable(site):
+            venue_candidates.append(_plain(addresses[0].get_text(' ', strip=True)))
+    if len(venue_candidates) != 1:
+        return None
+    address = venue_candidates[0]
+    if (not UK_POSTCODE.search(address) or not re.search(r'\bLondon\b', address, re.I)
+            or not re.search(r'\b\d{1,5}\s+[A-Za-z].*\b(?:Road|Street|Lane|Square|Drive|Way)\b',
+                             address, re.I)):
+        return None
+    location = fields['location']
+    if len(location) > 160 or CONTAMINATION.search(location):
+        return None
+    venue = site + ' — ' + location
+    row = record(title, start.isoformat(), end.isoformat(), venue,
+                 address + ', United Kingdom', 'London', url,
+                 url + '#visible-event', tz='Europe/London')
+    if row is None:
+        return []
+    row['timezone'] = 'Europe/London'
+    attach(row, source, evidence_url=url)
+    return [row]
+
+
 def read(source, soup, url):
     main = soup.find('main') or soup.find(attrs={'role': 'main'})
     if main is None:
@@ -194,6 +299,9 @@ def read(source, soup, url):
     title = _title(soup, main)
     if title is None:
         return None
+    hnm = _hnm_theme_event(source, soup, main, url, title)
+    if hnm is not None:
+        return hnm
     fields = _labeled(main)
     if not fields or not all(fields.get(key) for key in ('date', 'time', 'where')):
         return None
