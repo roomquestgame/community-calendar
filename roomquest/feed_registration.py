@@ -332,6 +332,7 @@ def register(ticket):
     from roomquest import liberty_calendar, registered_listings
     from roomquest.registration_formats import source_key, extraction_hold
     with capture_publisher_pacing() as pacing:
+        body = None  # Fetch failure can occur before a response was collected.
         try:
             deadline = monotonic() + 35
             def check(target, endpoint_only=False, venue_website=False):
