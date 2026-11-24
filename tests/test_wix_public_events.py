@@ -95,3 +95,41 @@ def test_cancellation_and_private_event_never_promoted():
 def test_window_never_exceeds_sixty_days():
     with pytest.raises(ValueError, match='wix_public_window_invalid'):
         wix.extract(profile(), html(), '2026-11-24', '2027-01-23')
+
+
+def test_contradictory_wix_totals_and_nonboolean_more_are_not_complete():
+    for fragment in ('"hasMore": "false"', '"hasMore": 0',
+                     '"total": 2, "hasMore": false'):
+        payload = html().replace('"hasMore": false', fragment)
+        with pytest.raises(ValueError, match='pagination_unverified'):
+            wix.extract(profile(), payload, '2026-12-01', '2026-12-30')
+
+
+def test_same_uuid_case_variants_must_not_replace_different_event_facts():
+    original = event()
+    alias = event(id=ID.upper())
+    complete = wix.extract(profile(), html(events=[original, alias]), '2026-12-01', '2026-12-30')
+    assert len(complete['events']) == 1
+    alias['description'] = 'Conflicting event content.'
+    with pytest.raises(ValueError, match='event_identity_conflict'):
+        wix.extract(profile(), html(events=[original, alias]), '2026-12-01', '2026-12-30')
+
+
+def test_explicit_hidden_end_date_is_not_exposed_as_verified_end():
+    item = event()
+    item['scheduling']['config']['endDateHidden'] = True
+    found = wix.extract(profile(), html(events=[item]), '2026-12-01', '2026-12-30')
+    assert found['events'][0]['ends_at'] is None
+
+
+@pytest.mark.parametrize('item', [event(status=False), event(status=None),
+    event(registration={'restrictedTo': True}), event(registration={})])
+def test_malformed_status_or_visibility_is_not_a_verified_snapshot(item):
+    with pytest.raises(ValueError, match='wix_public_event_(status|visibility)_unverified'):
+        wix.extract(profile(), html(events=[item]), '2026-12-01', '2026-12-30')
+
+
+def test_same_hostname_different_port_is_not_a_first_party_event_link():
+    payload = html().replace(LINK, LINK.replace('shows.example.org', 'shows.example.org:444'))
+    with pytest.raises(ValueError, match='event_link_unverified'):
+        wix.extract(profile(), payload, '2026-12-01', '2026-12-30')
