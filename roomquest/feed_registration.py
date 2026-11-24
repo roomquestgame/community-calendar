@@ -383,8 +383,9 @@ def register(ticket):
             if durable and candidate.get('html_capture_pending') is True:
                 result = _checkpoint_registration(candidate, ticket, pacing, deadline, resume=True)
                 if result is not None:
+                    result = auto_defer_nonactionable(result)
                     recorded = supabase_rpc('community_collector_finish_registration',
-                        {**args, **auto_defer_nonactionable(result)}, timeout=8)
+                        {**args, **result}, timeout=8)
                     return {'outcome': result['p_outcome'] if recorded else 'lease_expired'}
             def check(target, endpoint_only=False, venue_website=False):
                 def fetch(resource, accept):
