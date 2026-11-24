@@ -133,3 +133,21 @@ def test_same_hostname_different_port_is_not_a_first_party_event_link():
     payload = html().replace(LINK, LINK.replace('shows.example.org', 'shows.example.org:444'))
     with pytest.raises(ValueError, match='event_link_unverified'):
         wix.extract(profile(), payload, '2026-12-01', '2026-12-30')
+
+
+def test_real_wix_registration_route_shape_is_exactly_linked():
+    # Publisher-observed path family on a public London Wix Events listing.
+    target = LINK.replace('/event-details/', '/event-details-registration/')
+    found = wix.extract(profile(), html().replace(LINK, target), '2026-12-01', '2026-12-30')
+    assert found['events'][0]['event_url'] == target
+    for bad in ('/other/event-details-registration/', '/event-details-registration/foo/'):
+        payload = html().replace(LINK, LINK.replace('/event-details/', bad))
+        with pytest.raises(ValueError, match='event_link_unverified'):
+            wix.extract(profile(), payload, '2026-12-01', '2026-12-30')
+
+
+def test_observed_uk_widget_without_counts_remains_on_hold_even_with_hasmore_false():
+    # Both UK publisher listings in the read-only shadow expose this shape.
+    payload = html().replace('"totalCount": 1, ', '')
+    with pytest.raises(ValueError, match='pagination_unverified'):
+        wix.extract(profile(), payload, '2026-12-01', '2026-12-30')
