@@ -5100,8 +5100,19 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
                     publisher_handoff["ready_at"] = monotonic() + max(
                         1, pacing["crawl_delay_seconds"], pacing["retry_after_seconds"])
                 ical_conditional_cache.save_after_success(deadline_at=deadline)
-                return {"complete": 1, "failed": 0, "staged": staged,
-                        "publication_required": result["publication_required"]}
+                completed = {"complete": 1, "failed": 0, "staged": staged,
+                             "publication_required": result["publication_required"]}
+                if source.get("ical_optimization_enabled") is True:
+                    # Count-only diagnostic evidence. The category worker
+                    # consumes this private return field before its response;
+                    # no event IDs, URLs, headers or bodies are logged.
+                    completed["_incremental_observation"] = {
+                        key: result.get(key) for key in (
+                            "changed", "confirmed", "normalized_reused",
+                            "end_only_updated", "location_skips_reused",
+                            "publication_required")
+                    }
+                return completed
             else:
                 raise PreviewError("incremental_receipt_invalid")
         except (PreviewError, OSError, ValueError) as exc:
