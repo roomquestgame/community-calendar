@@ -30,6 +30,8 @@ class Backend:
         self.requests = []
         self.rows = {}
         self.batches = []
+        self.members = None
+        self.fetch_receipts = None
         self.count = count
 
     def read(self):
@@ -41,8 +43,18 @@ class Backend:
         self.envelope = deepcopy(envelope)
         return {'checkpoint_saved': True, 'revision': self.revision}
 
+    def seal(self, revision, previous, updated, receipts, members):
+        assert previous == self.envelope and revision == self.revision
+        assert self.members is None
+        assert len(receipts) == len(self.requests)
+        self.fetch_receipts = deepcopy(receipts)
+        self.members = deepcopy(members)
+        return dict(self.write(revision, updated), sealed_count=len(members))
+
     def stage(self, revision, previous, updated, rows):
         assert previous == self.envelope and revision == self.revision
+        assert self.members is not None
+        assert [{k: row[k] for k in ('id', 'starts_at', 'event_url')} for row in rows] == self.members[len(self.rows):len(self.rows)+len(rows)]
         for row in rows:
             self.rows[(row['id'], row['starts_at'])] = row
         self.batches.append(len(rows))
@@ -79,7 +91,7 @@ class Backend:
     def run(self, **overrides):
         args = dict(read=self.read, write=self.write, fetch=self.fetch,
                     convert=lambda source, snapshot: snapshot['events'],
-                    stage_and_save=self.stage, can_continue=lambda: True,
+                    seal=self.seal, stage_and_save=self.stage, can_continue=lambda: True,
                     clock=lambda: STAMP, max_steps=1)
         args.update(overrides)
         return runner.run_slice(SOURCE, PROFILE, **args)
@@ -102,6 +114,8 @@ class RunnerTests(unittest.TestCase):
         self.assertEqual(result['record_count'], 25)
         self.assertEqual(result['staged_count'], 25)
         self.assertEqual(db.batches, [20, 5])
+        self.assertEqual(len(db.members), 25)
+        self.assertEqual(len(db.fetch_receipts), 20)
         self.assertEqual(len(db.requests), 20)  # 9*2 dates + venues + real plan
         self.assertEqual(len(set(db.requests)), 20)
         self.assertEqual(len(db.rows), 25)
@@ -117,8 +131,32 @@ class RunnerTests(unittest.TestCase):
         self.assertEqual(result['status'], 'staged')
         self.assertEqual(result['record_count'], 0)
         self.assertEqual(db.batches, [])
+        self.assertEqual(db.members, [])
+        self.assertEqual(len(db.fetch_receipts), 19)
         self.assertEqual(len(db.requests), 19)
         self.assertTrue(store.ready_to_publish(SOURCE, db.envelope, at=STAMP))
+
+    def test_short_seal_ack_stops_before_stage(self):
+        db = Backend(1)
+        while db.run()['phase'] != 'project':
+            pass
+        revision = db.revision
+        with self.assertRaisesRegex(ValueError, 'seal_receipt_invalid'):
+            db.run(seal=lambda *args: {
+                'checkpoint_saved': True, 'revision': revision + 1,
+                'sealed_count': 0})
+        self.assertIsNone(db.members)
+        self.assertFalse(db.rows)
+
+    def test_sealed_membership_cap_is_not_silent_truncation(self):
+        db = Backend(1)
+        while db.run()['phase'] != 'project':
+            pass
+        with self.assertRaisesRegex(ValueError, 'sealed_membership_limit'):
+            db.run(convert=lambda source, snapshot: [
+                dict(snapshot['events'][0], id='fixture-%04d' % i)
+                for i in range(501)])
+        self.assertIsNone(db.members)
 
     def test_bad_stage_receipt_does_not_advance_local_or_durable_cursor(self):
         db = Backend(1)
