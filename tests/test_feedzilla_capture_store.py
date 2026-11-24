@@ -49,7 +49,8 @@ def test_two_resumable_pages_then_stage_ack_permit_completion():
 def test_acknowledged_records_must_be_contiguous_and_bounded():
     one=store.acknowledge_page(SOURCE,new(),API,BODY,at=STAMP)
     two=store.acknowledge_page(SOURCE,one,TWO,'[]',terminal=True,at=STAMP)
-    stage=store.prepare_staging(SOURCE,two,[RECORD]*21,at=STAMP)
+    unique=[dict(RECORD,id='spektrix:'+str(i)) for i in range(21)]
+    stage=store.prepare_staging(SOURCE,two,unique,at=STAMP)
     with pytest.raises(ValueError,match='feedzilla_capture_stage_receipt_invalid'):
         store.acknowledge_stage(SOURCE,stage,21,at=STAMP)
     with pytest.raises(ValueError,match='feedzilla_capture_stage_receipt_invalid'):
@@ -123,3 +124,10 @@ def test_missing_stage_evidence_refused():
     two=store.acknowledge_page(SOURCE,one,TWO,'[]',terminal=True,at=STAMP)
     with pytest.raises(ValueError,match='feedzilla_capture_records_invalid'):
         store.prepare_staging(SOURCE,two,[{'id':'x'}],at=STAMP)
+
+
+def test_duplicate_stage_records_are_rejected_before_database_rpc():
+    first=store.acknowledge_page(SOURCE,new(),API,BODY,at=STAMP)
+    complete=store.acknowledge_page(SOURCE,first,TWO,'[]',terminal=True,at=STAMP)
+    with pytest.raises(ValueError,match='feedzilla_capture_duplicate_record'):
+        store.prepare_staging(SOURCE,complete,[RECORD,RECORD],at=STAMP)
