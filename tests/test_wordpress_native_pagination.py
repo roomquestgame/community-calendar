@@ -98,6 +98,24 @@ class RegisteredTECInventoryTests(unittest.TestCase):
         self.assertEqual(len(rows), 1)
         self.assertEqual(calls, [1])
 
+    def test_incomplete_first_count_declaration_is_not_legacy(self):
+        for counts in [{'total': 9}, {'total_pages': 1}]:
+            with self.subTest(counts=counts), self.assertRaisesRegex(
+                    ValueError, 'invalid_wordpress_pagination'):
+                self.run_pages([{'events': [event(1)], **counts}])
+
+    def test_late_count_declaration_cannot_prove_prior_inventory(self):
+        with self.assertRaisesRegex(ValueError, 'wordpress_pagination_changed'):
+            self.run_pages([{'events': [event(1)], 'next_rest_url': FEED + '?page=2'},
+                            response([event(2)], 9, 2)])
+
+    def test_consistent_legacy_countless_pages_still_work(self):
+        rows, calls = self.run_pages([
+            {'events': [event(1)], 'next_rest_url': FEED + '?page=2'},
+            {'events': [event(2)]}])
+        self.assertEqual(len(rows), 2)
+        self.assertEqual(calls, [1, 2])
+
     def test_legacy_source_outside_new_registered_guard_is_unchanged(self):
         rows, calls = self.run_pages([response([event(1)], 9, 1)],
                                      source={'feed_url': FEED})
