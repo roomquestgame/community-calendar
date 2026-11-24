@@ -8,6 +8,7 @@ from copy import deepcopy
 from datetime import datetime, date, timedelta, timezone
 from html import unescape
 import re
+from urllib.parse import urlsplit
 from zoneinfo import ZoneInfo
 
 ZONE = ZoneInfo('Europe/London')
@@ -18,6 +19,7 @@ SHORT_DAY = re.compile(r'([A-Za-z]{3})\s+(\d{1,2})\s+([A-Za-z]{3})\Z')
 FULL_RANGE = re.compile(r'(\d{1,2})(?:st|nd|rd|th)?\s+([A-Za-z]+)\s+(20\d\d)\s*·\s*('
                         + CLOCK + r')\s*[-–—]\s*(' + CLOCK + r')\Z', re.I)
 UK_POSTCODE = re.compile(r'[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}\Z', re.I)
+TABLE_DAY = re.compile(r'([A-Za-z]+)\s+(\d{1,2})(?:st|nd|rd|th)?\s+([A-Za-z]+)\s+(20\d\d)\Z', re.I)
 
 
 def _plain(value):
@@ -42,17 +44,20 @@ def _local(day, clock):
     return local
 
 
-def _physical_uk(event):
+def _physical_uk(event, url):
     place = event.get('location')
     if not isinstance(place, dict):
         return None
     address = place.get('address')
     if not isinstance(address, dict):
         return None
+    country = _title(address.get('addressCountry'))
+    hostname = (urlsplit(url).hostname or '').casefold()
     if (not _plain(place.get('name')) or not _plain(address.get('streetAddress'))
             or not _plain(address.get('addressLocality'))
             or not UK_POSTCODE.fullmatch(_plain(address.get('postalCode')))
-            or _title(address.get('addressCountry')) not in ('gb', 'uk', 'united kingdom')):
+            or (country and country not in ('gb', 'uk', 'united kingdom'))
+            or (not country and not hostname.endswith('.uk'))):
         return None
     return place
 
@@ -143,6 +148,52 @@ def _visible_range(event, heading, place):
     return starts, ends
 
 
+def _visible_occurrences(event, root):
+    """Read a complete Date/Time table that corroborates a naive Event span.
+
+    Some UK venue templates publish the first and last occurrence as the
+    JSON-LD start/end, then enumerate every actual performance in one ordinary
+    server-rendered table.  Retain each factual start and do not reinterpret
+    the last occurrence's start as a verified duration.
+    """
+    candidates = []
+    for table in root.select('table'):
+        rows = table.select('tr')
+        if not rows:
+            continue
+        headings = [_plain(cell.get_text(' ', strip=True)).casefold()
+                    for cell in rows[0].select('th,td')]
+        if headings == ['date', 'time']:
+            candidates.append(rows)
+    if not candidates:
+        return None
+    if len(candidates) != 1:
+        raise ValueError('html_calendar_clock_conflict')
+    starts = []
+    for row in candidates[0][1:]:
+        cells = [_plain(cell.get_text(' ', strip=True)) for cell in row.select('th,td')]
+        if len(cells) != 2 or not (day_match := TABLE_DAY.fullmatch(cells[0])) \
+                or not re.fullmatch(CLOCK, cells[1], re.I):
+            raise ValueError('html_calendar_clock_conflict')
+        weekday, day, month, year = day_match.groups()
+        try:
+            date_value = datetime.strptime(f'{day} {month} {year}', '%d %B %Y').date()
+        except ValueError as exc:
+            raise ValueError('html_calendar_clock_conflict') from exc
+        if date_value.strftime('%A').casefold() != weekday.casefold():
+            raise ValueError('html_calendar_clock_conflict')
+        starts.append(_local(date_value, _clock(cells[1])))
+    if not starts or len(starts) > 500 or any(b <= a for a, b in zip(starts, starts[1:])):
+        raise ValueError('html_calendar_clock_conflict')
+    first, last = event.get('startDate'), event.get('endDate')
+    if (not isinstance(first, str) or not LOCAL_STAMP.fullmatch(first)
+            or not isinstance(last, str) or not LOCAL_STAMP.fullmatch(last)
+            or starts[0].replace(tzinfo=None) != datetime.fromisoformat(first)
+            or starts[-1].replace(tzinfo=None) != datetime.fromisoformat(last)):
+        raise ValueError('html_calendar_clock_conflict')
+    return starts
+
+
 def candidates(nodes, soup, url, is_event, public_url, url_key):
     """Return only independently bound, normalized occurrences, or None."""
     events = [node for node in nodes if is_event(node)]
@@ -182,7 +233,7 @@ def candidates(nodes, soup, url, is_event, public_url, url_key):
     if not isinstance(raw, str):
         return None
     if match := UTC_STAMP.fullmatch(raw):
-        place = _physical_uk(event)
+        place = _physical_uk(event, url)
         if place is None:
             raise ValueError('html_calendar_clock_conflict')
         anchor = datetime.fromisoformat(match[1] + 'T' + match[2]).replace(tzinfo=timezone.utc)
@@ -191,9 +242,17 @@ def candidates(nodes, soup, url, is_event, public_url, url_key):
                      name=f"{_plain(fixed['name'])} — {label}" if label else fixed['name'])
                 for starts, label in rows]
     if LOCAL_STAMP.fullmatch(raw):
-        place = _physical_uk(event)
+        place = _physical_uk(event, url)
         if place is None:
             raise ValueError('html_calendar_clock_conflict')
+        occurrences = _visible_occurrences(event, root)
+        if occurrences is not None:
+            rows = []
+            for starts in occurrences:
+                row = dict(fixed, startDate=starts.isoformat())
+                row.pop('endDate', None)
+                rows.append(row)
+            return rows
         starts, ends = _visible_range(event, headings[0], place)
         return [dict(fixed, startDate=starts.isoformat(), endDate=ends.isoformat())]
     # Ordinary ISO-offset facts need no additional local-time assumption.
