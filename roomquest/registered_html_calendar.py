@@ -335,8 +335,13 @@ def _loadomatic_pagination(soup, url, collection_url, previous_pages):
         return None
     if len(roots) != 1:
         _fail('html_calendar_pagination_ambiguous')
-    triggers = roots[0].select('.loadomatic__elements > button.loadomatic__trigger')
+    # Ten4 emits the listing wrapper and its pager as siblings under <main>.
+    # Bind the contract by requiring one wrapper, one pager container and one
+    # direct trigger across the complete server-rendered page.
+    element_containers = soup.select('.loadomatic__elements')
+    triggers = soup.select('.loadomatic__elements > button.loadomatic__trigger')
     if (len(triggers) != 1
+            or len(element_containers) != 1
             or not PAGINATION_LABEL.fullmatch(triggers[0].get_text(' ', strip=True))):
         _fail('html_calendar_pagination_needed')
     pattern = re.compile(
