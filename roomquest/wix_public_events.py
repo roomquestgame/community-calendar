@@ -60,7 +60,8 @@ def _observed_links(soup, base_url):
         url = urljoin(base_url, node.get('href', ''))
         p = urlsplit(url)
         if (p.scheme != 'https' or p.netloc != base.netloc or p.query
-                or p.fragment or not p.path.startswith('/event-details/')):
+                or p.fragment or not re.fullmatch(
+                    r'/(?:event-details|event-details-registration)/[a-z0-9]+(?:-[a-z0-9]+)*', p.path)):
             continue
         slug = p.path.rsplit('/', 1)[-1]
         if not SLUG.fullmatch(slug):
