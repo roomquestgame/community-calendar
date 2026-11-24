@@ -166,7 +166,12 @@ def _physical_place(soup, where):
         footer = soup.find('footer')
         footer_text = _plain(footer.get_text(' ', strip=True)) if footer else ''
         for node in soup.select('footer address,footer [itemprop="address"],footer .contact-address'):
-            value = _plain(node.get_text(' ', strip=True))
+            # Preserve publisher-authored address line boundaries. A semantic
+            # address commonly uses <br> elements; flattening them to spaces
+            # turns a valid street/district/city layout into one ambiguous
+            # string before the shared GB address gate sees it.
+            lines = [_plain(value) for value in node.stripped_strings if _plain(value)]
+            value = ', '.join(lines) if len(lines) > 1 else _plain(node.get_text(' ', strip=True))
             if ((site_name.casefold() in value.casefold()
                     or site_name.casefold() in footer_text.casefold())
                     and UK_POSTCODE.search(value)
@@ -191,8 +196,11 @@ def _physical_place(soup, where):
     venue = where.split(' - ', 1)[0].strip().rstrip(',')
     if not venue or len(venue) > 180:
         return None
-    return venue, _plain(value + (', London' if not re.search(r'\bLondon\b', value, re.I) else '')
-                         + ', United Kingdom')
+    value = _plain(value + (', London' if not re.search(r'\bLondon\b', value, re.I) else ''))
+    # Canonicalize, rather than duplicate, an explicit publisher country.
+    value = re.sub(r'\s*,?\s*(?:UK|GB|Great Britain|United Kingdom)\s*$', '', value,
+                   flags=re.I).rstrip(' ,')
+    return venue, value + ', United Kingdom'
 
 
 def _hnm_theme_event(source, soup, main, url, title):
