@@ -386,6 +386,53 @@ def test_unrendered_facetwp_pager_cannot_certify_the_initial_events_as_complete(
     fetch.assert_not_called()
 
 
+def loadomatic_page(url, current, total, urls, *, extra_query='', pager=''):
+    config = ("<script>window.albany = function(common) { common.buildLoadOMatic({"
+              "loadUrl: '" + url + "', currentPage: " + str(current) +
+              ", totalPages: " + str(total) + ", extraQuery: '" + extra_query +
+              "'}, false); }</script>")
+    control = ('<div class="loadomatic"><div class="loadomatic__elements">'
+               '<button class="loadomatic__trigger loadomatic__trigger--hidden">'
+               'Load more</button></div>' + pager + '</div>')
+    return listing(urls, extra=control + config)
+
+
+def test_loadomatic_declared_pages_complete_before_any_detail_fetches():
+    next_page = FEED + '?page=2'
+    first = loadomatic_page(FEED, 1, 2, (ONE,))
+    pager = ('<ul class="pagination"><li><button class="pagination__button" '
+             'data-url="' + FEED + '">1</button>'
+             '<li><span class="pagination__button pagination__button--current">2</span></ul>')
+    last = loadomatic_page(next_page, 2, 2, (TWO,), pager=pager)
+    fetch = fetcher({next_page: last, ONE: detail(event()), TWO: detail(event(TWO))})
+    rows = calendar.collect(source(), fetch, listing=first)
+    assert len(rows) == 2
+    assert [call.args[0] for call in fetch.call_args_list] == [next_page, ONE, TWO]
+
+
+@pytest.mark.parametrize('mutation,reason', [
+    ('filtered', 'html_calendar_pagination_needed'),
+    ('wrong_current', 'html_calendar_pagination_needed'),
+    ('over_budget', 'html_calendar_pagination_needed'),
+    ('wrong_url', 'html_calendar_pagination_scope_conflict'),
+])
+def test_loadomatic_requires_one_exact_unfiltered_bounded_contract(mutation, reason):
+    current, total, url, extra = 1, 2, FEED, ''
+    if mutation == 'filtered':
+        extra = '&category=music'
+    elif mutation == 'wrong_current':
+        current = 2
+    elif mutation == 'over_budget':
+        total = calendar.MAX_LISTING_PAGES + 1
+    elif mutation == 'wrong_url':
+        url = BASE + '/calendar'
+    fetch = Mock()
+    with pytest.raises(ValueError, match=reason):
+        calendar.collect(source(), fetch,
+                         listing=loadomatic_page(url, current, total, (ONE,), extra_query=extra))
+    fetch.assert_not_called()
+
+
 @pytest.mark.parametrize('next_page', [FEED + '/page/2/', FEED + '?page=2'])
 def test_observed_next_pages_complete_before_any_detail_is_fetched(next_page):
     first = listing((ONE,), extra='<a rel="next" href="' + next_page + '">Next</a>')
