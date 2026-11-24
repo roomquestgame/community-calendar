@@ -130,7 +130,7 @@ def _public_get(route_record):
             continue
         methods = group.get('methods', ())
         if isinstance(methods, dict):
-            methods = methods.keys()
+            methods = tuple(methods)
         if isinstance(methods, (list, tuple, set)) and 'GET' in methods:
             return True
     return False
