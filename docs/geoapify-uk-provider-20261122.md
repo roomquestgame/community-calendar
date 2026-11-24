@@ -1,3 +1,25 @@
+## November 24 — owner reiterates trust of provider points
+
+Owner explicitly requires accepting the geocoder's returned matching point
+without an arbitrary minimum confidence. Geocodio already accepts scores
+0–1; Geoapify had a .8 threshold in Python AND the SQL verifier. Remove that
+floor in both, retain the native numeric confidence, precision and
+attribution; no change to existing identity, country, supported precision,
+credential/lease, quotas or invalid-response checks. Littleport #6374 actual
+Geoapify request 1bc71082-106e-4f2b-b2a3-a461e64f5a80 was ambiguous solely
+in recorded score_valid, with one address/country/coordinate/type match;
+the precise returned score/point was not saved. Preserve provider history.
+After both releases, retry only the existing eligible Littleport address
+without resetting attempts or issuing an out-of-band request. No batch
+requeue, no new cron, queue, geocoder or broader source-policy changes.
+30/30 focused Geoapify unittest cases passed on exact GitHub blobs in
+network-denied sandbox, including 18 low/high score and precision cases,
+unchanged native coordinates/attribution and malformed/mismatch negatives.
+Shared Supabase rollback tests passed. Release DB first, then collector.
+Historical .8 threshold below is superseded.
+
+---
+
 # Geoapify for reviewed UK venue addresses
 
 The reviewed UK feed test reached Geocodio but received HTTP 422 responses under
