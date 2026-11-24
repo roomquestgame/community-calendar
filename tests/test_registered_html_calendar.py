@@ -687,6 +687,44 @@ def test_sidebar_events_are_not_imported_as_the_requested_detail():
     assert row['title'] == 'Publisher event'
 
 
+def test_page_local_multi_occurrence_jsonld_gets_stable_document_identities():
+    page = BASE + '/event/four-day-festival'
+    first = datetime.now(timezone.utc) + timedelta(days=2)
+    rows = []
+    for offset in range(4):
+        starts = (first + timedelta(days=offset)).replace(microsecond=0)
+        item = event(None, name='Four Day Festival',
+                     startDate=starts.isoformat(), endDate=None)
+        item.pop('@id', None)
+        item.pop('url', None)
+        rows.append(item)
+    body = detail(rows, canonical=page).replace(
+        '</head>', '<meta property="og:url" content="' + page + '"></head>').replace(
+        '</html>', '<body><main><h1>Four Day Festival</h1></main></body></html>')
+    result = calendar.collect(source(page.replace('/event/four-day-festival', '/events')),
+                              fetcher({page: body}), listing=listing((page,)))
+    assert len(result) == 4
+    assert len({row['id'] for row in result}) == 4
+    assert all(row['event_url'] == page for row in result)
+
+
+def test_page_local_multi_occurrence_requires_document_and_clock_proof():
+    page = BASE + '/event/four-day-festival'
+    first = event(None, name='Four Day Festival',
+                  startDate='2027-04-22T12:00:00+01:00', endDate=None)
+    second = dict(first)
+    for item in (first, second):
+        item.pop('@id', None)
+        item.pop('url', None)
+    for body in (
+        detail([first, second], canonical=page),
+        detail([first, dict(second, startDate='2027-04-23T12:00:00')], canonical=page),
+    ):
+        with pytest.raises(ValueError, match='html_calendar_detail_identity_conflict'):
+            calendar.collect(source(page.replace('/event/four-day-festival', '/events')),
+                             fetcher({page: body}), listing=listing((page,)))
+
+
 def test_local_place_and_image_references_keep_the_publishers_exact_facts():
     item = event()
     place = {**item['location'], '@id': '#place'}
