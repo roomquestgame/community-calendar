@@ -1,4 +1,4 @@
-"""Focused no-network checks for the five-source ICS parser rule fingerprint."""
+"""Focused no-network tests for enrolled ICS parser rule fingerprints."""
 from pathlib import Path
 import re
 
@@ -7,6 +7,7 @@ from roomquest import incremental_snapshot as inc
 
 PILOT = {
     "kind": "ical", "platform_adapter": "ical",
+    "ical_optimization_enabled": True,
     "source_key": "municipal_df6fb09e5e9df3f197946372",
 }
 
@@ -26,6 +27,8 @@ def _fixture(root: Path):
     (root / "roomquest/preview_worker.py").write_text(
         functions +
         """def preview_source(source):
+    if source.get("kind", "ical") == "ical" and source.get("platform_adapter") == "ical":
+        return "primary-ics"
     adapter = source.get("platform_adapter")
     if adapter == "other":
         return 0
@@ -87,6 +90,19 @@ def test_ics_dispatch_or_recurrence_module_change_invalidates(tmp_path):
     assert inc._scoped_ical_parser_digest(tmp_path) != baseline
 
 
+
+def test_primary_ical_route_change_invalidates_even_when_generic_tail_unchanged(tmp_path):
+    _fixture(tmp_path)
+    baseline = inc._scoped_ical_parser_digest(tmp_path)
+    assert baseline is not None
+    preview = tmp_path / "roomquest/preview_worker.py"
+    body = preview.read_text("utf-8").replace(
+        'return "primary-ics"', 'return "different-ical-parser"')
+    preview.write_text(body, encoding="utf-8")
+    assert inc._scoped_ical_parser_digest(tmp_path) != baseline
+
+
+
 def test_missing_dependency_or_dispatch_falls_back(tmp_path):
     _fixture(tmp_path)
     (tmp_path / "roomquest/reviewed_venue_addresses.py").unlink()
@@ -103,7 +119,11 @@ def test_scope_only_applies_to_exact_approved_ical_profile(monkeypatch):
     monkeypatch.setattr(inc, "_global_parser_context", lambda: "global")
     monkeypatch.setattr(inc, "_scoped_ical_parser_context", lambda: "specific")
     assert inc.parser_context(PILOT) == "specific"
+    assert inc.parser_context({**PILOT, "source_key": "municipal_mapsee_0123456789abcdef01234567"}) == "specific"
     assert inc.parser_context({**PILOT, "source_key": "other"}) == "global"
+    assert inc.parser_context({**PILOT, "ical_optimization_enabled": False}) == "global"
+    assert inc.parser_context({key: value for key,value in PILOT.items()
+                               if key != "ical_optimization_enabled"}) == "global"
     assert inc.parser_context({**PILOT, "kind": "json"}) == "global"
     assert inc.parser_context({**PILOT, "platform_adapter": "localist"}) == "global"
     assert inc.parser_context() == "global"
