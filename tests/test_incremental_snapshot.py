@@ -210,6 +210,66 @@ def test_category_skips_only_explicit_no_publication_and_always_finishes():
         assert calls[-1][0] == "community_collector_finish_category" and calls[-1][1]["p_outcome"] == "complete"
 
 
+def test_ical_completion_logs_count_only_observation_without_returning_it():
+    src = {**source(), "ical_optimization_enabled": True}
+    calls = []
+    accepted = {
+        "complete": 1, "failed": 0, "staged": 3,
+        "publication_required": False,
+        "_incremental_observation": {
+            "changed": 3, "confirmed": 7, "normalized_reused": 2,
+            "end_only_updated": 1, "location_skips_reused": 1,
+            "publication_required": False,
+        },
+    }
+
+    def rpc(path, payload, **_kwargs):
+        calls.append((path, payload))
+        if path.endswith("claim_category"):
+            return src
+        return True
+
+    with patch.object(category_worker, "supabase_rpc", side_effect=rpc), \
+            patch.object(category_worker, "_process_claimed_source", return_value=accepted), \
+            patch.object(category_worker._LOGGER, "info") as logged:
+        returned = category_worker.collect_category("ical", "ticket")
+
+    assert "_incremental_observation" not in returned
+    record = json.loads(logged.call_args.args[0])
+    assert record == {
+        "category": "ical", "changed": 3, "confirmed": 7,
+        "end_only_updated": 1, "event": "collector_incremental_completion",
+        "location_skips_reused": 1, "normalized_reused": 2,
+        "publication_required": False, "source_id": 123, "total": 10,
+    }
+    assert calls[-1][0] == "community_collector_finish_category"
+
+
+def test_invalid_incremental_observation_never_logs_or_changes_result():
+    src = {**source(), "ical_optimization_enabled": True}
+    accepted = {
+        "complete": 1, "failed": 0, "staged": 0,
+        "publication_required": False,
+        "_incremental_observation": {
+            "changed": 501, "confirmed": 0, "normalized_reused": 0,
+            "end_only_updated": 0, "location_skips_reused": 0,
+            "publication_required": False,
+        },
+    }
+
+    def rpc(path, _payload, **_kwargs):
+        return src if path.endswith("claim_category") else True
+
+    with patch.object(category_worker, "supabase_rpc", side_effect=rpc), \
+            patch.object(category_worker, "_process_claimed_source", return_value=accepted), \
+            patch.object(category_worker._LOGGER, "info") as logged:
+        returned = category_worker.collect_category("ical", "ticket")
+
+    assert "_incremental_observation" not in returned
+    assert returned["complete"] == 1 and returned["publication_required"] is False
+    logged.assert_not_called()
+
+
 class Response:
     def __init__(self, body="", status=200, headers=None):
         self.body = body if isinstance(body, bytes) else body.encode("utf-8")
