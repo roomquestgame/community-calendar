@@ -1,3 +1,69 @@
+## November 24 — provider-only scope revision and real UK Wix shadow
+
+Owner coordination: Feedzilla may modify only provider-specific parsing,
+extraction, profile evidence and checkpoint adapters. Shared transport,
+publication, scheduling, deduplication, ETag/fingerprints, Admin lifecycle,
+coverage, venue-processing performance and robots policy belong to the
+ICS/Supabase workstream. Do not use the proposed separate database checkpoint
+migration described in the historical section below; use existing shared
+checkpoint/claim/stage/complete interfaces after the owner of those facilities
+confirms an admission contract. PR #489 remains on coordination hold and
+central Spektrix stays disabled. No London original receipt rechecks.
+
+**Provider-only changes.** Custom WordPress extraction now validates an
+ordered prefix of exact page-URL receipts, page lengths and publisher
+X-WP-Total/TotalPages values (including conflicting case-insensitive names);
+the next page is derived only after a valid prefix. Complete extraction
+delegates to the existing event parser. The ordinary shared fetch returns
+body text/bytes, not actual HTTP headers/final URL; provider integration is
+blocked pending shared transport-owner support, not a separate network
+client or persistence mechanism. No new registration or checkpoint
+authorization. Wix validates contradictory declared counts and non-boolean
+pagination/status/visibility evidence, detects conflicting case variants of
+a publisher UUID, honors explicitly hidden end dates as in the previously
+reviewed Wix adapter, and accepts the two actually observed first-party
+detail-link families /event-details/ and /event-details-registration/.
+No new visibility enum guesses or relaxation of inventory proof.
+
+**Read-only publisher evidence:** two independent UK calendar leads, no
+matching registration/source domains in the read-only production check.
+Both exact robots.txt URLs returned 200; current collector policy parser
+allowed the exact listing, crawl-delay 1, then a single bounded first-party
+GET per site. No API calls or alternate user agents; no source registration,
+retry, staging or publication. 
+- https://www.stephnorwood.co.uk/upcoming-events (Cambridgeshire): 5 embedded
+  records, 4 dated physical UK events Dec 9–17, one explicitly TBD; 10
+  observed detail anchors (title + Details), /event-details/. The visible
+  listing has hasMore=false but neither totalCount nor total. All embedded
+  registration.restrictedTo values 0, distinct from the current reviewed
+  synthetic/legacy 1. Strict extractor holds wix_public_pagination_unverified.
+- https://www.breathbodysoul.co.uk/upcoming-events (London): 7 embedded
+  records, four dated physical UK events Dec 6–Jan 17, one online and two
+  outside the current window; 14 detail anchors with /event-details-registration/.
+  hasMore=false but no totalCount/total, same numeric visibility 0. Strict
+  extractor holds wix_public_pagination_unverified. Vendor symbolic
+  VISITOR/MEMBER documentation is not proof of warmup numeric enum mapping;
+  require actual evidence before changing eligibility or filtering.
+- Both leads are candidates only. Need independent complete-list evidence
+  and exact numeric visibility semantics, then normal authorized Admin
+  intake. No forced type hints, hidden endpoints, token use or source writes.
+  Explicit publisher TBD/online/mixed-country behavior needs reviewed
+  provider-specific handling before admission.
+
+**Verification:** 43 focused direct assertion cases on five SHA-verified
+GitHub blobs: WP core 7, WP pagination 17, Wix 19. Python 3.14.4 with
+repository-pinned BeautifulSoup 4.15.0 in temporary Vercel sandboxes.
+pytest absent; assertion cases executed with standard-library raises and
+parametrize harness, not full pytest/CI. Both sandboxes stopped. The real
+shadow was a read-only, exact-policy/DNS/no-redirect limited diagnostic,
+not a deployed collector or a successful complete import. Required
+.claude/bram-conventions.md was 404 on current main; AGENTS.md and existing
+provider contracts used. No migration or shared-file change. Do not deploy
+standalone dormant parser work while shared rollout is active; coordinate
+release without changing processing fingerprints. EVE-159 tracks scope.
+
+---
+
 # EVE-159 — Public Wix Events and WordPress custom event extraction foundations
 
 November 24, 2026 · additive collector-parser code, **not a deployed Feedzilla
