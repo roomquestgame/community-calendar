@@ -107,9 +107,9 @@ class PageBoundEventTests(unittest.TestCase):
         self.assertEqual(row['starts_at'], '2026-11-29T15:00:00+00:00')
         self.assertEqual(row['ends_at'], '2026-11-29T16:30:00+00:00')
 
-    def test_uk_domain_postcode_and_complete_date_table_bind_local_occurrences(self):
+    def test_uk_domain_postcode_and_complete_date_table_bind_linked_local_occurrences(self):
         item = event(name='Jazz Saturdays', startDate='2026-11-21T13:00:00',
-                     endDate='2026-12-05T13:00:00')
+                     endDate='2026-12-05T13:00:00', url=UK_URL, **{'@id': '#event'})
         item['location']['address'].pop('addressCountry')
         item['location']['address'].update(
             streetAddress='Douglas Way', addressLocality='Deptford', postalCode='SE8 4AG')
@@ -122,6 +122,7 @@ class PageBoundEventTests(unittest.TestCase):
         # filtering retains the remaining independently enumerated occurrence.
         self.assertEqual([row['starts_at'] for row in rows],
                          ['2026-12-05T13:00:00+00:00'])
+        self.assertEqual([row['id'] for row in rows], [UK_URL + '#event'])
         self.assertTrue(all(row['ends_at'] is None for row in rows))
 
     def test_missing_country_schedule_requires_uk_domain_and_exact_complete_table(self):
