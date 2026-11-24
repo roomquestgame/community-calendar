@@ -1,3 +1,26 @@
+## November 24 — automatic registered HTML parser-context rollover
+
+Registered native HTML sources now have a reusable parser-upgrade path. An
+active ordinary HTML claim first validates the completed private checkpoint
+and replays its exact captured response bytes through the current parser. If
+the current traversal still matches, updated normalized rows are staged with
+zero publisher requests and the immutable checkpoint is retained. If traversal
+changed, only a completed source checkpoint may rotate to a fresh bounded
+capture through the dedicated database RPC; registration and partial captures
+never restart. The RPC reuses the existing source tuple, rights/demand,
+worker-lease, revision-CAS, four-hour envelope and publisher-pacing gates.
+Previously staged and published events remain live until the replacement
+snapshot completes, so this is not a source reset or parallel queue/worker.
+
+Focused verification: 133 tests passed across registered checkpoint,
+continuation and category-worker suites. Database migration
+`20261207049000_feedzilla_html_capture_rollover.sql` adds the narrow rollover
+gate and rollback-only shape/ACL assertions. This repairs post-deployment
+recollection for already registered sources while preserving exact first-run
+registration capture transfer.
+
+---
+
 ## November 24 — live HTML category-worker handoff repair
 
 Actual original Poplar Union #1217 (source #6377) and Conway Hall #1220 (source #6376) both registered after 35/9 captured pages, successfully transferred terminal checkpoints. Source worker failed fetch_checkpoint_context_missing because its closed source-key routing did not pass the negotiated generic HTML claim context. DB treated the infrastructure code as publisher review; two sources paused automatically, exact terminal envelopes retained. Fix: capability-gated pass-through of existing claimed category/ticket. Preserve old captures through dispatcher-only release: recompute exact predecessor global fingerprint by restoring ONLY the two marked control-flow edits and verifying both original Git blobs; all other files and dependency versions still hashed. No generic mismatch bypass, no persisted normalized records accepted, full capture receipt and actual parser replay still required. Exact predecessor context computed from full cloned repo/dependency environment matched both live source envelopes; read-only copies of actual compressed captures replayed through actual category_worker and preview_worker with RPC mocks, 7 and 70 staged records, zero network requests, exact identical terminal checkpoint, normal preview/publish/finish invocation. Full focused suite 140 tests plus 15 subtests passed. The compatibility block is temporary release-specific; remove once predecessor captures expire (4h) or when parser changes invalidate the reconstruction, with matching test update. No routine CI. Backend needs narrow infrastructure error disposition repair and guarded normal source resume; no registration resubmit or rights/robots changes. Missing .claude/bram-conventions.md (404) noted.
