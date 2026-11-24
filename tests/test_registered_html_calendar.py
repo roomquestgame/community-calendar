@@ -391,9 +391,11 @@ def loadomatic_page(url, current, total, urls, *, extra_query='', pager=''):
               "loadUrl: '" + url + "', currentPage: " + str(current) +
               ", totalPages: " + str(total) + ", extraQuery: '" + extra_query +
               "'}, false); }</script>")
-    control = ('<div class="loadomatic"><div class="loadomatic__elements">'
+    # Ten4 renders the listing wrapper and LoadOMatic controls as siblings.
+    control = ('<div class="loadomatic"></div>'
+               '<div class="loadomatic__elements">'
                '<button class="loadomatic__trigger loadomatic__trigger--hidden">'
-               'Load more</button></div>' + pager + '</div>')
+               'Load more</button></div>' + pager)
     return listing(urls, extra=control + config)
 
 
@@ -430,6 +432,17 @@ def test_loadomatic_requires_one_exact_unfiltered_bounded_contract(mutation, rea
     with pytest.raises(ValueError, match=reason):
         calendar.collect(source(), fetch,
                          listing=loadomatic_page(url, current, total, (ONE,), extra_query=extra))
+    fetch.assert_not_called()
+
+
+def test_loadomatic_rejects_multiple_control_containers():
+    markup = loadomatic_page(FEED, 1, 2, (ONE,)).replace(
+        '<div class="loadomatic__elements">',
+        '<div class="loadomatic__elements"></div><div class="loadomatic__elements">',
+        1)
+    fetch = Mock()
+    with pytest.raises(ValueError, match='html_calendar_pagination_needed'):
+        calendar.collect(source(), fetch, listing=markup)
     fetch.assert_not_called()
 
 
