@@ -22,7 +22,11 @@ VERSION = 'registered_html_jsonld_v1'
 CAPABILITY = 'registered_html_calendar_version'
 MAX_HTML_BYTES = 3_000_000
 MAX_DETAILS = 40
-MAX_LISTING_PAGES = 3
+# Listing traversal stays all-or-nothing: a page beyond this cap remains a
+# technical hold, never a truncated authoritative snapshot. Extend the
+# complete-navigation headroom for standard WordPress archives without
+# raising per-run detail fetches or the registration's 35-second deadline.
+MAX_LISTING_PAGES = 8
 MAX_NODES = 5000
 MAX_EVENTS = 500
 
