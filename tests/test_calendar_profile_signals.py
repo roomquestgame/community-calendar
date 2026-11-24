@@ -1,5 +1,5 @@
 """Recognition signals must never auto-admit publisher calendars."""
-from roomquest.calendar_profile_signals import unsupported_calendar_profile
+from roomquest.calendar_profile_signals import annotate_unsupported, unsupported_calendar_profile
 from roomquest.registration_auto_defer import auto_defer_nonactionable, MONTH_SECONDS
 
 
@@ -28,3 +28,16 @@ def test_new_signals_stay_on_existing_monthly_auto_defer_path():
         assert auto_defer_nonactionable({'p_outcome': 'review', 'p_reason': reason, 'p_type': 'html'}) == {
             'p_outcome': 'retry', 'p_reason': reason, 'p_retry_seconds': MONTH_SECONDS,
         }
+
+
+def test_review_annotation_never_overrides_working_or_policy_holds():
+    html = '<html><div data-tockify-calendar="demo"></div><script src="https://public.tockify.com/browser/embed.js"></script></html>'
+    assert annotate_unsupported({'p_outcome': 'review', 'p_reason': 'no_reusable_calendar'}, html) == {
+        'p_outcome': 'review', 'p_reason': 'tockify_adapter_needed', 'p_type': 'html'}
+    for result in (
+        {'p_outcome': 'verified', 'p_endpoint': 'https://example.org/feed.ics', 'p_type': 'ical'},
+        {'p_outcome': 'disabled', 'p_reason': 'robots_denied'},
+        {'p_outcome': 'review', 'p_reason': 'multiple_calendar_links'},
+        {'p_outcome': 'review', 'p_reason': 'html_calendar_detail_identity_conflict'},
+    ):
+        assert annotate_unsupported(result, html) is result
