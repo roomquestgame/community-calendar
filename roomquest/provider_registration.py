@@ -5,7 +5,7 @@ from urllib.parse import urlsplit
 from xml.etree import ElementTree
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
-from roomquest import chambermate, legistar, mapsee_adapter, revize, south_carolina_parks
+from roomquest import chambermate, legistar, mapsee_adapter, revize, south_carolina_parks, spektrix_provider
 from roomquest.registration_formats import source_key
 
 PARK = re.compile(r'https://southcarolinaparks\.com/api/events#park=([1-9][0-9]{0,9})')
@@ -14,11 +14,13 @@ TENANT = re.compile(r'https://api\.chambermate\.com/core/biz/webPresence/getEven
 LEGISTAR = re.compile(r'https://webapi\.legistar\.com/v1/([a-z0-9-]+)/events')
 SOCRATA = re.compile(r'/resource/[a-z0-9]{4}-[a-z0-9]{4}\.json')
 REVIZE = '/_assets_/plugins/revizeCalendar/calendar_data_handler.php'
-FAMILIES = {'chambermate', 'growthzone', 'legistar', 'socrata', 'revize', 'south_carolina_parks'}
+FAMILIES = {'chambermate', 'growthzone', 'legistar', 'socrata', 'revize', 'south_carolina_parks', 'spektrix'}
 
 
 def family(url, body=None):
     parts = urlsplit(url)
+    if spektrix_provider.family(url):
+        return 'spektrix'
     if TENANT.fullmatch(url):
         return 'chambermate'
     if PARK.fullmatch(url):
@@ -55,6 +57,10 @@ def collect(url, adapter, fetch, *, deadline, profile=None, body=None):
     source = {'source_key': source_key(url), 'feed_url': url, 'platform_adapter': adapter,
               'kind': 'xml' if adapter == 'growthzone' else 'json'}
     config = profile or {}
+    if adapter == 'spektrix':
+        if not isinstance(profile, dict) or not profile:
+            raise ValueError('spektrix_provider_profile_required')
+        return spektrix_provider.probe(source, config, fetch, deadline_at=deadline)
     if adapter == 'south_carolina_parks':
         park_id = PARK.fullmatch(url)[1]
         return south_carolina_parks.collect(dict(source, source_key='south_carolina_parks_' + park_id),
