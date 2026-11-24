@@ -1,3 +1,55 @@
+## November 24 — production venue handoff and bounded London continuation
+
+Conway Hall receipt #1220/source #6376 and Poplar Union receipt #1217/source
+#6377 retained their original identities and completed the ordinary shared venue,
+Geoapify and publication path. Conway resolved `25 Red Lion Square, London,
+WC1R 4RL` and published 7/7 staged events. Poplar's reusable compact-postcode
+normalization resolved `2 Cotall St, Poplar, E14 6TL`; 69/70 staged events are
+currently eligible and public, while one occurrence had already started. Live
+Admin counts and canonical public EventQuest detail pages were both physically
+verified. There are zero duplicate attributed public keys. No registration,
+capture or stage was reset.
+
+Backend PRs #1925, #1930 and #1932 shipped automatic GB registered-venue
+handoff, bounded fail-closed source evaluation, and a decoupled registered-source
+tick so a stale legacy venue-page lookup cannot roll back Feedzilla admission.
+Protected migration runs 45458986139 and 45464982683 succeeded; live migration
+ledger includes 20261207039000, 40000, 41000, 42000 and 43000. Rollback acceptance
+and low statement-timeout gates passed.
+
+Collector PRs #497/#498 added and then production-corrected bounded generic
+LoadOMatic pagination. The first Albany #1226 recheck preserved the receipt and
+failed closed against an inaccurate nested-control fixture; the second passed
+the real sibling-control pagination and advanced to `timezone_unresolved`.
+PR #499 (commit 4864d8b50673a4daf078acbcc89277bbdac8668f; Vercel
+dpl_536abxTtQg2RfvkuwjQKsWyvZrxE READY) binds a complete server-rendered
+Date/Time occurrence table to the publisher's JSON-LD boundary timestamps and
+accepts missing addressCountry only for a full physical UK address, valid UK
+postcode and `.uk` publisher host. Ambiguous tables, weekday/date conflicts,
+foreign country values, out-of-order rows and boundary mismatches fail closed.
+The controlled recheck showed the Event's exact linked URL kept it on the
+ordinary JSON-LD path, so the narrower schedule proof was not reached. App PR
+#1933/migration 20261207044000 added `timezone_unresolved` to the existing
+reviewed Admin recheck allow-list without changing any other gate; protected
+run #702 succeeded and live eligibility readback passed. Collector PR #500
+(commit 4d489282a89df975552fb382af38268671809ef2; Vercel
+dpl_4h4RAUD6QCDTmZbzjkNmiZho13dG READY) now applies the same exact schedule
+proof to already-linked detail JSON-LD while rejecting conflicting URL/@id
+evidence. 128 focused tests plus 18 subtests passed; one pre-existing deadline
+mock assertion reproduces unchanged on clean main. Albany's next single
+original-receipt production recheck is pending the enforced Admin cooldown at
+this checkpoint.
+
+The other seven original London blockers were not requeued. Oxford House,
+Spitalfields Music and South London Gallery still lack reusable Event data;
+Horniman still needs its exact AJAX pagination contract; Rich Mix needs its
+Spektrix detail contract proven; Omnibus needs a bounded Wix-data contract; and
+Museum of the Home needs mixed permanent/ticketed classification plus a rule
+for publisher date conflicts before its embedded JSON inventory can be safely
+admitted. No new queue, worker, cron, publisher bypass or ICS-path change.
+
+---
+
 ## November 24 — live HTML category-worker handoff repair
 
 Actual original Poplar Union #1217 (source #6377) and Conway Hall #1220 (source #6376) both registered after 35/9 captured pages, successfully transferred terminal checkpoints. Source worker failed fetch_checkpoint_context_missing because its closed source-key routing did not pass the negotiated generic HTML claim context. DB treated the infrastructure code as publisher review; two sources paused automatically, exact terminal envelopes retained. Fix: capability-gated pass-through of existing claimed category/ticket. Preserve old captures through dispatcher-only release: recompute exact predecessor global fingerprint by restoring ONLY the two marked control-flow edits and verifying both original Git blobs; all other files and dependency versions still hashed. No generic mismatch bypass, no persisted normalized records accepted, full capture receipt and actual parser replay still required. Exact predecessor context computed from full cloned repo/dependency environment matched both live source envelopes; read-only copies of actual compressed captures replayed through actual category_worker and preview_worker with RPC mocks, 7 and 70 staged records, zero network requests, exact identical terminal checkpoint, normal preview/publish/finish invocation. Full focused suite 140 tests plus 15 subtests passed. The compatibility block is temporary release-specific; remove once predecessor captures expire (4h) or when parser changes invalidate the reconstruction, with matching test update. No routine CI. Backend needs narrow infrastructure error disposition repair and guarded normal source resume; no registration resubmit or rights/robots changes. Missing .claude/bram-conventions.md (404) noted.
