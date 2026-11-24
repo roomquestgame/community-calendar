@@ -1,3 +1,68 @@
+## November 24 — actual permitted native WordPress collection; Admin blocker
+
+Owner approved next batch: WordPress and provider pagination together, actual
+automatic onboarding, not only parser recognition. Existing shared transport,
+checkpoint authorization, hash/ETag/dedup, scheduling/publication, robots
+policy, coverage/venue processing and +500 ICS remain the other workstream's
+scope. Keep original London ten and ADC/Spektrix holds intact.
+
+**Real independent publisher acceptance leads:** read-only DB duplicate
+check found no source/registration domains for Bow Arts, Littleport Society,
+Inside Cambridge, 2G3S Stapleford or IHRC. In short-lived restricted sandbox,
+actual collector UA and unchanged robots matcher/delay, DNS and no redirect:
+- The Littleport Society `https://www.littleportsociety.org.uk/events/`:
+  robots 200 allowed, delay 1; publisher advertised `/wp-json/` and index
+  explicitly advertised GET `/tribe/events/v1/events`. Exact bounded native
+  API response for Nov 24–Jan 23: 1 raw member / total 1 / pages 1, no next;
+  published Dec 1 Christmas Prize Quiz Night, Feoffees Hall, 28 City Road,
+  Littleport CB6 1NG. A second fresh read using the actual revised
+  wordpress_adapter.collect normalized one row with UTC 19:30,
+  Europe/London and full street address. No source or staging write.
+- Inside Cambridge `https://insidecambs.co.uk/whats-on/`: same genuine
+  native API, 29 unique members / total 29 / pages 1. This is a multi-venue
+  aggregator including ADC Theatre and Cambridge Corn Exchange. Do not submit
+  it as an independent publisher or circumvent existing holds/overlap.
+- Bow Arts listing: robots allowed/delay 3 but requested /events/ returned
+  301; diagnostic did not follow an unreviewed redirect. Hold that lead.
+
+**Admin attempt:** existing signed-in Browser Use task, blank hint and
+exact Littleport listing only, duplicate check already passed. Browser Use
+returned insufficient_credits before beginning the run. No registration
+receipt, submission, stage, source activation, or publication. Do not
+retry that blocked tool or use SQL/direct API as substitute. When normal
+authenticated Admin access is available, submit precisely the Littleport
+listing (blank hint) via Preview/Confirm and check receipt/registered
+source/full snapshot/eligible public events. Native WordPress API
+recognition and normalized positive read are not an Admin receipt.
+
+**Existing native TEC path improved** (not a parallel collector):
+`wordpress_adapter.collect` validates publisher-declared body
+`total` and `total_pages` on the canonical registration-derived
+source key only, before filtering. Enforce consistent declared counts
+across pages, count raw rows, preserve recurring distinct start identities,
+reject repeated raw members, empty intermediate/contradictory terminal
+pages and existing >5-page cap. Explicit 0/0 and 0/1 empty conventions
+accepted. Old bodies missing declared counts on first response retain
+existing compatibility; legacy reviewed/Mapsee source-specific paths
+unchanged. No new network calls or shared file edits. Custom WP still
+needs shared owner support for actual response headers and source-bound
+continuation; no invented checkpoint admission.
+
+**Evidence:** 11/11 new unittest cases passed on exact GitHub blobs in a
+short-lived Vercel sandbox, using actual updated collector, actual
+mapsee_adapter.parse_tribe, reviewed venue addresses and worker factual
+normalization functions AST-isolated from unrelated worker imports.
+Unrelated source-specific dispatch branches used fail-on-invocation
+sentinels. Real Littleport native read returned one normalized row;
+native optional media capability and complete registration/DB stage/public
+path were not exercised. Earlier shadow sandbox expired before replay,
+so used one fresh bounded authorized API read. Both sandboxes stopped or
+expired; no routine CI, no production deployment or broad source checks.
+Earlier 43 provider fixture cases remain passed for unchanged files (54
+focused cases total across both runs). PR #490 stays draft for coordinated
+release; shared fingerprints not modified. Future actual multi-page
+publisher, durable claim continuation and Admin verification still needed.
+---
 ## November 24 — provider-only scope revision and real UK Wix shadow
 
 Owner coordination: Feedzilla may modify only provider-specific parsing,
