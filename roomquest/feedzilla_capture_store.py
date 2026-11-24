@@ -135,13 +135,16 @@ def decode(source, envelope, *, at=None):
         binary=base64.b64decode(envelope['payload'],validate=True)
         decompressor=zlib.decompressobj()
         raw=decompressor.decompress(binary,MAX_EXPANDED+1)
-        if (len(raw) > MAX_EXPANDED or decompressor.unconsumed_tail
-                or decompressor.unused_data or not decompressor.eof
-                or len(raw) != envelope['uncompressed_bytes']
-                or hashlib.sha256(raw).hexdigest() != envelope['sha256']):
-            _fail('checksum')
-        state=json.loads(raw)
     except (ValueError, TypeError, zlib.error, binascii.Error, UnicodeDecodeError, RecursionError):
+        _fail()
+    if (len(raw) > MAX_EXPANDED or decompressor.unconsumed_tail
+            or decompressor.unused_data or not decompressor.eof
+            or len(raw) != envelope['uncompressed_bytes']
+            or hashlib.sha256(raw).hexdigest() != envelope['sha256']):
+        _fail('checksum')
+    try:
+        state=json.loads(raw)
+    except (ValueError, TypeError, UnicodeDecodeError, RecursionError):
         _fail()
     _validate_state(state,source_key=source['source_key'],
                     feed_url=source['feed_url'],adapter=source['platform_adapter'],at=at)
