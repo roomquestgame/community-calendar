@@ -9,6 +9,7 @@ can enter projection. Publication is not permitted until every projected
 record has a server-acknowledged stage receipt.
 """
 import base64
+import binascii
 from copy import deepcopy
 from datetime import datetime, timezone
 import hashlib
@@ -47,7 +48,7 @@ def _validate_state(state, *, source_key=None, feed_url=None, adapter=None, at=N
                       adapter=adapter, at=at)
     pages, phase, records, stage = (state[key] for key in (
         'pages', 'phase', 'records', 'stage_cursor'))
-    if (phase not in _ALLOWED_PHASES or not isinstance(pages, list)
+    if (not isinstance(phase,str) or phase not in _ALLOWED_PHASES or not isinstance(pages, list)
             or len(pages) != cursor['cursor']
             or not isinstance(records, list) or len(records) > MAX_RECORDS
             or type(stage) is not int or not 0 <= stage <= len(records)):
@@ -70,6 +71,8 @@ def _validate_state(state, *, source_key=None, feed_url=None, adapter=None, at=N
            or not row.get('starts_at') or not row.get('event_url')
            for row in records):
         _fail('records_invalid')
+    if len({(row['id'],row['starts_at']) for row in records}) != len(records):
+        _fail('duplicate_record')
     if len(_raw(state)) > MAX_EXPANDED:
         _fail('size_limit')
     return state
@@ -138,7 +141,7 @@ def decode(source, envelope, *, at=None):
                 or hashlib.sha256(raw).hexdigest() != envelope['sha256']):
             _fail('checksum')
         state=json.loads(raw)
-    except (ValueError, TypeError, zlib.error, UnicodeDecodeError, RecursionError):
+    except (ValueError, TypeError, zlib.error, binascii.Error, UnicodeDecodeError, RecursionError):
         _fail()
     _validate_state(state,source_key=source['source_key'],
                     feed_url=source['feed_url'],adapter=source['platform_adapter'],at=at)
