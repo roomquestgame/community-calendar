@@ -94,9 +94,10 @@ def _global_parser_context():
 
 
 
-# Exactly the same approved five-source pilot as the bounded HTTP cache.
-# Leave non-pilot and source-specific parser routes on the existing broad
-# fallback until their dependencies can be reviewed independently.
+# The private collector claim authorizes staged rollout per source ID.
+# Only conventional hashed municipal/Mapsee ICS source keys may use the scoped
+# parser dependency fingerprint. Specialized source families and non-enrolled
+# sources retain the conservative whole-package fingerprint.
 _SCOPED_ICAL_KEYS = frozenset({
     "municipal_mapsee_48489e8f5c906f7610d30197",
     "municipal_df6fb09e5e9df3f197946372",
@@ -153,7 +154,22 @@ def _scoped_ical_parser_digest(root):
         if not any(isinstance(node, ast.Constant) and node.value == "ical"
                    for entry in tail for node in ast.walk(entry)):
             return None
-        digest = sha256(b"eventquest-ical-parser-scope-v1\0")
+        # The actual municipal and Mapsee ICS path exits *before* the generic
+        # fallback at the end of preview_source. Include that entire branch
+        # (registration, publisher adapter choice, recurrence/format routing),
+        # or fail closed. Previously hashing only the fallback could miss a
+        # change to the earlier ICS path.
+        ical_branches = [node for node in source.body
+                         if isinstance(node, ast.If)
+                         and "kind" in ast.dump(node.test)
+                         and "platform_adapter" in ast.dump(node.test)
+                         and "ical" in ast.dump(node.test)]
+        if len(ical_branches) != 1:
+            return None
+        digest = sha256(b"eventquest-ical-parser-scope-v2\0")
+        digest.update(b"preview_source.primary_ical_route\0")
+        digest.update(ast.dump(ical_branches[0], include_attributes=False).encode("utf-8"))
+        digest.update(b"\0")
         digest.update(b"LOOKAHEAD_DAYS=60\0MAX_PREVIEWS=10\0")
         for name, node in zip(_SCOPED_ICAL_PREVIEW_FUNCTIONS, required):
             digest.update(name.encode("utf-8") + b"\0")
@@ -184,8 +200,12 @@ def _scoped_ical_parser_context():
 
 
 def parser_context(source=None):
+    source_key = source.get("source_key") if isinstance(source, dict) else None
     if (isinstance(source, dict)
-            and source.get("source_key") in _SCOPED_ICAL_KEYS
+            and source.get("ical_optimization_enabled") is True
+            and isinstance(source_key, str)
+            and (source_key in _SCOPED_ICAL_KEYS
+                 or re.fullmatch(r"municipal_(?:mapsee_)?[0-9a-f]{24}", source_key))
             and source.get("kind") == "ical"
             and source.get("platform_adapter") == "ical"):
         scoped = _scoped_ical_parser_context()
