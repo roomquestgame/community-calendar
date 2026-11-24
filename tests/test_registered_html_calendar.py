@@ -191,11 +191,12 @@ def test_wordpress_footer_can_name_venue_outside_its_semantic_address():
             '<p><strong>Dates</strong> ' + label + ' - ' + label + '</p>'
             '<p><strong>Times</strong> 5:00 pm - 6:00 pm</p>'
             '<p><strong>Location</strong> Oxford House, Café</p></main>'
-            '<footer><address>Derbyshire Street, Bethnal Green, London E2 6HG, UK'
+            '<footer><address>Derbyshire Street<br>Bethnal Green<br>London E2 6HG<br>UK'
             '</address><p>Oxford House by Bethnal Green © 2026</p></footer></body></html>')
     [row] = calendar._detail(source(), html, event_url)
     assert row['venue_name'] == 'Oxford House, Café'
-    assert 'Derbyshire Street' in row['venue_address']
+    assert row['venue_address'] == ('Derbyshire Street, Bethnal Green, London E2 6HG, '
+                                    'United Kingdom')
     native.validate_record(row, source())
 
 
