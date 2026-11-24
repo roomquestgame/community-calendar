@@ -813,9 +813,20 @@ def _cambridge_featured_image(source, soup, url, title):
     return next(iter(matches)) if len(matches) == 1 else None
 
 
-def _detail(source, payload, url):
+def _detail(source, payload, url, *, listing_evidence=None):
     soup = _html(payload)
+    # WordPress themes frequently publish precise custom fields but only a
+    # generic WebPage graph. Read or explicitly exclude those structures
+    # before the generic Event-identity fallbacks interpret unrelated graphs.
+    from roomquest.wordpress_visible_event import read as wordpress_event
+    wordpress_rows = wordpress_event(source, soup, url, listing=listing_evidence)
+    # A selected programme/category alias may redirect to its canonical season
+    # page. It emits nothing, so no event identity is accepted from that alias.
+    if wordpress_rows == []:
+        return []
     _canonical(soup, url)
+    if wordpress_rows is not None:
+        return wordpress_rows
     nodes = _document(payload)
     candidates = []
     references = []
@@ -962,14 +973,29 @@ def _request_stream(source, url, *, deadline_at, page_limit, detail_limit, total
 
     check_deadline()
     links = {}
+    detail_evidence = {}
     pages = []
     inventories = set()
     required_pages = set()
     current = url
     payload = yield (url, 'text/html,application/xhtml+xml')
+    # A custom Wix CMS list is often only the first "Load more" prefix.  The
+    # specialist traversal requires the publisher's complete dynamic sitemap
+    # and typed collection records, while remaining inside this same durable
+    # fetch/checkpoint/staging path.
+    from roomquest import wix_custom_collection
+    if wix_custom_collection.supports_listing(url, payload):
+        return (yield from wix_custom_collection.stream(
+            source, url, payload, deadline_at=deadline_at))
     while True:
         check_deadline()
         soup = _html(payload)
+        from roomquest.wordpress_visible_event import listing_evidence
+        for target, evidence in listing_evidence(soup, current).items():
+            prior = detail_evidence.get(_url_key(target))
+            if prior is not None and prior != evidence:
+                _fail('html_calendar_detail_identity_conflict')
+            detail_evidence[_url_key(target)] = evidence
         observed = _links(current, soup)
         if not _listing_shape(current, soup, observed, collection_url=url if pages else None):
             _fail('html_calendar_scope_unverified')
@@ -1010,7 +1036,8 @@ def _request_stream(source, url, *, deadline_at, page_limit, detail_limit, total
         body = yield (detail_url, 'text/html,application/ld+json')
         check_deadline()
         try:
-            detail_rows = _detail(source, body, detail_url)
+            detail_rows = _detail(source, body, detail_url,
+                                  listing_evidence=detail_evidence.get(_url_key(detail_url)))
         except ValueError as error:
             print(json.dumps({'event': 'registered_html_calendar_detail_error',
                               'reason': str(error), 'url': detail_url},

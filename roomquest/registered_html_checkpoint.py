@@ -231,11 +231,16 @@ def collect_chunk(source, fetch, *, checkpoint=None, listing=None,
             if plan['cursor'] and str(exc) == 'collection_deadline':
                 break
             raise
-        plan = progress.advance(plan, target, sha256(body.encode()).hexdigest(),
+        # Wix repeats its full application shell on every CMS detail. Persist
+        # the strict replay-equivalent typed collection evidence, not unrelated
+        # JavaScript. This stays inside the same checkpoint and traversal.
+        from roomquest.wix_custom_collection import compact_capture
+        stored_body = compact_capture(body)
+        plan = progress.advance(plan, target, sha256(stored_body.encode()).hexdigest(),
                                 next_link=next_request[0] if next_request else None,
                                 next_link_scope_verified=next_request is not None,
                                 terminal=next_request is None, at=at)
-        state['pages'].append({'url': target, 'body': body})
+        state['pages'].append({'url': target, 'body': stored_body})
         state['progress'] = plan
         request = next_request
         requests += 1
