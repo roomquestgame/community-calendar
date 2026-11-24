@@ -133,6 +133,31 @@ def validate(state, *, source_key=None, feed_url=None, adapter=None, at=None):
     return state
 
 
+
+def extend_verified_tasks(state, tasks, *, scope_verified=False, at=None):
+    """Extend a fully fetched but nonterminal plan with evidenced next-phase URLs.
+
+    Example: Spektrix public instance responses reveal the exact plan IDs
+    needed for venue resolution. The caller must prove those IDs originate
+    from its captured publisher records; a host match alone is insufficient.
+    """
+    validate(state, at=at)
+    if (not scope_verified or state['terminal_verified']
+            or state['cursor'] != len(state['tasks'])
+            or not isinstance(tasks, list) or not 1 <= len(tasks)
+            or len(state['tasks']) + len(tasks) > MAX_TASKS
+            or any(not _url(url, state['allowed_hosts']) for url in tasks)
+            or len(set(tasks)) != len(tasks)
+            or set(tasks).intersection(state['tasks'])):
+        _fail()
+    output = dict(state)
+    output['tasks'] = list(state['tasks']) + tasks
+    output['receipts'] = list(state['receipts'])
+    output['plan_sha256'] = _digest(output['tasks'])
+    validate(output, at=at)
+    return output
+
+
 def next_request(state, *, at=None):
     validate(state, at=at)
     return state['tasks'][state['cursor']] if state['cursor'] < len(state['tasks']) else None

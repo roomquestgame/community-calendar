@@ -153,6 +153,23 @@ def decode(source, envelope, *, at=None):
     return state
 
 
+
+def add_verified_requests(source, envelope, urls, *, scope_verified=False, at=None):
+    """Append another evidenced API phase without releasing prior page receipts.
+
+    The caller verifies request identities against the *captured* publisher
+    response, not a guessed calendar URL. The immutable source and fetch
+    manifest remain bound to the original lease/CAS state.
+    """
+    state=decode(source,envelope,at=at)
+    if state['phase'] != 'fetch':
+        _fail('phase_invalid')
+    result=deepcopy(state)
+    result['progress']=progress.extend_verified_tasks(
+        state['progress'], urls, scope_verified=scope_verified, at=at)
+    return encode(source,result,at=at)
+
+
 def acknowledge_page(source, envelope, url, body, *, next_link=None,
                      next_link_scope_verified=False, terminal=False, at=None):
     """Acknowledge precisely one publisher-validated page and its content."""
