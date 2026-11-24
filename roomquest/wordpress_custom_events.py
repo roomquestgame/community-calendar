@@ -95,18 +95,19 @@ def _instant(value, zone):
         _fail('event_time_missing')
     try:
         moment = datetime.fromisoformat(value.replace('Z', '+00:00'))
-        if moment.tzinfo is None:
-            tz = ZoneInfo(zone)
-            moment = moment.replace(tzinfo=tz)
-            if (moment.utcoffset() != moment.replace(fold=1).utcoffset()
-                    or moment.astimezone(timezone.utc).astimezone(tz)
-                       .replace(tzinfo=None) != moment.replace(tzinfo=None)):
-                _fail('time_ambiguous')
-        return moment.astimezone(timezone.utc)
-    except ZoneInfoNotFoundError:
-        _fail('timezone_invalid')
-    except (ValueError, TypeError):
+    except ValueError:
         _fail('event_time_missing')
+    if moment.tzinfo is None:
+        try:
+            tz = ZoneInfo(zone)
+        except (TypeError, ZoneInfoNotFoundError):
+            _fail('timezone_invalid')
+        moment = moment.replace(tzinfo=tz)
+        if (moment.utcoffset() != moment.replace(fold=1).utcoffset()
+                or moment.astimezone(timezone.utc).astimezone(tz)
+                   .replace(tzinfo=None) != moment.replace(tzinfo=None)):
+            _fail('time_ambiguous')
+    return moment.astimezone(timezone.utc)
 
 
 def extract(profile, pages, total_pages, start, end):
@@ -131,6 +132,10 @@ def extract(profile, pages, total_pages, start, end):
     if any(not isinstance(config.get(k), str) or not FIELD.fullmatch(config[k])
            for k in required) or config['start'].casefold() in NON_EVENT_FIELDS:
         _fail('mapping_invalid')
+    try:
+        venue_zone = ZoneInfo(profile['timezone'])
+    except (TypeError, ZoneInfoNotFoundError):
+        _fail('timezone_invalid')
     if any(not isinstance(page, list) or len(page) > 100 for page in pages):
         _fail('page_invalid')
     posts = {}
@@ -168,7 +173,7 @@ def extract(profile, pages, total_pages, start, end):
                 _fail('occurrences_invalid')
             starts = _instant(_path(item, config['start']), profile['timezone'])
             # The *local* publisher date controls the 60-day inclusion test.
-            local = starts.astimezone(ZoneInfo(profile['timezone']))
+            local = starts.astimezone(venue_zone)
             if not first <= local.date() <= last:
                 continue
             end_value = _path(item, config['end']) if config.get('end') else None
