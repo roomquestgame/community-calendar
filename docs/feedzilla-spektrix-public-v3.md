@@ -120,7 +120,11 @@ such as The Albany provides an official Craft CMS event page.
 
 It accepts **already observed, first-party** CMS page records containing the
 exact event title, full HTTPS canonical URL, and one or more explicitly
-timezone-aware start instants. It matches a Spektrix event only when its title
+timezone-aware start instants. Spektrix `project(..., cms_pages=...)` and
+the bounded `collect(..., cms_pages=...)` probe can use those records for
+an otherwise blank API `webUrl`; conflicts with preverified Admin links
+are rejected rather than overwritten. This is a data-projection option, **not**
+a Craft CMS fetcher or publication path. It matches a Spektrix event only when its title
 and at least one uncancelled, public performance's startUtc agree. It returns
 `{spektrix_event_id: canonical_publisher_page_url}` for a unique match.
 Two pages matching a show, one page matching two shows, conflicting public
