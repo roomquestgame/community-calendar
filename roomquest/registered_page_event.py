@@ -89,6 +89,13 @@ def _session_rows(event, root, anchor, place):
     if not blocks or len(blocks) > 500 or event.get('endDate'):
         raise ValueError('html_calendar_clock_conflict')
     venue = _title(place['name'])
+    # A publisher can put audience names in a nominal location column. Only
+    # recognize these two explicit session labels when the independent event
+    # narrative also names that session type. Retain the structured venue.
+    narrative = ' '.join(_plain(p.get_text(' ', strip=True)) for p in root.select('p,li')
+                         if not p.find_parent(class_='event-time-container')
+                         and not p.find_parent(['footer', 'nav', 'aside', 'form']))
+    audience = {'family session': 'Family session', 'adult session': 'Adult session'}
     rows = []
     for block in blocks:
         day = _dated_session(_one(block, '.date'), anchor.date())
@@ -98,13 +105,17 @@ def _session_rows(event, root, anchor, place):
         site = _title(_one(block, '.location'))
         # Explicit room within the same named site is permitted, not another
         # venue's address or a substring match on an unrelated place.
+        label = None
         if site != venue and not re.fullmatch(r'.+?\s*[-–—]\s*' + re.escape(venue), site):
-            raise ValueError('html_calendar_venue_conflict')
+            if site in audience and re.search(r'\b' + re.escape(site) + r's?\b', narrative, re.I):
+                label = audience[site]
+            else:
+                raise ValueError('html_calendar_venue_conflict')
         starts = _local(day, _clock(clock))
         if (not rows and starts.astimezone(timezone.utc) != anchor.astimezone(timezone.utc)
-                or rows and starts <= rows[-1]):
+                or rows and starts <= rows[-1][0]):
             raise ValueError('html_calendar_clock_conflict')
-        rows.append(starts)
+        rows.append((starts, label))
     return rows
 
 
@@ -176,7 +187,9 @@ def candidates(nodes, soup, url, is_event, public_url, url_key):
             raise ValueError('html_calendar_clock_conflict')
         anchor = datetime.fromisoformat(match[1] + 'T' + match[2]).replace(tzinfo=timezone.utc)
         rows = _session_rows(event, root, anchor.astimezone(ZONE), place)
-        return [dict(fixed, startDate=starts.isoformat()) for starts in rows]
+        return [dict(fixed, startDate=starts.isoformat(),
+                     name=f"{_plain(fixed['name'])} — {label}" if label else fixed['name'])
+                for starts, label in rows]
     if LOCAL_STAMP.fullmatch(raw):
         place = _physical_uk(event)
         if place is None:
