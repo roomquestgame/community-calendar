@@ -381,6 +381,28 @@ def test_repeated_or_cyclic_listing_pages_never_become_successful_empty():
         assert fetch.call_count == 1
 
 
+def test_four_page_wordpress_style_archive_completes_before_detail_fetches():
+    # The previous 3-page cap blocked real archives with an explicit page 4.
+    detail_urls = [BASE + '/event/four-page-' + str(n) for n in range(1, 5)]
+    pages = {}
+    for index, event_url in enumerate(detail_urls, start=1):
+        current = FEED if index == 1 else FEED + '?page=' + str(index)
+        next_page = FEED + '?page=' + str(index + 1)
+        previous = FEED if index == 2 else FEED + '?page=' + str(index - 1)
+        nav = ('<link rel="prev" href="' + previous + '">' if index > 1 else '')
+        if index < 4:
+            nav += '<link rel="next" href="' + next_page + '">'
+        pages[current] = listing((event_url,), extra=nav)
+        pages[event_url] = detail(event(event_url))
+    fetch = fetcher(pages)
+    records = calendar.collect(source(), fetch)
+    assert len(records) == 4
+    expected_pages = [FEED] + [FEED + '?page=' + str(n) for n in (2, 3, 4)]
+    assert [call.args[0] for call in fetch.call_args_list][:4] == expected_pages
+    assert [call.args[0] for call in fetch.call_args_list][4:] == detail_urls
+    assert {row['event_url'] for row in records} == set(detail_urls)
+
+
 def test_pagination_budget_refuses_a_prefix_before_fetching_event_details():
     pages = {}
     for index in range(1, calendar.MAX_LISTING_PAGES + 1):
