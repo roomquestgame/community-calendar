@@ -4188,7 +4188,11 @@ def supabase_rpc(path: str, payload: dict, *, timeout: float = 4):
             maximum = (1_500_000 if path == "community_collector_openactive_state"
                        else 920_000 if path in ("community_collector_read_fetch_checkpoint",
                                                   "community_collector_feedzilla_capture_read")
-                       else 240_000 if path == "community_collector_read_ical_cache"
+                       # A validated iCalendar cache row can contain the same
+                       # bounded 3-MB body accepted by the publisher fetch.
+                       # JSON escaping can make the RPC response larger than
+                       # the raw calendar bytes, so keep an explicit 8-MB cap.
+                       else 8_000_000 if path == "community_collector_read_ical_cache"
                        else 150_000)
             raw = response.read(maximum + 1)
             if len(raw) > maximum:

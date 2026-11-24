@@ -16,7 +16,12 @@ from roomquest.incremental_snapshot import _cacheable, _validator, request_hash
 
 _LOG = logging.getLogger(__name__)
 _current = ContextVar("eq_ical_conditional_cache", default=None)
-_MAX_BYTES = 131072
+# Match the ordinary reviewed publisher-response ceiling. The initial 128-KB
+# pilot bound excluded nearly every large-library feed, preventing otherwise
+# usable validators from being retained. Keeping the complete bounded body is
+# required: a trusted 304 must still replay recurrence rules through the
+# current moving-window parser rather than reuse an old occurrence manifest.
+_MAX_BYTES = 3_000_000
 # The claim RPC now advertises enrollment only for source IDs explicitly
 # approved in the private database rollout table. All other iCalendar feeds
 # take the old no-cache path without an extra database read or HTTP request.
@@ -57,7 +62,7 @@ class ConditionalCache:
                 "p_policy_context": self.snapshot.policy_context,
                 "p_context_hash": self.snapshot.context_hash,
                 "p_request_hash": self.request_hash,
-            }, timeout=4)
+            }, timeout=8)
         except Exception:
             _LOG.warning("Optional iCalendar conditional cache read failed")
             return
@@ -229,7 +234,7 @@ class ConditionalCache:
                     try:
                         self.rpc("community_collector_save_ical_cache", {
                             **params, "p_body": self.candidate["body"],
-                        }, timeout=4)
+                        }, timeout=8)
                     except Exception:
                         _LOG.warning("Optional iCalendar conditional cache save failed")
         outcome = self._completed_outcome()

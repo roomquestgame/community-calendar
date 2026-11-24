@@ -136,6 +136,23 @@ def test_200_stages_cache_metadata_without_committing_before_success():
     assert rpc.calls[-1][1]["p_body_bytes"] == len(BODY.encode("utf-8"))
 
 
+def test_large_calendar_with_validator_is_admitted_and_saved():
+    repeated = "X-DESCRIPTION:" + ("community-calendar-entry;" * 9_000) + "\r\n"
+    large_body = BODY.replace("BEGIN:VEVENT\r\n", repeated + "BEGIN:VEVENT\r\n")
+    payload = large_body.encode("utf-8")
+    assert 131_072 < len(payload) < cache._MAX_BYTES
+    state, _, rpc = make_state()
+    state.record_body(URL, "text/calendar", payload, {
+        "ETag": '"large-v1"', "Content-Type": "text/calendar; charset=utf-8",
+    }, encoding="utf-8")
+    assert state.candidate is not None
+    assert state._cache_disposition == "admitted"
+    state.save_after_success()
+    assert rpc.calls[-2][0] == "community_collector_save_ical_cache"
+    assert rpc.calls[-2][1]["p_body"] == large_body
+    assert rpc.calls[-1][1]["p_body_bytes"] == len(payload)
+
+
 def test_unusable_body_and_unsupported_cache_control_stay_uncached():
     state, _, rpc = make_state()
     state.record_body(URL, "text/calendar", BODY.encode("utf-8"),
