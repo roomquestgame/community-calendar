@@ -220,3 +220,33 @@ def test_weekly_recurrence_ranges_do_not_duplicate_one_event_or_drop_instances()
 def test_payload_at_known_size_limit_is_not_certified_complete():
     with pytest.raises(ValueError, match='spektrix_events_invalid'):
         api._items([{}] * api.MAX_EVENTS, api.MAX_EVENTS, 'events')
+
+
+
+def test_public_craft_page_matches_api_event_without_weburl():
+    cms = [{
+        'url': 'https://www.thealbany.org.uk/events/gingerbread-man/',
+        'title': 'Christmas: The Gingerbread Man',
+        'instances': ['2026-12-05T14:00:00+00:00'],
+    }]
+    rows = api.project(profile(), [event(webUrl='')], [instance()], [plan()],
+                       [venue()], START, STOP, cms_pages=cms)['events']
+    assert len(rows) == 1
+    assert rows[0]['event_url'] == cms[0]['url']
+    # Without observed first-party page evidence the blank API webUrl holds.
+    with pytest.raises(ValueError, match='spektrix_event_link_missing'):
+        api.project(profile(), [event(webUrl='')], [instance()], [plan()],
+                    [venue()], START, STOP)
+
+
+def test_cms_page_conflict_with_existing_verified_event_link_is_held():
+    cms = [{
+        'url': 'https://www.thealbany.org.uk/events/alternate-gingerbread/',
+        'title': 'Christmas: The Gingerbread Man',
+        'instances': ['2026-12-05T14:00:00Z'],
+    }]
+    with pytest.raises(ValueError, match='spektrix_event_link_conflict'):
+        api.project(profile(event_urls={
+            EVENT: 'https://www.thealbany.org.uk/events/gingerbread-man/'}),
+            [event(webUrl='')], [instance()], [plan()], [venue()],
+            START, STOP, cms_pages=cms)
