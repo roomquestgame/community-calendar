@@ -4160,6 +4160,8 @@ def supabase_rpc(path: str, payload: dict, *, timeout: float = 4):
                "community_collector_openactive_state",
                "community_collector_feedzilla_capture_read", "community_collector_feedzilla_capture_write",
                "community_collector_feedzilla_capture_stage",
+               "community_collector_feedzilla_capture_seal", "community_collector_feedzilla_capture_note_wait",
+               "community_collector_feedzilla_capture_yield", "community_collector_feedzilla_capture_verify",
                "community_collector_stage_incremental", "community_collector_complete_incremental",
                "community_collector_read_ical_cache", "community_collector_save_ical_cache",
                "community_collector_touch_ical_cache",
