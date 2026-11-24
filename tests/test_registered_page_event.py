@@ -141,6 +141,21 @@ class PageBoundEventTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, 'html_calendar_(?:clock|venue)_conflict'):
                     self.rows(detail(event(), body))
 
+    def test_corroborated_audience_session_labels_keep_structured_venue(self):
+        item = event(startDate='2026-11-28UTC12:00:00')
+        blocks = sessions(session('Sat 28 Nov', '12:00 pm', 'Family session'),
+                          session('Sat 28 Nov', '1:30 pm', 'Adult session'))
+        rows = self.rows(detail(item, '<p>We offer family sessions and adult sessions.</p>' + blocks))
+        self.assertEqual([r['title'] for r in rows],
+                         ['Open Studio & Stories — Family session',
+                          'Open Studio & Stories — Adult session'])
+        self.assertTrue(all(r['venue_name'] == 'Community Hall' for r in rows))
+        self.assertTrue(all(r['ends_at'] is None for r in rows))
+        with self.assertRaisesRegex(ValueError, 'html_calendar_venue_conflict'):
+            self.rows(detail(item, blocks))
+        with self.assertRaisesRegex(ValueError, 'html_calendar_venue_conflict'):
+            self.rows(detail(item, '<p>We offer family sessions.</p>' + blocks))
+
     def test_naive_clock_must_be_independently_verified(self):
         item = event(startDate='2026-11-29 15:00:00', endDate='2026-11-29 16:30:00')
         for body in ('', '<p>29th November 2026 · 3:00pm - 5:30pm</p>',
