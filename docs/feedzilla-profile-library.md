@@ -53,3 +53,29 @@ The current first-pass `calendar_profile_signals.py` implements *only* bounded r
 1217 Poplar Union pagination limit; 1219 Horniman / 1226 The Albany pagination needed. 1218 Oxford House, 1223 Spitalfields Music, 1225 South London Gallery Event JSON-LD missing. 1220 Conway Hall identity conflict. 1221 Rich Mix, 1222 Omnibus Theatre, 1224 Museum of the Home no reusable calendar. These ten original IDs were processed but had **no registered source IDs or published events** in the Nov 23 readback. Recheck the same IDs only after the corresponding generic capability is deployed and the existing Admin technical-recheck gate permits it. Never resubmit duplicates to imply success.
 
 **Next work:** extend complete calendar discovery (publisher-linked ICS/API/embedded feed), durable multi-run pagination and evidence-backed event extraction; add a candidate-scoped diagnostic API and broaden gated recheck for the existing IDs. Distinguish submitted, recognized, registered, staged, published.
+
+## November 23, 2026 — legacy WordPress fingerprints
+
+The EVE-159 diagnostic stage now recognizes identifiable historical plugin
+markers for Events Manager, Event Organiser, Modern Events Calendar, EventON,
+WP Event Manager, All-in-One Event Calendar and legacy WordPress JSON API.
+It recognizes WordPress site generator/theme/REST discovery as a separate
+generic `wordpress_calendar_adapter_needed` when no plugin family is
+unambiguous. These are **technical-hold reasons only**, not source adapter
+activation. A plugin signature never means the corresponding publisher
+installed or exposed a public JSON API or an ICS feed.
+
+Fingerprint annotation occurs **after** the existing ICS/native discovery,
+source-scope, HTML completeness and publisher access checks. Only
+`review/html_adapter_needed` and `review/no_reusable_calendar` receive
+a different reason. A complete verified feed, Robots/403 denial, conflicting
+event identity, or unverified filtered scope stays unchanged. These new
+reasons use the existing 30-day deferred technical retry. The companion
+Admin EVE-159 guarded technical recheck update can later allow an admin
+to retry the exact existing original registration after a verified adapter
+fix, without bypassing the publisher's policies.
+
+This diagnostic stage does **not** add legacy JSON / Modern Events Calendar
+API collection or install publisher plugins. The current WordPress native
+API-first source registration remains in the existing verified TEC collector.
+
