@@ -617,25 +617,23 @@ def _description(soup, original, row):
 
 
 
-def _cambridge_featured_image(source, soup, url, title):
-    """Use only an unambiguous same-event upload on the approved Eventin site.
+def _event_detail_featured_image(source, soup, url, title):
+    """Find an unambiguous event-titled image on the canonical detail page.
 
-    Other HTML publishers and pages keep their existing JSON-LD-only behavior.
-    A missing image remains missing rather than selecting site chrome.
+    The source-specific media permission remains enforced downstream.
     """
-    if (source.get('feed_url') != 'https://cambridgeppf.org/events-list/'
-            or urlsplit(url).hostname != 'cambridgeppf.org'
-            or not urlsplit(url).path.startswith('/etn/')):
+    # Only use a photograph from the already-fetched, canonical event detail.
+    # Candidate publication is still governed by the source's existing photo
+    # permission; this helper never fetches or validates image bytes.
+    if not source.get('feed_url') or urlsplit(url).hostname != urlsplit(source['feed_url']).hostname:
         return None
-    root = soup.find('main')
-    if root is None:
-        return None
+    root = soup.find('main') or soup.find('article') or soup
 
     def words(value):
         return re.findall(r'[a-z0-9]+', (value or '').casefold())
 
     if not any(words(node.get_text(' ', strip=True)) == words(title)
-               for node in root.select('h1')):
+               for node in soup.select('h1')):
         return None
     meaningful = [term for term in words(title)
                   if len(term) >= 4 and term not in {'with', 'from', 'this', 'that'}]
@@ -643,11 +641,12 @@ def _cambridge_featured_image(source, soup, url, title):
         return None
     from roomquest.registered_native_content import image_candidate
     matches = set()
-    for img in root.select('img[src]')[:35]:
+    for img in root.select('img[src], img[data-src], img[data-lazy-src]')[:35]:
         if img.find_parent(['aside', 'nav', 'footer', 'header']):
             continue
-        candidate = _public_url(img.get('src', ''), url)
-        if not candidate or '/wp-content/uploads/' not in urlsplit(candidate).path:
+        candidate = _public_url(img.get('data-src') or img.get('data-lazy-src') or img.get('src', ''), url)
+        if (not candidate or urlsplit(candidate).hostname != urlsplit(url).hostname
+                or '/wp-content/uploads/' not in urlsplit(candidate).path):
             continue
         if not image_candidate(candidate, url):
             continue
@@ -754,7 +753,7 @@ def _detail(source, payload, url):
             primary_image = image_value(original.get('image'))
             from roomquest.registered_native_content import image_candidate
             if not image_candidate(primary_image, url):
-                primary_image = _cambridge_featured_image(source, soup, url, row['title'])
+                primary_image = _event_detail_featured_image(source, soup, url, row['title'])
             attach(row, source, description_value=description_value,
                    image_value=primary_image, evidence_url=url, **extra)
             records.append(row)

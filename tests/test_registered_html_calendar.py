@@ -709,3 +709,29 @@ def test_cambridge_featured_fallback_does_not_apply_to_other_publishers():
     [row] = calendar._detail(source(FEED), html.replace(CAMBRIDGE_DETAIL, ONE), ONE)
     assert row.get('image_url') is None
 
+
+
+def test_generic_wordpress_detail_photo_is_extracted_from_lazy_image():
+    """Use a same-event publisher URL without fetching image bytes."""
+    detail = 'https://example.test/events/volunteer-work-party/'
+    photo = 'https://example.test/wp-content/uploads/2026/11/volunteer-work-party-square.jpg'
+    item = event(detail, name='Volunteer Work Party', image=None)
+    html = ('<html><head><link rel="canonical" href="' + detail + '">'
+            '<script type="application/ld+json">' + json.dumps(item) + '</script>'
+            '</head><body><main><h1>Volunteer Work Party</h1>'
+            '<img data-src="' + photo + '" src="/placeholder.gif"></main></body></html>')
+    [row] = calendar._detail(source('https://example.test/events/'), html, detail)
+    assert row['image_url'] == photo
+    assert row['image_evidence_url'] == detail
+
+
+def test_generic_detail_photo_rejects_unrelated_or_offhost_artwork():
+    detail = 'https://example.test/events/volunteer-work-party/'
+    item = event(detail, name='Volunteer Work Party', image=None)
+    html = ('<html><head><link rel="canonical" href="' + detail + '">'
+            '<script type="application/ld+json">' + json.dumps(item) + '</script>'
+            '</head><body><main><h1>Volunteer Work Party</h1>'
+            '<img src="https://unrelated.test/wp-content/uploads/2026/11/volunteer-work-party.jpg">'
+            '<img src="/wp-content/uploads/2026/11/site-logo.jpg"></main></body></html>')
+    [row] = calendar._detail(source('https://example.test/events/'), html, detail)
+    assert row.get('image_url') is None
