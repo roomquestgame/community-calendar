@@ -110,6 +110,59 @@ def _instant(value, zone):
     return moment.astimezone(timezone.utc)
 
 
+def complete_response_pages(responses, *, per_page=100):
+    """Validate every WordPress X-WP-TotalPages/Total receipt across a snapshot.
+
+    The bounded fetch worker supplies (JSON list, HTTP response headers) pairs.
+    No partial page prefix is returned, even if all observed records are valid.
+    """
+    if (not isinstance(responses, list) or not responses or len(responses) > MAX_PAGES
+            or type(per_page) is not int or not 1 <= per_page <= 100):
+        _fail('pagination_invalid')
+    expected = None
+    collected = []
+    seen = set()
+    for page in responses:
+        if (not isinstance(page, (tuple, list)) or len(page) != 2
+                or not isinstance(page[0], list) or not isinstance(page[1], dict)
+                or len(page[0]) > per_page):
+            _fail('pagination_invalid')
+        rows, headers = page
+        headers = {str(key).lower(): value for key, value in headers.items()}
+        count_raw, pages_raw = headers.get('x-wp-total'), headers.get('x-wp-totalpages')
+        if (not isinstance(count_raw, (str, int)) or not isinstance(pages_raw, (str, int))
+                or not re.fullmatch(r'[0-9]{1,5}', str(count_raw))
+                or not re.fullmatch(r'[0-9]{1,3}', str(pages_raw))):
+            _fail('pagination_headers_missing')
+        total, total_pages = int(count_raw), int(pages_raw)
+        if (total <= 0 or total >= MAX_POSTS or total_pages <= 0
+                or total_pages > MAX_PAGES
+                or (total + per_page - 1) // per_page != total_pages):
+            _fail('pagination_total_invalid')
+        if expected is None:
+            expected = (total, total_pages)
+        elif expected != (total, total_pages):
+            _fail('pagination_changed')
+        for item in rows:
+            if not isinstance(item, dict) or type(item.get('id')) is not int:
+                _fail('post_invalid')
+            if item['id'] in seen:
+                _fail('pagination_duplicate')
+            seen.add(item['id'])
+        collected.append(rows)
+    if (expected is None or len(collected) != expected[1]
+            or sum(len(p) for p in collected) != expected[0]
+            or any(len(page) != per_page for page in collected[:-1])):
+        _fail('pagination_incomplete')
+    return collected, expected[1]
+
+
+def extract_from_responses(profile, responses, start, end, *, per_page=100):
+    """Parse only a fully acknowledged WordPress paginated GET series."""
+    pages, total_pages = complete_response_pages(responses, per_page=per_page)
+    return extract(profile, pages, total_pages, start, end)
+
+
 def extract(profile, pages, total_pages, start, end):
     """Project only a fully paginated, publisher-reviewed custom event route."""
     first, last = windows(start, end)
@@ -144,8 +197,8 @@ def extract(profile, pages, total_pages, start, end):
             if not isinstance(post, dict) or type(post.get('id')) is not int or post['id'] <= 0:
                 _fail('post_invalid')
             previous = posts.get(post['id'])
-            if previous is not None and previous != post:
-                _fail('post_conflict')
+            if previous is not None:
+                _fail('pagination_duplicate')
             posts[post['id']] = post
             if len(posts) > MAX_POSTS:
                 _fail('post_limit')
