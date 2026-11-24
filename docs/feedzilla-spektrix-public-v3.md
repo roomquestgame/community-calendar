@@ -89,3 +89,25 @@ Spektrix clients.
 - https://integrate.spektrix.com/docs/api/agent-guide
 - https://support.spektrix.com/hc/en-us/articles/227094568-Venues
 - https://support.spektrix.com/hc/en-us/articles/11101569928093-How-to-Set-Up-Instances
+
+## Reusable pagination checkpoint core in this batch
+
+\`roomquest/feedzilla_pagination_checkpoint.py\` defines a source-bound,
+monotone fetch progress envelope intended for Spektrix, Wix and WordPress
+workers. It stores exact task URLs, a task-plan SHA-256, contiguous per-page
+response hashes, immutable publisher/source/adapter/60-day-window identity,
+a four-hour expiry and an explicit last-page proof. A failed/incomplete task
+may retain progress, but \`complete()\` is **never** true merely because a
+partial prefix is available. An observed publisher next-page URL must first
+pass a provider-specific scope check before it can be appended.
+
+This is **Python state validation only**. The existing
+\`community_collector_read_fetch_checkpoint\`/
+\`community_collector_write_fetch_checkpoint\` database contracts currently
+authorize a narrower reviewed-source set. Spektrix, Wix and custom WordPress
+are **not enrolled** by this PR. Integration must extend the private
+source-profile, lease/CAS and staged acknowledgement contracts through a
+focused migration, rather than adding more entries to the pre-existing large
+hardcoded \`fetch_checkpoint_profile\` SQL function. No new SQL file is in
+this PR.
+
