@@ -17,6 +17,9 @@ from roomquest import spektrix_v3 as api
 HOST = 'system.spektrix.com'
 MAX_STEPS = 8
 MAX_BATCH_BYTES = 140_000
+# The existing common DB preview contract is capped at 500 for this family.
+# Refuse an oversized manifest rather than silently dropping performances.
+MAX_SEALED_MEMBERS = 500
 
 
 def _fail(reason):
@@ -118,13 +121,15 @@ def _batch(state):
     return rows
 
 
-def run_slice(source, profile, *, read, write, fetch, convert, stage_and_save,
+def run_slice(source, profile, *, read, write, fetch, convert, seal, stage_and_save,
               can_continue, clock=_clock, max_steps=MAX_STEPS):
     """Advance a source-bound 60-day capture through bounded work.
 
     read() -> {revision, checkpoint}; write(revision, envelope) -> CAS receipt.
     fetch(url, 'application/json') must enforce existing publisher policies.
     convert(source, complete_snapshot) uses the existing stage-row contract.
+    seal(revision, previous, next, fetch_receipts, members) atomically saves
+    the complete explicit member manifest and returns its sealed_count.
     stage_and_save(revision, previous_envelope, next_envelope, rows) MUST
     atomically validate the current lease/generation, stage exactly those rows
     idempotently, and CAS-save the acknowledgement. It returns a write receipt
@@ -184,8 +189,18 @@ def run_slice(source, profile, *, read, write, fetch, convert, stage_and_save,
         elif phase == 'project':
             snapshot = planner.project(source, profile, envelope, at=at)
             rows = convert(source, snapshot)
+            if not isinstance(rows, list) or len(rows) > MAX_SEALED_MEMBERS:
+                _fail('sealed_membership_limit')
             updated = store.prepare_staging(source, envelope, rows, at=clock())
-            revision = _write_receipt(write(revision, updated), revision)
+            members = [{key: row[key] for key in ('id', 'starts_at', 'event_url')}
+                       for row in rows]
+            receipt = seal(revision, envelope, updated,
+                           state['progress']['receipts'], members)
+            if (not isinstance(receipt, dict)
+                    or type(receipt.get('sealed_count')) is not int
+                    or receipt['sealed_count'] != len(members)):
+                _fail('seal_receipt_invalid')
+            revision = _write_receipt(receipt, revision)
             envelope = updated
         elif phase == 'stage':
             rows = _batch(state)
@@ -201,5 +216,6 @@ def run_slice(source, profile, *, read, write, fetch, convert, stage_and_save,
     done = store.ready_to_publish(source, envelope, at=clock())
     return {'status': 'staged' if done else 'pending',
             'phase': state['phase'], 'revision': revision,
+            'checkpoint_sha256': envelope['sha256'],
             'staged_this_slice': staged, 'staged_count': state['stage_cursor'],
             'record_count': len(state['records'])}
