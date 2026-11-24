@@ -1,9 +1,9 @@
-"""Feedzilla Spektrix capture runner (inactive until the paired DB contract).
+"""Fetch-only Spektrix adapter for the existing incremental collector.
 
-The caller supplies lease-fenced read/write, a robots-aware GET, the existing
-stage-record conversion, and an ATOMIC stage+CAS operation. No network or
-database credentials, category claim, publication, or registration here.
-A stage acknowledgement is not a publication receipt.
+No staging, completion, publication, or separate event ledger. The adapter
+returns the ordinary preview_source result only after a terminal, scoped
+fetch manifest has been acknowledged by the shared checkpoint writer.
+Production admission remains disabled.
 """
 from datetime import datetime, timedelta, timezone
 import json
@@ -13,13 +13,12 @@ from zoneinfo import ZoneInfo
 from roomquest import feedzilla_capture_store as store
 from roomquest import spektrix_capture_plan as planner
 from roomquest import spektrix_v3 as api
+from roomquest.incremental_snapshot import MAX_EVENTS, Snapshot, fingerprint, utc_start
 
 HOST = 'system.spektrix.com'
 MAX_STEPS = 8
-MAX_BATCH_BYTES = 140_000
-# The existing common DB preview contract is capped at 500 for this family.
-# Refuse an oversized manifest rather than silently dropping performances.
-MAX_SEALED_MEMBERS = 500
+MAX_PREVIEWS = 10
+MAX_SAMPLE_BYTES = 18_000
 
 
 def _fail(reason):
@@ -40,25 +39,22 @@ def _read_receipt(receipt):
     return receipt['revision'], receipt['checkpoint']
 
 
-def _write_receipt(receipt, revision, *, count=None):
+def _write_receipt(receipt, revision):
     if (not isinstance(receipt, dict)
             or receipt.get('checkpoint_saved') is not True
             or type(receipt.get('revision')) is not int
-            or receipt['revision'] != revision + 1
-            or count is not None and (
-                type(receipt.get('staged_count')) is not int
-                or receipt['staged_count'] != count)):
+            or receipt['revision'] != revision + 1):
         _fail('write_receipt_invalid')
     return receipt['revision']
 
 
-def _manifest(source, profile, envelope, at):
+def _manifest(source, profile, envelope, context_hash, at):
     """Re-derive exact URLs from the persisted publisher evidence BEFORE GET.
 
     A valid checksum or matching host alone cannot authorize a request to
     another client, an arbitrary API resource, or a forged plan ID.
     """
-    state = store.decode(source, envelope, at=at)
+    state = store.decode(source, envelope, context_hash=context_hash, at=at)
     p = state['progress']
     born = datetime.fromisoformat(p['started_at'])
     start = born.astimezone(ZoneInfo(profile['timezone'])).date()
@@ -71,7 +67,7 @@ def _manifest(source, profile, envelope, at):
     if p['tasks'][:len(base)] != base:
         _fail('manifest_invalid')
     if len(state['pages']) < len(base):
-        if p['tasks'] != base or state['phase'] != 'fetch':
+        if p['tasks'] != base or p['terminal_verified']:
             _fail('manifest_invalid')
     else:
         _, instances, _, _ = planner._read_base(source, profile, state)
@@ -83,7 +79,7 @@ def _manifest(source, profile, envelope, at):
                  for pid in sorted(active)]
         if p['tasks'] != base + plans:
             _fail('manifest_invalid')
-        if state['phase'] == 'fetch' and p['cursor'] == len(p['tasks']):
+        if not p['terminal_verified'] and p['cursor'] == len(p['tasks']):
             # The runner saves the expanded plan (or terminal empty proof)
             # atomically with the final base page, never an unsealed prefix.
             _fail('manifest_unsealed')
@@ -108,114 +104,102 @@ def _validate_page(url, body):
         api._merge({}, rows, resource, limits[resource])
 
 
-def _batch(state):
-    rows = []
-    for row in state['records'][state['stage_cursor']:
-                                state['stage_cursor'] + store.MAX_STAGE_BATCH]:
-        candidate = rows + [row]
-        if len(json.dumps(candidate, ensure_ascii=True).encode('utf-8')) > MAX_BATCH_BYTES:
-            break
-        rows = candidate
-    if not rows:
-        _fail('stage_batch_limit')
-    return rows
+def capture_context(snapshot, profile):
+    """Bind the in-flight capture to the existing processing/policy context."""
+    if not isinstance(snapshot, Snapshot):
+        _fail('incremental_context_required')
+    return fingerprint({
+        'adapter': store.ADAPTER, 'processing_context': snapshot.context_hash,
+        'policy_context': snapshot.policy_context, 'profile': profile,
+    })
 
 
-def run_slice(source, profile, *, read, write, fetch, convert, seal, stage_and_save,
+def _preview_output(source, complete_snapshot, convert):
+    """Ordinary preview shape; no private staging or publication API."""
+    if not isinstance(complete_snapshot, dict) or complete_snapshot.get('complete') is not True:
+        _fail('snapshot_incomplete')
+    rows = convert(source, complete_snapshot)
+    if not isinstance(rows, list) or len(rows) > MAX_EVENTS:
+        _fail('shared_incremental_limit')
+    for row in rows:
+        if (not isinstance(row, dict) or not isinstance(row.get('id'), str)
+                or not row['id'].strip() or not isinstance(row.get('event_url'), str)
+                or not row['event_url']):
+            _fail('event_identity_invalid')
+        utc_start(row.get('starts_at'))
+    samples = rows[:MAX_PREVIEWS]
+    while len(json.dumps(samples, ensure_ascii=False).encode('utf-8')) > MAX_SAMPLE_BYTES:
+        samples.pop()
+    output = {'p_source_key': source['source_key'], 'p_samples': samples,
+              'p_future_count': len(rows),
+              'p_venue_count': sum(row.get('lat') is not None for row in rows),
+              'p_error': None, 'p_events': rows}
+    # Ordinary processing calls Snapshot.plan once on this exact output.
+    return output
+
+
+def run_slice(source, profile, *, snapshot, read, write, fetch, convert,
               can_continue, clock=_clock, max_steps=MAX_STEPS):
-    """Advance a source-bound 60-day capture through bounded work.
+    """Fetch under an acknowledged lease/CAS, then return ordinary preview data.
 
-    read() -> {revision, checkpoint}; write(revision, envelope) -> CAS receipt.
-    fetch(url, 'application/json') must enforce existing publisher policies.
-    convert(source, complete_snapshot) uses the existing stage-row contract.
-    seal(revision, previous, next, fetch_receipts, members) atomically saves
-    the complete explicit member manifest and returns its sealed_count.
-    stage_and_save(revision, previous_envelope, next_envelope, rows) MUST
-    atomically validate the current lease/generation, stage exactly those rows
-    idempotently, and CAS-save the acknowledgement. It returns a write receipt
-    with staged_count. No separate, unverified cursor advances are accepted.
-    The DB must also independently certify complete staged membership before
-    the existing publication worker may publish. This runner does not do so.
+    The caller must retain the ordinary incremental Snapshot for the exact
+    active claim and invoke the shared processor in that final lease. If the
+    claim expires after partial staging, its old ACKs are not transferable:
+    a subsequent claim must re-plan against the current accepted baseline
+    and restage its still-changed bodies, never advance a separate cursor.
     """
     if (not isinstance(source, dict) or source.get('kind') != 'json'
             or not isinstance(profile, dict)
             or profile.get('ready_for_registration') is not True
+            or not isinstance(snapshot, Snapshot)
+            or snapshot.source_key != source.get('source_key')
             or type(max_steps) is not int or not 1 <= max_steps <= MAX_STEPS):
         _fail('context_invalid')
+    context_hash = capture_context(snapshot, profile)
     at = clock()
-    # Validate exact client/feed scope before any callback.
     start = at.astimezone(ZoneInfo(profile['timezone'])).date()
     end = start + timedelta(days=api.MAX_DAYS - 1)
     base = planner.base_tasks(source, profile, start, end)
     revision, envelope = _read_receipt(read())
     if envelope is None:
         envelope = store.new(source, base, allowed_hosts=[HOST],
-                             start=start, end=end, at=at)
+                             start=start, end=end, context_hash=context_hash, at=at)
         revision = _write_receipt(write(revision, envelope), revision)
 
-    staged = 0
     for _ in range(max_steps):
         at = clock()
-        state, base_count = _manifest(source, profile, envelope, at)
-        phase = state['phase']
-        if phase == 'done' or not can_continue():
+        state, base_count = _manifest(source, profile, envelope, context_hash, at)
+        p = state['progress']
+        if p['window_start'] != at.astimezone(ZoneInfo(profile['timezone'])).date().isoformat():
+            _fail('window_rolled_over')
+        if p['terminal_verified'] or not can_continue():
             break
-        if phase == 'fetch':
-            p = state['progress']
-            url = p['tasks'][p['cursor']]
-            body = fetch(url, 'application/json')
-            _validate_page(url, body)
-            at = clock()
-            # Base phase must never be marked terminal until its real instance
-            # records determine whether a second phase is necessary.
-            last_base = p['cursor'] + 1 == base_count
-            terminal = not last_base and p['cursor'] + 1 == len(p['tasks'])
-            updated = store.acknowledge_page(source, envelope, url, body,
-                                              terminal=terminal, at=at)
-            if last_base:
-                plans = planner.plan_tasks(source, profile, updated, at=at)
-                if plans:
-                    updated = store.add_verified_requests(
-                        source, updated, plans, scope_verified=True, at=at)
-                else:
-                    # A genuinely empty/off-sale calendar has no plan pages.
-                    # Re-acknowledge this same validated final base page with
-                    # terminal proof; do not invent a sentinel HTTP request.
-                    updated = store.acknowledge_page(
-                        source, envelope, url, body, terminal=True, at=at)
-            _manifest(source, profile, updated, at)
-            revision = _write_receipt(write(revision, updated), revision)
-            envelope = updated
-        elif phase == 'project':
-            snapshot = planner.project(source, profile, envelope, at=at)
-            rows = convert(source, snapshot)
-            if not isinstance(rows, list) or len(rows) > MAX_SEALED_MEMBERS:
-                _fail('sealed_membership_limit')
-            updated = store.prepare_staging(source, envelope, rows, at=clock())
-            members = [{key: row[key] for key in ('id', 'starts_at', 'event_url')}
-                       for row in rows]
-            receipt = seal(revision, envelope, updated,
-                           state['progress']['receipts'], members)
-            if (not isinstance(receipt, dict)
-                    or type(receipt.get('sealed_count')) is not int
-                    or receipt['sealed_count'] != len(members)):
-                _fail('seal_receipt_invalid')
-            revision = _write_receipt(receipt, revision)
-            envelope = updated
-        elif phase == 'stage':
-            rows = _batch(state)
-            updated = store.acknowledge_stage(source, envelope, len(rows), at=clock())
-            receipt = stage_and_save(revision, envelope, updated, rows)
-            revision = _write_receipt(receipt, revision, count=len(rows))
-            staged += len(rows)
-            envelope = updated
-        else:
-            _fail('phase_invalid')
+        url = p['tasks'][p['cursor']]
+        body = fetch(url, 'application/json')
+        _validate_page(url, body)
+        at = clock()
+        last_base = p['cursor'] + 1 == base_count
+        terminal = not last_base and p['cursor'] + 1 == len(p['tasks'])
+        updated = store.acknowledge_page(source, envelope, url, body,
+                         context_hash=context_hash, terminal=terminal, at=at)
+        if last_base:
+            plans = planner.plan_tasks(source, profile, updated,
+                                       context_hash=context_hash, at=at)
+            if plans:
+                updated = store.add_verified_requests(source, updated, plans,
+                         context_hash=context_hash, scope_verified=True, at=at)
+            else:
+                updated = store.acknowledge_page(source, envelope, url, body,
+                         context_hash=context_hash, terminal=True, at=at)
+        _manifest(source, profile, updated, context_hash, at)
+        revision = _write_receipt(write(revision, updated), revision)
+        envelope = updated
 
-    state, _ = _manifest(source, profile, envelope, clock())
-    done = store.ready_to_publish(source, envelope, at=clock())
-    return {'status': 'staged' if done else 'pending',
-            'phase': state['phase'], 'revision': revision,
-            'checkpoint_sha256': envelope['sha256'],
-            'staged_this_slice': staged, 'staged_count': state['stage_cursor'],
-            'record_count': len(state['records'])}
+    at = clock()
+    state, _ = _manifest(source, profile, envelope, context_hash, at)
+    if state['progress']['window_start'] != at.astimezone(ZoneInfo(profile['timezone'])).date().isoformat():
+        _fail('window_rolled_over')
+    if not state['progress']['terminal_verified'] or not can_continue():
+        return {'fetch_pending': True}
+    full = planner.project(source, profile, envelope, context_hash=context_hash, at=at)
+    return _preview_output(source, full, convert)
