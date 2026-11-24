@@ -391,7 +391,8 @@ def register(ticket):
                     try:
                         config = provider_registration.read_profile(target, adapter, supabase_rpc)
                         records = provider_registration.collect(target, adapter, fetch, deadline=deadline,
-                                                                profile=config, body=body)
+                                                                profile=config, body=body,
+                                                                registration_probe=True)
                         if records:
                             return {'p_outcome':'verified', 'p_endpoint':target, 'p_type':adapter}, body
                         return review('no_extractable_events', adapter), body

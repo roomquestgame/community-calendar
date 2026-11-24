@@ -46,7 +46,7 @@ def timezone(config):
     return name
 
 
-def collect(url, adapter, fetch, *, deadline, profile=None, body=None):
+def collect(url, adapter, fetch, *, deadline, profile=None, body=None, registration_probe=False):
     from roomquest.preview_worker import public_source_url
     if not public_source_url(url):
         raise ValueError('invalid_provider_endpoint')
@@ -60,6 +60,11 @@ def collect(url, adapter, fetch, *, deadline, profile=None, body=None):
     if adapter == 'spektrix':
         if not isinstance(profile, dict) or not profile:
             raise ValueError('spektrix_provider_profile_required')
+        # The short calendar probe is NEVER a recurring 60-day source snapshot.
+        # Collection must use the future durable checkpoint runner, not this
+        # registration-only bridge or a partial one-shot preview.
+        if registration_probe is not True:
+            raise ValueError('spektrix_provider_checkpoint_required')
         return spektrix_provider.probe(source, config, fetch, deadline_at=deadline)
     if adapter == 'south_carolina_parks':
         park_id = PARK.fullmatch(url)[1]
