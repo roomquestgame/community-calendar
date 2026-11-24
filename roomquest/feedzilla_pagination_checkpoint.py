@@ -9,10 +9,10 @@ snapshot. Source/adapter/window and the exact requested endpoint list remain
 bound to the persisted state across retry invocations.
 """
 from datetime import date, datetime, timedelta, timezone
-import hashlib
 import json
 import re
 from urllib.parse import urlsplit
+from roomquest.incremental_snapshot import fingerprint
 
 VERSION = 1
 MAX_TASKS = 500
@@ -34,8 +34,7 @@ def _stamp(at=None):
 
 
 def _digest(tasks):
-    return hashlib.sha256(json.dumps(tasks, sort_keys=True, ensure_ascii=True,
-                                     separators=(',', ':')).encode()).hexdigest()
+    return fingerprint(tasks)
 
 
 def _url(value, hosts):
