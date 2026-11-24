@@ -1,8 +1,8 @@
-"""Evidence-only signatures for publisher calendars without a supported feed.
+"""Evidence-only calendar platform signatures.
 
-These signals improve registration diagnostics; they do not authorize requests,
-register endpoints, or turn a publisher widget into a complete event snapshot.
-An actual supported feed always wins via the existing registration classifier.
+The registration checker already owns access, supported feed validation and
+publication. This module only reports unsupported calendar families when no
+existing family or publisher-linked feed has been verified.
 """
 import re
 
@@ -10,16 +10,11 @@ MAX_SIGNAL_CHARS = 500_000
 
 
 def unsupported_calendar_profile(html):
-    """Return a precise unsupported family, never a collector/approval decision.
-
-    Capture both ends of a large HTML response because embed scripts commonly
-    live in the document footer. The existing fetcher owns payload limits.
-    """
+    """A descriptive technical hold, never an authorized collector endpoint."""
     if not isinstance(html, str) or not html.lstrip('\ufeff \t\r\n').startswith('<'):
-        if ('data-tockify-calendar=' in fragment and
-            'public.tockify.com/browser/embed.js' in fragment):
-        return 'tockify_adapter_needed'
-    return None
+        return None
+
+    # Embed scripts may be near the bottom of a long document.
     fragment = (html[:MAX_SIGNAL_CHARS] + '\n' + html[-MAX_SIGNAL_CHARS:]).casefold()
     if ('elfsight-app-' in fragment and
             ('elfsightcdn.com/platform.js' in fragment or
@@ -31,4 +26,7 @@ def unsupported_calendar_profile(html):
     if (re.search(r'\b(?:new\s+)?fullcalendar\.calendar\s*\(', fragment) and
             re.search(r'\bevents\s*:', fragment)):
         return 'fullcalendar_adapter_needed'
+    if ('data-tockify-calendar=' in fragment and
+            'public.tockify.com/browser/embed.js' in fragment):
+        return 'tockify_adapter_needed'
     return None
