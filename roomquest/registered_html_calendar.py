@@ -33,12 +33,16 @@ MAX_EVENTS = 500
 CALENDAR_NAMES = {
     'events', 'calendar', 'shows', 'concerts', 'performances', 'upcoming-events',
     'events-calendar', 'event-calendar', 'whats-on', 'whatson', 'schedule',
+    'music-and-events',
 }
 INDEX_SEGMENTS = {
     'calendar', 'category', 'categories', 'tag', 'tags', 'page', 'month',
     'week', 'day', 'past', 'upcoming', 'all', 'venues', 'locations',
 }
-DETAIL_PATH = re.compile(r'/(?:events?|shows?|performances?|concerts?)/(.+)', re.I)
+# Venue event sections vary by publisher. The collection path itself is
+# not a detail; only a non-index child can be followed as a candidate.
+DETAIL_PATH = re.compile(
+    r'/(?:events?|shows?|performances?|concerts?|whats-on|whatson|live-events)/(.+)', re.I)
 COLLECTION_HEADING = re.compile(
     r'^(?:(?:all|upcoming|our|current)\s+)?(?:events|shows|concerts|performances)'
     r'(?:\s+(?:calendar|schedule|listing))?$|^event calendar$|^what[’\']?s on$', re.I)
@@ -660,7 +664,19 @@ def _detail(source, payload, url):
             if outcome is not None:
                 return outcome
             from roomquest.registered_event_microdata import parse_event_microdata
-            return parse_event_microdata(source, soup, url)
+            try:
+                return parse_event_microdata(source, soup, url)
+            except ValueError as error:
+                if str(error) != 'html_calendar_event_jsonld_missing':
+                    raise
+                # Reuse exact publisher-labeled Date/Time/Where facts when
+                # neither JSON-LD nor Event microdata exists. Ambiguous
+                # calendars still retain their original technical hold.
+                from roomquest.registered_visible_event import read as visible_event
+                outcome = visible_event(source, soup, url)
+                if outcome is not None:
+                    return outcome
+                raise
     if len(candidates) > MAX_EVENTS:
         _fail('html_calendar_event_limit')
 
