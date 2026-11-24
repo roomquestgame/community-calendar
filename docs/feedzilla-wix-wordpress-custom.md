@@ -1,3 +1,13 @@
+## November 24 — owner-authorized scoped provider release
+
+- Littleport source #6374: normal third Geoapify attempt resolved the exact publisher address at 16:16:46 UTC with confidence 0.5; readback at 16:52 UTC verified one scheduled public event, 586b2f64-ab78-411c-b644-c9f7508d0f4a. Staged historical location reason remained held; do not equate that reason with no public row. Category sports needs separate category-rule review. A fresh first-registration canary remains necessary.
+- Generic HTML request stream now shares the actual ordinary collection traversal; legacy one-run limits and Forestry exception are retained. A fetch-only authenticated ordered-prefix continuation entry point replays listing/detail evidence, returns the next exact request, and produces ordinary normalized rows only after terminal pagination and every detail. It consumes existing checkpoint bounds, does not persist/claim/stage/publish itself, and is not wired to the live registration dispatcher.
+- Offline exact-blob Vercel sandbox with network denied, pinned BeautifulSoup: 30/30 focused tests passed twice (16 generic HTML, 14 native WordPress inventory). Real HTML/JSON-LD extraction, normalizer and native evidence validation exercised; four-page ordinary old/new output equality, 9 pages + 45 details / 54 unique requests with simulated continuation, selector/scope/order/limit/deadline and incomplete-detail negatives. New committed regression module rerun with native WordPress tests, 30/30. Actual preview-worker factual functions isolated; unrelated specialized provider branches and unused Tribe fallback isolated by fail-on-use sentinels. No full CI or authenticated live continuation claimed.
+- Owner authorized release of tested provider-only changes. Shared EVE-170 migrations through 35000 are live, existing enrolled ordinary ICS scoped parser dependencies are unchanged. Non-scoped sources can need a fresh proof baseline on normal demand because the global parser package changed. No reauthorization, forced collection, queue reset or shared fingerprint modification.
+- Remaining gates: registration-receipt-bound and registered-source-bound use of the existing shared fetch checkpoint claim/CAS/continuation mechanism; actual publisher pagination acceptance; guarded HTTP header/final URL support for custom WordPress; fresh Admin canary. No original London receipt rechecks, no new source activation, no central Spektrix access or +500 ICS. Do not claim this provider package is complete intake automation.
+
+---
+
 # November 24, 11:09 ET — follow-up publisher evidence
 
 - St James's Church, Paddington: `https://stjamespaddington.org.uk/events/`.
