@@ -197,6 +197,47 @@ def test_visible_event_fallback_never_invents_clock_recurrence_or_venue(dates, t
         calendar._detail(source(), html, BASE + '/event/community-talk')
 
 
+def hnm_detail(dates, times, *, location='The Studio - lower ground floor'):
+    return ('<html><head><meta property="og:site_name" '
+            'content="Horniman Museum and Gardens"><script src="' + BASE
+            + '/wp-content/themes/horniman-theme/assets/js/main.min.js?ver=1"></script>'
+            '</head><body><main><h1>Wildlife Photography</h1>'
+            '<div class="event-details-widget">'
+            '<div class="event-details-row"><div class="h3">Dates</div>'
+            '<div class="event-details-line">' + dates + '</div></div>'
+            '<div class="event-details-row"><div class="h3">Times</div>'
+            '<div class="event-details-line">' + times + '</div></div>'
+            '<div class="event-details-row"><div class="h3">Location</div>'
+            '<div class="event-details-line">' + location + '</div></div></div></main>'
+            '<footer><div class="footer-col"><div class="h5">Horniman<br>'
+            'Museum &amp; Gardens</div><div class="footer-address">'
+            '100 London Road, Forest Hill<br>London SE23 3PQ</div></div></footer>'
+            '</body></html>')
+
+
+def test_hnm_theme_finite_detail_uses_exact_widget_and_footer_facts():
+    event_url = BASE + '/event/wildlife-photography/'
+    [row] = calendar._detail(
+        source(), hnm_detail('17 December 2026 - 21 February 2027', '10am – 5.30pm'),
+        event_url)
+    assert row['starts_at'] == '2026-12-17T10:00:00+00:00'
+    assert row['ends_at'] == '2027-02-21T17:30:00+00:00'
+    assert row['venue_name'].startswith('Horniman Museum and Gardens — The Studio')
+    assert row['venue_address'].endswith('SE23 3PQ, United Kingdom')
+    native.validate_record(row, source())
+
+
+@pytest.mark.parametrize('dates,times', [
+    ('Sundays', '10am – 3pm'),
+    ('2 December 2026 - 20 January 2027', 'Various times'),
+    ('Daily, until March 2028', '10am – 5.30pm'),
+    ('1 December', '12pm – 1.20pm'),
+])
+def test_hnm_theme_classifies_non_discrete_schedules_without_guessing(dates, times):
+    assert calendar._detail(source(), hnm_detail(dates, times),
+                            BASE + '/event/non-discrete/') == []
+
+
 @pytest.mark.parametrize('url,body', [
     (ONE, listing()),
     (BASE + '/article/editorial', listing((ONE,), heading='Our favorites')),
