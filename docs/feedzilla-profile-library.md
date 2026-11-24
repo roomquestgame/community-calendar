@@ -16,6 +16,7 @@ Research-backed guide. **No source is registered or published just because a fin
 | FullCalendar / Drupal | `new FullCalendar.Calendar(... { events: ... })` + publisher JSON source | Date-bounded `start`/`end` requests; verify the publisher-linked source and any page/window limit | **Signal only** |
 | Spektrix | `system.spektrix.com/<client>/api/v3/events` or `/instances` in publisher-linked code | Separate Event (show) from Instance (dated performance); date-bounded public instance reads | **Signal only** |
 | Elfsight | `elfsightcdn.com/platform.js` plus `elfsight-app-...` | Widget does **not** demonstrate a documented public calendar feed; never infer widget backend URL | **Signal only** |
+| Tockify | `data-tockify-calendar` with `public.tockify.com/browser/embed.js` | Publisher embed identifies calendar/account, but not an authorized reusable feed; check public subscription options instead | **Signal only** |
 | Communico | Library events page with an enabled RSS button | Publisher-enabled event RSS, not generic news; verify all filtered locations and dates | Candidate research |
 | Ticket Tailor | Publisher box office widget or published ticket listing | `GET /v1/events` requires a box-office API key (Basic Auth); use only publisher-permitted integration | Permission-backed |
 | Eventbrite | Publisher event page or widget | REST v3 requires private token/OAuth; link is not a feed | Permission-backed |
@@ -28,7 +29,7 @@ Research-backed guide. **No source is registered or published just because a fin
  "paging":"bounded date windows","admission":"existing verified Feedzilla registration"}
 ```
 
-The current first-pass `calendar_profile_signals.py` implements *only* bounded, two-evidence recognition of Spektrix, FullCalendar and Elfsight when the existing HTML classifier would otherwise return `no_reusable_calendar`. It emits specific technical hold reasons with the **same deferred retry**; it performs **no outbound fetch**, adapter activation or registration. Real fixture-based and official-API adapters remain subsequent batches. Verified first-party feeds always take priority.
+The current first-pass `calendar_profile_signals.py` implements *only* bounded recognition of Spektrix, FullCalendar, Elfsight and Tockify when the existing HTML classifier would otherwise return `no_reusable_calendar`. It emits specific technical hold reasons with the **same deferred retry**; it performs **no outbound fetch**, adapter activation or registration. Real fixture-based and official-API adapters remain subsequent batches. Verified first-party feeds always take priority.
 
 ## Primary official references
 
@@ -41,7 +42,8 @@ The current first-pass `calendar_profile_signals.py` implements *only* bounded, 
 - Drupal REST Export feed: https://www.drupal.org/docs/extending-drupal/contributed-modules/contributed-module-documentation/fullcalendar-block/how-to-use-a-drupal-view-as-the-event-feed-source-of-fullcalendar-block
 - Spektrix public API and instances: https://integrate.spektrix.com/docs/API3 and https://integrate.spektrix.com/docs/apieventfiltering
 - Communico RSS events: https://communicocollege.com/rss-event-feeds
-- Elfsight public embed: https://help.elfsight.com/article/1248-how-to-dynamically-change-the-event-calendar-layout
+- Elfsight widget embed example: https://elfsight.com/event-calendar-widget/
+- Tockify official embed example: https://tockify.com/i/docs/faq/technical
 - Ticket Tailor API authentication: https://developers.tickettailor.com/docs/api/get-all-events/
 - Eventbrite API authorization: https://www.eventbrite.com/platform/new/api
 - Wix Events APIs: https://dev.wix.com/docs/api-reference/business-solutions/events/event-management/events-v3
