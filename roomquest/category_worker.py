@@ -614,6 +614,11 @@ def collect_category(category, ticket):
                     process_args['publisher_handoff'] = publisher_handoff
                 if category == 'html':
                     process_args['publisher_handoff'] = publisher_handoff
+                    # BEGIN EVE159_DISPATCH_CONTEXT
+                    from roomquest import registered_html_checkpoint
+                    if registered_html_checkpoint.enabled(source):
+                        process_args['collection_context'] = args
+                    # END EVE159_DISPATCH_CONTEXT
                     if ((source.get('source_key') in ('discover_halifax_va', 'visit_atlantic_city_nj', 'noyes_arts_atlantic_city_nj', 'atlantic_city_municipal_nj', 'greatday_atlantic_city_nj', 'visit_raleigh_nc')
                             or source.get('source_key') == wasilla_key
                             or source.get('source_key') in LINKED_DESCRIPTION_PROFILES
