@@ -62,8 +62,10 @@ def _feed_type(url, attrs, label):
         return None
     if is_tec_collection(url):
         return "wordpress"
+    from roomquest.wordpress_capabilities import publisher_linked_ical_subscription
     if (parts.path.lower().endswith(".ics") or
             keys.get("ical") == ["1"] or
+            publisher_linked_ical_subscription(url) or
             parts.path.lower().endswith("/ical_subscribe.php") or
             (parts.path.lower().endswith("/icalendar.aspx") and
              keys.get("feed") == ["calendar"]) or
