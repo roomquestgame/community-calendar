@@ -6,6 +6,7 @@ overwritten. Time repair requires exact independently displayed schedule facts.
 """
 from copy import deepcopy
 from datetime import datetime, date, timedelta, timezone
+from hashlib import sha256
 from html import unescape
 import re
 from urllib.parse import urljoin, urlsplit
@@ -333,6 +334,53 @@ def candidates(nodes, soup, url, is_event, public_url, url_key):
     if starts.tzinfo is None or starts.utcoffset() is None:
         return None
     return [fixed]
+
+
+def multiple_candidates(nodes, soup, url, is_event, public_url, url_key):
+    """Bind several page-local Event occurrences to one detail document.
+
+    Craft and similar CMS templates sometimes publish one Event JSON-LD object
+    per dated performance but omit ``url``/``@id`` from every object.  Accept
+    that shape only when canonical/OG metadata binds the document, one visible
+    H1 names every Event, and every occurrence supplies a distinct explicit
+    offset timestamp.  This is page identity repair, not recurrence inference.
+    """
+    events = [node for node in nodes if is_event(node)]
+    if not 2 <= len(events) <= 500 or any(
+            event.get('url') not in (None, '') or event.get('@id') not in (None, '')
+            for event in events):
+        return None
+    metadata = [node.get('href') for node in soup.select('link[rel="canonical"]')]
+    metadata += [node.get('content') for node in soup.select('meta[property="og:url"]')]
+    if not metadata or any(not (link := public_url(raw, url))
+                           or url_key(link) != url_key(url) for raw in metadata):
+        return None
+    root = soup.find('main') or soup.find(attrs={'role': 'main'}) or soup.body
+    if root is None:
+        return None
+    headings = [node for node in root.select('h1')
+                if not node.find_parent(['footer', 'nav', 'aside', 'form'])]
+    if len(headings) != 1 or any(
+            not _title(event.get('name'))
+            or not _page_title_matches(event['name'], headings[0].get_text(' ', strip=True))
+            for event in events):
+        return None
+    seen = set()
+    fixed = []
+    for event in events:
+        raw = event.get('startDate')
+        try:
+            starts = datetime.fromisoformat(raw.replace('Z', '+00:00'))
+        except (AttributeError, ValueError):
+            return None
+        if starts.tzinfo is None or starts.utcoffset() is None or raw in seen:
+            return None
+        seen.add(raw)
+        identity = url + '#event-' + sha256(raw.encode('utf-8')).hexdigest()[:16]
+        if len(identity) > 180:
+            raise ValueError('html_calendar_event_identity_limit')
+        fixed.append(dict(deepcopy(event), url=url, **{'@id': identity}))
+    return fixed
 
 
 def description_only_controls(value):
