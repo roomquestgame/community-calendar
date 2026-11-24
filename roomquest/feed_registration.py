@@ -12,6 +12,7 @@ from roomquest.registration_formats import collection_evidence, document_kind, p
 from roomquest.preview_worker import PreviewError, fetch_publisher, public_source_url, supabase_rpc
 from roomquest.publisher_pacing import capture_publisher_pacing
 from roomquest.registration_auto_defer import auto_defer_nonactionable
+from roomquest.wordpress_capabilities import publisher_linked_ical_subscription
 
 ACCEPT = 'text/calendar, application/json, application/xml, text/xml, text/html;q=0.8'
 DENIALS = {'robots_denied', 'publisher_http_401', 'publisher_http_403'}
@@ -113,7 +114,9 @@ class CalendarLinks(HTMLParser):
         if is_tec_collection(url):
             self.links[url] = 'wordpress'
         elif (webcal or attrs.get('type') == 'text/calendar' or parts.path.lower().endswith('.ics')
-              or query.get('ical') == ['1'] or (parts.path.lower().endswith('/icalendar.aspx')
+              or query.get('ical') == ['1']
+              or publisher_linked_ical_subscription(url)
+              or (parts.path.lower().endswith('/icalendar.aspx')
               and query.get('feed') == ['calendar']) or parts.path.lower().endswith('/ical_subscribe.php')):
             self.links[url] = 'ical'
 

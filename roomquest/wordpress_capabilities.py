@@ -178,3 +178,44 @@ def inspect_rest_index(api_root, raw):
         'endpoint': endpoint,
         'collector': 'wordpress' if endpoint else None,
     }
+
+
+
+def publisher_linked_ical_subscription(url):
+    """Recognize documented WordPress *calendar-wide* exports when linked.
+
+    This helper must be called only on real publisher <a>/<link> URLs. It
+    never generates a candidate, fetches content or certifies events. The
+    existing transport, source-scope, and ical parser own verification.
+    """
+    try:
+        parts = urlsplit(url)
+        if parts.scheme != 'https' or parts.username or parts.password or parts.fragment:
+            return False
+        path = [part.casefold() for part in parts.path.split('/') if part]
+        params = parse_qsl(parts.query, keep_blank_values=True)
+        keys = {key.casefold() for key, _ in params}
+        if keys.intersection({'event_id','eventid','post_id','eid','tribe_event_id'}):
+            return False
+        if (not params and len(path) == 2 and path[0] in {
+                'events', 'calendar', 'whatson', 'whats-on', 'event-calendar'}
+                and path[1] == 'ical-feed'):
+            return True
+        # Timely All-in-One legacy public exporter: the three exact required
+        # values identify an existing publisher-linked calendar export.
+        actual = dict(params)
+        return (
+            actual.get('plugin') == 'all-in-one-event-calendar'
+            and actual.get('controller') == 'ai1ec_exporter_controller'
+            and actual.get('action') == 'export_events'
+            and actual.get('no_html') in (None, 'true', '1')
+            and keys <= {
+                # Reject filtered (category/venue/single-event) exporters.
+                # A partial export must not stand in for a full calendar.
+                'plugin', 'controller', 'action', 'no_html'
+            }
+            and not (len(path)>2 or (path and path[-1] not in {
+                'events', 'calendar', 'whatson', 'whats-on', 'event-calendar'}))
+        )
+    except (ValueError, TypeError):
+        return False
