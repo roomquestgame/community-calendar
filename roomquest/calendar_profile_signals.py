@@ -16,7 +16,10 @@ def unsupported_calendar_profile(html):
     live in the document footer. The existing fetcher owns payload limits.
     """
     if not isinstance(html, str) or not html.lstrip('\ufeff \t\r\n').startswith('<'):
-        return None
+        if ('data-tockify-calendar=' in fragment and
+            'public.tockify.com/browser/embed.js' in fragment):
+        return 'tockify_adapter_needed'
+    return None
     fragment = (html[:MAX_SIGNAL_CHARS] + '\n' + html[-MAX_SIGNAL_CHARS:]).casefold()
     if ('elfsight-app-' in fragment and
             ('elfsightcdn.com/platform.js' in fragment or
