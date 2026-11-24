@@ -30,6 +30,18 @@ def _title(value):
     return _plain(value).casefold()
 
 
+def _page_title_matches(structured, visible):
+    """Match an exact H1 or a bounded publisher season/program prefix."""
+    structured_text = _plain(structured)
+    visible_title = _title(visible)
+    if _title(structured_text) == visible_title:
+        return True
+    prefix, separator, suffix = structured_text.partition(':')
+    return bool(separator and len(prefix) <= 48
+                and re.search(r'\b20\d\d\b', prefix)
+                and _title(suffix) == visible_title)
+
+
 def _clock(value):
     value = re.sub(r'\s+', '', value).upper()
     return datetime.strptime(value, '%I:%M%p' if ':' in value else '%I%p').time()
@@ -240,7 +252,8 @@ def candidates(nodes, soup, url, is_event, public_url, url_key):
     headings = [node for node in root.select('h1')
                 if not node.find_parent(['footer', 'nav', 'aside', 'form'])]
     if (len(headings) != 1 or not _title(event.get('name'))
-            or _title(headings[0].get_text(' ', strip=True)) != _title(event['name'])):
+            or not _page_title_matches(event['name'],
+                                       headings[0].get_text(' ', strip=True))):
         return None
     fixed = deepcopy(event)
     fixed['url'] = url
