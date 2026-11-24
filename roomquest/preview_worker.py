@@ -4839,7 +4839,40 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
         native_content = native_enabled(source)
         deadline = min(monotonic() + 43, deadline_at or float("inf"))
         checkpoint_key = source.get("source_key")
-        if ((checkpoint_key in ("discover_halifax_va", "visit_atlantic_city_nj", "noyes_arts_atlantic_city_nj", "atlantic_city_municipal_nj", "greatday_atlantic_city_nj")
+        from roomquest import registered_html_checkpoint as registered_capture
+        if registered_capture.enabled(source):
+            if (not isinstance(collection_context, dict)
+                    or collection_context.get("p_category") != "html"
+                    or not isinstance(collection_context.get("p_ticket"), str)):
+                raise PreviewError("fetch_checkpoint_context_missing")
+            try:
+                chunk = registered_capture.collect_and_save(
+                    source, lambda url, accept: fetch_publisher(
+                        url, accept, respect_robots=True, deadline_at=deadline - 9,
+                        allowed_hosts=(urlsplit(source["feed_url"]).hostname,)),
+                    supabase_rpc, pacing, category="html",
+                    ticket=collection_context["p_ticket"], deadline_at=deadline - 9)
+            except PreviewError:
+                raise
+            except (ValueError, KeyError, TypeError, OverflowError) as exc:
+                reason = str(exc)
+                raise PreviewError(reason if re.fullmatch(r'[a-z0-9_]{1,100}', reason)
+                                   else "invalid_html_event_payload") from exc
+            if publisher_handoff is not None:
+                publisher_handoff["ready_at"] = monotonic() + max(
+                    1, pacing["crawl_delay_seconds"], pacing["retry_after_seconds"])
+            if not chunk["complete"]:
+                return {"complete": 0, "failed": 0, "staged": 0, "fetch_pending": True}
+            records = chunk["events"]
+            samples = records[:MAX_PREVIEWS]
+            while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
+                samples.pop()
+            output = {"p_source_key": source["source_key"], "p_samples": samples,
+                      "p_future_count": len(records), "p_venue_count": sum(
+                          row.get("lat") is not None for row in records),
+                      "p_error": None, "p_events": records,
+                      "p_parser_capability": NATIVE_VERSION}
+        elif ((checkpoint_key in ("discover_halifax_va", "visit_atlantic_city_nj", "noyes_arts_atlantic_city_nj", "atlantic_city_municipal_nj", "greatday_atlantic_city_nj")
                 or checkpoint_key == wasilla.KEY
                 or checkpoint_key in continuation_checkpoint_keys
                 or checkpoint_key in new_york_checkpoint_keys
