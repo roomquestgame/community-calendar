@@ -215,8 +215,16 @@ def _visible_occurrences(event, root):
             raise ValueError('html_calendar_clock_conflict') from exc
         if date_value.strftime('%A').casefold() != weekday.casefold():
             raise ValueError('html_calendar_clock_conflict')
-        starts.append(_local(date_value, _clock(cells[1])))
-    if not starts or len(starts) > 500 or any(b <= a for a, b in zip(starts, starts[1:])):
+        start = _local(date_value, _clock(cells[1]))
+        # Some server-rendered performance tables repeat the final, exact
+        # date/time row. Treat that as one occurrence, while retaining the
+        # strict ordering failure for any conflicting or out-of-order row.
+        if starts and start == starts[-1]:
+            continue
+        if starts and start < starts[-1]:
+            raise ValueError('html_calendar_clock_conflict')
+        starts.append(start)
+    if not starts or len(starts) > 500:
         raise ValueError('html_calendar_clock_conflict')
     first, last = event.get('startDate'), event.get('endDate')
     if (not isinstance(first, str) or not LOCAL_STAMP.fullmatch(first)
