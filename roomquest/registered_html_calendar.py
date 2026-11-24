@@ -11,7 +11,7 @@ from datetime import datetime
 import json
 import re
 from time import monotonic
-from urllib.parse import parse_qsl, urldefrag, urljoin, urlsplit, urlunsplit
+from urllib.parse import parse_qsl, urlencode, urldefrag, urljoin, urlsplit, urlunsplit
 
 from bs4 import BeautifulSoup
 
@@ -321,6 +321,61 @@ def _page_in_scope(target, collection_url):
             and Counter(page_query) == Counter(base_query))
 
 
+def _loadomatic_pagination(soup, url, collection_url, previous_pages):
+    """Read one exact server-rendered LoadOMatic page contract.
+
+    Ten4/Craft listings publish their current canonical URL and finite page
+    count in the page itself.  The browser library then requests the ordinary
+    ``page`` selector.  Accept only that unfiltered, same-origin declaration;
+    any missing, conflicting, filtered or over-budget configuration retains the
+    existing pagination review hold.
+    """
+    roots = soup.select('.loadomatic')
+    if not roots:
+        return None
+    if len(roots) != 1:
+        _fail('html_calendar_pagination_ambiguous')
+    triggers = roots[0].select('.loadomatic__elements > button.loadomatic__trigger')
+    if (len(triggers) != 1
+            or not PAGINATION_LABEL.fullmatch(triggers[0].get_text(' ', strip=True))):
+        _fail('html_calendar_pagination_needed')
+    pattern = re.compile(
+        r'\b[A-Za-z_$][\w$]*[.]buildLoadOMatic\(\s*\{\s*'
+        r"loadUrl\s*:\s*'([^']+)'\s*,\s*"
+        r'currentPage\s*:\s*([1-9][0-9]{0,4})\s*,\s*'
+        r'totalPages\s*:\s*([1-9][0-9]{0,4})\s*,\s*'
+        r"extraQuery\s*:\s*''\s*\}\s*,\s*false\s*\)\s*;?",
+        re.S)
+    configs = []
+    for script in soup.select('script'):
+        configs.extend(pattern.findall(script.string or ''))
+    if len(configs) != 1 or not collection_url:
+        _fail('html_calendar_pagination_needed')
+    declared_url, current_raw, total_raw = configs[0]
+    current, total = int(current_raw), int(total_raw)
+    if total > MAX_LISTING_PAGES or current > total or current != len(previous_pages) + 1:
+        _fail('html_calendar_pagination_needed')
+    declared = _public_url(declared_url, url)
+    if not declared or _url_key(declared) != _url_key(url):
+        _fail('html_calendar_pagination_scope_conflict')
+    base = urlsplit(collection_url)
+    base_query = parse_qsl(base.query, keep_blank_values=True)
+    if any(key in {'page', 'paged'} for key, _ in base_query):
+        _fail('html_calendar_pagination_scope_conflict')
+
+    def page_url(number):
+        if number == 1:
+            return collection_url
+        query = urlencode([*base_query, ('page', str(number))])
+        return urlunsplit((base.scheme, base.netloc, base.path, query, ''))
+
+    expected = page_url(current)
+    if _url_key(expected) != _url_key(url):
+        _fail('html_calendar_pagination_scope_conflict')
+    required = {_url_key(page_url(number)) for number in range(2, total + 1)}
+    return (page_url(current + 1) if current < total else None), required
+
+
 def _pagination(soup, url, *, collection_url=None, previous_pages=()):
     root = _content(soup)
     # A FacetWP template with an otherwise empty client-side pager can be
@@ -353,6 +408,12 @@ def _pagination(soup, url, *, collection_url=None, previous_pages=()):
     previous = {_url_key(page) for page in previous_pages}
     forward = {}
     required = set()
+    loadomatic = _loadomatic_pagination(soup, url, collection_url, previous_pages)
+    if loadomatic is not None:
+        next_page, declared_pages = loadomatic
+        required.update(declared_pages)
+        if next_page:
+            forward[_url_key(next_page)] = next_page
     for node in soup.select('a[rel],link[rel]'):
         rel = node.get('rel') or []
         if isinstance(rel, str):
@@ -411,6 +472,15 @@ def _pagination(soup, url, *, collection_url=None, previous_pages=()):
         disabled = node.has_attr('disabled') or node.get('aria-disabled') == 'true'
         dynamic_more = (re.search(r'load[-_]?more|show[-_]?more', marker, re.I)
                         or node.has_attr('data-offset') and PAGINATION_LABEL.fullmatch(label.strip()))
+        if loadomatic is not None and node.name == 'button':
+            if 'loadomatic__trigger' in (node.get('class') or []):
+                continue
+            if ('pagination__button' in (node.get('class') or [])
+                    and node.find_parent('ul', class_='pagination')):
+                target = _public_url(node.get('data-url'), url)
+                if not target or _url_key(target) not in previous:
+                    _fail('html_calendar_pagination_needed')
+                continue
         # Carbonhouse initially disables its offset-backed Load More button
         # while JavaScript initializes. Disabled does not prove the final page.
         if dynamic_more and (disabled or not supported):
