@@ -16,6 +16,8 @@ from roomquest.registered_native_content import validate_record
 
 FEED = 'https://venue.example.org/events/'
 URL = 'https://venue.example.org/event/open-studio/'
+UK_FEED = 'https://venue.example.org.uk/events'
+UK_URL = 'https://venue.example.org.uk/events/jazz-saturdays'
 
 
 class ReplayMeta(type):
@@ -30,8 +32,8 @@ class ReplayClock(datetime, metaclass=ReplayMeta):
         return at.astimezone(tz) if tz else at.replace(tzinfo=None)
 
 
-def source():
-    return {'source_key': source_key(FEED), 'feed_url': FEED, 'kind': 'html',
+def source(feed=FEED):
+    return {'source_key': source_key(feed), 'feed_url': feed, 'kind': 'html',
             'platform_adapter': 'html', 'registered_html_calendar_version': 1,
             'registered_native_content_version': 1}
 
@@ -77,10 +79,11 @@ class PageBoundEventTests(unittest.TestCase):
         self.clock.start()
         self.addCleanup(self.clock.stop)
 
-    def rows(self, html):
-        rows = calendar._detail(source(), html, URL)
+    def rows(self, html, url=URL):
+        claim = source(UK_FEED if url == UK_URL else FEED)
+        rows = calendar._detail(claim, html, url)
         for row in rows:
-            validate_record(row, source())
+            validate_record(row, claim)
         return rows
 
     def test_publisher_sessions_exact_year_rollover(self):
@@ -103,6 +106,48 @@ class PageBoundEventTests(unittest.TestCase):
                                  canonical=None, newsletter=True))
         self.assertEqual(row['starts_at'], '2026-11-29T15:00:00+00:00')
         self.assertEqual(row['ends_at'], '2026-11-29T16:30:00+00:00')
+
+    def test_uk_domain_postcode_and_complete_date_table_bind_local_occurrences(self):
+        item = event(name='Jazz Saturdays', startDate='2026-11-21T13:00:00',
+                     endDate='2026-12-05T13:00:00')
+        item['location']['address'].pop('addressCountry')
+        item['location']['address'].update(
+            streetAddress='Douglas Way', addressLocality='Deptford', postalCode='SE8 4AG')
+        table = ('<table><tr><th>Date</th><th>Time</th></tr>'
+                 '<tr><td>Saturday 21st November 2026</td><td>01:00 pm</td></tr>'
+                 '<tr><td>Saturday 5th December 2026</td><td>01:00 pm</td></tr></table>')
+        rows = self.rows(detail(item, table, canonical=UK_URL, og=UK_URL,
+                                heading='Jazz Saturdays'), UK_URL)
+        # The publisher's first row has already started; ordinary future-event
+        # filtering retains the remaining independently enumerated occurrence.
+        self.assertEqual([row['starts_at'] for row in rows],
+                         ['2026-12-05T13:00:00+00:00'])
+        self.assertTrue(all(row['ends_at'] is None for row in rows))
+
+    def test_missing_country_schedule_requires_uk_domain_and_exact_complete_table(self):
+        item = event(name='Jazz Saturdays', startDate='2026-11-21T13:00:00',
+                     endDate='2026-12-05T13:00:00')
+        item['location']['address'].pop('addressCountry')
+        item['location']['address'].update(
+            streetAddress='Douglas Way', addressLocality='Deptford', postalCode='SE8 4AG')
+        good = ('<table><tr><th>Date</th><th>Time</th></tr>'
+                '<tr><td>Saturday 21st November 2026</td><td>01:00 pm</td></tr>'
+                '<tr><td>Saturday 5th December 2026</td><td>01:00 pm</td></tr></table>')
+        cases = [
+            (URL, good),
+            (UK_URL, good.replace('5th December', '6th December')),
+            (UK_URL, good + good),
+        ]
+        for target, body in cases:
+            with self.subTest(target=target):
+                with self.assertRaisesRegex(ValueError, 'html_calendar_clock_conflict'):
+                    self.rows(detail(item, body, canonical=target, og=target,
+                                     heading='Jazz Saturdays'), target)
+        foreign = deepcopy(item)
+        foreign['location']['address']['addressCountry'] = 'US'
+        with self.assertRaisesRegex(ValueError, 'html_calendar_clock_conflict'):
+            self.rows(detail(foreign, good, canonical=UK_URL, og=UK_URL,
+                             heading='Jazz Saturdays'), UK_URL)
 
     def test_ordinary_offset_without_identity(self):
         [row] = self.rows(detail(event(startDate='2026-11-29T15:00:00+00:00')))
