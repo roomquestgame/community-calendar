@@ -24,15 +24,15 @@ def start(adapter='spektrix'):
 
 def test_incomplete_page_prefix_never_certifies_an_event_snapshot():
     state = start()
-    assert cp.next_request(state) == PAGES[0]
+    assert cp.next_request(state, at=STAMP) == PAGES[0]
     assert not cp.complete(state, at=STAMP)
     one = cp.advance(state, PAGES[0], HASH, at=STAMP)
     assert one['cursor'] == 1
-    assert cp.next_request(one) == PAGES[1]
+    assert cp.next_request(one, at=STAMP) == PAGES[1]
     assert not cp.complete(one, at=STAMP)
     assert state['cursor'] == 0  # immutable snapshot update
     two = cp.advance(one, PAGES[1], HASH, terminal=True, at=STAMP)
-    assert cp.next_request(two) is None
+    assert cp.next_request(two, at=STAMP) is None
     assert cp.complete(two, at=STAMP)
     assert two['receipts'] == [
         {'url': PAGES[0], 'sha256': HASH},
