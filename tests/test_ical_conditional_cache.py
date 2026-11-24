@@ -80,6 +80,8 @@ def test_etag_precedes_last_modified_and_304_replays_complete_body():
     assert "p_body" not in rpc.calls[-2][1]
     assert rpc.calls[-1][0] == "community_collector_record_ical_http_metric"
     assert rpc.calls[-1][1]["p_outcome"] == "reused_304"
+    assert rpc.calls[-1][1]["p_cache_disposition"] == "reused_304"
+    assert rpc.calls[-1][1]["p_body_bytes"] == 0
 
 
 def test_last_modified_fallback():
@@ -130,6 +132,8 @@ def test_200_stages_cache_metadata_without_committing_before_success():
     assert rpc.calls[-2][1]["p_etag"] == '"v2"'
     assert rpc.calls[-1][0] == "community_collector_record_ical_http_metric"
     assert rpc.calls[-1][1]["p_outcome"] == "full_200"
+    assert rpc.calls[-1][1]["p_cache_disposition"] == "admitted"
+    assert rpc.calls[-1][1]["p_body_bytes"] == len(BODY.encode("utf-8"))
 
 
 def test_unusable_body_and_unsupported_cache_control_stay_uncached():
@@ -144,10 +148,39 @@ def test_unusable_body_and_unsupported_cache_control_stay_uncached():
     assert len(rpc.calls) == 2
     assert rpc.calls[-1][0] == "community_collector_record_ical_http_metric"
     assert rpc.calls[-1][1]["p_outcome"] == "full_200"
+    assert rpc.calls[-1][1]["p_cache_disposition"] == "no_store"
     state.record_body(URL, "text/calendar", b"\xff\xfe",
                       {"ETag": '"v2"', "Content-Type": "text/calendar"},
                       encoding="utf-8")
     assert state.candidate is None
+
+
+@pytest.mark.parametrize(("payload", "headers", "encoding", "reason"), [
+    (BODY.encode("utf-8"), {"Content-Type": "text/calendar"}, "utf-8",
+     "validator_absent"),
+    (BODY.encode("utf-8"), {"ETag": "not-an-etag", "Content-Type": "text/calendar"},
+     "utf-8", "validator_invalid"),
+    (BODY.encode("utf-8"), {"ETag": '"v2"', "Vary": "Authorization",
+                            "Content-Type": "text/calendar"},
+     "utf-8", "vary_unsupported"),
+    (b"X" * (cache._MAX_BYTES + 1), {"ETag": '"v2"',
+                                       "Content-Type": "text/calendar"},
+     "utf-8", "body_oversize"),
+    (b"\xff\xfe", {"ETag": '"v2"', "Content-Type": "text/calendar"},
+     "utf-8", "decode_error"),
+    (BODY.encode("utf-16"), {"ETag": '"v2"', "Content-Type": "text/calendar"},
+     "utf-16", "decode_error"),
+    (b"not a calendar body", {"ETag": '"v2"', "Content-Type": "text/calendar"},
+     "utf-8", "invalid_calendar"),
+    (BODY.encode("utf-8"), {"ETag": '"v2"'}, "utf-8", "content_type_invalid"),
+])
+def test_successful_200_reports_cache_admission_reason(payload, headers, encoding, reason):
+    state, _, rpc = make_state()
+    state.record_body(URL, "text/calendar", payload, headers, encoding=encoding)
+    state.save_after_success()
+    assert rpc.calls[-1][0] == "community_collector_record_ical_http_metric"
+    assert rpc.calls[-1][1]["p_cache_disposition"] == reason
+    assert rpc.calls[-1][1]["p_body_bytes"] == len(payload)
 
 
 
