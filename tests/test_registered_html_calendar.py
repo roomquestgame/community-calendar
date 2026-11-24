@@ -105,6 +105,16 @@ def test_one_parser_fetches_all_details_and_retains_their_own_native_evidence():
         native.validate_record(row, source())
 
 
+def test_detail_failure_logs_exact_public_url_and_preserves_reason(capsys):
+    fetch = fetcher({ONE: '<html><body><main><h1>Reading</h1></main></body></html>'})
+    with pytest.raises(ValueError, match='html_calendar_event_jsonld_missing'):
+        calendar.collect(source(), fetch, listing=listing((ONE,)))
+    log = capsys.readouterr().out
+    assert 'registered_html_calendar_detail_error' in log
+    assert 'html_calendar_event_jsonld_missing' in log
+    assert ONE in log
+
+
 def test_already_fetched_listing_is_reused_and_duplicate_links_fetch_once():
     fetch = fetcher({ONE: detail(event())})
     [row] = calendar.collect(source(), fetch, listing=listing((ONE, ONE + '/', ONE + '#tickets')))

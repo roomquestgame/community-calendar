@@ -1004,7 +1004,14 @@ def _request_stream(source, url, *, deadline_at, page_limit, detail_limit, total
         check_deadline()
         body = yield (detail_url, 'text/html,application/ld+json')
         check_deadline()
-        for row in _detail(source, body, detail_url):
+        try:
+            detail_rows = _detail(source, body, detail_url)
+        except ValueError as error:
+            print(json.dumps({'event': 'registered_html_calendar_detail_error',
+                              'reason': str(error), 'url': detail_url},
+                             sort_keys=True), flush=True)
+            raise
+        for row in detail_rows:
             key = (row['id'], row['starts_at'])
             if key in records and records[key] != row:
                 _fail('conflicting_event_occurrence')
