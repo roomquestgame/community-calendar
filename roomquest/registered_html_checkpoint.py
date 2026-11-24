@@ -126,7 +126,9 @@ def _source(source):
 def _decode(source, checkpoint, context, *, at=None):
     state = codec.decode(source, checkpoint, at=at)
     if (set(state) != {'started_at', 'events', 'context', 'progress', 'pages'}
-            or state['events'] != [] or state['context'] != context):
+            or state['events'] != [] or not isinstance(state['context'], str)):
+        raise ValueError('html_calendar_capture_invalid')
+    if state['context'] != context:
         raise ValueError('html_calendar_capture_context_changed')
     plan = progress.validate(state['progress'], source_key=source['source_key'],
                              feed_url=source['feed_url'], adapter='html', at=at)
@@ -149,7 +151,8 @@ def _decode(source, checkpoint, context, *, at=None):
 
 
 def collect_chunk(source, fetch, *, checkpoint=None, listing=None,
-                  deadline_at=None, max_requests=MAX_REQUESTS, at=None):
+                  deadline_at=None, max_requests=MAX_REQUESTS, at=None,
+                  replay_terminal_context=False):
     url = _source(source)
     if type(max_requests) is not int or not 1 <= max_requests <= MAX_REQUESTS:
         raise ValueError('html_calendar_capture_invalid')
@@ -164,9 +167,21 @@ def collect_chunk(source, fetch, *, checkpoint=None, listing=None,
             if str(exc) != 'html_calendar_capture_context_changed':
                 raise
             previous = _dispatch_predecessor_context(source)
-            if previous is None:
+            if previous is not None:
+                state = _decode(source, checkpoint, previous, at=at)
+            elif replay_terminal_context and checkpoint.get('phase') == 'stage':
+                # The checkpoint is private, source-bound and CAS-protected.
+                # Validate its complete stored context and receipts, then run
+                # those exact bytes through the current parser. If traversal
+                # has changed, the progress comparison below rejects replay
+                # before a publisher request and the caller rotates capture.
+                stored = codec.decode(source, checkpoint, at=at)
+                stored_context = stored.get('context') if isinstance(stored, dict) else None
+                if not isinstance(stored_context, str):
+                    raise ValueError('html_calendar_capture_invalid')
+                state = _decode(source, checkpoint, stored_context, at=at)
+            else:
                 raise
-            state = _decode(source, checkpoint, previous, at=at)
         # END EVE159_PREDECESSOR_DECODE
     else:
         start = codec.now(at).date()
@@ -256,11 +271,33 @@ def collect_and_save(source, fetch, rpc, pacing, *, category, ticket,
         raise ValueError('fetch_checkpoint_context_missing')
     _source(source)
     saved = read(source, category, ticket, rpc) if saved is None else saved
-    chunk = collect_chunk(source, fetch, checkpoint=saved['checkpoint'],
-                          listing=listing, deadline_at=deadline_at)
+    rotating = False
+    try:
+        chunk = collect_chunk(source, fetch, checkpoint=saved['checkpoint'],
+                              listing=listing, deadline_at=deadline_at)
+    except ValueError as exc:
+        # A completed source capture is immutable evidence for its parser
+        # context, not a permanent block on later parser releases. Start a
+        # new source-bound capture only after an exact context mismatch. The
+        # database CAS separately admits this terminal-to-fresh rollover and
+        # the existing staged/public snapshot remains live until replacement
+        # staging completes. Registration and partial captures never restart.
+        prior = saved['checkpoint']
+        if (category != 'html' or listing is not None
+                or str(exc) != 'html_calendar_capture_context_changed'
+                or not isinstance(prior, dict) or prior.get('phase') != 'stage'):
+            raise
+        try:
+            chunk = collect_chunk(source, fetch, checkpoint=prior,
+                                  deadline_at=deadline_at,
+                                  replay_terminal_context=True)
+        except (ValueError, KeyError, TypeError, OverflowError):
+            chunk = collect_chunk(source, fetch, deadline_at=deadline_at)
+            rotating = True
     if pacing['wait_unbounded']:
         raise ValueError('publisher_wait_requires_review')
-    ack = rpc('community_collector_write_fetch_checkpoint', {
+    ack = rpc(('community_collector_rotate_fetch_checkpoint' if rotating
+               else 'community_collector_write_fetch_checkpoint'), {
         'p_category': category, 'p_ticket': ticket,
         'p_source_key': source['source_key'],
         'p_expected_revision': saved['revision'],
