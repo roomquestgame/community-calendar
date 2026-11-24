@@ -846,6 +846,11 @@ def _detail(source, payload, url):
             if repaired is not None:
                 candidates = repaired
     if not candidates:
+        from roomquest.registered_page_event import multiple_candidates
+        repaired = multiple_candidates(nodes, soup, url, _event, _public_url, _url_key)
+        if repaired is not None:
+            candidates = repaired
+    if not candidates:
         from roomquest.registered_date_only_clock import date_only_event_with_clock
         completed = date_only_event_with_clock(nodes, soup, url, _event)
         if completed == []:
