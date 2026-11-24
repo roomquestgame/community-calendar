@@ -142,14 +142,17 @@ def _local(when, name):
         _fail('spektrix_time_invalid')
     try:
         zone = ZoneInfo(name)
-        dt = datetime.fromisoformat(when).replace(tzinfo=zone)
-        if (dt.utcoffset() != dt.replace(fold=1).utcoffset()
-                or dt.astimezone(timezone.utc).astimezone(zone).replace(tzinfo=None)
-                != dt.replace(tzinfo=None)):
-            _fail('spektrix_time_invalid')
-        return dt
-    except (ValueError, ZoneInfoNotFoundError):
+    except (TypeError, ZoneInfoNotFoundError):
         _fail('spektrix_timezone_invalid')
+    try:
+        dt = datetime.fromisoformat(when).replace(tzinfo=zone)
+    except ValueError:
+        _fail('spektrix_time_invalid')
+    if (dt.utcoffset() != dt.replace(fold=1).utcoffset()
+            or dt.astimezone(timezone.utc).astimezone(zone).replace(tzinfo=None)
+            != dt.replace(tzinfo=None)):
+        _fail('spektrix_time_invalid')
+    return dt
 
 
 def _text(value):
@@ -181,8 +184,13 @@ def project(profile, events, instances, plans, venues, start, end):
     """
     intervals = windows(start, end)
     client = _client(profile.get('client'))
-    if not isinstance(profile.get('publisher_url'), str) or (
-            urlsplit(profile['publisher_url']).scheme != 'https'):
+    if not isinstance(profile.get('publisher_url'), str):
+        _fail('spektrix_publisher_invalid')
+    publisher = urlsplit(profile['publisher_url'])
+    country = profile.get('country')
+    if (publisher.scheme != 'https' or not publisher.hostname
+            or publisher.username or publisher.password
+            or not isinstance(country, str) or not re.fullmatch(r'[A-Z]{2}', country)):
         _fail('spektrix_publisher_invalid')
     events_by_id, instances_by_id, plans_by_id, venues_by_id = {}, {}, {}, {}
     _merge(events_by_id, _items(events, MAX_EVENTS, 'events'), 'events', MAX_EVENTS)
@@ -211,7 +219,14 @@ def project(profile, events, instances, plans, venues, start, end):
         if not venue:
             _fail('spektrix_plan_venue_unresolved')
         details = (profile.get('verified_venues') or {}).get(venue_id) or {}
-        address = _text(venue.get('address')) or _text(details.get('address'))
+        address = _text(venue.get('address'))
+        if not address and details.get('address'):
+            evidence = details.get('evidence_url')
+            url = urlsplit(evidence) if isinstance(evidence, str) else None
+            if (url is None or url.scheme != 'https' or url.hostname != publisher.hostname
+                    or url.username or url.password):
+                _fail('spektrix_venue_evidence_missing')
+            address = _text(details['address'])
         city = _text(details.get('city'))
         if not city and profile.get('home_city') and re.search(
                 r'\b' + re.escape(profile['home_city']) + r'\b', address, re.I):
