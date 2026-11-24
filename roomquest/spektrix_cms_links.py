@@ -44,14 +44,57 @@ def resolve(publisher_url, events, instances, pages):
         _fail('source_invalid')
     schedules = {}
     for item in instances:
-        parent = item.get('event') if isinstance(item, dict) else None
-        event_id = parent.get('id') if isinstance(parent, dict) else None
-        instant = _instant(item.get('startUtc') + 'Z' if (
-            isinstance(item.get('startUtc'), str) and
-            not re.search(r'(?:Z|[+-]\d{2}:\d{2})$', item['startUtc'])
-        ) else item.get('startUtc')) if isinstance(item, dict) else None
+        if not isinstance(item, dict):
+            _fail('instance_invalid')
         if item.get('cancelled') is True or item.get('isOnSale') is False:
             continue
+        parent = item.get('event')
+        event_id = parent.get('id') if isinstance(parent, dict) else None
+        clock = item.get('startUtc')
+        if isinstance(clock, str) and not re.search(
+                r'(?:Z|[+-]\d{2}:\d{2})
+        if not isinstance(event_id, str) or instant is None:
+            _fail('instance_invalid')
+        schedules.setdefault(event_id, set()).add(instant)
+    candidates = {}
+    pages_by_url = {}
+    for page in pages:
+        if not isinstance(page, dict):
+            _fail('identity_invalid')
+        url = page.get('url')
+        parts = urlsplit(url) if isinstance(url, str) else None
+        if (not parts or parts.scheme != 'https' or parts.hostname != origin.hostname
+                or not parts.path or parts.username or parts.password or parts.fragment):
+            _fail('source_conflict')
+        label = _title(page.get('title'))
+        times = page.get('instances')
+        if not label or not isinstance(times, list) or not times or len(times) > 500:
+            continue
+        observed = {_instant(value) for value in times}
+        if None in observed:
+            _fail('identity_invalid')
+        if url in pages_by_url and pages_by_url[url] != (label, observed):
+            _fail('identity_conflict')
+        pages_by_url[url] = (label, observed)
+        for event in events:
+            if not isinstance(event, dict) or not isinstance(event.get('id'), str):
+                _fail('event_invalid')
+            key = event['id']
+            if (_title(event.get('name')) == label
+                    and key in schedules
+                    and observed.intersection(schedules[key])):
+                candidates.setdefault(key, set()).add(url)
+    result = {}
+    for key, links in candidates.items():
+        if len(links) != 1:
+            _fail('link_ambiguous')
+        result[key] = next(iter(links))
+    if len(result.values()) != len(set(result.values())):
+        _fail('event_identity_conflict')
+    return result
+, clock):
+            clock += 'Z'  # Spektrix's documented UTC field may omit Z.
+        instant = _instant(clock)
         if not isinstance(event_id, str) or instant is None:
             _fail('instance_invalid')
         schedules.setdefault(event_id, set()).add(instant)
