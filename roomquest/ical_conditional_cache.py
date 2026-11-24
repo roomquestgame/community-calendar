@@ -46,6 +46,8 @@ class ConditionalCache:
         self._saw_200 = False
         self._invalid_304 = False
         self._reused_304 = False
+        self._cache_disposition = None
+        self._body_bytes = None
 
     def initialize(self):
         try:
@@ -117,6 +119,8 @@ class ConditionalCache:
         self.candidate = dict(prior)
         self._invalid_304 = False
         self._reused_304 = True
+        self._cache_disposition = "reused_304"
+        self._body_bytes = 0
         return body
 
     def record_body(self, url, accept, payload, headers, *, encoding):
@@ -125,21 +129,47 @@ class ConditionalCache:
         # Only this exact pilot feed's successfully decoded HTTP 200 body
         # counts. A non-cacheable 200 is still a full download.
         self._saw_200 = True
-        if not isinstance(payload, bytes) or len(payload) > _MAX_BYTES or not _cacheable(headers):
+        self._body_bytes = len(payload) if isinstance(payload, bytes) else None
+        if not isinstance(payload, bytes):
+            self._cache_disposition = "body_not_bytes"
+            return
+        if len(payload) > _MAX_BYTES:
+            self._cache_disposition = "body_oversize"
+            return
+        vary = {value.strip().lower()
+                for value in headers.get("Vary", "").split(",") if value.strip()}
+        if vary - {"accept", "accept-encoding", "user-agent"}:
+            self._cache_disposition = "vary_unsupported"
+            return
+        if "no-store" in headers.get("Cache-Control", "").lower():
+            self._cache_disposition = "no_store"
             return
         try:
             body = payload.decode("utf-8", errors="strict")
             # Only cache identical decoded bytes. Other encodings or BOM
             # normalization must use the ordinary body/fetch path.
-            if body != payload.decode(encoding, errors="strict") or not _valid_ical(body):
+            if body != payload.decode(encoding, errors="strict"):
+                self._cache_disposition = "encoding_mismatch"
+                return
+            if not _valid_ical(body):
+                self._cache_disposition = "invalid_calendar"
                 return
         except (UnicodeError, LookupError):
+            self._cache_disposition = "decode_error"
             return
         etag = _validator(headers.get("ETag"), etag=True)
         modified = _validator(headers.get("Last-Modified"))
         content_type = headers.get("Content-Type", "")
-        if (etag is None and modified is None) or not (1 <= len(content_type) <= 180):
+        if etag is None and modified is None:
+            self._cache_disposition = ("validator_invalid"
+                                       if headers.get("ETag") is not None
+                                       or headers.get("Last-Modified") is not None
+                                       else "validator_absent")
             return
+        if not (1 <= len(content_type) <= 180):
+            self._cache_disposition = "content_type_invalid"
+            return
+        self._cache_disposition = "admitted"
         self.candidate = {
             "body": body, "body_hash": sha256(payload).hexdigest(),
             "etag": etag, "last_modified": modified,
@@ -213,6 +243,8 @@ class ConditionalCache:
             self.rpc("community_collector_record_ical_http_metric", {
                 **self.context, "p_source_key": self.source["source_key"],
                 "p_outcome": outcome,
+                "p_cache_disposition": self._cache_disposition,
+                "p_body_bytes": self._body_bytes,
             }, timeout=3)
         except Exception:
             _LOG.warning("Optional iCalendar conditional outcome metric failed")
