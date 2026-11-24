@@ -127,5 +127,78 @@ class CaptureTests(unittest.TestCase):
                 category='registration',ticket='test',deadline_at=monotonic()+30)
 
 
+    def test_exact_predecessor_terminal_capture_survives_dispatch_only_change(self):
+        src = admitted()
+        previous = capture._dispatch_predecessor_context(src)
+        self.assertRegex(previous, r'^[a-f0-9]{64}$')
+        self.assertNotEqual(previous, capture.context_hash(src))
+        pages, _ = fixture(1, 2)
+        with patch.object(capture, 'context_hash', return_value=previous):
+            original = capture.collect_chunk(src, lambda u, a: pages[u])
+        self.assertTrue(original['complete'])
+        replay = capture.collect_chunk(src,
+            lambda u, a: self.fail('unexpected publisher request'),
+            checkpoint=original['checkpoint'])
+        self.assertEqual(replay['events'], original['events'])
+        self.assertEqual(replay['checkpoint'], original['checkpoint'])
+
+    def test_negotiated_category_claim_replays_transferred_capture_and_stages(self):
+        from roomquest import category_worker, preview_worker
+        from roomquest.registered_native_content import validate_record
+        src = dict(admitted(), source_id=999, action='collect')
+        pages, _ = fixture(1, 2)
+        terminal = capture.collect_chunk(src, lambda u, a: pages[u])['checkpoint']
+        calls, staged = [], []
+        ticket = 'fixture-ticket'
+
+        def rpc(method, args, **kwargs):
+            calls.append(method)
+            if method == 'community_collector_claim_category':
+                self.assertEqual(args, {'p_category': 'html', 'p_ticket': ticket})
+                return src
+            if method == 'community_collector_read_fetch_checkpoint':
+                self.assertEqual(args, {'p_category': 'html', 'p_ticket': ticket,
+                                        'p_source_key': src['source_key']})
+                return {'revision': 1, 'checkpoint': terminal}
+            if method == 'community_collector_write_fetch_checkpoint':
+                self.assertEqual(args['p_expected_revision'], 1)
+                self.assertEqual(args['p_checkpoint'], terminal)
+                self.assertEqual(args['p_ticket'], ticket)
+                self.assertEqual(args['p_category'], 'html')
+                return {'checkpoint_saved': True, 'revision': 2}
+            if method == 'community_collector_record_staged_events':
+                self.assertEqual(args['p_registered_native_content_version'], 1)
+                for row in args['p_events']:
+                    validate_record(row, src)
+                staged.extend(args['p_events'])
+                return len(args['p_events'])
+            if method == 'community_collector_record_preview_v3':
+                self.assertIsNone(args['p_error'])
+                self.assertEqual(args['p_future_count'], len(staged))
+                return None
+            if method == 'community_collector_publish_category':
+                return {'outcome': 'continued'}
+            if method == 'community_collector_finish_category':
+                self.assertEqual(args['p_outcome'], 'complete')
+                return True
+            self.fail(method)
+
+        with patch.object(category_worker, 'supabase_rpc', side_effect=rpc), \
+                patch.object(preview_worker, 'supabase_rpc', side_effect=rpc), \
+                patch.object(preview_worker, 'fetch_publisher',
+                             side_effect=AssertionError('unexpected publisher GET')):
+            result = category_worker.collect_category('html', ticket)
+        self.assertEqual(result['complete'], 1)
+        self.assertEqual(result['failed'], 0)
+        self.assertEqual(result['staged'], 2)
+        self.assertEqual(calls, ['community_collector_claim_category',
+                                 'community_collector_read_fetch_checkpoint',
+                                 'community_collector_write_fetch_checkpoint',
+                                 'community_collector_record_staged_events',
+                                 'community_collector_record_preview_v3',
+                                 'community_collector_publish_category',
+                                 'community_collector_finish_category'])
+
+
 if __name__=='__main__':
     unittest.main()
