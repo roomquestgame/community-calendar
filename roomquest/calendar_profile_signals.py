@@ -30,3 +30,18 @@ def unsupported_calendar_profile(html):
             'public.tockify.com/browser/embed.js' in fragment):
         return 'tockify_adapter_needed'
     return None
+
+
+def annotate_unsupported(result, html):
+    """Add a platform-specific reason to an existing technical review only.
+
+    Call after the normal native feed and HTML collection recovery. Preserve
+    source scope, access denials, and all other outcome/hold categories.
+    """
+    if (not isinstance(result, dict) or result.get('p_outcome') != 'review'
+            or result.get('p_reason') not in ('html_adapter_needed', 'no_reusable_calendar')):
+        return result
+    reason = unsupported_calendar_profile(html)
+    if not reason:
+        return result
+    return dict(result, p_reason=reason, p_type='html')
