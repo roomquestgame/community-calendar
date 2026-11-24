@@ -113,7 +113,9 @@ class CalendarLinks(HTMLParser):
         if is_tec_collection(url):
             self.links[url] = 'wordpress'
         elif (webcal or attrs.get('type') == 'text/calendar' or parts.path.lower().endswith('.ics')
-              or query.get('ical') == ['1'] or (parts.path.lower().endswith('/icalendar.aspx')
+              or query.get('ical') == ['1']
+              or __import__('roomquest.wordpress_capabilities', fromlist=['publisher_linked_ical_subscription']).publisher_linked_ical_subscription(url)
+              or (parts.path.lower().endswith('/icalendar.aspx')
               and query.get('feed') == ['calendar']) or parts.path.lower().endswith('/ical_subscribe.php')):
             self.links[url] = 'ical'
 
