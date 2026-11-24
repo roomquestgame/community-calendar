@@ -20,6 +20,7 @@ FULL_RANGE = re.compile(r'(\d{1,2})(?:st|nd|rd|th)?\s+([A-Za-z]+)\s+(20\d\d)\s*�
                         + CLOCK + r')\s*[-–—]\s*(' + CLOCK + r')\Z', re.I)
 UK_POSTCODE = re.compile(r'[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}\Z', re.I)
 TABLE_DAY = re.compile(r'([A-Za-z]+)\s+(\d{1,2})(?:st|nd|rd|th)?\s+([A-Za-z]+)\s+(20\d\d)\Z', re.I)
+DURATION = re.compile(r'(?:(\d{1,2})\s*hours?)?(?:\s*(\d{1,3})\s*minutes?)?\Z', re.I)
 
 
 def _plain(value):
@@ -220,10 +221,28 @@ def _visible_occurrences(event, root):
     first, last = event.get('startDate'), event.get('endDate')
     if (not isinstance(first, str) or not LOCAL_STAMP.fullmatch(first)
             or not isinstance(last, str) or not LOCAL_STAMP.fullmatch(last)
-            or starts[0].replace(tzinfo=None) != datetime.fromisoformat(first)
-            or starts[-1].replace(tzinfo=None) != datetime.fromisoformat(last)):
+            or starts[0].replace(tzinfo=None) != datetime.fromisoformat(first)):
         raise ValueError('html_calendar_clock_conflict')
-    return starts
+    boundary = datetime.fromisoformat(last)
+    duration = None
+    if starts[-1].replace(tzinfo=None) != boundary:
+        values = []
+        for dt in root.select('dt'):
+            if _title(dt.get_text(' ', strip=True)).rstrip(':') not in ('length', 'duration'):
+                continue
+            dd = dt.find_next_sibling('dd')
+            if dd is not None:
+                values.append(_plain(dd.get_text(' ', strip=True)))
+        if len(set(values)) != 1 or not values:
+            raise ValueError('html_calendar_clock_conflict')
+        match = DURATION.fullmatch(values[0])
+        if not match or not any(match.groups()):
+            raise ValueError('html_calendar_clock_conflict')
+        duration = timedelta(hours=int(match[1] or 0), minutes=int(match[2] or 0))
+        if (duration <= timedelta(0) or duration > timedelta(days=1)
+                or (starts[-1] + duration).replace(tzinfo=None) != boundary):
+            raise ValueError('html_calendar_clock_conflict')
+    return [(start, start + duration if duration else None) for start in starts]
 
 
 def candidates(nodes, soup, url, is_event, public_url, url_key):
@@ -285,9 +304,12 @@ def candidates(nodes, soup, url, is_event, public_url, url_key):
         occurrences = _visible_occurrences(event, root)
         if occurrences is not None:
             rows = []
-            for starts in occurrences:
+            for starts, ends in occurrences:
                 row = dict(fixed, startDate=starts.isoformat())
-                row.pop('endDate', None)
+                if ends is None:
+                    row.pop('endDate', None)
+                else:
+                    row['endDate'] = ends.isoformat()
                 rows.append(row)
             return rows
         starts, ends = _visible_range(event, headings[0], place)
