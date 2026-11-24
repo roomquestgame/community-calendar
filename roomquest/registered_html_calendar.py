@@ -381,6 +381,77 @@ def _loadomatic_pagination(soup, url, collection_url, previous_pages):
     return (page_url(current + 1) if current < total else None), required
 
 
+def _hnm_ajax_pagination(soup, url, collection_url, previous_pages):
+    """Read the HNM theme's declared, unfiltered WordPress AJAX pager.
+
+    The theme publishes its same-origin AJAX endpoint in an inline JSON object
+    and a single numbered Load More control. Subsequent responses use the same
+    exact endpoint and either declare the next sequential page or omit the
+    pager to prove the terminal page. No hostname or publisher is privileged.
+    """
+    triggers = soup.select('.paginate > a.btn-load[data-container][data-next-page]')
+    if not triggers:
+        return None
+    if len(triggers) != 1 or not collection_url:
+        _fail('html_calendar_pagination_ambiguous')
+    trigger = triggers[0]
+    if (trigger.get('href') not in ('', None)
+            or not PAGINATION_LABEL.fullmatch(trigger.get_text(' ', strip=True))):
+        _fail('html_calendar_pagination_needed')
+    container = trigger.get('data-container', '')
+    if (not re.fullmatch(r'[A-Za-z][\w-]{0,80}', container)
+            or len(soup.select('.' + container)) != 1):
+        _fail('html_calendar_pagination_needed')
+    try:
+        declared_next = int(trigger['data-next-page'])
+    except (TypeError, ValueError):
+        _fail('html_calendar_pagination_needed')
+    if declared_next < 2 or declared_next > MAX_LISTING_PAGES:
+        _fail('html_calendar_pagination_needed')
+
+    collection = urlsplit(collection_url)
+    current = urlsplit(url)
+    if (collection.scheme, collection.netloc) != (current.scheme, current.netloc) \
+            or collection.query or collection.fragment:
+        _fail('html_calendar_pagination_scope_conflict')
+    endpoint = urlunsplit((collection.scheme, collection.netloc,
+                           '/wp-admin/admin-ajax.php', '', ''))
+    if _url_key(url) == _url_key(collection_url):
+        configs = []
+        pattern = re.compile(r'\bvar\s+HNM\s*=\s*', re.I)
+        for script in soup.select('script:not([src])'):
+            raw = script.string or ''
+            match = pattern.search(raw)
+            if match:
+                try:
+                    configs.append(json.JSONDecoder().raw_decode(raw[match.end():])[0])
+                except (ValueError, TypeError):
+                    _fail('html_calendar_pagination_needed')
+        theme_scripts = []
+        for script in soup.select('script[src]'):
+            target = _public_url(script.get('src'), url)
+            if target and urlsplit(target).path.endswith(
+                    '/wp-content/themes/horniman-theme/assets/js/main.min.js'):
+                theme_scripts.append(target)
+        if (len(configs) != 1 or not isinstance(configs[0], dict)
+                or len(theme_scripts) != 1
+                or configs[0].get('ajaxurl') != endpoint
+                or configs[0].get('baseurl') != urlunsplit(
+                    (collection.scheme, collection.netloc, '', '', ''))
+                or declared_next != 2 or previous_pages):
+            _fail('html_calendar_pagination_needed')
+    else:
+        query = parse_qsl(current.query, keep_blank_values=True)
+        if (current.path != '/wp-admin/admin-ajax.php'
+                or query != [('action', 'getEvents'),
+                             ('page', str(len(previous_pages) + 1))]
+                or declared_next != len(previous_pages) + 2):
+            _fail('html_calendar_pagination_scope_conflict')
+    next_url = endpoint + '?' + urlencode(
+        [('action', 'getEvents'), ('page', str(declared_next))])
+    return next_url, {_url_key(next_url)}, trigger
+
+
 def _pagination(soup, url, *, collection_url=None, previous_pages=()):
     root = _content(soup)
     # A FacetWP template with an otherwise empty client-side pager can be
@@ -419,6 +490,11 @@ def _pagination(soup, url, *, collection_url=None, previous_pages=()):
         required.update(declared_pages)
         if next_page:
             forward[_url_key(next_page)] = next_page
+    hnm_ajax = _hnm_ajax_pagination(soup, url, collection_url, previous_pages)
+    if hnm_ajax is not None:
+        next_page, declared_pages, _ = hnm_ajax
+        required.update(declared_pages)
+        forward[_url_key(next_page)] = next_page
     for node in soup.select('a[rel],link[rel]'):
         rel = node.get('rel') or []
         if isinstance(rel, str):
@@ -486,6 +562,8 @@ def _pagination(soup, url, *, collection_url=None, previous_pages=()):
                 if not target or _url_key(target) not in previous:
                     _fail('html_calendar_pagination_needed')
                 continue
+        if hnm_ajax is not None and node is hnm_ajax[2]:
+            continue
         # Carbonhouse initially disables its offset-backed Load More button
         # while JavaScript initializes. Disabled does not prove the final page.
         if dynamic_more and (disabled or not supported):
