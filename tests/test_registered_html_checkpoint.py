@@ -76,6 +76,98 @@ class CaptureTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,'html_calendar_capture_context_changed'):
                 capture.collect_chunk(admitted(),lambda u,a:self.fail('network called'),checkpoint=first['checkpoint'])
 
+    def test_source_collection_replays_completed_bytes_after_compatible_parser_change(self):
+        pages, order=fixture(2,2)
+        src=admitted()
+        with patch.object(capture,'context_hash',return_value='1'*64):
+            terminal=capture.collect_chunk(src,lambda u,a:pages[u])['checkpoint']
+        state={'revision':7,'checkpoint':terminal}
+        calls=[]
+
+        def fetch(url,accept):
+            calls.append(url)
+            return pages[url]
+
+        def rpc(method,args,**kwargs):
+            if method.endswith('read_fetch_checkpoint'):
+                return deepcopy(state)
+            self.assertEqual(method,'community_collector_write_fetch_checkpoint')
+            self.assertEqual(args['p_expected_revision'],7)
+            self.assertEqual(args['p_checkpoint'],terminal)
+            return {'checkpoint_saved':True,'revision':8}
+
+        pacing={'crawl_delay_seconds':1,'retry_after_seconds':0,'wait_unbounded':False}
+        with patch.object(capture,'context_hash',return_value='2'*64), \
+                patch.object(capture,'_dispatch_predecessor_context',return_value=None):
+            result=capture.collect_and_save(src,fetch,rpc,pacing,category='html',
+                ticket='fresh-source-capture',deadline_at=monotonic()+30)
+        self.assertTrue(result['complete'])
+        self.assertEqual(len(result['events']),4)
+        self.assertEqual(calls,[])
+
+    def test_source_collection_rotates_terminal_capture_when_traversal_changed(self):
+        pages,order=fixture(2,2)
+        src=admitted()
+        with patch.object(capture,'context_hash',return_value='5'*64):
+            terminal=capture.collect_chunk(src,lambda u,a:pages[u])['checkpoint']
+        calls=[]
+        original_resume=capture.resume_capture
+
+        def changed_traversal(source,prefix,**kwargs):
+            if prefix:
+                raise ValueError('html_calendar_capture_invalid')
+            return original_resume(source,prefix,**kwargs)
+
+        def fetch(url,accept):
+            calls.append(url)
+            return pages[url]
+
+        def rpc(method,args,**kwargs):
+            if method.endswith('read_fetch_checkpoint'):
+                return {'revision':4,'checkpoint':terminal}
+            self.assertEqual(method,'community_collector_rotate_fetch_checkpoint')
+            self.assertEqual(args['p_expected_revision'],4)
+            self.assertNotEqual(args['p_checkpoint'],terminal)
+            return {'checkpoint_saved':True,'revision':5}
+
+        pacing={'crawl_delay_seconds':1,'retry_after_seconds':0,'wait_unbounded':False}
+        with patch.object(capture,'context_hash',return_value='6'*64), \
+                patch.object(capture,'_dispatch_predecessor_context',return_value=None), \
+                patch.object(capture,'resume_capture',side_effect=changed_traversal):
+            result=capture.collect_and_save(src,fetch,rpc,pacing,category='html',
+                ticket='rotated-source-capture',deadline_at=monotonic()+30)
+        self.assertTrue(result['complete'])
+        self.assertEqual(calls,order)
+
+    def test_context_change_never_restarts_registration_or_partial_capture(self):
+        pages,order=fixture(2,2)
+        src=admitted()
+        pacing={'crawl_delay_seconds':1,'retry_after_seconds':0,'wait_unbounded':False}
+        for category,complete in [('registration',True),('html',False)]:
+            with self.subTest(category=category,complete=complete):
+                with patch.object(capture,'context_hash',return_value='3'*64):
+                    prior=capture.collect_chunk(src,lambda u,a:pages[u],
+                        max_requests=8 if complete else 1)['checkpoint']
+                def rpc(method,args,**kwargs):
+                    if method.endswith('read_fetch_checkpoint'):
+                        return {'revision':1,'checkpoint':prior}
+                    self.fail('stale capture must not be overwritten')
+                with patch.object(capture,'context_hash',return_value='4'*64), \
+                        patch.object(capture,'_dispatch_predecessor_context',return_value=None), \
+                        self.assertRaisesRegex(ValueError,'html_calendar_capture_context_changed'):
+                    capture.collect_and_save(src,lambda u,a:self.fail('network called'),rpc,pacing,
+                        category=category,ticket='preserve-prior',deadline_at=monotonic()+30)
+
+    def test_malformed_state_is_not_treated_as_context_rotation(self):
+        pages,order=fixture(1,1)
+        src=admitted()
+        checkpoint=capture.collect_chunk(src,lambda u,a:pages[u])['checkpoint']
+        state=codec.decode(src,checkpoint)
+        state['events']=[{'forged':True}]
+        invalid=codec.encode(src,state,phase='stage',cursor=1,count=1)
+        with self.assertRaisesRegex(ValueError,'html_calendar_capture_invalid'):
+            capture.collect_chunk(src,lambda u,a:self.fail('network called'),checkpoint=invalid)
+
     def test_expired_and_cross_source_rejected(self):
         pages, order=fixture(2,2)
         now=datetime.now(timezone.utc)
@@ -127,18 +219,18 @@ class CaptureTests(unittest.TestCase):
                 category='registration',ticket='test',deadline_at=monotonic()+30)
 
 
-    def test_exact_predecessor_terminal_capture_survives_dispatch_only_change(self):
+    def test_reviewed_predecessor_terminal_capture_survives_dispatch_only_change(self):
         src = admitted()
-        previous = capture._dispatch_predecessor_context(src)
-        self.assertRegex(previous, r'^[a-f0-9]{64}$')
+        previous = '7'*64
         self.assertNotEqual(previous, capture.context_hash(src))
         pages, _ = fixture(1, 2)
         with patch.object(capture, 'context_hash', return_value=previous):
             original = capture.collect_chunk(src, lambda u, a: pages[u])
         self.assertTrue(original['complete'])
-        replay = capture.collect_chunk(src,
-            lambda u, a: self.fail('unexpected publisher request'),
-            checkpoint=original['checkpoint'])
+        with patch.object(capture,'_dispatch_predecessor_context',return_value=previous):
+            replay = capture.collect_chunk(src,
+                lambda u, a: self.fail('unexpected publisher request'),
+                checkpoint=original['checkpoint'])
         self.assertEqual(replay['events'], original['events'])
         self.assertEqual(replay['checkpoint'], original['checkpoint'])
 
