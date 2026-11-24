@@ -452,15 +452,33 @@ def current_snapshot():
     return _capture.get()
 
 
+def _fetch_only_incremental_claim(source, collection_context):
+    """The future exact fetch-only v2 Spektrix claim; never admit legacy checkpoints.
+
+    The DB must independently authorize the exact source/rights/profile,
+    checkpoint completion, policy and lease. No backend currently issues this.
+    """
+    return (isinstance(collection_context, dict)
+            and collection_context.get("p_category") == "jsonld"
+            and source.get("action") == "collect"
+            and source.get("kind") == "json"
+            and source.get("platform_adapter") == "spektrix"
+            and type(source.get("fetch_checkpoint_version")) is int
+            and source["fetch_checkpoint_version"] == 2)
+
+
 @contextmanager
 def capture_snapshot(source, collection_context):
     claim = source.get("incremental_snapshot")
     snapshot = None
-    if (isinstance(collection_context, dict) and collection_context.get("p_category") in _CATEGORIES
+    fetch_only = _fetch_only_incremental_claim(source, collection_context)
+    if (isinstance(collection_context, dict)
+            and (collection_context.get("p_category") in _CATEGORIES or fetch_only)
             and isinstance(collection_context.get("p_ticket"), str) and collection_context["p_ticket"]
             and isinstance(claim, dict) and type(claim.get("version")) is int and claim["version"] == VERSION
             and isinstance(claim.get("policy_context"), str) and _HASH.fullmatch(claim["policy_context"])
-            and not source.get("fetch_checkpoint_version") and not source.get("civic_contract_version")):
+            and (not source.get("fetch_checkpoint_version") or fetch_only)
+            and not source.get("civic_contract_version")):
         try:
             snapshot = Snapshot(source, collection_context, claim)
         except (KeyError, ValueError, TypeError, OSError):

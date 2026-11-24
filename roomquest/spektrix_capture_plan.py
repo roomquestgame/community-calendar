@@ -63,10 +63,10 @@ def _read_base(source, profile, state):
     return events, instances, venues, expected
 
 
-def plan_tasks(source, profile, envelope, *, at=None):
+def plan_tasks(source, profile, envelope, *, context_hash, at=None):
     """Only return plan URLs actually referenced by complete API instances."""
-    state = store.decode(source, envelope, at=at)
-    if (state['phase'] != 'fetch' or state['progress']['terminal_verified']
+    state = store.decode(source, envelope, context_hash=context_hash, at=at)
+    if (state['progress']['terminal_verified']
             or state['progress']['cursor'] != len(state['progress']['tasks'])):
         _fail('base_manifest_incomplete')
     _, instances, _, expected = _read_base(source, profile, state)
@@ -80,14 +80,15 @@ def plan_tasks(source, profile, envelope, *, at=None):
             for identity in sorted(plans)]
 
 
-def project(source, profile, envelope, *, at=None, cms_pages=None):
+def project(source, profile, envelope, *, context_hash, at=None, cms_pages=None):
     """Project a complete authenticated *shape* of pages, not a staged result.
 
     The caller must separately verify publisher access, store CAS, the active
-    worker lease, event links and actual staging receipts before publication.
+    worker lease and event links. The common incremental collector owns
+    downstream staging and publication receipts.
     """
-    state = store.decode(source, envelope, at=at)
-    if state['phase'] != 'project':
+    state = store.decode(source, envelope, context_hash=context_hash, at=at)
+    if not state['progress']['terminal_verified']:
         _fail('not_complete')
     events, instances, venues, expected = _read_base(source, profile, state)
     client = _client(source, profile)

@@ -1,57 +1,42 @@
-"""Compressed source-bound capture state for multi-run Feedzilla collectors.
+"""Fetch-only evidence for bounded multipage collection.
 
-This is the Python persistence envelope, NOT a database-backed worker or an
-approval to publish. The database must separately enforce source ownership,
-leases, CAS revision, publisher pacing, stage acknowledgements and rights.
-
-An incomplete fetch prefix can be resumed, but only a verified terminal page
-can enter projection. Publication is not permitted until every projected
-record has a server-acknowledged stage receipt.
+Uses the existing compressed checkpoint codec. The shared incremental
+snapshot owns event hashes, staging acknowledgements, withdrawals and
+publication. There are deliberately no event rows or staging cursors here.
+No production claim admits this new envelope format yet.
 """
-import base64
-import binascii
 from copy import deepcopy
-from datetime import datetime, timezone
 import hashlib
 import json
+import re
 import zlib
 
 from roomquest import feedzilla_pagination_checkpoint as progress
+from roomquest import national_feed_checkpoint as codec
 
-VERSION = 1
-MAX_ENVELOPE = 850_000
-MAX_EXPANDED = 12_000_000
+VERSION = 2
+ADAPTER = 'feedzilla_fetch_v2'
+MAX_ENVELOPE = codec.MAX_BYTES
 MAX_PAGE_BYTES = 3_000_000
-MAX_RECORDS = 4500
-MAX_STAGE_BATCH = 20
-_ALLOWED_PHASES = {'fetch', 'project', 'stage', 'done'}
+_HASH = re.compile(r'[a-f0-9]{64}\Z')
 
 
 def _fail(reason='invalid'):
     raise ValueError('feedzilla_capture_' + reason)
 
 
-def _raw(obj):
-    try:
-        return json.dumps(obj, sort_keys=True, ensure_ascii=True,
-                          separators=(',', ':')).encode('utf-8')
-    except (TypeError, ValueError, RecursionError):
-        _fail()
-
-
-def _validate_state(state, *, source_key=None, feed_url=None, adapter=None, at=None):
-    if not isinstance(state, dict) or set(state) != {
-            'progress', 'pages', 'phase', 'records', 'stage_cursor'}:
-        _fail()
+def _validate_state(source, state, context_hash, *, at=None):
+    if (not isinstance(source, dict) or not isinstance(state, dict)
+            or set(state) != {'progress', 'pages', 'context_hash'}
+            or not isinstance(context_hash, str) or not _HASH.fullmatch(context_hash)
+            or state['context_hash'] != context_hash):
+        _fail('context_invalid')
     cursor = state['progress']
-    progress.validate(cursor, source_key=source_key, feed_url=feed_url,
-                      adapter=adapter, at=at)
-    pages, phase, records, stage = (state[key] for key in (
-        'pages', 'phase', 'records', 'stage_cursor'))
-    if (not isinstance(phase,str) or phase not in _ALLOWED_PHASES or not isinstance(pages, list)
-            or len(pages) != cursor['cursor']
-            or not isinstance(records, list) or len(records) > MAX_RECORDS
-            or type(stage) is not int or not 0 <= stage <= len(records)):
+    progress.validate(cursor, source_key=source['source_key'],
+                      feed_url=source['feed_url'],
+                      adapter=source['platform_adapter'], at=at)
+    pages = state['pages']
+    if not isinstance(pages, list) or len(pages) != cursor['cursor']:
         _fail()
     for i, page in enumerate(pages):
         if (not isinstance(page, dict) or set(page) != {'url', 'body'}
@@ -61,164 +46,90 @@ def _validate_state(state, *, source_key=None, feed_url=None, adapter=None, at=N
                 or hashlib.sha256(page['body'].encode('utf-8')).hexdigest()
                    != cursor['receipts'][i]['sha256']):
             _fail('receipt_invalid')
-    if (phase == 'fetch' and (cursor['terminal_verified'] or records or stage)
-            or phase == 'project' and (not progress.complete(cursor, at=at)
-                                       or records or stage)
-            or phase in ('stage', 'done') and not progress.complete(cursor, at=at)
-            or phase == 'done' and stage != len(records)):
-        _fail('phase_invalid')
-    if any(not isinstance(row, dict) or not row.get('id')
-           or not row.get('starts_at') or not row.get('event_url')
-           for row in records):
-        _fail('records_invalid')
-    if len({(row['id'],row['starts_at']) for row in records}) != len(records):
-        _fail('duplicate_record')
-    if len(_raw(state)) > MAX_EXPANDED:
-        _fail('size_limit')
     return state
 
 
-def new(source, tasks, *, allowed_hosts, start, end, at=None):
-    """A new 60-day-or-shorter scoped fetch plan with no certified records."""
-    if not isinstance(source, dict):
-        _fail('source_invalid')
+def new(source, tasks, *, allowed_hosts, start, end, context_hash, at=None):
     cursor = progress.new(source['source_key'], source['feed_url'],
                           source['platform_adapter'], tasks,
-                          allowed_hosts=allowed_hosts,start=start,end=end,at=at)
-    state={'progress':cursor,'pages':[],'phase':'fetch','records':[],
-           'stage_cursor':0}
-    _validate_state(state, source_key=source['source_key'],
-                    feed_url=source['feed_url'], adapter=source['platform_adapter'],at=at)
-    return encode(source,state,at=at)
+                          allowed_hosts=allowed_hosts, start=start, end=end, at=at)
+    return encode(source, {'progress': cursor, 'pages': [],
+                           'context_hash': context_hash},
+                  context_hash=context_hash, at=at)
 
 
-def encode(source, state, *, at=None):
-    """Bounded immutable checkpoint envelope; DB still owns the CAS revision."""
-    if not isinstance(source,dict):
-        _fail('source_invalid')
-    _validate_state(state,source_key=source.get('source_key'),
-                    feed_url=source.get('feed_url'),adapter=source.get('platform_adapter'),at=at)
-    raw = _raw(state)
-    compressed = zlib.compress(raw, 9)
-    envelope = {
-        'version': VERSION,
+def encode(source, state, *, context_hash, at=None):
+    _validate_state(source, state, context_hash, at=at)
+    cursor = state['progress']
+    result = {
+        'version': VERSION, 'adapter': ADAPTER,
         'source_key': source['source_key'], 'feed_url': source['feed_url'],
-        'adapter': source['platform_adapter'],
-        'started_at': state['progress']['started_at'],
-        'encoding': 'zlib+base64',
-        'uncompressed_bytes': len(raw),
-        'sha256': hashlib.sha256(raw).hexdigest(),
-        'payload': base64.b64encode(compressed).decode('ascii')
+        'context_hash': context_hash, 'started_at': cursor['started_at'],
+        'window_start': cursor['window_start'], 'window_end': cursor['window_end'],
+        'cursor': cursor['cursor'], 'manifest_count': len(cursor['tasks']),
+        'terminal_verified': cursor['terminal_verified'],
+        'manifest_hash': cursor['plan_sha256'],
+        **codec.encode_payload(state),
     }
-    if len(_raw(envelope)) > MAX_ENVELOPE:
+    if len(json.dumps(result).encode()) > MAX_ENVELOPE:
         _fail('size_limit')
-    return envelope
+    return result
 
 
-def decode(source, envelope, *, at=None):
-    """Reject forged, stale, oversized, cross-source or corrupted checkpoints."""
-    if not isinstance(source,dict) or not isinstance(envelope,dict) or set(envelope) != {
-            'version','source_key','feed_url','adapter','started_at',
-            'encoding','uncompressed_bytes','sha256','payload'}:
-        _fail()
-    if (type(envelope['version']) is not int or envelope['version'] != VERSION
+def decode(source, envelope, *, context_hash, at=None):
+    if (not isinstance(source, dict) or not isinstance(envelope, dict)
+            or set(envelope) != {'version', 'adapter', 'source_key', 'feed_url',
+                'context_hash', 'started_at', 'window_start', 'window_end',
+                'cursor', 'manifest_count', 'terminal_verified', 'manifest_hash',
+                'encoding', 'uncompressed_bytes', 'sha256', 'payload'}
+            or type(envelope['version']) is not int or envelope['version'] != VERSION
+            or envelope['adapter'] != ADAPTER
             or envelope['source_key'] != source.get('source_key')
             or envelope['feed_url'] != source.get('feed_url')
-            or envelope['adapter'] != source.get('platform_adapter')
-            or envelope['encoding'] != 'zlib+base64'
-            or type(envelope['uncompressed_bytes']) is not int
-            or not 0 < envelope['uncompressed_bytes'] <= MAX_EXPANDED
-            or not isinstance(envelope['payload'],str)
-            or len(_raw(envelope)) > MAX_ENVELOPE):
-        _fail()
+            or envelope['context_hash'] != context_hash
+            or type(envelope['cursor']) is not int
+            or type(envelope['manifest_count']) is not int
+            or type(envelope['terminal_verified']) is not bool):
+        _fail('context_invalid')
     try:
-        binary=base64.b64decode(envelope['payload'],validate=True)
-        decompressor=zlib.decompressobj()
-        raw=decompressor.decompress(binary,MAX_EXPANDED+1)
-    except (ValueError, TypeError, zlib.error, binascii.Error, UnicodeDecodeError, RecursionError):
-        _fail()
-    if (len(raw) > MAX_EXPANDED or decompressor.unconsumed_tail
-            or decompressor.unused_data or not decompressor.eof
-            or len(raw) != envelope['uncompressed_bytes']
-            or hashlib.sha256(raw).hexdigest() != envelope['sha256']):
-        _fail('checksum')
-    try:
-        state=json.loads(raw)
-    except (ValueError, TypeError, UnicodeDecodeError, RecursionError):
-        _fail()
-    _validate_state(state,source_key=source['source_key'],
-                    feed_url=source['feed_url'],adapter=source['platform_adapter'],at=at)
-    if envelope['started_at'] != state['progress']['started_at']:
+        state = codec.decode_payload(envelope)
+    except (ValueError, TypeError, KeyError, UnicodeError, zlib.error, RecursionError) as exc:
+        _fail('checksum' if str(exc) == 'national_feed_checkpoint_checksum' else 'invalid')
+    _validate_state(source, state, context_hash, at=at)
+    cursor = state['progress']
+    if (any(envelope[key] != cursor[key] for key in
+            ('started_at', 'window_start', 'window_end', 'cursor', 'terminal_verified'))
+            or envelope['manifest_count'] != len(cursor['tasks'])
+            or envelope['manifest_hash'] != cursor['plan_sha256']):
         _fail('identity_changed')
     return state
 
 
-
-def add_verified_requests(source, envelope, urls, *, scope_verified=False, at=None):
-    """Append another evidenced API phase without releasing prior page receipts.
-
-    The caller verifies request identities against the *captured* publisher
-    response, not a guessed calendar URL. The immutable source and fetch
-    manifest remain bound to the original lease/CAS state.
-    """
-    state=decode(source,envelope,at=at)
-    if state['phase'] != 'fetch':
-        _fail('phase_invalid')
-    result=deepcopy(state)
-    result['progress']=progress.extend_verified_tasks(
+def add_verified_requests(source, envelope, urls, *, context_hash,
+                          scope_verified=False, at=None):
+    state = decode(source, envelope, context_hash=context_hash, at=at)
+    result = deepcopy(state)
+    result['progress'] = progress.extend_verified_tasks(
         state['progress'], urls, scope_verified=scope_verified, at=at)
-    return encode(source,result,at=at)
+    return encode(source, result, context_hash=context_hash, at=at)
 
 
-def acknowledge_page(source, envelope, url, body, *, next_link=None,
+def acknowledge_page(source, envelope, url, body, *, context_hash, next_link=None,
                      next_link_scope_verified=False, terminal=False, at=None):
-    """Acknowledge precisely one publisher-validated page and its content."""
-    state=decode(source,envelope,at=at)
-    if (state['phase'] != 'fetch' or not isinstance(body,str)
-            or len(body.encode('utf-8')) > MAX_PAGE_BYTES):
+    state = decode(source, envelope, context_hash=context_hash, at=at)
+    if (not isinstance(body, str) or len(body.encode('utf-8')) > MAX_PAGE_BYTES):
         _fail('page_invalid')
-    cursor=progress.advance(
-        state['progress'],url,hashlib.sha256(body.encode('utf-8')).hexdigest(),
-        next_link=next_link,next_link_scope_verified=next_link_scope_verified,
-        terminal=terminal,at=at)
-    output=deepcopy(state)
-    output['progress']=cursor
-    output['pages'].append({'url':url,'body':body})
-    if progress.complete(cursor,at=at):
-        output['phase']='project'
-    return encode(source,output,at=at)
+    cursor = progress.advance(
+        state['progress'], url, hashlib.sha256(body.encode('utf-8')).hexdigest(),
+        next_link=next_link, next_link_scope_verified=next_link_scope_verified,
+        terminal=terminal, at=at)
+    result = deepcopy(state)
+    result['progress'] = cursor
+    result['pages'].append({'url': url, 'body': body})
+    return encode(source, result, context_hash=context_hash, at=at)
 
 
-def prepare_staging(source, envelope, rows, *, at=None):
-    """Only a fully verified manifest may become a stageable record list."""
-    state=decode(source,envelope,at=at)
-    if (state['phase'] != 'project' or not isinstance(rows,list)
-            or len(rows) > MAX_RECORDS):
-        _fail('stage_not_ready')
-    output=deepcopy(state)
-    output['records']=deepcopy(rows)
-    output['stage_cursor']=0
-    output['phase']='done' if not rows else 'stage'
-    return encode(source,output,at=at)
-
-
-def acknowledge_stage(source, envelope, confirmed_count, *, at=None):
-    """Advance *after* matching records were acknowledged by the DB stage RPC."""
-    state=decode(source,envelope,at=at)
-    if (state['phase'] != 'stage' or type(confirmed_count) is not int
-            or not 1 <= confirmed_count <= MAX_STAGE_BATCH
-            or state['stage_cursor']+confirmed_count > len(state['records'])):
-        _fail('stage_receipt_invalid')
-    output=deepcopy(state)
-    output['stage_cursor']+=confirmed_count
-    if output['stage_cursor'] == len(output['records']):
-        output['phase']='done'
-    return encode(source,output,at=at)
-
-
-def ready_to_publish(source, envelope, *, at=None):
-    """The *Python* readiness gate; DB must also verify staged acknowledgements."""
-    state=decode(source,envelope,at=at)
-    return (state['phase']=='done' and
-            state['stage_cursor']==len(state['records']) and
-            progress.complete(state['progress'],at=at))
+def ready_to_project(source, envelope, *, context_hash, at=None):
+    """Only fetch completeness, never event or publication acceptance."""
+    state = decode(source, envelope, context_hash=context_hash, at=at)
+    return progress.complete(state['progress'], at=at)
