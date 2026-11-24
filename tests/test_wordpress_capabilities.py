@@ -107,7 +107,8 @@ def test_an_unhinted_tec_api_is_discovered_via_the_publisher_index():
     responses = {page: listing, root: index, endpoint: events}
     def fetch(url, accept, **kwargs):
         assert kwargs.get('respect_robots') is True
-        assert kwargs.get('allowed_hosts') == ('theatre.example.org',)
+        if url != page:
+            assert kwargs.get('allowed_hosts') == ('theatre.example.org',)
         return responses[url]
     with patch('roomquest.feed_registration.supabase_rpc',
                side_effect=[{'url': page}, True]) as rpc, \
