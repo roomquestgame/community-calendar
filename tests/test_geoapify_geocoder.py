@@ -134,7 +134,7 @@ class VerificationTests(unittest.TestCase):
                 self.assertIsNone(geo.verify(response(result_type=result_type), ADDRESS))
 
     def test_confidence_and_coordinates_are_finite_numeric_values(self):
-        for score in (None, "1", True, float("nan"), float("inf"), 10 ** 1000, -.1, 1.1, .79):
+        for score in (None, "1", True, float("nan"), float("inf"), 10 ** 1000, -.1, 1.1):
             with self.subTest(score=score):
                 self.assertIsNone(geo.verify(response(rank={"confidence": score, "match_type": "full_match"}), ADDRESS))
         for field, values in (("lat", (None, "52.2", True, float("nan"), float("inf"), 91, 10 ** 1000)),
@@ -142,6 +142,22 @@ class VerificationTests(unittest.TestCase):
             for value in values:
                 with self.subTest(field=field, value=value):
                     self.assertIsNone(geo.verify(response(**{field: value}), ADDRESS))
+
+    def test_low_confidence_matching_provider_points_are_accepted_unchanged(self):
+        for score in (0, .01, .45, .79, .8, 1):
+            for result_type in ("building", "street", "amenity"):
+                payload = response(result_type=result_type,
+                                   rank={"confidence": score, "match_type": "full_match"})
+                with self.subTest(score=score, result_type=result_type):
+                    result = geo.verify(payload, ADDRESS)
+                    self.assertIsNotNone(result)
+                    point = result["results"][0]
+                    self.assertEqual(point["rank"]["confidence"], score)
+                    self.assertEqual(point["result_type"], result_type)
+                    self.assertEqual((point["lat"], point["lon"]), (52.2, 0.1))
+                    self.assertTrue(geo.result_diagnostic(payload, ADDRESS)["score_valid"])
+        low = response(country_code="us", rank={"confidence": .4, "match_type": "full_match"})
+        self.assertIsNone(geo.verify(low, ADDRESS))
 
     def test_all_supplied_confidence_fields_are_valid(self):
         payload = response()
