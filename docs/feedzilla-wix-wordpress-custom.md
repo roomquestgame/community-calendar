@@ -1,3 +1,36 @@
+## November 24 — resume checkpoint: incomplete native TEC count declarations
+
+Live readback 16:04 UTC: original London #1217–1226 remain seven review,
+three retry (due Dec 24), all one attempt and zero linked sources. Littleport
+#1230/#1231 → source #6374 approved/ready/complete, one staged held event
+#454245, no coordinates. App #1914 and collector #491 are merged; prior
+Geoapify retry consumed attempt 2 on the OLD deployment during alias cutover.
+The existing normal retry is pending for 16:15:49 UTC; do not force/reset it.
+No changes to original receipts or shared infrastructure.
+
+Native registered TEC guard now rejects one-sided count declarations on any
+page and late introduction of totals after a genuinely count-less first page.
+Both could previously silently fall through legacy mode, accepting an
+unproved inventory. Consistently count-less legacy responses still work.
+Exact old/new class extracted by AST from the full GitHub blob, compiled
+and run in a short-lived network-denied Vercel sandbox: reproduced three
+old false acceptances, 11/11 isolated guard cases passed; patched provider
+blob SHA 565d9949a5c1c698b1c09e579235ba9e093f9819. Sandbox stopped.
+Added three collect-path regression tests; those new full integration tests
+were not separately run. No routine CI or deployment. Keep #490 draft
+pending real multi-page shadow, normal Admin canary/publication and
+shared-owner transport/continuation agreement.
+
+Two independent first-party potential native TEC leads found in public
+listing research: Community Links (community-links.org/events/) and St
+James's Church Paddington (stjamespaddington.org.uk/events/). Both have
+future dated venue listings; production duplicate check found no receipts
+or sources on either domain. Exact current collector robots policy, actual
+advertised API and completeness have not been verified; do not submit or
+claim either as a feed. No original source rechecks or +500 expansion.
+
+---
+
 ## November 24 — actual permitted native WordPress collection; Admin blocker
 
 Owner approved next batch: WordPress and provider pagination together, actual
