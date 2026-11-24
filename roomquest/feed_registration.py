@@ -290,7 +290,7 @@ def recover_html_feed(listing_url, listing_body, deadline):
     return {'p_outcome': 'discovered', 'p_endpoint': endpoint, 'p_type': kind}
 
 
-def verify_html_calendar(listing_url, listing_body, deadline):
+def verify_html_calendar(listing_url, listing_body, deadline, *, continuation=None):
     """Probe the exact same linked-detail adapter used by scheduled collection."""
     from roomquest import registered_html_calendar, forestry_england
     from roomquest.registered_native_content import CAPABILITY, HTML_CAPABILITY
@@ -308,6 +308,8 @@ def verify_html_calendar(listing_url, listing_body, deadline):
                                allowed_hosts=(urlsplit(listing_url).hostname,))
 
     try:
+        if continuation is not None and not forestry_england.owns_url(listing_url):
+            return continuation(listing_url, listing_body)
         records = registered_html_calendar.collect(
             source, fetch_detail, deadline_at=deadline, listing=listing_body)
         # A fully checked official Forestry venue calendar remains a reusable
@@ -326,6 +328,44 @@ def verify_html_calendar(listing_url, listing_body, deadline):
             'p_type': 'html', 'p_reason': registered_html_calendar.VERSION}
 
 
+def _checkpoint_registration(candidate, ticket, pacing, deadline, *, listing=None, resume=False):
+    """Use the original receipt's leased checkpoint, never create a source early."""
+    from roomquest import registered_html_checkpoint as capture, registered_html_calendar
+    from roomquest.registration_formats import source_key, extraction_hold
+    from roomquest.registered_native_content import CAPABILITY, HTML_CAPABILITY
+    url = candidate['url']
+    source = {'source_key': source_key(url), 'feed_url': url, 'kind': 'html',
+              'platform_adapter': 'html', CAPABILITY: 1, HTML_CAPABILITY: 1,
+              capture.CAPABILITY: 1}
+    try:
+        saved = capture.read(source, 'registration', ticket, supabase_rpc)
+        if resume and saved['checkpoint'] is None:
+            return None  # Expired capture: repeat normal guarded discovery.
+        if not resume and saved['checkpoint'] is not None:
+            raise PreviewError('fetch_checkpoint_invalid_response')
+        chunk = capture.collect_and_save(source,
+            lambda target, accept: fetch_publisher(
+                target, accept, respect_robots=True, deadline_at=deadline - 8,
+                allowed_hosts=(urlsplit(url).hostname,)),
+            supabase_rpc, pacing, category='registration', ticket=ticket,
+            deadline_at=deadline - 8, listing=listing, saved=saved)
+    except PreviewError:
+        raise
+    except (ValueError, KeyError, TypeError, OverflowError) as exc:
+        if str(exc) in ('fetch_checkpoint_context_missing', 'fetch_checkpoint_invalid_response',
+                        'publisher_wait_requires_review'):
+            raise PreviewError(str(exc)) from exc
+        return extraction_hold('html', exc)
+    if not chunk['complete']:
+        return {'p_outcome': 'retry', 'p_reason': capture.PENDING,
+                'p_retry_seconds': max(1, pacing['crawl_delay_seconds'],
+                                       pacing['retry_after_seconds'])}
+    if not chunk['events']:
+        return review('no_extractable_events', 'html')
+    return {'p_outcome': 'verified', 'p_endpoint': url, 'p_type': 'html',
+            'p_reason': registered_html_calendar.VERSION}
+
+
 def register(ticket):
     args = {'p_ticket': ticket}
     candidate = supabase_rpc('community_collector_claim_registration', args, timeout=6)
@@ -338,6 +378,14 @@ def register(ticket):
         body = None  # Fetch failure can occur before a response was collected.
         try:
             deadline = monotonic() + 35
+            from roomquest import registered_html_checkpoint as capture
+            durable = capture.enabled(candidate)
+            if durable and candidate.get('html_capture_pending') is True:
+                result = _checkpoint_registration(candidate, ticket, pacing, deadline, resume=True)
+                if result is not None:
+                    recorded = supabase_rpc('community_collector_finish_registration',
+                        {**args, **auto_defer_nonactionable(result)}, timeout=8)
+                    return {'outcome': result['p_outcome'] if recorded else 'lease_expired'}
             def check(target, endpoint_only=False, venue_website=False):
                 def fetch(resource, accept):
                     return fetch_publisher(resource, accept, respect_robots=True, deadline_at=deadline,
@@ -487,7 +535,11 @@ def register(ticket):
                         'html_adapter_needed', 'no_reusable_calendar',
                         'collection_scope_unverified',
                     }):
-                verified_html = verify_html_calendar(url, body, deadline)
+                continuation = (lambda target, listing: _checkpoint_registration(
+                    candidate, ticket, pacing, deadline, listing=listing)
+                    ) if durable and url == candidate['url'] else None
+                verified_html = verify_html_calendar(url, body, deadline,
+                                                     continuation=continuation)
                 if verified_html:
                     result = verified_html
                     if url != candidate['url'] and result['p_outcome'] == 'verified':
