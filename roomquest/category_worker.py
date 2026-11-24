@@ -89,8 +89,6 @@ def _observe_incremental_completion(source, observation):
     except Exception:
         # Observability must never change the accepted completion result.
         pass
-
-
 # This is an explicit diagnostic vocabulary, not a shape-only exception-message
 # filter: even a secret that happens to look like a code must not reach logs.
 _ERROR_CODES = frozenset(('database_unavailable', 'staging_deadline', 'incremental_receipt_invalid',
