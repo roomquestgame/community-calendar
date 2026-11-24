@@ -171,7 +171,27 @@ def _visible_occurrences(event, root):
         raise ValueError('html_calendar_clock_conflict')
     starts = []
     for row in candidates[0][1:]:
-        cells = [_plain(cell.get_text(' ', strip=True)) for cell in row.select('th,td')]
+        cells = row.select('th,td')
+        if len(cells) == 2:
+            # A schedule date may be split across leading inline elements and
+            # followed by a tooltip/popup describing accessibility features.
+            # Bind only an exact leading date assembled from simple inline
+            # fields; never admit arbitrary trailing prose into the clock.
+            leading = []
+            for child in cells[0].contents:
+                if isinstance(child, str):
+                    if child.strip():
+                        leading.append(child)
+                    continue
+                if child.name not in ('span', 'time'):
+                    break
+                leading.append(child.get_text(' ', strip=True))
+            date_value = _plain(' '.join(leading))
+            if not TABLE_DAY.fullmatch(date_value):
+                date_value = _plain(cells[0].get_text(' ', strip=True))
+            cells = [date_value, _plain(cells[1].get_text(' ', strip=True))]
+        else:
+            cells = []
         if len(cells) != 2 or not (day_match := TABLE_DAY.fullmatch(cells[0])) \
                 or not re.fullmatch(CLOCK, cells[1], re.I):
             raise ValueError('html_calendar_clock_conflict')

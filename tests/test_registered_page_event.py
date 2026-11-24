@@ -125,6 +125,31 @@ class PageBoundEventTests(unittest.TestCase):
         self.assertEqual([row['id'] for row in rows], [UK_URL + '#event'])
         self.assertTrue(all(row['ends_at'] is None for row in rows))
 
+    def test_complete_date_table_ignores_separate_accessibility_annotation(self):
+        item = event(name='The Gingerbread Man', startDate='2026-12-05T11:00:00',
+                     endDate='2026-12-12T11:00:00', url=UK_URL)
+        item['location']['address'].pop('addressCountry')
+        item['location']['address'].update(
+            streetAddress='Douglas Way', addressLocality='Deptford', postalCode='SE8 4AG')
+        annotated = ('<table><tr><th>Date</th><th>Time</th></tr>'
+                     '<tr><th><span>Saturday 5th</span><span>December 2026</span></th>'
+                     '<th>11:00 am</th></tr>'
+                     '<tr><th><span>Saturday 12th</span><span>December 2026</span>'
+                     '<div class="performance-tags"><span>BSL</span><div class="popup">'
+                     'The performance on Saturday 12th December 2026 at 11:00 am is signed.'
+                     '</div></div></th><th>11:00 am</th></tr></table>')
+        rows = self.rows(detail(item, annotated, canonical=UK_URL, og=UK_URL,
+                                heading='The Gingerbread Man'), UK_URL)
+        self.assertEqual([row['starts_at'] for row in rows],
+                         ['2026-12-05T11:00:00+00:00', '2026-12-12T11:00:00+00:00'])
+
+        # The exception is structural, not a general license to trim noisy cells.
+        ambiguous = annotated.replace(
+            '<div class="performance-tags">', 'second date <div class="performance-tags">')
+        with self.assertRaisesRegex(ValueError, 'html_calendar_clock_conflict'):
+            self.rows(detail(item, ambiguous, canonical=UK_URL, og=UK_URL,
+                             heading='The Gingerbread Man'), UK_URL)
+
     def test_missing_country_schedule_requires_uk_domain_and_exact_complete_table(self):
         item = event(name='Jazz Saturdays', startDate='2026-11-21T13:00:00',
                      endDate='2026-12-05T13:00:00')
