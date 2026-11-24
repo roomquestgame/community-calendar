@@ -233,6 +233,73 @@ def _madison_display_schedule(item, source, fetch):
                 utc_end_date=ends.astimezone(timezone.utc).isoformat())
 
 
+class _RegisteredTECInventory:
+    """Validate publisher-declared TEC body totals before returning a snapshot.
+
+    Only the existing automatically registered native WordPress path uses
+    this guard. No extra fetches, checkpoints, stage writes, or identity
+    changes. Old responses without totals retain their existing behavior.
+    Count the actual API inventory BEFORE filtering public/dated events.
+    """
+
+    def __init__(self):
+        self.totals = None
+        self.count = 0
+        self.members = set()
+        self.started = False
+
+    def page(self, payload, number):
+        has_total = 'total' in payload
+        has_pages = 'total_pages' in payload
+        if has_total != has_pages:
+            raise ValueError('wordpress_pagination_changed' if self.started else 'invalid_wordpress_pagination')
+        totals_present = has_total and has_pages
+        if not self.started:
+            self.started = True
+            if not totals_present:
+                return
+            total, pages = payload['total'], payload['total_pages']
+            if (type(total) is not int or type(pages) is not int
+                    or total < 0 or pages < 0 or (total == 0 and pages not in (0, 1))
+                    or (total > 0 and pages == 0)):
+                raise ValueError('invalid_wordpress_pagination')
+            if pages > MAX_PAGES:
+                raise ValueError('pagination_limit')
+            self.totals = total, pages
+        if self.totals is None:
+            if totals_present:
+                raise ValueError('wordpress_pagination_changed')
+            return
+        total, pages = self.totals
+        if (not totals_present or type(payload['total']) is not int
+                or type(payload['total_pages']) is not int
+                or (payload['total'], payload['total_pages']) != self.totals):
+            raise ValueError('wordpress_pagination_changed')
+        rows = payload['events']
+        # An empty collection may report zero pages, but a nonempty collection
+        # cannot have an empty intermediate page or contradictory next marker.
+        if (number > max(1, pages) or (total > 0 and not rows)
+                or (number >= max(1, pages) and payload.get('next_rest_url'))):
+            raise ValueError('wordpress_pagination_incomplete')
+        for item in rows:
+            if not isinstance(item, dict):
+                raise ValueError('unsupported_wordpress_payload')
+            identity = item.get('id')
+            start = item.get('utc_start_date') or item.get('start_date')
+            if (type(identity) not in (str, int) or not str(identity).strip()
+                    or not isinstance(start, str) or not start):
+                raise ValueError('invalid_wordpress_inventory_member')
+            key = str(identity), start
+            if key in self.members:
+                raise ValueError('wordpress_pagination_duplicate')
+            self.members.add(key)
+        self.count += len(rows)
+        if self.count > total:
+            raise ValueError('wordpress_pagination_incomplete')
+        if number >= max(1, pages) and self.count != total:
+            raise ValueError('wordpress_pagination_incomplete')
+
+
 def collect(source, fetch, *, deadline_at=None):
     source_key = source.get('source_key')
     from roomquest.registered_native_content import enabled as native_enabled
@@ -273,6 +340,9 @@ def collect(source, fetch, *, deadline_at=None):
     profile = profiles().get(source_key) if (source_key or '').startswith('municipal_mapsee_') else None
     direct_key = 'municipal_' + md5(('feed_registration:' + source['feed_url']).encode()).hexdigest()[:24]
     public_calendar = source_key == direct_key or bool(profile and profile.get('config', {}).get('strict_public') is True)
+    # The registration-derived native TEC family has an explicit source
+    # identity. Do not change reviewed legacy/source-specific collectors.
+    inventory = _RegisteredTECInventory() if source_key == direct_key else None
     params = dict(parse_qsl(root.query, keep_blank_values=True))
     if '/wp-json/tribe/events/v1/events' in root.path:
         if root.path.rstrip('/').split('/wp-json/', 1)[1] != 'tribe/events/v1/events':
@@ -306,6 +376,8 @@ def collect(source, fetch, *, deadline_at=None):
             raise ValueError('unsupported_wordpress_payload')
         if len(payload['events']) > 100:
             raise ValueError('source_record_limit')
+        if inventory is not None:
+            inventory.page(payload, page)
         if reading_room:
             payload = _reading_room_events(payload)
         if source_key == LEWIS_GINTER:

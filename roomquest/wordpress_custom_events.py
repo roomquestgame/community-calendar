@@ -64,12 +64,14 @@ def _route(url):
         if p.scheme != 'https' or not p.hostname or p.username or p.password or p.fragment:
             _fail('route_invalid')
         args = parse_qsl(p.query, keep_blank_values=True)
-        if any(k.lower() in ('page', 'per_page') for k, _ in args):
-            _fail('route_invalid')
+        # A filtered/custom query is not the complete reviewed public
+        # collection. Permit only the standard route or exact legacy
+        # rest_route parameter; page_url owns all pagination parameters.
         segments = p.path.rstrip('/').split('/')
-        standard = len(segments) >= 4 and segments[-3:-1] == ['wp', 'v2']
-        legacy = any(k == 'rest_route' and re.fullmatch(r'/wp/v2/[a-z0-9_-]+', v)
-                     for k, v in args)
+        standard = (not args and len(segments) >= 4
+                    and segments[-3:-1] == ['wp', 'v2'])
+        legacy = (len(args) == 1 and args[0][0] == 'rest_route'
+                  and re.fullmatch(r'/wp/v2/[a-z0-9_-]+', args[0][1]))
         if not ((standard and segments[-4] == 'wp-json'
                  and re.fullmatch(r'[a-z0-9_-]+', segments[-1])) or legacy):
             _fail('route_invalid')
@@ -110,51 +112,114 @@ def _instant(value, zone):
     return moment.astimezone(timezone.utc)
 
 
+def _page_totals(headers, per_page):
+    # HTTP names are case insensitive. A conflicting duplicate is not a
+    # trustworthy pagination declaration. Keep the publisher's exact totals.
+    normalized = {}
+    for name, value in headers.items():
+        key = str(name).lower()
+        if key not in ('x-wp-total', 'x-wp-totalpages'):
+            continue
+        if key in normalized and str(normalized[key]) != str(value):
+            _fail('pagination_headers_conflict')
+        normalized[key] = value
+    count_raw = normalized.get('x-wp-total')
+    pages_raw = normalized.get('x-wp-totalpages')
+    if (not isinstance(count_raw, (str, int)) or not isinstance(pages_raw, (str, int))
+            or not re.fullmatch(r'[0-9]{1,5}', str(count_raw))
+            or not re.fullmatch(r'[0-9]{1,3}', str(pages_raw))):
+        _fail('pagination_headers_missing')
+    total, total_pages = int(count_raw), int(pages_raw)
+    if (total <= 0 or total >= MAX_POSTS or total_pages <= 0
+            or total_pages > MAX_PAGES
+            or (total + per_page - 1) // per_page != total_pages):
+        _fail('pagination_total_invalid')
+    return total, total_pages
+
+
+def _response_prefix(responses, per_page):
+    """Verify exact page lengths, totals and post identities in a prefix."""
+    if (not isinstance(responses, list) or len(responses) > MAX_PAGES
+            or type(per_page) is not int or not 1 <= per_page <= 100):
+        _fail('pagination_invalid')
+    expected = None
+    collected = []
+    seen = set()
+    for number, page in enumerate(responses, 1):
+        if (not isinstance(page, (tuple, list)) or len(page) != 2
+                or not isinstance(page[0], list) or not isinstance(page[1], dict)
+                or len(page[0]) > per_page):
+            _fail('pagination_invalid')
+        rows, headers = page
+        totals = _page_totals(headers, per_page)
+        if expected is None:
+            expected = totals
+        elif expected != totals:
+            _fail('pagination_changed')
+        total, total_pages = expected
+        if number > total_pages or len(rows) != min(per_page, total - (number - 1) * per_page):
+            _fail('pagination_incomplete')
+        for item in rows:
+            if not isinstance(item, dict) or type(item.get('id')) is not int or item['id'] <= 0:
+                _fail('post_invalid')
+            if item['id'] in seen:
+                _fail('pagination_duplicate')
+            seen.add(item['id'])
+        collected.append(rows)
+    return collected, expected
+
+
 def complete_response_pages(responses, *, per_page=100):
     """Validate every WordPress X-WP-TotalPages/Total receipt across a snapshot.
 
     The bounded fetch worker supplies (JSON list, HTTP response headers) pairs.
     No partial page prefix is returned, even if all observed records are valid.
     """
-    if (not isinstance(responses, list) or not responses or len(responses) > MAX_PAGES
-            or type(per_page) is not int or not 1 <= per_page <= 100):
+    if not isinstance(responses, list) or not responses:
         _fail('pagination_invalid')
-    expected = None
-    collected = []
-    seen = set()
-    for page in responses:
-        if (not isinstance(page, (tuple, list)) or len(page) != 2
-                or not isinstance(page[0], list) or not isinstance(page[1], dict)
-                or len(page[0]) > per_page):
-            _fail('pagination_invalid')
-        rows, headers = page
-        headers = {str(key).lower(): value for key, value in headers.items()}
-        count_raw, pages_raw = headers.get('x-wp-total'), headers.get('x-wp-totalpages')
-        if (not isinstance(count_raw, (str, int)) or not isinstance(pages_raw, (str, int))
-                or not re.fullmatch(r'[0-9]{1,5}', str(count_raw))
-                or not re.fullmatch(r'[0-9]{1,3}', str(pages_raw))):
-            _fail('pagination_headers_missing')
-        total, total_pages = int(count_raw), int(pages_raw)
-        if (total <= 0 or total >= MAX_POSTS or total_pages <= 0
-                or total_pages > MAX_PAGES
-                or (total + per_page - 1) // per_page != total_pages):
-            _fail('pagination_total_invalid')
-        if expected is None:
-            expected = (total, total_pages)
-        elif expected != (total, total_pages):
-            _fail('pagination_changed')
-        for item in rows:
-            if not isinstance(item, dict) or type(item.get('id')) is not int:
-                _fail('post_invalid')
-            if item['id'] in seen:
-                _fail('pagination_duplicate')
-            seen.add(item['id'])
-        collected.append(rows)
-    if (expected is None or len(collected) != expected[1]
-            or sum(len(p) for p in collected) != expected[0]
-            or any(len(page) != per_page for page in collected[:-1])):
+    collected, expected = _response_prefix(responses, per_page)
+    if expected is None or len(collected) != expected[1]:
         _fail('pagination_incomplete')
     return collected, expected[1]
+
+
+def _receipt_prefix(route_url, receipts, per_page):
+    """Consume only the exact ordered, publisher-scoped GET page receipts.
+
+    The existing transport must supply the actual response URL and headers.
+    The shared checkpoint owner persists the receipts under its normal lease,
+    identity, window and CAS checks; this module does not store or hash them.
+    """
+    _route(route_url)
+    if not isinstance(receipts, list) or len(receipts) > MAX_PAGES:
+        _fail('pagination_invalid')
+    responses = []
+    for number, receipt in enumerate(receipts, 1):
+        if (not isinstance(receipt, dict)
+                or set(receipt) != {'url', 'rows', 'headers'}
+                or receipt['url'] != page_url(route_url, number, per_page=per_page)):
+            _fail('pagination_receipt_scope')
+        responses.append((receipt['rows'], receipt['headers']))
+    return _response_prefix(responses, per_page)
+
+
+def next_page_url(route_url, receipts, *, per_page=100):
+    """Return the next exact GET, or None only after the full inventory.
+
+    No fetch, checkpoint write, profile approval or publication happens here.
+    """
+    collected, expected = _receipt_prefix(route_url, receipts, per_page)
+    if expected is not None and len(collected) == expected[1]:
+        return None
+    return page_url(route_url, len(collected) + 1, per_page=per_page)
+
+
+def extract_from_page_receipts(profile, receipts, start, end, *, per_page=100):
+    """Project a complete receipt sequence using the existing event parser."""
+    pages, expected = _receipt_prefix(profile.get('route_url'), receipts, per_page)
+    if expected is None or len(pages) != expected[1]:
+        _fail('pagination_incomplete')
+    return extract(profile, pages, expected[1], start, end)
 
 
 def extract_from_responses(profile, responses, start, end, *, per_page=100):

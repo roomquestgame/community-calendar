@@ -59,8 +59,9 @@ def _observed_links(soup, base_url):
     for node in soup.select('a[href]'):
         url = urljoin(base_url, node.get('href', ''))
         p = urlsplit(url)
-        if (p.scheme != 'https' or p.hostname != base.hostname or p.query
-                or p.fragment or not p.path.startswith('/event-details/')):
+        if (p.scheme != 'https' or p.netloc != base.netloc or p.query
+                or p.fragment or not re.fullmatch(
+                    r'/(?:event-details|event-details-registration)/[a-z0-9]+(?:-[a-z0-9]+)*', p.path)):
             continue
         slug = p.path.rsplit('/', 1)[-1]
         if not SLUG.fullmatch(slug):
@@ -98,16 +99,24 @@ def _widget_events(payload):
         # A blank JavaScript pager or just the first 6 tiles is not a source.
         total = box.get('totalCount', box.get('total'))
         if (type(total) is not int or total < 0 or total != len(records)
-                or box.get('hasMore') is True or len(records) > MAX_EVENTS):
+                or ('totalCount' in box and 'total' in box and
+                    (type(box['total']) is not int or box['total'] != total))
+                or ('hasMore' in box and box['hasMore'] is not False)
+                or len(records) > MAX_EVENTS):
             _fail('pagination_unverified')
         widgets += 1
         for item in records:
             if not isinstance(item, dict) or not UUID.fullmatch(str(item.get('id', ''))):
                 _fail('event_identity_invalid')
-            previous = all_events.get(item['id'])
-            if previous is not None and previous != item:
+            # Wix UUID spelling is case insensitive. Contradictory
+            # representations of the same event cannot silently overwrite
+            # each other during projection into the ordinary event identity.
+            identity = item['id'].lower()
+            canonical = dict(item, id=identity)
+            previous = all_events.get(identity)
+            if previous is not None and previous != canonical:
                 _fail('event_identity_conflict')
-            all_events[item['id']] = item
+            all_events[identity] = canonical
             if len(all_events) >= MAX_EVENTS:
                 _fail('event_limit')
     if not widgets:
@@ -132,7 +141,9 @@ def extract(profile, html, start, end):
     links = _observed_links(soup, base_url)
     result = {}
     for item in events:
-        if item.get('status') != 0:
+        if type(item.get('status')) is not int:
+            _fail('event_status_unverified')
+        if item['status'] != 0:
             continue
         title = _text(item.get('title'))
         slug = item.get('slug')
@@ -153,7 +164,9 @@ def extract(profile, html, start, end):
                 or not isinstance(registration, dict)):
             _fail('event_facts_incomplete')
         # Public visibility is not permission to expose private/member events.
-        if registration.get('restrictedTo') != 1:
+        if type(registration.get('restrictedTo')) is not int:
+            _fail('event_visibility_unverified')
+        if registration['restrictedTo'] != 1:
             continue
         if address.get('country') != profile['country']:
             _fail('country_mismatch')
@@ -173,6 +186,10 @@ def extract(profile, html, start, end):
         finishes = _timestamp(end_raw) if end_raw else None
         if finishes is not None and finishes < begins:
             _fail('end_before_start')
+        # The publisher can explicitly hide the end date in Wix. Preserve
+        # the same behavior as the existing reviewed Wix warmup adapter.
+        if config.get('endDateHidden') is True:
+            finishes = None
         local = begins.astimezone(zone)
         if not first <= local.date() <= last:
             continue
