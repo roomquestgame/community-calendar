@@ -27,6 +27,7 @@ class Snapshot:
 
 def source():
     return {"kind": "ical", "platform_adapter": "ical",
+            "ical_optimization_enabled": True,
             "source_key": "municipal_mapsee_48489e8f5c906f7610d30197", "feed_url": URL}
 
 
@@ -271,6 +272,29 @@ def test_failed_metadata_touch_is_optional_and_falls_back():
 
 
 
+
+def test_server_rollout_flag_allows_new_approved_key_without_static_code_list():
+    new = {**source(), "source_key": "municipal_mapsee_0123456789abcdef01234567"}
+    snapshot = Snapshot()
+    rpc = RPC({"enabled": True})
+    with cache.capture(new, snapshot, context(), rpc) as state:
+        assert state is not None
+        assert state.enabled is True
+        assert [name for name, _ in rpc.calls] == ["community_collector_read_ical_cache"]
+
+
+def test_false_or_missing_server_enrollment_skips_cache_read():
+    snapshot = Snapshot()
+    rpc = RPC(saved())
+    for value in ({**source(), "ical_optimization_enabled": False},
+                  {key: value for key, value in source().items()
+                   if key != "ical_optimization_enabled"}):
+        with cache.capture(value, snapshot, context(), rpc) as state:
+            assert state is None
+    assert rpc.calls == []
+
+
+
 def test_capture_resets_context_and_non_ical_sources_cannot_cache():
     snapshot = Snapshot()
     rpc = RPC(saved())
@@ -285,7 +309,8 @@ def test_capture_resets_context_and_non_ical_sources_cannot_cache():
         assert state is None
         assert cache.conditional_headers(URL, "text/calendar") == {}
     calls_before = len(rpc.calls)
-    unapproved = {**source(), "source_key": "not_an_approved_pilot"}
+    unapproved = {**source(), "source_key": "not_an_approved_pilot",
+                  "ical_optimization_enabled": False}
     with cache.capture(unapproved, snapshot, context(), rpc) as state:
         assert state is None
         assert cache.conditional_headers(URL, "text/calendar") == {}
