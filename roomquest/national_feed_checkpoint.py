@@ -23,18 +23,47 @@ def now(value=None):
     return value.astimezone(timezone.utc)
 
 
-def encode(source, state, *, phase, cursor, count, stage_cursor=0):
+def encode_payload(state):
+    """Shared bounded compressed evidence codec; not event fingerprinting.
+
+    Preserve the byte-for-byte national_feed_v1 encoding. Adapter-specific
+    headers, source identity, age and progress remain their own validation.
+    """
     raw = json.dumps(state, ensure_ascii=False, sort_keys=True, separators=(',', ':')).encode()
     if len(raw) > MAX_EXPANDED:
         raise ValueError('national_feed_checkpoint_size_limit')
+    return {
+        'encoding': 'zlib+base64', 'uncompressed_bytes': len(raw),
+        'sha256': hashlib.sha256(raw).hexdigest(),
+        'payload': base64.b64encode(zlib.compress(raw, 9)).decode(),
+    }
+
+
+def decode_payload(checkpoint):
+    """Check the actual bounded bytes and checksum before JSON parsing."""
+    if (checkpoint.get('encoding') != 'zlib+base64'
+            or type(checkpoint.get('uncompressed_bytes')) is not int
+            or not 0 <= checkpoint['uncompressed_bytes'] <= MAX_EXPANDED
+            or not isinstance(checkpoint.get('payload'), str)
+            or len(json.dumps(checkpoint).encode()) > MAX_BYTES):
+        raise ValueError('national_feed_checkpoint_invalid')
+    compressed = base64.b64decode(checkpoint['payload'], validate=True)
+    decoder = zlib.decompressobj()
+    raw = decoder.decompress(compressed, MAX_EXPANDED + 1)
+    if (len(raw) > MAX_EXPANDED or decoder.unconsumed_tail or decoder.unused_data
+            or not decoder.eof or len(raw) != checkpoint['uncompressed_bytes']
+            or hashlib.sha256(raw).hexdigest() != checkpoint['sha256']):
+        raise ValueError('national_feed_checkpoint_checksum')
+    return json.loads(raw)
+
+
+def encode(source, state, *, phase, cursor, count, stage_cursor=0):
     result = {
         'version': 1, 'adapter': VERSION, 'source_key': source['source_key'],
         'feed_url': source['feed_url'], 'started_at': state['started_at'],
         'phase': phase, 'cursor': cursor, 'manifest_count': count,
         'record_count': len(state['events']), 'stage_cursor': stage_cursor,
-        'encoding': 'zlib+base64', 'uncompressed_bytes': len(raw),
-        'sha256': hashlib.sha256(raw).hexdigest(),
-        'payload': base64.b64encode(zlib.compress(raw, 9)).decode(),
+        **encode_payload(state),
     }
     if len(json.dumps(result).encode()) > MAX_BYTES:
         raise ValueError('national_feed_checkpoint_size_limit')
@@ -62,14 +91,7 @@ def decode(source, checkpoint, *, at=None):
         age = now(at) - datetime.fromisoformat(checkpoint['started_at'])
         if not timedelta(seconds=-30) <= age <= MAX_AGE:
             raise ValueError('national_feed_checkpoint_expired')
-        compressed = base64.b64decode(checkpoint['payload'], validate=True)
-        decoder = zlib.decompressobj()
-        raw = decoder.decompress(compressed, MAX_EXPANDED + 1)
-        if (len(raw) > MAX_EXPANDED or decoder.unconsumed_tail or decoder.unused_data
-                or not decoder.eof or len(raw) != checkpoint['uncompressed_bytes']
-                or hashlib.sha256(raw).hexdigest() != checkpoint['sha256']):
-            raise ValueError
-        state = json.loads(raw)
+        state = decode_payload(checkpoint)
         if (state['started_at'] != checkpoint['started_at']
                 or len(state['events']) != checkpoint['record_count']
                 or checkpoint['phase'] == 'stage' and checkpoint['cursor'] != checkpoint['manifest_count']):
