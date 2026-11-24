@@ -133,8 +133,8 @@ def validate(state, *, source_key=None, feed_url=None, adapter=None, at=None):
     return state
 
 
-def next_request(state):
-    validate(state)
+def next_request(state, *, at=None):
+    validate(state, at=at)
     return state['tasks'][state['cursor']] if state['cursor'] < len(state['tasks']) else None
 
 
