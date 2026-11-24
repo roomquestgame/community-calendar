@@ -29,6 +29,26 @@ def unsupported_calendar_profile(html):
     if ('data-tockify-calendar=' in fragment and
             'public.tockify.com/browser/embed.js' in fragment):
         return 'tockify_adapter_needed'
+    # WordPress event publishers may advertise legacy plugin fingerprints
+    # even without a readable events API. Report a *technical hold*, not a
+    # feed. Specific plugin families are more useful than a CMS generator.
+    from roomquest.wordpress_capabilities import wordpress_fingerprints
+    matches = wordpress_fingerprints(html)
+    family_reasons = {
+        'events-manager': 'events_manager_adapter_needed',
+        'event-organiser': 'event_organiser_adapter_needed',
+        'modern-events-calendar': 'mec_adapter_needed',
+        'eventon': 'eventon_adapter_needed',
+        'wp-event-manager': 'wp_event_manager_adapter_needed',
+        'all-in-one-event-calendar': 'ai1ec_adapter_needed',
+        'legacy-json-api': 'wordpress_legacy_json_adapter_needed',
+    }
+    if len(matches) == 1 and matches[0] in family_reasons:
+        return family_reasons[matches[0]]
+    if (matches or re.search(r'/wp-content/(?:plugins|themes)/|'
+                             r'<meta[^>]{0,250}generator[^>]{0,250}wordpress|'
+                             r'rel=[\"\\\']https://api\\.w\\.org/', fragment)):
+        return 'wordpress_calendar_adapter_needed'
     return None
 
 
