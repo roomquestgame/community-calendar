@@ -137,6 +137,65 @@ def test_explicit_itemlist_supports_publisher_permalink_shapes():
     (FEED, '<main><h1>Events</h1><a href="https://other.example.org/event/a">A</a></main>'),
     (FEED, '<h1>Events</h1><nav><a href="/event/a">A</a><a href="/event/b">B</a></nav>'),
 ])
+
+def test_whats_on_and_whatson_venues_use_same_complete_linked_detail_collector():
+    date = (datetime.now(timezone.utc) + timedelta(days=14)).date()
+    label = date.strftime('%B %d, %Y')
+    for slug in ('whats-on', 'whatson'):
+        listing_url = BASE + '/' + slug
+        event_url = listing_url + '/evening-talk'
+        page = listing((event_url,), heading="What's On")
+        labelled = ('<html><body><main><h1>Evening Talk</h1>'
+                    '<p><strong>Date</strong> ' + label + '</p>'
+                    '<p><strong>Time</strong> 5:00 pm - 6:00 pm</p>'
+                    '<p><strong>Where</strong> Studio - 136 Kingsland Road, London E2 8EA</p>'
+                    '</main></body></html>')
+        assert calendar.supports_listing(listing_url, page)
+        fetch = fetcher({event_url: labelled})
+        records = calendar.collect(source(listing_url), fetch, listing=page)
+        assert len(records) == 1
+        row = records[0]
+        assert row['event_url'] == event_url
+        assert row['timezone'] == 'Europe/London'
+        assert row['venue_name'] == 'Studio'
+        assert row['id'] == event_url + '#visible-event'
+        native.validate_record(row, source(listing_url))
+
+
+def test_wordpress_old_h2_title_and_labeled_details_are_supported_when_footer_agrees():
+    day = (datetime.now(timezone.utc) + timedelta(days=17)).date()
+    label = day.strftime('%B %d, %Y')
+    event_url = BASE + '/event/friday-jazz-' + day.isoformat()
+    html = ('<html><head><meta property="og:title" content="Friday Jazz - Oxford House">'
+            '<meta property="og:site_name" content="Oxford House"></head><body>'
+            '<main><h2>Welcome to live music</h2><h2>Friday Jazz</h2>'
+            '<p><strong>Dates</strong> ' + label + ' - ' + label + '</p>'
+            '<p><strong>Times</strong> 5:00 pm - 6:00 pm</p>'
+            '<p><strong>Location</strong> Oxford House, Café</p></main>'
+            '<footer><address>Oxford House, Derbyshire Street, London E2 6HG'
+            '</address></footer></body></html>')
+    [row] = calendar._detail(source(), html, event_url)
+    assert row['venue_name'] == 'Oxford House, Café'
+    assert 'Derbyshire Street' in row['venue_address']
+    native.validate_record(row, source())
+
+
+@pytest.mark.parametrize('dates,times,venue', [
+    ('27 November 2026 - 4 December 2026', '5pm - 6pm', 'Studio - 136 Kingsland Road, London E2 8EA'),
+    ('27 November 2026', 'Times vary', 'Studio - 136 Kingsland Road, London E2 8EA'),
+    ('27 November 2026', '5pm - 6pm', 'Online only'),
+    ('27 November 2026', '5pm - 6pm', 'Studio'),
+    ('27 November 2026', '6pm - 5pm', 'Studio - 136 Kingsland Road, London E2 8EA'),
+])
+def test_visible_event_fallback_never_invents_clock_recurrence_or_venue(dates, times, venue):
+    html = ('<html><body><main><h1>Community Talk</h1>'
+            '<p><strong>Date</strong> ' + dates + '</p>'
+            '<p><strong>Time</strong> ' + times + '</p>'
+            '<p><strong>Where</strong> ' + venue + '</p></main></body></html>')
+    with pytest.raises(ValueError, match='html_calendar_event_jsonld_missing'):
+        calendar._detail(source(), html, BASE + '/event/community-talk')
+
+
 def test_calendar_scope_cannot_come_from_single_events_or_navigation(url, body):
     assert not calendar.supports_listing(url, body)
 
