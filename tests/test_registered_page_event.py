@@ -168,6 +168,26 @@ class PageBoundEventTests(unittest.TestCase):
             self.rows(detail(unbounded, table, canonical=UK_URL, og=UK_URL,
                              heading='The Gingerbread Man'), UK_URL)
 
+    def test_last_occurrence_finish_requires_matching_visible_duration(self):
+        item = event(name='Christmas 2026: The Gingerbread Man',
+                     startDate='2026-12-05T11:00:00',
+                     endDate='2026-12-12T11:50:00', url=UK_URL)
+        item['location']['address'].pop('addressCountry')
+        item['location']['address'].update(
+            streetAddress='Douglas Way', addressLocality='Deptford', postalCode='SE8 4AG')
+        table = ('<table><tr><th>Date</th><th>Time</th></tr>'
+                 '<tr><th>Saturday 5th December 2026</th><th>11:00 am</th></tr>'
+                 '<tr><th>Saturday 12th December 2026</th><th>11:00 am</th></tr></table>')
+        length = '<dl><dt><p>Length</p></dt><dd><p>50 minutes</p></dd></dl>'
+        rows = self.rows(detail(item, table + length, canonical=UK_URL, og=UK_URL,
+                                heading='The Gingerbread Man'), UK_URL)
+        self.assertEqual([row['ends_at'] for row in rows],
+                         ['2026-12-05T11:50:00+00:00', '2026-12-12T11:50:00+00:00'])
+        with self.assertRaisesRegex(ValueError, 'html_calendar_clock_conflict'):
+            self.rows(detail(item, table + length.replace('50', '45'),
+                             canonical=UK_URL, og=UK_URL,
+                             heading='The Gingerbread Man'), UK_URL)
+
     def test_missing_country_schedule_requires_uk_domain_and_exact_complete_table(self):
         item = event(name='Jazz Saturdays', startDate='2026-11-21T13:00:00',
                      endDate='2026-12-05T13:00:00')
