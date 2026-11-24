@@ -210,11 +210,9 @@ def publisher_linked_ical_subscription(url):
             and actual.get('action') == 'export_events'
             and actual.get('no_html') in (None, 'true', '1')
             and keys <= {
-                'plugin', 'controller', 'action', 'no_html',
-                # A publisher may intentionally filter the feed. The
-                # existing scoped_endpoint check protects the original
-                # submitted selector, and final ICS parse proves content.
-                'ai1ec_cat_ids', 'ai1ec_tag_ids', 'ai1ec_post_ids'
+                # Reject filtered (category/venue/single-event) exporters.
+                # A partial export must not stand in for a full calendar.
+                'plugin', 'controller', 'action', 'no_html'
             }
             and not (len(path)>2 or (path and path[-1] not in {
                 'events', 'calendar', 'whatson', 'whats-on', 'event-calendar'}))
