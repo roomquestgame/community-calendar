@@ -275,6 +275,7 @@ def find_calendar(website_html, website_url, event_url, fetch, deadline, *, requ
     'none'/'access_denied': no reusable public calendar evidenced.
     """
     inspected = set()
+    inspected_api_roots = set()
     candidates = [(website_url, website_html)]
     pages = []
     endpoints = []
@@ -359,6 +360,47 @@ def find_calendar(website_html, website_url, event_url, fetch, deadline, *, requ
             if parse_qs(urlsplit(url).query).get("format") == ["json"] and _squarespace_collection(data):
                 return url, "squarespace"
             # Invalid/cancelled/single event feed never becomes a registered source.
+        # WordPress advertises its REST root in a rel=api.w.org link. Read
+        # *that* index for an actual supported TEC GET route, rather than
+        # assuming WordPress has a particular plugin or /wp-json location.
+        # This is an optional fallback after publisher-linked subscriptions:
+        # never broaden a filtered calendar, exceed the shared probe budget,
+        # or let an inaccessible API block ordinary HTML review.
+        if (count + 2 <= MAX_REQUESTS and machine_checks + 2 <= MAX_FEEDS
+                and not urlsplit(base).query
+                and CALENDAR_PAGE.search(urlsplit(base).path.lower().rstrip('/'))):
+            from roomquest.wordpress_capabilities import advertised_rest_root, inspect_rest_index
+            api_root = advertised_rest_root(base, html)
+            if (api_root and api_root not in inspected_api_roots
+                    and scoped_endpoint(base, api_root)):
+                inspected_api_roots.add(api_root)
+                count += 1
+                machine_checks += 1
+                try:
+                    index_body = fetch(api_root, "application/json",
+                                       respect_robots=True, allowed_hosts=(_host(website_url),),
+                                       deadline_at=deadline)
+                except PreviewError:
+                    pass
+                else:
+                    capability = inspect_rest_index(api_root, index_body)
+                    endpoint = capability.get('endpoint') if capability else None
+                    if (endpoint and endpoint not in inspected
+                            and scoped_endpoint(base, endpoint)):
+                        inspected.add(endpoint)
+                        count += 1
+                        machine_checks += 1
+                        try:
+                            data = fetch(endpoint, "application/json",
+                                         respect_robots=True, allowed_hosts=(_host(website_url),),
+                                         deadline_at=deadline)
+                        except PreviewError:
+                            pass
+                        else:
+                            checked = classify(endpoint, data, endpoint_only=True)
+                            if (checked.get("p_outcome") == "verified"
+                                    and checked.get("p_type") == "wordpress"):
+                                return endpoint, "wordpress"
         if count >= MAX_REQUESTS:
             break
         if not candidates and pages and page_checks < MAX_PAGES:
