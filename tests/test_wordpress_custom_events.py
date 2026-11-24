@@ -79,7 +79,7 @@ def test_missing_date_does_not_fall_back_to_wordpress_post_date():
 def test_full_pagination_required_even_when_first_page_has_real_events():
     with pytest.raises(ValueError, match='wordpress_custom_source_or_pagination_invalid'):
         wp.extract(profile(), [[post()]], 2, '2026-12-01', '2026-12-30')
-    with pytest.raises(ValueError, match='wordpress_custom_page_invalid'):
+    with pytest.raises(ValueError, match='wordpress_custom_post_invalid'):
         wp.extract(profile(), [['not a publisher post']], 1,
                    '2026-12-01', '2026-12-30')
 
