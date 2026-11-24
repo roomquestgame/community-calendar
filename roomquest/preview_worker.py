@@ -4183,7 +4183,7 @@ def supabase_rpc(path: str, payload: dict, *, timeout: float = 4):
             # Only the private, fenced fetch checkpoint may contain the complete
             # bounded aggregate. All other RPCs retain their existing limit.
             maximum = (1_500_000 if path == "community_collector_openactive_state"
-                       else 920_000 if path in ("community_collector_read_fetch_checkpoint",
+                       else 920_000 if path == "community_collector_read_fetch_checkpoint"
                        else 240_000 if path == "community_collector_read_ical_cache"
                        else 150_000)
             raw = response.read(maximum + 1)
