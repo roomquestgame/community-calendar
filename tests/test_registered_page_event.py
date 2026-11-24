@@ -188,6 +188,34 @@ class PageBoundEventTests(unittest.TestCase):
                              canonical=UK_URL, og=UK_URL,
                              heading='The Gingerbread Man'), UK_URL)
 
+    def test_exact_duplicate_schedule_row_is_one_occurrence(self):
+        item = event(name="Spring 2026: Come 'n' Grow",
+                     startDate='2026-11-27T12:00:00',
+                     endDate='2026-12-18T14:00:00', url=UK_URL)
+        item['location']['address'].pop('addressCountry')
+        item['location']['address'].update(
+            streetAddress='Douglas Way', addressLocality='Deptford', postalCode='SE8 4AG')
+        table = ('<table><tr><th>Date</th><th>Time</th></tr>'
+                 '<tr><td>Friday 27th November 2026</td><td>12:00 pm</td></tr>'
+                 '<tr><td>Friday 4th December 2026</td><td>12:00 pm</td></tr>'
+                 '<tr><td>Friday 11th December 2026</td><td>12:00 pm</td></tr>'
+                 '<tr><td>Friday 18th December 2026</td><td>12:00 pm</td></tr>'
+                 '<tr><td>Friday 18th December 2026</td><td>12:00 pm</td></tr></table>')
+        length = '<dl><dt>Length</dt><dd>2 hours</dd></dl>'
+        rows = self.rows(detail(item, table + length, canonical=UK_URL, og=UK_URL,
+                                heading="Come 'n' Grow"), UK_URL)
+        self.assertEqual([row['starts_at'] for row in rows],
+                         ['2026-11-27T12:00:00+00:00', '2026-12-04T12:00:00+00:00',
+                          '2026-12-11T12:00:00+00:00', '2026-12-18T12:00:00+00:00'])
+        self.assertTrue(all(row['ends_at'].endswith('14:00:00+00:00') for row in rows))
+
+        conflicting = table.replace(
+            '<tr><td>Friday 18th December 2026</td><td>12:00 pm</td></tr></table>',
+            '<tr><td>Friday 11th December 2026</td><td>1:00 pm</td></tr></table>')
+        with self.assertRaisesRegex(ValueError, 'html_calendar_clock_conflict'):
+            self.rows(detail(item, conflicting + length, canonical=UK_URL, og=UK_URL,
+                             heading="Come 'n' Grow"), UK_URL)
+
     def test_missing_country_schedule_requires_uk_domain_and_exact_complete_table(self):
         item = event(name='Jazz Saturdays', startDate='2026-11-21T13:00:00',
                      endDate='2026-12-05T13:00:00')
