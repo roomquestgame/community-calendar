@@ -111,3 +111,27 @@ focused migration, rather than adding more entries to the pre-existing large
 hardcoded \`fetch_checkpoint_profile\` SQL function. No new SQL file is in
 this PR.
 
+
+## Craft / CMS to Spektrix event URL matching
+
+`roomquest/spektrix_cms_links.py` is a source-independent identity join for
+the common case where Spektrix's public `Event.webUrl` is blank, but a venue
+such as The Albany provides an official Craft CMS event page.
+
+It accepts **already observed, first-party** CMS page records containing the
+exact event title, full HTTPS canonical URL, and one or more explicitly
+timezone-aware start instants. It matches a Spektrix event only when its title
+and at least one uncancelled, public performance's startUtc agree. It returns
+`{spektrix_event_id: canonical_publisher_page_url}` for a unique match.
+Two pages matching a show, one page matching two shows, conflicting public
+page facts, foreign hosts and naive timestamps fail closed or remain unresolved.
+It does not fetch Craft GraphQL or create any source and does not infer links
+from titles alone.
+
+**Unfinished:** source-specific Craft entry/instance discovery, durable
+fetch/pagination in the existing DB worker, the public record normalization
+and formal cross-source deduplication/transition. Synthetic tests for the
+unique match and all conflict/absence cases live in
+`tests/test_spektrix_cms_links.py`. The existence of this parser is not
+a functioning Craft collector or an authorized London source import.
+
