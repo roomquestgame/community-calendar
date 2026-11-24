@@ -197,3 +197,26 @@ def test_foreign_publisher_links_and_marketing_mentions_do_not_verify_clients():
         '<a href="https://system.spektrix.com/adctheatre/website/EventList.aspx">Two</a></html>')
     assert result['status'] == 'ambiguous'
     assert {x['client'] for x in result['candidates']} == {'richmix', 'adctheatre'}
+
+
+
+def test_weekly_recurrence_ranges_do_not_duplicate_one_event_or_drop_instances():
+    first = event(firstInstanceDateTime='2026-12-05T14:00:00',
+                  lastInstanceDateTime='2026-12-08T14:00:00',
+                  instanceDates='5 December-8 December')
+    second = event(firstInstanceDateTime='2026-12-12T14:00:00',
+                   lastInstanceDateTime='2026-12-19T14:00:00',
+                   instanceDates='12 December-19 December')
+    records = {}
+
+    api._merge(records, [first], 'events', api.MAX_EVENTS)
+    api._merge(records, [second], 'events', api.MAX_EVENTS)
+    assert list(records) == [EVENT]
+    with pytest.raises(ValueError, match='spektrix_events_conflict'):
+        api._merge(records, [event(name='Entirely different event')], 'events',
+                   api.MAX_EVENTS)
+
+
+def test_payload_at_known_size_limit_is_not_certified_complete():
+    with pytest.raises(ValueError, match='spektrix_events_invalid'):
+        api._items([{}] * api.MAX_EVENTS, api.MAX_EVENTS, 'events')
