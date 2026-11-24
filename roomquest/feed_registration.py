@@ -235,7 +235,15 @@ def classify(url, payload, hint=None, endpoint_only=False, venue_website=False):
             and scoped_endpoint(url, next(iter(parser.calendar_pages)))):
         return {'calendar_page': next(iter(parser.calendar_pages))}
     if len(links) != 1:
-        return review('multiple_calendar_links', 'html') if links else evidence or review('no_reusable_calendar')
+        if links:
+            return review('multiple_calendar_links', 'html')
+        if evidence:
+            return evidence
+        # Calendar brand detection only enriches the existing technical hold.
+        # It never creates a feed endpoint or bypasses publisher access checks.
+        from roomquest.calendar_profile_signals import unsupported_calendar_profile
+        marker = unsupported_calendar_profile(body)
+        return review(marker or 'no_reusable_calendar', 'html' if marker else None)
     endpoint, kind = next(iter(links.items()))
     return {'p_outcome': 'discovered', 'p_endpoint': endpoint, 'p_type': kind}
 
