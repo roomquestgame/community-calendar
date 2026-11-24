@@ -113,7 +113,24 @@ def _event(node):
 
 
 def _document(payload):
-    reader = jsonld_adapter.Blocks()
+    class DetailBlocks(jsonld_adapter.Blocks):
+        def handle_endtag(self, tag):
+            try:
+                super().handle_endtag(tag)
+            except json.JSONDecodeError as exc:
+                # Some publisher narratives contain literal line breaks inside
+                # otherwise valid JSON strings. Do not repair identity, dates,
+                # keys or any other structured field in this HTML-specific path.
+                if not self.active or not exc.msg.startswith('Invalid control character'):
+                    raise
+                from roomquest.registered_page_event import description_only_controls
+                parsed = json.loads(''.join(self.parts), strict=False)
+                if not description_only_controls(parsed):
+                    raise
+                self.blocks.append(parsed)
+                self.active = False
+
+    reader = DetailBlocks()
     reader.feed(payload)
     reader.close()
     if reader.active:
@@ -155,6 +172,15 @@ def _links(url, soup):
         if not link or _url_key(link) == _url_key(url):
             continue
         if _is_detail(link):
+            # Publisher taxonomy links rendered in the calendar's filter
+            # control are not individual events. Require both the explicit
+            # filter container and the exact calendar/platform/slug shape.
+            if (re.fullmatch(r'/(?:events|whats-on|whatson)/platform/[^/]+/?',
+                             urlsplit(link).path, re.I)
+                    and any('filters' in (parent.get('class') or [])
+                            for parent in anchor.parents if parent is not root
+                            and getattr(parent, 'attrs', None))):
+                continue
             links.setdefault(_url_key(link), link)
     # An ItemList's explicit item URLs are structured calendar links even when
     # the publisher does not use /event/ in its permalink paths.
@@ -661,7 +687,11 @@ def _detail(source, payload, url):
         if completed:
             candidates.append(completed)
         elif any(_event(node) for node in nodes):
-            _fail('html_calendar_detail_identity_conflict')
+            from roomquest.registered_page_event import candidates as page_candidates
+            matched = page_candidates(nodes, soup, url, _event, _public_url, _url_key)
+            if matched is None:
+                _fail('html_calendar_detail_identity_conflict')
+            candidates.extend(matched)
         else:
             from roomquest.registered_venue_event_card import read as read_venue_card
             outcome = read_venue_card(source, soup, url)
