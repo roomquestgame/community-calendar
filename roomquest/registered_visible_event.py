@@ -210,9 +210,11 @@ def _hnm_theme_event(source, soup, main, url, title):
         labels = row.select(':scope > .h3')
         values = row.select(':scope > .event-details-line')
         if len(labels) != 1 or len(values) != 1:
-            return None
+            continue
         label = _plain(labels[0].get_text(' ', strip=True)).casefold()
         value = _plain(values[0].get_text(' ', strip=True))
+        if label not in ('dates', 'times', 'location'):
+            continue
         if label in fields or not value:
             return None
         fields[label] = value
