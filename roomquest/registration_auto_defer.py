@@ -17,6 +17,7 @@ AUTO_DEFER_REASONS = frozenset({
     "spektrix_adapter_needed",
     "fullcalendar_adapter_needed",
     "elfsight_adapter_needed",
+    "tockify_adapter_needed",
     "no_extractable_events",
 })
 
