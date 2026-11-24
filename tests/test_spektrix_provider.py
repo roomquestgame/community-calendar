@@ -71,3 +71,13 @@ def test_provider_registration_bridge_rejects_missing_profile():
     with pytest.raises(ValueError,match='spektrix_provider_profile_required'):
         provider_registration.collect(URL,'spektrix',lambda url,accept:'[]',
                                       deadline=100,profile=None)
+
+def test_staged_spektrix_profile_cannot_register_or_collect():
+    with pytest.raises(ValueError, match='spektrix_provider_not_enabled'):
+        provider_registration.collect(
+            URL,'spektrix',lambda url,accept:'[]',deadline=100,
+            profile={**profile(),'ready_for_registration':False},registration_probe=True)
+    with pytest.raises(ValueError,match='spektrix_provider_checkpoint_required'):
+        provider_registration.collect(
+            URL,'spektrix',lambda url,accept:'[]',deadline=100,
+            profile={**profile(),'ready_for_registration':True})

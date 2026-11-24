@@ -60,6 +60,8 @@ def collect(url, adapter, fetch, *, deadline, profile=None, body=None, registrat
     if adapter == 'spektrix':
         if not isinstance(profile, dict) or not profile:
             raise ValueError('spektrix_provider_profile_required')
+        if profile.get('ready_for_registration') is not True:
+            raise ValueError('spektrix_provider_not_enabled')
         # The short calendar probe is NEVER a recurring 60-day source snapshot.
         # Collection must use the future durable checkpoint runner, not this
         # registration-only bridge or a partial one-shot preview.
