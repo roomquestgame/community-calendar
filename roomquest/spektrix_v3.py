@@ -186,7 +186,7 @@ def _event_url(event, profile):
     return link
 
 
-def project(profile, events, instances, plans, venues, start, end):
+def project(profile, events, instances, plans, venues, start, end, *, cms_pages=None):
     """Project one *complete* bounded snapshot; never publish a partial prefix.
 
     An on-sale performance must have a matching Event, plan, real Venue,
@@ -208,6 +208,18 @@ def project(profile, events, instances, plans, venues, start, end):
     _merge(instances_by_id, _items(instances, MAX_INSTANCES, 'instances'), 'instances', MAX_INSTANCES)
     _merge(plans_by_id, _items(plans, MAX_PLANS, 'plans'), 'plans', MAX_PLANS)
     _merge(venues_by_id, _items(venues, MAX_VENUES, 'venues'), 'venues', MAX_VENUES)
+    if cms_pages is not None:
+        # Craft CMS and other publisher pages may be the only trustworthy
+        # deep-link evidence when Spektrix Event.webUrl is empty. Reconcile
+        # against verified exact-title and performance-time evidence.
+        from roomquest.spektrix_cms_links import resolve
+        verified = resolve(profile['publisher_url'], list(events_by_id.values()),
+                           list(instances_by_id.values()), cms_pages)
+        prior = profile.get('event_urls') or {}
+        if (not isinstance(prior, dict) or any(
+                key in prior and prior[key] != url for key, url in verified.items())):
+            _fail('event_link_conflict')
+        profile = dict(profile, event_urls={**prior, **verified})
     records = []
     rejected = 0
     for instance in instances_by_id.values():
@@ -288,7 +300,7 @@ def project(profile, events, instances, plans, venues, start, end):
     }
 
 
-def collect(profile, start, end, fetch, *, deadline_at=None):
+def collect(profile, start, end, fetch, *, deadline_at=None, cms_pages=None):
     """One-shot probe only. Large feeds require durable runner/checkpoint wiring.
 
     The normal publisher transport must be injected. A deadline/size failure
@@ -322,4 +334,5 @@ def collect(profile, start, end, fetch, *, deadline_at=None):
     _merge(items['venues'], _items(read(api_url(client, 'venues')), MAX_VENUES, 'venues'),
            'venues', MAX_VENUES)
     return project(profile, list(items['events'].values()), list(items['instances'].values()),
-                   list(items['plans'].values()), list(items['venues'].values()), start, end)
+                   list(items['plans'].values()), list(items['venues'].values()), start, end,
+                   cms_pages=cms_pages)
