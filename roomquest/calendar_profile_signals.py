@@ -46,8 +46,8 @@ def unsupported_calendar_profile(html):
     if len(matches) == 1 and matches[0] in family_reasons:
         return family_reasons[matches[0]]
     if (matches or re.search(r'/wp-content/(?:plugins|themes)/|'
-                             r'<meta[^>]{0,250}generator[^>]{0,250}wordpress|'
-                             r'rel=[\"\\\']https://api\\.w\\.org/', fragment)):
+                             r'<meta[^>]{0,250}generator[^>]{0,250}wordpress', fragment)
+            or ('<link' in fragment and 'https://api.w.org/' in fragment)):
         return 'wordpress_calendar_adapter_needed'
     return None
 
