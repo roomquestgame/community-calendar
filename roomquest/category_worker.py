@@ -57,6 +57,38 @@ _OPERATIONS = frozenset(('community_collector_claim_category',
                          'community_collector_record_preview_v3',
                          'community_collector_publish_category',
                          'community_collector_finish_category'))
+def _observe_incremental_completion(source, observation):
+    """Log exact count-only pilot evidence without affecting collection."""
+    try:
+        if (source.get('ical_optimization_enabled') is not True
+                or source.get('kind') != 'ical'
+                or source.get('platform_adapter') != 'ical'
+                or type(source.get('source_id')) is not int
+                or not isinstance(observation, dict)):
+            return
+        counts = {key: observation.get(key) for key in (
+            'changed', 'confirmed', 'normalized_reused',
+            'end_only_updated', 'location_skips_reused')}
+        if (any(type(value) is not int or value < 0 for value in counts.values())
+                or type(observation.get('publication_required')) is not bool):
+            return
+        total = counts['changed'] + counts['confirmed']
+        if (total > 500 or any(value > total for key, value in counts.items()
+                               if key not in ('changed', 'confirmed'))):
+            return
+        _LOGGER.info(json.dumps({
+            'event': 'collector_incremental_completion',
+            'category': 'ical',
+            'source_id': source['source_id'],
+            'total': total,
+            **counts,
+            'publication_required': observation['publication_required'],
+        }, separators=(',', ':'), sort_keys=True))
+    except Exception:
+        # Observability must never change the accepted completion result.
+        pass
+
+
 # This is an explicit diagnostic vocabulary, not a shape-only exception-message
 # filter: even a secret that happens to look like a code must not reach logs.
 _ERROR_CODES = frozenset(('database_unavailable', 'staging_deadline', 'incremental_receipt_invalid',
@@ -634,6 +666,8 @@ def collect_category(category, ticket):
                             and source['fetch_checkpoint_version'] == 1):
                         process_args['collection_context'] = args
                 result.update(_process_claimed_source(source, **process_args))
+                _observe_incremental_completion(
+                    source, result.pop('_incremental_observation', None))
                 if result.get('fetch_pending'):
                     # The saved prefix is incomplete. Finishing this claim
                     # dispatches a source-bound fetch continuation, without
