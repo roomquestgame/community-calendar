@@ -654,7 +654,8 @@ def parse(payload, source, *, legacy=False, include_description=False):
     # Narrative retention is independent of the legacy image/venue contract.
     # Enabling the older include_description switch also changes those fields.
     result=parse_ics_preview(payload,allow_ongoing=True,include_images=legacy, include_description=True,
-                             sanitize_description=not include_description)
+                             sanitize_description=not include_description,
+                             include_source_semantics=source.get('ical_optimization_enabled') is True)
     if not result and not date_notices and unsupported:raise ValueError(unsupported[0])
     # Known native publisher identities may supply an event page when URL is
     # absent. Otherwise retain the validated actual feed fallback. Never guess a

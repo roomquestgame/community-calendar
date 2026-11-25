@@ -1197,7 +1197,7 @@ def _preview(title, start, end, venue, lat, lng, url, identity="",
     }
 
 
-def parse_ics_preview(payload: str, *, allow_ongoing=False, include_images=True, include_description=False, sanitize_description=False) -> list[dict]:
+def parse_ics_preview(payload: str, *, allow_ongoing=False, include_images=True, include_description=False, sanitize_description=False, include_source_semantics=False) -> list[dict]:
     """Use upstream combine_ics recurrence expansion and icalendar VEVENT parsing."""
     from icalendar import Calendar
     from scripts.combine_ics import expand_rrules
@@ -1235,6 +1235,9 @@ def parse_ics_preview(payload: str, *, allow_ongoing=False, include_images=True,
                               calendar_categories(item), image=calendar_image(item) if include_images else None,
                               allow_ongoing=allow_ongoing)
             if record:
+                if include_source_semantics:
+                    from roomquest.ical_source_semantics import capture
+                    record["source_semantics_v1"] = capture(item)
                 tzid = item["DTSTART"].params.get("TZID")
                 if isinstance(tzid, str):
                     try:
@@ -3489,7 +3492,7 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                     or source_key in {"mecklenburg_va_libraries", "sarpy_tourism_ne"},
                     deadline_at=deadline, **host_scope)
                 calendar_source = {"url": source["feed_url"], "source_key": source_key,
-                                   **{key: source[key] for key in ('timezone', 'civic_contract_version',
+                                   **{key: source[key] for key in ('timezone', 'ical_optimization_enabled', 'civic_contract_version',
                                       'civic_jurisdiction_id', 'civic_jurisdiction_name') if key in source}}
                 records = parse(payload, calendar_source, legacy=not mapsee,
                                 include_description=civic_ics or raleigh_ics or source_key == "independence_ia_library_family")
@@ -4826,7 +4829,8 @@ def _stage_legacy_events(source, events, *, native_content, deadline, observe_ph
             raise PreviewError("staging_deadline")
         _observe_collection_phase(observe_phase, "stage", operation=operation)
         written = supabase_rpc(operation, {
-            "p_source_key": source["source_key"], "p_events": batch,
+            "p_source_key": source["source_key"],
+            "p_events": [{k: v for k, v in event.items() if k != "source_semantics_v1"} for event in batch],
             **({"p_registered_native_content_version": 1} if native_content else {})
         })
         staged += int(written or 0)
@@ -5127,6 +5131,10 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
     if not publisher_media:
         # Only the v3 RPC accepts a parser capability marker.
         output.pop("p_parser_capability", None)
+    # Publisher semantic evidence belongs to the leased staging protocol, not
+    # the bounded operator-facing preview sample format.
+    output["p_samples"] = [{k: v for k, v in event.items() if k != "source_semantics_v1"}
+                           for event in output["p_samples"]]
     if incremental_plan is not None and output["p_error"] is None:
         operation = "community_collector_complete_incremental"
         completion_phase = "record"
