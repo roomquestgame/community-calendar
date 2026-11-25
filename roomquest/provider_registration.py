@@ -162,6 +162,6 @@ def collect(url, adapter, fetch, *, deadline, profile=None, body=None, registrat
 
 
 def read_profile(url, adapter, rpc):
-    if adapter in ('south_carolina_parks', 'chambermate', 'eventon', 'event_discovery', 'tickera'):
+    if adapter in ('south_carolina_parks', 'chambermate', 'eventon'):
         return {}
     return rpc('community_collector_feed_profile', {'p_url':url, 'p_adapter':adapter}) or {}
