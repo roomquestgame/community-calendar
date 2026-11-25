@@ -144,9 +144,18 @@ def collect(source, fetch, *, body=None, deadline_at=None):
     listing = source.get('feed_url')
     if source.get('platform_adapter') != 'event_discovery' or source.get('kind') != 'json':
         raise ValueError('unregistered_event_discovery_source')
-    page = body if body is not None else fetch(listing, 'text/html,application/xhtml+xml')
-    spec = contract(listing, page)
+    try:
+        page = body if body is not None else fetch(listing, 'text/html,application/xhtml+xml')
+        spec = contract(listing, page)
+    except TypeError as exc:
+        raise ValueError('event_discovery_contract_type_error') from exc
     today = datetime.now(ZoneInfo(spec['timezone'])).date()
     end = today + timedelta(days=61)
-    payload = fetch(spec['endpoint'], 'application/json', calendar_form=form(spec, today.isoformat(), end.isoformat()))
-    return parse(payload, url=listing, zone=spec['timezone'])
+    try:
+        payload = fetch(spec['endpoint'], 'application/json', calendar_form=form(spec, today.isoformat(), end.isoformat()))
+    except TypeError as exc:
+        raise ValueError('event_discovery_transport_type_error') from exc
+    try:
+        return parse(payload, url=listing, zone=spec['timezone'])
+    except TypeError as exc:
+        raise ValueError('event_discovery_parse_type_error') from exc
