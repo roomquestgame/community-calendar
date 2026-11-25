@@ -489,6 +489,17 @@ def register(ticket):
                                 else 'noncanonical_provider_error',
                             }, separators=(',', ':')))
                         return extraction_hold(adapter, exc), body
+                    except Exception as exc:
+                        if adapter == 'spektrix':
+                            code = str(exc).strip("'\\\"")
+                            print(json.dumps({
+                                'event': 'spektrix_registration_failed',
+                                'error_type': type(exc).__name__,
+                                'error_code': code if re.fullmatch(
+                                    r'[a-z][a-z0-9_]{1,70}', code)
+                                    else 'noncanonical_provider_error',
+                            }, separators=(',', ':')))
+                        raise
                 return classify(target, body, candidate.get('type_hint'), endpoint_only, venue_website), body
 
             result, body = check(url, candidate.get('endpoint_only', False),
