@@ -980,6 +980,11 @@ def _request_stream(source, url, *, deadline_at, page_limit, detail_limit, total
     current = url
     contact_links = {}
     payload = yield (url, 'text/html,application/xhtml+xml')
+    # Retain only the first bounded listing response. Publisher calendars often
+    # carry their own venue address in the shared header/footer even when they
+    # do not expose a uniquely labelled Contact/Visit link. Binding still uses
+    # the same strict single-address and exact venue-identity checks below.
+    publisher_listing_payload = payload
     # A custom Wix CMS list is often only the first "Load more" prefix.  The
     # specialist traversal requires the publisher's complete dynamic sitemap
     # and typed collection records, while remaining inside this same durable
@@ -1060,6 +1065,11 @@ def _request_stream(source, url, *, deadline_at, page_limit, detail_limit, total
         check_deadline()
     rows = sorted(records.values(), key=lambda row: (row['starts_at'], row['id']))
     if any(not str(row.get('venue_address') or '').strip() for row in rows):
+        from roomquest.registered_publisher_venue import apply as publisher_venue
+        completed = publisher_venue(rows, publisher_listing_payload, url)
+        if completed is not None:
+            rows = completed
+    if any(not str(row.get('venue_address') or '').strip() for row in rows):
         if len(contact_links) != 1:
             return rows
         contact_url = next(iter(contact_links.values()))
@@ -1068,7 +1078,6 @@ def _request_stream(source, url, *, deadline_at, page_limit, detail_limit, total
         check_deadline()
         contact_body = yield (contact_url, 'text/html,application/xhtml+xml')
         check_deadline()
-        from roomquest.registered_publisher_venue import apply as publisher_venue
         completed = publisher_venue(rows, contact_body, contact_url)
         if completed is not None:
             rows = completed
