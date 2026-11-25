@@ -123,8 +123,11 @@ def parse(payload, *, url, zone):
             continue
         venue = _plain_fragment(event.get('venue'))
         image_node = BeautifulSoup(str(event.get('imageUrl') or ''), 'html.parser').find('img', src=True)
-        item = record(html.unescape(str(event.get('title') or '')), stamp, None, venue, '', '',
-                      event_url, event_url + ':' + stamp, tz=zone)
+        try:
+            item = record(html.unescape(str(event.get('title') or '')), stamp, None, venue, '', '',
+                          event_url, event_url + ':' + stamp, tz=zone)
+        except (TypeError, ValueError, OverflowError):
+            continue
         if item is not None:
             if image_node:
                 image = urljoin(url, image_node['src'])
