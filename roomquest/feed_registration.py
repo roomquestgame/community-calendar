@@ -458,6 +458,15 @@ def register(ticket):
                     except PreviewError:
                         raise
                     except (KeyError, ValueError, TypeError, OverflowError, AttributeError) as exc:
+                        code = str(exc).strip("'\\\"")
+                        if adapter in ('event_discovery', 'tickera'):
+                            print(json.dumps({
+                                'event': 'provider_registration_extraction_hold',
+                                'adapter': adapter,
+                                'error_type': type(exc).__name__,
+                                'error_code': code if re.fullmatch(r'[a-z][a-z0-9_]{1,70}', code)
+                                else 'noncanonical_provider_error',
+                            }, separators=(',', ':')))
                         return extraction_hold(adapter, exc), body
                 return classify(target, body, candidate.get('type_hint'), endpoint_only, venue_website), body
 
