@@ -126,6 +126,54 @@ def test_detail_advertised_api_expands_same_checkpoint_without_repeat(monkeypatc
     assert len(visited) == len(set(visited)) == len(responses) + 1
 
 
+def test_blank_api_weburl_uses_exact_publisher_card_identity(monkeypatch):
+    start = date(2026, 12, 5)
+    monkeypatch.setattr(adapter, '_today', lambda: start)
+    responses = payloads(start)
+    for value in responses.values():
+        if isinstance(value, list):
+            for item in value:
+                if item.get('id') == EVENT:
+                    item['webUrl'] = ''
+    page = HTML.replace(
+        '</body>',
+        '<article class="card"><h4>Beacon Christmas Show</h4>'
+        '<a href="/event/beacon-christmas-show-347737/">Book Now</a>'
+        '</article></body>')
+    [row] = calendar.collect(source(), lambda url, accept: json.dumps(responses[url]),
+                             listing=page)
+    assert row['event_url'] == (
+        'https://www.beaconartscentre.co.uk/event/beacon-christmas-show-347737/')
+
+
+def test_listing_link_requires_prefix_and_exact_nearest_heading(monkeypatch):
+    start = date(2026, 12, 5)
+    monkeypatch.setattr(adapter, '_today', lambda: start)
+    responses = payloads(start)
+    for value in responses.values():
+        if isinstance(value, list):
+            for item in value:
+                if item.get('id') == EVENT:
+                    item['webUrl'] = ''
+    wrong_title = HTML.replace(
+        '</body>',
+        '<article><h4>Different Show</h4>'
+        '<a href="/event/beacon-christmas-show-347737/">Book Now</a>'
+        '</article></body>')
+    with pytest.raises(ValueError, match='spektrix_event_link_missing'):
+        calendar.collect(source(), lambda url, accept: json.dumps(responses[url]),
+                         listing=wrong_title)
+    ambiguous = HTML.replace(
+        '</body>',
+        '<article><h4>Beacon Christmas Show</h4>'
+        '<a href="/event/beacon-christmas-show-347737/">Book Now</a></article>'
+        '<article><h4>Beacon Christmas Show</h4>'
+        '<a href="/event/alternate-show-347737/">Book Now</a></article></body>')
+    with pytest.raises(ValueError, match='html_spektrix_event_link_conflict'):
+        calendar.collect(source(), lambda url, accept: json.dumps(responses[url]),
+                         listing=ambiguous)
+
+
 def test_detail_central_or_foreign_api_does_not_expand(monkeypatch):
     for host in ('system.spektrix.com', 'tickets.attacker.org.uk'):
         body = HTML.replace('tickets.beaconartscentre.co.uk', host)
