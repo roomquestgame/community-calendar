@@ -1463,6 +1463,7 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         try:
             profile = provider_registration.read_profile(url, adapter, supabase_rpc)
             records = provider_registration.collect(url, adapter, fetch, deadline=deadline, profile=profile)
+            records = provider_registration.apply_verified_default_venue(source, records)
         except PreviewError:
             raise
         except (ValueError, KeyError, TypeError, OverflowError, AttributeError) as exc:
