@@ -46,6 +46,14 @@ def test_contact_candidates_reject_foreign_query_and_keep_one_exact_page():
         'https://venue.example/visit/'}
 
 
+def test_literal_contact_page_precedes_a_distinct_visit_page():
+    soup = BeautifulSoup(
+        '<a href="/your-visit/">Your visit</a>'
+        '<a href="/contact/">Contact</a>', 'html.parser')
+    assert venue.contact_link(soup, 'https://venue.example/events/') == {
+        'https://venue.example/contact/'}
+
+
 def test_contact_identity_collapses_only_optional_trailing_slash():
     assert venue.contact_identity('https://venue.example/contact') == (
         'https', 'venue.example', '/contact')

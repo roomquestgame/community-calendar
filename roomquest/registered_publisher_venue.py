@@ -22,7 +22,10 @@ STREET = re.compile(
     r"(?:Road|Rd|Street|St|Lane|Ln|Avenue|Ave|Square|Sq|Way|Drive|Dr|"
     r"Place|Pl|Terrace|Gardens|Northside|Southside|Eastside|Westside))"
     r"\s*,?\s*London\s*,?\s*(" + POSTCODE.pattern + r")\b", re.I)
-CONTACT_LABELS = {"contact", "contact us", "visit us", "your visit", "plan your visit"}
+CONTACT_LABELS = {
+    "contact": 0, "contact us": 0,
+    "visit us": 1, "your visit": 1, "plan your visit": 1,
+}
 
 
 def _plain(value):
@@ -40,16 +43,19 @@ def _root_venue(value):
 def contact_link(soup, base_url):
     """Return exact same-host publisher contact/visit page candidates."""
     host = urlsplit(base_url).netloc
-    found = set()
+    found = {0: set(), 1: set()}
     for node in soup.select("a[href]"):
-        if _key(node.get_text(" ", strip=True)) not in CONTACT_LABELS:
+        label = _key(node.get_text(" ", strip=True))
+        if label not in CONTACT_LABELS:
             continue
         target = urljoin(base_url, node.get("href", ""))
         parsed = urlsplit(target)
         if (parsed.scheme == "https" and parsed.netloc == host and not parsed.query
                 and not parsed.fragment and target != base_url and len(target) <= 1000):
-            found.add(target)
-    return found
+            found[CONTACT_LABELS[label]].add(target)
+    # A literal Contact page is the least ambiguous publisher-owned evidence.
+    # Visit pages remain the fallback when no Contact link exists.
+    return found[0] or found[1]
 
 
 def contact_identity(url):
