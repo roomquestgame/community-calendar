@@ -9,6 +9,12 @@ import re
 MAX_SIGNAL_CHARS = 500_000
 
 
+def _linked_inventory(fragment, host, path):
+    """Require more than one publisher-rendered provider event URL."""
+    return len(set(re.findall(
+        rf'https://(?:www\.)?{host}/{path}[a-z0-9_%./?=&-]*', fragment))) >= 2
+
+
 def unsupported_calendar_profile(html):
     """A descriptive technical hold, never an authorized collector endpoint."""
     if not isinstance(html, str) or not html.lstrip('\ufeff \t\r\n').startswith('<'):
@@ -20,8 +26,10 @@ def unsupported_calendar_profile(html):
             ('elfsightcdn.com/platform.js' in fragment or
              'apps.elfsight.com/p/platform.js' in fragment)):
         return 'elfsight_adapter_needed'
-    if ('system.spektrix.com/' in fragment and
-            re.search(r'/api/v[23]/(?:events|instances)\b', fragment)):
+    if (('system.spektrix.com/' in fragment and
+            re.search(r'/api/v[23]/(?:events|instances)\b', fragment))
+            or ('webcomponents.spektrix.com' in fragment
+                and re.search(r'<spektrix-[a-z0-9-]+\b', fragment))):
         return 'spektrix_adapter_needed'
     if (re.search(r'\b(?:new\s+)?fullcalendar\.calendar\s*\(', fragment) and
             re.search(r'\bevents\s*:', fragment)):
@@ -41,6 +49,48 @@ def unsupported_calendar_profile(html):
     if len(set(re.findall(
             r'https://(?:www\.)?ticketweb\.com/event/[a-z0-9_%./?=&-]+', fragment))) >= 2:
         return 'ticketweb_linked_events_adapter_needed'
+    if _linked_inventory(fragment, r'ticketmaster\.com', r'event/'):
+        return 'ticketmaster_linked_events_adapter_needed'
+    if _linked_inventory(fragment, r'eventbrite\.com', r'e/'):
+        return 'eventbrite_linked_events_adapter_needed'
+    if _linked_inventory(fragment, r'axs\.com', r'events/'):
+        return 'axs_linked_events_adapter_needed'
+    if _linked_inventory(fragment, r'etix\.com', r'ticket/'):
+        return 'etix_linked_events_adapter_needed'
+    if _linked_inventory(fragment, r'tixr\.com', r'groups/'):
+        return 'tixr_linked_events_adapter_needed'
+    # CMS/application shells are provider-family evidence even when their
+    # event endpoint has not yet been verified.  Each signature uses two
+    # independently authored platform assets or an explicit generator.
+    if ('static1.squarespace.com' in fragment
+            and ('definitions.sqspcdn.com' in fragment
+                 or 'images.squarespace-cdn.com' in fragment)):
+        return 'squarespace_adapter_needed'
+    if ('cdn.prod.website-files.com' in fragment
+            and re.search(r'\bdata-wf-(?:page|site)=', fragment)):
+        return 'webflow_calendar_adapter_needed'
+    if re.search(r'<meta[^>]{0,250}generator[^>]{0,250}drupal\s+[0-9]', fragment):
+        return 'drupal_calendar_adapter_needed'
+    if ('edge.growthzonecms.com' in fragment and 'growthzone' in fragment):
+        return 'growthzone_cms_adapter_needed'
+    if 'static.spotapps.co' in fragment and 'cdn.spotapps.co' in fragment:
+        return 'spotapps_calendar_adapter_needed'
+    if 'images.getbento.com' in fragment and 'theme-assets.getbento.com' in fragment:
+        return 'getbento_calendar_adapter_needed'
+    if 'content.elevent.app' in fragment and 'elevent' in fragment:
+        return 'elevent_calendar_adapter_needed'
+    if 'img.ctykit.com' in fragment and 'ctycms.com' in fragment:
+        return 'citykit_calendar_adapter_needed'
+    if '.thethirdplace.is' in fragment and 'website-files.com' in fragment:
+        return 'thethirdplace_calendar_adapter_needed'
+    if 'blackbaudhosting.com' in fragment and re.search(
+            r'https://[a-z0-9.-]+\.blackbaudhosting\.com/', fragment):
+        return 'blackbaud_calendar_adapter_needed'
+    if ('owner.com' in fragment and 'ordersave.com' in fragment):
+        return 'owner_calendar_adapter_needed'
+    if re.search(r'<meta[^>]{0,250}generator[^>]{0,250}go\s*daddy website builder',
+                 fragment):
+        return 'godaddy_calendar_adapter_needed'
     # A Wix application shell is its own platform signal.  Test it before
     # WordPress plugin names because Wix warmup JSON can contain arbitrary
     # publisher-authored text and bundled asset names.  Native Wix Events and

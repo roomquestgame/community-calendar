@@ -12,6 +12,10 @@ def test_embedded_profiles_require_strong_two_part_signals():
     assert unsupported_calendar_profile('''<html><script src="https://widget.staging.venuepilot.com/events.js"></script><a href="#/events">Shows</a></html>''') == 'venuepilot_adapter_needed'
     assert unsupported_calendar_profile('''<html><a href="https://cityweb.myvscloud.com/webtrac/web/search.html?Module=AR">Programs</a></html>''') == 'webtrac_adapter_needed'
     assert unsupported_calendar_profile('''<html><a href="https://www.ticketweb.com/event/one-tickets/100">One</a><a href="https://www.ticketweb.com/event/two-tickets/200">Two</a></html>''') == 'ticketweb_linked_events_adapter_needed'
+    assert unsupported_calendar_profile('''<html><a href="https://www.ticketmaster.com/event/one">One</a><a href="https://ticketmaster.com/event/two">Two</a></html>''') == 'ticketmaster_linked_events_adapter_needed'
+    assert unsupported_calendar_profile('''<html><a href="https://www.eventbrite.com/e/one">One</a><a href="https://eventbrite.com/e/two">Two</a></html>''') == 'eventbrite_linked_events_adapter_needed'
+    assert unsupported_calendar_profile('''<html><a href="https://www.axs.com/events/one">One</a><a href="https://axs.com/events/two">Two</a></html>''') == 'axs_linked_events_adapter_needed'
+    assert unsupported_calendar_profile('''<html><script src="https://webcomponents.spektrix.com/starter.js"></script><spektrix-event-list></spektrix-event-list></html>''') == 'spektrix_adapter_needed'
     assert unsupported_calendar_profile('<html><meta name="generator" content="WordPress 5.4"></html>') == 'wordpress_calendar_adapter_needed'
     assert unsupported_calendar_profile('<html><script src="/wp-content/plugins/events-manager/events.js"></script></html>') == 'events_manager_adapter_needed'
     assert unsupported_calendar_profile('<html><link href="/wp-content/plugins/the-events-calendar/events.css"></html>') == 'the_events_calendar_adapter_needed'
@@ -24,12 +28,21 @@ def test_embedded_profiles_require_strong_two_part_signals():
       {"appsWarmupData":{"140603ad-af8d-84a5-2c80-a0f60cb47351":{}}}</script></html>''') == 'wix_events_adapter_needed'
     assert unsupported_calendar_profile('''<html><script id="wix-warmup-data" type="application/json">
       {"appsWarmupData":{"dataBinding":{"schemas":{}}}}</script></html>''') == 'wix_custom_page_adapter_needed'
+    assert unsupported_calendar_profile('''<html><script src="https://static1.squarespace.com/a.js"></script><img src="https://images.squarespace-cdn.com/x"></html>''') == 'squarespace_adapter_needed'
+    assert unsupported_calendar_profile('''<html data-wf-page="abc"><script src="https://cdn.prod.website-files.com/x.js"></script></html>''') == 'webflow_calendar_adapter_needed'
+    assert unsupported_calendar_profile('<html><meta name="Generator" content="Drupal 11 (https://www.drupal.org)"></html>') == 'drupal_calendar_adapter_needed'
+    assert unsupported_calendar_profile('''<html><script src="https://static.spotapps.co/x.js"></script><img src="https://cdn.spotapps.co/x"></html>''') == 'spotapps_calendar_adapter_needed'
+    assert unsupported_calendar_profile('''<html><img src="https://images.getbento.com/x"><script src="https://theme-assets.getbento.com/x.js"></script></html>''') == 'getbento_calendar_adapter_needed'
 
 
 def test_marketing_mentions_and_json_do_not_create_adapter_claims():
     assert unsupported_calendar_profile('<html><p>Spektrix ticketing partner</p></html>') is None
     assert unsupported_calendar_profile('<html><script src="/fullcalendar.js"></script></html>') is None
     assert unsupported_calendar_profile('<html><div class="elfsight-app-example"></div></html>') is None
+    assert unsupported_calendar_profile('<html><a href="https://ticketmaster.com/event/one">Tickets</a></html>') is None
+    assert unsupported_calendar_profile('<html><script src="https://static1.squarespace.com/a.js"></script></html>') is None
+    assert unsupported_calendar_profile('<html><script src="https://cdn.prod.website-files.com/a.js"></script></html>') is None
+    assert unsupported_calendar_profile('<html><p>Built by a Drupal developer</p></html>') is None
     assert unsupported_calendar_profile('{"events":[]}') is None
     assert unsupported_calendar_profile('''<html><script id="wix-warmup-data" type="application/json">
       {"componentName":"eo-event","asset":"/event-organiser/card.js"}</script></html>''') == 'wix_custom_page_adapter_needed'
@@ -41,7 +54,7 @@ def test_footer_signals_in_large_documents():
 
 
 def test_new_signals_stay_on_existing_monthly_auto_defer_path():
-    for reason in ('elfsight_adapter_needed', 'spektrix_adapter_needed', 'fullcalendar_adapter_needed', 'tockify_adapter_needed', 'venuepilot_adapter_needed', 'webtrac_adapter_needed', 'ticketweb_linked_events_adapter_needed', 'wix_events_adapter_needed', 'wix_custom_page_adapter_needed', 'wordpress_calendar_adapter_needed', 'the_events_calendar_adapter_needed', 'events_manager_adapter_needed', 'mec_adapter_needed', 'tickera_adapter_needed', 'event_discovery_adapter_needed'):
+    for reason in ('elfsight_adapter_needed', 'spektrix_adapter_needed', 'fullcalendar_adapter_needed', 'tockify_adapter_needed', 'venuepilot_adapter_needed', 'webtrac_adapter_needed', 'ticketweb_linked_events_adapter_needed', 'ticketmaster_linked_events_adapter_needed', 'eventbrite_linked_events_adapter_needed', 'axs_linked_events_adapter_needed', 'etix_linked_events_adapter_needed', 'tixr_linked_events_adapter_needed', 'squarespace_adapter_needed', 'webflow_calendar_adapter_needed', 'drupal_calendar_adapter_needed', 'growthzone_cms_adapter_needed', 'spotapps_calendar_adapter_needed', 'getbento_calendar_adapter_needed', 'elevent_calendar_adapter_needed', 'citykit_calendar_adapter_needed', 'thethirdplace_calendar_adapter_needed', 'blackbaud_calendar_adapter_needed', 'owner_calendar_adapter_needed', 'godaddy_calendar_adapter_needed', 'wix_events_adapter_needed', 'wix_custom_page_adapter_needed', 'wordpress_calendar_adapter_needed', 'the_events_calendar_adapter_needed', 'events_manager_adapter_needed', 'mec_adapter_needed', 'tickera_adapter_needed', 'event_discovery_adapter_needed'):
         assert auto_defer_nonactionable({'p_outcome': 'review', 'p_reason': reason, 'p_type': 'html'}) == {
             'p_outcome': 'retry', 'p_reason': reason, 'p_retry_seconds': MONTH_SECONDS,
         }
