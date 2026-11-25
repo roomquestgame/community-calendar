@@ -18,7 +18,7 @@ from urllib.parse import urlencode, urlsplit
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 MAX_DAYS = 60
-PAGE_DAYS = 7
+PAGE_DAYS = 60
 MAX_EVENTS = 700
 MAX_INSTANCES = 3000
 MAX_VENUES = 150
@@ -368,6 +368,10 @@ def collect(profile, start, end, fetch, *, deadline_at=None, cms_pages=None):
             rows = _items(read(api_url(client, family, start=first, end=last,
                                        base=profile.get('api_base'))), limit, family)
             _merge(items[family], rows, family, limit)
+    _merge(items['venues'], _items(read(api_url(client, 'venues',
+                                                base=profile.get('api_base'))),
+                                  MAX_VENUES, 'venues'),
+           'venues', MAX_VENUES)
     active_plans = set()
     for instance in items['instances'].values():
         if instance.get('cancelled') is False and instance.get('isOnSale') is True:
@@ -376,16 +380,22 @@ def collect(profile, start, end, fetch, *, deadline_at=None, cms_pages=None):
             active_plans.add(instance['planId'])
     if len(active_plans) > MAX_PLANS:
         _fail('spektrix_plans_limit')
-    for plan_id in sorted(active_plans):
-        plan = _payload(read(api_url(client, 'plans', identity=plan_id,
-                                     base=profile.get('api_base'))))
-        if not isinstance(plan, dict) or plan.get('id') != plan_id:
-            _fail('spektrix_plan_invalid')
-        items['plans'][plan_id] = plan
-    _merge(items['venues'], _items(read(api_url(client, 'venues',
-                                                base=profile.get('api_base'))),
-                                  MAX_VENUES, 'venues'),
-           'venues', MAX_VENUES)
+    if len(items['venues']) == 1:
+        # With exactly one API venue every client plan necessarily belongs to
+        # that venue. Avoid redundant seating-plan downloads; they can be large
+        # and publisher pacing must fit the ordinary worker deadline.
+        venue_id = next(iter(items['venues']))
+        items['plans'] = {
+            plan_id: {'id': plan_id, 'venue': {'id': venue_id}}
+            for plan_id in active_plans
+        }
+    else:
+        for plan_id in sorted(active_plans):
+            plan = _payload(read(api_url(client, 'plans', identity=plan_id,
+                                         base=profile.get('api_base'))))
+            if not isinstance(plan, dict) or plan.get('id') != plan_id:
+                _fail('spektrix_plan_invalid')
+            items['plans'][plan_id] = plan
     return project(profile, list(items['events'].values()), list(items['instances'].values()),
                    list(items['plans'].values()), list(items['venues'].values()), start, end,
                    cms_pages=cms_pages)
