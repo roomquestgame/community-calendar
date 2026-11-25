@@ -828,14 +828,18 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
                          and allowed_hosts == ('artspacenc.org',)
                          and valid_artspace_calendar_form(calendar_form))
         from roomquest import eventon
-        eventon_form = (url == eventon.ENDPOINT and accept == 'application/json'
-                        and respect_robots and allowed_hosts == (eventon.HOST,)
+        eventon_parts = urlparse(url)
+        eventon_host = eventon_parts.hostname
+        eventon_form = (eventon_parts.scheme == 'https'
+                        and eventon_parts.path == '/' and eventon_parts.query == 'evo-ajax=eventon_init_load'
+                        and accept == 'application/json' and respect_robots
+                        and eventon_host is not None and allowed_hosts == (eventon_host,)
                         and isinstance(calendar_form, dict) and len(calendar_form) <= 150
                         and all(isinstance(v, str) and len(v) <= 2048
                                 for v in calendar_form.values())
                         and re.fullmatch(r'[a-zA-Z0-9]{8,24}', calendar_form.get('nonce', ''))
                         and all(k == 'nonce' or re.fullmatch(
-                            r'(?:global|cals\[evcal_calendar_277\]\[sc\])(?:\[[a-zA-Z0-9_-]+\])+', k)
+                            r'(?:global|cals\[evcal_calendar_[1-9][0-9]{0,9}\]\[sc\])(?:\[[a-zA-Z0-9_-]+\])+', k)
                                 for k in calendar_form))
         # A second boundary keeps internal callers from turning this into an
         # arbitrary write-capable transport. Never replay a POST on redirect.
@@ -878,7 +882,7 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
         headers['Referer'] = ('https://www.cfengage.org/calendar' if cfengage_form
                               else 'https://goodshepherdsouthhill.org/welcome/calendar/')
         if eventon_form:
-            headers['Referer'] = eventon.CALENDAR
+            headers['Referer'] = f'https://{eventon_host}/'
         if boston_cares_form:
             headers['Referer'] = 'https://www.bostoncares.org/calendar'
         if artspace_form:
@@ -1417,9 +1421,9 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         if source.get('kind') != ('xml' if adapter == 'growthzone' else 'json'):
             raise PreviewError('provider_kind_mismatch')
         deadline = min(monotonic() + 32, deadline_at - 8 if deadline_at is not None else float('inf'))
-        def fetch(target, accept):
+        def fetch(target, accept, **options):
             return fetch_publisher(target, accept, respect_robots=True, deadline_at=deadline,
-                                   allowed_hosts=(urlparse(url).hostname,))
+                                   allowed_hosts=(urlparse(url).hostname,), **options)
         try:
             profile = provider_registration.read_profile(url, adapter, supabase_rpc)
             records = provider_registration.collect(url, adapter, fetch, deadline=deadline, profile=profile)
