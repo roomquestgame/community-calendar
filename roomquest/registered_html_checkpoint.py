@@ -136,12 +136,23 @@ def _decode(source, checkpoint, context, *, at=None):
     allowed = plan['allowed_hosts']
     pages = state['pages']
     branded_scope = False
-    if (type(pages) is list and pages and isinstance(pages[0], dict)
-            and len(allowed) == 2 and allowed[0] == source_host
-            and pages[0].get('url') == source['feed_url'] and len(plan['tasks']) > 1):
-        from roomquest.registered_html_spektrix import verified_api_host
-        branded_scope = verified_api_host(
-            source['feed_url'], pages[0].get('body'), plan['tasks'][1]) == allowed[1]
+    if (type(pages) is list and pages and len(allowed) == 2
+            and allowed[0] == source_host):
+        api_host = allowed[1]
+        first_api = next((i for i, task in enumerate(plan['tasks'])
+                          if urlsplit(task).hostname == api_host), None)
+        if (isinstance(first_api, int) and first_api > 0
+                and first_api <= len(pages)
+                and all(urlsplit(task).hostname == source_host
+                        for task in plan['tasks'][:first_api])
+                and all(urlsplit(task).hostname == api_host
+                        for task in plan['tasks'][first_api:])):
+            evidence = pages[first_api - 1]
+            from roomquest.registered_html_spektrix import verified_api_host
+            branded_scope = (isinstance(evidence, dict)
+                             and verified_api_host(source['feed_url'],
+                                                   evidence.get('body'),
+                                                   plan['tasks'][first_api]) == api_host)
     if (state['started_at'] != plan['started_at']
             or not (allowed == [source_host] or branded_scope)
             or type(pages) is not list
@@ -250,7 +261,9 @@ def collect_chunk(source, fetch, *, checkpoint=None, listing=None,
                 and urlsplit(next_request[0]).hostname not in plan['allowed_hosts']):
             from roomquest.registered_html_spektrix import verified_api_host
             api_host = verified_api_host(url, body, next_request[0])
-            if (plan['cursor'] != 0 or target != url or not api_host):
+            source_host = urlsplit(url).hostname
+            if (plan['allowed_hosts'] != [source_host]
+                    or urlsplit(target).hostname != source_host or not api_host):
                 raise ValueError('html_calendar_capture_invalid')
             plan = progress.extend_verified_hosts(
                 plan, [api_host], scope_verified=True, at=at)

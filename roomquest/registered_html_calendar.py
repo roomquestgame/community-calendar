@@ -1051,6 +1051,16 @@ def _request_stream(source, url, *, deadline_at, page_limit, detail_limit, total
         check_deadline()
         body = yield (detail_url, 'text/html,application/ld+json')
         check_deadline()
+        # Some publishers advertise their branded Spektrix v3 base only on
+        # event details, beside the performance web components, rather than on
+        # the calendar index.  The detail is already an exact publisher-
+        # evidenced URL inside this traversal, so use the same guarded adapter
+        # before the generic JSON-LD parser rejects the page.  The checkpoint
+        # expands transport scope only after persisting and hashing this body.
+        from roomquest import registered_html_spektrix
+        if registered_html_spektrix.supports_listing(url, body):
+            return (yield from registered_html_spektrix.stream(
+                source, url, body, deadline_at=deadline_at))
         from roomquest.registered_publisher_venue import contact_identity, contact_link
         for candidate in contact_link(_html(body), detail_url):
             contact_links.setdefault(contact_identity(candidate), candidate)
