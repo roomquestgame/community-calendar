@@ -978,6 +978,7 @@ def _request_stream(source, url, *, deadline_at, page_limit, detail_limit, total
     inventories = set()
     required_pages = set()
     current = url
+    contact_links = set()
     payload = yield (url, 'text/html,application/xhtml+xml')
     # A custom Wix CMS list is often only the first "Load more" prefix.  The
     # specialist traversal requires the publisher's complete dynamic sitemap
@@ -990,6 +991,8 @@ def _request_stream(source, url, *, deadline_at, page_limit, detail_limit, total
     while True:
         check_deadline()
         soup = _html(payload)
+        from roomquest.registered_publisher_venue import contact_link
+        contact_links.update(contact_link(soup, current))
         from roomquest.wordpress_visible_event import listing_evidence
         for target, evidence in listing_evidence(soup, current).items():
             prior = detail_evidence.get(_url_key(target))
@@ -1035,6 +1038,8 @@ def _request_stream(source, url, *, deadline_at, page_limit, detail_limit, total
         check_deadline()
         body = yield (detail_url, 'text/html,application/ld+json')
         check_deadline()
+        from roomquest.registered_publisher_venue import contact_link
+        contact_links.update(contact_link(_html(body), detail_url))
         try:
             detail_rows = _detail(source, body, detail_url,
                                   listing_evidence=detail_evidence.get(_url_key(detail_url)))
@@ -1051,7 +1056,21 @@ def _request_stream(source, url, *, deadline_at, page_limit, detail_limit, total
             if len(records) > MAX_EVENTS:
                 _fail('html_calendar_event_limit')
         check_deadline()
-    return sorted(records.values(), key=lambda row: (row['starts_at'], row['id']))
+    rows = sorted(records.values(), key=lambda row: (row['starts_at'], row['id']))
+    if any(not str(row.get('venue_address') or '').strip() for row in rows):
+        if len(contact_links) != 1:
+            return rows
+        contact_url = next(iter(contact_links))
+        if total_limit is not None and len(pages) + len(links) + 1 > total_limit:
+            _fail('html_calendar_request_limit')
+        check_deadline()
+        contact_body = yield (contact_url, 'text/html,application/xhtml+xml')
+        check_deadline()
+        from roomquest.registered_publisher_venue import apply as publisher_venue
+        completed = publisher_venue(rows, contact_body, contact_url)
+        if completed is not None:
+            rows = completed
+    return rows
 
 
 

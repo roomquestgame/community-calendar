@@ -84,6 +84,18 @@ def test_nested_heading_time_and_room_leave_street_for_shared_resolver():
     assert row["venue_address"] == ""
 
 
+def test_landmark_widget_compacts_repeated_name_to_named_physical_address():
+    detail = shell(
+        '<header class="entry-header"><h1 class="entry-title">Concert</h1>'
+        '<p class="eventdates">Saturday 12th December, 6pm</p>'
+        '<p class="eventvenue">Tower of London — The Chapel</p></header>'
+        '<div class="venueinfo">Venue information Tower of London — The Chapel '
+        'Tower of London London EC3N 4AB United Kingdom Get directions</div>',
+        description="Saturday 12 December 2026, 6pm concert")
+    [row] = wp.read(source(), detail, FEED + "concert/")
+    assert row["venue_address"] == "Tower of London, London, EC3N 4AB, United Kingdom"
+
+
 def test_unbounded_visible_recurrence_is_an_explicit_non_discrete_exclusion():
     soup = shell('<header><h1>Garden Trail<div class="date-range">'
                  'EVERY SAT &amp; SUN, 12-6PM</div></h1></header>')

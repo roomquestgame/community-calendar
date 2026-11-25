@@ -257,7 +257,15 @@ def _entry_header(source, soup, url, evidence=None):
         text = _plain(block.get_text(" ", strip=True))
         if venue.casefold() in text.casefold() and POSTCODE.search(text) and "London" in text:
             before = re.split(r"\bGet directions\b", text, maxsplit=1, flags=re.I)[0]
-            candidates.append(before.removeprefix("Venue information ").strip())
+            candidate = before.removeprefix("Venue information ").strip()
+            # A venue widget may repeat an iconic site's name around a room
+            # label. Retain one publisher-authored landmark + city + postcode.
+            root = _plain(re.split(r"\s+[-–—]\s+", venue, maxsplit=1)[0])
+            postal = POSTCODE.search(candidate)
+            if (postal and root and not re.search(r"\b\d{1,5}\s+[A-Za-z]", candidate)
+                    and len(re.findall(re.escape(root), candidate, re.I)) >= 2):
+                candidate = f"{root}, London, {postal.group()}, United Kingdom"
+            candidates.append(candidate)
     if day is None or len(candidates) != 1:
         return None
     return _row(source, soup, url, _plain(titles[0].get_text(" ", strip=True)), day,
