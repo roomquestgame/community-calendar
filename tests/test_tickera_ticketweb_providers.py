@@ -1,0 +1,114 @@
+from datetime import datetime, timedelta, timezone
+import html
+import json
+from unittest.mock import patch
+
+import pytest
+
+from roomquest import (feed_registration, preview_worker, provider_registration,
+                       tickera_provider, ticketweb_event_discovery)
+from roomquest.registration_formats import source_key
+
+
+DAY = (datetime.now(timezone.utc) + timedelta(days=7)).date()
+START = DAY.isoformat() + ' 19:00'
+
+
+def tickera_page():
+    return f'''<html><link href="/wp-content/plugins/tickera-event-calendar/includes/fullcalendar/lib/main.css">
+    <div id="tc_calendar"></div><script>document.addEventListener('DOMContentLoaded', function() {{
+    var calendar = new FullCalendar.Calendar(document.getElementById('tc_calendar'), {{
+    events: [{{title: 'Public show', start: '{START}', end: '{DAY.isoformat()} 20:00',
+    url: 'https://venue.example.org/event/public-show/', classNames: 'tcec-event-',
+    backgroundImage: 'https://venue.example.org/show.jpg'}}], eventDidMount: function() {{}} }}); }});</script></html>'''
+
+
+def event_discovery_page():
+    settings = {'type': 'calendar3', 'current_datetime': {
+        'date': DAY.isoformat() + ' 09:00:00', 'timezone_type': 3, 'timezone': 'America/Boise'}}
+    return f'''<html><link href="/wp-content/plugins/event-discovery/css/tw-default.css">
+    <script>jQuery.ajax({{url: 'https://venue.example.org/wp-admin/admin-ajax.php', data: {{
+    action: 'get_events_artist_calendar', nonce: '123456789a', start: start_date, end: end_date,
+    params: '{html.escape(json.dumps(settings))}',
+    monthview: 'standard'}}}});</script></html>'''
+
+
+def event_discovery_payload():
+    return json.dumps({'events': [{
+        'id': 'Public show', 'start': DAY.isoformat(), 'title': 'Public show',
+        'sortkey': START + ':00', 'url': 'https://venue.example.org/tm-event/public-show/',
+        'imageUrl': '<img src="https://i.ticketweb.com/show.jpg">',
+        'venue': '<div>Fixture Hall<br>Boise, ID</div>'}]})
+
+
+def test_tickera_contract_uses_calendar_array_and_wordpress_timezone():
+    page = tickera_page()
+    assert tickera_provider.supports_listing('https://venue.example.org/calendar/', page)
+    fetch = lambda url, accept, **kwargs: json.dumps({'timezone_string': 'America/New_York'})
+    [row] = tickera_provider.collect({
+        'feed_url': 'https://venue.example.org/calendar/', 'source_key': 'fixture',
+        'platform_adapter': 'tickera', 'kind': 'json'}, fetch, body=page)
+    assert row['title'] == 'Public show'
+    assert row['event_url'].endswith('/event/public-show/')
+    assert row['image_url'].endswith('/show.jpg')
+
+
+def test_ticketweb_event_discovery_contract_uses_public_display_action():
+    page = event_discovery_page()
+    spec = ticketweb_event_discovery.contract('https://venue.example.org/calendar/', page)
+    calls = []
+    def fetch(url, accept, **kwargs):
+        calls.append((url, kwargs))
+        return event_discovery_payload()
+    [row] = ticketweb_event_discovery.collect({
+        'feed_url': 'https://venue.example.org/calendar/', 'source_key': 'fixture',
+        'platform_adapter': 'event_discovery', 'kind': 'json'}, fetch, body=page)
+    assert row['title'] == 'Public show'
+    assert row['venue_name'] == 'Fixture Hall Boise, ID'
+    assert calls[0][0] == spec['endpoint']
+    assert calls[0][1]['calendar_form']['action'] == 'get_events_artist_calendar'
+
+
+@pytest.mark.parametrize(('adapter','marker','page','extra'), [
+    ('tickera', '/wp-content/plugins/tickera/', tickera_page(),
+     {'https://venue.example.org/wp-json/': json.dumps({'timezone_string':'America/New_York'})}),
+    ('event_discovery', '/wp-content/plugins/event-discovery/', event_discovery_page(),
+     {'https://venue.example.org/wp-admin/admin-ajax.php': event_discovery_payload()}),
+])
+def test_feedzilla_registration_and_recurring_collection_share_provider(adapter, marker, page, extra):
+    home = f'<html><link href="{marker}front.css"><a href="/calendar/">Calendar</a></html>'
+    url = 'https://venue.example.org/'
+    calendar = url + 'calendar/'
+    receipts = []
+    def rpc(method, args, **kwargs):
+        if method.endswith('claim_registration'):
+            return {'url': url}
+        if method.endswith('feed_profile'):
+            return {}
+        receipts.append(args)
+        return True
+    def fetch(target, accept, **kwargs):
+        if target == url:
+            return home
+        if target == calendar:
+            return page
+        if target in extra:
+            return extra[target]
+        raise AssertionError(target)
+    with patch.object(feed_registration, 'supabase_rpc', rpc), patch.object(
+            feed_registration, 'fetch_publisher', fetch):
+        assert feed_registration.register('ticket')['outcome'] == 'discovered'
+    assert (receipts[0]['p_endpoint'], receipts[0]['p_type']) == (calendar, adapter)
+
+    source = {'feed_url': calendar, 'source_key': source_key(calendar),
+              'platform_adapter': adapter, 'kind': 'json'}
+    with patch.object(preview_worker, 'supabase_rpc', rpc), patch.object(
+            preview_worker, 'fetch_publisher', fetch):
+        result = preview_worker.preview_source(source)
+    assert result['p_future_count'] == 1
+
+
+def test_provider_identity_is_not_generic_fullcalendar():
+    assert provider_registration.family('https://venue.example.org/calendar/', tickera_page()) == 'tickera'
+    assert provider_registration.family(
+        'https://venue.example.org/calendar/', event_discovery_page()) == 'event_discovery'

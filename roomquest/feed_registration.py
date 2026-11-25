@@ -195,6 +195,14 @@ def classify(url, payload, hint=None, endpoint_only=False, venue_website=False):
         return evidence
     if endpoint_only:
         return evidence if evidence and evidence['p_outcome'] == 'review' else review('no_reusable_calendar')
+    # Standard provider plugins may advertise their calendar from the site
+    # homepage. Follow exactly one same-host calendar and independently verify
+    # the provider contract there; a generic calendar link is never enough.
+    from roomquest import tickera_provider, ticketweb_event_discovery
+    for module in (ticketweb_event_discovery, tickera_provider):
+        destination = module.calendar_destination(url, body)
+        if destination:
+            return {'calendar_page': destination}
     from roomquest.libcal_registration import subscription
     libcal = subscription(url, body)
     if libcal:
