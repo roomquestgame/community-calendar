@@ -105,6 +105,24 @@ def test_one_parser_fetches_all_details_and_retains_their_own_native_evidence():
         native.validate_record(row, source())
 
 
+def test_addressless_publisher_venue_uses_one_exact_contact_page_after_capture():
+    contact_url = BASE + '/contact/'
+    item = event(location={'@type': 'Place', 'name': 'Publisher Hall'})
+    index = listing((ONE,), extra='<a href="/contact/">Contact</a>')
+    contact = ('<html><head><meta property="og:site_name" content="Publisher Hall">'
+               '</head><body><main>Publisher Hall, 35-47 Bethnal Green Road, '
+               'London E1 6LA</main></body></html>')
+    fetch = fetcher({ONE: detail(item), contact_url: contact})
+
+    [row] = calendar.collect(source(), fetch, listing=index)
+
+    assert [call.args[0] for call in fetch.call_args_list] == [ONE, contact_url]
+    assert row['venue_address'] == (
+        '35-47 Bethnal Green Road, London, E1 6LA, United Kingdom')
+    assert row['location_provenance'] == 'publisher_contact_street_pending_geocode'
+    assert row['publisher_details']['venue_address_evidence_url'] == contact_url
+
+
 def test_detail_failure_logs_exact_public_url_and_preserves_reason(capsys):
     fetch = fetcher({ONE: '<html><body><main><h1>Reading</h1></main></body></html>'})
     with pytest.raises(ValueError, match='html_calendar_event_jsonld_missing'):
