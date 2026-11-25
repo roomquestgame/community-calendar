@@ -88,7 +88,13 @@ def supports_listing(url, page):
 
 
 def parse(payload, *, host=HOST, calendar=CALENDAR, calendar_id=CALENDAR_ID, city='Richmond'):
-    data = json.loads(payload)['cals'][calendar_id]
+    document = json.loads(payload)
+    if isinstance(document, dict) and document.get('status') == 'bad':
+        message = str(document.get('msg', '')).casefold()
+        if 'nonce' in message and ('fail' in message or 'invalid' in message):
+            raise ValueError('eventon_nonce_unavailable')
+        raise ValueError('invalid_eventon_calendar')
+    data = document['cals'][calendar_id]
     if not isinstance(data['json'], list) or len(data['json']) > 100:
         raise ValueError('invalid_eventon_calendar')
     page = BeautifulSoup(data['html'], 'html.parser')

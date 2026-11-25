@@ -29,12 +29,34 @@ def unsupported_calendar_profile(html):
     if ('data-tockify-calendar=' in fragment and
             'public.tockify.com/browser/embed.js' in fragment):
         return 'tockify_adapter_needed'
+    if ('venuepilot.com' in fragment
+            and (re.search(r'venuepilot\.com/[^"\']*(?:widget|event)', fragment)
+                 or '#/events' in fragment)):
+        return 'venuepilot_adapter_needed'
+    if re.search(r'https://[a-z0-9.-]+\.myvscloud\.com/webtrac/web/search\.html(?:[?&"\']|$)',
+                 fragment):
+        return 'webtrac_adapter_needed'
+    # Multiple publisher-rendered TicketWeb event links identify a linked
+    # ticketing inventory, not merely a footer or one-off purchase button.
+    if len(set(re.findall(
+            r'https://(?:www\.)?ticketweb\.com/event/[a-z0-9_%./?=&-]+', fragment))) >= 2:
+        return 'ticketweb_linked_events_adapter_needed'
+    # A Wix application shell is its own platform signal.  Test it before
+    # WordPress plugin names because Wix warmup JSON can contain arbitrary
+    # publisher-authored text and bundled asset names.  Native Wix Events and
+    # custom/static Wix calendars require different completeness contracts.
+    if ('id="wix-warmup-data"' in fragment or "id='wix-warmup-data'" in fragment):
+        from roomquest.wix_public_events import WIX_EVENTS
+        if WIX_EVENTS in fragment:
+            return 'wix_events_adapter_needed'
+        return 'wix_custom_page_adapter_needed'
     # WordPress event publishers may advertise legacy plugin fingerprints
     # even without a readable events API. Report a *technical hold*, not a
     # feed. Specific plugin families are more useful than a CMS generator.
     from roomquest.wordpress_capabilities import wordpress_fingerprints
     matches = wordpress_fingerprints(html)
     family_reasons = {
+        'the-events-calendar': 'the_events_calendar_adapter_needed',
         'events-manager': 'events_manager_adapter_needed',
         'event-organiser': 'event_organiser_adapter_needed',
         'modern-events-calendar': 'mec_adapter_needed',
