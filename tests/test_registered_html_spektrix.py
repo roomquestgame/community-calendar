@@ -20,6 +20,8 @@ VENUE = '201AGBHDRLQHNHPHKKMPKLGPMDRDTDMVL'
 STAMP = datetime(2026, 11, 25, 12, tzinfo=timezone.utc)
 HTML = ('<html><head><link rel="import" href="' + BASE
         + '/webcomponents/html"></head><body><h1>What’s On</h1></body></html>')
+COMPONENT = ('<html><body><spektrix-donate client-name="beaconartscentre" '
+             'custom-domain="tickets.beaconartscentre.co.uk"></spektrix-donate></body></html>')
 DETAIL = LISTING + 'event/beacon-christmas-show/'
 INDEX = ('<html><body><main><h1>What’s On</h1><article><a href="' + DETAIL
          + '">Book Now</a></article></main></body></html>')
@@ -107,7 +109,7 @@ def test_detail_advertised_api_expands_same_checkpoint_without_repeat(monkeypatc
     def fetch(url, accept):
         visited.append(url)
         if url == DETAIL:
-            return HTML
+            return COMPONENT
         return json.dumps(responses[url])
 
     first = checkpoint.collect_chunk(source(), fetch, listing=INDEX,
