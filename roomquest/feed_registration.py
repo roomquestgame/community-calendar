@@ -202,19 +202,20 @@ def classify(url, payload, hint=None, endpoint_only=False, venue_website=False):
         }
     parser = CalendarLinks(url)
     parser.feed(body)
+    # A provider's homepage can contain SEO event summaries as well as its
+    # actual calendar link. Prefer the latter and run the same native collector
+    # at the destination; never register the homepage summary as the feed.
+    if not endpoint_only:
+        from roomquest import tickera_provider, ticketweb_event_discovery
+        for module in (ticketweb_event_discovery, tickera_provider):
+            destination = module.calendar_destination(url, body)
+            if destination:
+                return {'calendar_page': destination}
     evidence = collection_evidence(url, body)
     if evidence and (evidence['p_outcome'] == 'verified' or (not endpoint_only and evidence['p_outcome'] == 'discovered') or evidence.get('p_reason') in ('single_event_page','localist_filter_unverified')):
         return evidence
     if endpoint_only:
         return evidence if evidence and evidence['p_outcome'] == 'review' else review('no_reusable_calendar')
-    # Standard provider plugins may advertise their calendar from the site
-    # homepage. Follow exactly one same-host calendar and independently verify
-    # the provider contract there; a generic calendar link is never enough.
-    from roomquest import tickera_provider, ticketweb_event_discovery
-    for module in (ticketweb_event_discovery, tickera_provider):
-        destination = module.calendar_destination(url, body)
-        if destination:
-            return {'calendar_page': destination}
     from roomquest.libcal_registration import subscription
     libcal = subscription(url, body)
     if libcal:
@@ -484,6 +485,18 @@ def register(ticket):
 
             result, body = check(url, candidate.get('endpoint_only', False),
                                  candidate.get('verified_venue_website', False))
+            # Known native WordPress/Squarespace feeds take precedence over
+            # SEO event summaries too, not only over failed HTML extraction.
+            # Reuse the existing bounded discovery and collection verification.
+            if (not candidate.get('endpoint_only') and body
+                    and result.get('p_outcome') == 'verified'
+                    and result.get('p_type') == 'jsonld'):
+                from roomquest.wordpress_capabilities import wordpress_fingerprints
+                if ('the-events-calendar' in wordpress_fingerprints(body)
+                        or 'squarespace' in body.lower()):
+                    recovered = recover_html_feed(url, body, deadline)
+                    if recovered:
+                        result = recovered
             if (type(candidate.get('registered_html_calendar_version')) is int
                     and candidate['registered_html_calendar_version'] == 1
                     and not candidate.get('endpoint_only')
@@ -525,8 +538,10 @@ def register(ticket):
             # collector, not a new HTML parser or a guessed timezone. Keep the
             # original review hold on a denied, incomplete or unprofiled feed.
             if (not candidate.get('endpoint_only') and body
-                    and result.get('p_outcome') == 'review'
-                    and result.get('p_reason') in {'html_adapter_needed', 'no_reusable_calendar'}
+                    and ((result.get('p_outcome') == 'review'
+                          and result.get('p_reason') in {'html_adapter_needed', 'no_reusable_calendar'})
+                         or (result.get('p_outcome') == 'verified'
+                             and result.get('p_type') == 'jsonld'))
                     and body.lstrip().lstrip(chr(0xfeff)).lstrip().startswith('<')
                     and document_kind(body) != 'xml'):
                 growthzone_endpoint = growthzone_calendar_candidate(url, body)

@@ -93,3 +93,34 @@ deployment, production write, source approval, or public acceptance claim is
 part of this preparation. The parent owns release and durable regional
 reporting. Capability home is EVE-6; Admin findings relate to EVE-10, and local
 acceptance to EVE-150/EVE-151.
+
+## November 25 — supported-provider URL routing repair
+
+Owner requested simple URL submission into existing supported collectors.
+Tickera/Event Discovery now follow one advertised same-host calendar at common
+calendar paths (`events`, `shows`, `whats-on`, etc.), retaining query selectors
+and refusing ambiguous or venue-path-widening navigation. Their actual
+collector validates the destination before registration. Provider navigation
+and native Squarespace collections take priority over page SEO JSON-LD;
+verified TEC/GrowthZone native discovery also precedes JSON-LD acceptance.
+No new provider types, queue, scheduler, database schema or source resets.
+
+Valid empty Tickera/Event Discovery arrays return empty recurring snapshots;
+initial registration still requires extracted events. Malformed Event Discovery
+rows with no valid events remain an error. Tickera's documented calendar may
+be category-filtered: it represents that configured calendar, not an assumed
+publisher-wide archive. Official references:
+https://tickera.com/tickera-documentation/event-calendar/
+https://info.ticketweb.com/client-website-services/
+https://commerce-apis.squarespace.com/view-json-data
+
+Focused URL-to-registration-to-preview and affected provider suites: 120 passed.
+Existing outdated TEC reason assertions and GrowthZone registration-probe mock
+signature/retry expectations were aligned with already-deployed behavior.
+Read-only live state: Motorco #6403 has 11 included staged events; Knitting
+Factory #6402 has 15 held for coordinates across four venue-label variants.
+Both are approved/healthy/preview-complete and publication-supported. Neither
+had a publication request or future public events at this observation.
+Local publisher checks could not resolve DNS; this is not publisher rejection.
+Required .claude/bram-conventions.md remains unavailable (404). No routine CI.
+Release and live acceptance evidence will be recorded in the canonical master.
