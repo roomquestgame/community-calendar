@@ -194,17 +194,43 @@ def _text(value):
 
 
 def _event_url(event, profile):
+    """Use publisher URL evidence, then Spektrix's documented event route."""
     link = event.get('webUrl') or profile.get('event_urls', {}).get(event['id'])
+    if not link:
+        value = event.get('webEventId')
+        params = None
+        if isinstance(value, str) and value and len(value) <= 100:
+            params = {'WebEventId': value}
+        else:
+            numeric = re.match(r'^([0-9]{1,12})', event.get('id') or '')
+            if numeric:
+                params = {'EventId': numeric[1]}
+        if params:
+            base = api_base(profile['client'], profile.get('api_base'))
+            link = base[:-len('/api/v3')] + '/website/EventDetails.aspx?' + urlencode(params)
     if not isinstance(link, str):
         _fail('spektrix_event_link_missing')
     parts = urlsplit(link)
     publisher = urlsplit(profile['publisher_url'])
-    allowed = {publisher.hostname, *(profile.get('verified_event_hosts') or ())}
+    api = urlsplit(api_base(profile['client'], profile.get('api_base')))
+    allowed = {publisher.hostname, api.hostname, *(profile.get('verified_event_hosts') or ())}
     if (parts.scheme != 'https' or parts.username or parts.password
             or parts.hostname not in allowed or parts.fragment
             or len(link) > 1200 or not parts.path):
         _fail('spektrix_event_link_unverified')
     return link
+
+
+def _city(address):
+    """Retain an API-published locality hint; geocoding remains downstream."""
+    parts = [part.strip() for part in str(address or '').split(',') if part.strip()]
+    if len(parts) >= 3 and re.fullmatch(r'[A-Z]{2}(?:\s+\d{5}(?:-\d{4})?)?', parts[-1]):
+        return parts[-2]
+    if len(parts) >= 2:
+        postcode = re.search(r'\b[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}\b', parts[-1], re.I)
+        candidate = parts[-1][:postcode.start()].strip() if postcode else ''
+        return candidate or parts[-2]
+    return ''
 
 
 def project(profile, events, instances, plans, venues, start, end, *, cms_pages=None):
@@ -219,10 +245,8 @@ def project(profile, events, instances, plans, venues, start, end, *, cms_pages=
     if not isinstance(profile.get('publisher_url'), str):
         _fail('spektrix_publisher_invalid')
     publisher = urlsplit(profile['publisher_url'])
-    country = profile.get('country')
     if (publisher.scheme != 'https' or not publisher.hostname
-            or publisher.username or publisher.password
-            or not isinstance(country, str) or not re.fullmatch(r'[A-Z]{2}', country)):
+            or publisher.username or publisher.password):
         _fail('spektrix_publisher_invalid')
     events_by_id, instances_by_id, plans_by_id, venues_by_id = {}, {}, {}, {}
     _merge(events_by_id, _items(events, MAX_EVENTS, 'events'), 'events', MAX_EVENTS)
@@ -271,19 +295,23 @@ def project(profile, events, instances, plans, venues, start, end, *, cms_pages=
                     or url.username or url.password):
                 _fail('spektrix_venue_evidence_missing')
             address = _text(details['address'])
-        city = _text(details.get('city'))
-        if not city and profile.get('home_city') and re.search(
-                r'\b' + re.escape(profile['home_city']) + r'\b', address, re.I):
-            city = profile['home_city']
+        city = _text(details.get('city')) or _city(address)
         time_zone = details.get('timezone') or profile.get('timezone')
-        if (not address or not city or not isinstance(time_zone, str)
-                or not _text(venue.get('name'))):
+        if not address or not _text(venue.get('name')):
             _fail('spektrix_venue_location_unresolved')
-        local = _local(instance.get('start'), time_zone)
         instant = _utc(instance.get('startUtc'))
-        if local.astimezone(timezone.utc) != instant:
-            _fail('spektrix_time_conflict')
-        if not intervals[0][0] <= local.date() <= intervals[-1][1]:
+        if isinstance(time_zone, str):
+            local = _local(instance.get('start'), time_zone)
+            if local.astimezone(timezone.utc) != instant:
+                _fail('spektrix_time_conflict')
+            local_date = local.date()
+        else:
+            raw_local = instance.get('start')
+            try:
+                local_date = date.fromisoformat(raw_local[:10])
+            except (TypeError, ValueError):
+                _fail('spektrix_time_invalid')
+        if not intervals[0][0] <= local_date <= intervals[-1][1]:
             _fail('spektrix_instance_window_mismatch')
         minutes = event.get('duration')
         if type(minutes) is not int or minutes < 0 or minutes > 24 * 60:

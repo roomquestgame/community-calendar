@@ -191,10 +191,15 @@ def classify(url, payload, hint=None, endpoint_only=False, venue_website=False):
     # A directly submitted Spektrix client landing URL already carries the
     # provider and exact client slug. Preserve that deterministic identity
     # instead of downgrading the source to generic HTML. This is recognition
-    # only; the normal provider-profile, access and collector gates remain.
+    # only; normal access, registration and collection safeguards remain.
     from roomquest.spektrix_discovery import submitted_website
-    if submitted_website(url):
-        return review('spektrix_adapter_needed', 'spektrix')
+    spektrix = submitted_website(url)
+    if spektrix:
+        return {
+            'p_outcome': 'discovered',
+            'p_endpoint': spektrix['api_base'] + '/events',
+            'p_type': 'spektrix',
+        }
     parser = CalendarLinks(url)
     parser.feed(body)
     evidence = collection_evidence(url, body)

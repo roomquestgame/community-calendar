@@ -87,6 +87,24 @@ def test_instance_plan_venue_link_has_stable_performance_identity():
     assert row['event_url'].startswith('https://www.thealbany.org.uk/events/')
 
 
+def test_api_facts_are_collectable_without_a_manual_location_profile():
+    value = {
+        'client': 'foxtucsontheatre',
+        'api_base': 'https://tickets.foxtucson.com/foxtucsontheatre/api/v3',
+        'publisher_url': 'https://tickets.foxtucson.com/foxtucsontheatre/website/',
+    }
+    fox_event = event(id=EVENT, webUrl='', webEventId='gingerbread-man')
+    fox_instance = instance(start='2026-12-05T07:00:00',
+                            startUtc='2026-12-05T14:00:00Z')
+    fox_venue = venue(name='Fox Tucson Theatre',
+                      address='17 West Congress Street, Tucson, AZ 85701')
+    [row] = api.project(value, [fox_event], [fox_instance], [plan()],
+                        [fox_venue], START, STOP)['events']
+    assert row['venue_city'] == 'Tucson'
+    assert row['timezone'] is None
+    assert row['event_url'].endswith(
+        '/website/EventDetails.aspx?WebEventId=gingerbread-man')
+
 def test_second_venue_is_not_replaced_by_first_venue():
     other = '401ANPJQJQPQMRSBDNMVNLSPGTRBVQVRH'
     new_plan = '9806ASSTKDLDBPRRRVQQRRDHSJMQVBSNQ'
@@ -105,8 +123,6 @@ def test_missing_venue_event_link_or_matching_event_fails_whole_snapshot():
     scenarios = [
         ([event()], [instance()], [], [venue()], 'spektrix_plan_venue_unresolved'),
         ([event()], [instance()], [plan()], [], 'spektrix_plan_venue_unresolved'),
-        ([event(webUrl='')], [instance()], [plan()], [venue()],
-         'spektrix_event_link_missing'),
         ([event(webUrl='http://evil.example/show')], [instance()], [plan()], [venue()],
          'spektrix_event_link_unverified'),
         ([], [instance()], [plan()], [venue()], 'spektrix_event_manifest_mismatch'),
@@ -309,10 +325,11 @@ def test_public_craft_page_matches_api_event_without_weburl():
                        [venue()], START, STOP, cms_pages=cms)['events']
     assert len(rows) == 1
     assert rows[0]['event_url'] == cms[0]['url']
-    # Without observed first-party page evidence the blank API webUrl holds.
-    with pytest.raises(ValueError, match='spektrix_event_link_missing'):
-        api.project(profile(), [event(webUrl='')], [instance()], [plan()],
-                    [venue()], START, STOP)
+    # With no CMS page, the documented Spektrix EventDetails route remains a
+    # stable public event link derived from the API event ID.
+    fallback = api.project(profile(), [event(webUrl='')], [instance()], [plan()],
+                           [venue()], START, STOP)['events'][0]['event_url']
+    assert fallback.endswith('/website/EventDetails.aspx?EventId=347737')
 
 
 def test_cms_page_conflict_with_existing_verified_event_link_is_held():

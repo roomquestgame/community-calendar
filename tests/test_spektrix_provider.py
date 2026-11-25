@@ -84,7 +84,10 @@ def test_same_organization_branded_api_is_exactly_bound():
 
 
 def test_exact_source_url_and_publisher_profile_are_required():
-    assert spektrix_provider.validate(source(),profile())==profile()
+    validated = spektrix_provider.validate(source(), profile())
+    assert validated['client'] == CLIENT
+    assert validated['api_base'] == 'https://system.spektrix.com/thealbany/api/v3'
+    assert validated['publisher_url'] == PUBLISHER
     for modified in (
         dict(source(),source_key='municipal_wrong'),
         dict(source(),feed_url='https://system.spektrix.com/richmix/api/v3/events'),
@@ -110,17 +113,13 @@ def test_short_live_probe_calls_bounded_api_with_injected_transport(monkeypatch)
     assert (called[0][2]-called[0][1]).days==spektrix_provider.MAX_PROBE_DAYS-1
 
 
-def test_provider_registration_bridge_rejects_missing_profile():
-    with pytest.raises(ValueError,match='spektrix_provider_profile_required'):
-        provider_registration.collect(URL,'spektrix',lambda url,accept:'[]',
-                                      deadline=100,profile=None)
+def test_public_feed_does_not_require_a_stored_profile():
+    assert provider_registration.collect(
+        URL, 'spektrix', lambda url, accept: '[]', deadline=100,
+        profile=None, registration_probe=True) == []
 
-def test_staged_spektrix_profile_cannot_register_or_collect():
-    with pytest.raises(ValueError, match='spektrix_provider_not_enabled'):
-        provider_registration.collect(
-            URL,'spektrix',lambda url,accept:'[]',deadline=100,
-            profile={**profile(),'ready_for_registration':False},registration_probe=True)
-    with pytest.raises(ValueError,match='spektrix_provider_checkpoint_required'):
-        provider_registration.collect(
-            URL,'spektrix',lambda url,accept:'[]',deadline=100,
-            profile={**profile(),'ready_for_registration':True})
+
+def test_public_feed_uses_the_same_dispatch_for_recurring_collection():
+    assert provider_registration.collect(
+        URL, 'spektrix', lambda url, accept: '[]', deadline=100,
+        profile=None) == []
