@@ -9,6 +9,7 @@ Spektrix's Web/Public events and instances list different objects; joining
 them through instance.event.id, instance.planId and plan.venue.id is required
 to avoid assigning a ticketing client's headquarters to every performance.
 """
+from concurrent.futures import ThreadPoolExecutor
 from datetime import date, datetime, timedelta, timezone
 from html import unescape
 import json
@@ -24,6 +25,7 @@ MAX_INSTANCES = 3000
 MAX_VENUES = 150
 MAX_PLANS = 120
 MAX_BODY = 3_000_000
+MAX_CONCURRENT_PLAN_REQUESTS = 3
 CLIENT = re.compile(r'[a-z][a-z0-9_-]{1,59}\Z')
 API_ID = re.compile(r'[A-Za-z0-9-]{10,80}\Z')
 
@@ -401,12 +403,25 @@ def collect(profile, start, end, fetch, *, deadline_at=None, cms_pages=None):
             for plan_id in active_plans
         }
     else:
-        for plan_id in sorted(active_plans):
-            plan = _payload(read(api_url(client, 'plans', identity=plan_id,
-                                         base=profile.get('api_base'))))
-            if not isinstance(plan, dict) or plan.get('id') != plan_id:
-                _fail('spektrix_plan_invalid')
-            items['plans'][plan_id] = plan
+        # A multi-venue client requires its referenced seating plans to resolve
+        # each performance to the correct physical Venue. These plan documents
+        # can be comparatively expensive even though only venue.id is needed.
+        # Keep concurrency deliberately small; the shared publisher transport
+        # still applies its host pacing, robots and deadline policy to every
+        # request. map() preserves deterministic plan/result ordering and any
+        # failed request still holds the complete snapshot.
+        plan_ids = sorted(active_plans)
+
+        def read_plan(plan_id):
+            return plan_id, _payload(read(api_url(
+                client, 'plans', identity=plan_id, base=profile.get('api_base'))))
+
+        with ThreadPoolExecutor(max_workers=MAX_CONCURRENT_PLAN_REQUESTS) as pool:
+            resolved_plans = pool.map(read_plan, plan_ids)
+            for plan_id, plan in resolved_plans:
+                if not isinstance(plan, dict) or plan.get('id') != plan_id:
+                    _fail('spektrix_plan_invalid')
+                items['plans'][plan_id] = plan
     return project(profile, list(items['events'].values()), list(items['instances'].values()),
                    list(items['plans'].values()), list(items['venues'].values()), start, end,
                    cms_pages=cms_pages)
