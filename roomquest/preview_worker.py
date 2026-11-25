@@ -1463,7 +1463,13 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         try:
             profile = provider_registration.read_profile(url, adapter, supabase_rpc)
             records = provider_registration.collect(url, adapter, fetch, deadline=deadline, profile=profile)
-            records = provider_registration.apply_verified_default_venue(source, records)
+            location_claim = {**source, **{
+                key: profile.get(key) for key in (
+                    'publisher_default_venue', 'publisher_default_lat',
+                    'publisher_default_lng', 'publisher_default_evidence')
+                if isinstance(profile, dict) and key in profile
+            }}
+            records = provider_registration.apply_verified_default_venue(location_claim, records)
         except PreviewError:
             raise
         except (ValueError, KeyError, TypeError, OverflowError, AttributeError) as exc:
