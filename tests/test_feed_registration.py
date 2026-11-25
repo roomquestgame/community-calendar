@@ -28,8 +28,8 @@ def test_follow_only_an_unambiguous_calendar_subscription():
 def test_direct_spektrix_client_website_keeps_provider_identity():
     url = 'https://tickets.foxtucson.com/foxtucsontheatre/website/'
     assert classify(url, '<html><title>Fox Tucson Theatre</title></html>') == {
-        'p_outcome': 'review',
-        'p_reason': 'spektrix_adapter_needed',
+        'p_outcome': 'discovered',
+        'p_endpoint': 'https://tickets.foxtucson.com/foxtucsontheatre/api/v3/events',
         'p_type': 'spektrix',
     }
 
