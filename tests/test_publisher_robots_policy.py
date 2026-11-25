@@ -230,7 +230,7 @@ def test_transient_robots_network_failure_temporarily_allows_collection(monkeypa
         assert worker.robots_allowed("publisher.example", "/events")
         assert worker.robots_allowed("publisher.example", "/events?page=2")
         assert opened.call_count == 1
-        assert worker._checkpoint_robots_snapshot({"feed_url": "https://publisher.example/events"}) is None
+        assert worker._robots_cache["publisher.example"][2] is None
     finally:
         _restore_robots_state(previous)
 
