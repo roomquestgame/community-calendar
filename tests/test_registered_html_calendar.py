@@ -917,10 +917,11 @@ def test_different_query_selected_occurrences_are_not_collapsed():
     assert {row['event_url'] for row in rows} == set(urls)
 
 
-def test_description_length_limit_cannot_drop_native_evidence_silently():
+def test_description_length_limit_preserves_native_evidence():
     item = event(description='x' * (native.MAX_DESCRIPTION + 1))
-    with pytest.raises(ValueError, match='registered_native_description_too_long'):
-        calendar.collect(source(), fetcher({ONE: detail(item)}), listing=listing((ONE,)))
+    row, = calendar.collect(source(), fetcher({ONE: detail(item)}), listing=listing((ONE,)))
+    assert row['description'] == 'x' * native.MAX_DESCRIPTION
+    native.validate_record(row, source())
 
 
 # Publisher image regression: event metadata is preferred, and an unambiguous

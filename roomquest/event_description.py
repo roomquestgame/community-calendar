@@ -21,7 +21,10 @@ _DIVI_SHORTCODE = re.compile(
 )
 
 
-def description(value, *, limit=2000):
+MAX_EVENT_DESCRIPTION_CHARACTERS = 12000
+
+
+def description(value, *, limit=MAX_EVENT_DESCRIPTION_CHARACTERS):
     if value is None:
         return ''
     if not isinstance(value, str):
@@ -47,3 +50,23 @@ def description(value, *, limit=2000):
     if _URL_ONLY.fullmatch(text):
         return ''
     return text[:limit]
+
+def calendar_description(item, title=""):
+    """Read the occurrence's own plain/HTML alternative; never fetch or guess."""
+    primary = description(str(item.get("DESCRIPTION", "")))
+    normalized_title = " ".join(str(title).split()).casefold()
+    primary_key = " ".join(primary.split()).casefold()
+    alternatives = item.get("X-ALT-DESC", [])
+    alternatives = alternatives if isinstance(alternatives, list) else [alternatives]
+    for value in alternatives:
+        if str(getattr(value, "params", {}).get("FMTTYPE", "")).lower() != "text/html":
+            continue
+        candidate = description(str(value))
+        candidate_key = " ".join(candidate.split()).casefold()
+        if not candidate_key or candidate_key == normalized_title:
+            continue
+        if not primary_key or primary_key == normalized_title:
+            return candidate
+        if len(candidate_key) > len(primary_key) and primary_key in candidate_key:
+            return candidate
+    return primary

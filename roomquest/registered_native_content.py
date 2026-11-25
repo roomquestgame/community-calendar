@@ -11,7 +11,7 @@ HTML_VERSION = 'registered_html_jsonld_v1'
 HTML_SPEKTRIX_VERSION = 'registered_html_spektrix_v1'
 HTML_CAPABILITY = 'registered_html_calendar_version'
 HTML_DESCRIPTION_FIELD = 'rockhouse_event_description'
-MAX_DESCRIPTION = 12000
+from roomquest.event_description import MAX_EVENT_DESCRIPTION_CHARACTERS as MAX_DESCRIPTION
 CAPABILITY = 'registered_native_content_version'
 
 
@@ -148,11 +148,8 @@ def attach(row, source, *, description_value=None, image_value=None, evidence_ur
         raise ValueError('registered_native_evidence_invalid')
     evidence = evidence_url if detail else source['feed_url']
     from roomquest.event_description import description
-    # One extra character detects overflow after the existing sanitizer, without
-    # silently truncating the native narrative or counting UTF-8 bytes as text.
-    text = description(description_value, limit=MAX_DESCRIPTION + 1)
-    if len(text) > MAX_DESCRIPTION:
-        raise ValueError('registered_native_description_too_long')
+    # Bound authentic text rather than rejecting the entire calendar.
+    text = description(description_value, limit=MAX_DESCRIPTION)
     candidate = image_candidate(image_value, evidence)
     row['description'] = text
     row['registered_native_content'] = {
@@ -187,9 +184,7 @@ def attach_spektrix(row, source, *, client, api_base, description_value=None,
             or _organization_domain(api_host.hostname) != _organization_domain(publisher.hostname)):
         raise ValueError('registered_native_evidence_invalid')
     from roomquest.event_description import description
-    text = description(description_value, limit=MAX_DESCRIPTION + 1)
-    if len(text) > MAX_DESCRIPTION:
-        raise ValueError('registered_native_description_too_long')
+    text = description(description_value, limit=MAX_DESCRIPTION)
     candidate = image_candidate(image_value, row['event_url'])
     row['description'] = text
     row['registered_native_content'] = {
