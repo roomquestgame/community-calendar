@@ -123,6 +123,22 @@ def test_addressless_publisher_venue_uses_one_exact_contact_page_after_capture()
     assert row['publisher_details']['venue_address_evidence_url'] == contact_url
 
 
+def test_addressless_publisher_venue_uses_one_exact_listing_footer_address():
+    item = event(location={'@type': 'Place', 'name': 'Publisher Hall'})
+    index = listing((ONE,), extra=(
+        '<meta property="og:site_name" content="Publisher Hall">'
+        '<footer>Publisher Hall, 35-47 Bethnal Green Road, '
+        'London E1 6LA</footer>'))
+    fetch = fetcher({ONE: detail(item)})
+
+    [row] = calendar.collect(source(), fetch, listing=index)
+
+    assert [call.args[0] for call in fetch.call_args_list] == [ONE]
+    assert row['venue_address'] == (
+        '35-47 Bethnal Green Road, London, E1 6LA, United Kingdom')
+    assert row['publisher_details']['venue_address_evidence_url'] == FEED
+
+
 def test_equivalent_contact_links_do_not_create_false_ambiguity():
     contact_url = BASE + '/contact/'
     item = event(location={'@type': 'Place', 'name': 'Publisher Hall'})
