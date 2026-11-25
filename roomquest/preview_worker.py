@@ -4806,11 +4806,11 @@ def _preview_fetch_chunk(source, pacing, *, adapter, allowed_hosts, collection_c
         raise
 
 
-def _event_batches(events, *, empty=False):
+def _event_batches(events, *, empty=False, batch_size=STAGING_BATCH_SIZE):
     batches, batch, size = [], [], 2
     for event in events:
         event_size = len(json.dumps(event, ensure_ascii=False).encode("utf-8")) + 2
-        if batch and (len(batch) >= STAGING_BATCH_SIZE or size + event_size > 150_000):
+        if batch and (len(batch) >= batch_size or size + event_size > 150_000):
             batches.append(batch)
             batch, size = [], 2
         batch.append(event)
@@ -4823,7 +4823,10 @@ def _event_batches(events, *, empty=False):
 def _stage_legacy_events(source, events, *, native_content, deadline, observe_phase):
     staged = 0
     operation = "community_collector_record_staged_events"
-    for batch in _event_batches(events, empty=True):
+    # The staging gateway accepts up to 100 records / 180 KB. Keep the
+    # conservative byte bound, but avoid 29 round trips for a large theatre.
+    batch_size = 100 if source.get("platform_adapter") == "spektrix" else STAGING_BATCH_SIZE
+    for batch in _event_batches(events, empty=True, batch_size=batch_size):
         _observe_collection_phase(observe_phase, "stage")
         if monotonic() > deadline - 4:
             raise PreviewError("staging_deadline")

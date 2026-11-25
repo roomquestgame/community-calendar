@@ -249,3 +249,28 @@ def test_broken_observer_cannot_change_staging_or_recorded_source_outcome(source
     assert rpc.call_args.args[0] == 'community_collector_record_preview'
     assert rpc.call_args.args[1]['p_error'] == (None if source_error is None else 'robots_denied')
     observer.assert_called()
+
+
+def test_spektrix_stages_large_snapshot_with_gateway_sized_batches():
+    events = [{'id': str(i), 'title': 'Performance'} for i in range(571)]
+    calls = []
+    def rpc(path, data):
+        calls.append(data['p_events'])
+        return len(data['p_events'])
+    with patch.object(w, 'supabase_rpc', side_effect=rpc):
+        count = w._stage_legacy_events(
+            {'source_key': 'theatre', 'platform_adapter': 'spektrix'}, events,
+            native_content=False, deadline=float('inf'), observe_phase=None)
+    assert count == 571
+    assert [len(batch) for batch in calls] == [100, 100, 100, 100, 100, 71]
+    assert [event for batch in calls for event in batch] == events
+
+
+def test_spektrix_large_batches_preserve_byte_bound():
+    import json
+    events = [{'id': str(i), 'description': 'x' * 12000} for i in range(100)]
+    batches = w._event_batches(events, batch_size=100)
+    assert len(batches) > 1
+    assert all(len(json.dumps(batch, ensure_ascii=False).encode('utf-8')) <= 150000
+               for batch in batches)
+    assert [event for batch in batches for event in batch] == events
