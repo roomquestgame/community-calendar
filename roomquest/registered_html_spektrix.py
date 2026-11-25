@@ -10,14 +10,16 @@ from datetime import datetime, timedelta
 from html import unescape
 import re
 from time import monotonic
-from urllib.parse import urlsplit
+from urllib.parse import urljoin, urlsplit
 from zoneinfo import ZoneInfo
+
+from bs4 import BeautifulSoup
 
 from roomquest import spektrix_discovery as discovery
 from roomquest import spektrix_provider as provider
 from roomquest import spektrix_v3 as api
 
-VERSION = 'registered_html_spektrix_v1'
+VERSION = 'registered_html_spektrix_v2'
 ZONE = 'Europe/London'
 POSTCODE = re.compile(r'\b[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}\b', re.I)
 
@@ -129,6 +131,77 @@ def _city(raw):
     return ''
 
 
+def _listing_event_urls(publisher_url, listing_html, events):
+    """Bind observed first-party CMS cards to exact Spektrix event identities.
+
+    Some Spektrix tenants deliberately leave Event.webUrl empty while their
+    server-rendered calendar publishes links whose final numeric token is the
+    public prefix of the same Spektrix event ID.  Require that token *and* the
+    nearest card heading to match exactly.  Ambiguity holds the snapshot.
+    """
+    try:
+        origin = urlsplit(publisher_url)
+        if (not isinstance(listing_html, str) or len(listing_html) > 3_000_000
+                or not isinstance(events, list)):
+            _fail('event_link_evidence_invalid')
+        prefixes = {}
+        names = {}
+        for event in events:
+            identity = event.get('id') if isinstance(event, dict) else None
+            name = event.get('name') if isinstance(event, dict) else None
+            match = re.match(r'^([0-9]{3,12})(?=[A-Za-z])', identity or '')
+            label = re.sub(r'\s+', ' ', unescape(name)).strip().casefold() \
+                if isinstance(name, str) else ''
+            if not match or not label:
+                continue
+            token = match.group(1)
+            if token in prefixes and prefixes[token] != identity:
+                _fail('event_link_conflict')
+            prefixes[token] = identity
+            names[identity] = label
+
+        found = {}
+        used = {}
+        soup = BeautifulSoup(listing_html, 'html.parser')
+        for anchor in soup.select('a[href]'):
+            raw = anchor.get('href')
+            if not isinstance(raw, str) or not raw.strip() or len(raw) > 1500:
+                continue
+            target = urljoin(publisher_url, raw.strip())
+            parts = urlsplit(target)
+            match = re.fullmatch(r'/event/[^/]*-([0-9]{3,12})/?', parts.path, re.I)
+            if (not match or parts.scheme != 'https' or parts.hostname != origin.hostname
+                    or parts.username or parts.password or parts.fragment):
+                continue
+            identity = prefixes.get(match.group(1))
+            if identity is None:
+                continue
+            heading = None
+            parent = anchor.parent
+            for _ in range(4):
+                if parent is None:
+                    break
+                heading = parent.find(re.compile(r'^h[1-6]$'))
+                if heading is not None:
+                    break
+                parent = parent.parent
+            label = (re.sub(r'\s+', ' ', unescape(
+                heading.get_text(' ', strip=True))).strip().casefold()
+                if heading is not None else '')
+            if label != names[identity]:
+                continue
+            if identity in found and found[identity] != target:
+                _fail('event_link_conflict')
+            if target in used and used[target] != identity:
+                _fail('event_link_conflict')
+            found[identity], used[target] = target, identity
+        return found
+    except (AttributeError, TypeError, ValueError) as exc:
+        if str(exc).startswith('html_spektrix_'):
+            raise
+        _fail('event_link_evidence_invalid')
+
+
 def stream(source, publisher_url, listing_html, *, deadline_at=None):
     """Yield one complete 60-day v3 traversal and return ordinary HTML rows."""
     profile = _candidate(publisher_url, listing_html)
@@ -184,6 +257,8 @@ def stream(source, publisher_url, listing_html, *, deadline_at=None):
         if city:
             locations[venue_id] = {'city': city, 'timezone': ZONE}
     profile['verified_venues'] = locations
+    profile['event_urls'] = _listing_event_urls(
+        publisher_url, listing_html, list(events.values()))
     snapshot = api.project(profile, list(events.values()), list(instances.values()),
                            list(plans.values()), list(venues.values()), start, end)
     rows = provider.stageable(source, snapshot)

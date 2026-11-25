@@ -8,7 +8,7 @@ from urllib.parse import urlsplit
 
 VERSION = 'registered_native_content_v1'
 HTML_VERSION = 'registered_html_jsonld_v1'
-HTML_SPEKTRIX_VERSION = 'registered_html_spektrix_v1'
+HTML_SPEKTRIX_VERSION = 'registered_html_spektrix_v2'
 HTML_CAPABILITY = 'registered_html_calendar_version'
 HTML_DESCRIPTION_FIELD = 'rockhouse_event_description'
 from roomquest.event_description import MAX_EVENT_DESCRIPTION_CHARACTERS as MAX_DESCRIPTION
