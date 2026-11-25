@@ -236,6 +236,26 @@ def _city(address):
     return ''
 
 
+
+def _ticket_extra(event):
+    """Exclude explicit ticket products, not every supplementary experience.
+
+    Spektrix supplementary events can also be real talks/tours. Soho's public
+    API exposes no universal supplementary flag: its four ticket products have
+    zero duration and all three listing categories explicitly blank. Require
+    that metadata together with an unambiguous product title; missing categories,
+    an uncategorized show, or a zero-duration real show alone is insufficient.
+    """
+    categories = [f'attribute_WebsiteFilterCategory{i}' for i in (1, 2, 3)]
+    if (event.get('duration') != 0
+            or any(key not in event or event[key] != '' for key in categories)):
+        return False
+    title = _text(event.get('name'))
+    return bool(re.fullmatch(
+        r'Pre[ -]?Order\s*:?\s*(?:Drinks?(?:\s+(?:Downstairs|Main House))?|Pizza)'
+        r'|Babes in Arms\s*\([^()]+\)', title, re.I))
+
+
 def project(profile, events, instances, plans, venues, start, end, *, cms_pages=None):
     """Project one *complete* bounded snapshot; never publish a partial prefix.
 
@@ -270,6 +290,7 @@ def project(profile, events, instances, plans, venues, start, end, *, cms_pages=
         profile = dict(profile, event_urls={**prior, **verified})
     records = []
     rejected = 0
+    ticket_extras = 0
     for instance in instances_by_id.values():
         if instance.get('cancelled') is True or instance.get('isOnSale') is False:
             rejected += 1
@@ -281,6 +302,9 @@ def project(profile, events, instances, plans, venues, start, end, *, cms_pages=
         event = events_by_id.get(event_id)
         if event is None:
             _fail('spektrix_event_manifest_mismatch')
+        if _ticket_extra(event):
+            ticket_extras += 1
+            continue
         title = _text(event.get('name'))
         if not title:
             _fail('spektrix_event_title_missing')
@@ -367,6 +391,7 @@ def project(profile, events, instances, plans, venues, start, end, *, cms_pages=
         'window_end': intervals[-1][1].isoformat(),
         'instance_total': len(instances_by_id),
         'held_unsale_or_cancelled': rejected,
+        'excluded_ticket_extras': ticket_extras,
         'events': sorted(records, key=lambda row: (row['starts_at'], row['id'])),
     }
 
