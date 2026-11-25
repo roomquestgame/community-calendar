@@ -209,7 +209,8 @@ def test_one_shot_collection_uses_single_venue_without_plan_downloads():
 
     result = api.collect(profile(), START, STOP, fetch)
     assert len(result['events']) == 1
-    assert visited == list(responses)
+    assert set(visited) == set(responses)
+    assert len(visited) == len(responses)
     assert not any('/plans/' in url for url in visited)
     del responses[api.api_url(client, 'venues')]
     with pytest.raises(KeyError):

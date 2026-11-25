@@ -10,6 +10,7 @@ them through instance.event.id, instance.planId and plan.venue.id is required
 to avoid assigning a ticketing client's headquarters to every performance.
 """
 from concurrent.futures import ThreadPoolExecutor
+from contextvars import copy_context
 from datetime import date, datetime, timedelta, timezone
 from html import unescape
 import json
@@ -376,15 +377,29 @@ def collect(profile, start, end, fetch, *, deadline_at=None, cms_pages=None):
             _fail('spektrix_collection_deadline')
         return fetch(url, 'application/json')
 
+    requests = []
     for first, last in windows(start, end):
         for family, limit in (('events', MAX_EVENTS), ('instances', MAX_INSTANCES)):
-            rows = _items(read(api_url(client, family, start=first, end=last,
-                                       base=profile.get('api_base'))), limit, family)
+            requests.append((family, limit, api_url(
+                client, family, start=first, end=last,
+                base=profile.get('api_base'))))
+    requests.append(('venues', MAX_VENUES, api_url(
+        client, 'venues', base=profile.get('api_base'))))
+
+    def read_resource(request):
+        family, limit, url = request
+        return family, limit, _items(read(url), limit, family)
+
+    # These resources are independent parts of the same complete snapshot.
+    # The injected shared transport still spaces starts and applies the exact
+    # host, robots and deadline policy; this only overlaps publisher response
+    # time so staging retains part of the ordinary worker budget.
+    with ThreadPoolExecutor(max_workers=MAX_CONCURRENT_PLAN_REQUESTS) as pool:
+        futures = [pool.submit(copy_context().run, read_resource, request)
+                   for request in requests]
+        for future in futures:
+            family, limit, rows = future.result()
             _merge(items[family], rows, family, limit)
-    _merge(items['venues'], _items(read(api_url(client, 'venues',
-                                                base=profile.get('api_base'))),
-                                  MAX_VENUES, 'venues'),
-           'venues', MAX_VENUES)
     active_plans = set()
     for instance in items['instances'].values():
         if instance.get('cancelled') is False and instance.get('isOnSale') is True:
@@ -417,8 +432,10 @@ def collect(profile, start, end, fetch, *, deadline_at=None, cms_pages=None):
                 client, 'plans', identity=plan_id, base=profile.get('api_base'))))
 
         with ThreadPoolExecutor(max_workers=MAX_CONCURRENT_PLAN_REQUESTS) as pool:
-            resolved_plans = pool.map(read_plan, plan_ids)
-            for plan_id, plan in resolved_plans:
+            futures = [pool.submit(copy_context().run, read_plan, plan_id)
+                       for plan_id in plan_ids]
+            for future in futures:
+                plan_id, plan = future.result()
                 if not isinstance(plan, dict) or plan.get('id') != plan_id:
                     _fail('spektrix_plan_invalid')
                 items['plans'][plan_id] = plan
