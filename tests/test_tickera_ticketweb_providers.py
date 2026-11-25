@@ -118,50 +118,7 @@ def test_ticketweb_event_discovery_transport_rejects_mutated_post(change):
     form = ticketweb_event_discovery.form(spec, DAY.isoformat(), (DAY + timedelta(days=61)).isoformat())
     form.update(change)
     with patch.object(preview_worker.requests, 'Session') as session:
-        with pytest.raises(preview_worker.PreviewError, match='^invalid_calendar_render_parameters
-    ('tickera', '/wp-content/plugins/tickera/', tickera_page(),
-     {'https://venue.example.org/wp-json/': json.dumps({'timezone_string':'America/New_York'})}),
-    ('event_discovery', '/wp-content/plugins/event-discovery/', event_discovery_page(),
-     {'https://venue.example.org/wp-admin/admin-ajax.php': event_discovery_payload()}),
-])
-def test_feedzilla_registration_and_recurring_collection_share_provider(adapter, marker, page, extra):
-    home = f'<html><link href="{marker}front.css"><a href="/calendar/">Calendar</a></html>'
-    url = 'https://venue.example.org/'
-    calendar = url + 'calendar/'
-    receipts = []
-    def rpc(method, args, **kwargs):
-        if method.endswith('claim_registration'):
-            return {'url': url}
-        if method.endswith('feed_profile'):
-            return {}
-        receipts.append(args)
-        return True
-    def fetch(target, accept, **kwargs):
-        if target == url:
-            return home
-        if target == calendar:
-            return page
-        if target in extra:
-            return extra[target]
-        raise AssertionError(target)
-    with patch.object(feed_registration, 'supabase_rpc', rpc), patch.object(
-            feed_registration, 'fetch_publisher', fetch):
-        assert feed_registration.register('ticket')['outcome'] == 'discovered'
-    assert (receipts[0]['p_endpoint'], receipts[0]['p_type']) == (calendar, adapter)
-
-    source = {'feed_url': calendar, 'source_key': source_key(calendar),
-              'platform_adapter': adapter, 'kind': 'json'}
-    with patch.object(preview_worker, 'supabase_rpc', rpc), patch.object(
-            preview_worker, 'fetch_publisher', fetch):
-        result = preview_worker.preview_source(source)
-    assert result['p_future_count'] == 1
-
-
-def test_provider_identity_is_not_generic_fullcalendar():
-    assert provider_registration.family('https://venue.example.org/calendar/', tickera_page()) == 'tickera'
-    assert provider_registration.family(
-        'https://venue.example.org/calendar/', event_discovery_page()) == 'event_discovery'
-):
+        with pytest.raises(preview_worker.PreviewError, match='^invalid_calendar_render_parameters$'):
             preview_worker._fetch_publisher_request(
                 spec['endpoint'], 'application/json', respect_robots=True,
                 allowed_hosts=('venue.example.org',), calendar_form=form)
@@ -210,3 +167,42 @@ def test_provider_identity_is_not_generic_fullcalendar():
     assert provider_registration.family('https://venue.example.org/calendar/', tickera_page()) == 'tickera'
     assert provider_registration.family(
         'https://venue.example.org/calendar/', event_discovery_page()) == 'event_discovery'
+
+
+def test_verified_single_venue_default_is_handed_to_shared_staging_policy():
+    records = [{'title': 'Show', 'venue_name': '', 'venue_address': '',
+                'venue_city': '', 'lat': None, 'lng': None}]
+    source = {'platform_adapter': 'tickera',
+              'publisher_default_venue': 'Motorco Music Hall',
+              'publisher_default_lat': 36.0035821,
+              'publisher_default_lng': -78.9002707,
+              'publisher_default_evidence': 'Verified venue website and reviewed street point.'}
+    [row] = provider_registration.apply_verified_default_venue(source, records)
+    assert row['venue_name'] == 'Motorco Music Hall'
+    assert row['lat'] is None and row['lng'] is None
+
+
+@pytest.mark.parametrize('change', [
+    {'platform_adapter': 'wordpress'},
+    {'publisher_default_evidence': ''},
+])
+def test_unverified_or_non_provider_default_is_not_inferred(change):
+    records = [{'title': 'Show', 'venue_name': '', 'venue_address': '',
+                'venue_city': '', 'lat': None, 'lng': None}]
+    source = {'platform_adapter': 'tickera',
+              'publisher_default_venue': 'Venue', 'publisher_default_lat': 1.0,
+              'publisher_default_lng': 2.0,
+              'publisher_default_evidence': 'Reviewed publisher evidence.', **change}
+    assert provider_registration.apply_verified_default_venue(source, records) is records
+
+
+def test_multi_venue_provider_snapshot_keeps_publisher_locations():
+    records = [
+        {'title': 'Main room', 'venue_name': 'Main Room', 'lat': None, 'lng': None},
+        {'title': 'Second room', 'venue_name': 'Second Room', 'lat': None, 'lng': None},
+    ]
+    source = {'platform_adapter': 'event_discovery',
+              'publisher_default_venue': 'Main Room', 'publisher_default_lat': 1.0,
+              'publisher_default_lng': 2.0,
+              'publisher_default_evidence': 'Reviewed publisher evidence.'}
+    assert provider_registration.apply_verified_default_venue(source, records) is records
