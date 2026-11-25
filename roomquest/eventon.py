@@ -1,8 +1,8 @@
-"""Read the public EventON calendar used by Friends of the James River Park."""
+"""Read publisher-advertised EventON calendars through a bounded contract."""
 from datetime import datetime
 import json
 import re
-from urllib.parse import urlsplit
+from urllib.parse import urlsplit, urlunsplit
 
 from bs4 import BeautifulSoup
 
@@ -15,9 +15,17 @@ CALENDAR_ID = 'evcal_calendar_277'
 REEDY_CREEK = '4001 Riverside Dr, Richmond, VA 23225'
 
 
-def calendar_form(page):
+def _calendar_id(document):
+    ids = {node.get('id') for node in document.select('[id^="evcal_calendar_"]')
+           if re.fullmatch(r'evcal_calendar_[1-9][0-9]{0,9}', node.get('id', ''))}
+    if len(ids) != 1:
+        raise ValueError('eventon_calendar_missing')
+    return next(iter(ids))
+
+
+def calendar_form(page, calendar_id=CALENDAR_ID):
     document = BeautifulSoup(page, 'html.parser')
-    calendar = document.find(id=CALENDAR_ID)
+    calendar = document.find(id=calendar_id)
     global_data = document.select_one('#evo_global_data[data-d]')
     nonce = re.search(r'var evo_general_params = (\{[^\n]+?\});', page)
     if calendar is None or global_data is None or nonce is None:
@@ -42,11 +50,45 @@ def calendar_form(page):
             yield name, '' if value is None else str(value)
 
     return dict([('nonce', token), *fields(json.loads(global_data['data-d']), 'global'),
-                 *fields(json.loads(settings['data-sc']), f'cals[{CALENDAR_ID}][sc]')])
+                 *fields(json.loads(settings['data-sc']), f'cals[{calendar_id}][sc]')])
 
 
-def parse(payload):
-    data = json.loads(payload)['cals'][CALENDAR_ID]
+def contract(url, page):
+    """Return only an exact same-host public EventON request advertised by HTML."""
+    parts = urlsplit(url)
+    if parts.scheme != 'https' or not parts.hostname or parts.username or parts.password:
+        raise ValueError('invalid_eventon_calendar')
+    document = BeautifulSoup(page, 'html.parser')
+    calendar_id = _calendar_id(document)
+    match = re.search(r'var evo_general_params = (\{[^\n]+?\});', page)
+    if match is None:
+        raise ValueError('eventon_calendar_missing')
+    try:
+        params = json.loads(match[1])
+    except (TypeError, ValueError, RecursionError) as exc:
+        raise ValueError('invalid_eventon_calendar') from exc
+    origin = urlunsplit((parts.scheme, parts.netloc, '/', '', ''))
+    if (not isinstance(params, dict)
+            or params.get('evo_ajax_url') != '/?evo-ajax=%%endpoint%%'
+            or params.get('ajaxurl') != origin + 'wp-admin/admin-ajax.php'):
+        raise ValueError('invalid_eventon_calendar')
+    return {
+        'calendar_id': calendar_id,
+        'endpoint': origin + '?evo-ajax=eventon_init_load',
+        'form': calendar_form(page, calendar_id),
+    }
+
+
+def supports_listing(url, page):
+    try:
+        contract(url, page)
+        return True
+    except (ValueError, TypeError, KeyError, RecursionError):
+        return False
+
+
+def parse(payload, *, host=HOST, calendar=CALENDAR, calendar_id=CALENDAR_ID, city='Richmond'):
+    data = json.loads(payload)['cals'][calendar_id]
     if not isinstance(data['json'], list) or len(data['json']) > 100:
         raise ValueError('invalid_eventon_calendar')
     page = BeautifulSoup(data['html'], 'html.parser')
@@ -65,7 +107,7 @@ def parse(payload):
             continue
         url = value('url')
         parsed = urlsplit(url)
-        if parsed.scheme != 'https' or parsed.netloc != HOST or not parsed.path.startswith('/events/'):
+        if parsed.scheme != 'https' or parsed.netloc != host or parsed.username or parsed.password:
             raise ValueError('invalid_eventon_occurrence')
         times = []
         for field in ('startDate', 'endDate'):
@@ -84,13 +126,27 @@ def parse(payload):
         street = value('streetAddress') if card.select_one('[itemprop="streetAddress"]') else ''
         venue = place.get_text(' ', strip=True) if place else ''
         lat = lng = None
-        if street.casefold() == '4001 riverside dr' or (
-                not street and title_text == 'Invasive Plant Removal at Reedy Creek'):
+        if host == HOST and (street.casefold() == '4001 riverside dr' or
+                (not street and title_text == 'Invasive Plant Removal at Reedy Creek')):
             venue = venue or 'Reedy Creek Parking Lot'
             street, lat, lng = REEDY_CREEK, 37.523206968014, -77.470957654180
         event = record(title_text, *times, venue,
-                       street, 'Richmond', url, f'{card["data-event_id"]}:{times[0]}',
+                       street, city, url, f'{card["data-event_id"]}:{times[0]}',
                        'Helping', lat, lng)
         if event:
             result.append(event)
     return result
+
+
+def collect(source, fetch, *, body=None, deadline_at=None):
+    """Collect one complete EventON response from its publisher-advertised form."""
+    listing = source.get('feed_url')
+    parts = urlsplit(listing or '')
+    if (source.get('platform_adapter') != 'eventon' or source.get('kind') != 'json'
+            or parts.scheme != 'https' or not parts.hostname):
+        raise ValueError('unregistered_eventon_source')
+    page = body if body is not None else fetch(listing, 'text/html,application/xhtml+xml')
+    spec = contract(listing, page)
+    payload = fetch(spec['endpoint'], 'application/json', calendar_form=spec['form'])
+    return parse(payload, host=parts.netloc, calendar=listing,
+                 calendar_id=spec['calendar_id'], city='')
