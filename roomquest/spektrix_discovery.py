@@ -14,6 +14,7 @@ CLIENT = re.compile(r'^[a-z][a-z0-9_-]{1,59}$')
 WEBSITE = re.compile(
     r'^/([a-z][a-z0-9_-]{1,59})/website/'
     r'(?:ChooseSeats|EventList|EventDetails|KeepAlive|Booking|ViewEvent)\.aspx$', re.I)
+WEBSITE_ROOT = re.compile(r'^/([a-z][a-z0-9_-]{1,59})/website/?$', re.I)
 API = re.compile(r'^/([a-z][a-z0-9_-]{1,59})/api/v3/(?:events|instances|venues)(?:/|$)', re.I)
 WEB_COMPONENTS = re.compile(
     r'^/([a-z][a-z0-9_-]{1,59})/api/v3/webcomponents/html/?$', re.I)
@@ -28,6 +29,41 @@ def _organization_domain(host):
             and parts[-2] in ('co', 'org', 'ac', 'net', 'gov')):
         return '.'.join(parts[-3:])
     return '.'.join(parts[-2:]) if len(parts) >= 2 else host.casefold()
+
+
+def submitted_website(url):
+    """Describe one explicit Spektrix client landing URL without admitting it.
+
+    The client-bearing ``/website/`` route plus a central Spektrix host or the
+    same branded ticket-host prefixes accepted by the native provider is a
+    deterministic platform signature.  It is still only registration
+    evidence: publisher access, the provider profile, collection completeness
+    and source approval remain downstream requirements.
+    """
+    try:
+        parts = urlsplit(url)
+        match = WEBSITE_ROOT.fullmatch(parts.path)
+        if (parts.scheme != 'https' or not parts.hostname or not match
+                or parts.username or parts.password or parts.query or parts.fragment):
+            return None
+        host = parts.hostname.casefold()
+        client = match[1].casefold()
+        api_base = 'https://' + host + '/' + client + '/api/v3'
+        # Reuse the native provider's canonical host contract instead of
+        # maintaining a second list of acceptable branded ticket prefixes.
+        from roomquest.spektrix_provider import family
+        if not family(api_base + '/events'):
+            return None
+        return {
+            'client': client,
+            'evidence_url': url,
+            'evidence_type': ('spektrix_host' if host in THIRD_PARTY
+                              else 'branded_client_website'),
+            'api_base': api_base,
+            'api_verified': False,
+        }
+    except (AttributeError, TypeError, ValueError):
+        return None
 
 
 class _Links(HTMLParser):

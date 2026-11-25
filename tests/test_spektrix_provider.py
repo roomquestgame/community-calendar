@@ -3,7 +3,7 @@ from datetime import date
 
 import pytest
 
-from roomquest import provider_registration, spektrix_provider, spektrix_v3
+from roomquest import provider_registration, spektrix_discovery, spektrix_provider, spektrix_v3
 from roomquest.registration_formats import source_key
 
 CLIENT='thealbany'
@@ -38,6 +38,25 @@ def test_only_canonical_source_api_is_detected():
         'https://system.spektrix.com/not/a/venue',
     ):
         assert not spektrix_provider.family(endpoint)
+
+
+def test_direct_client_website_is_deterministic_registration_evidence():
+    fox = 'https://tickets.foxtucson.com/foxtucsontheatre/website/'
+    assert spektrix_discovery.submitted_website(fox) == {
+        'client': 'foxtucsontheatre',
+        'evidence_url': fox,
+        'evidence_type': 'branded_client_website',
+        'api_base': 'https://tickets.foxtucson.com/foxtucsontheatre/api/v3',
+        'api_verified': False,
+    }
+    assert spektrix_discovery.submitted_website(
+        'https://system.spektrix.com/thealbany/website')['client'] == 'thealbany'
+    for invalid in (
+        'https://example.org/foxtucsontheatre/website/',
+        'https://tickets.foxtucson.com/foxtucsontheatre/website/?venue=other',
+        'https://tickets.foxtucson.com/foxtucsontheatre/website/EventList.aspx',
+    ):
+        assert spektrix_discovery.submitted_website(invalid) is None
 
 
 def test_same_organization_branded_api_is_exactly_bound():

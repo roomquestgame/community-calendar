@@ -188,6 +188,13 @@ def classify(url, payload, hint=None, endpoint_only=False, venue_website=False):
         return review('no_reusable_calendar')
     if document_kind(body) == 'xml':
         return review('xml_adapter_needed')
+    # A directly submitted Spektrix client landing URL already carries the
+    # provider and exact client slug. Preserve that deterministic identity
+    # instead of downgrading the source to generic HTML. This is recognition
+    # only; the normal provider-profile, access and collector gates remain.
+    from roomquest.spektrix_discovery import submitted_website
+    if submitted_website(url):
+        return review('spektrix_adapter_needed', 'spektrix')
     parser = CalendarLinks(url)
     parser.feed(body)
     evidence = collection_evidence(url, body)
