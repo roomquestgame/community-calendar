@@ -36,6 +36,20 @@ class _Links(HTMLParser):
         self.page = page
         self.urls = []
 
+    def _append_candidate(self, value):
+        """Bound actual Spektrix evidence, not unrelated page navigation."""
+        try:
+            target = urljoin(self.page, value.strip())
+            path = urlsplit(target).path
+        except (AttributeError, TypeError, ValueError):
+            return
+        if not (WEBSITE.match(path) or API.match(path) or WEB_COMPONENTS.match(path)):
+            return
+        if target not in self.urls:
+            self.urls.append(target)
+            if len(self.urls) > MAX_LINKS:
+                raise ValueError('spektrix_discovery_link_limit')
+
     def handle_starttag(self, tag, attrs):
         # Spektrix's public web-component loader derives its branded API import
         # at runtime from these publisher-authored attributes.  Capture that
@@ -51,20 +65,16 @@ class _Links(HTMLParser):
                     and '/' not in domain and '@' not in domain and ':' not in domain):
                 branded = urlsplit('https://' + domain.casefold())
                 if branded.hostname == domain.casefold():
-                    self.urls.append(
+                    self._append_candidate(
                         'https://' + branded.hostname + '/' + client.casefold()
                         + '/api/v3/webcomponents/html')
-                    if len(self.urls) > MAX_LINKS:
-                        raise ValueError('spektrix_discovery_link_limit')
         if tag not in ('a', 'iframe', 'script', 'link'):
             return
         attributes = dict(attrs)
         raw = attributes.get('href') if tag in ('a', 'link') else attributes.get('src')
         if not isinstance(raw, str) or not raw.strip() or len(raw) > 1500:
             return
-        self.urls.append(urljoin(self.page, raw.strip()))
-        if len(self.urls) > MAX_LINKS:
-            raise ValueError('spektrix_discovery_link_limit')
+        self._append_candidate(raw)
 
 
 def discover(publisher_url, html):
