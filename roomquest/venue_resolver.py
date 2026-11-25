@@ -27,10 +27,11 @@ MAX_PAGES = 2
 TIMEOUT = 5
 STREET = r"\d{1,6}[A-Za-z]?\s+[^,\n]{2,100}?"
 ADDRESS = re.compile(
-    r"(" + STREET + r"(?:Street|St\.?|Road|Rd\.?|Avenue|Ave\.?|Boulevard|Blvd\.?|"
+    r"(?P<street>" + STREET + r"(?:Street|St\.?|Road|Rd\.?|Avenue|Ave\.?|Boulevard|Blvd\.?|"
     r"Drive|Dr\.?|Lane|Ln\.?|Court|Ct\.?|Way|Parkway|Pkwy\.?|Place|Pl\.?|"
-    r"Circle|Cir\.?|Highway|Hwy\.?|Terrace|Ter\.?)\s*,?\s*"
-    r"[A-Za-z .'-]{2,60},\s*[A-Z]{2}(?:\s+\d{5}(?:-\d{4})?)?)\b", re.I)
+    r"Circle|Cir\.?|Highway|Hwy\.?|Terrace|Ter\.?))\s*(?:,|[-–—])?\s*"
+    r"(?P<city>[A-Za-z][A-Za-z .'-]{1,59}),\s*(?P<state>[A-Z]{2})"
+    r"(?P<zip>\s+\d{5}(?:-\d{4})?)?\b", re.I)
 
 
 def words(value) -> str:
@@ -137,7 +138,11 @@ def extract_candidates(html: str, url: str, claim: dict) -> list[dict]:
             tag.decompose()
         text = re.sub(r"\s+", " ", soup.get_text(" ", strip=True))
         for match in ADDRESS.finditer(text):
-            candidates.append({"address": match.group(1), "evidence_url": url,
+            # Publisher typography between street and city is a separator,
+            # not part of the city name supplied to the shared geocoder.
+            address = (f"{match['street'].strip()}, {match['city'].strip()}, "
+                       f"{match['state']}{match['zip'] or ''}")
+            candidates.append({"address": address, "evidence_url": url,
                                "evidence_name": expected, "method": "venue_contact"})
     # Distinct addresses are an ambiguity, not a reason to choose the first one.
     return list({words(c["address"]): c for c in candidates}.values())
