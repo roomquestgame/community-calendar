@@ -41,6 +41,13 @@ def test_plugin_and_legacy_fingerprints_do_not_imply_a_feed():
     assert wordpress_fingerprints('<p>Ordinary blog</p>') == ()
 
 
+def test_wix_bootstrap_text_cannot_impersonate_a_wordpress_plugin():
+    html = '''<html><script id="wix-warmup-data" type="application/json">
+      {"componentName":"eo-event","asset":"/event-organiser/card.js"}
+      </script><script src="https://static.wixstatic.com/services/wix-thunderbolt.js"></script></html>'''
+    assert wordpress_fingerprints(html) == ()
+
+
 def test_both_wp_rest_route_styles_and_subdirectory_installation():
     assert rest_route_url('https://theatre.example.org/wp-json/', '/tribe/events/v1/events') == (
         'https://theatre.example.org/wp-json/tribe/events/v1/events')

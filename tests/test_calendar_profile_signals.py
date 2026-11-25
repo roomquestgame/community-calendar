@@ -21,6 +21,8 @@ def test_marketing_mentions_and_json_do_not_create_adapter_claims():
     assert unsupported_calendar_profile('<html><script src="/fullcalendar.js"></script></html>') is None
     assert unsupported_calendar_profile('<html><div class="elfsight-app-example"></div></html>') is None
     assert unsupported_calendar_profile('{"events":[]}') is None
+    assert unsupported_calendar_profile('''<html><script id="wix-warmup-data" type="application/json">
+      {"componentName":"eo-event","asset":"/event-organiser/card.js"}</script></html>''') is None
 
 
 def test_footer_signals_in_large_documents():
