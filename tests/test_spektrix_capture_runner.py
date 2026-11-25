@@ -93,6 +93,27 @@ class Backend:
 
 
 class RunnerTests(unittest.TestCase):
+    def test_branded_host_capture_never_falls_back_to_central_host(self):
+        branded_source = dict(
+            SOURCE,
+            source_key='municipal_test_branded',
+            feed_url=('https://tickets.example.org/testclient/api/v3/events'))
+        branded_profile = dict(
+            PROFILE, api_base='https://tickets.example.org/testclient/api/v3')
+        db = Backend(0)
+        args = dict(read=db.read, write=db.write, fetch=db.fetch,
+                    convert=lambda source, snapshot: snapshot['events'],
+                    stage_and_save=db.stage, can_continue=lambda: True,
+                    clock=lambda: STAMP, max_steps=1)
+        for _ in range(30):
+            result = runner.run_slice(branded_source, branded_profile, **args)
+            if result['status'] == 'staged':
+                break
+        self.assertEqual(result['status'], 'staged')
+        self.assertTrue(db.requests)
+        self.assertTrue(all(url.startswith('https://tickets.example.org/testclient/api/v3/')
+                            for url in db.requests))
+
     def test_60_day_capture_resumes_and_stages_without_repeated_gets(self):
         db = Backend()
         first = db.run()

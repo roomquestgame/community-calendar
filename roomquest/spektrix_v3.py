@@ -61,7 +61,28 @@ def _client(client):
     return client
 
 
-def api_url(client, resource, *, start=None, end=None, identity=None):
+def api_base(client, value=None):
+    """Validate the exact v3 base advertised by a publisher page.
+
+    The default retains the legacy central public host. A branded base must
+    name this exact client and API version; provider admission separately
+    proves that its hostname belongs to the publisher organization.
+    """
+    client = _client(client)
+    value = value or 'https://system.spektrix.com/' + client + '/api/v3'
+    try:
+        parts = urlsplit(value)
+    except (TypeError, ValueError):
+        _fail('spektrix_api_base_invalid')
+    expected = '/' + client + '/api/v3'
+    if (not isinstance(value, str) or parts.scheme != 'https' or not parts.hostname
+            or parts.username or parts.password or parts.port is not None
+            or parts.path.rstrip('/') != expected or parts.query or parts.fragment):
+        _fail('spektrix_api_base_invalid')
+    return 'https://' + parts.hostname.casefold() + expected
+
+
+def api_url(client, resource, *, start=None, end=None, identity=None, base=None):
     """Construct *only* documented, read-only Spektrix public API routes."""
     client = _client(client)
     if resource not in ('events', 'instances', 'venues', 'plans'):
@@ -85,7 +106,7 @@ def api_url(client, resource, *, start=None, end=None, identity=None):
             'startFrom', 'startTo')
         query = '?' + urlencode(((keys[0], str(_day(start))), (keys[1], str(_day(end)))))
         tail = '/' + resource
-    return 'https://system.spektrix.com/' + client + '/api/v3' + tail + query
+    return api_base(client, base) + tail + query
 
 
 def _payload(value):
@@ -218,7 +239,7 @@ def project(profile, events, instances, plans, venues, start, end, *, cms_pages=
         prior = profile.get('event_urls') or {}
         if (not isinstance(prior, dict) or any(
                 key in prior and prior[key] != url for key, url in verified.items())):
-            _fail('event_link_conflict')
+            _fail('spektrix_event_link_conflict')
         profile = dict(profile, event_urls={**prior, **verified})
     records = []
     rejected = 0
@@ -316,7 +337,8 @@ def collect(profile, start, end, fetch, *, deadline_at=None, cms_pages=None):
 
     for first, last in windows(start, end):
         for family, limit in (('events', MAX_EVENTS), ('instances', MAX_INSTANCES)):
-            rows = _items(read(api_url(client, family, start=first, end=last)), limit, family)
+            rows = _items(read(api_url(client, family, start=first, end=last,
+                                       base=profile.get('api_base'))), limit, family)
             _merge(items[family], rows, family, limit)
     active_plans = set()
     for instance in items['instances'].values():
@@ -327,11 +349,14 @@ def collect(profile, start, end, fetch, *, deadline_at=None, cms_pages=None):
     if len(active_plans) > MAX_PLANS:
         _fail('spektrix_plans_limit')
     for plan_id in sorted(active_plans):
-        plan = _payload(read(api_url(client, 'plans', identity=plan_id)))
+        plan = _payload(read(api_url(client, 'plans', identity=plan_id,
+                                     base=profile.get('api_base'))))
         if not isinstance(plan, dict) or plan.get('id') != plan_id:
             _fail('spektrix_plan_invalid')
         items['plans'][plan_id] = plan
-    _merge(items['venues'], _items(read(api_url(client, 'venues')), MAX_VENUES, 'venues'),
+    _merge(items['venues'], _items(read(api_url(client, 'venues',
+                                                base=profile.get('api_base'))),
+                                  MAX_VENUES, 'venues'),
            'venues', MAX_VENUES)
     return project(profile, list(items['events'].values()), list(items['instances'].values()),
                    list(items['plans'].values()), list(items['venues'].values()), start, end,

@@ -14,7 +14,9 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 from roomquest import spektrix_v3
 from roomquest.registration_formats import source_key
 
-SOURCE = re.compile(r'^https://system\.spektrix\.com/([a-z][a-z0-9_-]{1,59})/api/v3/events$')
+SOURCE = re.compile(
+    r'^https://([a-z0-9](?:[a-z0-9.-]{0,251}[a-z0-9])?)/'
+    r'([a-z][a-z0-9_-]{1,59})/api/v3/events$')
 VALID_COUNTRIES = {'GB','IE','US','CA','AU','NZ'}
 MAX_PROBE_DAYS = 14
 MAX_PROBE_EVENTS = 150
@@ -26,7 +28,21 @@ def _fail(reason):
 
 def family(url):
     """Exact, canonical *read-only* event collection URL only."""
-    return bool(isinstance(url, str) and SOURCE.fullmatch(url))
+    match = SOURCE.fullmatch(url) if isinstance(url, str) else None
+    if not match:
+        return False
+    host = match[1]
+    return (host in ('system.spektrix.com', 'api.system.spektrix.com')
+            or host.split('.', 1)[0] in ('tickets', 'ticketing', 'boxoffice',
+                                         'booking', 'book'))
+
+
+def _organization_domain(host):
+    parts = host.casefold().split('.')
+    if (len(parts) >= 3 and parts[-1] in ('uk', 'au', 'nz')
+            and parts[-2] in ('co', 'org', 'ac', 'net', 'gov')):
+        return '.'.join(parts[-3:])
+    return '.'.join(parts[-2:]) if len(parts) >= 2 else host.casefold()
 
 
 def validate(source, profile):
@@ -37,7 +53,7 @@ def validate(source, profile):
     url = source.get('feed_url')
     match = SOURCE.fullmatch(url) if isinstance(url, str) else None
     if (not match or source.get('source_key') != source_key(url)
-            or profile.get('client') != match[1]
+            or profile.get('client') != match[2]
             or profile.get('country') not in VALID_COUNTRIES
             or not isinstance(profile.get('publisher_url'), str)):
         _fail('source_invalid')
@@ -47,6 +63,13 @@ def validate(source, profile):
             or publisher.username or publisher.password or publisher.fragment
             or not publisher.path):
         _fail('publisher_invalid')
+    api_base = spektrix_v3.api_base(profile['client'], profile.get('api_base'))
+    api = urlsplit(api_base)
+    central = api.hostname in ('system.spektrix.com', 'api.system.spektrix.com')
+    if (url != api_base + '/events'
+            or (not central and _organization_domain(api.hostname)
+                != _organization_domain(publisher.hostname))):
+        _fail('source_invalid')
     for field in ('timezone','home_city'):
         if not isinstance(profile.get(field), str) or not profile[field].strip():
             _fail('venue_invalid')
