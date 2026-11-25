@@ -31,9 +31,6 @@ def unsupported_calendar_profile(html):
             or ('webcomponents.spektrix.com' in fragment
                 and re.search(r'<spektrix-[a-z0-9-]+\b', fragment))):
         return 'spektrix_adapter_needed'
-    if (re.search(r'\b(?:new\s+)?fullcalendar\.calendar\s*\(', fragment) and
-            re.search(r'\bevents\s*:', fragment)):
-        return 'fullcalendar_adapter_needed'
     if ('data-tockify-calendar=' in fragment and
             'public.tockify.com/browser/embed.js' in fragment):
         return 'tockify_adapter_needed'
@@ -100,6 +97,9 @@ def unsupported_calendar_profile(html):
         if WIX_EVENTS in fragment:
             return 'wix_events_adapter_needed'
         return 'wix_custom_page_adapter_needed'
+    if ('/wp-content/plugins/fooevents/' in fragment
+            and '/wp-content/plugins/fooevents-calendar/' in fragment):
+        return 'fooevents_adapter_needed'
     # WordPress event publishers may advertise legacy plugin fingerprints
     # even without a readable events API. Report a *technical hold*, not a
     # feed. Specific plugin families are more useful than a CMS generator.
@@ -119,6 +119,11 @@ def unsupported_calendar_profile(html):
     }
     if len(matches) == 1 and matches[0] in family_reasons:
         return family_reasons[matches[0]]
+    # FullCalendar is a rendering library, not the publisher's provider.
+    # Use it only after specific WordPress plugins and external platforms.
+    if (re.search(r'\b(?:new\s+)?fullcalendar\.calendar\s*\(', fragment) and
+            re.search(r'\bevents\s*:', fragment)):
+        return 'fullcalendar_adapter_needed'
     if (matches or re.search(r'/wp-content/(?:plugins|themes)/|'
                              r'<meta[^>]{0,250}generator[^>]{0,250}wordpress', fragment)
             or ('<link' in fragment and 'https://api.w.org/' in fragment)):

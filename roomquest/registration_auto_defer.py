@@ -51,6 +51,7 @@ AUTO_DEFER_REASONS = frozenset({
     "ai1ec_adapter_needed",
     "tickera_adapter_needed",
     "event_discovery_adapter_needed",
+    "fooevents_adapter_needed",
     "wordpress_legacy_json_adapter_needed",
     "no_extractable_events",
 })
