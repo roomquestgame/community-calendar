@@ -389,9 +389,10 @@ def register(ticket):
                         {**args, **result}, timeout=8)
                     return {'outcome': result['p_outcome'] if recorded else 'lease_expired'}
             def check(target, endpoint_only=False, venue_website=False):
-                def fetch(resource, accept):
+                def fetch(resource, accept, **options):
                     return fetch_publisher(resource, accept, respect_robots=True, deadline_at=deadline,
                                            allowed_hosts=(urlsplit(target).hostname,),
+                                           **options,
                                            **({'follow_redirects': False} if target == liberty_calendar.ORIGINAL else {}))
                 initial_options = ({'allowed_hosts': (urlsplit(target).hostname,)}
                                    if target != candidate['url'] else {})
