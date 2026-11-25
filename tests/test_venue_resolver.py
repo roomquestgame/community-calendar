@@ -56,6 +56,17 @@ class EvidenceTests(unittest.TestCase):
         self.assertEqual(v.extract_candidates(text.replace('Glen Ridge Public Library', 'Other Organization'),
                                              CLAIM["event_url"], claim), [])
 
+    def test_contact_street_city_separator_preserves_city_identity(self):
+        claim = {**CLAIM, 'venue_name': 'Knitting Factory - Boise Boise, ID'}
+        for separator in (' - ', ' – ', ' — ', ', '):
+            with self.subTest(separator=separator):
+                text = '<h1>Knitting Factory - Boise</h1><p>416 S. 9th St' + separator + 'Boise, ID 83702</p>'
+                rows = v.extract_candidates(text, CLAIM['event_url'], claim)
+                self.assertEqual(rows[0]['address'], '416 S. 9th St, Boise, ID 83702')
+        text = '<h1>Knitting Factory - Boise</h1><p>123 Main St - Winston-Salem, NC 27101</p>'
+        rows = v.extract_candidates(text, CLAIM['event_url'], claim)
+        self.assertEqual(rows[0]['address'], '123 Main St, Winston-Salem, NC 27101')
+
     def test_multiple_distinct_addresses_require_review(self):
         other = {**PLACE, "address": {**PLACE["address"], "streetAddress": "100 Other Street"}}
         result = v.resolve(CLAIM, fetcher=lambda _: page([PLACE, other]), clock=lambda: 0, deadline=20)
