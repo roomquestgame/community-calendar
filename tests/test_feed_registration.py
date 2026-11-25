@@ -25,6 +25,15 @@ def test_follow_only_an_unambiguous_calendar_subscription():
     assert classify(URL + '/wp-json/tribe/events/v1/events', '{"events": []}')['p_type'] == 'wordpress'
 
 
+def test_direct_spektrix_client_website_keeps_provider_identity():
+    url = 'https://tickets.foxtucson.com/foxtucsontheatre/website/'
+    assert classify(url, '<html><title>Fox Tucson Theatre</title></html>') == {
+        'p_outcome': 'review',
+        'p_reason': 'spektrix_adapter_needed',
+        'p_type': 'spektrix',
+    }
+
+
 @pytest.mark.parametrize(('reason','outcome'), [('robots_denied','disabled'),('publisher_http_403','disabled'),
     ('publisher_http_503','retry'),('source_network_error','retry'),('publisher_http_429','retry'),
     ('non_public_dns','review')])
