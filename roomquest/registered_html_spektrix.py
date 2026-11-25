@@ -181,74 +181,7 @@ def _listing_event_urls(publisher_url, listing_html, events):
             for _ in range(4):
                 if parent is None:
                     break
-                heading = parent.find(re.compile(r'^h[1-6]
-    """Yield one complete 60-day v3 traversal and return ordinary HTML rows."""
-    profile = _candidate(publisher_url, listing_html)
-    if profile is None:
-        _fail('discovery_invalid')
-    start, end = _today(), _today() + timedelta(days=59)
-    events, instances, venues, plans = {}, {}, {}, {}
-
-    def check():
-        if deadline_at is not None and monotonic() >= deadline_at:
-            _fail('collection_deadline')
-
-    def read(resource, url, maximum):
-        check()
-        body = yield (url, 'application/json')
-        check()
-        rows = api._items(body, maximum, resource)
-        api._merge({'events': events, 'instances': instances,
-                    'venues': venues}[resource], rows, resource, maximum)
-
-    for first, last in api.windows(start, end):
-        yield from read('events', api.api_url(profile['client'], 'events', start=first,
-                                              end=last, base=profile['api_base']),
-                        api.MAX_EVENTS)
-        yield from read('instances', api.api_url(profile['client'], 'instances', start=first,
-                                                 end=last, base=profile['api_base']),
-                        api.MAX_INSTANCES)
-    yield from read('venues', api.api_url(profile['client'], 'venues',
-                                          base=profile['api_base']), api.MAX_VENUES)
-
-    active = set()
-    for instance in instances.values():
-        if instance.get('cancelled') is False and instance.get('isOnSale') is True:
-            plan_id = instance.get('planId')
-            if not api._id(plan_id):
-                _fail('plan_invalid')
-            active.add(plan_id)
-    if len(active) > api.MAX_PLANS:
-        _fail('plan_limit')
-    for plan_id in sorted(active):
-        check()
-        target = api.api_url(profile['client'], 'plans', identity=plan_id,
-                             base=profile['api_base'])
-        body = yield (target, 'application/json')
-        value = api._payload(body)
-        if not isinstance(value, dict) or value.get('id') != plan_id:
-            _fail('plan_invalid')
-        plans[plan_id] = value
-
-    locations = {}
-    for venue_id, venue in venues.items():
-        city = _city(venue.get('address'))
-        if city:
-            locations[venue_id] = {'city': city, 'timezone': ZONE}
-    profile['verified_venues'] = locations
-    profile['event_urls'] = _listing_event_urls(
-        publisher_url, listing_html, list(events.values()))
-    snapshot = api.project(profile, list(events.values()), list(instances.values()),
-                           list(plans.values()), list(venues.values()), start, end)
-    rows = provider.stageable(source, snapshot)
-    from roomquest.registered_native_content import attach_spektrix
-    for row in rows:
-        attach_spektrix(row, source, client=profile['client'],
-                        api_base=profile['api_base'],
-                        description_value=row.get('description'),
-                        image_value=row.get('image_url'))
-    return rows
-))
+                heading = parent.find(re.compile(r'^h[1-6]$'))
                 if heading is not None:
                     break
                 parent = parent.parent
@@ -324,6 +257,8 @@ def stream(source, publisher_url, listing_html, *, deadline_at=None):
         if city:
             locations[venue_id] = {'city': city, 'timezone': ZONE}
     profile['verified_venues'] = locations
+    profile['event_urls'] = _listing_event_urls(
+        publisher_url, listing_html, list(events.values()))
     snapshot = api.project(profile, list(events.values()), list(instances.values()),
                            list(plans.values()), list(venues.values()), start, end)
     rows = provider.stageable(source, snapshot)
