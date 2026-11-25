@@ -63,6 +63,8 @@ def unsupported_calendar_profile(html):
         'eventon': 'eventon_adapter_needed',
         'wp-event-manager': 'wp_event_manager_adapter_needed',
         'all-in-one-event-calendar': 'ai1ec_adapter_needed',
+        'tickera': 'tickera_adapter_needed',
+        'event-discovery': 'event_discovery_adapter_needed',
         'legacy-json-api': 'wordpress_legacy_json_adapter_needed',
     }
     if len(matches) == 1 and matches[0] in family_reasons:

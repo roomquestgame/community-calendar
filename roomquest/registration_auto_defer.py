@@ -32,6 +32,8 @@ AUTO_DEFER_REASONS = frozenset({
     "eventon_nonce_unavailable",
     "wp_event_manager_adapter_needed",
     "ai1ec_adapter_needed",
+    "tickera_adapter_needed",
+    "event_discovery_adapter_needed",
     "wordpress_legacy_json_adapter_needed",
     "no_extractable_events",
 })
