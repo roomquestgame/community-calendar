@@ -468,7 +468,15 @@ def register(ticket):
                         if records:
                             return {'p_outcome':'verified', 'p_endpoint':target, 'p_type':adapter}, body
                         return review('no_extractable_events', adapter), body
-                    except PreviewError:
+                    except PreviewError as exc:
+                        if adapter == 'spektrix':
+                            code = str(exc).strip("'\\\\\\\"")
+                            print(json.dumps({
+                                'event': 'spektrix_registration_unavailable',
+                                'error_code': code if re.fullmatch(
+                                    r'[a-z][a-z0-9_]{1,70}', code)
+                                    else 'noncanonical_preview_error',
+                            }, separators=(',', ':')))
                         raise
                     except (KeyError, ValueError, TypeError, OverflowError, AttributeError) as exc:
                         code = str(exc).strip("'\\\"")
