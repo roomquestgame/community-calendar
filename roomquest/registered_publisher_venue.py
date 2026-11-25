@@ -49,6 +49,13 @@ def contact_link(soup, base_url):
     return found
 
 
+def contact_identity(url):
+    """Collapse only a page's optional trailing slash, retaining its host/path."""
+    parsed = urlsplit(url)
+    path = parsed.path.rstrip("/") or "/"
+    return parsed.scheme, parsed.netloc, path
+
+
 def _addresses(soup):
     strings = [_plain(value) for value in soup.stripped_strings if _plain(value)]
     found = set()

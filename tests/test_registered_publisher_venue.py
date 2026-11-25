@@ -34,3 +34,12 @@ def test_contact_candidates_reject_foreign_query_and_keep_one_exact_page():
         '<a href="/visit/">Visit us</a>', 'html.parser')
     assert venue.contact_link(soup, 'https://venue.example/events/') == {
         'https://venue.example/visit/'}
+
+
+def test_contact_identity_collapses_only_optional_trailing_slash():
+    assert venue.contact_identity('https://venue.example/contact') == (
+        'https', 'venue.example', '/contact')
+    assert venue.contact_identity('https://venue.example/contact/') == (
+        'https', 'venue.example', '/contact')
+    assert venue.contact_identity('https://venue.example/visit-us') != (
+        venue.contact_identity('https://venue.example/contact/'))
