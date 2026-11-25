@@ -4846,6 +4846,7 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
         checkpoint_key = source.get("source_key")
         from roomquest import registered_html_checkpoint as registered_capture
         if registered_capture.enabled(source):
+            from roomquest.registered_html_spektrix import transport_hosts
             if (not isinstance(collection_context, dict)
                     or collection_context.get("p_category") != "html"
                     or not isinstance(collection_context.get("p_ticket"), str)):
@@ -4854,7 +4855,7 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
                 chunk = registered_capture.collect_and_save(
                     source, lambda url, accept: fetch_publisher(
                         url, accept, respect_robots=True, deadline_at=deadline - 9,
-                        allowed_hosts=(urlsplit(source["feed_url"]).hostname,)),
+                        allowed_hosts=transport_hosts(source, url)),
                     supabase_rpc, pacing, category="html",
                     ticket=collection_context["p_ticket"], deadline_at=deadline - 9)
             except PreviewError:

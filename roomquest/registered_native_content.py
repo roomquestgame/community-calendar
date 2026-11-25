@@ -8,6 +8,7 @@ from urllib.parse import urlsplit
 
 VERSION = 'registered_native_content_v1'
 HTML_VERSION = 'registered_html_jsonld_v1'
+HTML_SPEKTRIX_VERSION = 'registered_html_spektrix_v1'
 HTML_CAPABILITY = 'registered_html_calendar_version'
 HTML_DESCRIPTION_FIELD = 'rockhouse_event_description'
 MAX_DESCRIPTION = 12000
@@ -173,6 +174,42 @@ def attach(row, source, *, description_value=None, image_value=None, evidence_ur
     return row
 
 
+def attach_spektrix(row, source, *, client, api_base, description_value=None,
+                    image_value=None):
+    """Attach API-native fields without pretending they came from Event JSON-LD."""
+    if not enabled(source) or not html_details(source) or not event_identity(source, row):
+        raise ValueError('registered_native_event_identity_invalid')
+    from roomquest.spektrix_v3 import api_base as validate_base
+    base = validate_base(client, api_base)
+    from roomquest.spektrix_discovery import _organization_domain, THIRD_PARTY
+    publisher, api_host = urlsplit(source['feed_url']), urlsplit(base)
+    if (api_host.hostname in THIRD_PARTY
+            or _organization_domain(api_host.hostname) != _organization_domain(publisher.hostname)):
+        raise ValueError('registered_native_evidence_invalid')
+    from roomquest.event_description import description
+    text = description(description_value, limit=MAX_DESCRIPTION + 1)
+    if len(text) > MAX_DESCRIPTION:
+        raise ValueError('registered_native_description_too_long')
+    candidate = image_candidate(image_value, row['event_url'])
+    row['description'] = text
+    row['registered_native_content'] = {
+        'version': 1, 'source_key': source['source_key'],
+        'feed_url': source['feed_url'], 'adapter': source['platform_adapter'],
+        'event_id': row['id'], 'event_url': row['event_url'],
+        'description_field': 'description' if text else None,
+        'image_field': 'image' if candidate else None,
+        'evidence_url': base, 'extraction': HTML_SPEKTRIX_VERSION,
+        'client': client,
+    }
+    row['image_extractor_version'] = VERSION
+    for field in ('image_url', 'image_provenance', 'image_evidence_url'):
+        row.pop(field, None)
+    if candidate:
+        row.update(image_url=candidate, image_provenance=VERSION,
+                   image_evidence_url=base)
+    return row
+
+
 def validate_record(row, source):
     """Reject missing or inconsistent proof before the first staging batch."""
     if not enabled(source):
@@ -203,8 +240,25 @@ def validate_record(row, source):
     }
     evidence = source['feed_url']
     if html_details(source):
-        evidence = row['event_url']
-        expected.update(evidence_url=evidence, extraction=HTML_VERSION)
+        if isinstance(proof, dict) and proof.get('extraction') == HTML_SPEKTRIX_VERSION:
+            evidence = proof.get('evidence_url')
+            client = proof.get('client')
+            try:
+                from roomquest.spektrix_v3 import api_base as validate_base
+                from roomquest.spektrix_discovery import _organization_domain, THIRD_PARTY
+                evidence = validate_base(client, evidence)
+                publisher, api_host = urlsplit(source['feed_url']), urlsplit(evidence)
+                if (api_host.hostname in THIRD_PARTY
+                        or _organization_domain(api_host.hostname)
+                        != _organization_domain(publisher.hostname)):
+                    raise ValueError
+            except (ValueError, TypeError, KeyError):
+                raise ValueError('registered_native_evidence_invalid')
+            expected.update(evidence_url=evidence,
+                            extraction=HTML_SPEKTRIX_VERSION, client=client)
+        else:
+            evidence = row['event_url']
+            expected.update(evidence_url=evidence, extraction=HTML_VERSION)
     if (not isinstance(text, str) or len(text) > MAX_DESCRIPTION
             or re.search(r'<[^>]+>', text)
             or not isinstance(proof, dict) or type(proof.get('version')) is not int

@@ -993,6 +993,13 @@ def _request_stream(source, url, *, deadline_at, page_limit, detail_limit, total
     if wix_custom_collection.supports_listing(url, payload):
         return (yield from wix_custom_collection.stream(
             source, url, payload, deadline_at=deadline_at))
+    # A branded Spektrix API is followed only when this exact publisher page
+    # advertises one same-organization v3 base.  It remains inside the shared
+    # HTML checkpoint rather than creating a provider-specific queue/worker.
+    from roomquest import registered_html_spektrix
+    if registered_html_spektrix.supports_listing(url, payload):
+        return (yield from registered_html_spektrix.stream(
+            source, url, payload, deadline_at=deadline_at))
     while True:
         check_deadline()
         soup = _html(payload)
