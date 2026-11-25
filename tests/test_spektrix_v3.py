@@ -233,6 +233,29 @@ def test_static_web_component_attributes_yield_same_branded_api_without_js():
         'https://www.beaconartscentre.co.uk/whats-on/', central)['status'] == 'none'
 
 
+def test_large_publisher_page_bounds_only_spektrix_candidates():
+    navigation = ''.join(
+        '<a href="/ordinary-page-%d">Page %d</a>' % (index, index)
+        for index in range(discovery.MAX_LINKS + 12))
+    evidence = ('<link rel="import" href="https://tickets.beaconartscentre.co.uk/'
+                'beaconartscentre/api/v3/webcomponents/html">')
+    component = ('<spektrix-donate client-name="beaconartscentre" '
+                 'custom-domain="tickets.beaconartscentre.co.uk"></spektrix-donate>')
+    got = discovery.discover(
+        'https://www.beaconartscentre.co.uk/whats-on/',
+        '<html>' + navigation + evidence + component + '</html>')
+    assert got['status'] == 'unverified'
+    assert got['candidates'][0]['client'] == 'beaconartscentre'
+
+
+def test_candidate_limit_still_fails_closed():
+    evidence = ''.join(
+        '<a href="https://system.spektrix.com/client%d/website/EventList.aspx">x</a>'
+        % index for index in range(discovery.MAX_LINKS + 1))
+    assert discovery.discover('https://publisher.example.org/events',
+                              '<html>' + evidence + '</html>')['status'] == 'invalid_page'
+
+
 def test_foreign_branded_api_is_not_discovered():
     html = ('<html><link rel="import" href="https://tickets.attacker.org.uk/'
             'beaconartscentre/api/v3/webcomponents/html"></html>')
