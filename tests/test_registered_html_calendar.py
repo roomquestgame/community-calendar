@@ -123,6 +123,23 @@ def test_addressless_publisher_venue_uses_one_exact_contact_page_after_capture()
     assert row['publisher_details']['venue_address_evidence_url'] == contact_url
 
 
+def test_equivalent_contact_links_do_not_create_false_ambiguity():
+    contact_url = BASE + '/contact/'
+    item = event(location={'@type': 'Place', 'name': 'Publisher Hall'})
+    index = listing((ONE,), extra=(
+        '<a href="/contact">Contact</a><a href="/contact/">Contact us</a>'))
+    contact = ('<meta property="og:site_name" content="Publisher Hall">'
+               '<main>Publisher Hall, 35-47 Bethnal Green Road, '
+               'London E1 6LA</main>')
+    fetch = fetcher({ONE: detail(item), BASE + '/contact': contact,
+                     contact_url: contact})
+
+    [row] = calendar.collect(source(), fetch, listing=index)
+
+    assert row['venue_address'].startswith('35-47 Bethnal Green Road')
+    assert len(fetch.call_args_list) == 2
+
+
 def test_detail_failure_logs_exact_public_url_and_preserves_reason(capsys):
     fetch = fetcher({ONE: '<html><body><main><h1>Reading</h1></main></body></html>'})
     with pytest.raises(ValueError, match='html_calendar_event_jsonld_missing'):

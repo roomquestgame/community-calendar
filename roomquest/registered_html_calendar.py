@@ -978,7 +978,7 @@ def _request_stream(source, url, *, deadline_at, page_limit, detail_limit, total
     inventories = set()
     required_pages = set()
     current = url
-    contact_links = set()
+    contact_links = {}
     payload = yield (url, 'text/html,application/xhtml+xml')
     # A custom Wix CMS list is often only the first "Load more" prefix.  The
     # specialist traversal requires the publisher's complete dynamic sitemap
@@ -991,8 +991,9 @@ def _request_stream(source, url, *, deadline_at, page_limit, detail_limit, total
     while True:
         check_deadline()
         soup = _html(payload)
-        from roomquest.registered_publisher_venue import contact_link
-        contact_links.update(contact_link(soup, current))
+        from roomquest.registered_publisher_venue import contact_identity, contact_link
+        for candidate in contact_link(soup, current):
+            contact_links.setdefault(contact_identity(candidate), candidate)
         from roomquest.wordpress_visible_event import listing_evidence
         for target, evidence in listing_evidence(soup, current).items():
             prior = detail_evidence.get(_url_key(target))
@@ -1038,8 +1039,9 @@ def _request_stream(source, url, *, deadline_at, page_limit, detail_limit, total
         check_deadline()
         body = yield (detail_url, 'text/html,application/ld+json')
         check_deadline()
-        from roomquest.registered_publisher_venue import contact_link
-        contact_links.update(contact_link(_html(body), detail_url))
+        from roomquest.registered_publisher_venue import contact_identity, contact_link
+        for candidate in contact_link(_html(body), detail_url):
+            contact_links.setdefault(contact_identity(candidate), candidate)
         try:
             detail_rows = _detail(source, body, detail_url,
                                   listing_evidence=detail_evidence.get(_url_key(detail_url)))
@@ -1060,7 +1062,7 @@ def _request_stream(source, url, *, deadline_at, page_limit, detail_limit, total
     if any(not str(row.get('venue_address') or '').strip() for row in rows):
         if len(contact_links) != 1:
             return rows
-        contact_url = next(iter(contact_links))
+        contact_url = next(iter(contact_links.values()))
         if total_limit is not None and len(pages) + len(links) + 1 > total_limit:
             _fail('html_calendar_request_limit')
         check_deadline()
