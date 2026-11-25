@@ -155,6 +155,32 @@ def test_venue_api_missing_address_requires_verified_override():
     assert 'Bethnal Green' in row['venue_address']
 
 
+def test_generic_blank_venue_can_use_narrow_verified_plan_location():
+    blank = venue(name='Spitalfields Music', address='')
+    source = profile(verified_plans={
+        PLAN: {
+            'name': 'Tower Hamlets Town Hall',
+            'address': '160 Whitechapel Road, London E1 1BJ',
+            'city': 'London',
+            'timezone': 'Europe/London',
+            'evidence_url': 'https://www.thealbany.org.uk/visit-us',
+        }
+    })
+    row = api.project(source, [event()], [instance()], [plan()], [blank],
+                      START, STOP)['events'][0]
+    assert row['source_plan_id'] == PLAN
+    assert row['source_venue_id'] == VENUE
+    assert row['venue_name'] == 'Tower Hamlets Town Hall'
+    assert row['venue_address'] == '160 Whitechapel Road, London E1 1BJ'
+
+    # The reviewed address is plan-scoped. A second plan that reuses the same
+    # generic blank Venue must not inherit the first plan's location.
+    other_plan = '9806ASSTKDLDBPRRRVQQRRDHSJMQVBSNQ'
+    with pytest.raises(ValueError, match='spektrix_venue_location_unresolved'):
+        api.project(source, [event()], [instance(planId=other_plan)],
+                    [plan(id=other_plan)], [blank], START, STOP)
+
+
 def test_local_and_utc_clocks_must_match_and_reject_ambiguous_dst():
     with pytest.raises(ValueError, match='spektrix_time_conflict'):
         api.project(profile(), [event()], [instance(startUtc='2026-12-05T15:00:00')],
