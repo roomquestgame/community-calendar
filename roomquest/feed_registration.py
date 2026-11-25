@@ -633,6 +633,18 @@ def register(ticket):
                           'p_retry_seconds': max(pacing['retry_after_seconds'], pacing['crawl_delay_seconds'])}
             else:
                 result = review(reason if re.fullmatch(r'[a-z0-9_]{1,100}', reason) else 'publisher_check_failed')
+        except Exception as exc:
+            if provider_registration.family(url) == 'spektrix':
+                code = str(exc).strip("'\\\"")
+                print(json.dumps({
+                    'event': 'spektrix_registration_failed',
+                    'phase': 'workflow',
+                    'error_type': type(exc).__name__,
+                    'error_code': code if re.fullmatch(
+                        r'[a-z][a-z0-9_]{1,70}', code)
+                        else 'noncanonical_provider_error',
+                }, separators=(',', ':')))
+            raise
     if url != candidate['url']:
         result.setdefault('p_endpoint', url)
     # Annotate *only* the unsupported HTML result after all existing native,
@@ -646,5 +658,18 @@ def register(ticket):
     # Do not label a source as requiring human review just because it is
     # empty or lacks a supported extraction adapter today.
     result = auto_defer_nonactionable(result)
-    recorded = supabase_rpc('community_collector_finish_registration', {**args, **result}, timeout=8)
-    return {'outcome': result['p_outcome'] if recorded else 'lease_expired'}
+    try:
+        recorded = supabase_rpc('community_collector_finish_registration', {**args, **result}, timeout=8)
+        return {'outcome': result['p_outcome'] if recorded else 'lease_expired'}
+    except Exception as exc:
+        if provider_registration.family(url) == 'spektrix':
+            code = str(exc).strip("'\\\"")
+            print(json.dumps({
+                'event': 'spektrix_registration_failed',
+                'phase': 'receipt',
+                'error_type': type(exc).__name__,
+                'error_code': code if re.fullmatch(
+                    r'[a-z][a-z0-9_]{1,70}', code)
+                    else 'noncanonical_provider_error',
+            }, separators=(',', ':')))
+        raise
