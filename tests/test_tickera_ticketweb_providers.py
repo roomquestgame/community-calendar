@@ -41,6 +41,16 @@ def event_discovery_payload():
         'venue': '<div>Fixture Hall<br>Boise, ID</div>'}]})
 
 
+
+def event_discovery_provider_payload():
+    payload = json.loads(event_discovery_payload())
+    payload['events'][0]['url'] = 'https://www.ticketweb.com/event/public-show/'
+    payload['events'].extend([
+        {'title': 'Malformed row', 'url': 'https://www.ticketweb.com/event/bad/', 'sortkey': 'not-a-date'},
+        {'title': 'Untrusted row', 'url': 'https://unrelated.example/event/', 'sortkey': START + ':00'},
+    ])
+    return json.dumps(payload)
+
 def test_tickera_contract_uses_calendar_array_and_wordpress_timezone():
     page = tickera_page()
     assert tickera_provider.supports_listing('https://venue.example.org/calendar/', page)
@@ -69,6 +79,12 @@ def test_ticketweb_event_discovery_contract_uses_public_display_action():
     assert calls[0][1]['calendar_form']['action'] == 'get_events_artist_calendar'
 
 
+
+
+def test_ticketweb_provider_links_are_kept_and_bad_rows_do_not_drop_calendar():
+    [row] = ticketweb_event_discovery.parse(
+        event_discovery_provider_payload(), url='https://venue.example.org/calendar/', zone='America/Boise')
+    assert row['event_url'].startswith('https://www.ticketweb.com/event/')
 
 def test_ticketweb_event_discovery_transport_allows_only_reviewed_display_post():
     spec = ticketweb_event_discovery.contract('https://venue.example.org/calendar/', event_discovery_page())

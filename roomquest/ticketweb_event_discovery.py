@@ -110,16 +110,17 @@ def parse(payload, *, url, zone):
     rows = []
     for event in events:
         if not isinstance(event, dict):
-            raise ValueError('invalid_event_discovery_event')
+            continue
         event_url = html.unescape(str(event.get('url') or ''))
         parts = urlsplit(event_url)
-        if parts.scheme != 'https' or parts.hostname != host or parts.username or parts.password:
-            raise ValueError('invalid_event_discovery_event')
+        if (parts.scheme != 'https' or parts.username or parts.password
+                or parts.hostname not in (host, 'www.ticketweb.com', 'ticketweb.com')):
+            continue
         stamp = str(event.get('sortkey') or '')
         try:
             datetime.strptime(stamp, '%Y-%m-%d %H:%M:%S')
-        except ValueError as exc:
-            raise ValueError('invalid_event_discovery_event') from exc
+        except ValueError:
+            continue
         venue = _plain_fragment(event.get('venue'))
         image_node = BeautifulSoup(str(event.get('imageUrl') or ''), 'html.parser').find('img', src=True)
         item = record(html.unescape(str(event.get('title') or '')), stamp, None, venue, '', '',
@@ -131,6 +132,8 @@ def parse(payload, *, url, zone):
                 if image_parts.scheme == 'https' and image_parts.hostname and not image_parts.username and not image_parts.password:
                     item['image_url'] = image
             rows.append(item)
+    if not rows:
+        raise ValueError('invalid_event_discovery_calendar')
     return rows
 
 
