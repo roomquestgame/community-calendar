@@ -20,6 +20,9 @@ VENUE = '201AGBHDRLQHNHPHKKMPKLGPMDRDTDMVL'
 STAMP = datetime(2026, 11, 25, 12, tzinfo=timezone.utc)
 HTML = ('<html><head><link rel="import" href="' + BASE
         + '/webcomponents/html"></head><body><h1>What’s On</h1></body></html>')
+DETAIL = LISTING + 'event/beacon-christmas-show/'
+INDEX = ('<html><body><main><h1>What’s On</h1><article><a href="' + DETAIL
+         + '">Book Now</a></article></main></body></html>')
 
 
 def source():
@@ -93,6 +96,39 @@ def test_checkpoint_expands_only_from_captured_listing_evidence(monkeypatch):
     assert len(chunk['events']) == 1
     assert len(fetched) == len(set(fetched)) == len(responses)
     assert first['checkpoint']['cursor'] == 1
+
+
+def test_detail_advertised_api_expands_same_checkpoint_without_repeat(monkeypatch):
+    start = date(2026, 12, 5)
+    monkeypatch.setattr(adapter, '_today', lambda: start)
+    responses = payloads(start)
+    visited = []
+
+    def fetch(url, accept):
+        visited.append(url)
+        if url == DETAIL:
+            return HTML
+        return json.dumps(responses[url])
+
+    first = checkpoint.collect_chunk(source(), fetch, listing=INDEX,
+                                     max_requests=2, at=STAMP)
+    assert first['complete'] is False
+    assert first['checkpoint']['cursor'] == 2
+    assert visited == [DETAIL]
+    chunk = first
+    while not chunk['complete']:
+        chunk = checkpoint.collect_chunk(source(), fetch,
+                                         checkpoint=chunk['checkpoint'], at=STAMP)
+    assert len(chunk['events']) == 1
+    assert visited[0] == DETAIL
+    assert len(visited) == len(set(visited)) == len(responses) + 1
+
+
+def test_detail_central_or_foreign_api_does_not_expand(monkeypatch):
+    for host in ('system.spektrix.com', 'tickets.attacker.org.uk'):
+        body = HTML.replace('tickets.beaconartscentre.co.uk', host)
+        with pytest.raises(ValueError, match='html_calendar_event_jsonld_missing'):
+            calendar.collect(source(), lambda *_: body, listing=INDEX)
 
 
 def test_foreign_or_central_api_cannot_expand_html_transport():

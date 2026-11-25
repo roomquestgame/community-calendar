@@ -161,13 +161,13 @@ def extend_verified_tasks(state, tasks, *, scope_verified=False, at=None):
 def extend_verified_hosts(state, hosts, *, scope_verified=False, at=None):
     """Admit a publisher-evidenced host without creating another work queue.
 
-    Only the untouched first task may expand its host set.  The caller has the
-    first publisher response in hand and must verify the exact advertised base;
-    resumed checkpoints re-prove that evidence independently.
+    The caller has the current publisher response in hand and must verify the
+    exact advertised base before advancing that receipt.  This permits an
+    event detail to advertise the branded API when the listing does not;
+    resumed checkpoints re-prove the captured evidence independently.
     """
     validate(state, at=at)
-    if (not scope_verified or state['cursor'] != 0 or state['receipts']
-            or state['terminal_verified'] or not isinstance(hosts, list)
+    if (not scope_verified or state['terminal_verified'] or not isinstance(hosts, list)
             or not hosts or len(state['allowed_hosts']) + len(hosts) > 3
             or any(not isinstance(host, str) or not host or host in state['allowed_hosts']
                    for host in hosts)):
