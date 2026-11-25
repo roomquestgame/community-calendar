@@ -118,8 +118,10 @@ def test_missing_dependency_or_dispatch_falls_back(tmp_path):
 def test_scope_only_applies_to_exact_approved_ical_profile(monkeypatch):
     monkeypatch.setattr(inc, "_global_parser_context", lambda: "global")
     monkeypatch.setattr(inc, "_scoped_ical_parser_context", lambda: "specific")
-    assert inc.parser_context(PILOT) == "specific"
-    assert inc.parser_context({**PILOT, "source_key": "municipal_mapsee_0123456789abcdef01234567"}) == "specific"
+    from roomquest.ical_source_semantics import NORMALIZATION_VERSION
+    assert inc.parser_context(PILOT) == inc.fingerprint({
+        "protocol": "ical-publisher-facts-v1", "normalization": NORMALIZATION_VERSION})
+    assert inc.parser_context({**PILOT, "source_key": "municipal_mapsee_0123456789abcdef01234567"}) == inc.parser_context(PILOT)
     assert inc.parser_context({**PILOT, "source_key": "other"}) == "global"
     assert inc.parser_context({**PILOT, "ical_optimization_enabled": False}) == "global"
     assert inc.parser_context({key: value for key,value in PILOT.items()

@@ -208,9 +208,11 @@ def parser_context(source=None):
                  or re.fullmatch(r"municipal_(?:mapsee_)?[0-9a-f]{24}", source_key))
             and source.get("kind") == "ical"
             and source.get("platform_adapter") == "ical"):
-        scoped = _scoped_ical_parser_context()
-        if scoped is not None:
-            return scoped
+        # A reviewed semantic release value replaces incidental source-code
+        # hashes. Bump only when this normalization contract actually changes.
+        from roomquest.ical_source_semantics import NORMALIZATION_VERSION
+        return fingerprint({"protocol": "ical-publisher-facts-v1",
+                            "normalization": NORMALIZATION_VERSION})
     # The full prior fingerprint remains unchanged for every other source,
     # as well as when the scoped parser's imports/functions cannot be proven.
     return _global_parser_context()

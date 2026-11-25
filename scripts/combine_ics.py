@@ -395,6 +395,20 @@ def _serialize_vevent(event, original_had_rrule):
     Returns the inner content (without BEGIN:VEVENT / END:VEVENT wrappers).
     For expanded recurring instances, strips RRULE/EXDATE/RDATE and mutates UID.
     """
+    # Retain original recurrence evidence before the legacy standalone UID and
+    # RECURRENCE-ID transformation. Do not mutate the caller's component.
+    if original_had_rrule:
+        from copy import deepcopy
+        event = deepcopy(event)
+        if not event.get('X-EVENTQUEST-ORIGINAL-UID'):
+            event.add('X-EVENTQUEST-ORIGINAL-UID', str(event.get('UID', '')))
+        recurrence = event.decoded('RECURRENCE-ID', None)
+        if isinstance(recurrence, datetime):
+            recurrence = recurrence.astimezone(timezone.utc).isoformat() if recurrence.tzinfo else None
+        elif isinstance(recurrence, date):
+            recurrence = recurrence.isoformat()
+        if recurrence and not event.get('X-EVENTQUEST-RECURRENCE-ANCHOR'):
+            event.add('X-EVENTQUEST-RECURRENCE-ANCHOR', recurrence)
     raw = event.to_ical().decode('utf-8', errors='replace')
     # Extract inner content between BEGIN:VEVENT and END:VEVENT
     m = re.search(r'BEGIN:VEVENT\r?\n(.*?)\r?\nEND:VEVENT', raw, re.DOTALL)
