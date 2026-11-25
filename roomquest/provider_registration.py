@@ -18,6 +18,36 @@ SOCRATA = re.compile(r'/resource/[a-z0-9]{4}-[a-z0-9]{4}\.json')
 REVIZE = '/_assets_/plugins/revizeCalendar/calendar_data_handler.php'
 FAMILIES = {'chambermate', 'eventon', 'event_discovery', 'growthzone', 'legistar',
             'socrata', 'revize', 'south_carolina_parks', 'spektrix', 'tickera'}
+DEFAULT_VENUE_FAMILIES = {'event_discovery', 'tickera'}
+
+
+def apply_verified_default_venue(source, records):
+    """Hand a verified single-venue default to the shared staging policy.
+
+    The database remains responsible for matching the name to its reviewed
+    coordinates. A provider snapshot with any publisher venue evidence is
+    left unchanged, so multi-venue calendars continue through venue lookup.
+    """
+    venue = source.get('publisher_default_venue')
+    evidence = source.get('publisher_default_evidence')
+    lat = source.get('publisher_default_lat')
+    lng = source.get('publisher_default_lng')
+    if (source.get('platform_adapter') not in DEFAULT_VENUE_FAMILIES
+            or not isinstance(records, list) or not records
+            or not isinstance(venue, str) or not 3 <= len(venue.strip()) <= 160
+            or not isinstance(evidence, str) or not 12 <= len(evidence.strip()) <= 1000
+            or not isinstance(lat, (int, float)) or isinstance(lat, bool) or not -90 <= lat <= 90
+            or not isinstance(lng, (int, float)) or isinstance(lng, bool) or not -180 <= lng <= 180):
+        return records
+    if any(not isinstance(row, dict) or any((
+            str(row.get('venue_name') or '').strip(),
+            str(row.get('venue_address') or '').strip(),
+            str(row.get('venue_city') or '').strip(),
+            row.get('lat') is not None,
+            row.get('lng') is not None,
+    )) for row in records):
+        return records
+    return [{**row, 'venue_name': venue.strip()} for row in records]
 
 
 def family(url, body=None):
