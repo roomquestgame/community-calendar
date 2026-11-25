@@ -182,6 +182,16 @@ def test_verified_single_venue_default_is_handed_to_shared_staging_policy():
     assert row['lat'] is None and row['lng'] is None
 
 
+def test_provider_default_profile_uses_collector_authorized_rpc():
+    calls = []
+    profile = {'publisher_default_venue': 'Motorco Music Hall'}
+    assert provider_registration.read_profile(
+        'https://venue.example.org/calendar/', 'tickera',
+        lambda name, args: calls.append((name, args)) or profile) is profile
+    assert calls == [('community_collector_feed_profile', {
+        'p_url': 'https://venue.example.org/calendar/', 'p_adapter': 'tickera'})]
+
+
 @pytest.mark.parametrize('change', [
     {'platform_adapter': 'wordpress'},
     {'publisher_default_evidence': ''},
