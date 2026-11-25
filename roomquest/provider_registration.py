@@ -5,7 +5,7 @@ from urllib.parse import urlsplit
 from xml.etree import ElementTree
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
-from roomquest import chambermate, legistar, mapsee_adapter, revize, south_carolina_parks, spektrix_provider
+from roomquest import chambermate, eventon, legistar, mapsee_adapter, revize, south_carolina_parks, spektrix_provider
 from roomquest.registration_formats import source_key
 
 PARK = re.compile(r'https://southcarolinaparks\.com/api/events#park=([1-9][0-9]{0,9})')
@@ -14,13 +14,15 @@ TENANT = re.compile(r'https://api\.chambermate\.com/core/biz/webPresence/getEven
 LEGISTAR = re.compile(r'https://webapi\.legistar\.com/v1/([a-z0-9-]+)/events')
 SOCRATA = re.compile(r'/resource/[a-z0-9]{4}-[a-z0-9]{4}\.json')
 REVIZE = '/_assets_/plugins/revizeCalendar/calendar_data_handler.php'
-FAMILIES = {'chambermate', 'growthzone', 'legistar', 'socrata', 'revize', 'south_carolina_parks', 'spektrix'}
+FAMILIES = {'chambermate', 'eventon', 'growthzone', 'legistar', 'socrata', 'revize', 'south_carolina_parks', 'spektrix'}
 
 
 def family(url, body=None):
     parts = urlsplit(url)
     if spektrix_provider.family(url):
         return 'spektrix'
+    if body and eventon.supports_listing(url, body):
+        return 'eventon'
     if TENANT.fullmatch(url):
         return 'chambermate'
     if PARK.fullmatch(url):
@@ -52,6 +54,10 @@ def collect(url, adapter, fetch, *, deadline, profile=None, body=None, registrat
         raise ValueError('invalid_provider_endpoint')
     if adapter == 'growthzone' and body is None:
         body = fetch(url, 'application/xml,text/xml')
+    if adapter == 'eventon':
+        source = {'source_key': source_key(url), 'feed_url': url,
+                  'platform_adapter': adapter, 'kind': 'json'}
+        return eventon.collect(source, fetch, body=body, deadline_at=deadline)
     if family(url, body) != adapter:
         raise ValueError('provider_endpoint_mismatch')
     source = {'source_key': source_key(url), 'feed_url': url, 'platform_adapter': adapter,
@@ -114,6 +120,6 @@ def collect(url, adapter, fetch, *, deadline, profile=None, body=None, registrat
 
 
 def read_profile(url, adapter, rpc):
-    if adapter in ('south_carolina_parks', 'chambermate'):
+    if adapter in ('south_carolina_parks', 'chambermate', 'eventon'):
         return {}
     return rpc('community_collector_feed_profile', {'p_url':url, 'p_adapter':adapter}) or {}
