@@ -2,6 +2,8 @@ from datetime import datetime, timedelta, timezone
 import json
 from unittest.mock import Mock
 
+import pytest
+
 from roomquest import eventon
 
 
@@ -47,3 +49,6 @@ def test_generic_eventon_contract_and_collection_use_one_same_host_calendar():
     assert row['event_url'] == 'https://nature.example.org/program/winter-walk/'
     fetch.assert_any_call('https://nature.example.org/?evo-ajax=eventon_init_load',
                           'application/json', calendar_form=eventon.contract(listing, page)['form'])
+def test_eventon_nonce_failure_is_a_precise_provider_condition():
+    with pytest.raises(ValueError, match='eventon_nonce_unavailable'):
+        eventon.parse(json.dumps({'status': 'bad', 'msg': 'Nonce validation failed'}))
