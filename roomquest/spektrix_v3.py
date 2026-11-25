@@ -310,6 +310,143 @@ def project(profile, events, instances, plans, venues, start, end, *, cms_pages=
         venue_name = _text(details.get('name')) or _text(venue.get('name'))
         city = _text(details.get('city')) or _city(address)
         time_zone = details.get('timezone') or profile.get('timezone')
+        # A complete UK postcode identifies the timezone, not coordinates.
+        # Still compare the publisher's local time with startUtc below.
+        if not time_zone and re.search(r'\b(?:GIR\s*0AA|[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2})\s*
+        if not address or not venue_name:
+            _fail('spektrix_venue_location_unresolved')
+        instant = _utc(instance.get('startUtc'))
+        if isinstance(time_zone, str):
+            local = _local(instance.get('start'), time_zone)
+            if local.astimezone(timezone.utc) != instant:
+                _fail('spektrix_time_conflict')
+            local_date = local.date()
+        else:
+            raw_local = instance.get('start')
+            try:
+                local_date = date.fromisoformat(raw_local[:10])
+            except (TypeError, ValueError):
+                _fail('spektrix_time_invalid')
+        if not intervals[0][0] <= local_date <= intervals[-1][1]:
+            _fail('spektrix_instance_window_mismatch')
+        minutes = event.get('duration')
+        if type(minutes) is not int or minutes < 0 or minutes > 24 * 60:
+            _fail('spektrix_duration_invalid')
+        end_time = instant + timedelta(minutes=minutes) if minutes else None
+        event_url = _event_url(event, profile)
+        image_url = event.get('imageUrl') or event.get('thumbnailUrl')
+        if not isinstance(image_url, str) or not image_url.startswith('https://'):
+            image_url = None
+        records.append({
+            'id': client + ':' + instance['id'],
+            'source_event_id': event_id,
+            'source_instance_id': instance['id'],
+            'source_plan_id': plan.get('id'),
+            'source_venue_id': venue_id,
+            'title': title,
+            'starts_at': instant.isoformat(),
+            'ends_at': end_time.isoformat() if end_time else None,
+            'venue_name': venue_name,
+            'venue_address': address,
+            'venue_city': city,
+            'timezone': time_zone,
+            'event_url': event_url,
+            'description': _text(event.get('description') or event.get('htmlDescription'))[:12000],
+            'image_url': image_url,
+            'spektrix_adapter_version': 1,
+        })
+    return {
+        'complete': True,
+        'client': client,
+        'window_start': intervals[0][0].isoformat(),
+        'window_end': intervals[-1][1].isoformat(),
+        'instance_total': len(instances_by_id),
+        'held_unsale_or_cancelled': rejected,
+        'events': sorted(records, key=lambda row: (row['starts_at'], row['id'])),
+    }
+
+
+def collect(profile, start, end, fetch, *, deadline_at=None, cms_pages=None):
+    """One-shot probe only. Large feeds require durable runner/checkpoint wiring.
+
+    The normal publisher transport must be injected. A deadline/size failure
+    is an incomplete snapshot, never a successful empty or truncated list.
+    """
+    client = _client(profile.get('client'))
+    items = {'events': {}, 'instances': {}, 'plans': {}, 'venues': {}}
+
+    def read(url):
+        if deadline_at is not None and monotonic() >= deadline_at:
+            _fail('spektrix_collection_deadline')
+        return fetch(url, 'application/json')
+
+    requests = []
+    for first, last in windows(start, end):
+        for family, limit in (('events', MAX_EVENTS), ('instances', MAX_INSTANCES)):
+            requests.append((family, limit, api_url(
+                client, family, start=first, end=last,
+                base=profile.get('api_base'))))
+    requests.append(('venues', MAX_VENUES, api_url(
+        client, 'venues', base=profile.get('api_base'))))
+
+    def read_resource(request):
+        family, limit, url = request
+        return family, limit, _items(read(url), limit, family)
+
+    # These resources are independent parts of the same complete snapshot.
+    # The injected shared transport still spaces starts and applies the exact
+    # host, robots and deadline policy; this only overlaps publisher response
+    # time so staging retains part of the ordinary worker budget.
+    with ThreadPoolExecutor(max_workers=MAX_CONCURRENT_PLAN_REQUESTS) as pool:
+        futures = [pool.submit(copy_context().run, read_resource, request)
+                   for request in requests]
+        for future in futures:
+            family, limit, rows = future.result()
+            _merge(items[family], rows, family, limit)
+    active_plans = set()
+    for instance in items['instances'].values():
+        if instance.get('cancelled') is False and instance.get('isOnSale') is True:
+            if not _id(instance.get('planId')):
+                _fail('spektrix_plan_invalid')
+            active_plans.add(instance['planId'])
+    if len(active_plans) > MAX_PLANS:
+        _fail('spektrix_plans_limit')
+    if len(items['venues']) == 1:
+        # With exactly one API venue every client plan necessarily belongs to
+        # that venue. Avoid redundant seating-plan downloads; they can be large
+        # and publisher pacing must fit the ordinary worker deadline.
+        venue_id = next(iter(items['venues']))
+        items['plans'] = {
+            plan_id: {'id': plan_id, 'venue': {'id': venue_id}}
+            for plan_id in active_plans
+        }
+    else:
+        # A multi-venue client requires its referenced seating plans to resolve
+        # each performance to the correct physical Venue. These plan documents
+        # can be comparatively expensive even though only venue.id is needed.
+        # Keep concurrency deliberately small; the shared publisher transport
+        # still applies its host pacing, robots and deadline policy to every
+        # request. map() preserves deterministic plan/result ordering and any
+        # failed request still holds the complete snapshot.
+        plan_ids = sorted(active_plans)
+
+        def read_plan(plan_id):
+            return plan_id, _payload(read(api_url(
+                client, 'plans', identity=plan_id, base=profile.get('api_base'))))
+
+        with ThreadPoolExecutor(max_workers=MAX_CONCURRENT_PLAN_REQUESTS) as pool:
+            futures = [pool.submit(copy_context().run, read_plan, plan_id)
+                       for plan_id in plan_ids]
+            for future in futures:
+                plan_id, plan = future.result()
+                if not isinstance(plan, dict) or plan.get('id') != plan_id:
+                    _fail('spektrix_plan_invalid')
+                items['plans'][plan_id] = plan
+    return project(profile, list(items['events'].values()), list(items['instances'].values()),
+                   list(items['plans'].values()), list(items['venues'].values()), start, end,
+                   cms_pages=cms_pages)
+, address, re.I):
+            time_zone = 'Europe/London'
         if not address or not venue_name:
             _fail('spektrix_venue_location_unresolved')
         instant = _utc(instance.get('startUtc'))
