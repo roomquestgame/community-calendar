@@ -106,16 +106,14 @@ def collect(url, adapter, fetch, *, deadline, profile=None, body=None, registrat
               'kind': 'xml' if adapter == 'growthzone' else 'json'}
     config = profile or {}
     if adapter == 'spektrix':
-        if not isinstance(profile, dict) or not profile:
-            raise ValueError('spektrix_provider_profile_required')
-        if profile.get('ready_for_registration') is not True:
-            raise ValueError('spektrix_provider_not_enabled')
-        # The short calendar probe is NEVER a recurring 60-day source snapshot.
-        # Collection must use the future durable checkpoint runner, not this
-        # registration-only bridge or a partial one-shot preview.
-        if registration_probe is not True:
-            raise ValueError('spektrix_provider_checkpoint_required')
-        return spektrix_provider.probe(source, config, fetch, deadline_at=deadline)
+        # Public Spektrix feeds carry their client identity in the canonical
+        # URL and publish venue/address facts through the same v3 API. A stored
+        # profile may add reviewed overrides, but it is not a prerequisite for
+        # recognizing or collecting an ordinary public feed.
+        config = spektrix_provider.profile(url, profile)
+        if registration_probe:
+            return spektrix_provider.probe(source, config, fetch, deadline_at=deadline)
+        return spektrix_provider.collect(source, config, fetch, deadline_at=deadline)
     if adapter == 'south_carolina_parks':
         park_id = PARK.fullmatch(url)[1]
         return south_carolina_parks.collect(dict(source, source_key='south_carolina_parks_' + park_id),
