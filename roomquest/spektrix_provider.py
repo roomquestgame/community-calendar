@@ -54,6 +54,7 @@ def profile(url, stored=None):
         'publisher_url': api_base[:-len('/api/v3')] + '/website/',
         'event_urls': {},
         'verified_venues': {},
+        'verified_plans': {},
     }
     if stored:
         if not isinstance(stored, dict):
@@ -108,6 +109,14 @@ def validate(source, value):
     venues = value.get('verified_venues') or {}
     if not isinstance(venues, dict) or len(venues) > 150:
         _fail('venues_invalid')
+    plans = value.get('verified_plans', {})
+    if plans is None:
+        plans = {}
+    if (not isinstance(plans, dict) or len(plans) > spektrix_v3.MAX_PLANS
+            or any(not re.fullmatch(r'[A-Za-z0-9-]{10,80}', key)
+                   or not isinstance(details, dict)
+                   for key, details in plans.items())):
+        _fail('plans_invalid')
     return value
 
 

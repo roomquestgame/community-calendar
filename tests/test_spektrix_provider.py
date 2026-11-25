@@ -23,6 +23,7 @@ def profile():
         'client':CLIENT,'publisher_url':PUBLISHER,
         'country':'GB','home_city':'London','timezone':'Europe/London',
         'event_urls':{EVENT:'https://www.thealbany.org.uk/events/gingerbread-man/'},
+        'verified_plans':{},
         'verified_venues':{VENUE:{
             'address':'9 Giffin Street, London SE8 4RJ','city':'London',
             'evidence_url':'https://www.thealbany.org.uk/venues/deptford-lounge'}}
@@ -117,6 +118,20 @@ def test_public_feed_does_not_require_a_stored_profile():
     assert provider_registration.collect(
         URL, 'spektrix', lambda url, accept: '[]', deadline=100,
         profile=None, registration_probe=True) == []
+
+
+def test_verified_plan_profiles_are_bounded():
+    value = profile()
+    value['verified_plans'] = {
+        '1801APGQPRKNVLCHGSKJBCTJKDRMGPLNL': {
+            'address': '160 Whitechapel Road, London E1 1BJ'}}
+    assert spektrix_provider.validate(source(), value)['verified_plans'] == value['verified_plans']
+    value['verified_plans'] = []
+    with pytest.raises(ValueError, match='spektrix_provider_plans_invalid'):
+        spektrix_provider.validate(source(), value)
+    value['verified_plans'] = {'bad': {}}
+    with pytest.raises(ValueError, match='spektrix_provider_plans_invalid'):
+        spektrix_provider.validate(source(), value)
 
 
 def test_public_feed_uses_the_same_dispatch_for_recurring_collection():

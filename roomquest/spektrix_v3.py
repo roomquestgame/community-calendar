@@ -286,8 +286,17 @@ def project(profile, events, instances, plans, venues, start, end, *, cms_pages=
         venue = venues_by_id.get(venue_id)
         if not venue:
             _fail('spektrix_plan_venue_unresolved')
-        details = (profile.get('verified_venues') or {}).get(venue_id) or {}
+        # Some tenants attach many physical locations to one generic Venue and
+        # expose the real place only through the performance Plan. A reviewed
+        # plan override is therefore narrower and safer than permanently
+        # assigning that generic venue ID to one address. Native Venue.address
+        # remains authoritative whenever Spektrix supplies it.
+        venue_details = (profile.get('verified_venues') or {}).get(venue_id) or {}
+        plan_details = (profile.get('verified_plans') or {}).get(plan.get('id')) or {}
         address = _text(venue.get('address'))
+        details = {}
+        if not address:
+            details = plan_details or venue_details
         if not address and details.get('address'):
             evidence = details.get('evidence_url')
             url = urlsplit(evidence) if isinstance(evidence, str) else None
@@ -295,9 +304,10 @@ def project(profile, events, instances, plans, venues, start, end, *, cms_pages=
                     or url.username or url.password):
                 _fail('spektrix_venue_evidence_missing')
             address = _text(details['address'])
+        venue_name = _text(details.get('name')) or _text(venue.get('name'))
         city = _text(details.get('city')) or _city(address)
         time_zone = details.get('timezone') or profile.get('timezone')
-        if not address or not _text(venue.get('name')):
+        if not address or not venue_name:
             _fail('spektrix_venue_location_unresolved')
         instant = _utc(instance.get('startUtc'))
         if isinstance(time_zone, str):
@@ -325,11 +335,12 @@ def project(profile, events, instances, plans, venues, start, end, *, cms_pages=
             'id': client + ':' + instance['id'],
             'source_event_id': event_id,
             'source_instance_id': instance['id'],
+            'source_plan_id': plan.get('id'),
             'source_venue_id': venue_id,
             'title': title,
             'starts_at': instant.isoformat(),
             'ends_at': end_time.isoformat() if end_time else None,
-            'venue_name': _text(venue['name']),
+            'venue_name': venue_name,
             'venue_address': address,
             'venue_city': city,
             'timezone': time_zone,
