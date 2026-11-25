@@ -5,6 +5,7 @@ Missing event links use a proven publisher identity, then the validated feed URL
 Venue-address fallback stays on its existing normalization path.
 """
 from collections import defaultdict
+from roomquest.event_description import MAX_EVENT_DESCRIPTION_CHARACTERS
 from copy import deepcopy
 from datetime import date, datetime, time, timedelta, timezone
 import logging
@@ -279,9 +280,7 @@ def _enrich_mecklenburg(records, calendar, expanded):
         if record.get('event_url') in (None, '', MECKLENBURG_LIBRARY_FEED):
             record['event_url'] = MECKLENBURG_LIBRARY_CALENDAR
         if record.get('description') is not None:
-            # This reviewed source uses the shared 2,000-character narrative
-            # contract; the larger Independence/DCR allowance does not apply.
-            record['description'] = record['description'][:2000]
+            record['description'] = record['description'][:MAX_EVENT_DESCRIPTION_CHARACTERS]
         result.append(record)
     return result
 
@@ -324,7 +323,7 @@ def normalize_virginia_civic(records, source_url):
         item['venue_name'], item['venue_address'], item['venue_city'] = location
         item['event_url'] = (civicplus_detail_url(item.get('description', ''), item['id'].split('__', 1)[0],
                                                 source_url) or item['event_url'])
-        item['description'] = item.get('description', '')[:2000]
+        item['description'] = item.get('description', '')[:MAX_EVENT_DESCRIPTION_CHARACTERS]
     return records
 
 
@@ -654,11 +653,8 @@ def parse(payload, source, *, legacy=False, include_description=False):
     date_notices = _civic_dates(cal, source)
     # Narrative retention is independent of the legacy image/venue contract.
     # Enabling the older include_description switch also changes those fields.
-    result=parse_ics_preview(payload,allow_ongoing=True,include_images=legacy, include_description=True)
-    if not include_description:
-        from roomquest.event_description import description
-        for row in result:
-            row['description'] = description(row.get('description'))
+    result=parse_ics_preview(payload,allow_ongoing=True,include_images=legacy, include_description=True,
+                             sanitize_description=not include_description)
     if not result and not date_notices and unsupported:raise ValueError(unsupported[0])
     # Known native publisher identities may supply an event page when URL is
     # absent. Otherwise retain the validated actual feed fallback. Never guess a

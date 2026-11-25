@@ -4,6 +4,7 @@ Uses the existing factual parser, SSRF/robots transport and downstream staging.
 No venue search, source-wide pin, extra scheduler or provider identity change.
 """
 from datetime import datetime, timedelta, timezone
+from roomquest.event_description import MAX_EVENT_DESCRIPTION_CHARACTERS
 import json
 from hashlib import md5
 import re
@@ -192,7 +193,7 @@ def _madison_evidence(row, item):
         if month and (month, int(mention[2])) != (day.month, day.day):
             note = ('Schedule note: The date in the publisher description conflicts with its calendar. '
                     'Use the event date shown above and confirm with the organizer.\n\n')
-            row['description'] = note + narrative[:2000 - len(note)]
+            row['description'] = note + narrative[:MAX_EVENT_DESCRIPTION_CHARACTERS - len(note)]
     cost = item.get('cost')
     facts = {'cost': cost.strip()[:400]} if isinstance(cost, str) and cost.strip() else {}
     return attach(row, 'madison_county_parks_ia', facts=facts, candidate=candidate)

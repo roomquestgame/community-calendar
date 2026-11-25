@@ -251,7 +251,7 @@ def parse_tribe(data, *, strict_public=False, retain_description=False, utc_defa
                 value = e.get("description")
                 if value is not None and not isinstance(value, str):
                     raise ValueError("invalid_wordpress_description")
-                # Existing JSON publication contract is 2,000 characters.
+                # Use the shared bounded narrative contract.
                 # Missing publisher prose stays empty; never copy title/category.
                 r["description"] = description(value)
             if strict_public and tz_name:

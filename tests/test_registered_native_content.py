@@ -41,7 +41,7 @@ def item(index=1, *, blank_venue=False, description='<p>Make a basket.</p>'):
 
 
 def payload(items):
-    return json.dumps({'events': items, 'total_pages': 1})
+    return json.dumps({'events': items, 'total': len(items), 'total_pages': 1})
 
 
 def jsonld_item():
@@ -74,7 +74,7 @@ def run_worker(body, claim=None, *, stage_failure=False):
 def test_no_exact_capability_preserves_the_legacy_contract(value):
     claim = source(capability=value)
     row = collect([item(description='x' * 3000)], claim)[0]
-    assert len(row['description']) == 2000
+    assert len(row['description']) == 3000
     assert 'registered_native_content' not in row
     assert 'image_extractor_version' not in row and 'image_url' not in row
 
@@ -169,15 +169,12 @@ def test_twelve_thousand_unicode_characters_are_preserved():
     native.validate_record(row, source())
 
 
-def test_oversize_fails_whole_collection_before_any_staging():
-    items = [item(i) for i in range(1, 22)] + [item(99, description='🎨' * 12001)]
-    result, _, db = run_worker(payload(items))
-    assert result['failed'] == 1 and result['staged'] == 0 and result['complete'] == 0
-    db.assert_called_once()
-    assert db.call_args.args[0] == 'community_collector_record_preview_v3'
-    assert db.call_args.args[1]['p_error'] == 'registered_native_description_too_long'
-    assert db.call_args.args[1]['p_parser_capability'] == native.VERSION
-    assert db.call_args.args[1]['p_future_count'] == 0
+def test_oversize_narrative_is_bounded_without_rejecting_other_events():
+    rows = collect([item(1), item(99, description='🎨' * 12001)])
+    assert len(rows) == 2
+    assert rows[1]['description'] == '🎨' * 12000
+    for row in rows:
+        native.validate_record(row, source())
 
 
 @pytest.mark.parametrize('value', [None, '', 'https://venue.example.org/more'])
@@ -239,13 +236,12 @@ def test_jsonld_full_narrative_and_local_image_reference_use_same_contract():
     fetch.assert_called_once_with(source('jsonld')['feed_url'], 'text/html,application/ld+json')
 
 
-def test_jsonld_oversize_cannot_be_reported_as_completed():
+def test_jsonld_oversize_uses_common_bound():
     e = jsonld_item()
     e['description'] = 'x' * 12001
-    result, _, db = run_worker(json.dumps(e), source('jsonld'))
-    assert result['complete'] == 0 and result['failed'] == 1
-    db.assert_called_once()
-    assert db.call_args.args[1]['p_error'] == 'registered_native_description_too_long'
+    row = jsonld_adapter.collect(source('jsonld'), MagicMock(return_value=json.dumps(e)))[0]
+    assert row['description'] == 'x' * 12000
+    native.validate_record(row, source('jsonld'))
 
 
 def test_wordpress_empty_native_venue_reaches_private_stage_unchanged():

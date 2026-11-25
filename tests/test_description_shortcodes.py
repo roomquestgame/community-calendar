@@ -153,7 +153,7 @@ def test_doorways_generic_ics_route_preserves_event_identity_and_sanitizes(monke
     })
 
     row, = result['p_events']
-    assert row['description'] == expected[:2000]
+    assert row['description'] == expected[:12000]
     assert row['id'] == 'doorways-shortcode-fixture'
     assert row['event_url'] == event_url
     assert row['title'] == 'Sip & Shop at The Shops at 5807'
@@ -255,7 +255,7 @@ def test_wordpress_parser_uses_shared_cleaning_before_its_existing_limit():
     raw = _HURRDAT_DIVI_PREFIX * 3 + narrative + _HURRDAT_DIVI_SUFFIX * 3
     row, = parse_tribe({'events': [_hurrdat_item(raw)]},
                       strict_public=True, retain_description=True)
-    assert row['description'] == narrative[:2000]
+    assert row['description'] == narrative[:12000]
 
 
 @pytest.mark.parametrize('raw,expected', [

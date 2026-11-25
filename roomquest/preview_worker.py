@@ -1157,7 +1157,7 @@ def _preview(title, start, end, venue, lat, lng, url, identity="",
     }
 
 
-def parse_ics_preview(payload: str, *, allow_ongoing=False, include_images=True, include_description=False) -> list[dict]:
+def parse_ics_preview(payload: str, *, allow_ongoing=False, include_images=True, include_description=False, sanitize_description=False) -> list[dict]:
     """Use upstream combine_ics recurrence expansion and icalendar VEVENT parsing."""
     from icalendar import Calendar
     from scripts.combine_ics import expand_rrules
@@ -1208,7 +1208,12 @@ def parse_ics_preview(payload: str, *, allow_ongoing=False, include_images=True,
                 # Retain the occurrence's own narrative after recurrence expansion.
                 # Do not look up by UID: recurrence overrides can have different text.
                 if include_description:
-                    record["description"] = str(item.get("DESCRIPTION", "")).strip()[:12000]
+                    if sanitize_description:
+                        from roomquest.event_description import calendar_description
+                        record["description"] = calendar_description(item, record["title"])
+                    else:
+                        from roomquest.event_description import MAX_EVENT_DESCRIPTION_CHARACTERS
+                        record["description"] = str(item.get("DESCRIPTION", "")).strip()[:MAX_EVENT_DESCRIPTION_CHARACTERS]
                 results.append(record)
         except (KeyError, ValueError, TypeError):
             continue
