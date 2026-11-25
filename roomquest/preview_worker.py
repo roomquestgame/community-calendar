@@ -832,6 +832,7 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
             json_content_type = 'application/json; charset=utf-8'
     cfengage_form = False
     eventon_form = False
+    event_discovery_form = False
     boston_cares_form = False
     artspace_form = False
     if calendar_form is not None:
@@ -865,9 +866,17 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
                         and all(k == 'nonce' or re.fullmatch(
                             r'(?:global|cals\[evcal_calendar_[1-9][0-9]{0,9}\]\[sc\])(?:\[[a-zA-Z0-9_-]+\])+', k)
                                 for k in calendar_form))
+        from roomquest import ticketweb_event_discovery
+        event_discovery_form = (
+            eventon_parts.scheme == 'https'
+            and eventon_parts.path == '/wp-admin/admin-ajax.php'
+            and not eventon_parts.query and not eventon_parts.fragment
+            and accept == 'application/json' and respect_robots
+            and eventon_host is not None and allowed_hosts == (eventon_host,)
+            and ticketweb_event_discovery.valid_form(calendar_form))
         # A second boundary keeps internal callers from turning this into an
         # arbitrary write-capable transport. Never replay a POST on redirect.
-        if not (cfengage_form or eventon_form or boston_cares_form or artspace_form) and (url != 'https://goodshepherdsouthhill.org/wp-admin/admin-ajax.php'
+        if not (cfengage_form or eventon_form or event_discovery_form or boston_cares_form or artspace_form) and (url != 'https://goodshepherdsouthhill.org/wp-admin/admin-ajax.php'
                 or accept != 'text/html' or not respect_robots
                 or allowed_hosts != ('goodshepherdsouthhill.org',)
                 or not isinstance(calendar_form, dict)
@@ -907,11 +916,13 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
                               else 'https://goodshepherdsouthhill.org/welcome/calendar/')
         if eventon_form:
             headers['Referer'] = f'https://{eventon_host}/'
+        if event_discovery_form:
+            headers['Referer'] = f'https://{eventon_host}/calendar/'
         if boston_cares_form:
             headers['Referer'] = 'https://www.bostoncares.org/calendar'
         if artspace_form:
             headers['Referer'] = 'https://artspacenc.org/calendar/'
-        if cfengage_form or eventon_form or boston_cares_form or artspace_form:
+        if cfengage_form or eventon_form or event_discovery_form or boston_cares_form or artspace_form:
             headers['X-Requested-With'] = 'XMLHttpRequest'
     elif calendar_json is not None:
         headers['Content-Type'] = json_content_type
@@ -1055,7 +1066,7 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
                 if (calendar_form is not None and
                         response.headers.get('Content-Type', '').split(';', 1)[0].strip().lower()
                         not in ({'application/json', 'text/html'} if (cfengage_form or boston_cares_form or artspace_form) else
-                                {'application/json'} if eventon_form else {'text/html'})):
+                                {'application/json'} if (eventon_form or event_discovery_form) else {'text/html'})):
                     response.close()
                     raise PreviewError('invalid_calendar_render_content_type')
                 if (calendar_json is not None and

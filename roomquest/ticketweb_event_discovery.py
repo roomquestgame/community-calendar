@@ -70,6 +70,30 @@ def form(spec, start, end):
             'statefilter': '', 'cityfilter': '', 'locationfilter': '', 'showmobilelist': 'true'}
 
 
+def valid_form(value):
+    """Validate the display-only request before the shared transport can POST it."""
+    if not isinstance(value, dict) or set(value) != {
+            'action', 'nonce', 'start', 'end', 'params', 'monthview', 'calcount',
+            'statefilter', 'cityfilter', 'locationfilter', 'showmobilelist'}:
+        return False
+    if (value.get('action') != ACTION or value.get('monthview') != 'standard'
+            or value.get('calcount') != '1' or value.get('statefilter') != ''
+            or value.get('cityfilter') != '' or value.get('locationfilter') != ''
+            or value.get('showmobilelist') != 'true'
+            or not re.fullmatch(r'[a-zA-Z0-9]{8,24}', str(value.get('nonce') or ''))
+            or not isinstance(value.get('params'), str) or len(value['params']) > 40_000):
+        return False
+    try:
+        start = datetime.strptime(value['start'], '%Y-%m-%d').date()
+        end = datetime.strptime(value['end'], '%Y-%m-%d').date()
+        settings = json.loads(value['params'])
+        zone = settings['current_datetime']['timezone']
+        ZoneInfo(zone)
+    except (ValueError, TypeError, KeyError, ZoneInfoNotFoundError):
+        return False
+    return settings.get('type') in ('calendar', 'calendar2', 'calendar3') and 1 <= (end - start).days <= 62
+
+
 def _plain_fragment(value):
     return BeautifulSoup(str(value or ''), 'html.parser').get_text(' ', strip=True)
 
