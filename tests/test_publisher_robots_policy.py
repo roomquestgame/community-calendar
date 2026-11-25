@@ -7,6 +7,7 @@ No calendar/export requests are made by these tests.
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import MagicMock, Mock
+from urllib.error import HTTPError, URLError
 from urllib.parse import urlsplit
 
 import pytest
@@ -203,6 +204,64 @@ def guarded_origin(monkeypatch):
     for field in fields:
         getattr(worker, field).clear()
         getattr(worker, field).update(previous[field])
+
+
+def _clear_robots_state():
+    fields = ("_robots_cache", "_robots_delays", "_publisher_next", "_publisher_retry_after")
+    previous = {field: getattr(worker, field).copy() for field in fields}
+    for field in fields:
+        getattr(worker, field).clear()
+    return previous
+
+
+def _restore_robots_state(previous):
+    for field, value in previous.items():
+        getattr(worker, field).clear()
+        getattr(worker, field).update(value)
+
+
+def test_transient_robots_network_failure_temporarily_allows_collection(monkeypatch):
+    previous = _clear_robots_state()
+    opened = Mock(side_effect=URLError("temporary robots timeout"))
+    monkeypatch.setattr(worker, "build_opener", lambda *_: SimpleNamespace(open=opened))
+    monkeypatch.setattr(worker, "validate_public_dns", Mock())
+    monkeypatch.setattr(worker, "activity_before_request", Mock())
+    try:
+        assert worker.robots_allowed("publisher.example", "/events")
+        assert worker.robots_allowed("publisher.example", "/events?page=2")
+        assert opened.call_count == 1
+        assert worker._robots_cache["publisher.example"][2] is None
+    finally:
+        _restore_robots_state(previous)
+
+
+def test_soft_robots_response_temporarily_allows_collection(monkeypatch):
+    previous = _clear_robots_state()
+    response = MagicMock(status=200, headers={})
+    response.__enter__.return_value = response
+    response.read.return_value = b"<html><body>temporary application response</body></html>"
+    monkeypatch.setattr(worker, "build_opener", lambda *_: SimpleNamespace(open=Mock(return_value=response)))
+    monkeypatch.setattr(worker, "validate_public_dns", Mock())
+    monkeypatch.setattr(worker, "activity_before_request", Mock())
+    try:
+        assert worker.robots_allowed("publisher.example", "/events")
+        assert worker._checkpoint_robots_snapshot({"feed_url": "https://publisher.example/events"}) is None
+    finally:
+        _restore_robots_state(previous)
+
+
+def test_robots_http_access_denial_still_blocks_collection(monkeypatch):
+    previous = _clear_robots_state()
+    url = "https://publisher.example/robots.txt"
+    denied = HTTPError(url, 403, "Forbidden", {}, None)
+    monkeypatch.setattr(worker, "build_opener", lambda *_: SimpleNamespace(open=Mock(side_effect=denied)))
+    monkeypatch.setattr(worker, "validate_public_dns", Mock())
+    monkeypatch.setattr(worker, "activity_before_request", Mock())
+    try:
+        with pytest.raises(worker.PreviewError, match="^robots_denied$"):
+            worker.robots_allowed("publisher.example", "/events")
+    finally:
+        _restore_robots_state(previous)
 
 
 @pytest.mark.parametrize("url", EXPORTS)

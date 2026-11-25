@@ -55,6 +55,7 @@ VIRGINIA_CIVIC_ICS = {
 }
 _robots_delays = {}
 ROBOTS_CACHE_SECONDS = robots_checkpoint.TTL_SECONDS
+ROBOTS_UNAVAILABLE_ALLOW_SECONDS = 60
 MAX_ROBOTS_HOSTS = 128
 _robots_cache = OrderedDict()
 _robots_cache_lock = Lock()
@@ -245,6 +246,23 @@ def _cache_robots(host, parser, *, raw=None, status=200):
     return parser
 
 
+def _cache_unavailable_robots_allow(host):
+    """Temporarily allow collection when no robots policy can be obtained.
+
+    This is process-local and deliberately never checkpointed as publisher
+    permission. A later request rechecks robots.txt; an explicit rule denial
+    or robots HTTP 401/403 still blocks collection.
+    """
+    _robots_delays[host] = 1
+    with _robots_cache_lock:
+        _robots_cache[host] = (
+            monotonic() + ROBOTS_UNAVAILABLE_ALLOW_SECONDS, None, None)
+        _robots_cache.move_to_end(host)
+        while len(_robots_cache) > MAX_ROBOTS_HOSTS:
+            _robots_cache.popitem(last=False)
+    return None
+
+
 def _parse_robots_policy(host, raw):
     """One policy parser for fetched responses and authenticated fresh caches."""
     lines = raw.decode("utf-8-sig", errors="replace").splitlines()
@@ -353,8 +371,9 @@ def _robots_rules(host: str, *, deadline_at: float | None = None):
 
     Only exact reviewed robots redirects are permitted; every
     other redirect and every private-network destination remains blocked.
-    404/410 mean no robots rules; all other HTTP/network failures fail closed.
-    Actual denial and temporary unavailability retain distinct error codes.
+    404/410 mean no robots rules. Temporary inability to obtain a policy
+    allows this collection attempt through a short process-local cache; it is
+    never persisted as permission. Explicit rules and HTTP 401/403 still deny.
     Cache the rules, not a path's decision: every event path is still checked.
     """
     with _robots_cache_lock:
@@ -389,7 +408,7 @@ def _robots_rules(host: str, *, deadline_at: float | None = None):
             _observe_retry_after(host, getattr(response, "headers", {}))
             raw = response.read(128_001)
             if response.status != 200 or len(raw) > 128_000:
-                raise PreviewError("robots_unavailable")
+                return _cache_unavailable_robots_allow(host)
     except HTTPError as exc:
         _observe_retry_after(host, exc.headers)
         if exc.code in (404, 410):
@@ -399,13 +418,18 @@ def _robots_rules(host: str, *, deadline_at: float | None = None):
             raise _robots_denied("access_http_%d" % exc.code) from exc
         if exc.code == 429:
             raise PreviewError("publisher_rate_limited") from exc
-        raise PreviewError("robots_unavailable") from exc
-    except (URLError, TimeoutError, OSError) as exc:
-        raise PreviewError("robots_unavailable") from exc
+        return _cache_unavailable_robots_allow(host)
+    except (URLError, TimeoutError, OSError):
+        return _cache_unavailable_robots_allow(host)
     finally:
         if attempted:
             _reserve_known_crawl_delay(host)
-    parser, _robots_delays[host] = _parse_robots_policy(host, raw)
+    try:
+        parser, _robots_delays[host] = _parse_robots_policy(host, raw)
+    except PreviewError as exc:
+        if str(exc) == "robots_unavailable":
+            return _cache_unavailable_robots_allow(host)
+        raise
     # The newly learned delay also separates this robots response from the
     # first calendar request. An oversized value is held before that request.
     _reserve_known_crawl_delay(host)
