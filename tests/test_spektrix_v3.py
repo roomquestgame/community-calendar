@@ -87,8 +87,6 @@ def test_instance_plan_venue_link_has_stable_performance_identity():
     assert row['event_url'].startswith('https://www.thealbany.org.uk/events/')
 
 
-
-
 def test_api_facts_are_collectable_without_a_manual_location_profile():
     value = {
         'client': 'foxtucsontheatre',
