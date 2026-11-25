@@ -53,7 +53,7 @@ def run_claimed_capture(source, profile, *, collection_context, rpc, fetch_publi
 
     def fetch(url, accept):
         return fetch_publisher(url, accept, respect_robots=True,
-                               allowed_hosts=(runner.HOST,), follow_redirects=False,
+                               allowed_hosts=(runner.host(profile),), follow_redirects=False,
                                deadline_at=deadline_at - 10)
 
     kwargs = {'clock': clock} if clock is not None else {}

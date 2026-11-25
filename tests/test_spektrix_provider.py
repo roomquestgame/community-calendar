@@ -40,6 +40,30 @@ def test_only_canonical_source_api_is_detected():
         assert not spektrix_provider.family(endpoint)
 
 
+def test_same_organization_branded_api_is_exactly_bound():
+    branded = ('https://tickets.beaconartscentre.co.uk/beaconartscentre/'
+               'api/v3/events')
+    branded_source = {
+        'source_key': source_key(branded), 'feed_url': branded,
+        'platform_adapter': 'spektrix', 'kind': 'json',
+    }
+    branded_profile = {
+        **profile(),
+        'client': 'beaconartscentre',
+        'publisher_url': 'https://www.beaconartscentre.co.uk/whats-on/',
+        'api_base': ('https://tickets.beaconartscentre.co.uk/'
+                     'beaconartscentre/api/v3'),
+        'event_urls': {}, 'verified_venues': {},
+    }
+    assert spektrix_provider.family(branded)
+    assert spektrix_provider.validate(branded_source, branded_profile) == branded_profile
+    with pytest.raises(ValueError, match='spektrix_provider_source_invalid'):
+        spektrix_provider.validate(
+            branded_source,
+            dict(branded_profile,
+                 api_base='https://tickets.attacker.org.uk/beaconartscentre/api/v3'))
+
+
 def test_exact_source_url_and_publisher_profile_are_required():
     assert spektrix_provider.validate(source(),profile())==profile()
     for modified in (

@@ -187,6 +187,37 @@ def test_first_party_booking_link_yields_candidate_not_auto_admission():
     assert got['candidates'][0]['client'] == 'cambridgelive'
 
 
+def test_first_party_branded_web_components_yields_exact_api_base():
+    html = ('<html><link rel="import" href="https://tickets.beaconartscentre.co.uk/'
+            'beaconartscentre/api/v3/webcomponents/html"></html>')
+    got = discovery.discover('https://www.beaconartscentre.co.uk/whats-on/', html)
+    assert got == {
+        'status': 'unverified',
+        'candidates': [{
+            'client': 'beaconartscentre',
+            'evidence_url': ('https://tickets.beaconartscentre.co.uk/'
+                             'beaconartscentre/api/v3/webcomponents/html'),
+            'evidence_type': 'first_party_api',
+            'api_verified': False,
+            'api_base': ('https://tickets.beaconartscentre.co.uk/'
+                         'beaconartscentre/api/v3'),
+        }],
+    }
+    assert api.api_url('beaconartscentre', 'venues',
+                       base=got['candidates'][0]['api_base']) == (
+        'https://tickets.beaconartscentre.co.uk/beaconartscentre/api/v3/venues')
+    with pytest.raises(ValueError, match='spektrix_api_base_invalid'):
+        api.api_url('beaconartscentre', 'venues',
+                    base='https://tickets.beaconartscentre.co.uk/other/api/v3')
+
+
+def test_foreign_branded_api_is_not_discovered():
+    html = ('<html><link rel="import" href="https://tickets.attacker.org.uk/'
+            'beaconartscentre/api/v3/webcomponents/html"></html>')
+    assert discovery.discover(
+        'https://www.beaconartscentre.co.uk/whats-on/', html)['status'] == 'none'
+
+
 def test_foreign_publisher_links_and_marketing_mentions_do_not_verify_clients():
     html = ('<html><p>Spektrix client richmix</p>'
             '<a href="https://tickets.attacker.org.uk/falseclient/website/'

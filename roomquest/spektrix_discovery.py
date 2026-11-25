@@ -15,6 +15,8 @@ WEBSITE = re.compile(
     r'^/([a-z][a-z0-9_-]{1,59})/website/'
     r'(?:ChooseSeats|EventList|EventDetails|KeepAlive|Booking|ViewEvent)\.aspx$', re.I)
 API = re.compile(r'^/([a-z][a-z0-9_-]{1,59})/api/v3/(?:events|instances|venues)(?:/|$)', re.I)
+WEB_COMPONENTS = re.compile(
+    r'^/([a-z][a-z0-9_-]{1,59})/api/v3/webcomponents/html/?$', re.I)
 THIRD_PARTY = {'system.spektrix.com', 'api.system.spektrix.com'}
 
 
@@ -67,7 +69,10 @@ def discover(publisher_url, html):
             platform = uri.hostname in THIRD_PARTY
             if not platform and _organization_domain(uri.hostname) != _organization_domain(page.hostname):
                 continue
-            match = WEBSITE.match(uri.path) or (API.match(uri.path) if platform else None)
+            branded_api = (API.match(uri.path) or WEB_COMPONENTS.match(uri.path)) \
+                if not platform else None
+            match = ((WEBSITE.match(uri.path) or API.match(uri.path)) if platform
+                     else (WEBSITE.match(uri.path) or branded_api))
             if match is None:
                 continue
             client = match[1].casefold()
@@ -75,11 +80,17 @@ def discover(publisher_url, html):
                 continue
             # The public publisher page can establish a client-name candidate
             # but cannot prove that the API belongs to the same live venue.
-            clients.setdefault(client, []).append({
+            record = {
                 'client': client, 'evidence_url': link,
-                'evidence_type': 'spektrix_host' if platform else 'first_party_booking',
+                'evidence_type': ('spektrix_host' if platform else
+                                  'first_party_api' if branded_api else
+                                  'first_party_booking'),
                 'api_verified': False,
-            })
+            }
+            if branded_api:
+                record['api_base'] = (
+                    'https://' + uri.hostname.casefold() + '/' + client + '/api/v3')
+            clients.setdefault(client, []).append(record)
         except ValueError:
             continue
     records = [items[0] for items in clients.values()]

@@ -1,5 +1,21 @@
 # EVE-159 — Spektrix public v3 collector foundation (November 24, 2026)
 
+## Branded publisher host validation canary
+
+Beacon Arts Centre registration #1247 exposed a reusable host-binding gap:
+the publisher page advertises
+`https://tickets.beaconartscentre.co.uk/beaconartscentre/api/v3/webcomponents/html`,
+while the original foundation constructed every read under the central
+`system.spektrix.com` host. The collector now recognizes that exact
+same-organization web-components/API evidence, preserves the advertised v3
+base in the provider profile, and derives every bounded events, instances,
+venues and evidenced-plan request from it. Provider validation requires the
+API and publisher hosts to share the same organization domain; the durable
+manifest and transport pin the exact branded host and never fall back to the
+central host. Discovery remains evidence only. Database provider-profile and
+claim admission are still required before the original receipt can be
+rechecked; this collector release alone does not activate a source.
+
 Status: Python core + offline regression fixtures only. **NOT source admission,
 a connected production collector, a 60-day checkpoint implementation or proof
 of any EventQuest publication.**

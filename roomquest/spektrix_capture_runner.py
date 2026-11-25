@@ -14,7 +14,6 @@ from roomquest import feedzilla_capture_store as store
 from roomquest import spektrix_capture_plan as planner
 from roomquest import spektrix_v3 as api
 
-HOST = 'system.spektrix.com'
 MAX_STEPS = 8
 MAX_BATCH_BYTES = 140_000
 
@@ -25,6 +24,10 @@ def _fail(reason):
 
 def _clock():
     return datetime.now(timezone.utc)
+
+
+def host(profile):
+    return urlsplit(api.api_base(profile.get('client'), profile.get('api_base'))).hostname
 
 
 def _read_receipt(receipt):
@@ -60,7 +63,7 @@ def _manifest(source, profile, envelope, at):
     born = datetime.fromisoformat(p['started_at'])
     start = born.astimezone(ZoneInfo(profile['timezone'])).date()
     end = start + timedelta(days=api.MAX_DAYS - 1)
-    if (p['allowed_hosts'] != [HOST]
+    if (p['allowed_hosts'] != [host(profile)]
             or p['window_start'] != start.isoformat()
             or p['window_end'] != end.isoformat()):
         _fail('window_scope_invalid')
@@ -76,7 +79,8 @@ def _manifest(source, profile, envelope, at):
                   if row.get('cancelled') is False and row.get('isOnSale') is True}
         if len(active) >= api.MAX_PLANS:
             _fail('plan_limit')
-        plans = [api.api_url(profile['client'], 'plans', identity=pid)
+        plans = [api.api_url(profile['client'], 'plans', identity=pid,
+                             base=profile.get('api_base'))
                  for pid in sorted(active)]
         if p['tasks'] != base + plans:
             _fail('manifest_invalid')
@@ -144,7 +148,7 @@ def run_slice(source, profile, *, read, write, fetch, convert, stage_and_save,
     base = planner.base_tasks(source, profile, start, end)
     revision, envelope = _read_receipt(read())
     if envelope is None:
-        envelope = store.new(source, base, allowed_hosts=[HOST],
+        envelope = store.new(source, base, allowed_hosts=[host(profile)],
                              start=start, end=end, at=at)
         revision = _write_receipt(write(revision, envelope), revision)
 

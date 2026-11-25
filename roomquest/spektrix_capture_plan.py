@@ -17,7 +17,8 @@ def _client(source, profile):
     if not isinstance(source, dict) or not isinstance(profile, dict):
         _fail('source_invalid')
     client = api._client(profile.get('client'))
-    expected = 'https://system.spektrix.com/' + client + '/api/v3/events'
+    expected = api.api_url(client, 'events', start='2026-01-01', end='2026-01-01',
+                           base=profile.get('api_base')).split('?', 1)[0]
     if (source.get('feed_url') != expected
             or source.get('platform_adapter') != 'spektrix'):
         _fail('source_invalid')
@@ -29,9 +30,11 @@ def base_tasks(source, profile, start, end):
     client = _client(source, profile)
     urls = []
     for first, last in api.windows(start, end):
-        urls.append(api.api_url(client, 'events', start=first, end=last))
-        urls.append(api.api_url(client, 'instances', start=first, end=last))
-    urls.append(api.api_url(client, 'venues'))
+        urls.append(api.api_url(client, 'events', start=first, end=last,
+                                base=profile.get('api_base')))
+        urls.append(api.api_url(client, 'instances', start=first, end=last,
+                                base=profile.get('api_base')))
+    urls.append(api.api_url(client, 'venues', base=profile.get('api_base')))
     return urls
 
 
@@ -76,7 +79,8 @@ def plan_tasks(source, profile, envelope, *, at=None):
              if row.get('cancelled') is False and row.get('isOnSale') is True}
     if len(plans) >= api.MAX_PLANS:
         _fail('plan_limit')
-    return [api.api_url(profile['client'], 'plans', identity=identity)
+    return [api.api_url(profile['client'], 'plans', identity=identity,
+                        base=profile.get('api_base'))
             for identity in sorted(plans)]
 
 
@@ -93,7 +97,8 @@ def project(source, profile, envelope, *, at=None, cms_pages=None):
     client = _client(source, profile)
     plan_ids = {row['planId'] for row in instances.values()
                 if row.get('cancelled') is False and row.get('isOnSale') is True}
-    plan_urls = [api.api_url(client, 'plans', identity=p) for p in sorted(plan_ids)]
+    plan_urls = [api.api_url(client, 'plans', identity=p,
+                             base=profile.get('api_base')) for p in sorted(plan_ids)]
     if (state['progress']['tasks'] != expected + plan_urls
             or len(state['pages']) != len(expected) + len(plan_urls)):
         _fail('plan_manifest_invalid')
