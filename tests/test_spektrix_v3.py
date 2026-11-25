@@ -426,3 +426,23 @@ def test_cms_page_conflict_with_existing_verified_event_link_is_held():
             EVENT: 'https://www.thealbany.org.uk/events/gingerbread-man/'}),
             [event(webUrl='')], [instance()], [plan()], [venue()],
             START, STOP, cms_pages=cms)
+
+
+@pytest.mark.parametrize('address,expected', [
+    ('21 Dean St., London, W1D 3NE', 'Europe/London'),
+    ('186 Hoe Street, London E17 4QH', 'Europe/London'),
+    ('198 Hoe St, London E17 4BF', 'Europe/London'),
+    ('17 West Congress Street, Tucson, AZ 85701', None),
+    ('21 Dean Street, London W1D', None),
+])
+def test_native_postcode_timezone_without_profile(address, expected):
+    result = api.project(profile(timezone=None), [event()], [instance()],
+                         [plan()], [venue(address=address)], START, STOP)
+    assert result['events'][0]['timezone'] == expected
+
+
+def test_native_postcode_timezone_still_checks_publisher_clock():
+    with pytest.raises(ValueError, match='spektrix_time_conflict'):
+        api.project(profile(timezone=None), [event()],
+                    [instance(startUtc='2026-12-05T15:00:00Z')],
+                    [plan()], [venue()], START, STOP)
