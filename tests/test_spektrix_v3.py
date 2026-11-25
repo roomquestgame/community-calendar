@@ -173,7 +173,7 @@ def test_generic_blank_venue_can_use_narrow_verified_plan_location():
     assert row['source_plan_id'] == PLAN
     assert row['source_venue_id'] == VENUE
     assert row['venue_name'] == 'Tower Hamlets Town Hall'
-    assert row['venue_address'] == '160 Whitechapel Road, London E1 1BJ'
+    assert row['venue_address'] == '160 Whitechapel Road, London, E1 1BJ'
 
     # The reviewed address is plan-scoped. A second plan that reuses the same
     # generic blank Venue must not inherit the first plan's location.
@@ -439,6 +439,10 @@ def test_native_postcode_timezone_without_profile(address, expected):
     result = api.project(profile(timezone=None), [event()], [instance()],
                          [plan()], [venue(address=address)], START, STOP)
     assert result['events'][0]['timezone'] == expected
+    if expected == 'Europe/London':
+        assert result['events'][0]['venue_address'].count(',') == 2
+    else:
+        assert result['events'][0]['venue_address'] == address
 
 
 def test_native_postcode_timezone_still_checks_publisher_clock():
