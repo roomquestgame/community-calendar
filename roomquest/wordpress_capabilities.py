@@ -90,6 +90,18 @@ def wordpress_fingerprints(html):
     if not isinstance(html, str):
         return ()
     body = (html[:MAX_SCAN] + html[-MAX_SCAN:]).casefold()
+    # Wix serializes arbitrary collection text, slugs and component names into
+    # large JSON script blocks.  Those values can coincidentally contain short
+    # WordPress plugin tokens such as ``eo-event`` even though the publisher is
+    # not running WordPress.  A native Wix bootstrap is stronger CMS evidence
+    # than a substring inside that serialized data, so leave the page to the
+    # Wix/HTML detectors instead of assigning a false WordPress adapter hold.
+    wix_bootstrap = ('id="wix-warmup-data"' in body
+                     or "id='wix-warmup-data'" in body
+                     or ('id="wix-viewer-model"' in body
+                         and 'static.wixstatic.com/' in body))
+    if wix_bootstrap:
+        return ()
     found = [name for name, markers in PLUGIN_FINGERPRINTS.items()
              if any(marker in body for marker in markers)]
     if re.search(r'[?&]json=(?:1|get_posts|get_recent_posts)\b|/api/core/get_posts/', body):
