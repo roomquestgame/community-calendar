@@ -15,7 +15,10 @@ from bs4 import BeautifulSoup
 POSTCODE = re.compile(r"\b[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}\b", re.I)
 STREET = re.compile(
     r"\b(\d{1,5}(?:\s*-\s*\d{1,5})?\s+"
-    r"[A-Za-z0-9'&. -]{2,90}?\s+"
+    # A street name starts with a letter. This prevents a preceding telephone
+    # number from being absorbed as the building number when footer strings
+    # are joined across adjacent nodes.
+    r"[A-Za-z][A-Za-z0-9'&. -]{1,89}?\s+"
     r"(?:Road|Rd|Street|St|Lane|Ln|Avenue|Ave|Square|Sq|Way|Drive|Dr|"
     r"Place|Pl|Terrace|Gardens|Northside|Southside|Eastside|Westside))"
     r"\s*,?\s*London\s*,?\s*(" + POSTCODE.pattern + r")\b", re.I)
