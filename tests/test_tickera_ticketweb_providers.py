@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, timezone
 import html
 import json
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 import pytest
 
@@ -68,6 +68,88 @@ def test_ticketweb_event_discovery_contract_uses_public_display_action():
     assert calls[0][0] == spec['endpoint']
     assert calls[0][1]['calendar_form']['action'] == 'get_events_artist_calendar'
 
+
+
+def test_ticketweb_event_discovery_transport_allows_only_reviewed_display_post():
+    spec = ticketweb_event_discovery.contract('https://venue.example.org/calendar/', event_discovery_page())
+    form = ticketweb_event_discovery.form(spec, DAY.isoformat(), (DAY + timedelta(days=61)).isoformat())
+    response = Mock(status_code=200, encoding='utf-8')
+    response.headers = {'Content-Type': 'application/json'}
+    response.iter_content.return_value = [event_discovery_payload().encode()]
+    session = Mock()
+    session.__enter__ = Mock(return_value=session)
+    session.__exit__ = Mock(return_value=False)
+    session.post.return_value = response
+    with patch.object(preview_worker.requests, 'Session', return_value=session), patch.object(
+            preview_worker, 'validate_public_dns'), patch.object(
+            preview_worker, 'robots_allowed', return_value=True), patch.object(
+            preview_worker, 'pace_publisher'):
+        payload = preview_worker._fetch_publisher_request(
+            spec['endpoint'], 'application/json', respect_robots=True,
+            allowed_hosts=('venue.example.org',), calendar_form=form)
+    assert json.loads(payload)['events'][0]['title'] == 'Public show'
+    _, kwargs = session.post.call_args
+    assert kwargs['headers']['Referer'] == 'https://venue.example.org/calendar/'
+    assert kwargs['allow_redirects'] is False
+
+
+@pytest.mark.parametrize('change', [
+    {'action': 'register'}, {'end': '2099-01-01'}, {'showmobilelist': 'false'},
+    {'unexpected': 'field'},
+])
+def test_ticketweb_event_discovery_transport_rejects_mutated_post(change):
+    spec = ticketweb_event_discovery.contract('https://venue.example.org/calendar/', event_discovery_page())
+    form = ticketweb_event_discovery.form(spec, DAY.isoformat(), (DAY + timedelta(days=61)).isoformat())
+    form.update(change)
+    with patch.object(preview_worker.requests, 'Session') as session:
+        with pytest.raises(preview_worker.PreviewError, match='^invalid_calendar_render_parameters
+    ('tickera', '/wp-content/plugins/tickera/', tickera_page(),
+     {'https://venue.example.org/wp-json/': json.dumps({'timezone_string':'America/New_York'})}),
+    ('event_discovery', '/wp-content/plugins/event-discovery/', event_discovery_page(),
+     {'https://venue.example.org/wp-admin/admin-ajax.php': event_discovery_payload()}),
+])
+def test_feedzilla_registration_and_recurring_collection_share_provider(adapter, marker, page, extra):
+    home = f'<html><link href="{marker}front.css"><a href="/calendar/">Calendar</a></html>'
+    url = 'https://venue.example.org/'
+    calendar = url + 'calendar/'
+    receipts = []
+    def rpc(method, args, **kwargs):
+        if method.endswith('claim_registration'):
+            return {'url': url}
+        if method.endswith('feed_profile'):
+            return {}
+        receipts.append(args)
+        return True
+    def fetch(target, accept, **kwargs):
+        if target == url:
+            return home
+        if target == calendar:
+            return page
+        if target in extra:
+            return extra[target]
+        raise AssertionError(target)
+    with patch.object(feed_registration, 'supabase_rpc', rpc), patch.object(
+            feed_registration, 'fetch_publisher', fetch):
+        assert feed_registration.register('ticket')['outcome'] == 'discovered'
+    assert (receipts[0]['p_endpoint'], receipts[0]['p_type']) == (calendar, adapter)
+
+    source = {'feed_url': calendar, 'source_key': source_key(calendar),
+              'platform_adapter': adapter, 'kind': 'json'}
+    with patch.object(preview_worker, 'supabase_rpc', rpc), patch.object(
+            preview_worker, 'fetch_publisher', fetch):
+        result = preview_worker.preview_source(source)
+    assert result['p_future_count'] == 1
+
+
+def test_provider_identity_is_not_generic_fullcalendar():
+    assert provider_registration.family('https://venue.example.org/calendar/', tickera_page()) == 'tickera'
+    assert provider_registration.family(
+        'https://venue.example.org/calendar/', event_discovery_page()) == 'event_discovery'
+):
+            preview_worker._fetch_publisher_request(
+                spec['endpoint'], 'application/json', respect_robots=True,
+                allowed_hosts=('venue.example.org',), calendar_form=form)
+        session.assert_not_called()
 
 @pytest.mark.parametrize(('adapter','marker','page','extra'), [
     ('tickera', '/wp-content/plugins/tickera/', tickera_page(),
