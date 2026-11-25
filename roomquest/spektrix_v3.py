@@ -312,8 +312,12 @@ def project(profile, events, instances, plans, venues, start, end, *, cms_pages=
         time_zone = details.get('timezone') or profile.get('timezone')
         # A complete UK postcode identifies the timezone, not coordinates.
         # Still compare the publisher's local time with startUtc below.
-        if not time_zone and re.search(r'\b(?:GIR\s*0AA|[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2})\s*$', address, re.I):
+        postcode = re.search(r'\b(?:GIR\s*0AA|[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2})\s*$', address, re.I)
+        if postcode and time_zone in (None, '', 'Europe/London'):
             time_zone = 'Europe/London'
+            # The shared UK geocoder accepts street, city, postcode. Preserve
+            # the API's actual address, adding only the postcode separator.
+            address = address[:postcode.start()].rstrip(', ') + ', ' + postcode.group().strip().upper()
         if not address or not venue_name:
             _fail('spektrix_venue_location_unresolved')
         instant = _utc(instance.get('startUtc'))
