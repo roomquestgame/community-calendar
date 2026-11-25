@@ -17,6 +17,16 @@ def test_same_host_contact_link_and_exact_publisher_address():
         'https://venue.example/contact/')
 
 
+def test_footer_phone_number_is_not_absorbed_into_the_street_address():
+    contact = ('<meta property="og:site_name" content="Example Venue">'
+               '<footer><span>Box office</span><a>020 7613 7498</a>'
+               '<span>35-47 Bethnal Green Road, London, E1 6LA</span></footer>')
+    [row] = venue.apply([{'venue_name': 'Example Venue'}], contact,
+                        'https://venue.example/events/')
+    assert row['venue_address'] == (
+        '35-47 Bethnal Green Road, London, E1 6LA, United Kingdom')
+
+
 def test_offsite_or_ambiguous_contact_address_stays_unresolved():
     rows = [{"venue_name": "Other Hall", "venue_address": ""}]
     contact = ('<meta property="og:site_name" content="Example Venue">'
