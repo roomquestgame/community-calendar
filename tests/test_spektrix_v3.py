@@ -450,3 +450,39 @@ def test_native_postcode_timezone_still_checks_publisher_clock():
         api.project(profile(timezone=None), [event()],
                     [instance(startUtc='2026-12-05T15:00:00Z')],
                     [plan()], [venue()], START, STOP)
+
+
+@pytest.mark.parametrize('name', [
+    'Pre Order Drinks Downstairs', 'Pre Order Drinks Main House',
+    'Pre Order: Pizza', 'Babes in Arms (The Gruffalo)',
+])
+def test_ticket_products_excluded_before_venue_projection(name):
+    extra = event(name=name, duration=0, **{
+        f'attribute_WebsiteFilterCategory{i}': '' for i in (1, 2, 3)})
+    result = api.project(profile(), [extra], [instance()], [], [], START, STOP)
+    assert result['events'] == []
+    assert result['excluded_ticket_extras'] == 1
+    assert result['instance_total'] == 1
+    assert result['complete'] is True
+
+
+@pytest.mark.parametrize('overrides', [
+    {'name': 'ALOK: Eat Pray Leave', 'duration': 0},
+    {'name': 'Pizza and Comedy', 'duration': 0},
+    {'name': 'Babes in Arms', 'duration': 0},
+    {'name': 'Pre Order: Pizza', 'duration': 60},
+    {'name': 'Pre Order: Pizza', 'duration': 0, 'attribute_WebsiteFilterCategory1': 'Comedy'},
+    {'name': 'Pre Order: Pizza', 'duration': 0, 'attribute_WebsiteFilterCategory1': None},
+])
+def test_real_or_ambiguous_events_are_not_ticket_products(overrides):
+    attrs = {f'attribute_WebsiteFilterCategory{i}': '' for i in (1, 2, 3)}
+    result = api.project(profile(), [event(**(attrs | overrides))],
+                         [instance()], [plan()], [venue()], START, STOP)
+    assert len(result['events']) == 1
+    assert result['excluded_ticket_extras'] == 0
+
+
+def test_product_title_without_publisher_metadata_is_not_enough():
+    result = api.project(profile(), [event(name='Pre Order: Pizza', duration=0)],
+                         [instance()], [plan()], [venue()], START, STOP)
+    assert len(result['events']) == 1
