@@ -480,11 +480,12 @@ def _html_declared_charset(payload: bytes) -> str | None:
 
 def fetch_publisher(url: str, accept: str, *, respect_robots: bool = False,
                     deadline_at: float | None = None, allowed_hosts=None,
-                    follow_redirects: bool = True) -> str | bytes:
-    """Fetch an approved public source with the existing bounded GET transport."""
+                    follow_redirects: bool = True, calendar_form=None) -> str | bytes:
+    """Fetch an approved public source through the shared validated transport."""
     return _fetch_publisher_request(url, accept, respect_robots=respect_robots,
                                     deadline_at=deadline_at, allowed_hosts=allowed_hosts,
-                                    follow_redirects=follow_redirects)
+                                    follow_redirects=follow_redirects,
+                                    calendar_form=calendar_form)
 
 
 def fetch_visit_raleigh_page(url: str, *, deadline_at=None) -> str:
