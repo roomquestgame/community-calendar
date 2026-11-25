@@ -1,5 +1,7 @@
 """Offline read-only Spektrix v3 public collection and tenant discovery tests."""
 from datetime import date, timedelta
+from threading import Lock
+from time import sleep
 
 import pytest
 
@@ -229,6 +231,43 @@ def test_multi_venue_collection_resolves_each_plan():
         lambda url, accept: (visited.append(url), responses[url])[1])
     assert len(result['events']) == 1
     assert visited[-1].endswith('/plans/' + PLAN)
+
+
+def test_multi_venue_plan_fetches_are_concurrent_but_bounded():
+    client = 'thealbany'
+    other_venue = '401ANPJQJQPQMRSBDNMVNLSPGTRBVQVRH'
+    plan_ids = [PLAN] + [f'plan-{index:010d}' for index in range(1, 7)]
+    instances = [instance(
+        id=f'instance-{index:010d}', planId=plan_id,
+        start=f'2026-12-{5 + index:02d}T14:00:00',
+        startUtc=f'2026-12-{5 + index:02d}T14:00:00Z')
+        for index, plan_id in enumerate(plan_ids)]
+    responses = {
+        api.api_url(client, 'events', start=START, end=STOP): [event()],
+        api.api_url(client, 'instances', start=START, end=STOP): instances[:4],
+        api.api_url(client, 'venues'): [venue(), venue(id=other_venue, name='Other')],
+    }
+    for plan_id in plan_ids[:4]:
+        responses[api.api_url(client, 'plans', identity=plan_id)] = plan(id=plan_id)
+    active = peak = 0
+    lock = Lock()
+
+    def fetch(url, accept):
+        nonlocal active, peak
+        assert accept == 'application/json'
+        if '/plans/' not in url:
+            return responses[url]
+        with lock:
+            active += 1
+            peak = max(peak, active)
+        sleep(0.03)
+        with lock:
+            active -= 1
+        return responses[url]
+
+    result = api.collect(profile(), START, STOP, fetch)
+    assert len(result['events']) == 4
+    assert 1 < peak <= api.MAX_CONCURRENT_PLAN_REQUESTS
 
 
 def test_first_party_booking_link_yields_candidate_not_auto_admission():
