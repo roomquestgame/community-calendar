@@ -1,3 +1,49 @@
+# EVE-174 — Spektrix native feed rollout
+
+## Current state — November 25, 2026
+
+Canonical public v3 Events URLs now register directly as Spektrix JSON feeds.
+The ordinary worker derives the tenant from the URL, collects one bounded
+60-day Events/Instances snapshot, resolves actual plan-to-venue identities,
+and stages each performance separately. Stored profiles are optional reviewed
+overrides. The documented EventDetails.aspx route is used when webUrl is blank.
+Shared publisher access checks and the 96-hour success freshness policy remain.
+
+Collector PRs #553–557 bound concurrency to three, stage up to 100 Spektrix rows
+per batch (still under 150 KB), infer Europe/London from complete native UK
+postcodes and normalize postcode separators for existing geocoding.
+App PR #2048 raises only native Spektrix source snapshot counts to 3000.
+Fox Tucson has 30 public performances. Other London feeds are not converted.
+
+### Soho acceptance correction
+
+Source #6411 / registration #1357 completed its ordinary Admin-requested native
+collection at 2026-11-25T23:48:51Z. Its 571 rows included **264 ticket extras**:
+131 downstairs drink preorders, 102 main-house drink preorders, 27 pizza preorders
+and four babes-in-arms tickets for The Gruffalo. These are not 571 real events.
+The source was paused through Admin, hiding imported listings, pending correction.
+
+Direct public API inspection verified these four products have zero duration
+and all three attribute_WebsiteFilterCategory fields explicitly empty.
+The reusable adapter now combines those facts with narrowly matched ticket-product
+names. Empty category, missing duration, or supplementary status alone does not
+exclude an event (supplementary experiences can be real talks or tours).
+No additional API requests, title-only exclusions, or other collectors change.
+The expected corrected snapshot is 307 occurrences, subject to fresh live collection.
+Tests: 76 Spektrix/staging checks passed. Recollection and final publication proof
+remain outstanding at this handoff.
+
+Three native venue addresses resolve separately: 21 Dean Street W1D 3NE,
+186 Hoe Street E17 4QH, and 198 Hoe Street E17 4BF. Shared Geoapify already
+resolved the first two; the pub and complete public output still require proof.
+
+Official references:
+- https://integrate.spektrix.com/docs/apieventfiltering
+- https://support.spektrix.com/hc/en-us/articles/203801658-Supplementary-Events
+- https://tickets.sohotheatre.com/sohotheatre/api/v3/events
+
+## Historical foundation notes (superseded where current state above differs)
+
 # EVE-159 — Spektrix public v3 collector foundation (November 24, 2026)
 
 ## Branded publisher host validation canary
