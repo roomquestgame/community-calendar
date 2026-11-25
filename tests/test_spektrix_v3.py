@@ -211,6 +211,28 @@ def test_first_party_branded_web_components_yields_exact_api_base():
                     base='https://tickets.beaconartscentre.co.uk/other/api/v3')
 
 
+def test_static_web_component_attributes_yield_same_branded_api_without_js():
+    html = ('<html><spektrix-donate client-name="beaconartscentre" '
+            'custom-domain="tickets.beaconartscentre.co.uk"></spektrix-donate></html>')
+    got = discovery.discover('https://www.beaconartscentre.co.uk/whats-on/', html)
+    assert got['status'] == 'unverified'
+    assert got['candidates'][0] == {
+        'client': 'beaconartscentre',
+        'evidence_url': ('https://tickets.beaconartscentre.co.uk/'
+                         'beaconartscentre/api/v3/webcomponents/html'),
+        'evidence_type': 'first_party_api',
+        'api_verified': False,
+        'api_base': ('https://tickets.beaconartscentre.co.uk/'
+                     'beaconartscentre/api/v3'),
+    }
+    foreign = html.replace('tickets.beaconartscentre.co.uk', 'tickets.attacker.org.uk')
+    assert discovery.discover(
+        'https://www.beaconartscentre.co.uk/whats-on/', foreign)['status'] == 'none'
+    central = html.replace('tickets.beaconartscentre.co.uk', 'system.spektrix.com')
+    assert discovery.discover(
+        'https://www.beaconartscentre.co.uk/whats-on/', central)['status'] == 'none'
+
+
 def test_foreign_branded_api_is_not_discovered():
     html = ('<html><link rel="import" href="https://tickets.attacker.org.uk/'
             'beaconartscentre/api/v3/webcomponents/html"></html>')

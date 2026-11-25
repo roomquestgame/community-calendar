@@ -37,6 +37,25 @@ class _Links(HTMLParser):
         self.urls = []
 
     def handle_starttag(self, tag, attrs):
+        # Spektrix's public web-component loader derives its branded API import
+        # at runtime from these publisher-authored attributes.  Capture that
+        # static proof without executing JavaScript.  The ordinary URL loop
+        # below still enforces HTTPS, exact client syntax, same-organization
+        # ownership, ambiguity and the central-host boundary.
+        if tag.startswith('spektrix-'):
+            attributes = dict(attrs)
+            client = attributes.get('client-name')
+            domain = attributes.get('custom-domain')
+            if (isinstance(client, str) and CLIENT.fullmatch(client.casefold())
+                    and isinstance(domain, str) and 3 <= len(domain) <= 253
+                    and '/' not in domain and '@' not in domain and ':' not in domain):
+                branded = urlsplit('https://' + domain.casefold())
+                if branded.hostname == domain.casefold():
+                    self.urls.append(
+                        'https://' + branded.hostname + '/' + client.casefold()
+                        + '/api/v3/webcomponents/html')
+                    if len(self.urls) > MAX_LINKS:
+                        raise ValueError('spektrix_discovery_link_limit')
         if tag not in ('a', 'iframe', 'script', 'link'):
             return
         attributes = dict(attrs)
