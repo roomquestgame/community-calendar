@@ -38,6 +38,10 @@ def test_plugin_and_legacy_fingerprints_do_not_imply_a_feed():
         '<script src="/wp-content/plugins/events-manager/events.js"></script>')
     assert 'legacy-json-api' in wordpress_fingerprints(
         '<a href="/?json=get_recent_posts">Old JSON plugin</a>')
+    assert 'tickera' in wordpress_fingerprints(
+        '<script src="/wp-content/plugins/tickera-events-listing/events.js"></script>')
+    assert 'event-discovery' in wordpress_fingerprints(
+        '<script src="/wp-content/plugins/event-discovery/calendar.js"></script>')
     assert wordpress_fingerprints('<p>Ordinary blog</p>') == ()
 
 

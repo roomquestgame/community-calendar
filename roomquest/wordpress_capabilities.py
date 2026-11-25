@@ -23,6 +23,9 @@ PLUGIN_FINGERPRINTS = {
     'eventon': ('eventon', 'ajde_evcal'),
     'wp-event-manager': ('wp-event-manager', 'wpem-'),
     'all-in-one-event-calendar': ('all-in-one-event-calendar', 'ai1ec_'),
+    'tickera': ('/wp-content/plugins/tickera/',
+                '/wp-content/plugins/tickera-events-listing/'),
+    'event-discovery': ('/wp-content/plugins/event-discovery/',),
 }
 REST_PLUGIN_NAMESPACES = {
     'tribe/events/v1': 'the-events-calendar',
