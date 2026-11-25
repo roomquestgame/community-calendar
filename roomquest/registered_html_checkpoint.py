@@ -132,16 +132,26 @@ def _decode(source, checkpoint, context, *, at=None):
         raise ValueError('html_calendar_capture_context_changed')
     plan = progress.validate(state['progress'], source_key=source['source_key'],
                              feed_url=source['feed_url'], adapter='html', at=at)
+    source_host = urlsplit(source['feed_url']).hostname
+    allowed = plan['allowed_hosts']
+    pages = state['pages']
+    branded_scope = False
+    if (type(pages) is list and pages and isinstance(pages[0], dict)
+            and len(allowed) == 2 and allowed[0] == source_host
+            and pages[0].get('url') == source['feed_url'] and len(plan['tasks']) > 1):
+        from roomquest.registered_html_spektrix import verified_api_host
+        branded_scope = verified_api_host(
+            source['feed_url'], pages[0].get('body'), plan['tasks'][1]) == allowed[1]
     if (state['started_at'] != plan['started_at']
-            or plan['allowed_hosts'] != [urlsplit(source['feed_url']).hostname]
-            or type(state['pages']) is not list
-            or len(state['pages']) != plan['cursor']
+            or not (allowed == [source_host] or branded_scope)
+            or type(pages) is not list
+            or len(pages) != plan['cursor']
             or checkpoint['cursor'] != plan['cursor']
             or checkpoint['manifest_count'] != len(plan['tasks'])
             or checkpoint['record_count'] != 0 or checkpoint['stage_cursor'] != 0
             or (checkpoint['phase'] == 'stage') != plan['terminal_verified']):
         raise ValueError('html_calendar_capture_invalid')
-    for page, receipt in zip(state['pages'], plan['receipts']):
+    for page, receipt in zip(pages, plan['receipts']):
         if (not isinstance(page, dict) or set(page) != {'url', 'body'}
                 or not isinstance(page['body'], str)
                 or page['url'] != receipt['url']
@@ -236,6 +246,14 @@ def collect_chunk(source, fetch, *, checkpoint=None, listing=None,
         # JavaScript. This stays inside the same checkpoint and traversal.
         from roomquest.wix_custom_collection import compact_capture
         stored_body = compact_capture(body)
+        if (next_request is not None
+                and urlsplit(next_request[0]).hostname not in plan['allowed_hosts']):
+            from roomquest.registered_html_spektrix import verified_api_host
+            api_host = verified_api_host(url, body, next_request[0])
+            if (plan['cursor'] != 0 or target != url or not api_host):
+                raise ValueError('html_calendar_capture_invalid')
+            plan = progress.extend_verified_hosts(
+                plan, [api_host], scope_verified=True, at=at)
         plan = progress.advance(plan, target, sha256(stored_body.encode()).hexdigest(),
                                 next_link=next_request[0] if next_request else None,
                                 next_link_scope_verified=next_request is not None,

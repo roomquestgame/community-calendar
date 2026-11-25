@@ -337,6 +337,7 @@ def _checkpoint_registration(candidate, ticket, pacing, deadline, *, listing=Non
     source = {'source_key': source_key(url), 'feed_url': url, 'kind': 'html',
               'platform_adapter': 'html', CAPABILITY: 1, HTML_CAPABILITY: 1,
               capture.CAPABILITY: 1}
+    from roomquest.registered_html_spektrix import transport_hosts
     try:
         saved = capture.read(source, 'registration', ticket, supabase_rpc)
         if resume and saved['checkpoint'] is None:
@@ -346,7 +347,7 @@ def _checkpoint_registration(candidate, ticket, pacing, deadline, *, listing=Non
         chunk = capture.collect_and_save(source,
             lambda target, accept: fetch_publisher(
                 target, accept, respect_robots=True, deadline_at=deadline - 8,
-                allowed_hosts=(urlsplit(url).hostname,)),
+                allowed_hosts=transport_hosts(source, target)),
             supabase_rpc, pacing, category='registration', ticket=ticket,
             deadline_at=deadline - 8, listing=listing, saved=saved)
     except PreviewError:
