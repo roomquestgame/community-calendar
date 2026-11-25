@@ -10,14 +10,16 @@ from datetime import datetime, timedelta
 from html import unescape
 import re
 from time import monotonic
-from urllib.parse import urlsplit
+from urllib.parse import urljoin, urlsplit
 from zoneinfo import ZoneInfo
+
+from bs4 import BeautifulSoup
 
 from roomquest import spektrix_discovery as discovery
 from roomquest import spektrix_provider as provider
 from roomquest import spektrix_v3 as api
 
-VERSION = 'registered_html_spektrix_v1'
+VERSION = 'registered_html_spektrix_v2'
 ZONE = 'Europe/London'
 POSTCODE = re.compile(r'\b[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}\b', re.I)
 
@@ -127,6 +129,144 @@ def _city(raw):
             return ''
         return candidate
     return ''
+
+
+def _listing_event_urls(publisher_url, listing_html, events):
+    """Bind observed first-party CMS cards to exact Spektrix event identities.
+
+    Some Spektrix tenants deliberately leave Event.webUrl empty while their
+    server-rendered calendar publishes links whose final numeric token is the
+    public prefix of the same Spektrix event ID.  Require that token *and* the
+    nearest card heading to match exactly.  Ambiguity holds the snapshot.
+    """
+    try:
+        origin = urlsplit(publisher_url)
+        if (not isinstance(listing_html, str) or len(listing_html) > 3_000_000
+                or not isinstance(events, list)):
+            _fail('event_link_evidence_invalid')
+        prefixes = {}
+        names = {}
+        for event in events:
+            identity = event.get('id') if isinstance(event, dict) else None
+            name = event.get('name') if isinstance(event, dict) else None
+            match = re.match(r'^([0-9]{3,12})(?=[A-Za-z])', identity or '')
+            label = re.sub(r'\s+', ' ', unescape(name)).strip().casefold() \
+                if isinstance(name, str) else ''
+            if not match or not label:
+                continue
+            token = match.group(1)
+            if token in prefixes and prefixes[token] != identity:
+                _fail('event_link_conflict')
+            prefixes[token] = identity
+            names[identity] = label
+
+        found = {}
+        used = {}
+        soup = BeautifulSoup(listing_html, 'html.parser')
+        for anchor in soup.select('a[href]'):
+            raw = anchor.get('href')
+            if not isinstance(raw, str) or not raw.strip() or len(raw) > 1500:
+                continue
+            target = urljoin(publisher_url, raw.strip())
+            parts = urlsplit(target)
+            match = re.fullmatch(r'/event/[^/]*-([0-9]{3,12})/?', parts.path, re.I)
+            if (not match or parts.scheme != 'https' or parts.hostname != origin.hostname
+                    or parts.username or parts.password or parts.fragment):
+                continue
+            identity = prefixes.get(match.group(1))
+            if identity is None:
+                continue
+            heading = None
+            parent = anchor.parent
+            for _ in range(4):
+                if parent is None:
+                    break
+                heading = parent.find(re.compile(r'^h[1-6]
+    """Yield one complete 60-day v3 traversal and return ordinary HTML rows."""
+    profile = _candidate(publisher_url, listing_html)
+    if profile is None:
+        _fail('discovery_invalid')
+    start, end = _today(), _today() + timedelta(days=59)
+    events, instances, venues, plans = {}, {}, {}, {}
+
+    def check():
+        if deadline_at is not None and monotonic() >= deadline_at:
+            _fail('collection_deadline')
+
+    def read(resource, url, maximum):
+        check()
+        body = yield (url, 'application/json')
+        check()
+        rows = api._items(body, maximum, resource)
+        api._merge({'events': events, 'instances': instances,
+                    'venues': venues}[resource], rows, resource, maximum)
+
+    for first, last in api.windows(start, end):
+        yield from read('events', api.api_url(profile['client'], 'events', start=first,
+                                              end=last, base=profile['api_base']),
+                        api.MAX_EVENTS)
+        yield from read('instances', api.api_url(profile['client'], 'instances', start=first,
+                                                 end=last, base=profile['api_base']),
+                        api.MAX_INSTANCES)
+    yield from read('venues', api.api_url(profile['client'], 'venues',
+                                          base=profile['api_base']), api.MAX_VENUES)
+
+    active = set()
+    for instance in instances.values():
+        if instance.get('cancelled') is False and instance.get('isOnSale') is True:
+            plan_id = instance.get('planId')
+            if not api._id(plan_id):
+                _fail('plan_invalid')
+            active.add(plan_id)
+    if len(active) > api.MAX_PLANS:
+        _fail('plan_limit')
+    for plan_id in sorted(active):
+        check()
+        target = api.api_url(profile['client'], 'plans', identity=plan_id,
+                             base=profile['api_base'])
+        body = yield (target, 'application/json')
+        value = api._payload(body)
+        if not isinstance(value, dict) or value.get('id') != plan_id:
+            _fail('plan_invalid')
+        plans[plan_id] = value
+
+    locations = {}
+    for venue_id, venue in venues.items():
+        city = _city(venue.get('address'))
+        if city:
+            locations[venue_id] = {'city': city, 'timezone': ZONE}
+    profile['verified_venues'] = locations
+    profile['event_urls'] = _listing_event_urls(
+        publisher_url, listing_html, list(events.values()))
+    snapshot = api.project(profile, list(events.values()), list(instances.values()),
+                           list(plans.values()), list(venues.values()), start, end)
+    rows = provider.stageable(source, snapshot)
+    from roomquest.registered_native_content import attach_spektrix
+    for row in rows:
+        attach_spektrix(row, source, client=profile['client'],
+                        api_base=profile['api_base'],
+                        description_value=row.get('description'),
+                        image_value=row.get('image_url'))
+    return rows
+))
+                if heading is not None:
+                    break
+                parent = parent.parent
+            label = (re.sub(r'\s+', ' ', unescape(
+                heading.get_text(' ', strip=True))).strip().casefold()
+                if heading is not None else '')
+            if label != names[identity]:
+                continue
+            if identity in found and found[identity] != target:
+                _fail('event_link_conflict')
+            if target in used and used[target] != identity:
+                _fail('event_link_conflict')
+            found[identity], used[target] = target, identity
+        return found
+    except (AttributeError, TypeError, ValueError) as exc:
+        if str(exc).startswith('html_spektrix_'):
+            raise
+        _fail('event_link_evidence_invalid')
 
 
 def stream(source, publisher_url, listing_html, *, deadline_at=None):
