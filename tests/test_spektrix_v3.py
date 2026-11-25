@@ -51,8 +51,8 @@ def test_date_window_exactly_60_days_and_readonly_fixed_urls():
     start = date(2026, 11, 24)
     end = start + timedelta(days=59)
     chunks = api.windows(start, end)
-    assert len(chunks) == 9
-    assert chunks[0] == (start, start + timedelta(days=6))
+    assert len(chunks) == 1
+    assert chunks[0] == (start, end)
     assert chunks[-1][1] == end
     assert sum((b - a).days + 1 for a, b in chunks) == 60
     assert api.api_url('thealbany', 'events', start=START, end=STOP).endswith(
@@ -165,12 +165,11 @@ def test_local_and_utc_clocks_must_match_and_reject_ambiguous_dst():
             [plan()], [venue()], '2026-10-25', '2026-10-25')
 
 
-def test_one_shot_bounded_probe_never_guesses_urls_or_drops_parts():
+def test_one_shot_collection_uses_single_venue_without_plan_downloads():
     client = 'thealbany'
     responses = {
         api.api_url(client, 'events', start=START, end=STOP): [event()],
         api.api_url(client, 'instances', start=START, end=STOP): [instance()],
-        api.api_url(client, 'plans', identity=PLAN): plan(),
         api.api_url(client, 'venues'): [venue()],
     }
     visited = []
@@ -183,9 +182,27 @@ def test_one_shot_bounded_probe_never_guesses_urls_or_drops_parts():
     result = api.collect(profile(), START, STOP, fetch)
     assert len(result['events']) == 1
     assert visited == list(responses)
+    assert not any('/plans/' in url for url in visited)
     del responses[api.api_url(client, 'venues')]
     with pytest.raises(KeyError):
         api.collect(profile(), START, STOP, fetch)
+
+
+def test_multi_venue_collection_resolves_each_plan():
+    client = 'thealbany'
+    other = '401ANPJQJQPQMRSBDNMVNLSPGTRBVQVRH'
+    responses = {
+        api.api_url(client, 'events', start=START, end=STOP): [event()],
+        api.api_url(client, 'instances', start=START, end=STOP): [instance()],
+        api.api_url(client, 'venues'): [venue(), venue(id=other, name='Other')],
+        api.api_url(client, 'plans', identity=PLAN): plan(),
+    }
+    visited = []
+    result = api.collect(
+        profile(), START, STOP,
+        lambda url, accept: (visited.append(url), responses[url])[1])
+    assert len(result['events']) == 1
+    assert visited[-1].endswith('/plans/' + PLAN)
 
 
 def test_first_party_booking_link_yields_candidate_not_auto_admission():
