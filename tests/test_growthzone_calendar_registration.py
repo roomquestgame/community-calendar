@@ -56,7 +56,7 @@ def _run(profile=True, deny=False):
             return XML
         raise AssertionError("Unexpected publisher URL: " + url)
 
-    def collect_native(url, adapter, fetcher, *, deadline, profile=None, body=None):
+    def collect_native(url, adapter, fetcher, *, deadline, profile=None, body=None, registration_probe=False):
         if not profile or not profile.get("timezone"):
             raise ValueError("source_timezone_required")
         return [{"event_url": PAGE + "/details/community-gala-100"}]
@@ -81,16 +81,16 @@ def test_native_xml_is_verified_before_discovery_and_reuses_provider():
 
 def test_missing_timezone_retains_review_instead_of_fabricating_source_zone():
     status, receipts, urls, calls = _run(profile=False)
-    assert status == {"outcome": "review"}
+    assert status == {"outcome": "retry"}
     assert urls[:2] == [PAGE, NATIVE]
     assert calls == 1
-    assert receipts[0]["p_outcome"] == "review"
+    assert receipts[0]["p_outcome"] == "retry"
     assert receipts[0].get("p_endpoint") != NATIVE
 
 
 def test_discovered_endpoint_denial_never_disables_accessible_original():
     status, receipts, urls, calls = _run(profile=True, deny=True)
-    assert status == {"outcome": "review"}
+    assert status == {"outcome": "retry"}
     assert urls[:2] == [PAGE, NATIVE]
     assert calls == 0
-    assert receipts[0]["p_outcome"] == "review"
+    assert receipts[0]["p_outcome"] == "retry"

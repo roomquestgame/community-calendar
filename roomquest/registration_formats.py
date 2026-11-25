@@ -4,7 +4,7 @@ from html.parser import HTMLParser
 import json
 import re
 from hashlib import md5
-from urllib.parse import urlsplit, parse_qsl, urlunsplit
+from urllib.parse import urlsplit, parse_qsl, urlunsplit, urljoin, urldefrag
 
 from bs4 import BeautifulSoup
 
@@ -94,6 +94,30 @@ def extraction_hold(family, error):
     return {'p_outcome': 'review', 'p_reason': reason, 'p_type': family}
 
 
+def provider_calendar_destination(url, page):
+    """Find one advertised calendar after the caller identifies its provider.
+
+    Registration fetches the destination and runs the provider collector.
+    Keep selectors and do not widen a venue-specific path.
+    """
+    names = {'calendar', 'events', 'shows', 'whats-on', 'whatson',
+             'upcoming-events', 'events-calendar', 'event-calendar', 'schedule'}
+    base = urlsplit(url)
+    segments = [part for part in base.path.split('/') if part]
+    if segments and (len(segments) != 1 or segments[0].lower() not in names):
+        return None
+    targets = set()
+    for node in BeautifulSoup(page, 'html.parser').select('a[href]'):
+        target = urldefrag(urljoin(url, node['href'])).url
+        parts = urlsplit(target)
+        if (parts.scheme == 'https' and parts.netloc == base.netloc
+                and not parts.username and not parts.password
+                and parts.path.rstrip('/').rsplit('/', 1)[-1].lower() in names
+                and scoped_endpoint(url, target) and target != url):
+            targets.add(target)
+    return next(iter(targets)) if len(targets) == 1 else None
+
+
 def collection_evidence(url, body, obj=None):
     from roomquest.jsonld_adapter import parse as parse_jsonld
     from roomquest.squarespace import parse_registered
@@ -119,6 +143,13 @@ def collection_evidence(url, body, obj=None):
             return extraction_hold('localist', exc)
         if localist:
             return {'p_outcome': 'discovered', 'p_type': 'localist', 'p_endpoint': localist}
+        # Prefer the native collection to its possibly partial SEO JSON-LD.
+        parts = urlsplit(url)
+        if ('collection-type-events' in body.lower() and 'squarespace' in body.lower()
+                and 'format' not in dict(parse_qsl(parts.query))):
+            query = parts.query + ('&' if parts.query else '') + 'format=json'
+            return {'p_outcome': 'discovered', 'p_type': 'squarespace',
+                    'p_endpoint': urlunsplit(parts._replace(query=query))}
     blocks = soup.find_all('script', type=re.compile('^application/ld\\+json', re.I)) if html else []
     structured = bool(blocks) if html else isinstance(obj, (dict, list))
     if structured:
@@ -134,12 +165,6 @@ def collection_evidence(url, body, obj=None):
             return {'p_outcome': 'review', 'p_reason': reason, 'p_type': 'jsonld'}
     if html:
         hrefs = {a['href'].split('#')[0] for a in soup.select('a[href]') if EVENT_LINK.search(a['href'])}
-        parts = urlsplit(url)
-        if ('collection-type-events' in body.lower() and 'squarespace' in body.lower()
-                and 'format' not in dict(parse_qsl(parts.query))):
-            query = parts.query + ('&' if parts.query else '') + 'format=json'
-            return {'p_outcome': 'discovered', 'p_type': 'squarespace',
-                    'p_endpoint': urlunsplit(parts._replace(query=query))}
         path = urlsplit(url).path.rstrip('/').rsplit('/', 1)[-1].lower()
         if len(hrefs) >= 2 or path in {'events','calendar','shows','upcoming-events','event-calendar'}:
             return {'p_outcome': 'review', 'p_reason': 'html_adapter_needed', 'p_type': 'html'}

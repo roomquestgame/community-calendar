@@ -184,7 +184,7 @@ def test_html_registration_preserves_scope_instead_of_deriving_unfiltered_tec():
                side_effect=[{'url': page}, True]) as rpc, \
          patch('roomquest.feed_registration.fetch_publisher', return_value=html) as fetch:
         assert register('ticket') == {'outcome': 'retry'}
-    assert rpc.call_args.args[1]['p_reason'] == 'html_adapter_needed'
+    assert rpc.call_args.args[1]['p_reason'] == 'the_events_calendar_adapter_needed'
     assert fetch.call_count == 1  # A generic TEC API would drop the venue selector.
 
 
@@ -198,7 +198,7 @@ def test_html_registration_does_not_register_a_zero_event_collection():
                side_effect=[html, empty]) as fetch, \
          patch('roomquest.feed_registration.probe', return_value=False):
         assert register('ticket') == {'outcome': 'retry'}
-    assert rpc.call_args.args[1]['p_reason'] == 'html_adapter_needed'
+    assert rpc.call_args.args[1]['p_reason'] == 'the_events_calendar_adapter_needed'
     assert fetch.call_count == 2
 
 
@@ -210,7 +210,7 @@ def test_html_registration_keeps_robots_denial_of_new_endpoint_on_hold():
          patch('roomquest.feed_registration.fetch_publisher',
                side_effect=[html, PreviewError('robots_denied')]) as fetch:
         assert register('ticket') == {'outcome': 'retry'}
-    assert rpc.call_args.args[1]['p_reason'] == 'html_adapter_needed'
+    assert rpc.call_args.args[1]['p_reason'] == 'the_events_calendar_adapter_needed'
     assert fetch.call_count == 2
     assert fetch.call_args_list[1].kwargs['respect_robots'] is True
 

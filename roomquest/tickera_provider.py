@@ -10,6 +10,7 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 from bs4 import BeautifulSoup
 
 from roomquest.mapsee_adapter import record
+from roomquest.registration_formats import provider_calendar_destination
 
 PLUGIN = '/wp-content/plugins/tickera-event-calendar/'
 CORE = '/wp-content/plugins/tickera/'
@@ -25,15 +26,10 @@ def _origin(url):
 
 def calendar_destination(url, page):
     """Follow one advertised calendar only when the page proves Tickera."""
-    if CORE not in page:
+    if CORE not in page and PLUGIN not in page:
         return None
-    origin = _origin(url)
-    document = BeautifulSoup(page, 'html.parser')
-    targets = {urljoin(url, node.get('href')) for node in document.select('a[href]')
-               if urlsplit(urljoin(url, node.get('href'))).hostname == urlsplit(url).hostname
-               and urlsplit(urljoin(url, node.get('href'))).path.rstrip('/').endswith('/calendar')
-               and not urlsplit(urljoin(url, node.get('href'))).query}
-    return next(iter(targets)) if len(targets) == 1 and next(iter(targets)).startswith(origin) else None
+    _origin(url)
+    return provider_calendar_destination(url, page)
 
 
 def _events_script(page):
@@ -87,10 +83,12 @@ def timezone(page, fetch, url):
 
 def parse(page, *, url, zone):
     listing_host = urlsplit(url).hostname
-    blocks = re.findall(r'\{([^{}]{1,100000})\}', _events_script(page), re.S)
-    # The add-on emits the publisher's complete archive as one bounded array;
-    # normalization below drops past occurrences. Large active venues can
-    # legitimately retain several hundred historical entries.
+    script = _events_script(page)
+    if not script.strip():
+        return []  # Valid empty refresh; registration still requires events.
+    blocks = re.findall(r'\{([^{}]{1,100000})\}', script, re.S)
+    # Collect the configured calendar array (which may be category-filtered),
+    # not an assumed publisher-wide archive. Normalization drops past events.
     if not blocks or len(blocks) > 1000:
         raise ValueError('invalid_tickera_calendar')
     rows = []

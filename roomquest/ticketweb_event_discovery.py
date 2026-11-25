@@ -9,6 +9,7 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 from bs4 import BeautifulSoup
 
 from roomquest.mapsee_adapter import record
+from roomquest.registration_formats import provider_calendar_destination
 
 PLUGIN = '/wp-content/plugins/event-discovery/'
 ACTION = 'get_events_artist_calendar'
@@ -24,13 +25,8 @@ def _origin(url):
 def calendar_destination(url, page):
     if PLUGIN not in page:
         return None
-    origin = _origin(url)
-    document = BeautifulSoup(page, 'html.parser')
-    targets = {urljoin(url, node.get('href')) for node in document.select('a[href]')
-               if urlsplit(urljoin(url, node.get('href'))).hostname == urlsplit(url).hostname
-               and urlsplit(urljoin(url, node.get('href'))).path.rstrip('/').endswith('/calendar')
-               and not urlsplit(urljoin(url, node.get('href'))).query}
-    return next(iter(targets)) if len(targets) == 1 and next(iter(targets)).startswith(origin) else None
+    _origin(url)
+    return provider_calendar_destination(url, page)
 
 
 def contract(url, page):
@@ -104,8 +100,10 @@ def parse(payload, *, url, zone):
         events = envelope['events']
     except (ValueError, TypeError, KeyError) as exc:
         raise ValueError('invalid_event_discovery_calendar') from exc
-    if not isinstance(events, list) or not events or len(events) > 500:
+    if not isinstance(events, list) or len(events) > 500:
         raise ValueError('invalid_event_discovery_calendar')
+    if not events:
+        return []  # A valid empty refresh is distinct from malformed rows.
     host = urlsplit(url).hostname
     rows = []
     for event in events:
