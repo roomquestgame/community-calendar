@@ -422,6 +422,7 @@ def project(profile, events, instances, plans, venues, start, end, *, cms_pages=
             'venue_city': city,
             'timezone': time_zone,
             'event_url': event_url,
+            'source_event_url': event_url if event.get('webUrl') else None,
             'description': _text(event.get('description') or event.get('htmlDescription'))[:12000],
             'image_url': image_url,
             'spektrix_adapter_version': 1,
@@ -517,4 +518,3 @@ def collect(profile, start, end, fetch, *, deadline_at=None, cms_pages=None):
     return project(profile, list(items['events'].values()), list(items['instances'].values()),
                    list(items['plans'].values()), list(items['venues'].values()), start, end,
                    cms_pages=cms_pages)
-
