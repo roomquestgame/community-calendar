@@ -246,6 +246,17 @@ def _ticket_extra(event):
     that metadata together with an unambiguous product title; missing categories,
     an uncategorized show, or a zero-duration real show alone is insufficient.
     """
+    title = _text(event.get('name'))
+    description = _text(event.get('description') or event.get('htmlDescription'))
+    if event.get('duration') == 0 and (
+        (re.fullmatch(r'Pre[ -]?Order\s+Drinks?', title, re.I)
+         and re.search(r'pre[ -]?order your drinks', description, re.I))
+        or (re.fullmatch(r'Audio Description Headset', title, re.I)
+            and re.search(r'pre[ -]?book your Audio Description headset', description, re.I))
+        or (re.fullmatch(r'Captioning Facilities', title, re.I)
+            and re.search(r'captioning facilities', description, re.I))
+    ):
+        return True
     categories = [f'attribute_WebsiteFilterCategory{i}' for i in (1, 2, 3)]
     if (event.get('duration') != 0
             or any(key not in event or event[key] != '' for key in categories)):
