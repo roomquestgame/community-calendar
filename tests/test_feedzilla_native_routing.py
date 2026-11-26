@@ -4,7 +4,8 @@ import json
 from unittest.mock import patch
 
 import pytest
-from roomquest import feed_registration, preview_worker, tickera_provider, ticketweb_event_discovery
+from roomquest import (feed_registration, preview_worker, tickera_provider,
+                       ticketweb_event_discovery, tockify_provider)
 from roomquest.registration_formats import source_key
 from test_tickera_ticketweb_providers import tickera_page, event_discovery_page, event_discovery_payload
 
@@ -124,3 +125,43 @@ def test_valid_empty_calendar_does_not_create_a_new_source(adapter, page, extra)
     with patch.object(feed_registration, 'supabase_rpc', rpc), \
          patch.object(feed_registration, 'fetch_publisher', side_effect=[page, extra]):
         assert feed_registration.register('ticket') == {'outcome': 'retry'}
+
+
+def test_tockify_embed_discovers_and_verifies_standard_ics_subscription():
+    day = datetime.now(timezone.utc) + timedelta(days=7)
+    root = 'https://publisher.example.org/'
+    feed = 'https://tockify.com/api/feeds/ics/community.events'
+    page = '''<html><div data-tockify-calendar="community.events"></div>
+    <script src="https://public.tockify.com/browser/embed.js"></script></html>'''
+    ical = f'''BEGIN:VCALENDAR\r
+VERSION:2.0\r
+BEGIN:VEVENT\r
+UID:tockify-1\r
+DTSTART:{day.strftime('%Y%m%d')}T190000Z\r
+SUMMARY:Community show\r
+URL:https://publisher.example.org/events/community-show\r
+END:VEVENT\r
+END:VCALENDAR\r
+'''
+    assert tockify_provider.subscription(page) == feed
+    receipts = []
+    def rpc(method, args, **kwargs):
+        if method.endswith('claim_registration'):
+            return {'url': root}
+        receipts.append(args)
+        return True
+    def fetch(url, accept, **kwargs):
+        return page if url == root else ical if url == feed else pytest.fail(url)
+    with patch.object(feed_registration, 'supabase_rpc', rpc), patch.object(
+            feed_registration, 'fetch_publisher', fetch):
+        assert feed_registration.register('ticket')['outcome'] == 'discovered'
+    assert receipts[-1]['p_outcome'] == 'discovered'
+    assert receipts[-1]['p_endpoint'] == feed
+    assert receipts[-1]['p_type'] == 'ical'
+
+
+def test_tockify_multiple_or_unproved_embeds_are_not_guessed():
+    marker = '<script src="https://public.tockify.com/browser/embed.js"></script>'
+    assert tockify_provider.subscription('<div data-tockify-calendar="one"></div>') is None
+    assert tockify_provider.subscription(
+        marker + '<div data-tockify-calendar="one"></div><div data-tockify-calendar="two"></div>') is None
