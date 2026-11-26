@@ -5,6 +5,9 @@ publication. This module only reports unsupported calendar families when no
 existing family or publisher-linked feed has been verified.
 """
 import re
+from urllib.parse import urlsplit
+
+from bs4 import BeautifulSoup
 
 MAX_SIGNAL_CHARS = 500_000
 
@@ -41,6 +44,24 @@ def unsupported_calendar_profile(html):
     if re.search(r'https://[a-z0-9.-]+\.myvscloud\.com/webtrac/web/search\.html(?:[?&"\']|$)',
                  fragment):
         return 'webtrac_adapter_needed'
+    # The publisher's installed plugin is more specific than the ticket links
+    # it renders. Parse actual asset attributes so bundled CSS or serialized
+    # page text cannot impersonate another plugin (or a WordPress installation).
+    assets = BeautifulSoup(fragment, 'html.parser').select('script[src],link[href]')
+    plugins = set()
+    families = {'event-discovery': 'event_discovery', 'tickera': 'tickera',
+                'tickera-event-calendar': 'tickera', 'tickera-events-listing': 'tickera',
+                'eventon': 'eventon'}
+    for asset in assets:
+        try:
+            path = urlsplit(asset.get('src') or asset.get('href') or '').path
+        except ValueError:
+            continue
+        match = re.search(r'/wp-content/plugins/([^/]+)/', path)
+        if match and match[1] in families:
+            plugins.add(families[match[1]])
+    if len(plugins) == 1:
+        return next(iter(plugins)) + '_adapter_needed'
     # Multiple publisher-rendered TicketWeb event links identify a linked
     # ticketing inventory, not merely a footer or one-off purchase button.
     if len(set(re.findall(
