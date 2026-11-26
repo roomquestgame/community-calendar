@@ -35,7 +35,8 @@ def freeze(monkeypatch, value):
         def now(cls, tz=None):
             return value.astimezone(tz) if tz else value.replace(tzinfo=None)
 
-    monkeypatch.setattr(preview_worker, 'datetime', Clock)
+    for module in (preview_worker, revize, markets):
+        monkeypatch.setattr(module, 'datetime', Clock)
 
 
 @pytest.fixture(autouse=True)

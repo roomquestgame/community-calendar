@@ -421,6 +421,23 @@ def parse(payload, *, now=None, deadline_at=None, include_civic=False,
                         precision='timed', tz=TIMEZONE)
                 if source_key == SOURCE_KEY:
                     attach(row, source_key, facts={})
+                    if include_civic:
+                        raw_start = datetime.fromisoformat(item['start'].replace('Z', '+00:00'))
+                        local_clock = raw_start.tzinfo is None
+                        def original_time(value):
+                            if value is None:
+                                return None
+                            return (value.replace(tzinfo=None) if local_clock else value.astimezone(timezone.utc)).isoformat(timespec='seconds')
+                        clock = 'local' if local_clock else 'utc'
+                        row['collector_event_content_v1'] = {'version': 1, 'event_id': identity, 'facts': {
+                            'title': title, 'description': narrative or None, 'is_all_day': False,
+                            f'starts_at_{clock}': original_time(begins), f'ends_at_{clock}': original_time(ends),
+                            'publisher_status': status or 'scheduled',
+                            'meeting_location': plain(item.get('location')) or None,
+                            'event_url': plain(item.get('url')) or None,
+                            'source_image_url': plain(item.get('image')) or None,
+                            'publisher_categories': [category] if category else [],
+                        }}
                 records.append(row)
                 if len(records) > MAX_OCCURRENCES:
                     raise ValueError('source_record_limit')

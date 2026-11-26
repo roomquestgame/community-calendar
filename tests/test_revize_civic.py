@@ -71,3 +71,19 @@ def test_moved_finite_office_notice_keeps_publisher_identity():
     after, = revize.parse([moved], now=NOW, include_civic=True)
     assert before['id'] == after['id'] == 'revize:notice:64'
     assert before['starts_on'] != after['starts_on']
+
+
+def test_event_facts_ignore_check_time_and_isolate_publisher_changes():
+    meetings = [event('50'), event('72')]
+
+    def contents(items, instant):
+        rows = revize.parse(items, now=instant, include_civic=True)
+        return {row['id']: row['collector_event_content_v1']['facts'] for row in rows}
+
+    first = contents(meetings, NOW)
+    assert first and first == contents(meetings, NOW.replace(hour=13))
+    edited = deepcopy(meetings)
+    edited[1]['title'] += ' (updated)'
+    after = contents(edited, NOW)
+    assert first.keys() == after.keys()
+    assert all((facts != after[key]) == key.startswith('revize:72__') for key, facts in first.items())

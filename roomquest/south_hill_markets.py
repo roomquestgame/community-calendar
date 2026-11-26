@@ -229,6 +229,12 @@ def parse_text(text, *, document_url, now=None):
                publisher_categories=['Events'],
                location_provenance='publisher_pdf_street_and_named_town_venue')
     attach(row, SOURCE_KEY, facts={})
+    row['collector_event_content_v1'] = {'version': 1, 'event_id': occurrence, 'facts': {
+        'title': f'{heading} {printed_year}', 'description': description, 'is_all_day': False,
+        'starts_at_local': begins.replace(tzinfo=None).isoformat(timespec='seconds'),
+        'ends_at_local': finishes.replace(tzinfo=None).isoformat(timespec='seconds'),
+        'venue_name': venue, 'venue_address': street, 'venue_city': 'South Hill',
+    }}
     return row
 
 
@@ -288,6 +294,8 @@ def collect(source, fetch, *, deadline_at=None, now=None):
                  else 'publisher_document_unavailable')
             raise
         if row is not None:
+            if type(source.get('civic_contract_version')) is not int or source['civic_contract_version'] != 1:
+                row.pop('collector_event_content_v1', None)
             previous = rows.get(row['id'])
             if previous and any(previous.get(k) != row.get(k) for k in
                                 ('title', 'starts_at', 'ends_at', 'venue_name', 'venue_address')):
