@@ -342,6 +342,13 @@ def project(profile, events, instances, plans, venues, start, end, *, cms_pages=
             # The shared UK geocoder accepts street, city, postcode. Preserve
             # the API's actual address, adding only the postcode separator.
             address = address[:postcode.start()].rstrip(', ') + ', ' + postcode.group().strip().upper()
+            # Spektrix commonly returns a UK address without a country field.
+            # The shared GB address contract accepts the publisher address
+            # unchanged, plus an explicit country suffix; do not invent a
+            # location or alter the venue identity.
+            if (address.count(',') >= 3
+                    and not re.search(r'(?:,|\s)(?:United Kingdom|UK|GB|Great Britain)\s*$', address, re.I)):
+                address += ', United Kingdom'
         if not address or not venue_name:
             _fail('spektrix_venue_location_unresolved')
         instant = _utc(instance.get('startUtc'))
@@ -475,3 +482,4 @@ def collect(profile, start, end, fetch, *, deadline_at=None, cms_pages=None):
     return project(profile, list(items['events'].values()), list(items['instances'].values()),
                    list(items['plans'].values()), list(items['venues'].values()), start, end,
                    cms_pages=cms_pages)
+
