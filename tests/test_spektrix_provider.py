@@ -1,5 +1,6 @@
 """Unregistered Spektrix URLs cannot bypass stored provider profiles."""
 from datetime import date
+from urllib.parse import urlsplit
 from time import monotonic
 
 import pytest
@@ -181,3 +182,30 @@ def test_later_performance_registers_and_collects_with_identical_native_identity
     assert all(str(today+timedelta(days=59)) in target
                for target in calls if not target.endswith('/venues'))
     assert 'AFKFINN' in initial[0]['event_url']
+
+@pytest.mark.parametrize('url,link', [
+    ('https://tickets.z-arts.org/zarts/api/v3/events', 'https://www.z-arts.org/events/the-library-of-enchantment/'),
+    ('https://tickets.planosymphony.org/planosymphony/api/v3/events', 'https://planosymphony.org/guildfestiveeve/'),
+    ('https://boxoffice.example.co.uk/client/api/v3/events', 'https://www.example.co.uk/events/show/'),
+])
+def test_native_api_main_publisher_weburl(url, link):
+    config = spektrix_provider.profile(url)
+    assert spektrix_v3._event_url({'id': EVENT, 'webUrl': link}, config) == link
+    assert config['api_base'] + '/events' == url
+    assert urlsplit(config['publisher_url']).hostname == urlsplit(url).hostname
+
+@pytest.mark.parametrize('link', [
+    'https://evil.example/events/show/',
+    'https://www.z-arts.org.evil.example/events/show/',
+    'https://other.z-arts.org/events/show/',
+    'http://www.z-arts.org/events/show/',
+    'https://www.z-arts.org/events/show/#fragment',
+])
+def test_main_publisher_link_does_not_admit_other_hosts_or_invalid_urls(link):
+    with pytest.raises(ValueError, match='spektrix_event_link_unverified'):
+        spektrix_v3._event_url({'id': EVENT, 'webUrl': link},
+            spektrix_provider.profile('https://tickets.z-arts.org/zarts/api/v3/events'))
+
+def test_central_api_has_no_inferred_publisher_link_hosts():
+    assert not spektrix_provider.profile(URL).get('verified_event_hosts')
+    assert not spektrix_provider.profile('https://tickets.spektrix.com/client/api/v3/events').get('verified_event_hosts')
