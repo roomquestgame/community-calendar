@@ -194,6 +194,44 @@ def _tribe_times_agree(event, zone):
     return True
 
 
+def _tribe_original_content(event, venue, row, zone):
+    """Collect event facts from the original strict TEC response."""
+    if not isinstance(zone, ZoneInfo) or not event.get("utc_start_date") or not _tribe_times_agree(event, zone):
+        return None
+    if event.get("end_date") and not event.get("utc_end_date"):
+        return None
+    end = timestamp(event.get("utc_end_date"), "UTC")
+    point = (venue.get("geo_lat"), venue.get("geo_lng"))
+    try:
+        lat, lng = map(float, point)
+        if not (-90 <= lat <= 90 and -180 <= lng <= 180) or (lat, lng) == (0, 0):
+            lat = lng = None
+    except (ValueError, TypeError):
+        lat = lng = None
+    return {"version": 1, "event_id": row["id"], "facts": {
+        "title": plain(event.get("title")),
+        "description": row["description"],
+        "starts_at_utc": row["starts_at"],
+        "ends_at_utc": end.isoformat() if end else None,
+        "is_all_day": False,
+        "source_timezone": event["timezone"],
+        "publisher_status": plain(event.get("event_status")) or None,
+        "event_url": row["event_url"],
+        "venue_name": plain(venue.get("venue")) or None,
+        "provider_venue_id": str(venue["id"]) if venue.get("id") else None,
+        "venue_address": plain(venue.get("address")) or None,
+        "venue_city": plain(venue.get("city")) or None,
+        "venue_region": plain(venue.get("state") or venue.get("stateprovince") or venue.get("province")) or None,
+        "venue_postal_code": plain(venue.get("zip")) or None,
+        "venue_country": plain(venue.get("country")) or None,
+        "source_latitude": lat, "source_longitude": lng,
+        "source_image_url": row.get("image_url"),
+        "publisher_categories": [plain(term.get("name")) for key in ("categories", "tags")
+                                 for term in (event.get(key) or []) if isinstance(term, dict)],
+        "cost_text": plain(event.get("cost")) or None,
+    }}
+
+
 def parse_tribe(data, *, strict_public=False, retain_description=False, utc_default_zone=None,
                 native_source=None):
     # The same upstream Tribe parser used by Udell, with UTC dates and complete
@@ -246,6 +284,10 @@ def parse_tribe(data, *, strict_public=False, retain_description=False, utc_defa
                 from roomquest.registered_native_content import attach
                 attach(r, native_source, description_value=e.get('description'),
                        image_value=e.get('image'))
+                if strict_public and not reinterpret:
+                    facts = _tribe_original_content(e, venue, r, zone)
+                    if facts is not None:
+                        r["collector_event_content_v1"] = facts
             elif retain_description:
                 from roomquest.event_description import description
                 value = e.get("description")
@@ -348,4 +390,3 @@ def collect(source,profile,fetch):
     result=sorted(unique.values(),key=lambda e:(e["starts_at"],e["title"]))
     if result and not any(e.get("venue_name") or e.get("venue_address") for e in result):raise ValueError("venue_extraction_unavailable")
     return result
-
