@@ -134,7 +134,7 @@ def collect(url, adapter, fetch, *, deadline, profile=None, body=None, registrat
         if not isinstance(payload, dict) or not isinstance(payload.get('data'), dict):
             raise ValueError('invalid_chambermate_payload')
         source['timezone'] = chambermate._timezone(payload['data'].get('timeZoneIANAId'))
-        return chambermate.parse(payload, source)
+        return chambermate.parse(payload, source, retain_original=retain_original)
     if adapter == 'legistar':
         client = LEGISTAR.fullmatch(url)[1]
         spec = {'client': client, 'url': url, 'timezone': timezone(config)}

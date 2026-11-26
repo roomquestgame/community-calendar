@@ -285,7 +285,7 @@ def _times(event):
     return pairs
 
 
-def parse(payload, source):
+def parse(payload, source, *, retain_original=False):
     """Normalize a complete public response; unknown/truncated shapes fail."""
     config = source_config(source)
     if (not isinstance(payload, dict) or payload.get("status") is not True
@@ -339,6 +339,21 @@ def parse(payload, source):
                 row.update(venue_name="", venue_city="")
             if image:
                 row["image_url"] = image
+            if retain_original:
+                row["collector_event_content_v1"] = {
+                    "version": 1, "event_id": row["id"],
+                    "facts": {
+                        "title": row["title"], "description": description or None,
+                        "starts_at_utc": start.isoformat(),
+                        "ends_at_utc": end.isoformat() if end else None,
+                        "is_all_day": False, "publisher_status": "scheduled",
+                        "attendance_mode": mode, "publisher_event_type": kind,
+                        "event_url": url, "source_image_url": image,
+                        "venue_name": venue or None, "venue_address": street or None,
+                        "venue_city": city or None,
+                        "publisher_categories": event.get("eventCategoriesSystemFieldOptionKeys", []),
+                    },
+                }
             occurrence = (row["id"], row["starts_at"])
             if occurrence in unique and unique[occurrence] != row:
                 raise ValueError("conflicting_event_occurrence")
@@ -346,7 +361,7 @@ def parse(payload, source):
     return sorted(unique.values(), key=lambda row: (row["starts_at"], row["id"]))
 
 
-def collect(source, fetch, *, deadline_at=None):
+def collect(source, fetch, *, deadline_at=None, retain_original=False):
     config = source_config(source)
     deadline = min(monotonic() + 20, deadline_at if deadline_at is not None else float("inf"))
     if monotonic() >= deadline:
@@ -357,7 +372,7 @@ def collect(source, fetch, *, deadline_at=None):
         raise ValueError("invalid_chambermate_payload") from exc
     if monotonic() >= deadline:
         raise ValueError("collection_deadline")
-    rows = parse(payload, source)
+    rows = parse(payload, source, retain_original=retain_original)
     if monotonic() >= deadline:
         raise ValueError("collection_deadline")
     return rows

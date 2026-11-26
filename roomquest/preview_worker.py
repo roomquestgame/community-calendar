@@ -1477,7 +1477,7 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         try:
             profile = provider_registration.read_profile(url, adapter, supabase_rpc)
             records = provider_registration.collect(url, adapter, fetch, deadline=deadline, profile=profile,
-                                                    retain_original=adapter in ('spektrix', 'tickera', 'event_discovery'))
+                                                    retain_original=adapter in ('spektrix', 'tickera', 'event_discovery', 'chambermate'))
             location_claim = {**source, **{
                 key: profile.get(key) for key in (
                     'publisher_default_venue', 'publisher_default_lat',
@@ -3967,13 +3967,14 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                 source, lambda url, accept: fetch_publisher(
                     url, accept, respect_robots=True, deadline_at=deadline,
                     allowed_hosts=(API_HOST,),
-                ), deadline_at=deadline)
+                ), deadline_at=deadline, retain_original=True)
         except PreviewError:
             raise
         except (ValueError, TypeError, KeyError, OverflowError) as exc:
             reason = str(exc)
             raise PreviewError(reason if re.fullmatch(r"[a-z_]{3,100}", reason) else "invalid_chambermate_payload") from exc
-        samples = records[:MAX_PREVIEWS]
+        samples = [{key: value for key, value in row.items() if key != "collector_event_content_v1"}
+                   for row in records[:MAX_PREVIEWS]]
         while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
             samples.pop()
         return {"p_source_key": source["source_key"], "p_samples": samples,
