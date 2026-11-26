@@ -114,3 +114,80 @@ def test_search_without_separate_key_never_calls_network(monkeypatch):
     with pytest.raises(ValueError, match="search_not_configured"):
         search_urls("Wave Hill", SCOPE["hosts"], api_key="", deadline_at=20, clock=lambda: 0)
     post.assert_not_called()
+
+
+def test_model_input_byte_cap(monkeypatch):
+    from roomquest.venue_research import anthropic_extract
+    post = Mock()
+    monkeypatch.setattr("roomquest.venue_research.requests.post", post)
+    with pytest.raises(ValueError, match="model_input_bound"):
+        anthropic_extract({"huge": "x" * 17000}, api_key="mock", model="test", deadline_at=20, clock=lambda: 0)
+    post.assert_not_called()
+
+
+from roomquest.venue_research import configured, claim_options, defer_miss, handle_claim
+
+CONFIG = {"model": "test", "search_key": "search", "model_key": "model"}
+IDENTITY = {"venue_key": "key", "lease_id": "lease"}
+WORKER_CLAIM = {**IDENTITY, "provider": "nyc_event_calendar", "research_permit": {"test": True}}
+PROPOSAL = {"status": "proposed", "candidate": {"address": ADDRESS}}
+
+
+def test_disabled_by_default_and_no_crawler_key_fallback():
+    env = {"VENUE_RESEARCH_MODEL": "test", "TAVILY_API_KEY": "crawler", "VENUE_AI_ANTHROPIC_API_KEY": "model"}
+    assert configured(env) is None
+    env["VENUE_RESEARCH_ENABLED"] = "true"
+    assert configured(env) is None
+    env["VENUE_RESEARCH_TAVILY_API_KEY"] = "search"
+    assert configured(env) == CONFIG
+    assert claim_options(configured(env)) == {"limit": 1, "research_model": "test"}
+    assert claim_options(None) == {"limit": 1}
+
+
+def test_defer_only_on_eligible_miss():
+    db = Mock(return_value={"deferred": True})
+    assert not defer_miss(db, WORKER_CLAIM, IDENTITY, None)
+    assert not defer_miss(db, {"provider": "ics"}, IDENTITY, CONFIG)
+    db.assert_not_called()
+    assert defer_miss(db, WORKER_CLAIM, IDENTITY, CONFIG)
+    db.assert_called_once_with("research_defer", {**IDENTITY, "model": "test"})
+    db.return_value = {"deferred": False}
+    assert not defer_miss(db, WORKER_CLAIM, IDENTITY, CONFIG)
+
+
+def test_ordinary_lease_untouched(monkeypatch):
+    lookup = Mock()
+    monkeypatch.setattr("roomquest.venue_research.research", lookup)
+    db = Mock()
+    assert handle_claim(db, IDENTITY, IDENTITY, CONFIG, fetch=Mock(), deadline=15, clock=lambda: 0) is None
+    lookup.assert_not_called()
+    db.assert_not_called()
+
+
+@pytest.mark.parametrize("config,claim", [(None, WORKER_CLAIM), (CONFIG, {**WORKER_CLAIM, "provider": "ics"})])
+def test_unconfigured_or_wrong_source_permit_does_not_call_provider(monkeypatch, config, claim):
+    lookup = Mock()
+    monkeypatch.setattr("roomquest.venue_research.research", lookup)
+    db = Mock()
+    assert handle_claim(db, claim, IDENTITY, config, fetch=Mock(), deadline=15, clock=lambda: 0) == "review"
+    lookup.assert_not_called()
+    db.assert_called_once_with("fail", {**IDENTITY, "reason": "needs_review"})
+
+
+def test_admitted_research_persists_proposal_before_submit(monkeypatch):
+    lookup = Mock(return_value=PROPOSAL)
+    monkeypatch.setattr("roomquest.venue_research.research", lookup)
+    db = Mock(return_value={"recorded": True})
+    assert handle_claim(db, WORKER_CLAIM, IDENTITY, CONFIG, fetch=Mock(), deadline=15, clock=lambda: 0) == "resolved"
+    assert [c.args for c in db.call_args_list] == [("research_propose", {**IDENTITY, "proposal": PROPOSAL}),
+        ("submit", {**IDENTITY, **PROPOSAL["candidate"]})]
+    assert lookup.call_args.kwargs["admit"](WORKER_CLAIM) == WORKER_CLAIM["research_permit"]
+
+
+@pytest.mark.parametrize("answer,receipt", [({"status": "held"}, {}), (PROPOSAL, {"recorded": False})])
+def test_no_submit_on_held_or_rejected_proposal(monkeypatch, answer, receipt):
+    monkeypatch.setattr("roomquest.venue_research.research", Mock(return_value=answer))
+    db = Mock(return_value=receipt)
+    assert handle_claim(db, WORKER_CLAIM, IDENTITY, CONFIG, fetch=Mock(), deadline=15, clock=lambda: 0) == "review"
+    assert all(c.args[0] != "submit" for c in db.call_args_list)
+    assert db.call_args.args == ("fail", {**IDENTITY, "reason": "needs_review"})
