@@ -3,13 +3,13 @@
 Only embedded facts are read. No JS execution, page crawl, remote @context,
 geocoding, guessed timezone or publisher-wide location is introduced.
 """
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from html.parser import HTMLParser
 import json
 import re
 from urllib.parse import parse_qs, urljoin, urlsplit
 from zoneinfo import ZoneInfo
-from roomquest.mapsee_adapter import record, address
+from roomquest.mapsee_adapter import record, address, plain
 
 COALITION_KEY = 'municipal_mapsee_8000fb8c18bf23f709b53465'
 COALITION_URL = 'https://calendar.richmondcultureworks.org/organizations/coalition-theater/'
@@ -89,6 +89,56 @@ def definition_contains(full, partial):
             definition_contains(a, b) and definition_contains(b, a)
             for a, b in zip(full, partial))
     return full == partial
+
+
+def _original_event_content(event, venue, postal, geo, row, resolve):
+    """Project event-owned facts before reviewed venue or timezone fallbacks."""
+    try:
+        start = datetime.fromisoformat(event['startDate'])
+        original_end = event.get('endDate')
+        end = datetime.fromisoformat(original_end) if original_end else None
+    except (KeyError, TypeError, ValueError):
+        return None
+    if start.utcoffset() is None or (end is not None and end.utcoffset() is None):
+        return None
+    try:
+        lat, lng = float(geo.get('latitude')), float(geo.get('longitude'))
+        if not (-90 <= lat <= 90 and -180 <= lng <= 180) or (lat, lng) == (0, 0):
+            lat = lng = None
+    except (TypeError, ValueError):
+        lat = lng = None
+    address_facts = postal if isinstance(postal, dict) else {'streetAddress': postal}
+    keywords = event.get('keywords') or []
+    if isinstance(keywords, str):
+        keywords = [keywords]
+    categories = set(types(event))
+    if isinstance(keywords, list):
+        categories.update(plain(word) for word in keywords if isinstance(word, str) and plain(word))
+    offer_items = event.get('offers') or []
+    if not isinstance(offer_items, list):
+        offer_items = [offer_items]
+    offer_items = [resolve(offer) for offer in offer_items]
+    prices = sorted({
+        ' '.join(plain(str(offer[key])) for key in ('priceCurrency', 'price', 'lowPrice', 'highPrice')
+                 if offer.get(key) is not None and not isinstance(offer[key], bool))
+        for offer in offer_items if isinstance(offer, dict)
+    }-{''})
+    return {'version': 1, 'event_id': row['id'], 'facts': {
+        'title': plain(event['name']), 'description': row['description'],
+        'starts_at_utc': start.astimezone(timezone.utc).isoformat(),
+        'ends_at_utc': end.astimezone(timezone.utc).isoformat() if end else None,
+        'is_all_day': False, 'publisher_status': plain(event.get('eventStatus')) or None,
+        'attendance_mode': plain(event.get('eventAttendanceMode')) or None,
+        'event_url': row['event_url'], 'source_image_url': row.get('image_url'),
+        'venue_name': plain(venue.get('name')) or None, 'provider_venue_id': plain(venue.get('@id')) or None,
+        'venue_address': plain(address_facts.get('streetAddress')) or None,
+        'venue_city': plain(address_facts.get('addressLocality')) or None,
+        'venue_region': plain(address_facts.get('addressRegion')) or None,
+        'venue_postal_code': plain(address_facts.get('postalCode')) or None,
+        'venue_country': plain(address_facts.get('addressCountry')) or None,
+        'source_latitude': lat, 'source_longitude': lng,
+        'publisher_categories': sorted(categories), 'cost_text': ' | '.join(prices) or None,
+    }}
 
 
 def parse(payload, base='', *, native_source=None):
@@ -252,6 +302,9 @@ def parse(payload, base='', *, native_source=None):
                 image = e.get('image')
                 image = [resolve(value) for value in image[:5]] if isinstance(image, list) else resolve(image)
                 attach(row, native_source, description_value=e.get('description'), image_value=image)
+                facts = _original_event_content(e, v, a, g, row, resolve)
+                if facts is not None:
+                    row['collector_event_content_v1'] = facts
             else:
                 from roomquest.event_description import description
                 row['description'] = description(e.get('description'))

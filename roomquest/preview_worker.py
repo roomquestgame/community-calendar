@@ -4048,7 +4048,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         except (ValueError, TypeError, KeyError, OverflowError) as exc:
             reason = str(exc)
             raise PreviewError(reason if re.fullmatch(r"[a-z_]{3,100}", reason) else "invalid_calendar_payload") from exc
-        samples = records[:MAX_PREVIEWS]
+        samples = [{key: value for key, value in row.items() if key != "collector_event_content_v1"}
+                   for row in records[:MAX_PREVIEWS]]
         while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
             samples.pop()
         from roomquest.registered_native_content import enabled as native_enabled, VERSION as NATIVE_VERSION
