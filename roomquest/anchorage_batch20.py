@@ -322,7 +322,7 @@ def _row(key, event, now):
     return attach(row, key, candidate=event.get("assetUrl"))
 
 
-def collect(source, fetch, *, deadline_at=None, now=None):
+def collect(source, fetch, *, deadline_at=None, now=None, retain_original=False):
     key = source.get("source_key")
     if (key not in SOURCES or
             (source.get("feed_url"), source.get("kind"), source.get("platform_adapter")) != SOURCES[key]
@@ -337,7 +337,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
         raise ValueError("invalid_batch20_squarespace_payload")
     if (data.get("website") or {}).get("timeZone") != ZONE:
         raise ValueError("publisher_timezone_changed")
-    from roomquest.squarespace import check_pagination
+    from roomquest.squarespace import check_pagination, original_content
     check_pagination(data, upcoming=True)
     if len(data["upcoming"]) > MAX_EVENTS:
         raise ValueError("source_record_limit")
@@ -348,6 +348,8 @@ def collect(source, fetch, *, deadline_at=None, now=None):
         row = _row(key, event, now)
         if row is None:
             continue
+        if retain_original:
+            row["collector_event_content_v1"] = original_content(event, row, source["feed_url"], row["description"])
         identity = (row["id"], row["starts_at"])
         if identity in results and results[identity] != row:
             raise ValueError("conflicting_publisher_occurrence")
