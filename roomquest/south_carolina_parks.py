@@ -114,7 +114,7 @@ def occurrences(page):
     return sorted(result)
 
 
-def normalize(event, park, page):
+def normalize(event, park, page, *, retain_original=False):
     if event.get('parkId') != park.get('productID'):
         raise ValueError('park_identity_mismatch')
     if not park.get('address1') or not park.get('cityName') or park.get('state') != 'SC':
@@ -139,13 +139,29 @@ def normalize(event, park, page):
             row['publisher_categories'] = topics
             attach(row, 'south_carolina_parks_' + str(park['productID']),
                    facts=facts, candidate=candidate)
+            if retain_original:
+                row['collector_event_content_v1'] = {
+                    'version': 1, 'event_id': row['id'],
+                    'facts': {
+                        'title': row['title'], 'description': description or None,
+                        'is_all_day': False, 'publisher_status': 'scheduled',
+                        'starts_at_local': start, 'ends_at_local': end,
+                        'event_url': row['event_url'], 'source_image_url': candidate,
+                        'provider_venue_id': str(event['parkId']),
+                        'meeting_location': facts.get('meeting_location'),
+                        'audience': [facts['audience']] if 'audience' in facts else [],
+                        'cost_text': facts.get('cost'),
+                        'registration_text': facts.get('registration'),
+                        'publisher_categories': topics,
+                    },
+                }
             rows.append(row)
     if len(rows) > 500:
         raise ValueError('source_record_limit')
     return rows
 
 
-def collect(source, fetch, *, deadline_at=None):
+def collect(source, fetch, *, deadline_at=None, retain_original=False):
     key = source.get('source_key', '')
     match = re.fullmatch(r'south_carolina_parks_([1-9][0-9]{0,9})', key)
     if not match or source.get('feed_url') != ROOT + '/api/events#park=' + match[1]:
@@ -172,7 +188,8 @@ def collect(source, fetch, *, deadline_at=None):
     for event in selected:
         if type(event.get('id')) is not int or event['id'] <= 0:
             raise ValueError('invalid_park_event_id')
-        rows.extend(normalize(event, matches[0], get(f"/products/{event['id']}", 'text/html')))
+        rows.extend(normalize(event, matches[0], get(f"/products/{event['id']}", 'text/html'),
+                              retain_original=retain_original))
     if len(rows) > 500:
         raise ValueError('source_record_limit')
     return rows
