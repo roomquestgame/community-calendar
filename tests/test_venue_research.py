@@ -191,3 +191,27 @@ def test_no_submit_on_held_or_rejected_proposal(monkeypatch, answer, receipt):
     assert handle_claim(db, WORKER_CLAIM, IDENTITY, CONFIG, fetch=Mock(), deadline=15, clock=lambda: 0) == "review"
     assert all(c.args[0] != "submit" for c in db.call_args_list)
     assert db.call_args.args == ("fail", {**IDENTITY, "reason": "needs_review"})
+
+
+def test_gateway_oidc_explicit_model_and_search_opt_in(monkeypatch):
+    env = {"VENUE_RESEARCH_ENABLED":"true", "VENUE_RESEARCH_MODEL_PROVIDER":"vercel_gateway",
+           "VENUE_RESEARCH_MODEL":"anthropic/claude-haiku-5.5", "VERCEL_OIDC_TOKEN":"fake-oidc",
+           "TAVILY_API_KEY":"fake-existing-search"}
+    assert configured(env) is None
+    env["VENUE_RESEARCH_USE_EXISTING_TAVILY_KEY"] = "true"
+    assert configured(env) == {"model":"anthropic/claude-haiku-5.5", "provider":"vercel_gateway",
+                               "model_key":"fake-oidc", "search_key":"fake-existing-search"}
+    assert configured({**env, "VERCEL_OIDC_TOKEN":""}) is None
+    assert configured({**env, "VENUE_RESEARCH_MODEL":"claude-haiku-5-5"}) is None
+    from roomquest.venue_research import anthropic_extract
+    call = Mock(return_value={"stop_reason":"end_turn", "content":[{"type":"text","text":"{}"}]})
+    monkeypatch.setattr("roomquest.venue_research.bounded_json", call)
+    assert anthropic_extract({"identity":"fixture"}, api_key="fake-oidc", model=env["VENUE_RESEARCH_MODEL"],
+                             provider="vercel_gateway", deadline_at=30, clock=lambda:0) == "{}"
+    args = call.call_args.args
+    assert args[0] == "https://ai-gateway.vercel.sh/v1/messages"
+    assert args[1]["Authorization"] == "Bearer fake-oidc" and "x-api-key" not in args[1]
+    assert args[2]["max_tokens"] == 512 and args[2]["thinking"] == {"type":"disabled"}
+    with pytest.raises(ValueError, match="model_provider_mismatch"):
+        anthropic_extract({}, api_key="fake-oidc", model="wrong", provider="vercel_gateway", deadline_at=30, clock=lambda:0)
+    assert call.call_count == 1
