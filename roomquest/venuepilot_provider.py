@@ -34,6 +34,10 @@ PROFILES = {
                 'address': '221 W 46th St, New York, NY 10036', 'city': 'New York'},
             'Hotel Edison': {
                 'address': '228 W 47th St, New York, NY 10036', 'city': 'New York'},
+            'Joanne Trattoria': {
+                'address': '70 W 68th St, New York, NY 10023', 'city': 'New York'},
+            'Arc Beverly': {
+                'address': '121 S Spalding Dr, Beverly Hills, CA 90212', 'city': 'Beverly Hills'},
         },
     },
 }
