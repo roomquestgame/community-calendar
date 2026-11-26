@@ -164,4 +164,8 @@ def annotate_unsupported(result, html):
     reason = unsupported_calendar_profile(html)
     if not reason:
         return result
-    return dict(result, p_reason=reason, p_type='html')
+    # Installed native plugins remain identified even when this display variant
+    # is unsupported. This is detection metadata, never a verified snapshot.
+    native = {'event_discovery_adapter_needed': 'event_discovery',
+              'tickera_adapter_needed': 'tickera'}
+    return dict(result, p_reason=reason, p_type=native.get(reason, 'html'))
