@@ -20,7 +20,9 @@ PLUGIN_FINGERPRINTS = {
     'events-manager': ('events-manager', 'em-calendar'),
     'event-organiser': ('event-organiser', 'eo-event'),
     'modern-events-calendar': ('modern-events-calendar', 'mec-calendar'),
-    'eventon': ('eventon', 'ajde_evcal'),
+    # Event Discovery bundles legacy EventON styling. A CSS class or prose
+    # substring is not evidence that the publisher runs the EventON plugin.
+    'eventon': ('/wp-content/plugins/eventon/', 'ajde_evcal'),
     'wp-event-manager': ('wp-event-manager', 'wpem-'),
     'all-in-one-event-calendar': ('all-in-one-event-calendar', 'ai1ec_'),
     'tickera': ('/wp-content/plugins/tickera/',

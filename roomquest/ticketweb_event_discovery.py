@@ -15,6 +15,7 @@ from roomquest.registration_formats import provider_calendar_destination
 
 PLUGIN = '/wp-content/plugins/event-discovery/'
 ACTION = 'get_events_artist_calendar'
+CALENDAR_ACTION = 'get_events_for_calendar'
 LOGGER = logging.getLogger(__name__)
 
 
@@ -46,8 +47,10 @@ def contract(url, page):
         raise ValueError('event_discovery_calendar_missing')
     origin = _origin(url)
     endpoint = origin + 'wp-admin/admin-ajax.php'
-    if endpoint not in page or f"action: '{ACTION}'" not in page:
+    actions = set(re.findall(r"\baction\s*:\s*['\"](get_events_(?:artist_calendar|for_calendar))['\"]", page))
+    if endpoint not in page or len(actions) != 1:
         raise ValueError('event_discovery_calendar_missing')
+    action = next(iter(actions))
     nonce = re.search(r"\bnonce\s*:\s*'([a-zA-Z0-9]{8,24})'", page)
     params = re.search(r"\bparams\s*:\s*'(\{.*?\})'\s*,\s*\n\s*monthview", page, re.S)
     if nonce is None or params is None or len(params[1]) > 40_000:
@@ -60,7 +63,9 @@ def contract(url, page):
         raise ValueError('invalid_event_discovery_calendar') from exc
     if settings.get('type') not in ('calendar', 'calendar2', 'calendar3'):
         raise ValueError('invalid_event_discovery_calendar')
-    return {'endpoint': endpoint, 'nonce': nonce[1], 'params': json.dumps(settings, separators=(',', ':')),
+    if action == CALENDAR_ACTION and settings['type'] != 'calendar':
+        raise ValueError('invalid_event_discovery_calendar')
+    return {'endpoint': endpoint, 'action': action, 'nonce': nonce[1], 'params': json.dumps(settings, separators=(',', ':')),
             'timezone': zone}
 
 
@@ -73,7 +78,7 @@ def supports_listing(url, page):
 
 
 def form(spec, start, end):
-    return {'action': ACTION, 'nonce': spec['nonce'], 'start': start, 'end': end,
+    return {'action': spec['action'], 'nonce': spec['nonce'], 'start': start, 'end': end,
             'params': spec['params'], 'monthview': 'standard', 'calcount': '1',
             'statefilter': '', 'cityfilter': '', 'locationfilter': '', 'showmobilelist': 'true'}
 
@@ -84,7 +89,7 @@ def valid_form(value):
             'action', 'nonce', 'start', 'end', 'params', 'monthview', 'calcount',
             'statefilter', 'cityfilter', 'locationfilter', 'showmobilelist'}:
         return False
-    if (value.get('action') != ACTION or value.get('monthview') != 'standard'
+    if (value.get('action') not in (ACTION, CALENDAR_ACTION) or value.get('monthview') != 'standard'
             or value.get('calcount') != '1' or value.get('statefilter') != ''
             or value.get('cityfilter') != '' or value.get('locationfilter') != ''
             or value.get('showmobilelist') != 'true'
@@ -99,7 +104,9 @@ def valid_form(value):
         ZoneInfo(zone)
     except (ValueError, TypeError, KeyError, ZoneInfoNotFoundError):
         return False
-    return settings.get('type') in ('calendar', 'calendar2', 'calendar3') and 1 <= (end - start).days <= 62
+    return (settings.get('type') in ('calendar', 'calendar2', 'calendar3')
+            and (value['action'] != CALENDAR_ACTION or settings['type'] == 'calendar')
+            and 1 <= (end - start).days <= 62)
 
 
 def _plain_fragment(value):
@@ -117,6 +124,10 @@ def parse(payload, *, url, zone):
     if not events:
         return ParsedEvents([])  # A valid empty refresh is distinct from malformed rows.
     host = urlsplit(url).hostname
+    popup_html = envelope.get('popupdata', '')
+    if not isinstance(popup_html, str) or len(popup_html) > 2_000_000:
+        raise ValueError('invalid_event_discovery_calendar')
+    popups = BeautifulSoup(popup_html, 'html.parser')
     rows = []
     rejected = Counter()
     incomplete = False
@@ -126,6 +137,26 @@ def parse(payload, *, url, zone):
             incomplete = True
             continue
         event_url = html.unescape(str(event.get('url') or ''))
+        if event_url.startswith('#tw-event-dialog-'):
+            # Standard calendar view links to an exact dialog in this same
+            # response. Use its title link, never the fragment or a buy button.
+            expected = 'tw-event-dialog-' + str(event.get('id') or '')
+            dialogs = popups.find_all(id=expected)
+            links = dialogs[0].select('.tw-name a[href]') if len(dialogs) == 1 else []
+            if (event_url != '#' + expected or len(links) != 1
+                    or links[0].get_text(' ', strip=True) != html.unescape(str(event.get('title') or ''))):
+                rejected['dialog_identity_unverified'] += 1
+                incomplete = True
+                continue
+            event_url = html.unescape(links[0]['href'])
+        # Artist view can group several distinct performances into one card.
+        # Do not silently accept only the first URL as a complete snapshot.
+        performances = BeautifulSoup(str(event.get('times') or ''), 'html.parser')
+        performance_urls = {html.unescape(a['href']) for a in performances.select('a[href]')}
+        if performance_urls and performance_urls != {event_url}:
+            rejected['grouped_performances_unverified'] += 1
+            incomplete = True
+            continue
         parts = urlsplit(event_url)
         if (parts.scheme != 'https' or parts.username or parts.password
                 or parts.hostname not in (host, 'www.ticketweb.com', 'ticketweb.com')):

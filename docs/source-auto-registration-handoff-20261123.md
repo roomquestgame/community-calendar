@@ -124,3 +124,44 @@ had a publication request or future public events at this observation.
 Local publisher checks could not resolve DNS; this is not publisher rejection.
 Required .claude/bram-conventions.md remains unavailable (404). No routine CI.
 Release and live acceptance evidence will be recorded in the canonical master.
+
+## November 26 — Event Discovery standard calendar and trustworthy recognition
+
+Continuing broader Feedzilla; Spektrix venue-location holds remain owned by the
+separate EVE-174 workstream. Current main at investigation: 67d000ed. Required
+`.claude/bram-conventions.md` still returns 404; current AGENTS.md and owner scope
+were reviewed. No approved HTML source is an unfinished registration queue.
+
+TicketWeb documents native WordPress Event Discovery with distinct List,
+Calendar and Artist views (https://info.ticketweb.com/wordpress-plugin/ and
+https://info.ticketweb.com/client-website-services/). Live publisher evidence:
+Santos advertises `get_events_for_calendar`, type `calendar`, with exact dialog
+fragments bound by event ID to same-response `.tw-name` canonical title links.
+The existing collector supported only `get_events_artist_calendar`.
+
+This change admits the evidenced standard action through the existing bounded
+form validator and public publisher transport, resolves exact dialog identities,
+and preserves canonical URL + original sortkey occurrence IDs. Unknown actions,
+mixed action contracts, mismatched dialog titles and incomplete snapshots remain
+held. Event Discovery's bundled `eventon_details_shading_bot` CSS no longer
+counts as the actual EventON plugin. Real EventON plugin assets/ajde_evcal remain
+recognized. No other provider collector, shared worker/claim, queue, schema,
+publication or refresh policy changes.
+
+Focused four-suite verification: 70 passed. Replay of the actual Santos public
+response: 8 rows, complete, America/Chicago, canonical event links, image URLs,
+missing venue evidence retained. Actual Birdland artist response contains 102
+cards with additional performance links; accepting only its first URL would
+misrepresent completeness. Added a completeness guard; actual replay marks the
+snapshot incomplete (47 single-link cards remain but must not stage). Its
+calendar also declares America/Denver despite New York venue evidence; do not
+invent a replacement timezone or claim publication acceptance.
+
+Original #761 rechecked through signed-in Admin against deployed #564: parent
+now links canonical Tockify child #1562, which is disabled/robots_denied. No
+source was created and no alternate endpoint is authorized. Original #1298
+followed deployed calendar navigation to child #1563/source #6456, collected
+148 under the predecessor; new completeness finding requires correction before
+acceptance. #1334's deployed navigation recheck retained the stale FullCalendar
+hold because the standard action was unsupported. Recheck only after this
+release. Live production acceptance and exact deployed SHA remain to be added.
