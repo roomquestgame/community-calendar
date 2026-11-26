@@ -1209,7 +1209,9 @@ def parse_ics_preview(payload: str, *, allow_ongoing=False, include_images=True,
     """Use upstream combine_ics recurrence expansion and icalendar VEVENT parsing."""
     from icalendar import Calendar
     from scripts.combine_ics import expand_rrules
+    from roomquest.ical_source_semantics import capture, staging_enabled
 
+    collect_facts = include_source_semantics or staging_enabled()
     original = Calendar.from_ical(payload)
     expanded = expand_rrules(payload, window_days=LOOKAHEAD_DAYS)
     items = []
@@ -1243,9 +1245,10 @@ def parse_ics_preview(payload: str, *, allow_ongoing=False, include_images=True,
                               calendar_categories(item), image=calendar_image(item) if include_images else None,
                               allow_ongoing=allow_ongoing)
             if record:
-                if include_source_semantics:
-                    from roomquest.ical_source_semantics import capture
-                    record["source_semantics_v1"] = capture(item)
+                if collect_facts:
+                    facts = capture(item)
+                    if 0 < len(facts["original_uid"]) <= 180:
+                        record["source_semantics_v1"] = facts
                 tzid = item["DTSTART"].params.get("TZID")
                 if isinstance(tzid, str):
                     try:
@@ -4284,7 +4287,9 @@ def _observe_collection_phase(observer, phase, *, operation=None, error=None):
 def _process_claimed_source(source: dict, *, deadline_at=None, publisher_handoff=None,
                             observe_phase=None, collection_context=None) -> dict:
     """Process a single claimed feed with the existing private staging contract."""
-    with capture_publisher_pacing() as pacing, capture_snapshot(source, collection_context) as snapshot:
+    from roomquest.ical_source_semantics import staging_scope
+
+    with staging_scope(source), capture_publisher_pacing() as pacing, capture_snapshot(source, collection_context) as snapshot:
         with ical_conditional_cache.capture(source, snapshot, collection_context, supabase_rpc):
             return _process_claimed_source_with_pacing(
                 source, pacing, deadline_at=deadline_at, publisher_handoff=publisher_handoff,
@@ -4846,7 +4851,7 @@ def _stage_legacy_events(source, events, *, native_content, deadline, observe_ph
         _observe_collection_phase(observe_phase, "stage", operation=operation)
         written = supabase_rpc(operation, {
             "p_source_key": source["source_key"],
-            "p_events": [{k: v for k, v in event.items() if k != "source_semantics_v1"} for event in batch],
+            "p_events": batch,
             **({"p_registered_native_content_version": 1} if native_content else {})
         })
         staged += int(written or 0)
