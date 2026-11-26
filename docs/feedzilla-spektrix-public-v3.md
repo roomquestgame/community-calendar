@@ -1,3 +1,14 @@
+## November 26 — native venue evidence acceptance
+
+The live BAC Find Us page supplies a semantic address block beginning with the
+venue name, followed by BR-separated street and locality/postcode. The existing
+Spektrix-scoped venue helper now removes only an explicitly matched venue prefix
+and respects those semantic separators. A postcode boundary prevents splitting
+SW11 into a spurious town suffix and W11 postcode. Actual publisher response
+replay yields exactly `lavender hill,london,SW11 5TN`; Battersea Park near-miss
+returns no address. 83 focused tests and four subtests pass. BAC robots allows
+Find Us; the ticketing host robots returned 404, with no explicit denial.
+
 # November 26, 2026 — EVE-174 missing-location correction
 
 Native Spektrix capture now retains occurrences with missing location text.

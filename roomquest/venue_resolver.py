@@ -90,21 +90,29 @@ def json_nodes(value):
             yield from json_nodes(item)
 
 
-def gb_contact_addresses(soup):
+def gb_contact_addresses(soup, expected):
     """Read one short semantic address block, never a publisher-wide default."""
     from roomquest.forward_geocoder import normalize_gb_postcode, gb_address_part
     found = set()
     pattern = re.compile(
-        r"^([A-Za-z0-9' .–&-]{3,100}?),\s*([A-Za-z' .-]{2,80}),?\s*"
+        r"^([A-Za-z0-9' .–&-]{3,100}?),\s*([A-Za-z' .-]{2,80}?)\s*,?\s+"
         r"([A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2})(?:,\s*(?:UK|GB|United Kingdom))?$", re.I)
     for tag in soup.select('address,p,h2,h3')[:150]:
-        text = ', '.join(tag.stripped_strings)
+        block = BeautifulSoup(str(tag), 'html.parser')
+        for br in block.select('br'):
+            br.replace_with(', ')
+        text = re.sub(r'\s+', ' ', block.get_text(' ', strip=True)).strip()
+        # A semantic address can begin with its own explicit place identity.
+        # Remove only that matched component, never an arbitrary organization.
+        first, separator, rest = text.partition(',')
+        if separator and venue_matches(expected, first):
+            text = rest.strip()
         if len(text) > 220:
             continue
         match = pattern.fullmatch(text)
         if not match:
             continue
-        street, town, postcode = match.groups()
+        street, town, postcode = (value.strip() for value in match.groups())
         if not re.search(r'\b(?:street|st|road|rd|lane|ln|avenue|ave|square|hill|way|gardens|place|terrace)\.?$', street, re.I):
             continue
         street, town = gb_address_part(street, street=True), gb_address_part(town)
@@ -167,7 +175,7 @@ def extract_candidates(html: str, url: str, claim: dict) -> list[dict]:
     headings = [x.get_text(" ", strip=True) for x in soup.select("title,h1,h2")[:20]]
     if any(venue_matches(expected, name) for name in headings):
         if spektrix:
-            for address in gb_contact_addresses(soup):
+            for address in gb_contact_addresses(soup, expected):
                 candidates.append({'address': address, 'country_code': 'GB',
                                    'evidence_url': url, 'evidence_name': expected,
                                    'method': 'venue_contact'})
