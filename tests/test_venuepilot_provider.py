@@ -8,7 +8,7 @@ from roomquest import provider_registration
 from roomquest import venuepilot_provider as venuepilot
 
 
-URL = venuepilot.API + '#accounts=2535'
+URL = venuepilot.API + '?accountIds=2535'
 PAGE = '''
 <div id="venuepilot-app"></div>
 <script>window.venuepilotSettings = {

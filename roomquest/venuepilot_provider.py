@@ -21,7 +21,7 @@ QUERY = (
     'websiteUrl twitterUrl instagramUrl images status venue { name } footerContent '
     'highlightedImage ticketsUrl } }'
 )
-SOURCE = re.compile(r'https://www\.venuepilot\.co/graphql#accounts=([1-9][0-9]{0,9}(?:,[1-9][0-9]{0,9}){0,19})')
+SOURCE = re.compile(r'https://www\.venuepilot\.co/graphql\?accountIds=([1-9][0-9]{0,9}(?:,[1-9][0-9]{0,9}){0,19})')
 
 # Reviewed publisher facts for the first ordinary VenuePilot source. Additional
 # accounts can use the same provider after receiving an equally reviewed profile.
@@ -88,7 +88,10 @@ def subscription(page):
     values = [int(value.strip()) for value in raw.split(',')]
     if values != sorted(set(values)):
         return None
-    return API + '#accounts=' + ','.join(str(item) for item in values)
+    # Feed registration intentionally strips fragments. Keep the provider
+    # account scope in one exact canonical query parameter so source identity
+    # survives registration while the outgoing GraphQL POST still targets API.
+    return API + '?accountIds=' + ','.join(str(item) for item in values)
 
 
 def request(account_ids, start, end):
