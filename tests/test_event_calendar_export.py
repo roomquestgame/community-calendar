@@ -71,3 +71,14 @@ def test_event_export_accepts_exact_publisher_open_graph_identity_without_canoni
     assert evidence(og, URL, IDENTITY)['method'] == 'event_calendar_export'
     assert evidence(og.replace('content="' + URL, 'content="https://venue.example/other'), URL, IDENTITY) is None
     assert evidence(og + '<link rel="canonical" href="https://venue.example/other">', URL, IDENTITY) is None
+
+
+def test_unescaped_hash_is_recovered_only_inside_exact_known_title():
+    identity = dict(IDENTITY, event_title='Public show #2')
+    publisher = page(text='Public show #2').replace('%232', '#2')
+    assert evidence(publisher, URL, identity)['address'] == '1135 Decatur St, New Orleans, LA'
+    assert evidence(publisher, URL, IDENTITY) is None
+    assert evidence(publisher.replace('#2', '#3'), URL, identity) is None
+    assert evidence(publisher.replace('20261130T210000', '20261130T220000'), URL, identity) is None
+    assert evidence(publisher.replace('">Calendar</a>', '#other">Calendar</a>'), URL, identity) is None
+    assert evidence(page().replace('">Calendar</a>', '#fragment">Calendar</a>'), URL, IDENTITY) is None

@@ -280,3 +280,7 @@ historical, not additional current performances. At14:37:46Z the existing named
 venue helper independently resolved Birdland Theater's315West44thSt address via
 venue_contact. Normal geocoding/publication and new exact-event Santos lookups
 remain pending; do not claim public or96hrefresh acceptance yet.
+
+## November26 — exact calendar-export titles containing a literal hash
+
+Santos's publisher export for NEW ORLEANS PUNK WEEKEND #2 leaves the title hash unescaped, so normal URL parsing hides the dates/address behind a fragment. Recover only a literal hash inside the text query field whose complete decoded value exactly matches the staged event title. Reject every remaining fragment and retain exact canonical/og:url, event title, UTC start, timezone, unique physical US address and ambiguity checks. No Google request, inferred location or broader fragment decoding. 73 focused tests plus4 subtests pass. Seven other Santos exact-event pages already supplied independently matched publisher addresses; this eighth awaits deployed verification. Existing helper FIFO and normal Admin address review remain distinct acceptance paths.

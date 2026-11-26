@@ -2,7 +2,7 @@
 from datetime import datetime, timezone
 import html
 import re
-from urllib.parse import parse_qs, urlsplit
+from urllib.parse import parse_qs, unquote_plus, urlsplit
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from bs4 import BeautifulSoup
@@ -33,7 +33,18 @@ def evidence(page, url, identity):
     answers = {}
     for anchor in soup.select('a[href]'):
         try:
-            link = urlsplit(anchor['href'])
+            href = anchor['href']
+            # Some publisher widgets leave a literal hash in an event title.
+            # Recover only that exact known title field, never arbitrary fragments.
+            text_field = re.search(r'([?&]text=)([^&]*)', href)
+            if text_field and '#' in text_field[2]:
+                if html.unescape(unquote_plus(text_field[2])).strip() != title:
+                    continue
+                href = (href[:text_field.start(2)] + text_field[2].replace('#', '%23')
+                        + href[text_field.end(2):])
+            link = urlsplit(href)
+            if link.fragment:
+                continue
             if (link.scheme != 'https' or link.hostname not in ('www.google.com', 'calendar.google.com')
                     or link.path not in ('/calendar/event', '/calendar/render')):
                 continue
