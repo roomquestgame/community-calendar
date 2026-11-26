@@ -27,6 +27,7 @@ PUBLISHER_CALENDAR_PAGES = {
     'https://www.boplex.com/our-venues/bojangles-coliseum': 'https://www.boplex.com/events',
     'https://www.boplex.com/our-venues/ovens-auditorium': 'https://www.boplex.com/events',
     'https://www.morgan.edu/': 'https://events.morgan.edu/',
+    'https://mainejewishmuseum.org/': 'https://mainejewishmuseum.org/programs-and-events/',
     'https://residentculturebrewing.com/location/plaza-midwood/':
         'https://residentculturebrewing.com/events/?fwp_event_location=plaza-midwood',
 }

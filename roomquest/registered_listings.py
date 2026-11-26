@@ -21,9 +21,10 @@ INDY = 'https://www.indywinterfarmersmarket.org/'
 LYNCHBURG = 'https://www.lynchburgparksandrec.com/programs-and-activities/'
 STATE_THEATRE = 'https://statetheatreportland.com/calendar/'
 SHANK = 'https://shankhall.com/'
+MAINE_JEWISH = 'https://mainejewishmuseum.org/programs-and-events/'
 URLS = ((BOPLEX, BROADWAY, RESIDENT, PLAZA, INDY) + schedules.URLS
         + uk_registered_listings.URLS + wix_embedded_calendar.URLS + wildlife_trusts.URLS
-        + (liberty_calendar.ORIGINAL, LYNCHBURG, STATE_THEATRE, SHANK))
+        + (liberty_calendar.ORIGINAL, LYNCHBURG, STATE_THEATRE, SHANK, MAINE_JEWISH))
 EASTERN = ZoneInfo('America/New_York')
 CLOCK = r'(?:1[0-2]|0?[1-9])(?::[0-5]\d)?\s*[ap]m'
 
@@ -467,6 +468,70 @@ def shank(home, fetch, today):
         raise ValueError('shank_schedule_facts_incomplete')
 
 
+def maine_jewish(soup, today):
+    """Read the museum's current first-party programs archive.
+
+    The site still exposes stale The Events Calendar assets, but its live
+    schedule is a custom WordPress page.  Cards contain the complete dated
+    public facts, including off-site winter programs while the museum is
+    temporarily closed.
+    """
+    classes = set((soup.body or {}).get('class', ())) if soup.body else set()
+    cards = soup.select('ul.columns.x2 > li.p-3.align-m')
+    if 'page-id-2591' not in classes or not cards:
+        raise ValueError('maine_jewish_program_archive_changed')
+    venues = {
+        'Chanukah in New Vaudeville!': (
+            'The Gem Theater', '48 Cross Street, Bethel, ME 04217', 'Bethel',
+            ('The Gem Theater', '48 Cross Street, Bethel, Maine')),
+        'Zlateh, Thelma & a Whole Lotta Light: Menorah Lighting at the Maine Jewish Museum': (
+            'Maine Jewish Museum', '267 Congress Street, Portland, ME 04101', 'Portland',
+            ('at the Maine Jewish Museum',)),
+        "MJM + Hadassah + Rimon Women's Book Group: This Is Not About Us": (
+            'Coffee by Design Roastery Room', '1 Diamond Street, Portland, ME 04101', 'Portland',
+            ('Coffee by Design Roastery Room', '1 Diamond Street', 'Portland, Maine 04101')),
+        'Happy Hour with a Historian: The Shared Journeys of Maine Irish & Jewish Immigrant Women': (
+            'Maine Irish Heritage Center', '34 Gray Street, Portland, ME 04112', 'Portland',
+            ('Maine Irish Heritage Center', '34 Gray Street', 'Portland, ME 04112')),
+    }
+    seen = set()
+    for card in cards:
+        title = content(card, 'h3.pb-2.uppercase')
+        venue = venues.get(title)
+        link = card.select('a.button.slim[href]')
+        text = card.get_text(' ', strip=True)
+        schedule = next((p.get_text(' ', strip=True) for p in card.select('p') if re.search(
+            r'\b(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday),?\s+'
+            r'[A-Za-z]+ \d{1,2}, \d{4}\b', p.get_text(' ', strip=True))), '')
+        day_match = re.search(r'\b(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday),?\s+'
+                              r'([A-Za-z]+ \d{1,2}, \d{4})\b', schedule)
+        times = re.findall(r'\b' + CLOCK + r'\b', schedule, re.I)
+        if (not venue or len(link) != 1 or not day_match or len(times) < 1
+                or not all(marker in text for marker in venue[3])):
+            raise ValueError('maine_jewish_program_card_changed')
+        url = urljoin(MAINE_JEWISH, link[0].get('href', ''))
+        parts = urlsplit(url)
+        if (parts.hostname != urlsplit(MAINE_JEWISH).hostname or parts.query or parts.fragment
+                or url == MAINE_JEWISH or not parts.path.endswith('/')):
+            raise ValueError('maine_jewish_program_identity_changed')
+        day = datetime.strptime(day_match[1], '%B %d, %Y').date()
+        if (day, url) in seen:
+            raise ValueError('maine_jewish_program_duplicated')
+        seen.add((day, url))
+        if not today <= day <= today + timedelta(days=60):
+            continue
+        start = datetime.combine(day, clock(times[0]))
+        end = datetime.combine(day, clock(times[-1])) if len(times) > 1 else None
+        if end is not None and end <= start:
+            raise ValueError('maine_jewish_program_time_invalid')
+        row = record(title, start, end, venue[0], venue[1], venue[2], url, url,
+                     tz=EASTERN.key)
+        paragraphs = ' '.join(p.get_text(' ', strip=True) for p in card.select('p'))
+        if paragraphs:
+            row['description'] = description(paragraphs)
+        yield row
+
+
 def collect(source, fetch, *, deadline_at=None, listing=None):
     url = source['feed_url']
     if url not in URLS or source.get('source_key') != source_key(url):
@@ -491,6 +556,8 @@ def collect(source, fetch, *, deadline_at=None, listing=None):
         rows = state_theatre(soup, fetch, today)
     elif url == SHANK:
         rows = shank(soup, fetch, today)
+    elif url == MAINE_JEWISH:
+        rows = maine_jewish(soup, today)
     elif url == schedules.FOREST:
         rows = schedules.forest(soup, today)
     elif url == schedules.ALGONQUIN:
