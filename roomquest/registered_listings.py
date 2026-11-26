@@ -254,14 +254,19 @@ def state_theatre(soup, fetch, today):
     calendars = soup.select('.goo_calendar_container.goo_calendar_active[data-post_id]')
     if 'page-calendar' not in classes or not calendars:
         raise ValueError('state_theatre_calendar_changed')
-    calendar_ids = {node.get('data-post_id') for node in calendars}
-    if len(calendar_ids) != 1 or not next(iter(calendar_ids), '').isdigit():
+    if (any(not node.get('data-post_id', '').isdigit() for node in calendars)
+            or any(len(node.select(':scope > table.goo_table_scheduler')) != 1 for node in calendars)):
         raise ValueError('state_theatre_calendar_ambiguous')
 
     horizon = today + timedelta(days=60)
     occurrences = []
     months = set()
     for table in soup.select('.goo_calendar_container table.goo_table_scheduler'):
+        calendar_node = table.find_parent(
+            class_=lambda value: value and 'goo_calendar_container' in value.split())
+        calendar_id = calendar_node.get('data-post_id', '') if calendar_node else ''
+        if not calendar_id.isdigit():
+            raise ValueError('state_theatre_calendar_ambiguous')
         heading = content(table, '.goo_month_name')
         try:
             first = datetime.strptime(heading, '%B %Y').date().replace(day=1)
@@ -286,7 +291,7 @@ def state_theatre(soup, fetch, today):
                 if (urlsplit(url).hostname != urlsplit(STATE_THEATRE).hostname
                         or not re.fullmatch(re.escape('https://statetheatreportland.com/events/')
                                             + r'[a-z0-9][a-z0-9-]*/', url)
-                        or marker.get('data-calendar_id') not in calendar_ids
+                        or marker.get('data-calendar_id') != calendar_id
                         or not marker.get('data-post_id', '').isdigit()):
                     raise ValueError('state_theatre_event_link_unverified')
                 occurrences.append((day, url, marker.get_text(' ', strip=True)))
