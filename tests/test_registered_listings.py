@@ -64,7 +64,10 @@ def test_state_theatre_uses_real_calendar_and_detail_show_time(monkeypatch):
       <td class="goo_TD"><span class="scheduler_heading">{day.day:02d}</span>
         <div class="cal-entry-headliner"><a href="https://statetheatreportland.com/events/show-one/">
           <span class="goo_cal_link" data-post_id="20858" data-calendar_id="19186">Show One</span></a></div>
-      </td></tr></table></div></body>'''
+      </td></tr></table></div>
+      <div class="goo_calendar_container goo_calendar_active" data-post_id="19187">
+        <table class="goo_table_scheduler"><th class="goo_month_name">{(day + timedelta(days=65)).strftime('%B %Y')}</th></table>
+      </div></body>'''
     detail = f'''<article class="tm_event type-tm_event"><div class="edp-view-details vevent">
       <h1 class="headliners summary">Show One</h1><h2 class="edp-dates">{day.strftime('%a, %B')} {day.day}, {day.year}</h2>
       <h2 class="venue location">State Theatre</h2><h2 class="edp-times">Doors: 7:00pm - Show: 8:00pm - all ages</h2></div>
