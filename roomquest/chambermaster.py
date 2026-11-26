@@ -15,7 +15,7 @@ from roomquest.incremental_snapshot import RevalidatedDetail, detail_request, ut
 MAX_DETAILS = 20
 
 
-def collect(source, payload, deadline_at, fetcher=fetch_publisher):
+def collect(source, payload, deadline_at, fetcher=fetch_publisher, *, retain_original=False):
     """Require a complete bounded snapshot; never silently truncate a chamber."""
     from roomquest.registration_formats import source_key
     if (not source.get('source_key', '').startswith('municipal_chambermaster_')
@@ -27,7 +27,7 @@ def collect(source, payload, deadline_at, fetcher=fetch_publisher):
     from roomquest.reviewed_chambers import SOURCES, collect as reviewed_collect
     if source.get('source_key') in SOURCES:
         return reviewed_collect(source, payload)
-    records = parse_growthzone_preview(payload, source)
+    records = parse_growthzone_preview(payload, source, retain_original=retain_original)
     if len(records) > MAX_DETAILS:
         raise PreviewError('chambermaster_detail_limit')
     def enrich(row):
@@ -35,6 +35,7 @@ def collect(source, payload, deadline_at, fetcher=fetch_publisher):
         # venue evidence: unavailable details must never erase valid timed events
         # or invent a map pin. Conflicting identity/time and robots denials fail.
         if monotonic() >= deadline_at:
+            row.pop('collector_event_content_v1', None)
             return {**row, 'reason': 'publisher_venue_details_unavailable'}
         detail = row['event_url'].replace('/events/details/', '/events/addtocalendar/') + '?format=ICal'
         with detail_request(detail, 'text/calendar', row) as snapshot:
@@ -43,6 +44,7 @@ def collect(source, payload, deadline_at, fetcher=fetch_publisher):
             except PreviewError as exc:
                 if str(exc) in {'source_network_error', 'source_fetch_deadline',
                                 'publisher_rate_limited', 'publisher_pacing_deferred'}:
+                    row.pop('collector_event_content_v1', None)
                     return {**row, 'reason': 'publisher_venue_details_unavailable'}
                 raise
             if isinstance(raw, RevalidatedDetail):
@@ -81,6 +83,10 @@ def collect(source, payload, deadline_at, fetcher=fetch_publisher):
         name, lat, lng = _location(address, evidence['lat'], evidence['lng'])
         row.update(venue_name=name, lat=lat, lng=lng,
                    reason=None if lat is not None else 'missing_verified_venue_geo')
+        original = row.get('collector_event_content_v1')
+        if original is not None:
+            original['facts'].update(venue_address=address or None,
+                                     source_latitude=lat, source_longitude=lng)
         return row
     # The shared transport still enforces the publisher's per-host crawl delay.
     # Three bounded in-flight responses avoid serial network latency consuming

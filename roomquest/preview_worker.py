@@ -1365,7 +1365,7 @@ def parse_jsonld_preview(payload: str) -> list[dict]:
     return results
 
 
-def parse_growthzone_preview(payload: str, source: dict) -> list[dict]:
+def parse_growthzone_preview(payload: str, source: dict, *, retain_original=False) -> list[dict]:
     """Call Udell's GrowthZone/ChamberMaster XML parser, without its unrestricted fetch."""
     if not source.get("timezone"):
         raise PreviewError("source_timezone_required")
@@ -1410,6 +1410,26 @@ def parse_growthzone_preview(payload: str, source: dict) -> list[dict]:
                           item.get("location"), None, None, item.get("url"), event_id,
                           category=item.get("category", ""),
                           address=item.get("address", ""), city=item.get("city", ""))
+        if record and retain_original:
+            from roomquest.event_description import description
+            publisher_times = [
+                datetime.fromisoformat(raw) if raw else None
+                for raw in (element.findtext("StartDate"), element.findtext("EndDate"))
+            ]
+            start, end = publisher_times
+            has_offset = start.tzinfo is not None
+            if end is None or (end.tzinfo is not None) == has_offset:
+                schedule = "utc" if has_offset else "local"
+                record["collector_event_content_v1"] = {
+                    "version": 1, "event_id": record["id"],
+                    "facts": {
+                        "title": record["title"], "description": description(element.findtext("Description")) or None,
+                        "is_all_day": False, "publisher_status": "scheduled",
+                        f"starts_at_{schedule}": start.isoformat(),
+                        f"ends_at_{schedule}": end.isoformat() if end else None,
+                        "event_url": record["event_url"],
+                    },
+                }
         if record:
             results.append(record)
     return results
@@ -1477,7 +1497,7 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         try:
             profile = provider_registration.read_profile(url, adapter, supabase_rpc)
             records = provider_registration.collect(url, adapter, fetch, deadline=deadline, profile=profile,
-                                                    retain_original=adapter in ('spektrix', 'tickera', 'event_discovery', 'chambermate'))
+                                                    retain_original=adapter in ('spektrix', 'tickera', 'event_discovery', 'chambermate', 'growthzone'))
             location_claim = {**source, **{
                 key: profile.get(key) for key in (
                     'publisher_default_venue', 'publisher_default_lat',

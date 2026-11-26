@@ -165,7 +165,8 @@ def collect(url, adapter, fetch, *, deadline, profile=None, body=None, registrat
             root.remove(event)
     source['timezone'] = timezone(config)
     return collect_chamber(source, ElementTree.tostring(root, encoding='unicode'), deadline,
-                           fetcher=lambda target, accept, **kwargs: fetch(target, accept))
+                           fetcher=lambda target, accept, **kwargs: fetch(target, accept),
+                           retain_original=retain_original)
 
 
 def read_profile(url, adapter, rpc):
