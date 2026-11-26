@@ -20,9 +20,10 @@ PLAZA = RESIDENT + '?fwp_event_location=plaza-midwood'
 INDY = 'https://www.indywinterfarmersmarket.org/'
 LYNCHBURG = 'https://www.lynchburgparksandrec.com/programs-and-activities/'
 STATE_THEATRE = 'https://statetheatreportland.com/calendar/'
+SHANK = 'https://shankhall.com/schedule/'
 URLS = ((BOPLEX, BROADWAY, RESIDENT, PLAZA, INDY) + schedules.URLS
         + uk_registered_listings.URLS + wix_embedded_calendar.URLS + wildlife_trusts.URLS
-        + (liberty_calendar.ORIGINAL, LYNCHBURG, STATE_THEATRE))
+        + (liberty_calendar.ORIGINAL, LYNCHBURG, STATE_THEATRE, SHANK))
 EASTERN = ZoneInfo('America/New_York')
 CLOCK = r'(?:1[0-2]|0?[1-9])(?::[0-5]\d)?\s*[ap]m'
 
@@ -340,6 +341,75 @@ def state_theatre(soup, fetch, today):
         yield row
 
 
+def shank_month(soup, expected_month, today):
+    """Validate one complete first-party Shank Hall calendar month.
+
+    TicketWeb is only a purchase link on some rows.  The publisher's custom
+    WordPress theme also contains box-office-only events, so the reusable
+    source is its own monthly schedule.  Every non-cancelled in-window card
+    must have an exact dated first-party detail identity and one show time.
+    """
+    heading = content(soup, '.calendar > .header > h2')
+    if heading != expected_month.strftime('%B %Y'):
+        raise ValueError('shank_calendar_month_mismatch')
+    expected_days = set(range(1, calendar.monthrange(expected_month.year, expected_month.month)[1] + 1))
+    actual_days = []
+    for cell in soup.select('.calendar > .days > .day_num:not(.ignore)'):
+        marker = cell.select_one(':scope > span[data-day]')
+        if not marker or not marker.get_text(strip=True).isdigit():
+            raise ValueError('shank_calendar_day_grid_changed')
+        actual_days.append(int(marker.get_text(strip=True)))
+    if len(actual_days) != len(expected_days) or set(actual_days) != expected_days:
+        raise ValueError('shank_calendar_day_grid_incomplete')
+
+    for card in soup.select('.calendar > .days > .day_num .event'):
+        if card.find('strike') or re.search(r'\bcancel(?:led|ed)\b', card.get_text(' ', strip=True), re.I):
+            continue
+        details = card.select('a.details[href][aria-label]')
+        if len(details) != 1:
+            raise ValueError('shank_event_identity_changed')
+        detail = details[0]
+        match = re.fullmatch(r'Show details for ([A-Za-z]+ \d{1,2}, \d{4})',
+                             detail.get('aria-label', ''), re.I)
+        url = urljoin(SHANK, detail.get('href', ''))
+        if (not match or urlsplit(url).hostname != urlsplit(SHANK).hostname
+                or not re.fullmatch(r'/shows/[1-9][0-9]*/', urlsplit(url).path)
+                or urlsplit(url).query or urlsplit(url).fragment):
+            raise ValueError('shank_event_identity_changed')
+        day = datetime.strptime(match[1], '%B %d, %Y').date()
+        if (day.year, day.month) != (expected_month.year, expected_month.month):
+            raise ValueError('shank_event_month_mismatch')
+        marker = card.find_parent(class_='day_num').select_one(':scope > span[data-day]')
+        if not marker or int(marker.get_text(strip=True)) != day.day:
+            raise ValueError('shank_event_day_mismatch')
+        values = [node.get_text(' ', strip=True) for node in card.find_all('div', recursive=False)]
+        times = [value for value in values if re.fullmatch(CLOCK, value, re.I)]
+        titles = [value for value in values if value and value not in times
+                  and not value.startswith('$') and not re.search(r'\b(?:advance|door)\b', value, re.I)]
+        if len(times) != 1 or len(titles) != 1:
+            raise ValueError('shank_event_card_changed')
+        if today <= day <= today + timedelta(days=60):
+            title = re.sub(r'\s+([,;:])', r'\1', titles[0])
+            yield record(title, datetime.combine(day, clock(times[0])), None,
+                         'Shank Hall', '1434 N Farwell Ave, Milwaukee, WI 53202',
+                         'Milwaukee', url, url, tz='America/Chicago')
+
+
+def shank(listing, fetch, today):
+    """Collect every month intersecting the bounded 60-day window."""
+    first = today.replace(day=1)
+    last = (today + timedelta(days=60)).replace(day=1)
+    month = first
+    while month <= last:
+        if month == first:
+            soup = listing
+        else:
+            target = SHANK + '?' + month.strftime('%Y%m')
+            soup = BeautifulSoup(fetch(target, 'text/html'), 'html.parser')
+        yield from shank_month(soup, month, today)
+        month = (month.replace(day=28) + timedelta(days=4)).replace(day=1)
+
+
 def collect(source, fetch, *, deadline_at=None, listing=None):
     url = source['feed_url']
     if url not in URLS or source.get('source_key') != source_key(url):
@@ -362,6 +432,8 @@ def collect(source, fetch, *, deadline_at=None, listing=None):
         rows = lynchburg(soup, today)
     elif url == STATE_THEATRE:
         rows = state_theatre(soup, fetch, today)
+    elif url == SHANK:
+        rows = shank(soup, fetch, today)
     elif url == schedules.FOREST:
         rows = schedules.forest(soup, today)
     elif url == schedules.ALGONQUIN:
