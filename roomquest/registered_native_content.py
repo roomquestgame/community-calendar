@@ -35,9 +35,13 @@ def enabled(source, *, adapter=None):
     from roomquest import wildlife_trusts
     wildlife = (source.get('kind') == 'html' and source.get('platform_adapter') == 'html'
                 and source.get('feed_url') in wildlife_trusts.URLS)
+    from roomquest.spektrix_provider import family as spektrix_family
+    spektrix = (source.get('kind') == 'json'
+                and source.get('platform_adapter') == 'spektrix'
+                and spektrix_family(feed))
     family = ((source.get('kind') == 'json'
                and source.get('platform_adapter') in ('wordpress', 'jsonld'))
-              or html_details(source) or wildlife)
+              or html_details(source) or wildlife or spektrix)
     if (not family
             or (adapter is not None and source.get('platform_adapter') != adapter)
             or not native_url(feed)
