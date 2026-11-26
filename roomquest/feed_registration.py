@@ -200,6 +200,14 @@ def classify(url, payload, hint=None, endpoint_only=False, venue_website=False):
             'p_endpoint': spektrix['api_base'] + '/events',
             'p_type': 'spektrix',
         }
+    # Tockify publishes the calendar identity in its standard embed and a
+    # public publisher-wide ICS subscription. Discover that canonical feed;
+    # the ordinary ICS verifier still fetches and validates it before source
+    # creation, so an embed marker alone never registers a source.
+    from roomquest.tockify_provider import subscription as tockify_subscription
+    tockify = tockify_subscription(body)
+    if tockify:
+        return {'p_outcome': 'discovered', 'p_endpoint': tockify, 'p_type': 'ical'}
     parser = CalendarLinks(url)
     parser.feed(body)
     # A provider's homepage can contain SEO event summaries as well as its
