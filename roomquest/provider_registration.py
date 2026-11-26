@@ -100,6 +100,8 @@ def collect(url, adapter, fetch, *, deadline, profile=None, body=None, registrat
     if adapter in ('event_discovery', 'tickera'):
         source = {'source_key': source_key(url), 'feed_url': url,
                   'platform_adapter': adapter, 'kind': 'json'}
+        if adapter == 'event_discovery' and isinstance(profile, dict):
+            source['publisher_event_timezone'] = profile.get('publisher_event_timezone')
         module = ticketweb_event_discovery if adapter == 'event_discovery' else tickera_provider
         return module.collect(source, fetch, body=body, deadline_at=deadline)
     if family(url, body) != adapter:

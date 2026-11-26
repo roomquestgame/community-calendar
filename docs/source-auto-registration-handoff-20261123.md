@@ -215,3 +215,36 @@ cohort visibility was checked for all 26; only these two representative pages
 were physically inspected, not the whole Events/Map UI. No later 96-hour normal
 refresh has yet occurred; do not call ordinary Admin preview a scheduled-refresh
 proof. Canonical master and EVE-6/EVE-159/EVE-156 carry remaining work.
+
+## November26 continuation — Event Discovery complete occurrences and event evidence
+
+Candidate collector change expands only explicit artist-card performance links:
+card date and primary sortkey must agree; each exact URL has its own published
+clock, preserving existing URL:wall-time identities. Ambiguous clocks, foreign
+hosts, conflicting identities and >500 expanded occurrences hold the snapshot.
+Saved Birdland response expands149 cards to261 distinct performances. Birdland
+remains paused until the bad America/Denver widget zone is explicitly reviewed.
+
+Forward backend63500 enables an Event Discovery-only blank-location handoff in
+the existing leased venue queue. Each cache key binds source,event key,title,
+URL,start and original blank venue facts. The helper fetches only that exact
+event page and reads its publisher-authored Google Calendar export link locally
+(no Google request). Title, start, zone, physical US street and canonical/og:url
+identity must agree; no footer/contact/default venue is inferred. The one-page
+lookup uses the existing15s claim allowance and existing transport caps, so a
+10s crawl delay fits without extra requests or changing the pipeline deadline.
+
+Backend also exposes an opt-in reviewed source timezone to this adapter only.
+In normal Admin review save the IANA field and an evidence line exactly:
+`Timezone verified from publisher event calendar export: https://publisher/tm-event/event/`
+The source must be registered, approved, accessible, reviewed, and the evidence
+must be on its exact publisher host. Ordinary inferred source zones do not
+replace widget timezones. Existing venue defaults and other providers are unchanged.
+
+Focused Python selection84 passed plus4 subtests. Isolated PG18 compiled the
+exact live guarded predecessors plus63500 and exercised identity invalidation,
+actual CHECKs, stale/manual/online/point/classification fences, gateway submit,
+idempotence and reviewed-clock admission. Supporting services are stubs in that
+model; this is not a full production-schema replay or live publication claim.
+Protected backend deployment and normal canary acceptance remain next.
+Bourbon has real next-page links; its first20 list cards are not a complete feed.

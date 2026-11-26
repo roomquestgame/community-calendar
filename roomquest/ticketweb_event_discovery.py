@@ -149,14 +149,6 @@ def parse(payload, *, url, zone):
                 incomplete = True
                 continue
             event_url = html.unescape(links[0]['href'])
-        # Artist view can group several distinct performances into one card.
-        # Do not silently accept only the first URL as a complete snapshot.
-        performances = BeautifulSoup(str(event.get('times') or ''), 'html.parser')
-        performance_urls = {html.unescape(a['href']) for a in performances.select('a[href]')}
-        if performance_urls and performance_urls != {event_url}:
-            rejected['grouped_performances_unverified'] += 1
-            incomplete = True
-            continue
         parts = urlsplit(event_url)
         if (parts.scheme != 'https' or parts.username or parts.password
                 or parts.hostname not in (host, 'www.ticketweb.com', 'ticketweb.com')):
@@ -164,27 +156,69 @@ def parse(payload, *, url, zone):
             continue
         stamp = str(event.get('sortkey') or '')
         try:
-            datetime.strptime(stamp, '%Y-%m-%d %H:%M:%S')
+            primary = datetime.strptime(stamp, '%Y-%m-%d %H:%M:%S')
         except ValueError:
             rejected['invalid_start'] += 1
             incomplete = True
             continue
+        # Each artist-card anchor is a publisher-authored performance. Its
+        # date comes from the same card, and the primary clock must agree with
+        # sortkey. Never infer recurrence or roll a late clock into tomorrow.
+        performances = BeautifulSoup(str(event.get('times') or ''), 'html.parser')
+        links = performances.select('a[href]')
+        occurrences = [(event_url, stamp)]
+        if links:
+            try:
+                if (len(links) > 20 or event.get('start') != primary.date().isoformat()
+                        or primary.second != 0):
+                    raise ValueError()
+                occurrences = []
+                for anchor in links:
+                    target = html.unescape(anchor['href'])
+                    part = urlsplit(target)
+                    clock = re.sub(r'\s+', '', anchor.get_text(' ', strip=True)).upper()
+                    if (not re.fullmatch(r'(?:[1-9]|1[0-2]):[0-5][0-9](?:AM|PM)', clock)
+                            or part.scheme != 'https' or part.username or part.password
+                            or part.hostname not in (host, 'www.ticketweb.com', 'ticketweb.com')):
+                        raise ValueError()
+                    time = datetime.strptime(clock, '%I:%M%p').time()
+                    when = datetime.combine(primary.date(), time)
+                    pair = (target, when.strftime('%Y-%m-%d %H:%M:%S'))
+                    if any(target == previous[0] and pair != previous for previous in occurrences):
+                        raise ValueError()
+                    if pair not in occurrences:
+                        occurrences.append(pair)
+                if (event_url, stamp) not in occurrences:
+                    raise ValueError()
+            except ValueError:
+                rejected['grouped_performances_unverified'] += 1
+                incomplete = True
+                continue
         venue = _plain_fragment(event.get('venue'))
         image_node = BeautifulSoup(str(event.get('imageUrl') or ''), 'html.parser').find('img', src=True)
-        try:
-            item = record(html.unescape(str(event.get('title') or '')), stamp, None, venue, '', '',
-                          event_url, event_url + ':' + stamp, tz=zone)
-        except (TypeError, ValueError, OverflowError):
-            rejected['invalid_event'] += 1
-            incomplete = True
-            continue
-        if item is not None:
-            if image_node:
-                image = urljoin(url, image_node['src'])
-                image_parts = urlsplit(image)
-                if image_parts.scheme == 'https' and image_parts.hostname and not image_parts.username and not image_parts.password:
-                    item['image_url'] = image
-            rows.append(item)
+        for event_url, stamp in occurrences:
+            try:
+                item = record(html.unescape(str(event.get('title') or '')), stamp, None, venue, '', '',
+                              event_url, event_url + ':' + stamp, tz=zone)
+            except (TypeError, ValueError, OverflowError):
+                rejected['invalid_event'] += 1
+                incomplete = True
+                continue
+            if item is not None:
+                if image_node:
+                    image = urljoin(url, image_node['src'])
+                    image_parts = urlsplit(image)
+                    if image_parts.scheme == 'https' and image_parts.hostname and not image_parts.username and not image_parts.password:
+                        item['image_url'] = image
+                rows.append(item)
+    if len(rows) > 500:
+        raise ValueError('oversized_event_discovery_snapshot')
+    unique = {}
+    for item in rows:
+        if item['id'] in unique and unique[item['id']] != item:
+            raise ValueError('conflicting_event_discovery_event')
+        unique[item['id']] = item
+    rows = list(unique.values())
     if not rows:
         raise ValueError('invalid_event_discovery_calendar')
     return ParsedEvents(rows, rejected=rejected, complete=not incomplete)
@@ -199,6 +233,17 @@ def collect(source, fetch, *, body=None, deadline_at=None):
         spec = contract(listing, page)
     except TypeError as exc:
         raise ValueError('event_discovery_contract_type_error') from exc
+    reviewed_clock = source.get('publisher_event_timezone')
+    if reviewed_clock is not None:
+        if (not isinstance(reviewed_clock, dict)
+                or urlsplit(str(reviewed_clock.get('evidence_url') or '')).hostname != urlsplit(listing).hostname
+                or not str(reviewed_clock.get('evidence_url') or '').startswith('https://')):
+            raise ValueError('invalid_reviewed_event_timezone')
+        try:
+            ZoneInfo(reviewed_clock['timezone'])
+        except (KeyError, TypeError, ValueError, ZoneInfoNotFoundError) as exc:
+            raise ValueError('invalid_reviewed_event_timezone') from exc
+        spec['timezone'] = reviewed_clock['timezone']
     today = datetime.now(ZoneInfo(spec['timezone'])).date()
     end = today + timedelta(days=61)
     try:

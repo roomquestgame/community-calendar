@@ -315,3 +315,55 @@ def test_multi_venue_provider_snapshot_keeps_publisher_locations():
               'publisher_default_lng': 2.0,
               'publisher_default_evidence': 'Reviewed publisher evidence.'}
     assert provider_registration.apply_verified_default_venue(source, records) is records
+
+
+def grouped_payload():
+    payload = json.loads(event_discovery_payload())
+    event = payload['events'][0]
+    event['times'] = (f'<span><a href="{event["url"]}">7:00PM</a></span>'
+                      '<span><a href="https://venue.example.org/tm-event/second-performance/">9:30PM</a></span>')
+    return payload
+
+
+def test_artist_card_expands_published_performance_urls_without_changing_primary_identity():
+    payload = grouped_payload()
+    rows = ticketweb_event_discovery.parse(json.dumps(payload), url='https://venue.example.org/calendar/', zone='America/Boise')
+    assert rows.complete and not rows.rejected
+    assert len(rows) == 2
+    assert rows[0]['id'] == payload['events'][0]['url'] + ':' + START + ':00'
+    assert rows[1]['id'] == 'https://venue.example.org/tm-event/second-performance/:' + DAY.isoformat() + ' 21:30:00'
+    assert rows[0]['starts_at'].endswith('+00:00')
+    assert rows[0]['venue_name'] == rows[1]['venue_name']
+
+
+@pytest.mark.parametrize('change', ['date', 'primary_clock', 'other_host', 'ambiguous_clock', 'same_url_two_clocks'])
+def test_artist_card_ambiguous_performance_preserves_prior_snapshot(change):
+    payload = grouped_payload()
+    event = payload['events'][0]
+    if change == 'date':
+        event['start'] = (DAY + timedelta(days=1)).isoformat()
+    elif change == 'primary_clock':
+        event['times'] = event['times'].replace('7:00PM', '8:00PM')
+    elif change == 'other_host':
+        event['times'] = event['times'].replace('venue.example.org/tm-event/second', 'other.example.org/tm-event/second')
+    elif change == 'ambiguous_clock':
+        event['times'] = event['times'].replace('9:30PM', '9:30')
+    else:
+        event['times'] = event['times'].replace('https://venue.example.org/tm-event/second-performance/', event['url'])
+    payload['events'].append(json.loads(event_discovery_payload())['events'][0])
+    rows = ticketweb_event_discovery.parse(json.dumps(payload), url='https://venue.example.org/calendar/', zone='UTC')
+    assert not rows.complete and rows.rejected['grouped_performances_unverified'] == 1
+
+
+def test_explicit_reviewed_publisher_timezone_overrides_bad_widget_without_identity_changes():
+    source = {'feed_url': 'https://venue.example.org/calendar/', 'platform_adapter': 'event_discovery', 'kind': 'json'}
+    fetch = lambda *args, **kwargs: event_discovery_payload()
+    [original] = ticketweb_event_discovery.collect(source, fetch, body=event_discovery_page())
+    source['publisher_event_timezone'] = {'timezone': 'America/New_York',
+        'evidence_url': 'https://venue.example.org/tm-event/public-show/'}
+    [reviewed] = ticketweb_event_discovery.collect(source, fetch, body=event_discovery_page())
+    assert original['id'] == reviewed['id']
+    assert datetime.fromisoformat(original['starts_at']) - datetime.fromisoformat(reviewed['starts_at']) == timedelta(hours=2)
+    source['publisher_event_timezone']['evidence_url'] = 'https://other.example.org/show/'
+    with pytest.raises(ValueError, match='invalid_reviewed_event_timezone'):
+        ticketweb_event_discovery.collect(source, fetch, body=event_discovery_page())

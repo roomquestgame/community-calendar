@@ -124,6 +124,10 @@ def gb_contact_addresses(soup, expected):
 
 def extract_candidates(html: str, url: str, claim: dict) -> list[dict]:
     """Require matched place identity or the exact claimed event's location metadata."""
+    if claim.get('provider') == 'event_discovery':
+        from roomquest.event_calendar_export import evidence
+        answer = evidence(html, url, claim.get('location_identity'))
+        return [answer] if answer else []
     soup = BeautifulSoup(html, "html.parser")
     candidates = []
     expected = claim["venue_name"]
@@ -196,6 +200,8 @@ def extract_candidates(html: str, url: str, claim: dict) -> list[dict]:
 
 
 def next_links(html: str, url: str, claim: dict) -> list[str]:
+    if claim.get('provider') == 'event_discovery':
+        return []  # Its claim is bound to one occurrence, never the publisher's footer.
     soup = BeautifulSoup(html, "html.parser")
     host = (urlparse(url).hostname or "").lower()
     links = []
@@ -213,7 +219,7 @@ def next_links(html: str, url: str, claim: dict) -> list[str]:
     return links[:3]
 
 
-def fetch_page(url: str) -> str:
+def fetch_page(url: str, *, deadline_at=None) -> str:
     """Use the registration collector's robots-aware bounded transport.
 
     Venue lookup must not bypass robots/crawl delay merely because an event
@@ -226,7 +232,7 @@ def fetch_page(url: str) -> str:
     validate_public_dns(host)
     raw = fetch_publisher(
         url, "text/html,application/ld+json", respect_robots=True,
-        deadline_at=monotonic() + 8, allowed_hosts=(host,),
+        deadline_at=deadline_at if deadline_at is not None else monotonic() + 8, allowed_hosts=(host,),
     )
     if isinstance(raw, bytes):
         raw = raw.decode("utf-8", errors="replace")
@@ -237,8 +243,19 @@ def fetch_page(url: str) -> str:
     return raw
 
 def resolve(claim: dict, *, fetcher=None, clock=None, deadline=None) -> dict | None:
-    fetcher, clock = fetcher or fetch_page, clock or monotonic
+    clock = clock or monotonic
     deadline = deadline if deadline is not None else clock() + 12
+    if claim.get("provider") == "event_discovery":
+        # One exact event page uses the existing 15-second claim allowance.
+        # This admits a publisher crawl delay without adding requests, a fresh
+        # budget, or changing the shared transport/network/redirect caps.
+        target = claim.get("event_url")
+        if not target or not public_source_url(target) or clock() + TIMEOUT + 1 >= deadline:
+            return None
+        page = fetcher(target) if fetcher is not None else fetch_page(target, deadline_at=deadline)
+        candidates = extract_candidates(page, target, claim)
+        return candidates[0] if len(candidates) == 1 else None
+    fetcher = fetcher or fetch_page
     urls = [u for u in (claim.get("evidence_hint"), claim.get("event_url"),
                         claim.get("publisher_url")) if u and public_source_url(u)]
     visited, candidates = set(), []
