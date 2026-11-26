@@ -367,3 +367,18 @@ def test_explicit_reviewed_publisher_timezone_overrides_bad_widget_without_ident
     source['publisher_event_timezone']['evidence_url'] = 'https://other.example.org/show/'
     with pytest.raises(ValueError, match='invalid_reviewed_event_timezone'):
         ticketweb_event_discovery.collect(source, fetch, body=event_discovery_page())
+
+
+@pytest.mark.parametrize('adapter,page', [('event_discovery', event_discovery_page()), ('tickera', tickera_page())])
+@pytest.mark.parametrize('reason,outcome', [('source_network_error','retry'),('publisher_http_503','retry'),
+                                           ('robots_denied','disabled'),('publisher_http_403','disabled')])
+def test_native_provider_identity_survives_collection_failure_without_changing_access_or_retry(adapter,page,reason,outcome):
+    url = 'https://venue.example.org/calendar/'
+    with patch.object(feed_registration,'supabase_rpc',side_effect=[{'url':url},{},True]) as rpc, \
+         patch.object(feed_registration,'fetch_publisher',return_value=page), \
+         patch.object(provider_registration,'collect',side_effect=preview_worker.PreviewError(reason)):
+        assert feed_registration.register('ticket') == {'outcome':outcome}
+    result = rpc.call_args.args[1]
+    assert result['p_outcome'] == outcome and result['p_reason'] == reason
+    assert result['p_type'] == adapter and result['p_endpoint'] == url
+    assert not any('source_id' in key or 'approval' in key for key in result)
