@@ -433,6 +433,7 @@ def register(ticket):
     from roomquest.registration_formats import source_key, extraction_hold
     with capture_publisher_pacing() as pacing:
         body = None  # Fetch failure can occur before a response was collected.
+        recognized_provider = recognized_endpoint = None
         try:
             deadline = monotonic() + 35
             from roomquest import registered_html_checkpoint as capture
@@ -445,6 +446,7 @@ def register(ticket):
                         {**args, **result}, timeout=8)
                     return {'outcome': result['p_outcome'] if recorded else 'lease_expired'}
             def check(target, endpoint_only=False, venue_website=False):
+                nonlocal recognized_provider, recognized_endpoint
                 def fetch(resource, accept, **options):
                     return fetch_publisher(resource, accept, respect_robots=True, deadline_at=deadline,
                                            allowed_hosts=(urlsplit(target).hostname,),
@@ -495,6 +497,8 @@ def register(ticket):
                     **initial_options)
                 adapter = adapter or provider_registration.family(target, body)
                 if adapter:
+                    if adapter in ('event_discovery', 'tickera'):
+                        recognized_provider, recognized_endpoint = adapter, target
                     try:
                         config = provider_registration.read_profile(target, adapter, supabase_rpc)
                         records = provider_registration.collect(target, adapter, fetch, deadline=deadline,
@@ -693,6 +697,13 @@ def register(ticket):
     # Do not label a source as requiring human review just because it is
     # empty or lacks a supported extraction adapter today.
     result = auto_defer_nonactionable(result)
+    if (result.get('p_outcome') in ('review', 'retry', 'disabled')
+            and recognized_provider is not None and recognized_endpoint == url):
+        # A validated native display contract remains identified even when its
+        # collection is denied, unavailable, empty or incomplete. This metadata
+        # never changes the failure decision or creates/approves a source.
+        result.setdefault('p_type', recognized_provider)
+        result.setdefault('p_endpoint', recognized_endpoint)
     try:
         recorded = supabase_rpc('community_collector_finish_registration', {**args, **result}, timeout=8)
         return {'outcome': result['p_outcome'] if recorded else 'lease_expired'}

@@ -248,3 +248,35 @@ idempotence and reviewed-clock admission. Supporting services are stubs in that
 model; this is not a full production-schema replay or live publication claim.
 Protected backend deployment and normal canary acceptance remain next.
 Bourbon has real next-page links; its first20 list cards are not a complete feed.
+
+## November26 — native failure receipts preserve provider identity
+
+Live triage of original524 finds the installed Event Discovery plugin and its
+publisher-linked /calendar. Native collection encountered source_network_error;
+this is not evidence for a custom HTML collector. The workflow previously lost
+its known p_type on the outer transport-error path. The scoped correction keeps
+Event Discovery/Tickera type and exact recognized endpoint on retry/disabled/
+review receipts without changing status, publisher access, source creation,
+approval, request bounds or retry timing. Spektrix paths are unchanged.91 focused
+registration/provider/auto-defer tests pass, including eight native network,
+HTTP503, robots and403 identity/decision cases.
+
+Additional diagnostic evidence: Dock Street687, License1506 and Boggs1347 have
+publisher-linked calendar destinations, but their native Squarespace JSON
+requests are explicitly robots_denied. No bypass or generic HTML replacement
+was attempted. Official Squarespace View JSON Data and Collections docs were
+reviewed; an accessible page alone does not establish an accessible native feed.
+These are access blockers, not proof that a Squarespace collector is missing.
+None has an existing same-host source; VAStage1150 separately has pending5300,
+which must not be duplicated. Bourbon1289 needs a complete native paginated list
+contract; first20cards contain no full year/JSON-LD and cannot be accepted as a
+complete snapshot. Slim's81 and Gaspar's74 link dedicated event pages; WordPress
+alone is not a calendar provider.
+
+Backend63500 and63600 are now protected-deployed (runs45838364129 and45840113024).
+Birdland6456 normal retry completed261current stages at14:36:13Z with corrected
+New York times; Santos6458 completed8 at14:27:43Z. Old Birdland148stages remain
+historical, not additional current performances. At14:37:46Z the existing named
+venue helper independently resolved Birdland Theater's315West44thSt address via
+venue_contact. Normal geocoding/publication and new exact-event Santos lookups
+remain pending; do not claim public or96hrefresh acceptance yet.
