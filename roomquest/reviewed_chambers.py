@@ -74,7 +74,7 @@ def address_from_location(location, *, states=None):
     return f'{street}, {city}, {state}' + (' ' + postal if postal else ''), city
 
 
-def collect(source, payload, *, now=None):
+def collect(source, payload, *, now=None, retain_original=False):
     key=source.get('source_key');identity=SOURCES.get(key)
     if (not identity or source.get('feed_url')!=identity[0] or source.get('timezone')!=identity[1]
             or source.get('kind')!='xml' or source.get('platform_adapter')!='growthzone'):
@@ -137,6 +137,32 @@ def collect(source, payload, *, now=None):
         pictures={x.get('src') for x in BeautifulSoup(e.findtext('Description') or '', 'html.parser').select('img[src]')}
         candidate=next(iter(pictures)) if key != SIOUXLAND and len(pictures)==1 else None
         row=attach(row,key,facts={'cost':costs,'meeting_location':location[:400]},candidate=candidate)
+        if retain_original:
+            # Convert only explicitly offset publisher times to instants. Unzoned
+            # schedules retain their own wall clocks independent of routing configuration.
+            try:
+                raw_start = datetime.fromisoformat(e.findtext('StartDate'))
+                raw_end = datetime.fromisoformat(e.findtext('EndDate')) if ends else None
+            except (TypeError, ValueError):
+                raw_start = raw_end = None
+            if raw_start is not None and (raw_end is None or (raw_end.tzinfo is None) == (raw_start.tzinfo is None)):
+                schedule = 'local' if raw_start.tzinfo is None else 'utc'
+                facts = {
+                    'title': title, 'description': plain(e.findtext('Description')) or None,
+                    'is_all_day': False, 'publisher_status': 'scheduled',
+                    f'starts_at_{schedule}': raw_start.isoformat(),
+                    f'ends_at_{schedule}': raw_end.isoformat() if raw_end else None,
+                    'meeting_location': location or None, 'venue_address': plain(e.findtext('MapAddr1')) or None,
+                    'venue_city': plain(e.findtext('MapCity')) or None,
+                    'venue_region': plain(e.findtext('MapState')) or None,
+                    'venue_postal_code': plain(e.findtext('MapPostalCode')) or None,
+                    'cost_text': plain(e.findtext('AdmissionDesc')) or None,
+                    'event_url': url, 'source_image_url': candidate,
+                    'publisher_categories': [x.text.strip() for x in e.findall('Categories/int') if x.text],
+                }
+                if hours:
+                    facts['publisher_details'] = {'time_notes': hours}
+                row['collector_event_content_v1'] = {'version': 1, 'event_id': row['id'], 'facts': facts}
         uid=(row['id'],row['starts_at'])
         if uid in rows and rows[uid]!=row:raise ValueError('conflicting_event_occurrence')
         rows[uid]=row
