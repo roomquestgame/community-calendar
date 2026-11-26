@@ -24,6 +24,7 @@ MAX_PASSAGES = 4
 MAX_PASSAGE = 1200
 MAX_RESPONSE = 16 * 1024
 MAX_MODEL_INPUT_BYTES = 16 * 1024
+RESEARCH_WORK_SECONDS = 28
 STREET = re.compile(r"\b\d{1,6}[A-Za-z]?(?:-\d{1,6})?\s+[A-Za-z0-9.'’ -]{1,90}?\b(?:street|st|road|rd|avenue|ave|boulevard|blvd|drive|dr|lane|ln|court|ct|way|parkway|pkwy|place|pl|circle|cir|highway|hwy|terrace|ter|oval|plaza|broadway|square|hill|gardens|close)\.?(?:\s+(?:north|south|east|west|ne|nw|se|sw))?\b", re.I)
 SYSTEM = (
     'Extract a physical street address only from the supplied official-page passages. '
@@ -198,16 +199,26 @@ def search_urls(query, hosts, *, api_key, deadline_at, clock=monotonic):
     return [r.get("url") for r in data["results"] if isinstance(r, dict) and allowed_url(r.get("url"), hosts)]
 
 
-def anthropic_extract(payload, *, api_key, model, deadline_at, clock=monotonic):
+def anthropic_extract(payload, *, api_key, model, deadline_at, clock=monotonic, provider="anthropic"):
     if not api_key or not model:
         raise ValueError("model_not_configured")
     serialized = json.dumps(payload)
     if len(SYSTEM.encode()) + len(serialized.encode()) > MAX_MODEL_INPUT_BYTES:
         raise ValueError("model_input_bound")
-    data = bounded_json("https://api.anthropic.com/v1/messages",
-                        {"x-api-key": api_key, "anthropic-version": "2023-06-01"},
-                        {"model": model, "max_tokens": 512, "system": SYSTEM,
-                         "messages": [{"role": "user", "content": serialized}]},
+    headers = {"anthropic-version": "2023-06-01"}
+    if provider == "vercel_gateway" and model.startswith("anthropic/"):
+        endpoint = "https://ai-gateway.vercel.sh/v1/messages"
+        headers["Authorization"] = "Bearer " + api_key
+    elif provider == "anthropic" and "/" not in model:
+        endpoint = "https://api.anthropic.com/v1/messages"
+        headers["x-api-key"] = api_key
+    else:
+        raise ValueError("model_provider_mismatch")
+    body = {"model": model, "max_tokens": 512, "system": SYSTEM,
+            "messages": [{"role": "user", "content": serialized}]}
+    if provider == "vercel_gateway":
+        body["thinking"] = {"type": "disabled"}
+    data = bounded_json(endpoint, headers, body,
                         deadline_at=deadline_at, max_body=MAX_RESPONSE, timeout=5, clock=clock)
     if not isinstance(data, dict) or data.get("stop_reason") != "end_turn":
         raise ValueError("incomplete_response")
@@ -222,10 +233,26 @@ def configured(env=None):
     env = os.environ if env is None else env
     if env.get("VENUE_RESEARCH_ENABLED") != "true":
         return None
-    config = {"model": env.get("VENUE_RESEARCH_MODEL", "").strip(),
-              "search_key": env.get("VENUE_RESEARCH_TAVILY_API_KEY", "").strip(),
-              "model_key": env.get("VENUE_AI_ANTHROPIC_API_KEY", "").strip()}
-    return config if all(config.values()) and len(config["model"]) <= 100 else None
+    model = env.get("VENUE_RESEARCH_MODEL", "").strip()
+    provider = env.get("VENUE_RESEARCH_MODEL_PROVIDER", "anthropic").strip()
+    search_key = env.get("VENUE_RESEARCH_TAVILY_API_KEY", "").strip()
+    # Explicit opt-in only; the crawler key is never used implicitly.
+    if not search_key and env.get("VENUE_RESEARCH_USE_EXISTING_TAVILY_KEY") == "true":
+        search_key = env.get("TAVILY_API_KEY", "").strip()
+    if provider == "vercel_gateway":
+        if not model.startswith("anthropic/"):
+            return None
+        model_key = env.get("VERCEL_OIDC_TOKEN", "").strip()
+    elif provider == "anthropic":
+        if "/" in model:
+            return None
+        model_key = env.get("VENUE_AI_ANTHROPIC_API_KEY", "").strip()
+    else:
+        return None
+    config = {"model": model, "search_key": search_key, "model_key": model_key}
+    if provider != "anthropic":
+        config["provider"] = provider
+    return config if all(config.values()) and len(model) <= 100 else None
 
 
 def claim_options(config):
@@ -249,7 +276,8 @@ def handle_claim(database, claim, identity, config, *, fetch, deadline, clock):
                               query, hosts, api_key=config["search_key"], deadline_at=deadline_at, clock=clock),
                           fetch=fetch, complete=lambda payload: anthropic_extract(
                               payload, api_key=config["model_key"], model=config["model"],
-                              deadline_at=deadline-0.5, clock=clock),
+                              deadline_at=deadline-0.5, clock=clock,
+                              provider=config.get("provider", "anthropic")),
                           model=config["model"], deadline=deadline, clock=clock)
         if answer.get("status") == "proposed":
             receipt = database("research_propose", {**identity, "proposal": answer})
