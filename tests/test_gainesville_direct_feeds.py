@@ -125,6 +125,24 @@ class DirectGainesvilleTests(unittest.TestCase):
                 invalid = lib_event(eventid=str(19000000+cid), campus='Incorrect Branch')
                 self.assertEqual(g.collect(source(key), lambda *_:rss([invalid])), [])
 
+    def test_library_fingerprint_uses_event_facts_across_all_branches(self):
+        for key, (cid, campus, street, city) in g.LIBRARY_PROFILES.items():
+            with self.subTest(key=key):
+                one = lib_event(eventid='20000001', campus=campus, desc='')
+                two = lib_event(eventid='20000002', campus=campus, desc='Other')
+                def capture(items):
+                    rows = g.collect(source(key), lambda *_: rss(items), retain_original=True)
+                    return {r['id']: r['collector_event_content_v1']['facts'] for r in rows}
+                initial = capture([one, two])
+                with patch.dict(g.LIBRARY_PROFILES, {key: (cid, campus, 'Different street', city)}):
+                    self.assertEqual(capture([two, one]), initial)
+                self.assertIsNone(initial['20000001']['description'])
+                self.assertEqual(initial['20000001']['venue_name'], campus)
+                self.assertNotIn('venue_address', initial['20000001'])
+                edited = capture([{**one, 'location': 'Room B'}, two])
+                self.assertNotEqual(initial['20000001'], edited['20000001'])
+                self.assertEqual(initial['20000002'], edited['20000002'])
+
     def test_new_branch_missing_description_is_allowed(self):
         key = 'hall_library_spout_springs_ga'
         rows = g.collect(source(key), lambda *_:rss([
