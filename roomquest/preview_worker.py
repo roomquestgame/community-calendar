@@ -4148,7 +4148,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                 raise PreviewError("collection_deadline")
             if direct_localist:
                 records = collect_localist(source['feed_url'], lambda url, accept: fetch_publisher(
-                    url, accept, respect_robots=True, deadline_at=deadline, allowed_hosts=(urlparse(source['feed_url']).hostname,)))
+                    url, accept, respect_robots=True, deadline_at=deadline, allowed_hosts=(urlparse(source['feed_url']).hostname,)),
+                    retain_original=True)
             else:
                 records = collect(source, profile, lambda url, accept: fetch_publisher(
                     url, accept, respect_robots=True, deadline_at=deadline))
@@ -4160,7 +4161,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
             if re.fullmatch(r"[a-z_]{3,100}", reason):
                 raise PreviewError(reason) from exc
             raise PreviewError("invalid_calendar_payload") from exc
-        samples = records[:MAX_PREVIEWS]
+        samples = [{key: value for key, value in row.items() if key != 'collector_event_content_v1'}
+                   for row in records[:MAX_PREVIEWS]]
         while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
             samples.pop()
         return {

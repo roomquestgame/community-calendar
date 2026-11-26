@@ -101,7 +101,7 @@ def record(title, start, end, venue, street, city, url, identity, category="", l
     return out
 
 
-def parse_localist(data, *, registered=False):
+def parse_localist(data, *, registered=False, retain_original=False):
     if not isinstance(data, dict) or not isinstance(data.get("events"),list):
         raise ValueError("unsupported_localist_payload")
     out=[]
@@ -136,6 +136,41 @@ def parse_localist(data, *, registered=False):
             if r and registered:
                 from roomquest.event_description import description
                 r['description'] = description(event.get('description_text') or event.get('description'))
+            if r and retain_original:
+                lat, lng = r.get('lat'), r.get('lng')
+                if (lat is None) != (lng is None):
+                    lat = lng = None
+                tags = event.get('tags')
+                labels = [plain(event['category'])] if isinstance(event.get('category'), str) else []
+                if isinstance(tags, list):
+                    labels.extend(plain(tag) for tag in tags if isinstance(tag, str))
+                labels.extend(plain(field.get('name'))
+                              for fields in (event.get('filters') or {}).values()
+                              if isinstance(fields, list)
+                              for field in fields if isinstance(field, dict))
+                r['collector_event_content_v1'] = {
+                    'version': 1, 'event_id': r['id'],
+                    'facts': {
+                        'title': plain(event['title']), 'description': r.get('description'),
+                        'starts_at_utc': r['starts_at'], 'ends_at_utc': r.get('ends_at'),
+                        'is_all_day': False, 'publisher_status': 'scheduled',
+                        'source_timezone': plain(event.get('timezone')) or None,
+                        'event_url': r['event_url'],
+                        'source_image_url': plain(event['photo_url']) if isinstance(event.get('photo_url'), str) else None,
+                        'venue_name': plain(event.get('location_name')) or None,
+                        'meeting_location': plain(event.get('room_number')) or None,
+                        'venue_address': plain(street) or None,
+                        'venue_city': plain(geo.get('city')) or None,
+                        'venue_region': plain(geo.get('state')) or None,
+                        'venue_country': plain(geo.get('country')) or None,
+                        'venue_postal_code': plain(geo.get('zip')) or None,
+                        'provider_venue_id': plain(event.get('venue_id')) or None,
+                        'source_latitude': lat, 'source_longitude': lng,
+                        'publisher_categories': [label for label in labels if label],
+                        'cost_text': plain(event.get('ticket_cost')) or None,
+                        'is_free': event['free'] if type(event.get('free')) is bool else None,
+                    },
+                }
             if r:out.append(r)
     return out
 
