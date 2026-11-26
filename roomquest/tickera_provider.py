@@ -32,25 +32,29 @@ def calendar_destination(url, page):
     return provider_calendar_destination(url, page)
 
 
-def _events_script(page):
+def _events_scripts(page):
     if PLUGIN not in page or 'id=\'tc_calendar\'' not in page and 'id="tc_calendar"' not in page:
         raise ValueError('tickera_calendar_missing')
     document = BeautifulSoup(page, 'html.parser')
     matches = [node.get_text() for node in document.find_all('script')
                if 'new FullCalendar.Calendar' in node.get_text() and re.search(r'\bevents\s*:\s*\[', node.get_text())]
-    if len(matches) != 1:
+    if not matches or len(matches) > 20:
         raise ValueError('tickera_calendar_missing')
-    match = re.search(r'\bevents\s*:\s*\[(.*?)\]\s*,?\s*(?:eventDidMount|eventClick|eventMouseEnter|\}\s*\))',
-                      matches[0], re.S)
-    if match is None or len(match[1]) > 2_000_000:
-        raise ValueError('invalid_tickera_calendar')
-    return match[1]
+    arrays = []
+    for script in matches:
+        match = re.search(
+            r'\bevents\s*:\s*\[(.*?)\]\s*,?\s*(?:eventDidMount|eventClick|eventMouseEnter|\}\s*\))',
+            script, re.S)
+        if match is None or len(match[1]) > 2_000_000:
+            raise ValueError('invalid_tickera_calendar')
+        arrays.append(match[1])
+    return arrays
 
 
 def supports_listing(url, page):
     try:
         _origin(url)
-        _events_script(page)
+        _events_scripts(page)
         return True
     except (ValueError, TypeError, AttributeError):
         return False
@@ -83,15 +87,17 @@ def timezone(page, fetch, url):
 
 def parse(page, *, url, zone):
     listing_host = urlsplit(url).hostname
-    script = _events_script(page)
-    if not script.strip():
+    scripts = _events_scripts(page)
+    if not any(script.strip() for script in scripts):
         return []  # Valid empty refresh; registration still requires events.
-    blocks = re.findall(r'\{([^{}]{1,100000})\}', script, re.S)
+    blocks = [block for script in scripts
+              for block in re.findall(r'\{([^{}]{1,100000})\}', script, re.S)]
     # Collect the configured calendar array (which may be category-filtered),
     # not an assumed publisher-wide archive. Normalization drops past events.
     if not blocks or len(blocks) > 1000:
         raise ValueError('invalid_tickera_calendar')
     rows = []
+    identities = {}
     for block in blocks:
         title = _value(block, 'title')
         start = _value(block, 'start')
@@ -111,7 +117,13 @@ def parse(page, *, url, zone):
                 image_parts = urlsplit(image)
                 if image_parts.scheme == 'https' and image_parts.hostname and not image_parts.username and not image_parts.password:
                     item['image_url'] = image
-            rows.append(item)
+            signature = (title, start, end, event_url, item.get('image_url'))
+            previous = identities.get(event_url)
+            if previous is not None and previous != signature:
+                raise ValueError('conflicting_tickera_event')
+            if previous is None:
+                identities[event_url] = signature
+                rows.append(item)
     return rows
 
 
