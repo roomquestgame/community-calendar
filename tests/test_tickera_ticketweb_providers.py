@@ -63,6 +63,26 @@ def test_tickera_contract_uses_calendar_array_and_wordpress_timezone():
     assert row['image_url'].endswith('/show.jpg')
 
 
+def test_tickera_unions_multiple_configured_calendars_and_deduplicates_overlap():
+    first = tickera_page()
+    second = tickera_page().replace('Public show', 'Second show').replace(
+        '/event/public-show/', '/event/second-show/').replace('/show.jpg', '/second.jpg')
+    overlap = tickera_page()
+    page = first.replace('</html>', '') + second.replace('<html>', '').replace('</html>', '') \
+        + overlap.replace('<html>', '')
+    rows = tickera_provider.parse(
+        page, url='https://venue.example.org/calendar/', zone='America/New_York')
+    assert [row['title'] for row in rows] == ['Public show', 'Second show']
+
+
+def test_tickera_rejects_conflicting_duplicate_event_identity():
+    page = tickera_page().replace('</html>', '') + tickera_page().replace(
+        '<html>', '').replace('Public show', 'Changed show')
+    with pytest.raises(ValueError, match='^conflicting_tickera_event$'):
+        tickera_provider.parse(
+            page, url='https://venue.example.org/calendar/', zone='America/New_York')
+
+
 def test_ticketweb_event_discovery_contract_uses_public_display_action():
     page = event_discovery_page()
     spec = ticketweb_event_discovery.contract('https://venue.example.org/calendar/', page)
@@ -82,9 +102,35 @@ def test_ticketweb_event_discovery_contract_uses_public_display_action():
 
 
 def test_ticketweb_provider_links_are_kept_and_bad_rows_do_not_drop_calendar():
-    [row] = ticketweb_event_discovery.parse(
+    rows = ticketweb_event_discovery.parse(
         event_discovery_provider_payload(), url='https://venue.example.org/calendar/', zone='America/Boise')
+    [row] = rows
     assert row['event_url'].startswith('https://www.ticketweb.com/event/')
+    assert rows.complete is False
+    assert rows.rejected == {'invalid_start': 1, 'untrusted_url': 1}
+
+
+def test_ticketweb_incomplete_first_party_snapshot_is_not_accepted(caplog):
+    page = event_discovery_page()
+    def fetch(url, accept, **kwargs):
+        return event_discovery_provider_payload()
+    with pytest.raises(ValueError, match='^incomplete_event_discovery_snapshot$'):
+        ticketweb_event_discovery.collect({
+            'feed_url': 'https://venue.example.org/calendar/', 'source_key': 'fixture',
+            'platform_adapter': 'event_discovery', 'kind': 'json'}, fetch, body=page)
+    assert 'event_discovery_rows_rejected' in caplog.text
+    assert 'invalid_start' in caplog.text
+
+
+def test_ticketweb_untrusted_noise_does_not_make_snapshot_incomplete():
+    payload = json.loads(event_discovery_payload())
+    payload['events'].append({
+        'title': 'Untrusted row', 'url': 'https://unrelated.example/event/',
+        'sortkey': START + ':00'})
+    rows = ticketweb_event_discovery.parse(
+        json.dumps(payload), url='https://venue.example.org/calendar/', zone='America/Boise')
+    assert len(rows) == 1 and rows.complete is True
+    assert rows.rejected == {'untrusted_url': 1}
 
 def test_ticketweb_event_discovery_transport_allows_only_reviewed_display_post():
     spec = ticketweb_event_discovery.contract('https://venue.example.org/calendar/', event_discovery_page())
