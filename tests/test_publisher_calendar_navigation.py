@@ -101,3 +101,14 @@ def test_scoped_navigation_reuses_existing_listing_extraction_and_robots_gates()
     assert result['p_type'] == 'html'
     assert [c.args[0] for c in fetch.call_args_list] == [RESIDENT_HOME, RESIDENT_CALENDAR]
     assert all(c.kwargs['respect_robots'] for c in fetch.call_args_list)
+
+
+def test_state_theatre_stale_events_shell_has_one_exact_reviewed_correction():
+    source = 'https://statetheatreportland.com/events'
+    calendar = 'https://statetheatreportland.com/calendar/'
+    body = '''<body class="page-events"><script src="https://statetheatreportland.com/wp-content/plugins/events-manager/app.js"></script>
+      <main><div class="em-wrapper"><p>No Events</p></div></main></body>'''
+    assert classify(source, body) == {'calendar_page': calendar}
+    assert classify(source + '/', body) != {'calendar_page': calendar}
+    assert classify(source, body.replace('No Events', 'Upcoming Events')) != {'calendar_page': calendar}
+    assert classify(source, body, endpoint_only=True) != {'calendar_page': calendar}
