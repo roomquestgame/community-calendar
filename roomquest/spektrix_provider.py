@@ -56,6 +56,16 @@ def profile(url, stored=None):
         'verified_venues': {},
         'verified_plans': {},
     }
+    # Publisher-hosted ticketing APIs commonly return their own main-site CMS
+    # links in webUrl. Admit only the exact parent organization and its www
+    # alias; this does not add fetch hosts or authorize central Spektrix access.
+    host = match[1]
+    parent = host.split('.', 1)[1] if '.' in host else ''
+    if (not stored
+            and host.split('.', 1)[0] in ('tickets', 'ticketing', 'boxoffice', 'booking', 'book')
+            and parent == _organization_domain(host)
+            and parent != 'spektrix.com'):
+        value['verified_event_hosts'] = [parent, 'www.' + parent]
     if stored:
         if not isinstance(stored, dict):
             _fail('profile_invalid')
