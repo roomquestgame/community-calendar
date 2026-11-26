@@ -18,6 +18,7 @@ import requests
 from bs4 import BeautifulSoup
 
 from roomquest.venue_evidence_selection import public_https
+from roomquest.venue_research_address import valid_region, gb_candidates, uk_address, us_region_evidenced
 
 MAX_LEADS = 2
 MAX_PASSAGES = 4
@@ -33,6 +34,8 @@ SYSTEM = (
     'Use exact words from one passage; quote must contain the named venue, street, '
     'locality and any supplied postal code. Never invent or combine facts, infer '
     'a street number, return coordinates or choose among conflicting addresses. '
+    'For a GB address the exact UK postcode is required; a named street need not have a number. '
+    'For a registered US venue include the state abbreviation in the verbatim address quote. '
     'If evidence is insufficient or ambiguous, return null.'
 )
 
@@ -52,17 +55,20 @@ def allowed_url(url, hosts):
 
 
 def scope_for(claim, permit):
-    if not isinstance(permit, dict) or set(permit) != {
-            "permit_id", "venue", "locality", "region", "country", "hosts"}:
+    fields = {"permit_id", "venue", "locality", "region", "country", "hosts"}
+    if not isinstance(permit, dict) or set(permit) not in (fields, fields | {"scope_version"}):
+        return None
+    if "scope_version" in permit and permit["scope_version"] != "registered_venue_v1":
         return None
     if any(not isinstance(permit[k], str) or not permit[k].strip() or len(permit[k]) > 200
            or any(ord(c) < 32 for c in permit[k])
            for k in ("permit_id", "venue", "locality", "region", "country")):
         return None
-    # Initial extraction pilot is US only. Do not infer town/country from a venue name.
+    # Geography is supplied by the server's exact venue identity, not by the model.
     if (not norm(permit["venue"]) or norm(permit["venue"]) != norm(claim.get("venue_name"))
-            or not norm(permit["locality"]) or permit["country"] != "US"
-            or not re.fullmatch(r"[A-Z]{2}", permit["region"])):
+            or not norm(permit["locality"])
+            or not valid_region(permit["country"], permit["region"])
+            or (permit["country"] == "GB" and permit.get("scope_version") != "registered_venue_v1")):
         return None
     hosts = permit["hosts"]
     if (not isinstance(hosts, list) or not 1 <= len(hosts) <= 5 or
@@ -83,14 +89,22 @@ def passages_from_page(html, url, scope):
     headings = {norm(x.get_text(" ", strip=True)) for x in main.select("h1,h2")[:20]}
     if norm(scope["venue"]) not in headings:
         return []  # A different venue, footer, or merely fuzzy heading is not evidence.
-    visible = " ".join(main.get_text(" ", strip=True).split())
+    if scope["country"] == "GB":
+        visible = "\n".join(" ".join(t.split()) for t in main.stripped_strings)
+    else:
+        visible = " ".join(main.get_text(" ", strip=True).split())
     tokens = re.findall(r"\w+", scope["venue"])
     pattern = re.compile(r"(?<!\w)" + r"\W+".join(re.escape(t) for t in tokens) + r"(?!\w)", re.I)
     found = []
     for match in pattern.finditer(visible):
         start = max(0, match.start() - 100)
         passage = visible[start:start + MAX_PASSAGE].strip()
-        if not contains(passage, scope["locality"]) or not STREET.search(passage):
+        if not contains(passage, scope["locality"]):
+            continue
+        if scope["country"] == "GB":
+            if not gb_candidates(passage, scope["locality"]):
+                continue
+        elif not STREET.search(passage):
             continue
         key = hashlib.sha256((url + "\n" + passage).encode()).hexdigest()
         if all(p["id"] != key for p in found):
@@ -104,7 +118,10 @@ def proposal(scope, passages, *, complete, model):
     """One model extraction attempt; reject invented or conflicting street facts."""
     if not passages or len(passages) > MAX_PASSAGES:
         return {"status": "held", "reason": "no_scoped_passage"}
-    streets = {norm(m.group()) for p in passages for m in STREET.finditer(p["text"])}
+    if scope["country"] == "GB":
+        streets = set().union(*(gb_candidates(p["text"], scope["locality"]) for p in passages))
+    else:
+        streets = {norm(m.group()) for p in passages for m in STREET.finditer(p["text"])}
     if len(streets) != 1:
         return {"status": "held", "reason": "conflicting_evidence"}
     identity = {k: scope[k] for k in ("venue", "locality", "region", "country")}
@@ -124,12 +141,19 @@ def proposal(scope, passages, *, complete, model):
         if (p is None or not 8 <= len(quote) <= 700 or quote not in p["text"]
                 or not 3 <= len(street) <= 120 or norm(locality) != norm(scope["locality"])
                 or not all(contains(quote, value) for value in (scope["venue"], street, locality))
-                or (postal and (not re.fullmatch(r"\d{5}(?:-\d{4})?", postal) or not contains(quote, postal)))
-                or not STREET.fullmatch(street) or streets != {norm(street)}
                 or any(term in street.lower() for term in ("p.o. box", "po box", "virtual"))):
             raise ValueError("unsupported_quote")
-        # Region is the server-verified scope, not a model-generated fact.
-        address = f"{street}, {locality}, {scope['region']}" + (f" {postal}" if postal else "")
+        if scope["country"] == "GB":
+            address = uk_address(scope, street, locality, postal, quote, [p["text"] for p in passages])
+            if address is None:
+                raise ValueError("unsupported_uk_address")
+        else:
+            if ((postal and (not re.fullmatch(r"\d{5}(?:-\d{4})?", postal) or not contains(quote, postal)))
+                    or not STREET.fullmatch(street) or streets != {norm(street)}
+                    or (scope.get("scope_version") == "registered_venue_v1"
+                        and not us_region_evidenced(quote, locality, scope["region"]))):
+                raise ValueError("unsupported_us_address")
+            address = f"{street}, {locality}, {scope['region']}" + (f" {postal}" if postal else "")
         return {"status": "proposed", "permit_id": scope["permit_id"], "candidate_id": p["id"],
                 "model": model, "selection_method": "model_evidence_extraction_v1", "evidence_quote": quote,
                 "candidate": {"address": address, "evidence_url": p["url"], "evidence_name": scope["venue"],
@@ -260,7 +284,10 @@ def claim_options(config):
 
 
 def defer_miss(database, claim, identity, config):
-    if not config or claim.get("provider") != "nyc_event_calendar":
+    # The database signals eligible registration work; retain compatibility
+    # with the existing NYC pilot receipt until the shared DB migration lands.
+    if not config or not (claim.get("research_eligible") is True
+                          or claim.get("provider") == "nyc_event_calendar"):
         return False
     receipt = database("research_defer", {**identity, "model": config["model"]})
     return isinstance(receipt, dict) and receipt.get("deferred") is True
@@ -270,7 +297,8 @@ def handle_claim(database, claim, identity, config, *, fetch, deadline, clock):
     """Return None for ordinary leases; otherwise finish one admitted research lease."""
     if "research_permit" not in claim:
         return None
-    if config and claim.get("provider") == "nyc_event_calendar":
+    # A server-issued, valid permit, not an adapter label, authorizes research.
+    if config and scope_for(claim, claim.get("research_permit")) is not None:
         answer = research(claim, admit=lambda _: claim["research_permit"],
                           search=lambda query, hosts, *, deadline_at: search_urls(
                               query, hosts, api_key=config["search_key"], deadline_at=deadline_at, clock=clock),
