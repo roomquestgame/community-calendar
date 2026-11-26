@@ -288,15 +288,15 @@ def run_batch(*, database=None, resolver=None, clock=None, deadline_seconds=15) 
     # Keep ordinary work at its existing 15-second budget. A scheduled
     # research claim is eligible only when the route has the full research
     # allowance plus its separate completion headroom.
-    ordinary_deadline = start + min(18, max(1, deadline_seconds))
     research_ready = bool(research_config and deadline_seconds >= venue_research.RESEARCH_WORK_SECONDS)
+    ordinary_deadline = start + min(15 if research_ready else 18, max(1, deadline_seconds))
     research_deadline = start + venue_research.RESEARCH_WORK_SECONDS if research_ready else ordinary_deadline
     claims = database("claim", venue_research.claim_options(research_config if research_ready else None)) or []
     for claim in claims[:1]:
         stats["claimed"] += 1
         identity = {k: claim[k] for k in ("venue_key", "lease_id")}
         try:
-            outcome = venue_research.handle_claim(database, claim, identity, research_config,
+            outcome = venue_research.handle_claim(database, claim, identity, research_config if research_ready else None,
                                                    fetch=fetch_page, deadline=research_deadline, clock=clock)
             if outcome is not None:
                 stats[outcome] += 1
