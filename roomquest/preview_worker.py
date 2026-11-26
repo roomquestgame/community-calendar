@@ -4226,7 +4226,7 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         elif adapter == "growthzone":
             if chambermaster:
                 from roomquest.chambermaster import collect
-                events = collect(source, payload, min(monotonic() + 34, deadline_at or float("inf")))
+                events = collect(source, payload, min(monotonic() + 34, deadline_at or float("inf")), retain_original=True)
             else:
                 events = parse_growthzone_preview(payload, source)
         else:
@@ -4240,7 +4240,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
     unique = {((row.get("id") or row.get("title") or ""), row["starts_at"]): row for row in events}
     records = sorted(unique.values(), key=lambda row: (row["starts_at"], row["title"]))[:500]
     return {
-        "p_source_key": source["source_key"], "p_samples": records[:MAX_PREVIEWS],
+        "p_source_key": source["source_key"], "p_samples": [{k: v for k, v in row.items() if k != "collector_event_content_v1"}
+                                               for row in records[:MAX_PREVIEWS]],
         "p_future_count": len(records),
         "p_venue_count": sum(1 for row in records if row["lat"] is not None),
         "p_error": None,

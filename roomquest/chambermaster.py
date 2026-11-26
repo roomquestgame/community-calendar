@@ -26,7 +26,7 @@ def collect(source, payload, deadline_at, fetcher=fetch_publisher, *, retain_ori
         raise PreviewError('invalid_chambermaster_api')
     from roomquest.reviewed_chambers import SOURCES, collect as reviewed_collect
     if source.get('source_key') in SOURCES:
-        return reviewed_collect(source, payload)
+        return reviewed_collect(source, payload, retain_original=retain_original)
     records = parse_growthzone_preview(payload, source, retain_original=retain_original)
     if len(records) > MAX_DETAILS:
         raise PreviewError('chambermaster_detail_limit')

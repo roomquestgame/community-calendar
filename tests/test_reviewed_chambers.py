@@ -49,6 +49,21 @@ def test_no_public_flag_or_missing_locality_never_inherits_city_or_venue():
     with pytest.raises(ValueError,match='unregistered'):
         collect({**source(key),'feed_url':'https://unrelated.example/api/events'},ET.tostring(root),now=NOW)
 
+def test_original_event_content_preserves_own_price_and_independent_clock():
+    key = next(iter(SOURCES))
+    root = ET.parse(ROOT/'bellevue.xml').getroot()
+    event = next(e for e in root if e.findtext('EventID') == '2874')
+    def facts():
+        rows = shared_collect(source(key), ET.tostring(root), monotonic()+30, retain_original=True)
+        return {row['id']: row['collector_event_content_v1']['facts'] for row in rows}
+    before = facts()
+    assert before['2874']['starts_at_local'] == '2026-11-11T10:30:00'
+    event.find('AdmissionDesc').text = 'Twenty dollars'
+    after = facts()
+    assert after['2874']['cost_text'] == 'Twenty dollars'
+    assert {key for key in before if before[key] != after[key]} == {'2874'}
+
+
 def test_reviewed_shared_dispatch_does_not_fetch_per_record_ics(monkeypatch):
     key=next(iter(SOURCES))
     def nofetch(*args,**kwargs):raise AssertionError('unexpected detail network request')
