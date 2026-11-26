@@ -1,0 +1,7 @@
+# EVE-174 — same-publisher link evidence through native staging
+
+The exact Z-arts and Plano main-site webUrl cases now pass registration, but actual collection exposed the native evidence validator's older same-ticketing-host assumption. Match the existing provider profile's exact organization/main-www link policy only for capability-bound native Spektrix rows. Other collectors, stored profiles, URL guards, API fetch hosts and central Spektrix access retain existing behavior. Backend64600/RoomQuestGame2084 must deploy first, then release this collector followup and requeue existing sources6472/6473 through Admin.
+
+Two integration tests now run providerprofile→APIeventURL→stageable→nativeattach and verify original event/feed/venue identities and foreign-host rejection. Focused plus native-content tests:228passed,4subtests,1known unrelated WordPress paginationfixture deselected. Earlier broad run reproduced that exact pre-existing paginationfixture failure; no WordPress changes. Backend15actualSQL checks use livepredecessor/URLvalidator and cover original failure, validmain/wwwhosts, UKsuffixes, publicsuffix/nestedhost/central/genericcollector and existingHTTPS/credential/fragment safeguards.
+
+Protected native intake preference64300 is live; actualold6452/6454/6455 refreshes completed with137/27/65native stages. BAC244public andMiami10public/2held remain verified. Never certify deadline prefixes; currentBlackpool/Sheffield failures remain held. No newqueue/worker/scheduler/registry or routineCI.
