@@ -65,22 +65,28 @@ def subscription(page):
     """Recover identity only from VenuePilot's own complete widget contract."""
     if not isinstance(page, str) or len(page) > 5_000_000 or WIDGET not in page:
         return None
-    settings = re.search(r'window\.venuepilotSettings\s*=\s*(\{.*?\})\s*;', page, re.S)
-    if settings is None or len(settings[1]) > 100_000:
+    # The documented embed is JavaScript configuration, not necessarily JSON:
+    # ordinary examples use unquoted keys, single-quoted values and comments.
+    # Extract only two scalar identity fields from the non-nested `general`
+    # block; do not evaluate JavaScript or accept a marker elsewhere on a page.
+    settings = re.search(
+        r'window\.venuepilotSettings\s*=\s*\{\s*general\s*:\s*\{([^{}]{1,20000})\}\s*,\s*widgets\s*:',
+        page, re.S)
+    if settings is None:
         return None
-    try:
-        value = json.loads(settings[1])
-        general = value['general']
-        server = general['server']
-        values = general['accountIds']
-    except (ValueError, TypeError, KeyError):
+    account_matches = re.findall(
+        r'^\s*accountIds\s*:\s*\[([0-9\s,]{1,300})\]\s*,?\s*(?://.*)?$',
+        settings[1], re.M)
+    server_matches = re.findall(
+        r'''^\s*server\s*:\s*(['"])(https://www\.venuepilot\.co/)\1\s*,?\s*(?://.*)?$''',
+        settings[1], re.M)
+    if len(account_matches) != 1 or len(server_matches) != 1:
         return None
-    if (server != 'https://www.venuepilot.co/' or not isinstance(values, list)
-            or not 1 <= len(values) <= 20
-            or any(type(item) is not int or not 1 <= item <= 9_999_999_999 for item in values)):
+    raw = account_matches[0]
+    if not re.fullmatch(r'\s*[1-9][0-9]{0,9}(?:\s*,\s*[1-9][0-9]{0,9}){0,19}\s*', raw):
         return None
-    values = sorted(set(values))
-    if len(values) != len(general['accountIds']):
+    values = [int(value.strip()) for value in raw.split(',')]
+    if values != sorted(set(values)):
         return None
     return API + '#accounts=' + ','.join(str(item) for item in values)
 

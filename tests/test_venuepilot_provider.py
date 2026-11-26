@@ -11,8 +11,16 @@ from roomquest import venuepilot_provider as venuepilot
 URL = venuepilot.API + '#accounts=2535'
 PAGE = '''
 <div id="venuepilot-app"></div>
-<script>window.venuepilotSettings = {"general":{"accountIds":[2535],
-"server":"https://www.venuepilot.co/"}};</script>
+<script>window.venuepilotSettings = {
+  general: {
+    // required
+    accountIds: [2535],
+    server: 'https://www.venuepilot.co/',
+    // server: 'https://vp-localdev.local:5000/'
+    routing: 'hash',
+  },
+  widgets: { widgetElementId1: { type: 'widget' } },
+};</script>
 <script src="https://widget.staging.venuepilot.com/2.0.0/widget-loader.js"></script>
 '''
 
@@ -41,7 +49,7 @@ def test_standard_embed_discovers_exact_provider_identity():
     assert venuepilot.subscription(PAGE) == URL
     assert provider_registration.family(URL) == 'venuepilot'
     assert provider_registration.family(venuepilot.API) is None
-    assert venuepilot.subscription(PAGE.replace('https://www.venuepilot.co/', 'https://evil.example/')) is None
+    assert venuepilot.subscription(PAGE.replace("server: 'https://www.venuepilot.co/'", "server: 'https://evil.example/'")) is None
     assert venuepilot.subscription(PAGE.replace('[2535]', '[2535,2535]')) is None
     assert venuepilot.subscription(PAGE.replace('widget.staging.venuepilot.com/', 'evil.example/')) is None
 
