@@ -31,6 +31,22 @@ PUBLISHER_CALENDAR_PAGES = {
         'https://residentculturebrewing.com/events/?fwp_event_location=plaza-midwood',
 }
 
+STATE_THEATRE_SUBMITTED = 'https://statetheatreportland.com/events'
+STATE_THEATRE_CALENDAR = 'https://statetheatreportland.com/calendar/'
+
+
+def reviewed_stale_calendar_page(url, body):
+    """Correct one reviewed stale plugin URL without guessing site paths."""
+    if url != STATE_THEATRE_SUBMITTED:
+        return None
+    lowered = body.lower()
+    if (re.search(r'<body[^>]+class=["\'][^"\']*\bpage-events\b', body, re.I)
+            and 'wp-content/plugins/events-manager/' in lowered
+            and re.search(r'>\s*no events\s*<', body, re.I)
+            and 'statetheatreportland.com' in lowered):
+        return STATE_THEATRE_CALENDAR
+    return None
+
 
 def is_tec_collection(url):
     parts = urlsplit(url)
@@ -210,6 +226,9 @@ def classify(url, payload, hint=None, endpoint_only=False, venue_website=False):
         return {'p_outcome': 'discovered', 'p_endpoint': tockify, 'p_type': 'ical'}
     parser = CalendarLinks(url)
     parser.feed(body)
+    stale_destination = reviewed_stale_calendar_page(url, body)
+    if not endpoint_only and stale_destination:
+        return {'calendar_page': stale_destination}
     # A provider's homepage can contain SEO event summaries as well as its
     # actual calendar link. Prefer the latter and run the same native collector
     # at the destination; never register the homepage summary as the feed.
