@@ -282,20 +282,26 @@ def run_batch(*, database=None, resolver=None, clock=None, deadline_seconds=15) 
     if os.environ.get("FORWARD_GEOCODER_ENABLED") != "true" or os.environ.get("VERCEL_ENV") != "production":
         return stats
     database, resolver, clock = database or rpc, resolver or resolve, clock or monotonic
-    deadline = clock() + min(18, max(1, deadline_seconds))
     from roomquest import venue_research
     research_config = venue_research.configured()
-    claims = database("claim", venue_research.claim_options(research_config)) or []
+    start = clock()
+    # Keep ordinary work at its existing 15-second budget. A scheduled
+    # research claim is eligible only when the route has the full research
+    # allowance plus its separate completion headroom.
+    ordinary_deadline = start + min(18, max(1, deadline_seconds))
+    research_ready = bool(research_config and deadline_seconds >= venue_research.RESEARCH_WORK_SECONDS)
+    research_deadline = start + venue_research.RESEARCH_WORK_SECONDS if research_ready else ordinary_deadline
+    claims = database("claim", venue_research.claim_options(research_config if research_ready else None)) or []
     for claim in claims[:1]:
         stats["claimed"] += 1
         identity = {k: claim[k] for k in ("venue_key", "lease_id")}
         try:
             outcome = venue_research.handle_claim(database, claim, identity, research_config,
-                                                   fetch=fetch_page, deadline=deadline, clock=clock)
+                                                   fetch=fetch_page, deadline=research_deadline, clock=clock)
             if outcome is not None:
                 stats[outcome] += 1
                 continue
-            answer = resolver(claim, deadline=deadline)
+            answer = resolver(claim, deadline=ordinary_deadline)
             if answer:
                 database("submit", {**identity, **answer})
                 stats["resolved"] += 1
@@ -366,7 +372,11 @@ def run_pipeline() -> dict:
         try:
             # One four-second completion RPC, plus an eight-second page fetch
             # and final five-second read beyond the six-second admission guard.
-            result["venues"] = optional_stage(run_batch, 15, 11)
+            from roomquest import venue_research
+            if venue_research.configured() and deadline - monotonic() - 11 >= venue_research.RESEARCH_WORK_SECONDS:
+                result["venues"] = optional_stage(run_batch, venue_research.RESEARCH_WORK_SECONDS, 11)
+            else:
+                result["venues"] = optional_stage(run_batch, 15, 11)
         except Exception:
             result["venues"] = {"stop_reason": "stage_failed"}
 
