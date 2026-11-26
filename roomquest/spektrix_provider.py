@@ -132,17 +132,30 @@ def stageable(source, data):
     out = []
     for row in rows:
         if (not isinstance(row, dict) or not row.get('id')
-                or not row.get('event_url') or not row.get('venue_address')
+                or not row.get('event_url')
                 or not row.get('starts_at')):
             _fail('event_invalid')
         converted = record(
             row['title'], row['starts_at'], row.get('ends_at'),
-            row.get('venue_name'), row['venue_address'], row.get('venue_city', ''),
+            row.get('venue_name'), row.get('venue_address', ''), row.get('venue_city', ''),
             row['event_url'], row['id'], tz=row.get('timezone'))
         if converted is None:
             continue
         if row.get('timezone'):
             converted['timezone'] = row['timezone']
+        converted['venue_name'] = str(row.get('venue_name') or '')[:160]
+        # Retain native location identity through the ordinary stage writer.
+        # A generic Venue may be reused by physically distinct Plans. Never
+        # fill a blank name with the publisher's organization or main building.
+        converted['spektrix_location'] = {
+            'version': 1,
+            **{key: row.get(key, '') for key in (
+                'source_event_id', 'source_instance_id', 'source_plan_id', 'source_venue_id')},
+            **{key: str(row.get(key, ''))[:400 if key.endswith('address') else 160]
+               for key in ('source_plan_name', 'source_venue_name', 'source_venue_address')},
+            'venue_name': converted['venue_name'],
+            'venue_address': converted['venue_address'],
+        }
         from roomquest.event_description import description
         converted['description'] = description(row.get('description', ''))
         if row.get('image_url'):

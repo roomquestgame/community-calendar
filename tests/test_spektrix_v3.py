@@ -144,10 +144,12 @@ def test_cancelled_and_unsold_performances_never_get_published():
     assert result['events'] == []
 
 
-def test_venue_api_missing_address_requires_verified_override():
+def test_venue_api_missing_address_is_retained_for_shared_resolution():
     blank = venue(address='')
-    with pytest.raises(ValueError, match='spektrix_venue_location_unresolved'):
-        api.project(profile(), [event()], [instance()], [plan()], [blank], START, STOP)
+    snapshot = api.project(profile(), [event()], [instance()], [plan()], [blank], START, STOP)
+    assert snapshot['complete'] is True
+    assert snapshot['events'][0]['venue_address'] == ''
+    assert snapshot['events'][0]['source_plan_id'] == PLAN
     source = profile(verified_venues={
         VENUE: {'address': '35-47 Bethnal Green Road, London E1 6LA',
                 'city': 'London', 'timezone': 'Europe/London',
@@ -178,9 +180,28 @@ def test_generic_blank_venue_can_use_narrow_verified_plan_location():
     # The reviewed address is plan-scoped. A second plan that reuses the same
     # generic blank Venue must not inherit the first plan's location.
     other_plan = '9806ASSTKDLDBPRRRVQQRRDHSJMQVBSNQ'
-    with pytest.raises(ValueError, match='spektrix_venue_location_unresolved'):
-        api.project(source, [event()], [instance(planId=other_plan)],
-                    [plan(id=other_plan)], [blank], START, STOP)
+    row = api.project(source, [event()], [instance(planId=other_plan)],
+                      [plan(id=other_plan)], [blank], START, STOP)['events'][0]
+    assert row['venue_address'] == ''
+    assert row['source_plan_id'] == other_plan
+    assert row['venue_name'] == 'Spitalfields Music'
+
+
+@pytest.mark.parametrize('missing', [{'name': ''}, {'address': ''}, {'name': '', 'address': ''}])
+def test_missing_location_text_keeps_every_occurrence_and_native_identity(missing):
+    second_plan = '9806ASSTKDLDBPRRRVQQRRDHSJMQVBSNQ'
+    second_venue = '401ANPJQJQPQMRSBDNMVNLSPGTRBVQVRH'
+    snapshot = api.project(profile(), [event()],
+        [instance(), instance(id='2928802AGPJVJCHJVPHSNVRRBPHQBSJJQ', planId=second_plan)],
+        [plan(), plan(id=second_plan, venue={'id': second_venue})],
+        [venue(), venue(id=second_venue, **missing)], START, STOP)
+    assert snapshot['complete'] is True
+    assert len(snapshot['events']) == 2
+    assert len({r['id'] for r in snapshot['events']}) == 2
+    held = next(r for r in snapshot['events'] if r['source_plan_id'] == second_plan)
+    assert held['source_venue_id'] == second_venue
+    for key, value in missing.items():
+        assert held['venue_' + key] == value
 
 
 def test_local_and_utc_clocks_must_match_and_reject_ambiguous_dst():

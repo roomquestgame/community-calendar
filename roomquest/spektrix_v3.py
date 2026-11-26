@@ -293,8 +293,9 @@ def project(profile, events, instances, plans, venues, start, end, *, cms_pages=
     """Project one *complete* bounded snapshot; never publish a partial prefix.
 
     An on-sale performance must have a matching Event, plan, real Venue,
-    explicit timezone and publisher-owned event link. Missing facts hold the
-    whole snapshot rather than silently dropping that performance.
+    publisher-owned event link. Missing location text remains an explicit
+    per-occurrence hold downstream; missing manifest/plan facts still fail
+    the snapshot rather than silently dropping a performance.
     """
     intervals = windows(start, end)
     client = _client(profile.get('client'))
@@ -382,8 +383,6 @@ def project(profile, events, instances, plans, venues, start, end, *, cms_pages=
             if (address.count(',') >= 3
                     and not re.search(r'(?:,|\s)(?:United Kingdom|UK|GB|Great Britain)\s*$', address, re.I)):
                 address += ', United Kingdom'
-        if not address or not venue_name:
-            _fail('spektrix_venue_location_unresolved')
         instant = _utc(instance.get('startUtc'))
         if isinstance(time_zone, str):
             local = _local(instance.get('start'), time_zone)
@@ -412,6 +411,9 @@ def project(profile, events, instances, plans, venues, start, end, *, cms_pages=
             'source_instance_id': instance['id'],
             'source_plan_id': plan.get('id'),
             'source_venue_id': venue_id,
+            'source_plan_name': _text(plan.get('name')),
+            'source_venue_name': _text(venue.get('name')),
+            'source_venue_address': _text(venue.get('address')),
             'title': title,
             'starts_at': instant.isoformat(),
             'ends_at': end_time.isoformat() if end_time else None,
