@@ -1,3 +1,26 @@
+## November 26 — registration-window canary repair
+
+Production baseline: canonical alias READY at af8847bed218bcb6e6689609399fbded55d4e0dd.
+Atlantic receipt 1521 retained one attempt, retry/no_extractable_events, no source.
+Live bounded publisher GETs verified 0 Events/Instances through December 9 but
+2 Events and 36 Instances through January 24; first is FINN on December 12.
+The native collector successfully joins both active plans to actual API venues.
+Registration's 14-day probe falsely treats these later performances as an empty
+60-day calendar and auto-defers the receipt for 30 days.
+
+Repair: registration now uses the same existing 60-day bound as recurring
+collection, without extra fallback requests or altered parsing/identity/access/
+venue/publication rules. 80 focused Spektrix and registration tests pass,
+including late-performance registration/refresh identity equivalence. Two old
+absolute-deadline fixtures now use monotonic-relative budgets.
+
+The separately identified 20 venue-location receipts are not this empty-probe
+failure: their APIs expose blank venue addresses. They remain held until venue
+evidence is resolved; do not mass-recheck them for this repair. The original
+submission cohort has 91 unresolved-or-registered API receipts at this timestamp,
+not a 20-feed submission. Live receipt and downstream acceptance remain to be
+recorded after this release. No direct source/event/coordinate writes.
+
 # EVE-174 — Spektrix native feed rollout
 
 ## Current state — November 25, 2026
