@@ -192,3 +192,26 @@ still must succeed. Four-suite verification: 71 passed. No shared schema/worker
 or Spektrix changes. The remaining Event Discovery list-view contract and grouped
 artist/timezone evidence require reusable implementation, not a publisher HTML
 fallback or a forced publication.
+
+### November 26 final acceptance readback
+
+#581 is production READY at `7ed1ba1843c657c1a1247bed3b17c6375c3d0b60`,
+`dpl_9sNdoh4TXifDmc9EHJD4okht84VS`; exact canonical alias/no alias error.
+Original Bourbon #1289 now returns retry/event_discovery_adapter_needed after
+the authenticated post-release recheck, no source; list-view contract remains
+unsupported. Santos #6458 is approved/ok/complete with eight staged venue holds.
+Birdland's actual new preview returned incomplete_event_discovery_snapshot;
+Admin pause confirmed, original 148 stored stage IDs retained, zero public.
+
+Canonical public pages physically verified for the older canaries:
+- Motorco Will Backerman: https://eventquest.ai/e/ce99efd7-e34c-41ad-80e0-56bf12b0b25b
+- Boise Dark Harvest IV: https://eventquest.ai/e/db9c4956-a8e1-44d4-a2f9-75ec3443735a
+
+The initial public-page diagnostic used external storage UUIDs and returned
+404; `rq_seo_private.event_links.id` is the public URL identity. Correct canonical
+pages show local times, actual addresses and publisher attribution. This was a
+diagnostic error, not a serving bug. No identity changes were made. Database
+cohort visibility was checked for all 26; only these two representative pages
+were physically inspected, not the whole Events/Map UI. No later 96-hour normal
+refresh has yet occurred; do not call ordinary Admin preview a scheduled-refresh
+proof. Canonical master and EVE-6/EVE-159/EVE-156 carry remaining work.
