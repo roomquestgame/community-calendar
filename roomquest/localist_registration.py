@@ -40,7 +40,7 @@ def endpoint(url, soup=None):
     return urlunsplit((parts.scheme, parts.netloc, '/api/2/events', urlencode(selectors), ''))
 
 
-def collect(url, fetch):
+def collect(url, fetch, *, retain_original=False):
     if not is_api(url) or endpoint(url) != url:
         raise ValueError('unregistered_localist_endpoint')
     venue = dict(parse_qsl(urlsplit(url).query)).get('venue_id')
@@ -72,7 +72,7 @@ def collect(url, fetch):
             if venue and str(event.get('venue_id')) != venue:
                 raise ValueError('localist_venue_filter_mismatch')
         seen += len(events)
-        for row in parse_localist(data, registered=True):
+        for row in parse_localist(data, registered=True, retain_original=retain_original):
             key = row['id']
             if key in rows and rows[key] != row:
                 raise ValueError('conflicting_event_occurrence')
