@@ -1,5 +1,6 @@
 """Unregistered Spektrix URLs cannot bypass stored provider profiles."""
 from datetime import date
+from time import monotonic
 
 import pytest
 
@@ -101,7 +102,7 @@ def test_exact_source_url_and_publisher_profile_are_required():
         spektrix_provider.validate(source(),invalid)
 
 
-def test_short_live_probe_calls_bounded_api_with_injected_transport(monkeypatch):
+def test_registration_probe_matches_recurring_window_with_injected_transport(monkeypatch):
     called=[]
     def fake_collect(value,start,end,fetch,deadline_at=None):
         called.append((value,start,end,deadline_at))
@@ -111,12 +112,12 @@ def test_short_live_probe_calls_bounded_api_with_injected_transport(monkeypatch)
         today=date(2026,11,24),deadline_at=12)
     assert got==[]
     assert len(called)==1
-    assert (called[0][2]-called[0][1]).days==spektrix_provider.MAX_PROBE_DAYS-1
+    assert (called[0][2]-called[0][1]).days==spektrix_v3.MAX_DAYS-1
 
 
 def test_public_feed_does_not_require_a_stored_profile():
     assert provider_registration.collect(
-        URL, 'spektrix', lambda url, accept: '[]', deadline=100,
+        URL, 'spektrix', lambda url, accept: '[]', deadline=monotonic()+10,
         profile=None, registration_probe=True) == []
 
 
@@ -136,5 +137,47 @@ def test_verified_plan_profiles_are_bounded():
 
 def test_public_feed_uses_the_same_dispatch_for_recurring_collection():
     assert provider_registration.collect(
-        URL, 'spektrix', lambda url, accept: '[]', deadline=100,
+        URL, 'spektrix', lambda url, accept: '[]', deadline=monotonic()+10,
         profile=None) == []
+
+
+def test_later_performance_registers_and_collects_with_identical_native_identity():
+    """Atlantic canary: no first-fortnight rows, real performance on day 17."""
+    import json
+    from urllib.parse import parse_qs, urlsplit
+    from datetime import datetime, timezone, timedelta
+    today = datetime.now(timezone.utc).date()
+    performance = today + timedelta(days=16)
+    event_id = '6801ABTVLJRVPSSSGRNRDNBVDKGKTRLVM'
+    instance_id = '55001AMSBLSDPDNMRVSMJKRHLNGCNQBMH'
+    plan_id = '1001ADGKSHLJDTDBJQTBMGLLJRLBJCMNN'
+    venue_id = '401ANPJQJQPQMRSBDNMVNLSPGTRBVQVRH'
+    url = 'https://tickets.example.org/atlantic/api/v3/events'
+    calls = []
+    def fetch(target, accept):
+        calls.append(target)
+        parts = urlsplit(target)
+        query = parse_qs(parts.query)
+        if parts.path.endswith('/venues'):
+            return json.dumps([{'id': venue_id, 'name': 'Theater',
+                                'address': '336 W 20th Street, New York, NY 10011'}])
+        last = query.get('instanceStart_to', query.get('startTo'))[0]
+        if performance.isoformat() > last:
+            return '[]'
+        if parts.path.endswith('/events'):
+            return json.dumps([{'id': event_id, 'name': 'FINN', 'duration': 0,
+                                'webUrl': '', 'webEventId': 'AFKFINN'}])
+        return json.dumps([{'id': instance_id, 'event': {'id': event_id},
+                            'planId': plan_id, 'isOnSale': True, 'cancelled': False,
+                            'start': str(performance)+'T16:00:00',
+                            'startUtc': str(performance)+'T21:00:00'}])
+    kwargs = dict(deadline=monotonic()+20, profile=None)
+    initial = provider_registration.collect(url, 'spektrix', fetch,
+                                             registration_probe=True, **kwargs)
+    refresh = provider_registration.collect(url, 'spektrix', fetch, **kwargs)
+    assert len(initial) == 1
+    assert initial == refresh
+    assert len(calls) == 6  # Same three bounded resources, no fallback probe.
+    assert all(str(today+timedelta(days=59)) in target
+               for target in calls if not target.endswith('/venues'))
+    assert 'AFKFINN' in initial[0]['event_url']

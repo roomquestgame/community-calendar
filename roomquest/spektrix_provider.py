@@ -15,7 +15,7 @@ from roomquest.registration_formats import source_key
 SOURCE = re.compile(
     r'^https://([a-z0-9](?:[a-z0-9.-]{0,251}[a-z0-9])?)/'
     r'([a-z][a-z0-9_-]{1,59})/api/v3/events$')
-MAX_PROBE_DAYS = 14
+MAX_PROBE_DAYS = spektrix_v3.MAX_DAYS
 MAX_PROBE_EVENTS = 150
 
 
@@ -163,7 +163,12 @@ def _collect(source, value, fetch, days, *, deadline_at=None, today=None):
 
 
 def probe(source, value, fetch, *, deadline_at=None, today=None):
-    """Short first-registration proof using the same native collector."""
+    """Prove the same bounded window used by recurring collection.
+
+    A shorter probe incorrectly defers calendars whose first performance is
+    later in the ordinary 60-day window. Keep the same request and size bounds,
+    venue evidence and complete-snapshot validation as recurring collection.
+    """
     return _collect(source, value, fetch, MAX_PROBE_DAYS,
                     deadline_at=deadline_at, today=today)
 
