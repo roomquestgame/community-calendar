@@ -1476,7 +1476,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                                    allowed_hosts=(urlparse(url).hostname,), **options)
         try:
             profile = provider_registration.read_profile(url, adapter, supabase_rpc)
-            records = provider_registration.collect(url, adapter, fetch, deadline=deadline, profile=profile)
+            records = provider_registration.collect(url, adapter, fetch, deadline=deadline, profile=profile,
+                                                    retain_original=adapter == 'spektrix')
             location_claim = {**source, **{
                 key: profile.get(key) for key in (
                     'publisher_default_venue', 'publisher_default_lat',
@@ -1495,7 +1496,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
             for record in records:
                 attach(record, source, description_value=record.get('description'),
                        image_value=record.get('image_url'))
-        samples = records[:MAX_PREVIEWS]
+        samples = [{key: value for key, value in row.items() if key != 'collector_event_content_v1'}
+                   for row in records[:MAX_PREVIEWS]]
         while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
             samples.pop()
         return {**({'p_parser_capability': NATIVE_VERSION} if spektrix_native else {}),

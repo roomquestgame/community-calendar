@@ -130,7 +130,7 @@ def validate(source, value):
     return value
 
 
-def stageable(source, data):
+def stageable(source, data, *, retain_original=False):
     """Convert a complete v3 snapshot into the shared ordinary stage records."""
     if not isinstance(data, dict) or data.get('complete') is not True:
         _fail('snapshot_incomplete')
@@ -172,17 +172,32 @@ def stageable(source, data):
             image = event_image(row['image_url'], row['event_url'])
             if image:
                 converted['image_url'] = image
+        if retain_original:
+            converted['collector_event_content_v1'] = {
+                'version': 1,
+                'event_id': converted['id'],
+                'facts': {
+                    'title': row['title'], 'description': converted['description'],
+                    'starts_at_utc': row['starts_at'], 'ends_at_utc': row.get('ends_at'),
+                    'is_all_day': False, 'publisher_status': 'scheduled',
+                    'event_url': row.get('source_event_url'),
+                    'source_image_url': converted.get('image_url'),
+                    'provider_venue_id': row.get('source_venue_id'),
+                    'venue_name': row.get('source_venue_name') or None,
+                    'venue_address': row.get('source_venue_address') or None,
+                },
+            }
         out.append(converted)
     return sorted(out, key=lambda row: (row['starts_at'], row['id']))
 
 
-def _collect(source, value, fetch, days, *, deadline_at=None, today=None):
+def _collect(source, value, fetch, days, *, deadline_at=None, today=None, retain_original=False):
     value = validate(source, value)
     if today is None:
         today = datetime.now(timezone.utc).date()
     end = today + timedelta(days=days - 1)
     snapshot = spektrix_v3.collect(value, today, end, fetch, deadline_at=deadline_at)
-    return stageable(source, snapshot)
+    return stageable(source, snapshot, retain_original=retain_original)
 
 
 def probe(source, value, fetch, *, deadline_at=None, today=None):
@@ -196,7 +211,7 @@ def probe(source, value, fetch, *, deadline_at=None, today=None):
                     deadline_at=deadline_at, today=today)
 
 
-def collect(source, value, fetch, *, deadline_at=None, today=None):
+def collect(source, value, fetch, *, deadline_at=None, today=None, retain_original=False):
     """Complete rolling 60-day snapshot through the ordinary provider dispatch."""
     return _collect(source, value, fetch, spektrix_v3.MAX_DAYS,
-                    deadline_at=deadline_at, today=today)
+                    deadline_at=deadline_at, today=today, retain_original=retain_original)

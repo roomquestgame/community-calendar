@@ -87,7 +87,8 @@ def timezone(config):
     return name
 
 
-def collect(url, adapter, fetch, *, deadline, profile=None, body=None, registration_probe=False):
+def collect(url, adapter, fetch, *, deadline, profile=None, body=None, registration_probe=False,
+            retain_original=False):
     from roomquest.preview_worker import public_source_url
     if not public_source_url(url):
         raise ValueError('invalid_provider_endpoint')
@@ -117,7 +118,8 @@ def collect(url, adapter, fetch, *, deadline, profile=None, body=None, registrat
         config = spektrix_provider.profile(url, profile)
         if registration_probe:
             return spektrix_provider.probe(source, config, fetch, deadline_at=deadline)
-        return spektrix_provider.collect(source, config, fetch, deadline_at=deadline)
+        return spektrix_provider.collect(source, config, fetch, deadline_at=deadline,
+                                         retain_original=retain_original)
     if adapter == 'venuepilot':
         return venuepilot_provider.collect(source, fetch, stored=config, deadline_at=deadline)
     if adapter == 'south_carolina_parks':
