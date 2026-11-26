@@ -382,3 +382,21 @@ def test_native_provider_identity_survives_collection_failure_without_changing_a
     assert result['p_outcome'] == outcome and result['p_reason'] == reason
     assert result['p_type'] == adapter and result['p_endpoint'] == url
     assert not any('source_id' in key or 'approval' in key for key in result)
+
+
+def test_standard_dialog_accepts_only_documented_spaced_hyphen_typography():
+    payload = json.loads(event_discovery_payload())
+    event = payload['events'][0]
+    canonical = event['url']
+    title = 'Conjunto Atardecer - Impecable - Fuerza M'
+    event.update(id=16042, title=title, url='#tw-event-dialog-16042')
+    popup = ('<div id="tw-event-dialog-16042"><div class="tw-name">'
+             f'<a href="{canonical}">Conjunto Atardecer – Impecable – Fuerza M</a></div></div>')
+    payload['popupdata'] = popup
+    [row] = ticketweb_event_discovery.parse(json.dumps(payload), url='https://venue.example.org/calendar/', zone='UTC')
+    assert row['title'] == title and row['id'] == canonical + ':' + START + ':00'
+    for mismatch in [popup.replace('Fuerza M', 'Fuerza N'), popup.replace('16042', '16043'),
+                     popup.replace('Impecable', 'impecable'), popup.replace(' – ', '')]:
+        payload['popupdata'] = mismatch
+        with pytest.raises(ValueError):
+            ticketweb_event_discovery.parse(json.dumps(payload), url='https://venue.example.org/calendar/', zone='UTC')

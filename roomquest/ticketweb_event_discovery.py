@@ -109,6 +109,12 @@ def valid_form(value):
             and 1 <= (end - start).days <= 62)
 
 
+def _dialog_title(value):
+    # WordPress wptexturize maps a spaced hyphen to an en dash. Compare
+    # that display transformation only; retain the raw publisher title/ID.
+    return html.unescape(str(value or '')).replace(' - ', ' – ')
+
+
 def _plain_fragment(value):
     return BeautifulSoup(str(value or ''), 'html.parser').get_text(' ', strip=True)
 
@@ -144,7 +150,7 @@ def parse(payload, *, url, zone):
             dialogs = popups.find_all(id=expected)
             links = dialogs[0].select('.tw-name a[href]') if len(dialogs) == 1 else []
             if (event_url != '#' + expected or len(links) != 1
-                    or links[0].get_text(' ', strip=True) != html.unescape(str(event.get('title') or ''))):
+                    or _dialog_title(links[0].get_text(' ', strip=True)) != _dialog_title(event.get('title'))):
                 rejected['dialog_identity_unverified'] += 1
                 incomplete = True
                 continue
