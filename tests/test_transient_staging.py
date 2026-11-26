@@ -12,7 +12,7 @@ def output(count=45):
             'p_events':[{'id':str(i), 'title':'Fixture'} for i in range(count)]}
 
 
-@pytest.mark.parametrize('count,expected_batches', [(45, [10, 10, 10, 10, 5]), (28, [10, 10, 8])])
+@pytest.mark.parametrize('count,expected_batches', [(45, [20, 20, 5]), (28, [20, 8])])
 @pytest.mark.parametrize('source,rpc_name', [
     ({'source_key': 'fixture', 'kind': 'json', 'platform_adapter': 'spektrix'}, 'community_collector_record_preview'),
     ({'source_key': 'fixture'}, 'community_collector_record_preview'),
@@ -263,7 +263,7 @@ def test_spektrix_stages_large_snapshot_with_gateway_sized_batches():
             {'source_key': 'theatre', 'platform_adapter': 'spektrix'}, events,
             native_content=False, deadline=float('inf'), observe_phase=None)
     assert count == 571
-    assert [len(batch) for batch in calls] == [10] * 57 + [1]
+    assert [len(batch) for batch in calls] == [20] * 28 + [11]
     assert [event for batch in calls for event in batch] == events
 
 
