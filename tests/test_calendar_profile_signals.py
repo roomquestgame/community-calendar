@@ -60,6 +60,21 @@ def test_footer_signals_in_large_documents():
     assert unsupported_calendar_profile(html) == 'elfsight_adapter_needed'
 
 
+def test_installed_provider_precedes_the_ticket_links_it_renders():
+    links = '''<a href="https://www.ticketweb.com/event/one-tickets/100">One</a>
+      <a href="https://www.ticketweb.com/event/two-tickets/200">Two</a>'''
+    page = '''<html><script src="/wp-content/plugins/event-discovery/js/tw-plugin-search.js"></script>
+      <style>.eventon_details_shading_bot {z-index:3}</style>''' + links + '</html>'
+    assert unsupported_calendar_profile(page) == 'event_discovery_adapter_needed'
+    # Serialized content mentioning an asset does not prove installation.
+    page = '<html><script type="application/json">' + json_asset() + '</script>' + links + '</html>'
+    assert unsupported_calendar_profile(page) == 'ticketweb_linked_events_adapter_needed'
+
+
+def json_asset():
+    return '{"asset":"/wp-content/plugins/event-discovery/js/main.js"}'
+
+
 def test_new_signals_stay_on_existing_monthly_auto_defer_path():
     for reason in ('elfsight_adapter_needed', 'spektrix_adapter_needed', 'fullcalendar_adapter_needed', 'tockify_adapter_needed', 'venuepilot_adapter_needed', 'webtrac_adapter_needed', 'ticketweb_linked_events_adapter_needed', 'ticketmaster_linked_events_adapter_needed', 'eventbrite_linked_events_adapter_needed', 'axs_linked_events_adapter_needed', 'etix_linked_events_adapter_needed', 'tixr_linked_events_adapter_needed', 'squarespace_adapter_needed', 'webflow_calendar_adapter_needed', 'drupal_calendar_adapter_needed', 'growthzone_cms_adapter_needed', 'spotapps_calendar_adapter_needed', 'getbento_calendar_adapter_needed', 'elevent_calendar_adapter_needed', 'citykit_calendar_adapter_needed', 'thethirdplace_calendar_adapter_needed', 'blackbaud_calendar_adapter_needed', 'owner_calendar_adapter_needed', 'godaddy_calendar_adapter_needed', 'wix_events_adapter_needed', 'wix_custom_page_adapter_needed', 'wordpress_calendar_adapter_needed', 'the_events_calendar_adapter_needed', 'events_manager_adapter_needed', 'mec_adapter_needed', 'tickera_adapter_needed', 'event_discovery_adapter_needed', 'fooevents_adapter_needed'):
         assert auto_defer_nonactionable({'p_outcome': 'review', 'p_reason': reason, 'p_type': 'html'}) == {

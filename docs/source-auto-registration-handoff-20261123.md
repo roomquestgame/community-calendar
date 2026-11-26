@@ -165,3 +165,30 @@ followed deployed calendar navigation to child #1563/source #6456, collected
 acceptance. #1334's deployed navigation recheck retained the stale FullCalendar
 hold because the standard action was unsupported. Recheck only after this
 release. Live production acceptance and exact deployed SHA remain to be added.
+
+### November 26 — production readback and specific-plugin precedence
+
+#580 deployed READY as `8a66e72fe9201c2468cdcea6dfb460f9bea23891`,
+`dpl_4e8S9kf3e6wyPLt5RVSdi7wff576`, canonical production alias present,
+no alias error. Original Santos #1334 rechecked only after release; child #1564
+registered native Event Discovery source #6458. Actual ordinary preview completed
+8 future events; 0 located/public at initial read. Publisher Contact advertises
+1135 Decatur St., New Orleans, LA 70122; no guessed coordinates/default applied.
+Birdland #6456 paused through supported Admin after its partial artist inventory
+and conflicting publisher timezone were verified; original IDs/stages retained,
+0 public events. It cannot be counted as accepted native collection.
+
+Motorco #6403 and Knitting Factory #6402 now have 11 and 15 upcoming scheduled,
+non-hidden, located attributed public rows respectively. Their old staged venue
+hold reasons do not override actual public membership. Both last successful
+collections remain November 25; no new 96-hour scheduled refresh is claimed.
+Original Tockify #761/child #1562 remains a genuine robots denial.
+
+A final precedence check found Bourbon #1289's installed Event Discovery plugin
+was being described only as linked TicketWeb inventory. Actual script/link
+plugin assets now precede the ticket URLs they render, without admitting a feed;
+serialized asset text does not establish installation. Full native collection
+still must succeed. Four-suite verification: 71 passed. No shared schema/worker
+or Spektrix changes. The remaining Event Discovery list-view contract and grouped
+artist/timezone evidence require reusable implementation, not a publisher HTML
+fallback or a forced publication.
