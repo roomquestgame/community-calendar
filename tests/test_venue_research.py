@@ -129,7 +129,7 @@ from roomquest.venue_research import configured, claim_options, defer_miss, hand
 
 CONFIG = {"model": "test", "search_key": "search", "model_key": "model"}
 IDENTITY = {"venue_key": "key", "lease_id": "lease"}
-WORKER_CLAIM = {**IDENTITY, "provider": "nyc_event_calendar", "research_permit": {"test": True}}
+WORKER_CLAIM = {**IDENTITY, "provider": "nyc_event_calendar", "venue_name": "Wave Hill", "research_permit": SCOPE}
 PROPOSAL = {"status": "proposed", "candidate": {"address": ADDRESS}}
 
 
@@ -164,8 +164,8 @@ def test_ordinary_lease_untouched(monkeypatch):
     db.assert_not_called()
 
 
-@pytest.mark.parametrize("config,claim", [(None, WORKER_CLAIM), (CONFIG, {**WORKER_CLAIM, "provider": "ics"})])
-def test_unconfigured_or_wrong_source_permit_does_not_call_provider(monkeypatch, config, claim):
+@pytest.mark.parametrize("config,claim", [(None, WORKER_CLAIM), (CONFIG, {**WORKER_CLAIM, "research_permit": {"bad": True}})])
+def test_unconfigured_or_invalid_permit_does_not_call_provider(monkeypatch, config, claim):
     lookup = Mock()
     monkeypatch.setattr("roomquest.venue_research.research", lookup)
     db = Mock()
@@ -215,3 +215,37 @@ def test_gateway_oidc_explicit_model_and_search_opt_in(monkeypatch):
     with pytest.raises(ValueError, match="model_provider_mismatch"):
         anthropic_extract({}, api_key="fake-oidc", model="wrong", provider="vercel_gateway", deadline_at=30, clock=lambda:0)
     assert call.call_count == 1
+
+
+@pytest.mark.parametrize("adapter", ["ical", "wordpress", "html", "jsonld", "spektrix", "localist", "squarespace", "growthzone", "future_adapter"])
+def test_server_permit_not_adapter_controls_research(monkeypatch, adapter):
+    lookup = Mock(return_value=PROPOSAL)
+    monkeypatch.setattr("roomquest.venue_research.research", lookup)
+    claim = {**WORKER_CLAIM, "provider": adapter, "research_eligible": True}
+    db = Mock(return_value={"recorded": True, "deferred": True})
+    assert defer_miss(db, claim, IDENTITY, CONFIG)
+    assert handle_claim(db, claim, IDENTITY, CONFIG, fetch=Mock(), deadline=30, clock=lambda: 0) == "resolved"
+    lookup.assert_called_once()
+
+
+def test_shared_gb_extraction_and_postcode():
+    scope = {"permit_id": "permit", "venue": "Nottingham Playhouse",
+             "locality": "Nottingham", "region": "GB", "country": "GB",
+             "hosts": ["theatre.example"], "scope_version": "registered_venue_v1"}
+    html = "<main><h1>Nottingham Playhouse</h1><address>Wellington Circus, Nottingham, NG1 5AL</address></main>"
+    claim = {**CLAIM, "venue_name": "Nottingham Playhouse", "provider": "wordpress"}
+    def complete(payload):
+        p = payload["passages"][0]
+        return json.dumps({"passage_id": p["id"], "street": "Wellington Circus",
+            "locality": "Nottingham", "postal_code": "NG1 5AL", "quote": p["text"]})
+    ans = research(claim, admit=lambda _: scope, search=lambda *a, **k: ["https://theatre.example/visit"],
+                   fetch=lambda *a, **k: html, complete=complete, model="test", deadline=30, clock=lambda: 0)
+    assert ans["status"] == "proposed"
+    assert ans["candidate"]["address"] == "Wellington Circus, Nottingham, NG1 5AL"
+    assert ans["candidate"]["country_code"] == "GB"
+
+
+def test_registered_us_requires_region_proof():
+    scope = {**SCOPE, "scope_version": "registered_venue_v1"}
+    ans, _ = fixture(admit=Mock(return_value=scope))
+    assert ans["status"] == "held"

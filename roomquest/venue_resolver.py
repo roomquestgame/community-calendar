@@ -131,7 +131,8 @@ def extract_candidates(html: str, url: str, claim: dict) -> list[dict]:
     soup = BeautifulSoup(html, "html.parser")
     candidates = []
     expected = claim["venue_name"]
-    spektrix = claim.get('provider') == 'spektrix'
+    spektrix = (claim.get('provider') == 'spektrix'
+                or (claim.get('research_scope') or {}).get('country') == 'GB')
 
     def add(place, method, event_match=False):
         if not isinstance(place, dict):
