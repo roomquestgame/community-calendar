@@ -219,7 +219,7 @@ def _meeple(source, fetch):
     return sorted(results.values(), key=lambda r: (r["starts_at"], r["title"], r["id"]))
 
 
-def _libcal(source, fetch):
+def _libcal(source, fetch, *, retain_original=False):
     from roomquest.event_description import description
     key = source["source_key"]
     profile = LIBRARY_PROFILES[key]
@@ -286,6 +286,18 @@ def _libcal(source, fetch):
             continue
         row.update(description=narrative, timezone=ZONE, publisher_categories=labels,
                    location_provenance="publisher_branch_identity_official_street")
+        if retain_original:
+            row["collector_event_content_v1"] = {
+                "version": 1, "event_id": row["id"],
+                "facts": {
+                    "title": title, "description": narrative or None,
+                    "starts_at_local": day + "T" + start_text,
+                    "ends_at_local": day + "T" + end_text if end_text else None,
+                    "is_all_day": False, "publisher_status": "scheduled",
+                    "event_url": url, "venue_name": values.get("campus"),
+                    "meeting_location": room or None, "publisher_categories": labels,
+                },
+            }
         occurrence_key = (row["id"], row["starts_at"])
         if occurrence_key in out and out[occurrence_key] != row:
             raise ValueError("conflicting_event_occurrence")
@@ -293,7 +305,7 @@ def _libcal(source, fetch):
     return sorted(out.values(), key=lambda r: (r["starts_at"], r["title"], r["id"]))
 
 
-def collect(source, fetch, *, deadline_at=None, now=None):
+def collect(source, fetch, *, deadline_at=None, now=None, retain_original=False):
     key = source.get("source_key")
     expected = SOURCES.get(key)
     if not expected or (source.get("feed_url"), source.get("kind"),
@@ -304,7 +316,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
     if key == MEEPLE:
         return _meeple(source, fetch)
     if key in LIBRARY_PROFILES:
-        return _libcal(source, fetch)
+        return _libcal(source, fetch, retain_original=retain_original)
     url = SOURCES[BRENAU][0]
     current = now.astimezone(ZoneInfo(ZONE))
     params = {"per_page":100, "start_date":current.date().isoformat(),

@@ -2461,7 +2461,7 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                 source, lambda url, accept: fetch_publisher(
                     url, accept, respect_robots=True, deadline_at=deadline,
                     allowed_hosts=gainesville_direct_feeds.ALLOWED_HOSTS[source_key]),
-                deadline_at=deadline)
+                deadline_at=deadline, retain_original=source_key in gainesville_direct_feeds.LIBRARY_PROFILES)
             if any(not isinstance(row.get('description'), str)
                    or len(row['description']) > gainesville_direct_feeds.MAX_DESCRIPTION
                    or not isinstance(row.get('venue_address'), str)
@@ -2473,7 +2473,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
             reason = str(exc)
             raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}', reason)
                                else 'invalid_gainesville_direct_payload') from exc
-        samples = records[:MAX_PREVIEWS]
+        samples = [{key: value for key, value in row.items() if key != 'collector_event_content_v1'}
+                   for row in records[:MAX_PREVIEWS]]
         while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
             samples.pop()
         return {'p_source_key': source_key, 'p_samples': samples,
