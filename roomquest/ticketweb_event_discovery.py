@@ -5,6 +5,8 @@ import json
 import re
 from urllib.parse import urljoin, urlsplit, urlunsplit
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+from collections import Counter
+import logging
 
 from bs4 import BeautifulSoup
 
@@ -13,6 +15,16 @@ from roomquest.registration_formats import provider_calendar_destination
 
 PLUGIN = '/wp-content/plugins/event-discovery/'
 ACTION = 'get_events_artist_calendar'
+LOGGER = logging.getLogger(__name__)
+
+
+class ParsedEvents(list):
+    """Valid rows plus bounded completeness evidence for the provider snapshot."""
+
+    def __init__(self, rows, *, rejected=None, complete=True):
+        super().__init__(rows)
+        self.rejected = dict(rejected or {})
+        self.complete = complete
 
 
 def _origin(url):
@@ -103,21 +115,28 @@ def parse(payload, *, url, zone):
     if not isinstance(events, list) or len(events) > 500:
         raise ValueError('invalid_event_discovery_calendar')
     if not events:
-        return []  # A valid empty refresh is distinct from malformed rows.
+        return ParsedEvents([])  # A valid empty refresh is distinct from malformed rows.
     host = urlsplit(url).hostname
     rows = []
+    rejected = Counter()
+    incomplete = False
     for event in events:
         if not isinstance(event, dict):
+            rejected['non_object'] += 1
+            incomplete = True
             continue
         event_url = html.unescape(str(event.get('url') or ''))
         parts = urlsplit(event_url)
         if (parts.scheme != 'https' or parts.username or parts.password
                 or parts.hostname not in (host, 'www.ticketweb.com', 'ticketweb.com')):
+            rejected['untrusted_url'] += 1
             continue
         stamp = str(event.get('sortkey') or '')
         try:
             datetime.strptime(stamp, '%Y-%m-%d %H:%M:%S')
         except ValueError:
+            rejected['invalid_start'] += 1
+            incomplete = True
             continue
         venue = _plain_fragment(event.get('venue'))
         image_node = BeautifulSoup(str(event.get('imageUrl') or ''), 'html.parser').find('img', src=True)
@@ -125,6 +144,8 @@ def parse(payload, *, url, zone):
             item = record(html.unescape(str(event.get('title') or '')), stamp, None, venue, '', '',
                           event_url, event_url + ':' + stamp, tz=zone)
         except (TypeError, ValueError, OverflowError):
+            rejected['invalid_event'] += 1
+            incomplete = True
             continue
         if item is not None:
             if image_node:
@@ -135,7 +156,7 @@ def parse(payload, *, url, zone):
             rows.append(item)
     if not rows:
         raise ValueError('invalid_event_discovery_calendar')
-    return rows
+    return ParsedEvents(rows, rejected=rejected, complete=not incomplete)
 
 
 def collect(source, fetch, *, body=None, deadline_at=None):
@@ -154,6 +175,15 @@ def collect(source, fetch, *, body=None, deadline_at=None):
     except TypeError as exc:
         raise ValueError('event_discovery_transport_type_error') from exc
     try:
-        return parse(payload, url=listing, zone=spec['timezone'])
+        records = parse(payload, url=listing, zone=spec['timezone'])
+        if records.rejected:
+            LOGGER.warning('event_discovery_rows_rejected host=%s reasons=%s',
+                           urlsplit(listing).hostname,
+                           json.dumps(records.rejected, sort_keys=True, separators=(',', ':')))
+        if not records.complete:
+            # Preserve the last complete snapshot. A malformed first-party row
+            # cannot be interpreted as an event withdrawal.
+            raise ValueError('incomplete_event_discovery_snapshot')
+        return records
     except TypeError as exc:
         raise ValueError('event_discovery_parse_type_error') from exc
