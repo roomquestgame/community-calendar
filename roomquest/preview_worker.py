@@ -1477,7 +1477,7 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         try:
             profile = provider_registration.read_profile(url, adapter, supabase_rpc)
             records = provider_registration.collect(url, adapter, fetch, deadline=deadline, profile=profile,
-                                                    retain_original=adapter == 'spektrix')
+                                                    retain_original=adapter in ('spektrix', 'tickera', 'event_discovery'))
             location_claim = {**source, **{
                 key: profile.get(key) for key in (
                     'publisher_default_venue', 'publisher_default_lat',
