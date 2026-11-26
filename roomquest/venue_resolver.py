@@ -283,15 +283,24 @@ def run_batch(*, database=None, resolver=None, clock=None, deadline_seconds=15) 
         return stats
     database, resolver, clock = database or rpc, resolver or resolve, clock or monotonic
     deadline = clock() + min(18, max(1, deadline_seconds))
-    claims = database("claim", {"limit": 1}) or []
+    from roomquest import venue_research
+    research_config = venue_research.configured()
+    claims = database("claim", venue_research.claim_options(research_config)) or []
     for claim in claims[:1]:
         stats["claimed"] += 1
         identity = {k: claim[k] for k in ("venue_key", "lease_id")}
         try:
+            outcome = venue_research.handle_claim(database, claim, identity, research_config,
+                                                   fetch=fetch_page, deadline=deadline, clock=clock)
+            if outcome is not None:
+                stats[outcome] += 1
+                continue
             answer = resolver(claim, deadline=deadline)
             if answer:
                 database("submit", {**identity, **answer})
                 stats["resolved"] += 1
+            elif venue_research.defer_miss(database, claim, identity, research_config):
+                stats["research_deferred"] = stats.get("research_deferred", 0) + 1
             else:
                 database("fail", {**identity, "reason": "needs_review"})
                 stats["review"] += 1
