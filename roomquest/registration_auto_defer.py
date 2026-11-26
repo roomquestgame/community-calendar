@@ -64,8 +64,17 @@ def auto_defer_nonactionable(result):
     if (result.get("p_outcome") != "review"
             or result.get("p_reason") not in AUTO_DEFER_REASONS):
         return result
-    return {
+    deferred = {
         "p_outcome": "retry",
         "p_reason": result["p_reason"],
         "p_retry_seconds": MONTH_SECONDS,
     }
+    # Strong installed-plugin detection must survive the retry conversion.
+    # Keep only the matching native type; profiles, endpoints, source IDs and
+    # arbitrary caller fields still cannot turn an unsupported variant verified.
+    native = {"event_discovery_adapter_needed": "event_discovery",
+              "tickera_adapter_needed": "tickera"}
+    expected = native.get(result["p_reason"])
+    if expected is not None and result.get("p_type") == expected:
+        deferred["p_type"] = expected
+    return deferred
