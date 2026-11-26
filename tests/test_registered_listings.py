@@ -22,3 +22,35 @@ def test_full_postal_address_in_street_field():
              'location':{'name':'Studio','address':{'streetAddress':'101 Masons Ln, Leesburg, VA 20175, USA',
                 'addressLocality':'Leesburg','addressRegion':'VA','postalCode':'20175'}}}
     assert parse(json.dumps(event))[0]['venue_address'] == '101 Masons Ln, Leesburg, VA 20175'
+
+
+def test_lynchburg_uses_first_party_activity_cards_not_webtrac_checkout():
+    day = (datetime.now(listings.EASTERN) + timedelta(days=2)).strftime('%m/%d/%Y')
+    body = f'''<body class="archive post-type-archive post-type-archive-cl_and_activ">
+      <div class="pna-item"><h6 class="pna-title"><a href="{listings.LYNCHBURG}class-one/">Class One</a></h6>
+        <div class="pna-location">Miller Center</div><span class="pna-dates">{day} -</span>
+        <span class="pna-times">Start: 11:00 AM</span>
+        <a href="https://cityweb.myvscloud.com/webtrac/web/search.html?keyword=class">Register</a></div>
+      <div class="pna-item"><h6 class="pna-title"><a href="{listings.LYNCHBURG}unknown/">No Clock</a></h6>
+        <div class="pna-location">City Armory</div><span class="pna-dates">{day} -</span>
+        <span class="pna-times">Start: Varies</span></div></body>'''
+    rows = listings.collect(
+        {'feed_url': listings.LYNCHBURG, 'source_key': listings.source_key(listings.LYNCHBURG)},
+        lambda *_: body)
+    assert len(rows) == 1
+    assert rows[0]['title'] == 'Class One'
+    assert rows[0]['venue_name'] == 'Miller Center'
+    assert rows[0]['venue_address'] == '301 Grove Street, Lynchburg, VA 24501'
+    assert rows[0]['event_url'] == listings.LYNCHBURG + 'class-one/'
+
+
+def test_lynchburg_requires_exact_publisher_template():
+    body = '<body><div class="pna-item"></div></body>'
+    try:
+        listings.collect(
+            {'feed_url': listings.LYNCHBURG, 'source_key': listings.source_key(listings.LYNCHBURG)},
+            lambda *_: body)
+    except ValueError as exc:
+        assert str(exc) == 'lynchburg_activity_archive_changed'
+    else:
+        raise AssertionError('unproved template was accepted')
