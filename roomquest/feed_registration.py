@@ -29,10 +29,6 @@ PUBLISHER_CALENDAR_PAGES = {
     'https://www.morgan.edu/': 'https://events.morgan.edu/',
     'https://residentculturebrewing.com/location/plaza-midwood/':
         'https://residentculturebrewing.com/events/?fwp_event_location=plaza-midwood',
-    # Shank Hall's TicketWeb links are checkout destinations.  Its complete
-    # inventory (including box-office-only shows) is the first-party monthly
-    # schedule, so registration must follow that publisher-owned calendar.
-    'https://shankhall.com/': 'https://shankhall.com/schedule/',
 }
 
 STATE_THEATRE_SUBMITTED = 'https://statetheatreportland.com/events'
