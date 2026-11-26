@@ -480,12 +480,14 @@ def _html_declared_charset(payload: bytes) -> str | None:
 
 def fetch_publisher(url: str, accept: str, *, respect_robots: bool = False,
                     deadline_at: float | None = None, allowed_hosts=None,
-                    follow_redirects: bool = True, calendar_form=None) -> str | bytes:
+                    follow_redirects: bool = True, calendar_form=None,
+                    calendar_json=None) -> str | bytes:
     """Fetch an approved public source through the shared validated transport."""
     return _fetch_publisher_request(url, accept, respect_robots=respect_robots,
                                     deadline_at=deadline_at, allowed_hosts=allowed_hosts,
                                     follow_redirects=follow_redirects,
-                                    calendar_form=calendar_form)
+                                    calendar_form=calendar_form,
+                                    calendar_json=calendar_json)
 
 
 def fetch_visit_raleigh_page(url: str, *, deadline_at=None) -> str:
@@ -807,6 +809,7 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
     json_content_type = 'application/json'
     json_referer = None
     if calendar_json is not None:
+        from roomquest import venuepilot_provider
         elloree = (url == 'https://connect.elloreesc.com/api/functions/getPublicCalendarEvents'
                    and accept == 'application/json' and allowed_hosts == ('connect.elloreesc.com',)
                    and isinstance(calendar_json, dict) and not calendar_json)
@@ -822,13 +825,18 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
         cultural = (url == 'https://culture.virginiabeach.gov/api/products/productionseasons'
                     and accept == 'application/json' and allowed_hosts == ('culture.virginiabeach.gov',)
                     and isinstance(calendar_json, dict) and calendar_json == _virginia_beach_cultural_window())
-        if calendar_form is not None or not respect_robots or not (elloree or recdesk or cultural):
+        venuepilot = (url == venuepilot_provider.API and accept == 'application/json'
+                      and allowed_hosts == (venuepilot_provider.HOST,)
+                      and venuepilot_provider.valid_request(calendar_json))
+        if calendar_form is not None or not respect_robots or not (elloree or recdesk or cultural or venuepilot):
             raise PreviewError('invalid_calendar_render_parameters')
         render_content_type = 'text/html' if recdesk else 'application/json'
         json_referer = ('https://elloreesc.com/elloree-town-calendar/' if elloree
                         else 'https://oldsanteecanal.recdesk.com/Community/Program')
         if cultural:
             json_referer = 'https://culture.virginiabeach.gov/events'
+        if venuepilot:
+            json_referer = 'https://www.venuepilot.co/'
         if recdesk:
             json_content_type = 'application/json; charset=utf-8'
     cfengage_form = False
@@ -4830,8 +4838,10 @@ def _event_batches(events, *, empty=False, batch_size=STAGING_BATCH_SIZE):
 def _stage_legacy_events(source, events, *, native_content, deadline, observe_phase):
     staged = 0
     operation = "community_collector_record_staged_events"
-    # Shared staging transactions retain the existing payload byte bound.
-    for batch in _event_batches(events, empty=True):
+    # The staging gateway accepts up to 100 records / 180 KB. Keep the
+    # conservative byte bound, but avoid 29 round trips for a large theatre.
+    batch_size = 100 if source.get("platform_adapter") == "spektrix" else STAGING_BATCH_SIZE
+    for batch in _event_batches(events, empty=True, batch_size=batch_size):
         _observe_collection_phase(observe_phase, "stage")
         if monotonic() > deadline - 4:
             raise PreviewError("staging_deadline")
