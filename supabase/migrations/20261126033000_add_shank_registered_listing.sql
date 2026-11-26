@@ -22,5 +22,5 @@ as $$
    'https://sustainableow.co.uk/feed/',
    'https://www.lynchburgparksandrec.com/programs-and-activities/',
    'https://statetheatreportland.com/calendar/',
-   'https://shankhall.com/schedule/')
+   'https://shankhall.com/')
 $$;
