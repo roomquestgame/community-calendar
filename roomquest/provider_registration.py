@@ -7,7 +7,7 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from roomquest import (chambermate, eventon, legistar, mapsee_adapter, revize,
                        south_carolina_parks, spektrix_provider, tickera_provider,
-                       ticketweb_event_discovery)
+                       ticketweb_event_discovery, venuepilot_provider)
 from roomquest.registration_formats import source_key
 
 PARK = re.compile(r'https://southcarolinaparks\.com/api/events#park=([1-9][0-9]{0,9})')
@@ -17,7 +17,7 @@ LEGISTAR = re.compile(r'https://webapi\.legistar\.com/v1/([a-z0-9-]+)/events')
 SOCRATA = re.compile(r'/resource/[a-z0-9]{4}-[a-z0-9]{4}\.json')
 REVIZE = '/_assets_/plugins/revizeCalendar/calendar_data_handler.php'
 FAMILIES = {'chambermate', 'eventon', 'event_discovery', 'growthzone', 'legistar',
-            'socrata', 'revize', 'south_carolina_parks', 'spektrix', 'tickera'}
+            'socrata', 'revize', 'south_carolina_parks', 'spektrix', 'tickera', 'venuepilot'}
 DEFAULT_VENUE_FAMILIES = {'event_discovery', 'tickera'}
 
 
@@ -54,6 +54,8 @@ def family(url, body=None):
     parts = urlsplit(url)
     if spektrix_provider.family(url):
         return 'spektrix'
+    if venuepilot_provider.family(url):
+        return 'venuepilot'
     if body and eventon.supports_listing(url, body):
         return 'eventon'
     if body and ticketweb_event_discovery.supports_listing(url, body):
@@ -114,6 +116,8 @@ def collect(url, adapter, fetch, *, deadline, profile=None, body=None, registrat
         if registration_probe:
             return spektrix_provider.probe(source, config, fetch, deadline_at=deadline)
         return spektrix_provider.collect(source, config, fetch, deadline_at=deadline)
+    if adapter == 'venuepilot':
+        return venuepilot_provider.collect(source, fetch, stored=config, deadline_at=deadline)
     if adapter == 'south_carolina_parks':
         park_id = PARK.fullmatch(url)[1]
         return south_carolina_parks.collect(dict(source, source_key='south_carolina_parks_' + park_id),
