@@ -486,3 +486,21 @@ def test_product_title_without_publisher_metadata_is_not_enough():
     result = api.project(profile(), [event(name='Pre Order: Pizza', duration=0)],
                          [instance()], [plan()], [venue()], START, STOP)
     assert len(result['events']) == 1
+
+
+@pytest.mark.parametrize('name,description', [
+    ('Pre-order Drinks', 'Pre-order your drinks now to skip the bar queue and save 20%.'),
+    ('Audio Description Headset', 'Would you like to pre-book your Audio Description headset for this show?'),
+    ('Captioning Facilities', 'Let us know if you would like to use the Captioning facilities.'),
+])
+def test_bush_ticket_products_excluded_before_staging(name, description):
+    result = api.project(profile(), [event(name=name, duration=0, description=description)],
+                         [instance()], [], [], START, STOP)
+    assert result['events'] == []
+    assert result['excluded_ticket_extras'] == 1
+
+
+def test_touch_tour_remains_a_performance():
+    result = api.project(profile(), [event(name='Touch Tour', duration=0)],
+                         [instance()], [plan()], [venue()], START, STOP)
+    assert len(result['events']) == 1
