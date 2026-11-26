@@ -261,7 +261,7 @@ approval, request bounds or retry timing. Spektrix paths are unchanged.91 focuse
 registration/provider/auto-defer tests pass, including eight native network,
 HTTP503, robots and403 identity/decision cases.
 
-Additional diagnostic evidence: Dock Street687, License1506 and Boggs1347 have
+Additional diagnostic evidence: Dock Street687, License506 and Boggs1347 have
 publisher-linked calendar destinations, but their native Squarespace JSON
 requests are explicitly robots_denied. No bypass or generic HTML replacement
 was attempted. Official Squarespace View JSON Data and Collections docs were
@@ -284,3 +284,23 @@ remain pending; do not claim public or96hrefresh acceptance yet.
 ## November26 — exact calendar-export titles containing a literal hash
 
 Santos's publisher export for NEW ORLEANS PUNK WEEKEND #2 leaves the title hash unescaped, so normal URL parsing hides the dates/address behind a fragment. Recover only a literal hash inside the text query field whose complete decoded value exactly matches the staged event title. Reject every remaining fragment and retain exact canonical/og:url, event title, UTC start, timezone, unique physical US address and ambiguity checks. No Google request, inferred location or broader fragment decoding. 73 focused tests plus4 subtests pass. Seven other Santos exact-event pages already supplied independently matched publisher addresses; this eighth awaits deployed verification. Existing helper FIFO and normal Admin address review remain distinct acceptance paths.
+
+## November26 — separate native discovery and endpoint verification claims
+
+Stampede524 exhausted six attempts as review/publisher_pacing_deferred. A bounded
+first-party probe confirms10s crawl delay, installed Event Discovery, advertised
+/calendar, standard get_events_for_calendar and America/Denver. The current
+root claim fetches homepage+calendar+render before creating a child, then the
+child repeats verification. Discovery now records only the uniquely advertised
+same-host scoped native endpoint; the existing independent child claim must
+verify complete collection before a source can be approved. This matches native
+feed discovery, preserves35s/request bounds and publisher pacing, and adds no
+worker, queue, cap, guessed path or direct source insertion. Server endpoint_only
+plus parent-derived native hint retains identity on a child transport/access
+failure; a direct user hint cannot supply detected identity.112 focused tests
+pass, including parent-only fetch and independently robots-denied child cases.
+Review original524 only after the relevant deployment, then inspect its actual
+child result. A pacing label alone is not proof of an external permanent block.
+
+Correct License receipt reference:506, not1506 (unrelated Spektrix receipt,
+untouched). Native Squarespace denial evidence concerns687/506/1347.

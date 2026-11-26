@@ -165,3 +165,36 @@ def test_tockify_multiple_or_unproved_embeds_are_not_guessed():
     assert tockify_provider.subscription('<div data-tockify-calendar="one"></div>') is None
     assert tockify_provider.subscription(
         marker + '<div data-tockify-calendar="one"></div><div data-tockify-calendar="two"></div>') is None
+
+
+@pytest.mark.parametrize('adapter,module', [
+    ('event_discovery', ticketweb_event_discovery), ('tickera', tickera_provider),
+])
+def test_native_navigation_defers_endpoint_verification_to_its_existing_child_claim(adapter, module):
+    root = 'https://venue.example.org/'
+    destination = root + 'calendar/'
+    home = '<script src="' + module.PLUGIN + 'front.js"></script><a href="/calendar/">Calendar</a>'
+    with patch.object(feed_registration, 'supabase_rpc', side_effect=[{'url': root}, True]) as rpc, \
+         patch.object(feed_registration, 'fetch_publisher', return_value=home) as fetch:
+        assert feed_registration.register('parent-ticket') == {'outcome': 'discovered'}
+    assert fetch.call_count == 1 and fetch.call_args.args[0] == root
+    assert fetch.call_args.kwargs['respect_robots'] is True
+    result = rpc.call_args.args[1]
+    assert (result['p_outcome'], result['p_type'], result['p_endpoint']) == ('discovered', adapter, destination)
+    # An advertised endpoint is not itself verification, source creation or
+    # permission to bypass the independently claimed endpoint's robots rules.
+    with patch.object(feed_registration, 'supabase_rpc', side_effect=[{'url': destination, 'type_hint': adapter, 'endpoint_only': True}, True]) as rpc, \
+         patch.object(feed_registration, 'fetch_publisher', side_effect=preview_worker.PreviewError('robots_denied')) as fetch:
+        assert feed_registration.register('child-ticket') == {'outcome': 'disabled'}
+    assert rpc.call_args.args[1]['p_reason'] == 'robots_denied'
+    assert rpc.call_args.args[1]['p_type'] == adapter
+    assert rpc.call_args.args[1]['p_endpoint'] == destination
+    assert fetch.call_count == 1 and fetch.call_args.kwargs['respect_robots'] is True
+
+
+def test_unverified_user_hint_does_not_supply_detected_identity_on_failed_fetch():
+    with patch.object(feed_registration, 'supabase_rpc', side_effect=[
+            {'url': 'https://venue.example.org/', 'type_hint': 'event_discovery'}, True]) as rpc, \
+         patch.object(feed_registration, 'fetch_publisher', side_effect=preview_worker.PreviewError('robots_denied')):
+        assert feed_registration.register('ticket') == {'outcome': 'disabled'}
+    assert rpc.call_args.args[1].get('p_type') is None
