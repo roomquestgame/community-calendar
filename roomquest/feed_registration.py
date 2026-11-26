@@ -242,10 +242,15 @@ def classify(url, payload, hint=None, endpoint_only=False, venue_website=False):
     # at the destination; never register the homepage summary as the feed.
     if not endpoint_only:
         from roomquest import tickera_provider, ticketweb_event_discovery
-        for module in (ticketweb_event_discovery, tickera_provider):
+        for adapter, module in (('event_discovery', ticketweb_event_discovery),
+                                ('tickera', tickera_provider)):
             destination = module.calendar_destination(url, body)
             if destination:
-                return {'calendar_page': destination}
+                # Discovery creates an endpoint receipt, not an approved source.
+                # Verify its native collection on that receipt's ordinary claim,
+                # rather than spending both request budgets in this attempt.
+                return {'p_outcome': 'discovered', 'p_type': adapter,
+                        'p_endpoint': destination}
     evidence = collection_evidence(url, body)
     if evidence and (evidence['p_outcome'] == 'verified' or (not endpoint_only and evidence['p_outcome'] == 'discovered') or evidence.get('p_reason') in ('single_event_page','localist_filter_unverified')):
         return evidence
@@ -434,6 +439,10 @@ def register(ticket):
     with capture_publisher_pacing() as pacing:
         body = None  # Fetch failure can occur before a response was collected.
         recognized_provider = recognized_endpoint = None
+        # endpoint_only is server evidence of an existing parent discovery,
+        # not a user-provided hint. Retain that identity on transport failure.
+        if candidate.get('endpoint_only') and candidate.get('type_hint') in ('event_discovery', 'tickera'):
+            recognized_provider, recognized_endpoint = candidate['type_hint'], url
         try:
             deadline = monotonic() + 35
             from roomquest import registered_html_checkpoint as capture
