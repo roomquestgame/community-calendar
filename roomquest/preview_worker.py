@@ -36,7 +36,7 @@ from roomquest import ical_conditional_cache
 
 MAX_BODY = 3_000_000
 MAX_PREVIEWS = 10
-STAGING_BATCH_SIZE = 20
+STAGING_BATCH_SIZE = 10
 LOOKAHEAD_DAYS = 60
 ROOMQUEST_DB = "https://drpqjuqghpjivtwznfdj.supabase.co"
 RALEIGH_CATALOG_ICS = {
@@ -4830,10 +4830,8 @@ def _event_batches(events, *, empty=False, batch_size=STAGING_BATCH_SIZE):
 def _stage_legacy_events(source, events, *, native_content, deadline, observe_phase):
     staged = 0
     operation = "community_collector_record_staged_events"
-    # The staging gateway accepts up to 100 records / 180 KB. Keep the
-    # conservative byte bound, but avoid 29 round trips for a large theatre.
-    batch_size = 100 if source.get("platform_adapter") == "spektrix" else STAGING_BATCH_SIZE
-    for batch in _event_batches(events, empty=True, batch_size=batch_size):
+    # Shared ten-event transactions retain the existing payload byte bound.
+    for batch in _event_batches(events, empty=True):
         _observe_collection_phase(observe_phase, "stage")
         if monotonic() > deadline - 4:
             raise PreviewError("staging_deadline")
