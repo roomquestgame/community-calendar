@@ -2008,7 +2008,7 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
             records = anchorage_batch20.collect(
                 source, lambda url, accept: fetch_publisher(
                     url, accept, respect_robots=True, deadline_at=deadline,
-                    allowed_hosts=anchorage_batch20.ALLOWED_HOSTS[source_key]), deadline_at=deadline)
+                    allowed_hosts=anchorage_batch20.ALLOWED_HOSTS[source_key]), deadline_at=deadline, retain_original=True)
             if any(not isinstance(row.get('description'), str) or not row['description'].strip()
                    or len(row['description']) > anchorage_batch20.MAX_DESCRIPTION
                    or not isinstance(row.get('venue_address'), str)
@@ -2024,7 +2024,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
             reason = str(exc)
             raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}', reason)
                                else 'invalid_anchorage_batch20_payload') from exc
-        samples = records[:MAX_PREVIEWS]
+        samples = [{k: v for k, v in row.items() if k != 'collector_event_content_v1'}
+                   for row in records[:MAX_PREVIEWS]]
         while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
             samples.pop()
         return {'p_source_key': source_key, 'p_samples': samples,
@@ -4141,7 +4142,7 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         try:
             records = collect_squarespace(source, lambda url, accept: fetch_publisher(
                 url, accept, respect_robots=True, deadline_at=deadline),
-                retain_original=source_key == registration_source_key(source["feed_url"]))
+                retain_original=True)
         except PreviewError:
             # Transport errors are already safe, bounded codes (including HTTP digits).
             raise

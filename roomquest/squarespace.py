@@ -100,6 +100,53 @@ def collect(source, fetch, *, retain_original=False):
     return parse_registered(json.loads(payload), base, retain_original=retain_original)
 
 
+def publisher_coordinates(v):
+    lat, lng = v.get('mapLat'), v.get('mapLng')
+    marker = (v.get('markerLat'), v.get('markerLng'))
+    if marker[0] is not None and marker[1] is not None:
+        conflict = False
+        if lat is not None and lng is not None:
+            try:
+                conflict = not all(math.isclose(float(a), float(b), rel_tol=0, abs_tol=1e-7)
+                                   for a, b in zip((lat, lng), marker))
+            except (TypeError, ValueError, OverflowError):
+                conflict = True
+        if conflict:
+            lat = lng = None  # Conflicting evidence is held for location review.
+        else:
+            lat, lng = marker
+    if isinstance(lat, bool) or isinstance(lng, bool):
+        lat = lng = None
+    return lat, lng
+
+
+def original_content(event, row, base, description_text):
+    from roomquest.registered_native_content import image_candidate
+    location = event.get('location') or {}
+    if not isinstance(location, dict):
+        location = {}
+    raw_point = publisher_coordinates(location)
+    try:
+        lat, lng = map(float, raw_point)
+        if not (-90 <= lat <= 90 and -180 <= lng <= 180) or (lat, lng) == (0, 0):
+            lat = lng = None
+    except (TypeError, ValueError, OverflowError):
+        lat = lng = None
+    raw_address = ', '.join(plain(location[k]) for k in ('addressLine1', 'addressLine2') if location.get(k))
+    end = timestamp(event.get('endDate'))
+    return {'version': 1, 'event_id': row['id'], 'facts': {
+        'title': plain(event.get('title')), 'description': description_text,
+        'starts_at_utc': row['starts_at'], 'ends_at_utc': end.isoformat() if end else None,
+        'is_all_day': False, 'event_url': row['event_url'],
+        'venue_name': plain(location.get('addressTitle')) or None,
+        'venue_address': raw_address or None,
+        'source_latitude': lat, 'source_longitude': lng,
+        'publisher_categories': [plain(x) for x in event.get('categories', [])
+                                 if isinstance(x, str) and plain(x)],
+        'source_image_url': image_candidate(event.get('assetUrl'), base),
+    }}
+
+
 def parse_registered(data, base, *, retain_original=False):
     """Preserve Mapsee factual identities and reuse shared record normalization."""
     from roomquest.mapsee_adapter import record
@@ -134,23 +181,7 @@ def parse_registered(data, base, *, retain_original=False):
         if not isinstance(v, dict):
             raise ValueError('invalid_event_location')
         street = ', '.join(plain(v[k]) for k in ('addressLine1', 'addressLine2') if v.get(k))
-        lat, lng = v.get('mapLat'), v.get('mapLng')
-        marker = (v.get('markerLat'), v.get('markerLng'))
-        if marker[0] is not None and marker[1] is not None:
-            conflict = False
-            if lat is not None and lng is not None:
-                try:
-                    conflict = not all(math.isclose(float(a), float(b), rel_tol=0, abs_tol=1e-7)
-                                       for a, b in zip((lat, lng), marker))
-                except (TypeError, ValueError, OverflowError):
-                    conflict = True
-            if conflict:
-                lat = lng = None  # Conflicting evidence is held for location review.
-            else:
-                lat, lng = marker
-        if isinstance(lat, bool) or isinstance(lng, bool):
-            lat = lng = None
-        address_from_publisher, point_from_publisher = street, (lat, lng)
+        lat, lng = publisher_coordinates(v)
         if (base == ASHLAND_MUSEUM
                 and plain(v.get('addressTitle')) == 'Truist Theater in Brock Commons'
                 and street == 'Randolph-Macon College, Henry Street, Ashland, VA 23005'):
@@ -189,26 +220,7 @@ def parse_registered(data, base, *, retain_original=False):
             from roomquest.event_description import description
             row['description'] = description(e.get('body')) or description(e.get('excerpt'))
             if retain_original:
-                try:
-                    source_lat, source_lng = map(float, point_from_publisher)
-                    if not (-90 <= source_lat <= 90 and -180 <= source_lng <= 180) or (source_lat, source_lng) == (0, 0):
-                        source_lat = source_lng = None
-                except (TypeError, ValueError, OverflowError):
-                    source_lat = source_lng = None
-                from roomquest.registered_native_content import image_candidate
-                source_end = timestamp(e.get('endDate'))
-                row['collector_event_content_v1'] = {'version': 1, 'event_id': row['id'], 'facts': {
-                    'title': plain(e.get('title')), 'description': row['description'],
-                    'starts_at_utc': row['starts_at'],
-                    'ends_at_utc': source_end.isoformat() if source_end else None,
-                    'is_all_day': False, 'event_url': row['event_url'],
-                    'venue_name': plain(v.get('addressTitle')) or None,
-                    'venue_address': address_from_publisher or None,
-                    'source_latitude': source_lat, 'source_longitude': source_lng,
-                    'publisher_categories': [plain(x) for x in e.get('categories', [])
-                                             if isinstance(x, str) and plain(x)],
-                    'source_image_url': image_candidate(e.get('assetUrl'), base),
-                }}
+                row['collector_event_content_v1'] = original_content(e, row, base, row['description'])
             key = (row['id'], row['starts_at'])
             if key in out and out[key] != row:
                 raise ValueError('conflicting_event_occurrence')

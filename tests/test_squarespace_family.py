@@ -94,6 +94,8 @@ def test_registered_family_dispatch_and_protected_transport():
         result=preview_source(source)
         assert result['p_source_key']==source['source_key'] and len(result['p_events'])==1
         assert fetch.call_args.kwargs['respect_robots'] is True
+        assert result['p_events'][0]['collector_event_content_v1']['facts']['venue_name'] == 'Actual Hall'
+        assert 'collector_event_content_v1' not in result['p_samples'][0]
     with patch('roomquest.mapsee_adapter.profiles',return_value={}),patch('roomquest.preview_worker.fetch_publisher') as fetch:
         with pytest.raises(PreviewError,match='unregistered_mapsee_source'):preview_source(source)
         fetch.assert_not_called()

@@ -124,3 +124,7 @@ def test_preview_stays_source_scoped_and_robots_safe(monkeypatch):
     result=preview_worker.preview_source(source(ak.MAGNETIC))
     assert result["p_future_count"]==len(result["p_events"])==1
     assert result["p_venue_count"]==1
+    facts = result["p_events"][0]["collector_event_content_v1"]["facts"]
+    assert facts["venue_name"] == MAGLOC["addressTitle"]
+    assert facts["venue_address"] == ", ".join((MAGLOC["addressLine1"], MAGLOC["addressLine2"]))
+    assert "collector_event_content_v1" not in result["p_samples"][0]
