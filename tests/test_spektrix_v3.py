@@ -523,3 +523,16 @@ def test_refund_product_does_not_hold_the_physical_performance_snapshot():
                     dict(protection, description='Ticket refund protection', htmlDescription='')):
         assert api._ticket_extra(changed) is False
     assert api._ticket_extra(dict(protection, name='Secure My Booking')) is True
+
+
+@pytest.mark.parametrize('title,copy', [
+    ('Ticket Protection Secure My Booking', 'Protect your ticket. Ticket Protection is optional. All refund requests go to the provider.'),
+    ('Refreshments Ice Creams', 'Event for audience to pre-buy their refreshments when buying tickets'),
+    ('Ticket Bank Donation (Sleeping Beauty)', 'Please consider adding a donation to our Ticket Bank to cover someone else’s ticket.'),
+])
+def test_additional_product_copy_requires_exact_title_and_zero_duration(title, copy):
+    product = event(name=title, duration=0, description=copy)
+    assert api._ticket_extra(product)
+    assert not api._ticket_extra(dict(product, duration=60))
+    assert not api._ticket_extra(dict(product, name=title+' Concert'))
+    assert not api._ticket_extra(dict(product, description='A performance', htmlDescription=''))

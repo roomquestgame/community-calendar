@@ -248,14 +248,27 @@ def _ticket_extra(event):
     """
     title = _text(event.get('name'))
     description = _text(event.get('description') or event.get('htmlDescription'))
+    product_copy = _text((event.get('description') or '') + ' '
+                         + (event.get('htmlDescription') or ''))
     # Multiple clients publish refund protection as a dated supplementary
     # product with a blank/generic venue. It is not a physical performance.
     # Require both its exact product label and explanatory API copy; neither
     # zero duration nor a supplementary flag alone excludes a real event.
     if (event.get('duration') == 0
-            and re.fullmatch(r'Secure My Booking(?: Ticket Refund Protection)?', title, re.I)
-            and re.search(r'ticket refund protection', description, re.I)
-            and re.search(r'protect your (?:tickets|order)', description, re.I)):
+            and re.fullmatch(r'Secure My Booking(?: Ticket Refund Protection)?'
+                             r'|Ticket Protection Secure My Booking', title, re.I)
+            and re.search(r'ticket (?:refund )?protection', product_copy, re.I)
+            and re.search(r'protect your (?:tickets?|order)', product_copy, re.I)
+            and re.search(r'refund', product_copy, re.I)):
+        return True
+    if (event.get('duration') == 0
+            and re.fullmatch(r'Refreshments (?:Ice Creams|Drinks and Sweets)', title, re.I)
+            and re.search(r'pre-buy their refreshments when buying tickets', product_copy, re.I)):
+        return True
+    if (event.get('duration') == 0
+            and re.fullmatch(r'Ticket Bank Donation \([^()]+\)', title, re.I)
+            and re.search(r'adding a donation to our Ticket Bank', product_copy, re.I)
+            and re.search(r'cover someone else', product_copy, re.I)):
         return True
     if event.get('duration') == 0 and (
         (re.fullmatch(r'Pre[ -]?Order\s+Drinks?', title, re.I)

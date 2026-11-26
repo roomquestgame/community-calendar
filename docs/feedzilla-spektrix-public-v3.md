@@ -5,11 +5,14 @@ only location error is 69 zero-duration Secure My Booking Ticket Refund
 Protection products attached to blank venue '.', alongside 403 real extractable
 performances and 5 off-sale/cancelled instances. Cambridge Live independently
 publishes the same product and explicit refund-protection description.
-The shared ticket-extra filter now requires the exact product name, zero duration,
-and explanatory ticket-refund/protect-your-order copy. Supplementary flags,
+The shared ticket-extra filter requires exact product names, zero duration,
+and explanatory product copy. Verified variants also cover refreshments preorders
+and donations explicitly paying for someone else’s performance ticket. Supplementary flags,
 missing venues, zero duration and vague product titles alone do not filter events.
 The complete Blackpool snapshot now yields exactly 403 performances, excluding
-69 evidenced products before venue resolution. 81 focused tests pass with
+69 evidenced products before venue resolution. Complete replay also proves
+Harrogate Theatre 138 performances / 66 products / 1 off-sale; Horsecross 65 / 69 / 6;
+Joseph Rowntree 27 / 19 / 0. 84 focused tests pass with
 negative real-show, nonzero-duration and insufficient-copy controls.
 Only original receipts proven affected will be rechecked after deployment.
 Other named/generic missing locations remain held pending publisher evidence.
