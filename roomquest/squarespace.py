@@ -81,7 +81,7 @@ def check_pagination(data, *, upcoming):
         raise ValueError('pagination_requires_review')
 
 
-def collect(source, fetch):
+def collect(source, fetch, *, retain_original=False):
     """One JSON snapshot, shared by registered catalogs and curated sources.
 
     No archive crawl, per-event requests, location search or response next links.
@@ -97,10 +97,10 @@ def collect(source, fetch):
     payload = fetch(url, 'application/json')
     if base in SOURCES:
         return parse(payload, source)  # Retain reviewed timezone/state/location checks.
-    return parse_registered(json.loads(payload), base)
+    return parse_registered(json.loads(payload), base, retain_original=retain_original)
 
 
-def parse_registered(data, base):
+def parse_registered(data, base, *, retain_original=False):
     """Preserve Mapsee factual identities and reuse shared record normalization."""
     from roomquest.mapsee_adapter import record
     if not isinstance(data, dict):
@@ -150,6 +150,7 @@ def parse_registered(data, base):
                 lat, lng = marker
         if isinstance(lat, bool) or isinstance(lng, bool):
             lat = lng = None
+        address_from_publisher, point_from_publisher = street, (lat, lng)
         if (base == ASHLAND_MUSEUM
                 and plain(v.get('addressTitle')) == 'Truist Theater in Brock Commons'
                 and street == 'Randolph-Macon College, Henry Street, Ashland, VA 23005'):
@@ -187,6 +188,27 @@ def parse_registered(data, base):
         if row:
             from roomquest.event_description import description
             row['description'] = description(e.get('body')) or description(e.get('excerpt'))
+            if retain_original:
+                try:
+                    source_lat, source_lng = map(float, point_from_publisher)
+                    if not (-90 <= source_lat <= 90 and -180 <= source_lng <= 180) or (source_lat, source_lng) == (0, 0):
+                        source_lat = source_lng = None
+                except (TypeError, ValueError, OverflowError):
+                    source_lat = source_lng = None
+                from roomquest.registered_native_content import image_candidate
+                source_end = timestamp(e.get('endDate'))
+                row['collector_event_content_v1'] = {'version': 1, 'event_id': row['id'], 'facts': {
+                    'title': plain(e.get('title')), 'description': row['description'],
+                    'starts_at_utc': row['starts_at'],
+                    'ends_at_utc': source_end.isoformat() if source_end else None,
+                    'is_all_day': False, 'event_url': row['event_url'],
+                    'venue_name': plain(v.get('addressTitle')) or None,
+                    'venue_address': address_from_publisher or None,
+                    'source_latitude': source_lat, 'source_longitude': source_lng,
+                    'publisher_categories': [plain(x) for x in e.get('categories', [])
+                                             if isinstance(x, str) and plain(x)],
+                    'source_image_url': image_candidate(e.get('assetUrl'), base),
+                }}
             key = (row['id'], row['starts_at'])
             if key in out and out[key] != row:
                 raise ValueError('conflicting_event_occurrence')
@@ -266,4 +288,3 @@ def parse(payload, source):
                 raise ValueError('conflicting_event_occurrence')
             out[key] = record
     return sorted(out.values(), key=lambda e: (e['starts_at'], e['id']))
-
