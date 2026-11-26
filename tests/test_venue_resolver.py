@@ -48,6 +48,15 @@ class EvidenceTests(unittest.TestCase):
         self.assertIsNone(v.resolve(claim, fetcher=lambda _: page([place, other]),
                                    clock=lambda: 0, deadline=20))
 
+    def test_spektrix_semantic_address_keeps_explicit_venue_binding(self):
+        claim = {**CLAIM, 'provider': 'spektrix', 'venue_name': 'Battersea Arts Centre'}
+        html = ('<title>Find Us | Battersea Arts Centre</title><address>'
+                'Battersea Arts Centre<br>Lavender Hill<br>London SW11 5TN</address>')
+        rows = v.extract_candidates(html, claim['event_url'], claim)
+        self.assertEqual(rows[0]['address'], 'lavender hill,london,SW11 5TN')
+        self.assertEqual(v.extract_candidates(html, claim['event_url'],
+            {**claim, 'venue_name': 'Battersea Park'}), [])
+
     def test_room_suffix_matches_real_parent_building(self):
         self.assertTrue(v.venue_matches(CLAIM["venue_name"], PLACE["name"]))
         result = v.extract_candidates(page(PLACE), CLAIM["event_url"], CLAIM)
