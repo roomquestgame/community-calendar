@@ -225,6 +225,13 @@ def classify(url, payload, hint=None, endpoint_only=False, venue_website=False):
     tockify = tockify_subscription(body)
     if tockify:
         return {'p_outcome': 'discovered', 'p_endpoint': tockify, 'p_type': 'ical'}
+    # VenuePilot's standard embed publishes its exact account identity and
+    # read-only GraphQL server. The provider collector independently verifies
+    # and reads that collection before registration succeeds.
+    from roomquest.venuepilot_provider import subscription as venuepilot_subscription
+    venuepilot = venuepilot_subscription(body)
+    if venuepilot:
+        return {'p_outcome': 'discovered', 'p_endpoint': venuepilot, 'p_type': 'venuepilot'}
     parser = CalendarLinks(url)
     parser.feed(body)
     stale_destination = reviewed_stale_calendar_page(url, body)
