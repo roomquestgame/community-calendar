@@ -85,7 +85,7 @@ def timezone(page, fetch, url):
     return zone
 
 
-def parse(page, *, url, zone):
+def parse(page, *, url, zone, retain_original=False):
     listing_host = urlsplit(url).hostname
     scripts = _events_scripts(page)
     if not any(script.strip() for script in scripts):
@@ -123,13 +123,25 @@ def parse(page, *, url, zone):
                 raise ValueError('conflicting_tickera_event')
             if previous is None:
                 identities[event_url] = signature
+                if retain_original:
+                    item['collector_event_content_v1'] = {
+                        'version': 1, 'event_id': item['id'],
+                        'facts': {
+                            'title': item['title'], 'is_all_day': False,
+                            'publisher_status': 'scheduled',
+                            'starts_at_local': start.replace(' ', 'T') + ':00',
+                            'ends_at_local': end.replace(' ', 'T') + ':00' if end else None,
+                            'event_url': item['event_url'], 'source_image_url': item.get('image_url'),
+                        },
+                    }
                 rows.append(item)
     return rows
 
 
-def collect(source, fetch, *, body=None, deadline_at=None):
+def collect(source, fetch, *, body=None, deadline_at=None, retain_original=False):
     listing = source.get('feed_url')
     if source.get('platform_adapter') != 'tickera' or source.get('kind') != 'json':
         raise ValueError('unregistered_tickera_source')
     page = body if body is not None else fetch(listing, 'text/html,application/xhtml+xml')
-    return parse(page, url=listing, zone=timezone(page, fetch, listing))
+    return parse(page, url=listing, zone=timezone(page, fetch, listing),
+                 retain_original=retain_original)

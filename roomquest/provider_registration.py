@@ -104,7 +104,8 @@ def collect(url, adapter, fetch, *, deadline, profile=None, body=None, registrat
         if adapter == 'event_discovery' and isinstance(profile, dict):
             source['publisher_event_timezone'] = profile.get('publisher_event_timezone')
         module = ticketweb_event_discovery if adapter == 'event_discovery' else tickera_provider
-        return module.collect(source, fetch, body=body, deadline_at=deadline)
+        return module.collect(source, fetch, body=body, deadline_at=deadline,
+                              retain_original=retain_original)
     if family(url, body) != adapter:
         raise ValueError('provider_endpoint_mismatch')
     source = {'source_key': source_key(url), 'feed_url': url, 'platform_adapter': adapter,

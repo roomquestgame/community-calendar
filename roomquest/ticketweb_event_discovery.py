@@ -119,7 +119,7 @@ def _plain_fragment(value):
     return BeautifulSoup(str(value or ''), 'html.parser').get_text(' ', strip=True)
 
 
-def parse(payload, *, url, zone):
+def parse(payload, *, url, zone, retain_original=False):
     try:
         envelope = json.loads(payload)
         events = envelope['events']
@@ -216,6 +216,17 @@ def parse(payload, *, url, zone):
                     image_parts = urlsplit(image)
                     if image_parts.scheme == 'https' and image_parts.hostname and not image_parts.username and not image_parts.password:
                         item['image_url'] = image
+                if retain_original:
+                    item['collector_event_content_v1'] = {
+                        'version': 1, 'event_id': item['id'],
+                        'facts': {
+                            'title': item['title'], 'is_all_day': False,
+                            'publisher_status': 'scheduled',
+                            'starts_at_local': stamp.replace(' ', 'T'),
+                            'venue_name': venue or None, 'event_url': item['event_url'],
+                            'source_image_url': item.get('image_url'),
+                        },
+                    }
                 rows.append(item)
     if len(rows) > 500:
         raise ValueError('oversized_event_discovery_snapshot')
@@ -230,7 +241,7 @@ def parse(payload, *, url, zone):
     return ParsedEvents(rows, rejected=rejected, complete=not incomplete)
 
 
-def collect(source, fetch, *, body=None, deadline_at=None):
+def collect(source, fetch, *, body=None, deadline_at=None, retain_original=False):
     listing = source.get('feed_url')
     if source.get('platform_adapter') != 'event_discovery' or source.get('kind') != 'json':
         raise ValueError('unregistered_event_discovery_source')
@@ -257,7 +268,7 @@ def collect(source, fetch, *, body=None, deadline_at=None):
     except TypeError as exc:
         raise ValueError('event_discovery_transport_type_error') from exc
     try:
-        records = parse(payload, url=listing, zone=spec['timezone'])
+        records = parse(payload, url=listing, zone=spec['timezone'], retain_original=retain_original)
         if records.rejected:
             LOGGER.warning('event_discovery_rows_rejected host=%s reasons=%s',
                            urlsplit(listing).hostname,
