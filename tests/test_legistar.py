@@ -179,3 +179,16 @@ def test_reusable_parser_uses_each_reviewed_clients_own_timezone(monkeypatch):
     rows, held = legistar.parse_page([item], legistar.source_payload('west_coast_test'))
     assert held == 0 and rows[0]['starts_at'] == '2026-11-10T00:00:00+00:00'
     assert rows[0]['civic']['timezone'] == 'America/Los_Angeles'
+
+
+def test_original_facts_ignore_check_time_and_reviewed_address():
+    key = 'richmond_va_legistar'
+    src = legistar.source_payload(key)
+    rows = data()
+    first, _ = legistar.parse_page(rows, src, now=NOW, retain_original=True)
+    second, _ = legistar.parse_page(rows, src, now=NOW + timedelta(minutes=5), retain_original=True)
+    assert first and len(first) == len(second)
+    assert [r['collector_event_content_v1'] for r in first] == [r['collector_event_content_v1'] for r in second]
+    for row in first:
+        assert 'venue_address' not in row['collector_event_content_v1']['facts']
+        assert 'verified_at' not in row['collector_event_content_v1']['facts']

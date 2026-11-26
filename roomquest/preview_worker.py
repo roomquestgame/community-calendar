@@ -3437,7 +3437,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
             raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}', reason) else 'invalid_civic_payload') from exc
         if len(records) > 500:
             raise PreviewError('source_record_limit')
-        samples = records[:MAX_PREVIEWS]
+        samples = [{k: v for k, v in row.items() if k != 'collector_event_content_v1'}
+                   for row in records[:MAX_PREVIEWS]]
         while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
             samples.pop()
         return {'p_source_key': source_key, 'p_samples': samples,
@@ -3649,7 +3650,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         except (ValueError, TypeError, KeyError, OverflowError) as exc:
             reason = str(exc)
             raise PreviewError(reason if re.fullmatch(r"[a-z_]{3,100}", reason) else "invalid_revize_payload") from exc
-        samples = records[:MAX_PREVIEWS]
+        samples = [{k: v for k, v in row.items() if k != 'collector_event_content_v1'}
+                   for row in records[:MAX_PREVIEWS]]
         while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
             samples.pop()
         return {"p_source_key": source["source_key"], "p_samples": samples,

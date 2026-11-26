@@ -109,7 +109,7 @@ def _identity(item, spec):
     return f"legistar:{spec['client']}:{event_id}"
 
 
-def parse_page(data, source, *, now=None, spec=None):
+def parse_page(data, source, *, now=None, spec=None, retain_original=False):
     spec = spec if spec is not None else validate(source)
     current = _now(now)
     if not isinstance(data, list) or len(data) > PAGE_SIZE:
@@ -170,6 +170,13 @@ def parse_page(data, source, *, now=None, spec=None):
                        # Internal app visibility cutoff only; the unknown
                        # publisher end remains None in the event contract.
                        publisher_status=status)
+            if retain_original:
+                row['collector_event_content_v1'] = {'version': 1, 'event_id': identity, 'facts': {
+                    'title': title, 'description': '\n\n'.join(x for x in parts if x) or None,
+                    'starts_at_local': begins.replace(tzinfo=None).isoformat(timespec='seconds'),
+                    'is_all_day': False, 'publisher_status': status,
+                    'meeting_location': location or None, 'event_url': url,
+                }}
             if spec.get("jurisdiction_id"):
                 row["civic"] = _metadata(spec, url, current, begins + timedelta(hours=3))
             rows.append(row)
@@ -206,7 +213,8 @@ def collect(source, fetch, *, deadline_at=None, now=None, spec=None):
             if identity in identities:
                 raise ValueError('legistar_pagination_repeated')
             identities.add(identity)
-        parsed, rejected = parse_page(data, source, now=current, spec=spec)
+        parsed, rejected = parse_page(data, source, now=current, spec=spec,
+                                      retain_original=source.get('civic_contract_version') == 1 and source.get('source_key') in SOURCES)
         rows.extend(parsed)
         held += rejected
         if len(data) < PAGE_SIZE:
