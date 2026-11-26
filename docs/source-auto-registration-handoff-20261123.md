@@ -1,3 +1,15 @@
+## November 26 — Shared venue AI fallback draft (EVE-156 / EVE-175)
+
+Owner approved completing optional AI assistance. This draft adds only a bounded candidate-selection module and ten local tests. It is NOT integrated, deployed or enabled. Existing deterministic resolver, geocoder and queues remain unchanged.
+
+Model may select only from up to three independently verified venue/address/evidence candidates; unknown IDs, extra fields/coordinates, unsupported quotes, locality/country mismatch, invalid JSON and ambiguous responses stay held. One required durable admission callback precedes one model attempt. Caller must still implement trusted candidate discovery, publisher transport validation, durable daily request/token budget and existing lease/provenance handling before integration. No automatic approval or coordinates.
+
+Production collector environment-name inspection found TAVILY_API_KEY but no model API credential. Values were not decrypted or disclosed. Anthropic adapter is an unactivated candidate because anthropic is already an optional dependency; provider, exact model and spending ceiling are NOT selected by this draft. Required next decision: model/provider and approved budget, then server-only credential. Do not run paid inference or claim production acceptance from mocked tests. Tavily search is not an LLM address authority.
+
+NYC's submit contract currently restricts evidence to event host; verified third-party official venue evidence needs a constrained provenance contract, not removal of host validation. Preserve review outcomes and existing worker limits. Complete integration, guarded DB changes if needed, credential configuration, protected deployment, four-venue canaries and normal publication before reporting success. Keep EVE-156/EVE-175 open. No 438-event retry was requested or executed by this draft.
+
+Repository AGENTS references a missing .claude/bram-conventions.md; no substitute guidance was invented. Current owner explicitly approved completing the work after being informed. Available repository cost/deployment/PR and publisher safeguards remain in effect.
+
 ## 2026-11-23 — Review-hold batch of 10 and reusable GrowthZone intake detector
 
 Owner approved investigating ten of the existing feed-registration review holds while improving the registration automation, rather than bulk resetting all 73 eligible receipts. Original IDs **77, 79, 91, 129, 226, 328, 331, 441, 561, 878** remain unchanged in production. The linked ten-source audit and **source-status distinction** are in [the batch journal](journal/2026-11-23-held-registration-batch01.md).
