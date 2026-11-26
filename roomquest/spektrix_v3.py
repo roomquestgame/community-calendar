@@ -248,6 +248,15 @@ def _ticket_extra(event):
     """
     title = _text(event.get('name'))
     description = _text(event.get('description') or event.get('htmlDescription'))
+    # Multiple clients publish refund protection as a dated supplementary
+    # product with a blank/generic venue. It is not a physical performance.
+    # Require both its exact product label and explanatory API copy; neither
+    # zero duration nor a supplementary flag alone excludes a real event.
+    if (event.get('duration') == 0
+            and re.fullmatch(r'Secure My Booking(?: Ticket Refund Protection)?', title, re.I)
+            and re.search(r'ticket refund protection', description, re.I)
+            and re.search(r'protect your (?:tickets|order)', description, re.I)):
+        return True
     if event.get('duration') == 0 and (
         (re.fullmatch(r'Pre[ -]?Order\s+Drinks?', title, re.I)
          and re.search(r'pre[ -]?order your drinks', description, re.I))

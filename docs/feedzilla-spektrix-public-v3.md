@@ -1,3 +1,19 @@
+## November 26 — refund-product venue blocker
+
+Read-only native 60-day replay of original Blackpool receipt 1476 proves its
+only location error is 69 zero-duration Secure My Booking Ticket Refund
+Protection products attached to blank venue '.', alongside 403 real extractable
+performances and 5 off-sale/cancelled instances. Cambridge Live independently
+publishes the same product and explicit refund-protection description.
+The shared ticket-extra filter now requires the exact product name, zero duration,
+and explanatory ticket-refund/protect-your-order copy. Supplementary flags,
+missing venues, zero duration and vague product titles alone do not filter events.
+The complete Blackpool snapshot now yields exactly 403 performances, excluding
+69 evidenced products before venue resolution. 81 focused tests pass with
+negative real-show, nonzero-duration and insufficient-copy controls.
+Only original receipts proven affected will be rechecked after deployment.
+Other named/generic missing locations remain held pending publisher evidence.
+
 ## November 26 — registration-window canary repair
 
 Production baseline: canonical alias READY at af8847bed218bcb6e6689609399fbded55d4e0dd.
