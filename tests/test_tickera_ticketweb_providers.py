@@ -99,6 +99,59 @@ def test_ticketweb_event_discovery_contract_uses_public_display_action():
     assert calls[0][1]['calendar_form']['action'] == 'get_events_artist_calendar'
 
 
+def test_standard_ticketweb_calendar_uses_its_advertised_display_action():
+    page = event_discovery_page().replace('calendar3', 'calendar').replace(
+        'get_events_artist_calendar', 'get_events_for_calendar')
+    spec = ticketweb_event_discovery.contract('https://venue.example.org/calendar/', page)
+    submitted = ticketweb_event_discovery.form(
+        spec, DAY.isoformat(), (DAY + timedelta(days=61)).isoformat())
+    assert submitted['action'] == 'get_events_for_calendar'
+    assert ticketweb_event_discovery.valid_form(submitted)
+    calls = []
+    def fetch(url, accept, **kwargs):
+        calls.append(kwargs['calendar_form'])
+        return event_discovery_payload()
+    source = {'feed_url': 'https://venue.example.org/calendar/',
+              'platform_adapter': 'event_discovery', 'kind': 'json'}
+    assert len(ticketweb_event_discovery.collect(source, fetch, body=page)) == 1
+    assert len(calls) == 1 and calls[0]['action'] == submitted['action']
+    assert ticketweb_event_discovery.valid_form(calls[0])
+    # This is a specific public calendar variant, not arbitrary AJAX access.
+    with pytest.raises(ValueError, match='invalid_event_discovery_calendar'):
+        ticketweb_event_discovery.contract(source['feed_url'], page.replace('&quot;calendar&quot;', '&quot;calendar3&quot;'))
+    submitted['action'] = 'delete_event'
+    assert not ticketweb_event_discovery.valid_form(submitted)
+
+
+def test_ambiguous_ticketweb_calendar_actions_are_held():
+    page = event_discovery_page() + "<script>action: 'get_events_for_calendar'</script>"
+    assert not ticketweb_event_discovery.supports_listing('https://venue.example.org/calendar/', page)
+
+
+def test_standard_calendar_dialog_retains_exact_public_event_identity():
+    payload = json.loads(event_discovery_payload())
+    event = payload['events'][0]
+    canonical = event['url']
+    event.update(id=2827, url='#tw-event-dialog-2827')
+    payload['popupdata'] = ('<div id="tw-event-dialog-2827"><div class="tw-name">'
+                            f'<a href="{canonical}">Public show</a></div></div>')
+    [row] = ticketweb_event_discovery.parse(json.dumps(payload), url='https://venue.example.org/calendar/', zone='UTC')
+    assert row['event_url'] == canonical
+    assert row['id'] == canonical + ':' + START + ':00'
+    # A same-response dialog with another title cannot supply this event URL.
+    payload['popupdata'] = payload['popupdata'].replace('Public show', 'Other show')
+    with pytest.raises(ValueError):
+        ticketweb_event_discovery.parse(json.dumps(payload), url='https://venue.example.org/calendar/', zone='UTC')
+
+
+def test_grouped_artist_performances_cannot_seal_a_partial_snapshot():
+    payload = json.loads(event_discovery_payload())
+    payload['events'][0]['times'] = ('<a href="https://venue.example.org/tm-event/public-show/">7PM</a>'
+                                    '<a href="https://venue.example.org/tm-event/second-show/">9PM</a>')
+    with pytest.raises(ValueError):
+        ticketweb_event_discovery.parse(json.dumps(payload), url='https://venue.example.org/calendar/', zone='UTC')
+
+
 
 
 def test_ticketweb_provider_links_are_kept_and_bad_rows_do_not_drop_calendar():

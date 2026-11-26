@@ -52,6 +52,14 @@ def test_wix_bootstrap_text_cannot_impersonate_a_wordpress_plugin():
     assert wordpress_fingerprints(html) == ()
 
 
+def test_event_discovery_legacy_css_does_not_impersonate_eventon():
+    page = '''<html><script src="/wp-content/plugins/event-discovery/js/calendar-ada.js"></script>
+      <style>.eventon_details_shading_bot {z-index:3}</style></html>'''
+    assert wordpress_fingerprints(page) == ('event-discovery',)
+    assert wordpress_fingerprints(page + '<script src="/wp-content/plugins/eventon/main.js"></script>') == (
+        'eventon', 'event-discovery')
+
+
 def test_both_wp_rest_route_styles_and_subdirectory_installation():
     assert rest_route_url('https://theatre.example.org/wp-json/', '/tribe/events/v1/events') == (
         'https://theatre.example.org/wp-json/tribe/events/v1/events')
