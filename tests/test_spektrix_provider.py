@@ -209,3 +209,26 @@ def test_main_publisher_link_does_not_admit_other_hosts_or_invalid_urls(link):
 def test_central_api_has_no_inferred_publisher_link_hosts():
     assert not spektrix_provider.profile(URL).get('verified_event_hosts')
     assert not spektrix_provider.profile('https://tickets.spektrix.com/client/api/v3/events').get('verified_event_hosts')
+
+@pytest.mark.parametrize('url,link', [
+    ('https://tickets.z-arts.org/zarts/api/v3/events', 'https://www.z-arts.org/events/the-library-of-enchantment/'),
+    ('https://tickets.planosymphony.org/planosymphony/api/v3/events', 'https://planosymphony.org/guildfestiveeve/'),
+])
+def test_main_publisher_weburl_survives_native_staging_evidence(url, link):
+    from roomquest import registered_native_content as native
+    config = spektrix_provider.profile(url)
+    claim = {'source_key': source_key(url), 'feed_url': url, 'kind': 'json',
+             'platform_adapter': 'spektrix', 'registered_native_content_version': 1}
+    event_url = spektrix_v3._event_url({'id': EVENT, 'webUrl': link}, config)
+    rows = spektrix_provider.stageable(claim, {'complete': True, 'events': [{
+        'id': config['client'] + ':1234567890', 'title': 'Publisher event',
+        'starts_at': '2026-12-12T18:00:00+00:00', 'event_url': event_url,
+        'venue_name': 'Venue', 'venue_address': '',
+        'source_event_id': EVENT, 'source_instance_id': '1234567890',
+        'source_plan_id': '2234567890', 'source_venue_id': VENUE,
+    }]})
+    native.attach(rows[0], claim, description_value='Native publisher text')
+    assert rows[0]['registered_native_content']['event_url'] == link
+    assert rows[0]['registered_native_content']['feed_url'] == url
+    assert rows[0]['spektrix_location']['source_venue_id'] == VENUE
+    assert not native.event_url_matches(claim, 'https://other.example/event')

@@ -82,6 +82,12 @@ def event_url_matches(source, link):
     if (urlsplit(link).hostname.lower().removeprefix('www.')
             == urlsplit(source['feed_url']).hostname.lower().removeprefix('www.')):
         return True
+    if (source.get('kind') == 'json' and source.get('platform_adapter') == 'spektrix'
+            and enabled(source)):
+        # Match the provider's original API webUrl contract through staging.
+        # This accepts link evidence only; publisher fetch hosts stay unchanged.
+        from roomquest.spektrix_provider import profile
+        return urlsplit(link).hostname in profile(source['feed_url']).get('verified_event_hosts', ())
     # These exact calendars publish Ticketmaster URLs in their Event JSON-LD.
     # This is identity evidence from the fetched calendar, not fetch permission.
     return (source.get('platform_adapter') == 'jsonld' and enabled(source)
