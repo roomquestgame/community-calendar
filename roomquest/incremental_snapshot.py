@@ -27,7 +27,7 @@ MAX_EVENTS = 500
 MAX_REQUESTS = 32
 MAX_REQUEST_BYTES = 32_000
 _HASH = re.compile(r"[0-9a-f]{64}\Z")
-_CATEGORIES = frozenset(("ical", "wordpress", "localist", "chambermate", "chambermaster"))
+_CATEGORIES = frozenset(("ical", "wordpress", "jsonld", "localist", "chambermate", "chambermaster"))
 _capture = ContextVar("collector_incremental_snapshot", default=None)
 _detail = ContextVar("collector_incremental_detail", default=None)
 
