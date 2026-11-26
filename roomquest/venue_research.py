@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import re
 import unicodedata
 from time import monotonic
@@ -22,6 +23,7 @@ MAX_LEADS = 2
 MAX_PASSAGES = 4
 MAX_PASSAGE = 1200
 MAX_RESPONSE = 16 * 1024
+MAX_MODEL_INPUT_BYTES = 16 * 1024
 STREET = re.compile(r"\b\d{1,6}[A-Za-z]?(?:-\d{1,6})?\s+[A-Za-z0-9.'’ -]{1,90}?\b(?:street|st|road|rd|avenue|ave|boulevard|blvd|drive|dr|lane|ln|court|ct|way|parkway|pkwy|place|pl|circle|cir|highway|hwy|terrace|ter|oval|plaza|broadway|square|hill|gardens|close)\.?(?:\s+(?:north|south|east|west|ne|nw|se|sw))?\b", re.I)
 SYSTEM = (
     'Extract a physical street address only from the supplied official-page passages. '
@@ -199,10 +201,13 @@ def search_urls(query, hosts, *, api_key, deadline_at, clock=monotonic):
 def anthropic_extract(payload, *, api_key, model, deadline_at, clock=monotonic):
     if not api_key or not model:
         raise ValueError("model_not_configured")
+    serialized = json.dumps(payload)
+    if len(SYSTEM.encode()) + len(serialized.encode()) > MAX_MODEL_INPUT_BYTES:
+        raise ValueError("model_input_bound")
     data = bounded_json("https://api.anthropic.com/v1/messages",
                         {"x-api-key": api_key, "anthropic-version": "2023-06-01"},
                         {"model": model, "max_tokens": 512, "system": SYSTEM,
-                         "messages": [{"role": "user", "content": json.dumps(payload)}]},
+                         "messages": [{"role": "user", "content": serialized}]},
                         deadline_at=deadline_at, max_body=MAX_RESPONSE, timeout=5, clock=clock)
     if not isinstance(data, dict) or data.get("stop_reason") != "end_turn":
         raise ValueError("incomplete_response")
@@ -210,3 +215,49 @@ def anthropic_extract(payload, *, api_key, model, deadline_at, clock=monotonic):
     if not isinstance(blocks, list) or len(blocks) != 1 or not isinstance(blocks[0], dict) or blocks[0].get("type") != "text" or not isinstance(blocks[0].get("text"), str):
         raise ValueError("response_contract")
     return blocks[0]["text"]
+
+
+def configured(env=None):
+    """No implicit model, crawler key reuse, or provider call on disabled config."""
+    env = os.environ if env is None else env
+    if env.get("VENUE_RESEARCH_ENABLED") != "true":
+        return None
+    config = {"model": env.get("VENUE_RESEARCH_MODEL", "").strip(),
+              "search_key": env.get("VENUE_RESEARCH_TAVILY_API_KEY", "").strip(),
+              "model_key": env.get("VENUE_AI_ANTHROPIC_API_KEY", "").strip()}
+    return config if all(config.values()) and len(config["model"]) <= 100 else None
+
+
+def claim_options(config):
+    return {"limit": 1, "research_model": config["model"]} if config else {"limit": 1}
+
+
+def defer_miss(database, claim, identity, config):
+    if not config or claim.get("provider") != "nyc_event_calendar":
+        return False
+    receipt = database("research_defer", {**identity, "model": config["model"]})
+    return isinstance(receipt, dict) and receipt.get("deferred") is True
+
+
+def handle_claim(database, claim, identity, config, *, fetch, deadline, clock):
+    """Return None for ordinary leases; otherwise finish one admitted research lease."""
+    if "research_permit" not in claim:
+        return None
+    if config and claim.get("provider") == "nyc_event_calendar":
+        answer = research(claim, admit=lambda _: claim["research_permit"],
+                          search=lambda query, hosts, *, deadline_at: search_urls(
+                              query, hosts, api_key=config["search_key"], deadline_at=deadline_at, clock=clock),
+                          fetch=fetch, complete=lambda payload: anthropic_extract(
+                              payload, api_key=config["model_key"], model=config["model"],
+                              deadline_at=deadline-0.5, clock=clock),
+                          model=config["model"], deadline=deadline, clock=clock)
+        if answer.get("status") == "proposed":
+            receipt = database("research_propose", {**identity, "proposal": answer})
+            if isinstance(receipt, dict) and receipt.get("recorded") is True:
+                receipt = database("submit", {**identity, **answer["candidate"]})
+                if isinstance(receipt, dict) and receipt.get("recorded") is True:
+                    return "resolved"
+                # A transport/contract failure is not a successful publication.
+                raise ValueError("research_submit_not_recorded")
+    database("fail", {**identity, "reason": "needs_review"})
+    return "review"
