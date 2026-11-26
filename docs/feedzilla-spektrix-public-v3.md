@@ -1,3 +1,28 @@
+# November 26, 2026 — EVE-174 missing-location correction
+
+Native Spektrix capture now retains occurrences with missing location text.
+Manifest, event/plan/venue joins, complete snapshot bounds, stable occurrence IDs,
+cancellation checks, 60-day horizon and 96-hour refresh remain unchanged.
+Staging retains native event/instance/plan/venue identities and original location
+text in `spektrix_location`; the backend stores this in existing publisher evidence.
+Missing names remain blank and held; no publisher-wide address default is inferred.
+
+The coordinated backend migration uses existing venue lookup leases/cache,
+address waits, country geocoders and publication. Lookups distinguish source,
+plan, venue and original address revision. GB evidence extraction is enabled only
+for an explicit native Spektrix claim. Manual decisions and expired evidence
+remain authoritative. A current location-held occurrence must not be withdrawn
+merely because it was not renewed; genuine absence/cancellation remains normal.
+Deploy the backwards-compatible backend first, then this collector, then recheck
+original Battersea registration #1460 in Admin before the other 19.
+
+Verification: 82 focused Python tests and four subtests passed. Saved live BAC
+capture replay retained 244 unique occurrences, five plan IDs and one used Venue
+ID; seven API venue addresses are blank. Thirteen isolated PostgreSQL checks pass
+for plan separation, exact-source/revision matching, GB/US application, manual
+holds and expired evidence (dependency doubles, not full production replay).
+No registration recheck or publication result is claimed at this checkpoint.
+
 ## November 26 — refund-product venue blocker
 
 Read-only native 60-day replay of original Blackpool receipt 1476 proves its

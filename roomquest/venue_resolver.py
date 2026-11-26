@@ -55,7 +55,7 @@ def venue_matches(expected: str, actual: str) -> bool:
         and len((set(ta) & set(tb)) - generic) >= min(len(set(ta) - generic), len(set(tb) - generic)))
 
 
-def structured_address(value) -> str | None:
+def structured_address(value, *, allow_gb=False) -> str | None:
     if not isinstance(value, dict):
         return None
     street, city, state = (str(value.get(k) or "").strip() for k in
@@ -63,6 +63,13 @@ def structured_address(value) -> str | None:
     country = value.get("addressCountry", "US")
     if isinstance(country, dict):
         country = country.get("name", "")
+    if allow_gb and str(country).upper() in {'GB', 'UK', 'UNITED KINGDOM', 'GREAT BRITAIN'}:
+        from roomquest.forward_geocoder import normalize_gb_postcode, gb_address_part
+        postcode = normalize_gb_postcode(str(value.get('postalCode') or ''))
+        street, city = gb_address_part(street, street=True), gb_address_part(city)
+        if street and city and postcode:
+            return ','.join((street, city, postcode))
+        return None
     if str(country).upper() not in {"US", "USA", "UNITED STATES", "UNITED STATES OF AMERICA"}:
         return None
     if not re.match(r"^\d{1,6}[A-Za-z]?\s+", street) or not city or not state:
@@ -83,11 +90,36 @@ def json_nodes(value):
             yield from json_nodes(item)
 
 
+def gb_contact_addresses(soup):
+    """Read one short semantic address block, never a publisher-wide default."""
+    from roomquest.forward_geocoder import normalize_gb_postcode, gb_address_part
+    found = set()
+    pattern = re.compile(
+        r"^([A-Za-z0-9' .–&-]{3,100}?),\s*([A-Za-z' .-]{2,80}),?\s*"
+        r"([A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2})(?:,\s*(?:UK|GB|United Kingdom))?$", re.I)
+    for tag in soup.select('address,p,h2,h3')[:150]:
+        text = ', '.join(tag.stripped_strings)
+        if len(text) > 220:
+            continue
+        match = pattern.fullmatch(text)
+        if not match:
+            continue
+        street, town, postcode = match.groups()
+        if not re.search(r'\b(?:street|st|road|rd|lane|ln|avenue|ave|square|hill|way|gardens|place|terrace)\.?$', street, re.I):
+            continue
+        street, town = gb_address_part(street, street=True), gb_address_part(town)
+        postcode = normalize_gb_postcode(postcode)
+        if street and town and postcode:
+            found.add(','.join((street, town, postcode)))
+    return sorted(found)
+
+
 def extract_candidates(html: str, url: str, claim: dict) -> list[dict]:
     """Require matched place identity or the exact claimed event's location metadata."""
     soup = BeautifulSoup(html, "html.parser")
     candidates = []
     expected = claim["venue_name"]
+    spektrix = claim.get('provider') == 'spektrix'
 
     def add(place, method, event_match=False):
         if not isinstance(place, dict):
@@ -95,10 +127,12 @@ def extract_candidates(html: str, url: str, claim: dict) -> list[dict]:
         name = str(place.get("name") or "").strip()
         if not event_match and not venue_matches(expected, name):
             return
-        address = structured_address(place.get("address"))
+        address = structured_address(place.get("address"), allow_gb=spektrix)
         if address:
             candidates.append({"address": address, "evidence_url": url,
-                               "evidence_name": name or expected, "method": method})
+                               "evidence_name": name or expected, "method": method,
+                               **({'country_code': 'GB'} if spektrix and re.search(
+                                   r',[A-Z]{1,2}\d[A-Z\d]? \d[A-Z]{2}$', address) else {})})
 
     for script in soup.select('script[type="application/ld+json"]')[:30]:
         try:
@@ -132,6 +166,11 @@ def extract_candidates(html: str, url: str, claim: dict) -> list[dict]:
     # take an organization's footer address from an unrelated event page.
     headings = [x.get_text(" ", strip=True) for x in soup.select("title,h1,h2")[:20]]
     if any(venue_matches(expected, name) for name in headings):
+        if spektrix:
+            for address in gb_contact_addresses(soup):
+                candidates.append({'address': address, 'country_code': 'GB',
+                                   'evidence_url': url, 'evidence_name': expected,
+                                   'method': 'venue_contact'})
         for br in soup.select("br"):
             br.replace_with(", ")
         for tag in soup.select("script,style,nav"):

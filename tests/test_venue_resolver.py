@@ -23,6 +23,31 @@ def page(data):
 
 
 class EvidenceTests(unittest.TestCase):
+    def test_spektrix_gb_named_street_uses_the_existing_resolver(self):
+        claim = {**CLAIM, 'provider': 'spektrix', 'venue_name': 'Battersea Arts Centre'}
+        html = '<h2>Battersea Arts Centre</h2><h3>Lavender Hill<br>London, SW11 5TN</h3>'
+        rows = v.extract_candidates(html, 'https://bac.org.uk/find-us/', claim)
+        self.assertEqual(rows, [{'address': 'lavender hill,london,SW11 5TN',
+            'country_code': 'GB', 'evidence_url': 'https://bac.org.uk/find-us/',
+            'evidence_name': 'Battersea Arts Centre', 'method': 'venue_contact'}])
+        self.assertEqual(v.extract_candidates(html, claim['event_url'],
+            {**claim, 'venue_name': 'Battersea Park'}), [])
+        self.assertEqual(v.extract_candidates(html, claim['event_url'],
+            {**claim, 'provider': 'other'}), [])
+
+    def test_spektrix_gb_structured_country_and_ambiguity(self):
+        place = {'@type': 'Place', 'name': 'Battersea Arts Centre', 'address': {
+            'streetAddress': 'Lavender Hill', 'addressLocality': 'London',
+            'postalCode': 'SW115TN', 'addressCountry': 'GB'}}
+        claim = {**CLAIM, 'provider': 'spektrix', 'venue_name': place['name']}
+        rows = v.extract_candidates(page(place), claim['event_url'], claim)
+        self.assertEqual(rows[0]['country_code'], 'GB')
+        wrong = {**place, 'address': {**place['address'], 'addressCountry': 'CA'}}
+        self.assertEqual(v.extract_candidates(page(wrong), claim['event_url'], claim), [])
+        other = {**place, 'address': {**place['address'], 'streetAddress': '123 Other Road'}}
+        self.assertIsNone(v.resolve(claim, fetcher=lambda _: page([place, other]),
+                                   clock=lambda: 0, deadline=20))
+
     def test_room_suffix_matches_real_parent_building(self):
         self.assertTrue(v.venue_matches(CLAIM["venue_name"], PLACE["name"]))
         result = v.extract_candidates(page(PLACE), CLAIM["event_url"], CLAIM)
