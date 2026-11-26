@@ -83,6 +83,17 @@ def test_complete_public_collection_becomes_stage_records():
     assert rows[0]['image_url'].endswith('/show.jpg')
 
 
+def test_reviewed_touring_venues_keep_their_published_addresses():
+    rows = venuepilot.parse(payload([
+        event(id=207696, venue={'name': 'Joanne Trattoria'}),
+        event(id=201371, venue={'name': 'Arc Beverly'}),
+    ]), url=URL, config=venuepilot.profile(URL))
+    assert [row['venue_address'] for row in rows] == [
+        '121 S Spalding Dr, Beverly Hills, CA 90212',
+        '70 W 68th St, New York, NY 10023',
+    ]
+
+
 @pytest.mark.parametrize('rows,reason', [
     ([event(id=205906), event(id=205906)], 'venuepilot_event_invalid'),
     ([event(venue={'name': 'Unknown Room'})], 'venuepilot_venue_unreviewed'),
