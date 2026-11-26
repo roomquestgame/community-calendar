@@ -1478,10 +1478,17 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         except (ValueError, KeyError, TypeError, OverflowError, AttributeError) as exc:
             reason = str(exc)
             raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}', reason) else 'invalid_provider_collection') from exc
+        from roomquest.registered_native_content import enabled as native_enabled, attach, VERSION as NATIVE_VERSION
+        spektrix_native = adapter == 'spektrix' and native_enabled(source)
+        if spektrix_native:
+            for record in records:
+                attach(record, source, description_value=record.get('description'),
+                       image_value=record.get('image_url'))
         samples = records[:MAX_PREVIEWS]
         while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
             samples.pop()
-        return {'p_source_key':source_key, 'p_samples':samples, 'p_events':records,
+        return {**({'p_parser_capability': NATIVE_VERSION} if spektrix_native else {}),
+                'p_source_key':source_key, 'p_samples':samples, 'p_events':records,
                 'p_future_count':len(records), 'p_venue_count':sum(row.get('lat') is not None for row in records),
                 'p_error':None}
     from roomquest import raleigh_direct_sources

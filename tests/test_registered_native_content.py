@@ -580,3 +580,28 @@ def test_native_failure_diagnostics_remain_closed_codes(code):
     from roomquest.category_worker import _error_code
     assert _error_code(preview_worker.PreviewError(code)) == code
     assert _error_code(preview_worker.PreviewError(code + '_private_payload')) == 'unclassified_preview_error'
+
+
+def test_spektrix_native_worker_retains_description_and_candidate():
+    feed = 'https://tickets.sohotheatre.com/sohotheatre/api/v3/events'
+    claim = {'source_key': source_key(feed), 'feed_url': feed, 'kind': 'json',
+             'platform_adapter': 'spektrix', native.CAPABILITY: 1}
+    row = {'id': 'sohotheatre:123456ABCDEFGHIJKLMN', 'title': 'A real show',
+           'event_url': 'https://tickets.sohotheatre.com/sohotheatre/website/EventDetails.aspx?EventId=123',
+           'description': '<p>Publisher performance description.</p>',
+           'image_url': PHOTO, 'starts_at': '2026-12-10T19:30:00Z'}
+    from roomquest import provider_registration
+    with patch.object(provider_registration, 'read_profile', return_value={}), \
+         patch.object(provider_registration, 'collect', return_value=[row]), \
+         patch.object(provider_registration, 'apply_verified_default_venue', side_effect=lambda s, rows: rows):
+        result = preview_worker.preview_source(claim)
+    assert result['p_parser_capability'] == native.VERSION
+    assert result['p_events'][0]['description'] == 'Publisher performance description.'
+    assert result['p_events'][0]['image_url'] == PHOTO
+    native.validate_record(result['p_events'][0], claim)
+
+
+def test_spektrix_native_capability_requires_canonical_api_source():
+    claim = source('spektrix')
+    with pytest.raises(ValueError, match='registered_native_source_invalid'):
+        native.enabled(claim)
