@@ -304,3 +304,25 @@ child result. A pacing label alone is not proof of an external permanent block.
 
 Correct License receipt reference:506, not1506 (unrelated Spektrix receipt,
 untouched). Native Squarespace denial evidence concerns687/506/1347.
+
+## November26 — Event Discovery popup typography identity
+
+Stampede child1593 independently reached its native26-card response after588;
+one same-ID dialog failed title identity because raw JSON uses spaced hyphens
+and WordPress renders en dashes. Official wptexturize documentation explicitly
+describes this exact substitution:
+https://developer.wordpress.org/reference/functions/wptexturize/
+Normalize only this spaced-hyphen transformation on both compared titles. Keep
+case, words, event-ID/dialog uniqueness, trusted URL, wall clock, occurrence ID
+and raw emitted title unchanged.124 focused tests pass, including different
+word/case/event-ID and missing punctuation negatives. One provider card outside
+the60-day event horizon is intentionally not emitted by existing record policy.
+The remaining25 eligible cards require deployed replay and ordinary Admin child
+recheck after a corresponding guarded backend fix; no partial snapshot accepted.
+
+Live acceptance now confirms Birdland6456 all261current and Santos6458 all8
+current native IDs/start times/public verified points visible. Santos manual
+address provenance is explicit; normal recollection15:27:29 retained all8 stage
+IDs/addresses. Canonical public pages were physically checked for both feeds.
+Shared capacity temporarily returned busy, then progressed without cap/priority
+changes.96h refresh intervals verified; no elapsed scheduled-refresh claim.
