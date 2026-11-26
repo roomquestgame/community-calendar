@@ -61,3 +61,38 @@ def test_unrelated_python_changes_do_not_change_enrolled_semantic_version():
         assert parser_context(source) == first
     with patch('roomquest.incremental_snapshot._global_parser_context', return_value='legacy'):
         assert parser_context({**source, 'ical_optimization_enabled': False}) == 'legacy'
+
+
+def test_ordinary_ics_poll_carries_original_evidence_through_legacy_staging():
+    from datetime import timedelta
+    from time import monotonic
+
+    from roomquest import preview_worker as worker
+    from roomquest.ical_source_semantics import staging_enabled
+
+    start = datetime.now(timezone.utc).replace(microsecond=0) + timedelta(days=2)
+    calendar = Calendar()
+    event = Event()
+    event.add("uid", "ordinary-facts-test")
+    event.add("summary", "Test concert")
+    event.add("dtstart", start)
+    calendar.add_component(event)
+    payload = calendar.to_ical().decode()
+    source = {"kind": "ical", "platform_adapter": "ical", "source_key": "ordinary-test"}
+
+    def collect(source, *args, **kwargs):
+        rows = worker.parse_ics_preview(payload)
+        assert len(rows) == 1
+        assert rows[0]["source_semantics_v1"]["original_uid"] == "ordinary-facts-test"
+        assert "attendance_mode" not in rows[0]
+        with patch.object(worker, "supabase_rpc", return_value=1) as rpc:
+            assert worker._stage_legacy_events(
+                source, rows, native_content=False, deadline=monotonic() + 30, observe_phase=None,
+            ) == 1
+        assert rpc.call_args.args[1]["p_events"] == rows
+        return rows
+
+    with patch.object(worker, "_process_claimed_source_with_pacing", side_effect=collect):
+        worker._process_claimed_source(source)
+    assert not staging_enabled()
+    assert "source_semantics_v1" not in worker.parse_ics_preview(payload)[0]

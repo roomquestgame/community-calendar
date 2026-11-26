@@ -3,10 +3,28 @@
 No digest is computed here: PostgreSQL event_content_v1 remains authoritative.
 These fields are evidence, not a change to the existing occurrence identity.
 """
+from contextlib import contextmanager
+from contextvars import ContextVar
 from datetime import date, datetime, timezone
 
 
 NORMALIZATION_VERSION = "ical-publisher-facts-1"
+
+
+_staging_ical = ContextVar("staging_ical_source_facts", default=False)
+
+
+@contextmanager
+def staging_scope(source):
+    token = _staging_ical.set(source.get("kind") == "ical" and source.get("platform_adapter") == "ical")
+    try:
+        yield
+    finally:
+        _staging_ical.reset(token)
+
+
+def staging_enabled():
+    return _staging_ical.get()
 
 
 def anchor(value):
