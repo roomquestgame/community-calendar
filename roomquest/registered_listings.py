@@ -19,9 +19,10 @@ RESIDENT = 'https://residentculturebrewing.com/events/'
 PLAZA = RESIDENT + '?fwp_event_location=plaza-midwood'
 INDY = 'https://www.indywinterfarmersmarket.org/'
 LYNCHBURG = 'https://www.lynchburgparksandrec.com/programs-and-activities/'
+STATE_THEATRE = 'https://statetheatreportland.com/calendar/'
 URLS = ((BOPLEX, BROADWAY, RESIDENT, PLAZA, INDY) + schedules.URLS
         + uk_registered_listings.URLS + wix_embedded_calendar.URLS + wildlife_trusts.URLS
-        + (liberty_calendar.ORIGINAL, LYNCHBURG))
+        + (liberty_calendar.ORIGINAL, LYNCHBURG, STATE_THEATRE))
 EASTERN = ZoneInfo('America/New_York')
 CLOCK = r'(?:1[0-2]|0?[1-9])(?::[0-5]\d)?\s*[ap]m'
 
@@ -239,6 +240,101 @@ def lynchburg(soup, today):
                      tz=EASTERN.key)
 
 
+def state_theatre(soup, fetch, today):
+    """Read State Theatre's real ``goo-calendar`` and its exact event pages.
+
+    The publisher's ``/events/`` page is an unrelated, empty Events Manager
+    shell.  Its complete inventory is rendered by one first-party calendar.
+    The calendar supplies occurrence scope and detail URLs; the event pages
+    supply the authoritative show time and corrected venue name.  Every
+    occurrence in the 60-day intake horizon must verify, so a template or
+    venue change cannot silently publish a partial snapshot.
+    """
+    classes = set((soup.body or {}).get('class', ())) if soup.body else set()
+    calendars = soup.select('.goo_calendar_container.goo_calendar_active[data-post_id]')
+    if 'page-calendar' not in classes or not calendars:
+        raise ValueError('state_theatre_calendar_changed')
+    calendar_ids = {node.get('data-post_id') for node in calendars}
+    if len(calendar_ids) != 1 or not next(iter(calendar_ids), '').isdigit():
+        raise ValueError('state_theatre_calendar_ambiguous')
+
+    horizon = today + timedelta(days=60)
+    occurrences = []
+    months = set()
+    for table in soup.select('.goo_calendar_container table.goo_table_scheduler'):
+        heading = content(table, '.goo_month_name')
+        try:
+            first = datetime.strptime(heading, '%B %Y').date().replace(day=1)
+        except ValueError as exc:
+            raise ValueError('state_theatre_month_unverified') from exc
+        if first in months:
+            raise ValueError('state_theatre_month_duplicated')
+        months.add(first)
+        for cell in table.select('td.goo_TD'):
+            label = content(cell, '.scheduler_heading')
+            if not re.fullmatch(r'(?:0?[1-9]|[12]\d|3[01])', label):
+                continue
+            try:
+                day = first.replace(day=int(label))
+            except ValueError as exc:
+                raise ValueError('state_theatre_day_invalid') from exc
+            if not today <= day <= horizon:
+                continue
+            for anchor in cell.select('.cal-entry-headliner > a[href]:has(.goo_cal_link[data-post_id][data-calendar_id])'):
+                marker = anchor.select_one('.goo_cal_link[data-post_id][data-calendar_id]')
+                url = urljoin(STATE_THEATRE, anchor.get('href', ''))
+                if (urlsplit(url).hostname != urlsplit(STATE_THEATRE).hostname
+                        or not re.fullmatch(re.escape('https://statetheatreportland.com/events/')
+                                            + r'[a-z0-9][a-z0-9-]*/', url)
+                        or marker.get('data-calendar_id') not in calendar_ids
+                        or not marker.get('data-post_id', '').isdigit()):
+                    raise ValueError('state_theatre_event_link_unverified')
+                occurrences.append((day, url, marker.get_text(' ', strip=True)))
+    if not occurrences:
+        raise ValueError('no_extractable_events')
+
+    addresses = {
+        'State Theatre': '609 Congress Street, Portland, ME 04101',
+        'Portland House of Music and Events': '25 Temple Street, Portland, ME 04101',
+        "Mechanics' Hall": '519 Congress Street, Portland, ME 04101',
+        "Live at Madrid's": '144 Fore Street, Portland, ME 04103',
+        "Thompson's Point": '207 Thompsons Point, Portland, ME 04102',
+    }
+    seen = set()
+    for listed_day, url, listed_title in occurrences:
+        if (listed_day, url) in seen:
+            raise ValueError('state_theatre_occurrence_duplicated')
+        seen.add((listed_day, url))
+        detail = BeautifulSoup(fetch(url, 'text/html'), 'html.parser')
+        article = detail.select_one('article.tm_event.type-tm_event .edp-view-details.vevent')
+        title = content(article, '.headliners.summary') if article else ''
+        venue = content(article, '.venue.location') if article else ''
+        date_label = content(article, '.edp-dates') if article else ''
+        time_label = content(article, '.edp-times') if article else ''
+        day_match = re.fullmatch(r'(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun),\s+([A-Za-z]+ \d{1,2}, \d{4})', date_label)
+        show_match = re.search(r'\bShow:\s*(' + CLOCK + r')\b', time_label, re.I)
+        if (not title or title != listed_title or venue not in addresses
+                or not day_match or not show_match):
+            raise ValueError('state_theatre_event_detail_changed')
+        day = datetime.strptime(day_match[1], '%B %d, %Y').date()
+        if day != listed_day:
+            raise ValueError('state_theatre_occurrence_mismatch')
+        row = record(title, datetime.combine(day, clock(show_match[1])), None,
+                     venue, addresses[venue], 'Portland', url, url,
+                     tz=EASTERN.key)
+        if not row:
+            continue
+        narrative = content(detail, '.edp-bio-content')
+        if narrative:
+            row['description'] = description(narrative)
+        image = detail.select_one('article.tm_event img.wp-post-image[src]')
+        if image:
+            candidate = urljoin(url, image.get('src', ''))
+            if urlsplit(candidate).hostname == urlsplit(STATE_THEATRE).hostname:
+                row['image_url'] = candidate
+        yield row
+
+
 def collect(source, fetch, *, deadline_at=None, listing=None):
     url = source['feed_url']
     if url not in URLS or source.get('source_key') != source_key(url):
@@ -259,6 +355,8 @@ def collect(source, fetch, *, deadline_at=None, listing=None):
         rows = broadway(soup)
     elif url == LYNCHBURG:
         rows = lynchburg(soup, today)
+    elif url == STATE_THEATRE:
+        rows = state_theatre(soup, fetch, today)
     elif url == schedules.FOREST:
         rows = schedules.forest(soup, today)
     elif url == schedules.ALGONQUIN:
