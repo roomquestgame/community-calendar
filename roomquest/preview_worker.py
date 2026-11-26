@@ -3611,13 +3611,14 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         deadline = min(monotonic() + 30, deadline_at - 8 if deadline_at is not None else float("inf"))
         try:
             records = collect(source, lambda url, accept: fetch_publisher(
-                url, accept, respect_robots=True, deadline_at=deadline), deadline_at=deadline)
+                url, accept, respect_robots=True, deadline_at=deadline), deadline_at=deadline, retain_original=True)
         except PreviewError:
             raise
         except (ValueError, TypeError, KeyError, OverflowError) as exc:
             reason = str(exc)
             raise PreviewError(reason if re.fullmatch(r"[a-z_]{3,100}", reason) else "invalid_calendar_payload") from exc
-        samples = records[:MAX_PREVIEWS]
+        samples = [{key: value for key, value in row.items() if key != 'collector_event_content_v1'}
+                   for row in records[:MAX_PREVIEWS]]
         while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
             samples.pop()
         return {"p_source_key": source["source_key"], "p_samples": samples,
