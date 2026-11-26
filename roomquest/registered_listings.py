@@ -18,9 +18,10 @@ BROADWAY = 'https://www.broadwaycomedyclub.com/'
 RESIDENT = 'https://residentculturebrewing.com/events/'
 PLAZA = RESIDENT + '?fwp_event_location=plaza-midwood'
 INDY = 'https://www.indywinterfarmersmarket.org/'
+LYNCHBURG = 'https://www.lynchburgparksandrec.com/programs-and-activities/'
 URLS = ((BOPLEX, BROADWAY, RESIDENT, PLAZA, INDY) + schedules.URLS
         + uk_registered_listings.URLS + wix_embedded_calendar.URLS + wildlife_trusts.URLS
-        + (liberty_calendar.ORIGINAL,))
+        + (liberty_calendar.ORIGINAL, LYNCHBURG))
 EASTERN = ZoneInfo('America/New_York')
 CLOCK = r'(?:1[0-2]|0?[1-9])(?::[0-5]\d)?\s*[ap]m'
 
@@ -198,6 +199,46 @@ def indy(soup, today):
                      INDY,INDY,'Food & Coffee',tz='America/Indiana/Indianapolis')
 
 
+def lynchburg(soup, today):
+    """Read the publisher's WordPress activity archive, not its WebTrac link.
+
+    WebTrac is only the checkout/registration destination on this site.  The
+    authoritative public inventory and dates are first-party `cl_and_activ`
+    cards.  Rows with `Varies` or a multi-day range are intentionally withheld
+    because the archive does not publish an occurrence clock for them.
+    """
+    classes = set((soup.body or {}).get('class', ())) if soup.body else set()
+    if not {'post-type-archive', 'post-type-archive-cl_and_activ'} <= classes:
+        raise ValueError('lynchburg_activity_archive_changed')
+    addresses = {
+        'Miller Center': '301 Grove Street, Lynchburg, VA 24501',
+        'City Armory': '1200 Church Street, Lynchburg, VA 24504',
+        'Lynchburg Community Market': '1219 Main Street, Lynchburg, VA 24504',
+        'Meet at Lynchburg Community Market': '1219 Main Street, Lynchburg, VA 24504',
+    }
+    for card in soup.select('.pna-item'):
+        title = card.select_one('.pna-title a[href]')
+        venue = content(card, '.pna-location')
+        dates = content(card, '.pna-dates')
+        starts = content(card, '.pna-times')
+        if not title or venue not in addresses:
+            continue
+        url = urljoin(LYNCHBURG, title.get('href', ''))
+        if (urlsplit(url).hostname != urlsplit(LYNCHBURG).hostname
+                or not url.startswith(LYNCHBURG) or url == LYNCHBURG):
+            continue
+        day_match = re.fullmatch(r'(\d{2}/\d{2}/\d{4})\s*-?', dates)
+        time_match = re.fullmatch(r'Start:\s*(' + CLOCK + ')', starts, re.I)
+        if not day_match or not time_match:
+            continue
+        day = datetime.strptime(day_match[1], '%m/%d/%Y').date()
+        if not today <= day <= today + timedelta(days=60):
+            continue
+        yield record(title.get_text(' ', strip=True), datetime.combine(day, clock(time_match[1])),
+                     None, venue, addresses[venue], 'Lynchburg', url, url,
+                     tz=EASTERN.key)
+
+
 def collect(source, fetch, *, deadline_at=None, listing=None):
     url = source['feed_url']
     if url not in URLS or source.get('source_key') != source_key(url):
@@ -216,6 +257,8 @@ def collect(source, fetch, *, deadline_at=None, listing=None):
         rows = indy(soup, today)
     elif url == BROADWAY:
         rows = broadway(soup)
+    elif url == LYNCHBURG:
+        rows = lynchburg(soup, today)
     elif url == schedules.FOREST:
         rows = schedules.forest(soup, today)
     elif url == schedules.ALGONQUIN:
