@@ -10,6 +10,9 @@ from html.parser import HTMLParser
 from urllib.parse import urldefrag, urljoin, urlsplit
 
 from roomquest.preview_worker import public_source_url
+from roomquest.preview_worker import PreviewError
+from roomquest.feed_registration import classify
+from roomquest.venue_calendar_locator import find_calendar
 
 MAX_HTML = 750_000
 MAX_LINKS = 80
@@ -82,3 +85,40 @@ def select_candidate(links, model_response):
     if len(matches) != 1:
         return None
     return {"url": matches[0]["url"], "status": "needs_independent_validation"}
+
+
+def inspect_selection(website_url, event_url, selected, *, fetch, deadline):
+    """Probe a chosen publisher link through existing collector checks.
+
+    The caller must verify venue identity, hold an active research lease, and
+    establish that ``selected`` came from candidates on that venue's page.
+    This function never registers a URL or treats model selection as proof.
+    """
+    if not isinstance(selected, dict) or selected.get("status") != "needs_independent_validation":
+        return {"status": "review", "reason": "invalid_selection"}
+    url = selected.get("url")
+    try:
+        if (not isinstance(url, str) or not public_source_url(url)
+                or urlsplit(url).hostname != urlsplit(website_url).hostname):
+            return {"status": "review", "reason": "invalid_selection"}
+        content = fetch(url, "text/calendar,application/json,text/html",
+                        respect_robots=True, allowed_hosts=(urlsplit(website_url).hostname,),
+                        deadline_at=deadline)
+        result = classify(url, content, endpoint_only=True)
+        if result.get("p_outcome") == "verified" and result.get("p_type") in ("ical", "wordpress"):
+            return {"status": "candidate", "url": url, "kind": result["p_type"]}
+        if not isinstance(content, str) or not content.lstrip().startswith("<"):
+            return {"status": "review", "reason": "not_calendar"}
+        feed, kind = find_calendar(content, url, event_url, fetch, deadline,
+                                   require_unique_calendar_page=True)
+        if (feed and kind in ("ical", "wordpress", "squarespace", "html_listing")
+                and urlsplit(feed).hostname == urlsplit(website_url).hostname):
+            return {"status": "candidate", "url": feed, "kind": kind}
+        return {"status": "review", "reason": "calendar_not_verified"}
+    except PreviewError as exc:
+        reason = str(exc)
+        if reason in ("robots_denied", "publisher_http_401", "publisher_http_403"):
+            return {"status": "denied", "reason": reason}
+        return {"status": "retry", "reason": "publisher_unavailable"}
+    except (TypeError, ValueError):
+        return {"status": "review", "reason": "invalid_selection"}
