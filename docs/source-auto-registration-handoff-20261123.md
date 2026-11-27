@@ -394,3 +394,7 @@ At 00:04 UTC Nov 27 the four approved pilot keys remained pending, no AI admissi
 ## November 26 — owner direction: event-triggered venue research
 
 Do not start paid AI research from a cron phase. Reuse the current venue queue and one database-issued single-use dispatch ticket, starting from a committed eligible unresolved venue and chaining on completion. The authenticated geocoder remains the ordinary deterministic and geocoding path; no new scheduled jobs. The new POST /api/venue-research route maps to the existing geocode handler and accepts only a database ticket. The runtime OIDC request header is passed only to server code; no secret logging or global environment mutation. Periodic venue claims never request a paid model; they may hand off a clean deterministic miss to the same triggered lane. Preserve the existing budget, source/access holds, evidence and geocoding/publication contracts. No global pilot expansion.
+
+## November 26 — callback route binding correction
+
+Initial triggered pg_net dispatch 39165 reached Vercel at 00:14:55 UTC and received the handler's 404 before any claim. Bind the ticket-only POST to its own serverless entry file (same shared resolver, no path comparison on rewritten requests); the regular geocoder handler remains separate and authenticated. Ticket and completion nonce still validated by the existing Supabase RPC. No new cron, queue, source/permit or budget change. Reissue only the exact unclaimed terminal-404 dispatch after the new route is READY.
