@@ -163,6 +163,69 @@ def _identity(key, item):
     return "nyc:" + sha256(f"{key}:{item['url']}:{timestamp(item['start']).isoformat()}".encode()).hexdigest()
 
 
+def _content_venue(place):
+    if (not isinstance(place, (tuple, list)) or len(place) != 3
+            or any(not isinstance(value, str) or not value.strip() for value in place)):
+        raise ValueError("new_york_local_venue_unresolved")
+    postal = re.search(r"\bNY\s+(\d{5}(?:-\d{4})?)\s*$", place[1], re.I)
+    result = {
+        "venue_name": plain(place[0]), "venue_address": plain(place[1]),
+        "venue_city": plain(place[2]), "venue_region": "NY", "venue_country": "US",
+    }
+    if postal:
+        result["venue_postal_code"] = postal[1]
+    return result
+
+
+def _attach_content(row, body, *, content_venue, image=None):
+    start, end = timestamp(row.get("starts_at")), timestamp(row.get("ends_at"))
+    if start is None or start.tzinfo is None or end is None or end.tzinfo is None or end <= start:
+        raise ValueError("new_york_local_schedule_conflict")
+    facts = {
+        "title": row["title"], "description": body, "is_all_day": False,
+        "starts_at_utc": start.astimezone(timezone.utc).isoformat(),
+        "ends_at_utc": end.astimezone(timezone.utc).isoformat(),
+        "source_timezone": ZONE, "event_url": row["event_url"],
+        "source_image_url": image, "attendance_mode": "in_person", **content_venue,
+    }
+    facts = {name: value for name, value in facts.items() if value not in (None, "")}
+    row["collector_event_content_v1"] = {"version": 1, "event_id": row["id"], "facts": facts}
+    return row
+
+
+def _content_envelope_valid(row):
+    evidence = row.get("collector_event_content_v1")
+    if evidence is None:
+        return True
+    if (not isinstance(evidence, dict) or set(evidence) != {"version", "event_id", "facts"}
+            or evidence.get("version") != 1 or evidence.get("event_id") != row.get("id")
+            or not isinstance(evidence.get("facts"), dict)):
+        return False
+    facts = evidence["facts"]
+    allowed = {
+        "title", "description", "is_all_day", "starts_at_utc", "ends_at_utc",
+        "source_timezone", "event_url", "source_image_url", "venue_name",
+        "venue_address", "venue_city", "venue_region", "venue_postal_code",
+        "venue_country", "attendance_mode",
+    }
+    if not set(facts) <= allowed:
+        return False
+    try:
+        start, end = timestamp(row.get("starts_at")), timestamp(row.get("ends_at"))
+        expected = {
+            "title": row.get("title"), "description": row.get("description"),
+            "is_all_day": False, "starts_at_utc": start.astimezone(timezone.utc).isoformat(),
+            "ends_at_utc": end.astimezone(timezone.utc).isoformat(),
+            "source_timezone": ZONE, "event_url": row.get("event_url"),
+            "attendance_mode": "in_person", **_content_venue(
+                (row.get("venue_name"), row.get("venue_address"), row.get("venue_city"))),
+        }
+    except (AttributeError, TypeError, ValueError, OverflowError):
+        return False
+    return (facts.get("source_image_url") == row.get("image_url")
+            and all(facts.get(name) == value for name, value in expected.items()))
+
+
 def _row(key, item, body, image=None):
     place = tuple(item["venue"])
     point = reviewed_venue_location(key, *place[:2])
@@ -172,12 +235,15 @@ def _row(key, item, body, image=None):
     row = record(item["title"], start.isoformat(), end.isoformat(), *place, item["url"], _identity(key, item),
                  lat=point[0], lng=point[1], tz=ZONE, retain_until_end=True)
     if row:
-        row.update(description=_body(body), timezone=ZONE, attendance_mode="in_person", lat=point[0], lng=point[1],
+        native_body = _body(body)
+        row.update(description=native_body, timezone=ZONE, attendance_mode="in_person", lat=point[0], lng=point[1],
                    location_provenance="reviewed_nyc_pad_address_point")
         if row.get("reason") == "missing_verified_venue_geo":
             row["reason"] = None
-        if candidate := photo_url(key, image or item.get("image")):
+        candidate = photo_url(key, image or item.get("image"))
+        if candidate:
             row["image_url"] = candidate
+        _attach_content(row, native_body, content_venue=_content_venue(place), image=candidate)
     return row
 
 
@@ -316,6 +382,7 @@ def _validate_checkpoint(value, key, now):
                     or tuple(row.get(field) for field in ("venue_name", "venue_address", "venue_city")) != tuple(native["venue"])
                     or row.get("timezone") != ZONE or row.get("attendance_mode") != "in_person"
                     or _body(row.get("description")) != row.get("description")
+                    or not _content_envelope_valid(row)
                     or "body" in native and row["description"] != native["body"]
                     or (row.get("lat"), row.get("lng")) != reviewed_venue_location(key, row["venue_name"], row["venue_address"])
                     or row.get("image_url") is not None and photo_url(key, row["image_url"]) is None
@@ -352,6 +419,8 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
                      window_start=current.astimezone(ZoneInfo(ZONE)).date().isoformat(),
                      manifest_hash=_digest(queue), manifest_count=len(queue), cursor=0,
                      queue=queue, events=[], diagnostics=[])
+    legacy_prefix = bool(state["events"] and
+                         any("collector_event_content_v1" not in row for row in state["events"]))
     prior, fetched = state["cursor"], 0
     limit = min(MAX_DETAILS_PER_CHUNK, max(1, int(max_details)))
     while state["cursor"] < len(queue):
@@ -369,6 +438,9 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
             else:
                 row = _row(key, item, item["body"])
                 rows = [row] if row else []
+            if legacy_prefix:
+                for row in rows:
+                    row.pop("collector_event_content_v1", None)
             state["events"].extend(rows)
             if not rows:
                 state["diagnostics"].append(dict(event_url=item["url"], disposition="held", reason="no_available_future_occurrence"))
