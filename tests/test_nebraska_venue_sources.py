@@ -4,14 +4,15 @@ from zoneinfo import ZoneInfo
 
 from roomquest import hurrdat_calendar as hurrdat
 from roomquest import nebraska_venues as venues
+from roomquest import preview_worker
 from roomquest.preview_worker import preview_source
 
 
-def source(key):
+def source(key, *, publisher_name='Original provider label'):
     html = key in venues.SOURCES
     return dict(source_key=key, feed_url=venues.SOURCES.get(key, hurrdat.URL),
                 kind='html' if html else 'json', platform_adapter='html' if html else 'wordpress',
-                timezone=venues.ZONE)
+                timezone=venues.ZONE, publisher_name=publisher_name)
 
 
 def page(url, html):
@@ -39,6 +40,9 @@ def test_pint_uses_visible_time_and_verified_suite():
     assert row['venue_address'] == venues.VENUES[venues.PINT][1]
     assert row['lat'] is row['lng'] is None
     assert datetime.fromisoformat(row['starts_at']).astimezone(ZoneInfo(venues.ZONE)).hour == 19
+    facts = row['collector_event_content_v1']['facts']
+    assert facts['description'] == 'Play music bingo with friends.'
+    assert facts['venue_address'] == venues.VENUES[venues.PINT][1]
 
 
 def test_kros_filters_omaha_and_checks_la_vista_detail():
@@ -59,6 +63,9 @@ def test_kros_filters_omaha_and_checks_la_vista_detail():
     row, = result
     assert row['description'] == 'Join a group run.'
     assert row['venue_address'] == venues.VENUES[venues.KROS][1]
+    facts = row['collector_event_content_v1']['facts']
+    assert facts['venue_city'] == 'La Vista'
+    assert 'venue_name' not in facts and 'venue_address' not in facts
 
 
 def test_frosty_uses_explicit_open_nights_and_skips_closed_ones():
@@ -73,6 +80,55 @@ def test_frosty_uses_explicit_open_nights_and_skips_closed_ones():
     row, = venues.collect(source(venues.FROSTY), lambda *_: payload)
     assert row['id'] == day.isoformat()
     assert row['venue_address'] == venues.VENUES[venues.FROSTY][1]
+    assert row['collector_event_content_v1']['facts']['venue_address'] == venues.VENUES[venues.FROSTY][1]
+
+
+def test_provider_label_does_not_change_pint_content_or_identity():
+    day = datetime.now(ZoneInfo(venues.ZONE)).date() + timedelta(days=3)
+    payload = page(venues.SOURCES[venues.PINT], f"""
+    <article class="eventlist-event--upcoming">
+      <a class="eventlist-title-link" href="/events/opaque-bingo-slug">Brewery Bingo</a>
+      <time class="event-date" datetime="{day}"></time>
+      <time class="event-time-localized-start" datetime="{day}">7:00 PM</time>
+      <time class="event-time-localized-end" datetime="{day}">8:00 PM</time>
+      <li class="eventlist-meta-address">Pint Nine Brewing Company
+        <a href="http://maps.google.com?q=10411 Portal Road Ste 104 La Vista, Nebraska, 68128">(map)</a>
+      </li><div class="eventlist-description">Play music bingo with friends.</div>
+    </article>""")
+    [first] = venues.collect(source(venues.PINT), lambda *_: payload)
+    [renamed] = venues.collect(source(venues.PINT, publisher_name='Renamed provider label'),
+                              lambda *_: payload)
+    assert first['id'] == renamed['id']
+    assert first['collector_event_content_v1'] == renamed['collector_event_content_v1']
+
+
+def test_narrative_edit_changes_nebraska_venue_input_not_occurrence_id():
+    start = datetime.now(ZoneInfo(venues.ZONE)).replace(microsecond=0) + timedelta(days=2)
+    first = venues._row(venues.KROS, 'Run Club', start, None,
+                        'https://krosstrainbrewing.com/events/run-club/', '/events/run-club/',
+                        'Join a group run.', raw_city='La Vista')
+    changed = venues._row(venues.KROS, 'Run Club', start, None,
+                          'https://krosstrainbrewing.com/events/run-club/', '/events/run-club/',
+                          'Bring reflective gear for the group run.', raw_city='La Vista')
+    assert first['id'] == changed['id']
+    assert first['collector_event_content_v1'] != changed['collector_event_content_v1']
+
+
+def test_normal_path_keeps_nebraska_facts_and_admin_sample_strips(monkeypatch):
+    start = datetime.now(ZoneInfo(venues.ZONE)).replace(microsecond=0) + timedelta(days=2)
+    row = venues._row(venues.KROS, 'Run Club', start, None,
+                      'https://krosstrainbrewing.com/events/run-club/', '/events/run-club/',
+                      'Join a group run.', raw_city='La Vista')
+    calls = {}
+    monkeypatch.setattr(venues, 'collect', lambda *args, **kwargs: [row])
+    monkeypatch.setattr(preview_worker, 'fetch_publisher', lambda *args, **kwargs: '')
+    monkeypatch.setattr(preview_worker, 'supabase_rpc',
+                        lambda name, payload: calls.setdefault(name, payload) and 0)
+    preview_worker._process_claimed_source(source(venues.KROS))
+    staged = calls['community_collector_record_staged_events']['p_events']
+    samples = calls['community_collector_record_preview_v3']['p_samples']
+    assert staged[0]['collector_event_content_v1']['event_id'] == staged[0]['id']
+    assert 'collector_event_content_v1' not in samples[0]
 
 
 def test_hurrdat_requires_la_vista_venue_and_publisher_time():
