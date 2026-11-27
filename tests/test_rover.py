@@ -1,6 +1,6 @@
 import json
 
-from roomquest.rover import candidates, select_candidate, inspect_selection
+from roomquest.rover import candidates, select_candidate, inspect_selection, propose
 from roomquest.preview_worker import PreviewError
 
 
@@ -21,6 +21,23 @@ def test_model_cannot_invent_a_url_or_include_extra_instructions():
     assert select_candidate(links, json.dumps({'candidate_id': links[0]['id'],
                                                 'url': 'https://evil.example'})) is None
     assert select_candidate(links, 'not json') is None
+
+
+def test_model_only_receives_bounded_publisher_link_labels():
+    links = candidates('<a href="/whats-on?venue=west">What’s on</a>',
+                       'https://venue.example/')
+    def complete(system, payload):
+        assert 'untrusted' in system
+        assert payload == {'venue': 'West Venue', 'links': [
+            {'id': links[0]['id'], 'label': 'What’s on'}]}
+        return json.dumps({'candidate_id': links[0]['id']})
+    assert propose('West Venue', links, complete=complete)['url'] == links[0]['url']
+
+
+def test_model_miss_and_failure_remain_unresolved():
+    links = candidates('<a href="/about">About</a>', 'https://venue.example/')
+    assert propose('Venue', links, complete=lambda *a: '{"candidate_id":null}') is None
+    assert propose('Venue', links, complete=lambda *a: (_ for _ in ()).throw(TimeoutError())) is None
 
 
 def test_selected_non_calendar_does_not_register():
