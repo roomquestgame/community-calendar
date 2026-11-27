@@ -43,7 +43,7 @@ class CollectionWindowTests(unittest.TestCase):
 
     def test_shared_event_filter_accepts_only_requested_window(self):
         # Execute the production function without importing unrelated collectors.
-        module = ast.parse(Path("preview_worker.py").read_text())
+        module = ast.parse(Path("roomquest/preview_worker.py").read_text())
         function = next(n for n in module.body if isinstance(n, ast.FunctionDef) and n.name == "_future_datetime")
         namespace = {"datetime": datetime, "timezone": timezone, "collection_window": collection_window}
         exec(compile(ast.Module(body=[function], type_ignores=[]), "preview_worker.py", "exec"), namespace)
