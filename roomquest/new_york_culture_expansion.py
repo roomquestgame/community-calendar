@@ -307,7 +307,66 @@ def _manifest(key, fetch, deadline, now):
     return (_astor_manifest if key == ASTOR else _greenwood_manifest)(fetch, deadline, now)
 
 
-def _row(key, item, start, end, body, place, labels):
+def _attach_content(row, body, *, native_venue=None, native_labels=()):
+    """Retain only publisher-owned event facts before reviewed enrichment."""
+    start, end = timestamp(row.get('starts_at')), timestamp(row.get('ends_at'))
+    if start is None or start.tzinfo is None or end is not None and end.tzinfo is None:
+        raise ValueError('nyc_culture_schedule_changed')
+    facts = {
+        'title': row['title'], 'description': body, 'is_all_day': False,
+        'starts_at_utc': start.astimezone(timezone.utc).isoformat(),
+        'ends_at_utc': end.astimezone(timezone.utc).isoformat() if end else None,
+        'source_timezone': ZONE, 'event_url': row['event_url'],
+        'publisher_categories': sorted({plain(value) for value in native_labels if plain(value)}),
+        'attendance_mode': 'in_person', **(native_venue or {}),
+    }
+    facts = {name: value for name, value in facts.items()
+             if value is not None and value != '' and value != []}
+    row['collector_event_content_v1'] = {'version': 1, 'event_id': row['id'], 'facts': facts}
+    return row
+
+
+def _content_envelope_valid(key, row):
+    evidence = row.get('collector_event_content_v1')
+    if evidence is None:
+        return True
+    if (not isinstance(evidence, dict) or set(evidence) != {'version', 'event_id', 'facts'}
+            or evidence.get('version') != 1 or evidence.get('event_id') != row.get('id')
+            or not isinstance(evidence.get('facts'), dict)):
+        return False
+    facts = evidence['facts']
+    venue_fields = {'venue_name', 'venue_address', 'venue_city', 'venue_region',
+                    'venue_postal_code', 'venue_country', 'source_latitude', 'source_longitude'}
+    allowed = {'title', 'description', 'is_all_day', 'starts_at_utc', 'ends_at_utc',
+               'source_timezone', 'event_url', 'publisher_categories', 'attendance_mode'} | venue_fields
+    if not set(facts) <= allowed:
+        return False
+    try:
+        start, end = timestamp(row.get('starts_at')), timestamp(row.get('ends_at'))
+        expected = {'title': row.get('title'), 'description': row.get('description'),
+                    'is_all_day': False, 'starts_at_utc': start.astimezone(timezone.utc).isoformat(),
+                    'source_timezone': ZONE, 'event_url': row.get('event_url'),
+                    'attendance_mode': 'in_person'}
+        if end is not None:
+            expected['ends_at_utc'] = end.astimezone(timezone.utc).isoformat()
+    except (AttributeError, TypeError, ValueError, OverflowError):
+        return False
+    if not all(facts.get(name) == value for name, value in expected.items()):
+        return False
+    categories = facts.get('publisher_categories', [])
+    if categories != sorted(set(categories)) or any(not isinstance(value, str) or not value for value in categories):
+        return False
+    if key == ASTOR:
+        return (not categories and facts.get('venue_name') == 'Astor Center'
+                and facts.get('venue_address') in {
+                    '399 Lafayette Street, New York, NY 10003',
+                    '23 East 4th Street, New York, NY 10003'}
+                and not (set(facts) & (venue_fields - {'venue_name', 'venue_address'})))
+    return (not (set(facts) & venue_fields)
+            and (not categories or categories == sorted(set(row.get('publisher_categories') or []))))
+
+
+def _row(key, item, start, end, body, place, labels, *, native_venue=None, native_labels=()):
     name, street, city, lat, lng = VENUES[place]
     identity = item['id'] + ':' + start.isoformat() if key == ASTOR else item['id']
     row = record(item['title'], start.isoformat(), end.isoformat() if end else None,
@@ -324,6 +383,7 @@ def _row(key, item, start, end, body, place, labels):
                        place, 'publisher_attendee_street_and_exact_NYC_PAD_address_point'))
         if place in {'arch', 'historic_chapel', 'modern_chapel'}:
             row['location_is_approximate'] = True
+        _attach_content(row, body, native_venue=native_venue, native_labels=native_labels)
     return row
 
 
@@ -338,19 +398,27 @@ def _astor_detail(item, payload, now):
         raise ValueError('description_missing')
     body = _body(str(container))
     # Astor's full native JSON-LD body should agree with its visible full body.
-    native_starts = []
+    native_starts, native_venues = [], {}
     for event in nodes:
         venue = event.get('location', {})
-        if (not isinstance(venue, dict) or plain(venue.get('name')) != 'Astor Center'
-                or plain(venue.get('address')) not in {'399 Lafayette Street, New York, NY 10003',
-                                                      '23 East 4th Street, New York, NY 10003'}):
+        if not isinstance(venue, dict):
+            raise ValueError('venue_unreviewed')
+        venue_name, venue_address = plain(venue.get('name')), plain(venue.get('address'))
+        if (venue_name != 'Astor Center'
+                or venue_address not in {'399 Lafayette Street, New York, NY 10003',
+                                         '23 East 4th Street, New York, NY 10003'}):
             raise ValueError('venue_unreviewed')
         if _body(event.get('description')) != body:
             raise ValueError('nyc_culture_detail_changed')
         try:
-            native_starts.append(timestamp(datetime.strptime(event['startDate'], '%m/%d/%Y %I:%M:%S %p').isoformat(), ZONE))
+            native_start = timestamp(datetime.strptime(event['startDate'], '%m/%d/%Y %I:%M:%S %p').isoformat(), ZONE)
         except (KeyError, TypeError, ValueError):
             raise ValueError('schedule_unresolved') from None
+        native_starts.append(native_start)
+        native_venue = {'venue_name': venue_name, 'venue_address': venue_address}
+        if native_start in native_venues and native_venues[native_start] != native_venue:
+            raise ValueError('nyc_culture_schedule_changed')
+        native_venues[native_start] = native_venue
     if len(set(native_starts)) != len(native_starts):
         raise ValueError('nyc_culture_schedule_changed')
     options = soup.select('.event__date__cta__row')
@@ -387,7 +455,8 @@ def _astor_detail(item, payload, now):
     for start in starts:
         end = start + timedelta(hours=hours) if hours is not None else None
         if _within(start, end, now):
-            row = _row(ASTOR, item, start, end, body, 'astor', ['Classes & Tastings'])
+            row = _row(ASTOR, item, start, end, body, 'astor', ['Classes & Tastings'],
+                       native_venue=native_venues[start])
             if row:
                 rows.append(row)
     return rows
@@ -453,7 +522,8 @@ def _greenwood_detail(item, payload, now):
     if not _within(start, end, now):
         return []
     labels = [name.removeprefix('tribe_events_cat-').replace('-', ' ') for name in container.get('class', []) if name.startswith('tribe_events_cat-')]
-    row = _row(GREENWOOD, item, start, end, body, place, labels or ['Public Programs'])
+    row = _row(GREENWOOD, item, start, end, body, place, labels or ['Public Programs'],
+               native_labels=labels)
     if row and estimated:
         row['location_provenance'] = 'reviewed_same_tour_series_estimated_checkin_and_PAD_address_point'
         row['location_is_approximate'] = True
@@ -536,6 +606,7 @@ def _checkpoint(key, value, now):
                     or not isinstance(row.get('description'), str) or not 0 < len(row['description']) <= MAX_DESCRIPTION
                     or not row['description'].strip() or row.get('timezone') != ZONE
                     or row.get('attendance_mode') != 'in_person'
+                    or not _content_envelope_valid(key, row)
                     or tuple(row.get(field) for field in ('venue_name', 'venue_address', 'venue_city', 'lat', 'lng')) not in venues):
                 raise ValueError
             marker = _row_key(row)
@@ -585,6 +656,8 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
     started = timestamp(state['started_at']) if state else current
     if state is None:
         state = _new_state(key, _manifest(key, fetch, deadline, started), started)
+    legacy_prefix = bool(state['events'] and
+                         any('collector_event_content_v1' not in row for row in state['events']))
     queue = state['queue']
     prior, paused = state['cursor'], False
     detail = _astor_detail if key == ASTOR else _greenwood_detail
@@ -596,6 +669,9 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
             if NONPUBLIC.search(item['title']) or VISITING.search(item['title']):
                 raise ValueError('event_not_public')
             rows = _unique(detail(item, fetch(item['url'], 'text/html'), started))
+            if legacy_prefix:
+                for row in rows:
+                    row.pop('collector_event_content_v1', None)
         except ValueError as error:
             if _bounded_pause(error):
                 paused = True

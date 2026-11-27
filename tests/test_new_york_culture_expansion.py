@@ -124,6 +124,31 @@ def test_astor_native_full_description_survives_two_thousand_characters():
     assert 'Retail navigation' not in row['description']
 
 
+def test_original_facts_ignore_provider_label_and_exclude_reviewed_culture_enrichment():
+    renamed = {**source(ny.ASTOR), 'publisher_name': 'Renamed provider label'}
+    assert ny._source(renamed) == ny.ASTOR
+    astor = finish(ny.ASTOR, astor_fetch())['events'][0]
+    facts = astor['collector_event_content_v1']['facts']
+    assert facts['venue_name'] == 'Astor Center'
+    assert facts['venue_address'] == '399 Lafayette Street, New York, NY 10003'
+    assert facts['venue_address'] != astor['venue_address']
+    assert 'source_latitude' not in facts and 'source_longitude' not in facts
+    event = gw_event()
+    greenwood = finish(ny.GREENWOOD, lambda url, accept:
+        gw_month([event]) if url == ny.SOURCES[ny.GREENWOOD][0] else gw_detail(event))['events'][0]
+    greenwood_facts = greenwood['collector_event_content_v1']['facts']
+    assert greenwood_facts['publisher_categories'] == ['walking tour']
+    assert not ({'venue_name', 'venue_address', 'source_latitude', 'source_longitude'} & set(greenwood_facts))
+
+
+def test_publisher_narrative_change_changes_facts_not_occurrence_id():
+    item = ny._astor_manifest(astor_fetch(), float('inf'), NOW)[0]
+    first = ny._astor_detail(item, astor_detail(body='Original complete class narrative. Class is 2 hours long.'), NOW)[0]
+    changed = ny._astor_detail(item, astor_detail(body='Changed complete publisher narrative. Class is 2 hours long.'), NOW)[0]
+    assert changed['id'] == first['id']
+    assert changed['collector_event_content_v1'] != first['collector_event_content_v1']
+
+
 @pytest.mark.parametrize('body,reason',[('', 'description_missing'),('x'*12001,'description_limit')])
 def test_astor_blank_or_oversize_body_is_held_without_substitution(body,reason):
     result=finish(ny.ASTOR,astor_fetch(detail=lambda slug:astor_detail(slug,body=body)))
@@ -285,6 +310,24 @@ def test_snapshot_keeps_partial_rows_private_and_revalidates_manifest_before_suc
     before=fetch.call_count
     assert ny.collect_chunk(source(ny.ASTOR),fetch,checkpoint=second['checkpoint'],now=NOW)['complete']
     assert fetch.call_count==before
+
+
+def test_checkpoint_rejects_tampered_facts_and_finishes_legacy_prefix_without_invention():
+    fetch = astor_fetch(('wine-tasting', 'another-class'))
+    first = ny.collect_chunk(source(ny.ASTOR), fetch, now=NOW, max_details=1)
+    tampered = deepcopy(first['checkpoint'])
+    tampered['events'][0]['collector_event_content_v1']['facts']['description'] = 'Tampered facts.'
+    marker = ny._row_key(tampered['events'][0])
+    tampered['row_hashes'][marker] = ny._digest(tampered['events'][0])
+    with pytest.raises(ValueError, match='checkpoint_invalid'):
+        ny._checkpoint(ny.ASTOR, tampered, NOW)
+    legacy = deepcopy(first['checkpoint'])
+    legacy['events'][0].pop('collector_event_content_v1')
+    marker = ny._row_key(legacy['events'][0])
+    legacy['row_hashes'][marker] = ny._digest(legacy['events'][0])
+    complete = ny.collect_chunk(source(ny.ASTOR), fetch, checkpoint=legacy, now=NOW, max_details=1)
+    assert complete['complete']
+    assert all('collector_event_content_v1' not in row for row in complete['events'])
 
 
 def test_manifest_change_discards_stale_hydrated_prefix():
