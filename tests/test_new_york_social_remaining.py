@@ -105,6 +105,10 @@ class NewYorkSocialRemainingTests(unittest.TestCase):
         self.assertGreater(len(row["description"]), 2000)
         self.assertEqual(row["venue_address"], "10-40 Jackson Avenue, Long Island City, NY 11101")
         self.assertEqual((row["lat"], row["lng"]), ny.POINTS[ny.IRISH])
+        facts = row["collector_event_content_v1"]["facts"]
+        self.assertEqual(facts["venue_address"], row["venue_address"])
+        self.assertNotIn("source_latitude", facts)
+        self.assertNotIn("source_longitude", facts)
 
     def test_empty_irish_detail_requires_identical_complete_native_metadata(self):
         url = ny.SOURCES[ny.IRISH][0] + "/class"
@@ -159,6 +163,8 @@ class NewYorkSocialRemainingTests(unittest.TestCase):
         self.assertEqual(row["description"], body)
         self.assertEqual(row["starts_at"], "2026-11-18T13:00:00-05:00")
         self.assertEqual(row["venue_address"], "68 34th Street Building 6, Brooklyn, NY 11232")
+        self.assertEqual(row["collector_event_content_v1"]["facts"]["provider_venue_id"], "1")
+        self.assertNotIn("source_latitude", row["collector_event_content_v1"]["facts"])
         self.assertIn("/wp-json/tribe/events/v1/events?", fetch.call_args_list[0].args[0])
 
     def test_industry_event_location_supports_named_venues_and_floors(self):
@@ -228,6 +234,22 @@ class NewYorkSocialRemainingTests(unittest.TestCase):
         self.assertEqual(row["venue_address"], "220 36th St, Brooklyn, NY 11232")
         self.assertEqual((row["lat"], row["lng"]), (40.656, -74.007))
         self.assertEqual(row["location_provenance"], "publisher_event_geo")
+        facts = row["collector_event_content_v1"]["facts"]
+        self.assertEqual((facts["source_latitude"], facts["source_longitude"]), (40.656, -74.007))
+        self.assertEqual(facts["provider_venue_id"], event["id"])
+
+    def test_event_fingerprint_input_ignores_provider_label_and_changes_with_event_details(self):
+        event = industry_event()
+        item = ny._industry_manifest(Mock(return_value=industry_api(event)), NOW)[0]
+        with patch.object(ny, "record", side_effect=normalized_record):
+            first = ny._industry_detail(item, industry_detail(event))[0]
+            changed = deepcopy(item)
+            changed["body"] = "Changed publisher event description."
+            second = ny._industry_detail(changed, industry_detail(event, body="Changed publisher event description."))[0]
+        renamed = deepcopy(first)
+        renamed["publisher_name"] = "A provider label that can change independently"
+        self.assertEqual(renamed["collector_event_content_v1"], first["collector_event_content_v1"])
+        self.assertNotEqual(second["collector_event_content_v1"], first["collector_event_content_v1"])
 
     def test_wix_expired_online_unavailable_and_empty_events_are_explicitly_held(self):
         event = wix_event()
@@ -281,6 +303,17 @@ class NewYorkSocialRemainingTests(unittest.TestCase):
         forged = deepcopy(first["checkpoint"]); forged["events"][0]["id"] = "nyc-social:" + "0" * 64
         with self.assertRaisesRegex(ValueError, "checkpoint_invalid"):
             ny.collect_chunk(source(ny.PRIDE), fetch, now=NOW, checkpoint=forged)
+        tampered = deepcopy(first["checkpoint"])
+        tampered["events"][0]["collector_event_content_v1"]["facts"]["description"] = "Tampered facts."
+        with self.assertRaisesRegex(ValueError, "checkpoint_invalid"):
+            ny.collect_chunk(source(ny.PRIDE), fetch, now=NOW, checkpoint=tampered)
+        legacy = deepcopy(first["checkpoint"])
+        legacy["events"][0].pop("collector_event_content_v1")
+        with patch.object(ny, "record", side_effect=normalized_record):
+            compatible = ny.collect_chunk(source(ny.PRIDE), fetch, now=NOW + timedelta(seconds=30),
+                                          checkpoint=legacy, max_details=1)
+        self.assertTrue(compatible["complete"])
+        self.assertTrue(all("collector_event_content_v1" not in row for row in compatible["events"]))
 
     def test_wix_higher_chunk_ceiling_still_yields_before_the_worker_deadline(self):
         slugs = [f"event-{n}" for n in range(20)]
