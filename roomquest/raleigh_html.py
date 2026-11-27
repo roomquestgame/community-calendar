@@ -17,7 +17,7 @@ from zoneinfo import ZoneInfo
 
 from bs4 import BeautifulSoup
 
-from roomquest.mapsee_adapter import plain, record
+from roomquest.mapsee_adapter import plain, record, timestamp
 from roomquest.publisher_evidence import attach
 
 TIMEZONE = 'America/New_York'
@@ -124,7 +124,50 @@ def address(raw):
     return ', '.join(v for v in (street.strip(), city.strip(), state + (' ' + postal if postal else '')) if v), city.strip()
 
 
+def _attach_original_content(row, *, raw_venue=None, raw_address=None,
+                             topics=None, source_image_url=None):
+    """Keep source event facts separate from reviewed downstream enrichment."""
+    evidence = row.get('collector_event_content_v1')
+    if evidence is not None and (not isinstance(evidence, dict)
+            or evidence.get('version') != 1 or evidence.get('event_id') != row.get('id')
+            or not isinstance(evidence.get('facts'), dict)):
+        raise ValueError('raleigh_original_facts_invalid')
+    facts = dict(evidence['facts']) if evidence else {}
+    start, end = timestamp(row.get('starts_at'), TIMEZONE), timestamp(row.get('ends_at'), TIMEZONE)
+    if start is None or start.tzinfo is None or end is not None and end.tzinfo is None:
+        raise ValueError('publisher_schedule_conflict')
+
+    def local(moment):
+        return (moment.astimezone(ZoneInfo(TIMEZONE)).replace(tzinfo=None)
+                .isoformat(timespec='seconds')) if moment is not None else None
+
+    facts.update(title=row['title'], description=row['description'], is_all_day=False,
+                 starts_at_local=local(start), source_timezone=TIMEZONE,
+                 event_url=row['event_url'])
+    if end is None:
+        facts.pop('ends_at_local', None)
+    else:
+        facts['ends_at_local'] = local(end)
+    for name, value in (('venue_name', raw_venue), ('venue_address', raw_address)):
+        value = plain(value)
+        if value:
+            facts[name] = value
+        elif evidence is None:
+            facts.pop(name, None)
+    if topics is not None:
+        categories = sorted({plain(value) for value in topics if plain(value)})
+        if categories:
+            facts['publisher_categories'] = categories
+        else:
+            facts.pop('publisher_categories', None)
+    if source_image_url:
+        facts['source_image_url'] = source_image_url
+    row['collector_event_content_v1'] = {'version': 1, 'event_id': row['id'], 'facts': facts}
+    return row
+
+
 def _row(key, title, start, end, venue, raw_address, url, body, topics, image, evidence):
+    raw_venue = venue
     street, city = address(raw_address)
     if not venue:
         venue = street
@@ -136,6 +179,8 @@ def _row(key, title, start, end, venue, raw_address, url, body, topics, image, e
         row.update(timezone=TIMEZONE, description=body, publisher_categories=topics,
                    location_provenance='publisher_event_address_pending_geocode')
         attach(row, key, facts=facts_from_text(body), candidate=image, evidence_url=evidence)
+        _attach_original_content(row, raw_venue=raw_venue, raw_address=raw_address,
+                                 topics=topics, source_image_url=image)
     return row
 
 
@@ -405,7 +450,6 @@ def _enrich_books(rows, key, fetch, deadline):
             for script in soup.select('script[type="application/ld+json"]'):
                 data = json.loads(script.get_text())
                 events.extend(x for x in data.get('@graph', []) if isinstance(x, dict) and x.get('@type') == 'Event' and x.get('url') == row['event_url'])
-            from roomquest.mapsee_adapter import timestamp
             if len(events) != 1 or timestamp(events[0].get('startDate')) != timestamp(row['starts_at']):
                 raise ValueError('publisher_event_identity_conflict')
             end = timestamp(events[0].get('endDate'))
@@ -421,6 +465,7 @@ def _enrich_books(rows, key, fetch, deadline):
             candidate = photo_url(key, urljoin(row['event_url'], picture['src'])) if picture else None
             if candidate:
                 attach(row, key, facts=row['publisher_details'], candidate=candidate)
+            _attach_original_content(row, source_image_url=row.get('image_url'))
         except (ValueError, TypeError, KeyError, OSError) as e:
             print(json.dumps({'event': 'reviewed_calendar_optional_detail_unavailable',
                               'source_key': key, 'event_url': row['event_url'],

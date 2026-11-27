@@ -68,6 +68,11 @@ def test_real_calendars_preserve_actual_addresses_and_candidate_evidence(key):
         assert row['timezone'] == r.TIMEZONE
         assert family(key, row['event_url']) == 'raleigh:' + key
         assert row['details_evidence_url'] == row['event_url']
+        content = row['collector_event_content_v1']
+        assert content['version'] == 1 and content['event_id'] == row['id']
+        assert content['facts']['description'] == row['description']
+        assert content['facts']['event_url'] == row['event_url']
+        assert 'provider' not in content['facts'] and 'publisher_name' not in content['facts']
         if row.get('image_url'):
             assert image_url(row['image_url'], 'raleigh:' + key) == row['image_url']
             assert row['image_extractor_version'] == 'publisher_event_candidates_v1'
@@ -144,6 +149,27 @@ def test_registration_cost_facts_never_infer_free_from_free_drinks():
         'cost':'Free admission.', 'registration':'RSVP required.', 'audience':'All ages welcome.'}
 
 
+def test_provider_label_does_not_change_original_facts_and_event_edit_keeps_id():
+    key = 'volumes_vices_nc'
+    first = r.collect(source(key), fetcher(key), now=NOW)
+    renamed = r.collect({**source(key), 'publisher_name': 'Renamed provider label'},
+                        fetcher(key), now=NOW)
+    assert [row['collector_event_content_v1'] for row in renamed] == [
+        row['collector_event_content_v1'] for row in first]
+    native_address = first[0]['collector_event_content_v1']['facts']['venue_address']
+    assert native_address.endswith('United States') and native_address != first[0]['venue_address']
+    start = datetime(2026, 11, 20, 23, tzinfo=timezone.utc)
+    end = datetime(2026, 11, 21, 1, tzinfo=timezone.utc)
+    args = (key, 'Public workshop', start, end, 'Native venue',
+            '123 Main Street, Raleigh, NC 27601',
+            r.SOURCES[key][0] + '/public-workshop', ['Community'], None, r.SOURCES[key][0])
+    original = r._row(*args[:7], 'Original publisher narrative.', *args[7:])
+    changed = r._row(*args[:7], 'Changed publisher narrative.', *args[7:])
+    assert changed['id'] == original['id']
+    assert changed['collector_event_content_v1'] != original['collector_event_content_v1']
+    assert original['collector_event_content_v1']['facts']['venue_address'] == '123 Main Street, Raleigh, NC 27601'
+
+
 def test_expired_or_changed_collection_never_becomes_healthy():
     key='ponysaurus_raleigh_nc'
     with pytest.raises(ValueError, match='publisher_calendar_identity_changed'):
@@ -168,6 +194,9 @@ def test_detail_enrichment_uses_matching_event_and_ignores_broken_jsonld_address
     assert enriched['venue_address']==original_address
     assert enriched['lat'] is None and enriched['lng'] is None
     assert len(enriched['description'])>100
+    assert enriched['collector_event_content_v1']['facts']['description'] == enriched['description']
+    assert enriched['collector_event_content_v1']['facts']['ends_at_local'] == '2026-11-11T19:00:00'
+    assert enriched['collector_event_content_v1']['facts']['venue_address']
     before=dict(enriched)
     r._enrich_books([enriched],key,Mock(return_value=html('quail-story-future')),float('inf'))
     assert enriched==before
@@ -183,6 +212,8 @@ def test_worker_dispatch_preserves_real_transport_guards(monkeypatch):
     output=preview_worker.preview_source(source(key))
     assert output['p_parser_capability']=='publisher_event_candidates_v1'
     assert output['p_events']
+    assert all('collector_event_content_v1' in row for row in output['p_events'])
+    assert all('collector_event_content_v1' not in row for row in output['p_samples'])
     assert len(calls)==1
     assert calls[0][2]['respect_robots'] is True
     assert calls[0][2]['allowed_hosts']==('www.volumesandvices.com',)
