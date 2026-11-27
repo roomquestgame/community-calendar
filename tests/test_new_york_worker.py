@@ -121,6 +121,19 @@ class NewYorkWorkerTests(unittest.TestCase):
                          row['collector_event_content_v1'])
         self.assertNotIn('collector_event_content_v1',result['p_samples'][0])
 
+    def test_final_arts_normal_and_admin_payloads_share_private_content_boundary(self):
+        row=event(collector_event_content_v1={
+            'version':1,'event_id':'native-occurrence',
+            'facts':{'title':'Public workshop','description':'Complete publisher narrative. '*140,
+                     'is_all_day':False,'starts_at_utc':'2026-12-01T23:00:00+00:00',
+                     'ends_at_utc':'2026-12-02T00:00:00+00:00',
+                     'event_url':'https://www.brooklynkids.org/events/workshop/'}})
+        with patch.object(arts_final,'collect',return_value=[row]):
+            result=worker.preview_source(source(arts_final,arts_final.BCM))
+        self.assertEqual(result['p_events'][0]['collector_event_content_v1'],
+                         row['collector_event_content_v1'])
+        self.assertNotIn('collector_event_content_v1',result['p_samples'][0])
+
     def test_exact_source_contract_rejects_changed_endpoint_before_fetch(self):
         bad=source(arts,arts.CMOM);bad['feed_url']='https://cmom.org/other'
         with patch.object(arts,'collect') as collect:

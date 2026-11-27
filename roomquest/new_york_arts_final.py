@@ -149,7 +149,139 @@ def _within(start, end, now, days=60):
     return start < now + timedelta(days=days) and (end or start + timedelta(hours=3)) > now
 
 
-def _row(key, identity, title, start, end, venue, url, body, labels=(), image=None):
+def _content_venue(**values):
+    """Keep publisher event location facts separate from reviewed enrichment."""
+    allowed = {"venue_name", "venue_address", "venue_city", "venue_region",
+               "venue_postal_code", "venue_country"}
+    result = {}
+    for name, value in values.items():
+        if name not in allowed:
+            raise ValueError("nyc_final_payload_changed")
+        if value in (None, ""):
+            continue
+        if not isinstance(value, (str, int)) or len(str(value)) > 500:
+            raise ValueError("nyc_final_payload_changed")
+        result[name] = plain(str(value))
+    return result
+
+
+def _attach_content(row, body, *, content_venue=None, image=None, labels=(), source_coordinates=None):
+    """Retain event-owned facts before reviewed addresses and points are applied."""
+    start, end = timestamp(row.get("starts_at")), timestamp(row.get("ends_at"))
+    if start is None or start.tzinfo is None or end is not None and end.tzinfo is None:
+        raise ValueError("nyc_final_schedule_changed")
+    facts = {
+        "title": row["title"],
+        "description": body,
+        "is_all_day": False,
+        "starts_at_utc": start.astimezone(timezone.utc).isoformat(),
+        "ends_at_utc": end.astimezone(timezone.utc).isoformat() if end else None,
+        "source_timezone": ZONE,
+        "event_url": row["event_url"],
+        "source_image_url": image,
+        "publisher_categories": sorted({plain(value) for value in labels if plain(value)}),
+        "attendance_mode": "in_person",
+        **(content_venue or {}),
+    }
+    if source_coordinates is not None:
+        try:
+            lat, lng = map(float, source_coordinates)
+        except (TypeError, ValueError, OverflowError):
+            raise ValueError("nyc_final_venue_changed") from None
+        if not (math.isfinite(lat) and math.isfinite(lng)
+                and -90 <= lat <= 90 and -180 <= lng <= 180):
+            raise ValueError("nyc_final_venue_changed")
+        facts.update(source_latitude=lat, source_longitude=lng)
+    facts = {name: value for name, value in facts.items()
+             if value is not None and value != "" and value != [] and value != {}}
+    row["collector_event_content_v1"] = {
+        "version": 1,
+        # This associates the private facts with the occurrence. Live SQL hashes
+        # only facts, so provider/source/occurrence identity remains outside it.
+        "event_id": row["id"],
+        "facts": facts,
+    }
+    return row
+
+
+def _content_envelope_valid(row):
+    evidence = row.get("collector_event_content_v1")
+    if evidence is None:
+        return True
+    if (not isinstance(evidence, dict) or set(evidence) != {"version", "event_id", "facts"}
+            or evidence.get("version") != 1 or evidence.get("event_id") != row.get("id")
+            or not isinstance(evidence.get("facts"), dict)):
+        return False
+    facts = evidence["facts"]
+    allowed = {
+        "title", "description", "is_all_day", "starts_at_utc", "ends_at_utc",
+        "source_timezone", "event_url", "venue_name", "venue_address", "venue_city",
+        "venue_region", "venue_postal_code", "venue_country", "source_latitude",
+        "source_longitude", "source_image_url", "publisher_categories", "attendance_mode",
+    }
+    if not set(facts) <= allowed or ("source_latitude" in facts) != ("source_longitude" in facts):
+        return False
+    try:
+        start, end = timestamp(row.get("starts_at")), timestamp(row.get("ends_at"))
+        expected = {
+            "title": row.get("title"),
+            "description": row.get("description"),
+            "is_all_day": False,
+            "starts_at_utc": start.astimezone(timezone.utc).isoformat(),
+            "source_timezone": ZONE,
+            "event_url": row.get("event_url"),
+            "attendance_mode": "in_person",
+        }
+        if end is not None:
+            expected["ends_at_utc"] = end.astimezone(timezone.utc).isoformat()
+    except (AttributeError, TypeError, ValueError, OverflowError):
+        return False
+    if (facts.get("source_image_url") != row.get("image_url")
+            or facts.get("publisher_categories", []) != sorted(set(row.get("publisher_categories") or []))):
+        return False
+    if not all(facts.get(name) == value for name, value in expected.items()):
+        return False
+    url = row.get("event_url", "")
+    location = {name: facts.get(name) for name in (
+        "venue_name", "venue_address", "venue_city", "venue_region",
+        "venue_postal_code", "venue_country", "source_latitude", "source_longitude")
+        if name in facts}
+    if "bklynlibrary.org" in url:
+        expected_location = {
+            "venue_name": row.get("venue_name"), "venue_address": row.get("venue_address"),
+            "venue_city": row.get("venue_city"), "venue_region": "NY",
+            "venue_postal_code": str(row.get("venue_address", "")).rsplit(" ", 1)[-1],
+            "venue_country": "US",
+        }
+        return location == expected_location
+    if "eventbrite.com" in url:
+        return location == {
+            "venue_name": "Makerspace NYC- Brooklyn Army Terminal",
+            "venue_address": "140 58th St Building B, Unit 1C", "venue_city": "Brooklyn",
+            "venue_region": "NY", "venue_postal_code": "11220", "venue_country": "US",
+            "source_latitude": location.get("source_latitude"),
+            "source_longitude": location.get("source_longitude"),
+        } and ((location.get("source_latitude"), location.get("source_longitude")) in {
+            (40.6455001, -74.0239072), (40.6451278, -74.02420630000002)})
+    if "flushingtownhall.org" in url:
+        slug = url.rsplit("/", 1)[-1]
+        offsite = FTH_OFFSITE.get(slug)
+        return location == ({} if offsite is None else {
+            "venue_name": offsite[0], "venue_address": offsite[1]})
+    if "nytransitmuseum.org" in url:
+        if location.get("venue_name") == TRANSIT_VENUE[0]:
+            return location == {"venue_name": TRANSIT_VENUE[0],
+                                "source_latitude": TRANSIT_VENUE[3],
+                                "source_longitude": TRANSIT_VENUE[4]}
+        return location == {"venue_name": "Off-Site"}
+    if "brooklynkids.org" in url:
+        return not location or (set(location) == {"venue_name"}
+                                and "brooklyn children" in location["venue_name"].casefold())
+    return False
+
+
+def _row(key, identity, title, start, end, venue, url, body, labels=(), image=None, *,
+         content_venue=None, source_coordinates=None):
     if not event_url(key, url):
         raise ValueError("nyc_final_identity_changed")
     name, address, city, lat, lng = venue
@@ -160,8 +292,11 @@ def _row(key, identity, title, start, end, venue, url, body, labels=(), image=No
                    location_provenance=("publisher_named_station_reviewed_approximate_meeting_point"
                                         if "approximate meeting point" in name else "publisher_venue_and_reviewed_point"),
                    publisher_categories=list(labels))
-        if photo := photo_url(key, image):
+        photo = photo_url(key, image)
+        if photo:
             row["image_url"] = photo
+        _attach_content(row, body, content_venue=content_venue, image=photo,
+                        labels=labels, source_coordinates=source_coordinates)
     return row
 
 
@@ -211,8 +346,10 @@ def _bcm(fetch, deadline, now):
         if not _within(start, end, now, 30):
             continue
         try:
+            native_location = plain(item.get("LOCATION"))
             rows.append(_row(BCM, parsed["id"], title, start, end, BCM_VENUE, str(item["URL"]),
-                             body, ("Family Programs",), str(item.get("ATTACH", ""))))
+                             body, ("Family Programs",), str(item.get("ATTACH", "")),
+                             content_venue=_content_venue(venue_name=native_location)))
         except ValueError as exc:
             if str(exc) not in HOLD_REASONS:
                 raise
@@ -355,7 +492,10 @@ def _bpl_detail(item, payload, now):
     # native first content column contains the complete text and all bios.
     body = _body(str(bodies[0]))
     return [_row(BPL, item["id"], item["title"], start, end, (venue_name,) + place[1:], item["url"],
-                 body, labels, image.get("content") if image else None)]
+                 body, labels, image.get("content") if image else None,
+                 content_venue=_content_venue(venue_name=venue_name, venue_address=native_address,
+                                              venue_city=city, venue_region=state,
+                                              venue_postal_code=postal, venue_country="US"))]
 
 
 def _transit_detail(item, payload, now):
@@ -399,7 +539,13 @@ def _transit_detail(item, payload, now):
     else:
         raise ValueError("nyc_final_meeting_place_not_public")
     image = next((n.get("url") for n in nodes if isinstance(n, dict) and n.get("@type") == "ImageObject"), None)
-    return [_row(TRANSIT, item["id"], item["title"], start, end, venue, item["url"], body, item["labels"], image)] if _within(start, end, now) else []
+    geo = place.get("geo") if isinstance(place.get("geo"), dict) else {}
+    source_coordinates = ((geo.get("latitude"), geo.get("longitude"))
+                          if geo.get("latitude") is not None and geo.get("longitude") is not None else None)
+    content_venue = _content_venue(venue_name=place.get("name"))
+    return [_row(TRANSIT, item["id"], item["title"], start, end, venue, item["url"], body,
+                 item["labels"], image, content_venue=content_venue,
+                 source_coordinates=source_coordinates)] if _within(start, end, now) else []
 
 
 def _clock(value, assumed=None):
@@ -496,8 +642,12 @@ def _flushing_detail(item, payload, now):
                 if _within(start, end, now):
                     occurrences.append((start, end, "show", plain(heading.get_text(" "))))
     image = soup.select_one(".adx-top-banner img[src]")
+    offsite = FTH_OFFSITE.get(item["id"])
+    content_venue = (_content_venue(venue_name=offsite[0], venue_address=offsite[1])
+                     if offsite else {})
     return [_row(FLUSHING, item["id"] + ":" + start.isoformat() + ":" + suffix, title, start, end,
-                 _fth_venue(item, body, start), item["url"], body, (), image["src"] if image else None)
+                 _fth_venue(item, body, start), item["url"], body, (), image["src"] if image else None,
+                 content_venue=content_venue)
             for start, end, suffix, title in occurrences]
 
 
@@ -580,8 +730,18 @@ def _maker_detail(item, payload, now):
     labels = tuple(str(v) for v in (context.get("taxonomies") or {}).values() if isinstance(v, str) and v)
     images = (context.get("gallery") or {}).get("images") or []
     image = images[0].get("url") if images and isinstance(images[0], dict) else None
+    native = basic["venue"]["address"]
+    content_venue = _content_venue(
+        venue_name=basic["venue"].get("name"),
+        venue_address=" ".join(plain(value) for value in native["localizedMultiLineAddressDisplay"][:2]),
+        venue_city=native.get("city"), venue_region=native.get("region"),
+        venue_postal_code=re.search(r"\b\d{5}(?:-\d{4})?\b", plain(native["localizedMultiLineAddressDisplay"][2]))[0],
+        venue_country=native.get("country"),
+    )
     return [_row(MAKER, item["id"] + (":" + start.date().isoformat() if basic.get("isParentEvent") else ""),
-                 plain(basic.get("name")), start, end, venue, item["url"], body, labels, image)
+                 plain(basic.get("name")), start, end, venue, item["url"], body, labels, image,
+                 content_venue=content_venue,
+                 source_coordinates=(native.get("latitude"), native.get("longitude")))
             for start, end in occurrences]
 
 
@@ -661,6 +821,7 @@ def _checkpoint(key, value, now):
                     or row.get("timezone") != ZONE or row.get("attendance_mode") != "in_person"
                     or not (40.5 <= float(row["lat"]) <= 40.95 and -74.3 <= float(row["lng"]) <= -73.69)
                     or not _reviewed_row_place(key, row)
+                    or not _content_envelope_valid(row)
                     or (row.get("image_url") is not None and photo_url(key, row["image_url"]) is None)):
                 raise ValueError
             start, end = timestamp(row.get("starts_at")), timestamp(row.get("ends_at"))
@@ -718,6 +879,8 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
         raise ValueError("unregistered_nyc_arts_final")
     current = (now or datetime.now(timezone.utc)).astimezone(timezone.utc)
     state = _checkpoint(key, checkpoint, current)
+    legacy_prefix = bool(state and state["events"] and
+                         any("collector_event_content_v1" not in row for row in state["events"]))
     if state and state["manifest_verified"]:
         return dict(complete=True, events=_unique(deepcopy(state["events"])), checkpoint=state)
     deadline = deadline_at if deadline_at is not None else monotonic() + 35
@@ -744,6 +907,9 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
             if str(exc) not in HOLD_REASONS:
                 raise
             rows, reason = [], str(exc)
+        if legacy_prefix:
+            for row in rows:
+                row.pop("collector_event_content_v1", None)
         state["events"].extend(rows)
         state["diagnostics"].append(dict(event_url=item["url"], disposition="accepted" if rows else "held",
                                           event_count=len(rows), reason=None if rows else reason))
