@@ -72,6 +72,22 @@ class BostonArtsTests(unittest.TestCase):
         self.assertEqual(row['venue_address'], '279 Harvard Street, Brookline, MA 02446-2908')
         self.assertNotIn('Truncated', row['description'])
         self.assertNotIn('retail', row['description'])
+        facts = row['collector_event_content_v1']['facts']
+        self.assertEqual(facts['venue_address'], row['venue_address'])
+        self.assertEqual(facts['description'], text)
+
+    def test_event_only_facts_ignore_provider_label_and_change_with_event_details(self):
+        def run(src, body):
+            fetch = Mock(side_effect=[listing(), detail(body=body)])
+            first = b.collect_chunk(src, fetch, now=NOW)
+            return b.collect_chunk(src, fetch, checkpoint=first['checkpoint'], now=NOW)['events'][0]
+
+        original = 'Full publisher event description.'
+        first = run(source(b.BROOKLINE), original)
+        renamed = run({**source(b.BROOKLINE), 'publisher_name': 'Renamed provider label'}, original)
+        changed = run(source(b.BROOKLINE), 'Publisher changed the event description.')
+        self.assertEqual(renamed['collector_event_content_v1'], first['collector_event_content_v1'])
+        self.assertNotEqual(changed['collector_event_content_v1'], first['collector_event_content_v1'])
 
     def test_missing_or_overlimit_description_never_falls_back_to_excerpt(self):
         item = b._book_listing(b.BROOKLINE, listing(), b.SOURCES[b.BROOKLINE][0], NOW)[0][0]
@@ -117,6 +133,25 @@ class BostonArtsTests(unittest.TestCase):
         self.assertEqual(retry['events'], final['events'])
         self.assertEqual(fetch.call_count, used)
 
+    def test_checkpoint_rejects_tampered_original_facts_and_preserves_legacy_prefix(self):
+        two = '<div class="view-indiecommerce-event-list">' + card(1) + card(2) + '</div>'
+        fetch = Mock(side_effect=[two, detail(1), detail(2)])
+        listed = b.collect_chunk(source(b.BROOKLINE), fetch, now=NOW)
+        partial = b.collect_chunk(source(b.BROOKLINE), fetch, checkpoint=listed['checkpoint'],
+                                  now=NOW, max_details=1)
+        poison = deepcopy(partial['checkpoint'])
+        poison['events'][0]['collector_event_content_v1']['facts']['description'] = 'Tampered facts.'
+        with self.assertRaisesRegex(ValueError, 'checkpoint_invalid'):
+            b.collect_chunk(source(b.BROOKLINE), Mock(), checkpoint=poison, now=NOW)
+
+        legacy = deepcopy(partial['checkpoint'])
+        for row in legacy['events']:
+            row.pop('collector_event_content_v1')
+        done = b.collect_chunk(source(b.BROOKLINE), fetch, checkpoint=legacy, now=NOW)
+        self.assertTrue(done['complete'])
+        self.assertEqual(len(done['events']), 2)
+        self.assertTrue(all('collector_event_content_v1' not in row for row in done['events']))
+
     def test_checkpoint_tampering_and_external_links_are_rejected(self):
         part = b.collect_chunk(source(b.BROOKLINE), Mock(return_value=listing()), now=NOW)
         state = deepcopy(part['checkpoint'])
@@ -137,6 +172,7 @@ class BostonArtsTests(unittest.TestCase):
         row = b.collect(source(b.MILL), fetch, now=NOW)[0]
         self.assertEqual(row['description'], body)
         self.assertEqual(row['venue_address'], '61 Endicott St. Building 46, Norwood, MA 02062')
+        self.assertEqual(row['collector_event_content_v1']['facts']['description'], body)
 
     def test_armory_preserves_full_ics_text_strips_only_known_tracking_and_no_end_guess(self):
         text = "Opening instructions.\\n$('#getTixButton').click(function() {\\nfbq('track', 'Purchase', {currency: \"USD\", value: 0.00});\\n});\\nFinal instructions."
@@ -159,12 +195,16 @@ class BostonArtsTests(unittest.TestCase):
         self.assertEqual(first['checkpoint']['cursor'], 2)
         self.assertEqual(first['events'], [])
         b._bpl_checkpoint(first['checkpoint'], NOW)
-        final = b.collect_chunk(source(b.BPL), fetch, checkpoint=first['checkpoint'], now=NOW)
+        legacy = deepcopy(first['checkpoint'])
+        for row in legacy['events']:
+            row.pop('collector_event_content_v1')
+        final = b.collect_chunk(source(b.BPL), fetch, checkpoint=legacy, now=NOW)
         self.assertTrue(final['complete'])
         self.assertEqual(len(final['events']), 2)
         self.assertEqual(final['events'][0]['description'], long)
         self.assertEqual(final['events'][0]['venue_address'], '2 Boylston Street, Boston, MA 02116')
         self.assertTrue(all(row['lat'] == 42.352 for row in final['events']))
+        self.assertTrue(all('collector_event_content_v1' not in row for row in final['events']))
         self.assertEqual([parse_qs(urlsplit(c.args[0]).query)['page'][0] for c in fetch.call_args_list], ['1', '2', '3'])
         self.assertTrue(all(parse_qs(urlsplit(c.args[0]).query)['sort'] == ['definition.start asc'] for c in fetch.call_args_list))
         self.assertEqual(len(final['checkpoint']['seen_ids']),final['checkpoint']['native_count'])
