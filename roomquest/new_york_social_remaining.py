@@ -166,7 +166,107 @@ def _id(key, url, start, native=""):
     return "nyc-social:" + sha256(f"{key}:{url}:{timestamp(start).isoformat()}:{native}".encode()).hexdigest()
 
 
-def _row(key, item, body, place, *, point=None, native="", publisher_geo=False):
+def _content_venue(place):
+    """Retain publisher-supplied venue text without reviewed point enrichment."""
+    if (not isinstance(place, (tuple, list)) or len(place) != 3
+            or any(not isinstance(value, str) or not value.strip() or len(value) > 500
+                   for value in place)):
+        raise ValueError("new_york_social_location_unresolved")
+    postcode = re.search(r",\s*NY\s+(\d{5}(?:-\d{4})?)\b", place[1], re.I)
+    result = {
+        "venue_name": plain(place[0]),
+        "venue_address": plain(place[1]),
+        "venue_city": plain(place[2]),
+        "venue_region": "NY",
+        "venue_country": "US",
+    }
+    if postcode:
+        result["venue_postal_code"] = postcode[1]
+    return result
+
+
+def _attach_content(row, body, *, content_venue, image=None,
+                    provider_venue_id=None, source_coordinates=None):
+    """Retain only event-owned facts before EventQuest location enrichment."""
+    start, end = timestamp(row.get("starts_at")), timestamp(row.get("ends_at"))
+    if start is None or start.tzinfo is None or end is not None and end.tzinfo is None:
+        raise ValueError("new_york_social_schedule_conflict")
+    facts = {
+        "title": row["title"],
+        "description": body,
+        "is_all_day": False,
+        "starts_at_utc": start.astimezone(timezone.utc).isoformat(),
+        "ends_at_utc": end.astimezone(timezone.utc).isoformat() if end else None,
+        "source_timezone": ZONE,
+        "event_url": row["event_url"],
+        "provider_venue_id": str(provider_venue_id) if provider_venue_id else None,
+        "source_image_url": image,
+        "publisher_categories": [],
+        "attendance_mode": "in_person",
+        **content_venue,
+    }
+    if source_coordinates is not None:
+        try:
+            lat, lng = map(float, source_coordinates)
+        except (TypeError, ValueError, OverflowError):
+            raise ValueError("new_york_social_location_unresolved") from None
+        if not (math.isfinite(lat) and math.isfinite(lng)
+                and -90 <= lat <= 90 and -180 <= lng <= 180):
+            raise ValueError("new_york_social_location_unresolved")
+        facts.update(source_latitude=lat, source_longitude=lng)
+    facts = {name: value for name, value in facts.items()
+             if value is not None and value != "" and value != [] and value != {}}
+    row["collector_event_content_v1"] = {
+        "version": 1,
+        "event_id": row["id"],
+        "facts": facts,
+    }
+    return row
+
+
+def _content_envelope_valid(row):
+    evidence = row.get("collector_event_content_v1")
+    if evidence is None:
+        return True
+    if (not isinstance(evidence, dict) or set(evidence) != {"version", "event_id", "facts"}
+            or evidence.get("version") != 1 or evidence.get("event_id") != row.get("id")
+            or not isinstance(evidence.get("facts"), dict)):
+        return False
+    facts = evidence["facts"]
+    allowed = {
+        "title", "description", "is_all_day", "starts_at_utc", "ends_at_utc",
+        "source_timezone", "event_url", "provider_venue_id", "venue_name",
+        "venue_address", "venue_city", "venue_region", "venue_postal_code",
+        "venue_country", "source_latitude", "source_longitude", "source_image_url",
+        "publisher_categories", "attendance_mode",
+    }
+    if not set(facts) <= allowed or ("source_latitude" in facts) != ("source_longitude" in facts):
+        return False
+    try:
+        start, end = timestamp(row.get("starts_at")), timestamp(row.get("ends_at"))
+        expected = {
+            "title": row.get("title"),
+            "description": row.get("description"),
+            "is_all_day": False,
+            "starts_at_utc": start.astimezone(timezone.utc).isoformat(),
+            "source_timezone": ZONE,
+            "event_url": row.get("event_url"),
+            "venue_name": row.get("venue_name"),
+            "venue_address": row.get("venue_address"),
+            "venue_city": row.get("venue_city"),
+            "attendance_mode": "in_person",
+        }
+        if end is not None:
+            expected["ends_at_utc"] = end.astimezone(timezone.utc).isoformat()
+    except (AttributeError, TypeError, ValueError, OverflowError):
+        return False
+    if facts.get("source_image_url") != row.get("image_url"):
+        return False
+    return all(facts.get(name) == value for name, value in expected.items())
+
+
+def _row(key, item, body, place, *, point=None, native="", publisher_geo=False,
+         source_coordinates=None):
     start, end = timestamp(item["start"]), timestamp(item.get("end"))
     if not event_url(key, item["url"]) or not isinstance(item.get("title"), str) or not 1 <= len(item["title"]) <= 180:
         raise ValueError("new_york_social_identity")
@@ -184,10 +284,14 @@ def _row(key, item, body, place, *, point=None, native="", publisher_geo=False):
             row.update(lat=point[0], lng=point[1])
             if row.get("reason") == "missing_verified_venue_geo":
                 row["reason"] = None
-        if image := photo_url(key, item.get("image")):
+        image = photo_url(key, item.get("image"))
+        if image:
             row["image_url"] = image
         if key == PRIDE:
             row["publisher_native_id"] = native
+        _attach_content(row, body, content_venue=_content_venue(place), image=image,
+                        provider_venue_id=native or None,
+                        source_coordinates=source_coordinates)
     return row
 
 
@@ -555,7 +659,8 @@ def _wix_detail(item, payload, now):
     place, point = _wix_location(event)
     native = dict(item, title=title, start=start.isoformat(), end=end.isoformat() if end else None,
                   image=(event.get("mainImage") or {}).get("url"))
-    row = _row(PRIDE, native, body, place, point=point, native=event["id"], publisher_geo=True)
+    row = _row(PRIDE, native, body, place, point=point, native=event["id"], publisher_geo=True,
+               source_coordinates=point)
     return [row] if row else []
 
 
@@ -606,6 +711,7 @@ def _checkpoint(value, key, now):
         if (item is None or row["event_url"] in seen or not re.fullmatch(r"nyc-social:[a-f0-9]{64}", str(row.get("id", "")))
                 or not isinstance(row.get("description"), str) or not 1 <= len(row["description"]) <= MAX_DESCRIPTION
                 or not row.get("venue_name") or not row.get("venue_address") or row.get("timezone") != ZONE
+                or not _content_envelope_valid(row)
                 or row.get("image_url") is not None and photo_url(key, row["image_url"]) is None):
             raise ValueError("new_york_social_checkpoint_invalid")
         try:
@@ -621,6 +727,21 @@ def _checkpoint(value, key, now):
         if key in VENUES and ((row.get("venue_name"), row.get("venue_address"), row.get("venue_city")) != VENUES[key]
                 or (row.get("lat"), row.get("lng")) != POINTS[key]):
             raise ValueError("new_york_social_checkpoint_invalid")
+        evidence = row.get("collector_event_content_v1")
+        if evidence is not None:
+            facts = evidence["facts"]
+            expected_venue = _content_venue((row["venue_name"], row["venue_address"], row["venue_city"]))
+            expected_provider = (str(row.get("publisher_native_id")) if key == PRIDE
+                                 else str(item.get("native")) if item.get("native") else None)
+            if (any(facts.get(name) != value for name, value in expected_venue.items())
+                    or facts.get("provider_venue_id") != expected_provider):
+                raise ValueError("new_york_social_checkpoint_invalid")
+            if key == PRIDE:
+                if ((facts.get("source_latitude"), facts.get("source_longitude"))
+                        != (float(row["lat"]), float(row["lng"]))):
+                    raise ValueError("new_york_social_checkpoint_invalid")
+            elif "source_latitude" in facts or "source_longitude" in facts:
+                raise ValueError("new_york_social_checkpoint_invalid")
         if key == PRIDE:
             native = str(row.get("publisher_native_id", ""))
             start, end = timestamp(row.get("starts_at")), timestamp(row.get("ends_at"))
@@ -652,6 +773,8 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
     if current.tzinfo is None:
         raise ValueError("new_york_social_checkpoint_invalid")
     state = _checkpoint(checkpoint, key, current)
+    legacy_prefix = bool(state and state["events"] and
+                         any("collector_event_content_v1" not in row for row in state["events"]))
     anchor = timestamp(state["started_at"]) if state else current
     if deadline_at is not None and monotonic() >= deadline_at:
         raise ValueError("collection_deadline")
@@ -684,6 +807,9 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
                 rows = (_industry_detail(item, payload) if key == INDUSTRY else
                         _wix_detail(item, payload, current) if key == PRIDE else
                         _repair_detail(item, payload) if key == REPAIR else _irish_detail(item, payload))
+            if legacy_prefix:
+                for row in rows:
+                    row.pop("collector_event_content_v1", None)
             state["events"].extend(rows)
             if not rows:
                 raise ValueError("no_available_future_occurrence")
