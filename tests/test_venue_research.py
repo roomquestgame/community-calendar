@@ -249,3 +249,57 @@ def test_registered_us_requires_region_proof():
     scope = {**SCOPE, "scope_version": "registered_venue_v1"}
     ans, _ = fixture(admit=Mock(return_value=scope))
     assert ans["status"] == "held"
+
+
+def test_gateway_runtime_oidc_is_request_scoped(monkeypatch):
+    env = {"VENUE_RESEARCH_ENABLED": "true",
+           "VENUE_RESEARCH_MODEL_PROVIDER": "vercel_gateway",
+           "VENUE_RESEARCH_MODEL": "anthropic/claude-haiku-5.5",
+           "VENUE_RESEARCH_USE_EXISTING_TAVILY_KEY": "true",
+           "TAVILY_API_KEY": "fake-search",
+           "VERCEL_OIDC_TOKEN": "fake-build-token"}
+    assert configured(env, oidc_token="fake-request-token")["model_key"] == "fake-request-token"
+    assert configured(env, oidc_token="") is None
+    assert configured(env)["model_key"] == "fake-build-token"
+    assert env["VERCEL_OIDC_TOKEN"] == "fake-build-token"
+    assert configured({**env, "VENUE_RESEARCH_ENABLED": "false"},
+                      oidc_token="fake-request-token") is None
+
+
+def test_authenticated_geocode_handler_passes_oidc(monkeypatch):
+    from types import SimpleNamespace
+    from api import geocode
+    monkeypatch.setenv("CRON_SECRET", "fake-cron")
+    runner = Mock(return_value={"phase": "venues"})
+    monkeypatch.setattr(geocode, "run_batch", runner)
+    request = SimpleNamespace(headers={"Authorization": "Bearer fake-cron",
+                                       "x-vercel-oidc-token": "fake-request-token"},
+                              reply=Mock())
+    geocode.handler.invoke(request, "CRON_SECRET")
+    runner.assert_called_once_with(oidc_token="fake-request-token")
+    request.reply.assert_called_once_with(200, {"phase": "venues"})
+    request.headers["Authorization"] = "Bearer wrong"
+    request.reply.reset_mock()
+    runner.reset_mock()
+    geocode.handler.invoke(request, "CRON_SECRET")
+    runner.assert_not_called()
+    request.reply.assert_called_once_with(401, {"error": "unauthorized"})
+
+
+def test_request_token_enables_scoped_claim(monkeypatch):
+    from roomquest import venue_resolver
+    monkeypatch.setenv("FORWARD_GEOCODER_ENABLED", "true")
+    monkeypatch.setenv("VERCEL_ENV", "production")
+    monkeypatch.setenv("VENUE_RESEARCH_ENABLED", "true")
+    monkeypatch.setenv("VENUE_RESEARCH_MODEL_PROVIDER", "vercel_gateway")
+    monkeypatch.setenv("VENUE_RESEARCH_MODEL", "anthropic/claude-haiku-5.5")
+    monkeypatch.setenv("VENUE_RESEARCH_TAVILY_API_KEY", "fake-search")
+    monkeypatch.delenv("VERCEL_OIDC_TOKEN", raising=False)
+    db = Mock(return_value=[])
+    venue_resolver.run_batch(database=db, clock=lambda: 0, deadline_seconds=28,
+                             oidc_token="fake-request-token")
+    db.assert_called_once_with("claim", {"limit": 1, "research_model": "anthropic/claude-haiku-5.5"})
+    db.reset_mock()
+    venue_resolver.run_batch(database=db, clock=lambda: 0, deadline_seconds=28,
+                             oidc_token="")
+    db.assert_called_once_with("claim", {"limit": 1})
