@@ -6,7 +6,7 @@ from zoneinfo import ZoneInfo
 
 from bs4 import BeautifulSoup
 
-from roomquest.mapsee_adapter import record, timestamp
+from roomquest.mapsee_adapter import plain, record, timestamp
 from roomquest.mycountyparks import cancelled
 from roomquest.publisher_evidence import attach
 
@@ -33,6 +33,7 @@ VENUES = {
     KROS: ('Kros Strain Brewing', '10411 Portal Road Ste 102, La Vista, NE 68128', 'La Vista'),
     FROSTY: ('Falconwood Park', '905 Allied Road, Bellevue, NE 68123', 'Bellevue'),
 }
+MAX_DESCRIPTION = 12000
 
 
 def _text(node):
@@ -53,7 +54,39 @@ def _clock(day, value):
     return timestamp(datetime.combine(day, datetime.strptime(clock, fmt).time()), ZONE)
 
 
-def _row(key, title, starts, ends, url, identity, description='', image=None):
+def _narrative(value):
+    from roomquest.event_description import description
+    text = description(value or '', limit=MAX_DESCRIPTION + 1)
+    if len(text) > MAX_DESCRIPTION:
+        raise ValueError('publisher_description_limit')
+    return text
+
+
+def _attach_original_content(row, *, description='', raw_venue=None,
+                             raw_address=None, raw_city=None, image=None):
+    start = timestamp(row.get('starts_at'), ZONE)
+    end = timestamp(row.get('ends_at'), ZONE)
+    if start is None or start.tzinfo is None or end is not None and end.tzinfo is None:
+        raise ValueError('nebraska_venue_schedule_conflict')
+    local = lambda value: (value.astimezone(ZoneInfo(ZONE)).replace(tzinfo=None)
+                           .isoformat(timespec='seconds')) if value is not None else None
+    facts = {
+        'title': row['title'], 'description': description, 'is_all_day': False,
+        'starts_at_local': local(start), 'ends_at_local': local(end),
+        'source_timezone': ZONE, 'event_url': row['event_url'],
+        'venue_name': plain(raw_venue), 'venue_address': plain(raw_address),
+        'venue_city': plain(raw_city), 'publisher_status': 'scheduled',
+        'attendance_mode': 'in_person', 'source_image_url': image,
+    }
+    row['collector_event_content_v1'] = {
+        'version': 1, 'event_id': row['id'],
+        'facts': {name: value for name, value in facts.items()
+                  if value is not None and value != ''},
+    }
+
+
+def _row(key, title, starts, ends, url, identity, description='', image=None, *,
+         raw_venue=None, raw_address=None, raw_city=None):
     if cancelled(title, description):
         return None
     if ends and ends <= starts:
@@ -61,8 +94,11 @@ def _row(key, title, starts, ends, url, identity, description='', image=None):
     venue, address, city = VENUES[key]
     row = record(title, starts, ends, venue, address, city, url, identity, tz=ZONE)
     if row:
+        description = _narrative(description)
         row.update(description=description[:2000], attendance_mode='in_person', timezone=ZONE)
         attach(row, key, candidate=image)
+        _attach_original_content(row, description=description, raw_venue=raw_venue,
+                                 raw_address=raw_address, raw_city=raw_city, image=image)
     return row
 
 
@@ -92,7 +128,8 @@ def _pint(soup):
         img = card.select_one('img.eventlist-thumbnail')
         yield _row(PINT, _text(link), _clock(start_day, _text(start_node)), _clock(end_day, _text(end_node)),
                    href, urlsplit(href).path, _text(card.select_one('.eventlist-description')),
-                   img.get('src') if img else None)
+                   img.get('src') if img else None, raw_venue=VENUES[PINT][0],
+                   raw_address=VENUES[PINT][1], raw_city=VENUES[PINT][2])
 
 
 def _kros(soup, fetch):
@@ -123,7 +160,8 @@ def _kros(soup, fetch):
         ends = _clock(day, times[1]) if len(times) == 2 else None
         img = card.select_one('.section_home_upcoming_event_item_image_wrapper img')
         yield _row(KROS, _text(label), starts, ends, href, urlsplit(href).path,
-                   _text(detail.select_one('.rte')), img.get('src') if img else None)
+                   _text(detail.select_one('.rte')), img.get('src') if img else None,
+                   raw_city='La Vista')
 
 
 def _frosty(soup):
@@ -156,7 +194,9 @@ def _frosty(soup):
             continue
         first, last = _text(hours).split(' to ')
         yield _row(FROSTY, 'Falconwood Frosty Nights', _clock(day, first), _clock(day, last),
-                   SOURCES[FROSTY], day.isoformat(), 'Walk-through Christmas lights and Christmas village.')
+                   SOURCES[FROSTY], day.isoformat(), 'Walk-through Christmas lights and Christmas village.',
+                   raw_venue=VENUES[FROSTY][0], raw_address=VENUES[FROSTY][1],
+                   raw_city=VENUES[FROSTY][2])
 
 
 def collect(source, fetch, *, deadline_at=None):
