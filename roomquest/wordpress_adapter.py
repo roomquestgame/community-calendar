@@ -355,9 +355,10 @@ def collect(source, fetch, *, deadline_at=None):
         path = root.path or '/'
     else:
         path = root.path.rstrip('/') + '/wp-json/tribe/events/v1/events'
-    now = datetime.now(timezone.utc)
-    params.update(per_page=100, start_date=now.date().isoformat(),
-                  end_date=(now + timedelta(days=60)).date().isoformat())
+    from roomquest.collection_window import collection_window
+    window = collection_window(datetime.now(timezone.utc))
+    params.update(per_page=100, start_date=window.start.date().isoformat(),
+                  end_date=window.end.date().isoformat())
     deadline = min(monotonic() + 35, deadline_at or float('inf'))
     rows = []
     time_reviews = 0

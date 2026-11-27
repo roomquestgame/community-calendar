@@ -7,6 +7,7 @@ All requests are delegated to the worker's ordinary guarded publisher transport.
 """
 from __future__ import annotations
 
+from roomquest.collection_window import calendar_anchor
 from copy import deepcopy
 from datetime import datetime, timedelta, timezone
 from hashlib import sha256
@@ -227,7 +228,8 @@ def photo_url(key, value):
 
 
 def _within(start, end, now, days=60):
-    return bool(start and start < now + timedelta(days=days) and (end or start + timedelta(hours=3)) > now)
+    window_start = calendar_anchor(now)
+    return bool(start and start < window_start + timedelta(days=days) and (end or start + timedelta(hours=3)) > window_start)
 
 
 def _row(key, title, start, end, url, identity, body, venue, street, city, *, point=None,
@@ -465,7 +467,7 @@ def _offset_time(value):
 
 
 def _bc_collect(fetch, now, deadline_at, diagnostics):
-    start = now.astimezone(ZoneInfo(ZONE)).date()
+    start = calendar_anchor(now).astimezone(ZoneInfo(ZONE)).date()
     wrappers, total_items, total_pages = [], None, None
     for page in range(1, 7):
         _budget(deadline_at)
@@ -564,8 +566,8 @@ def _greenway_month(payload, year, month, now):
 
 
 def _greenway_manifest(fetch, now, deadline_at):
-    start = now.astimezone(ZoneInfo(ZONE)).date()
-    last = (now + timedelta(days=60)).astimezone(ZoneInfo(ZONE)).date()
+    start = calendar_anchor(now).astimezone(ZoneInfo(ZONE)).date()
+    last = (calendar_anchor(now) + timedelta(days=60)).astimezone(ZoneInfo(ZONE)).date()
     year, month = start.year, start.month
     items = {}
     while (year, month) <= (last.year, last.month):
@@ -649,6 +651,7 @@ def _greenway_detail(card, payload, now, diagnostics):
 
 
 def _nature_manifest(fetch, now, deadline_at):
+    window_start = calendar_anchor(now)
     items, previous = {}, None
     for page in range(1, 9):
         _budget(deadline_at)
@@ -669,10 +672,10 @@ def _nature_manifest(fetch, now, deadline_at):
                     or (previous is not None and start < previous)):
                 raise ValueError("boston_remaining_calendar_changed")
             previous = start
-            if start >= now + timedelta(days=60):
+            if start >= window_start + timedelta(days=60):
                 beyond = True
                 continue
-            if start + timedelta(days=1) < now:
+            if start + timedelta(days=1) < window_start:
                 continue
             venue = card.select_one(".event-card__content__place")
             item = {"url": link, "title": plain(title_node.get_text()), "start": start.isoformat(),
@@ -973,7 +976,7 @@ def _checkpoint_valid(key, state, now):
                 or not isinstance(manifest, list) or not 0 <= state["cursor"] <= len(manifest) <= MAX_MANIFEST
                 or state["manifest_count"] != len(manifest) or state["manifest_hash"] != _digest(manifest)
                 or started.utcoffset() != timedelta(0) or not -60 <= (now - started).total_seconds() <= 14400
-                or state["window_start"] != started.astimezone(ZoneInfo(ZONE)).date().isoformat()
+                or state["window_start"] != calendar_anchor(started).astimezone(ZoneInfo(ZONE)).date().isoformat()
                 or not isinstance(state["events"], list) or len(state["events"]) > MAX_CHECKPOINT_EVENTS
                 or not isinstance(state["diagnostics"], list) or len(state["diagnostics"]) > 400
                 or not isinstance(state["outcomes"], list) or len(state["outcomes"]) != state["cursor"]):
@@ -1055,7 +1058,7 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
         if len(manifest) > MAX_MANIFEST:
             raise ValueError("boston_remaining_record_limit")
         state = {"version": 1, "source_key": key, "started_at": now.isoformat(),
-                 "window_start": now.astimezone(ZoneInfo(ZONE)).date().isoformat(),
+                 "window_start": calendar_anchor(now).astimezone(ZoneInfo(ZONE)).date().isoformat(),
                  "manifest": manifest, "manifest_hash": _digest(manifest),
                  "manifest_count": len(manifest), "cursor": 0, "events": [],
                  "diagnostics": [], "outcomes": []}
@@ -1101,7 +1104,7 @@ def collect(source, fetch, *, deadline_at=None, now=None, render_calendar=None):
         if render_calendar is None:
             raise ValueError("boston_remaining_feed_changed")
         _budget(deadline_at)
-        first = now.astimezone(ZoneInfo(ZONE)).date()
+        first = calendar_anchor(now).astimezone(ZoneInfo(ZONE)).date()
         # The public endpoint treats both supplied dates as inclusive.
         end = first + timedelta(days=13)
         payload = render_calendar(start_day=first.isoformat(), end_day=end.isoformat())

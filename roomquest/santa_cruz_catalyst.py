@@ -10,6 +10,7 @@ from time import monotonic
 from urllib.parse import urlsplit
 from zoneinfo import ZoneInfo
 import re
+from roomquest.collection_window import calendar_anchor
 from roomquest.mapsee_adapter import plain,record
 from roomquest.event_description import description
 
@@ -87,7 +88,7 @@ def collect(source,fetch,*,deadline_at=None,now=None):
      (source.get('feed_url'),source.get('kind'),source.get('platform_adapter'))!=SOURCES[KEY]
      or source.get('timezone')!=ZONE):
   raise ValueError('unregistered_catalyst_source')
- now=now or datetime.now(timezone.utc)
+ now=calendar_anchor(now or datetime.now(timezone.utc))
  html=fetch(URL,'text/html')
  soup=BeautifulSoup(html,'html.parser')
  sections=soup.select('div.rhp-mobile-list')

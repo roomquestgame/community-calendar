@@ -17,6 +17,7 @@ from zoneinfo import ZoneInfo
 
 from bs4 import BeautifulSoup
 
+from roomquest.collection_window import calendar_anchor
 from roomquest.atlantic_city_venues import narrative
 from roomquest.mapsee_adapter import record
 
@@ -226,7 +227,7 @@ def _beth(payload):
 
 def collect(source, fetch, *, deadline_at=None, now=None):
     _source(source)
-    current = now or datetime.now(timezone.utc)
+    current = calendar_anchor(now or datetime.now(timezone.utc))
     if not isinstance(current, datetime) or current.tzinfo is None:
         raise ValueError("balic_timezone_required")
     page = _fetch(fetch, FEED, "text/html", deadline_at)

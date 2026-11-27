@@ -6,6 +6,7 @@ Explicit occurrences are captured completely before any records are returned.
 """
 from __future__ import annotations
 
+from roomquest.collection_window import calendar_anchor
 from copy import deepcopy
 from datetime import date, datetime, time, timedelta, timezone
 from hashlib import sha256
@@ -132,7 +133,8 @@ def _body(value):
 
 
 def _within(start, end, now):
-    return start < now + timedelta(days=60) and (end or start + timedelta(hours=3)) > now
+    window_start = calendar_anchor(now)
+    return start < window_start + timedelta(days=60) and (end or start + timedelta(hours=3)) > window_start
 
 
 def _occurrence(start, end=None):
@@ -198,7 +200,7 @@ def _venue(key, native):
 
 
 def _tec_url(key, now, page=1, overlap=False):
-    day = now.astimezone(ZoneInfo(ZONE)).date()
+    day = calendar_anchor(now).astimezone(ZoneInfo(ZONE)).date()
     # TEC rejects the Unix epoch itself as a falsey parsed timestamp. The next
     # day is a valid historical lower bound for every event on these calendars.
     args = {"per_page": 50, "start_date": "1970-01-02 00:00:00" if overlap else str(day - timedelta(days=1)) + " 00:00:00",
@@ -277,8 +279,8 @@ def _sports_occurrences(event, start, end, now, body):
     if not rules:
         raise ValueError("raleigh_direct_schedule_unresolved")
     out = []
-    day = max(start.date(), now.astimezone(ZoneInfo(ZONE)).date() - timedelta(days=1))
-    last = min(end.date(), (now + timedelta(days=60)).astimezone(ZoneInfo(ZONE)).date())
+    day = max(start.date(), calendar_anchor(now).astimezone(ZoneInfo(ZONE)).date() - timedelta(days=1))
+    last = min(end.date(), (calendar_anchor(now) + timedelta(days=60)).astimezone(ZoneInfo(ZONE)).date())
     while day <= last:
         clocks = exceptions.get(day, rules.get(day.weekday()))
         if clocks:
@@ -559,7 +561,7 @@ def _checkpoint(value, key, now):
         started = timestamp(value["started_at"])
         if (type(value["version"]) is not int or value["version"] != 1 or value["source_key"] != key
                 or not started or started.utcoffset() != timedelta(0) or started > now + timedelta(seconds=60)
-                or value["window_start"] != started.astimezone(ZoneInfo(ZONE)).date().isoformat()
+                or value["window_start"] != calendar_anchor(started).astimezone(ZoneInfo(ZONE)).date().isoformat()
                 or value["pages"] != _plans(key, started, value["totals"])
                 or value["manifest_hash"] != _hash({"pages": value["pages"], "totals": value["totals"]})
                 or type(value["manifest_count"]) is not int or value["manifest_count"] != len(value["pages"])
@@ -644,7 +646,7 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
             seeds[HUMANITIX_HOST] = dict(items=_humanitix_manifest(read(HUMANITIX_HOST, "text/html"), anchor), ids=[])
         pages = _plans(key, anchor, totals)
         state = dict(version=1, source_key=key, started_at=anchor.isoformat(),
-            window_start=anchor.astimezone(ZoneInfo(ZONE)).date().isoformat(), pages=pages, totals=totals,
+            window_start=calendar_anchor(anchor).astimezone(ZoneInfo(ZONE)).date().isoformat(), pages=pages, totals=totals,
             manifest_hash=_hash(dict(pages=pages, totals=totals)), manifest_count=len(pages), cursor=0,
             seeds=seeds, pending=[], pending_cursor=0, loaded_page=None, raw_seen={},
             events=[], diagnostics=[])

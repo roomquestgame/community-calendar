@@ -15,6 +15,7 @@ from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
 
+from roomquest.collection_window import calendar_anchor
 from roomquest.atlantic_city_pdf_programs import _pages
 from roomquest.mapsee_adapter import record, timestamp
 
@@ -120,7 +121,7 @@ def discover_document(payload):
 
 def parse_document(payload, *, registration_text, now=None, deadline_at=None):
     _check(deadline_at)
-    current = now or datetime.now(timezone.utc)
+    current = calendar_anchor(now or datetime.now(timezone.utc))
     if not isinstance(current, datetime) or current.tzinfo is None:
         raise ValueError('inland_clock_invalid')
     current = current.astimezone(timezone.utc)

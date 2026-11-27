@@ -16,6 +16,7 @@ import math
 import re
 import xml.etree.ElementTree as ET
 
+from roomquest.collection_window import calendar_anchor
 from roomquest.mapsee_adapter import plain, record, timestamp
 from roomquest.gainesville_sources import _narrative, _street
 
@@ -237,7 +238,7 @@ def _libcal(source, fetch, *, retain_original=False):
     entries = root.findall("./channel/item")
     if len(entries) > MAX_RECORDS:
         raise ValueError("source_record_limit")
-    now = datetime.now(ZoneInfo(ZONE))
+    now = calendar_anchor(datetime.now(ZoneInfo(ZONE)))
     out = {}
     for item in entries:
         values = {node.tag.rsplit("}", 1)[-1]:
@@ -311,7 +312,7 @@ def collect(source, fetch, *, deadline_at=None, now=None, retain_original=False)
     if not expected or (source.get("feed_url"), source.get("kind"),
                         source.get("platform_adapter")) != expected or source.get("timezone") != ZONE:
         raise ValueError("unregistered_gainesville_direct_source")
-    now = now or datetime.now(timezone.utc)
+    now = calendar_anchor(now or datetime.now(timezone.utc))
     deadline = min(monotonic() + 42, deadline_at or float("inf"))
     if key == MEEPLE:
         return _meeple(source, fetch)

@@ -17,6 +17,7 @@ from zoneinfo import ZoneInfo
 
 from bs4 import BeautifulSoup
 
+from roomquest.collection_window import calendar_anchor
 from roomquest.mapsee_adapter import record
 
 
@@ -277,7 +278,7 @@ def _occurrences(item, now):
 
 def collect(source, fetch, *, deadline_at=None, now=None):
     key = _source(source)
-    current = now or datetime.now(timezone.utc)
+    current = calendar_anchor(now or datetime.now(timezone.utc))
     if not isinstance(current, datetime) or current.tzinfo is None:
         raise ValueError("reviewed_poster_timezone_required")
     page = _fetch(fetch, SOURCES[key][0], "text/html", deadline_at)

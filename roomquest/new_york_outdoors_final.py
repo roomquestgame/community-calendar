@@ -6,6 +6,7 @@ bodies. Park access estimates are named and evidenced as approximate locations.
 """
 from __future__ import annotations
 
+from roomquest.collection_window import calendar_anchor
 from copy import deepcopy
 from datetime import datetime, timedelta, timezone
 from hashlib import sha256
@@ -3508,7 +3509,8 @@ def _times(start, end=None):
 
 
 def _within(start, end, now):
-    return start < now + timedelta(days=60) and (end or start + timedelta(hours=3)) > now
+    window_start = calendar_anchor(now)
+    return start < window_start + timedelta(days=60) and (end or start + timedelta(hours=3)) > window_start
 
 
 def _place(key, identity):
@@ -3640,7 +3642,7 @@ def _held(key, identity, title, reason, url=None):
 
 def _fordham_manifest(fetch, now, deadline):
     result, total, pages = [], None, None
-    day = now.astimezone(ZoneInfo(ZONE)).date()
+    day = calendar_anchor(now).astimezone(ZoneInfo(ZONE)).date()
     for page in range(1, 11):
         _budget(deadline)
         url = 'https://calendar.fordham.edu/api/2/events?' + urlencode({
@@ -3712,7 +3714,7 @@ def _fordham_rows(item, now):
 
 def _tribe_manifest(fetch, now, deadline):
     result, seen, total, pages = [], set(), None, None
-    day = now.astimezone(ZoneInfo(ZONE)).date()
+    day = calendar_anchor(now).astimezone(ZoneInfo(ZONE)).date()
     for page in range(1, 11):
         _budget(deadline)
         url = 'https://brooklyncb6.cityofnewyork.us/wp-json/tribe/events/v1/events?' + urlencode({
@@ -3880,7 +3882,7 @@ def _wave_manifest(fetch, now, deadline):
                 item['occurrences'].append(occurrence)
         # Pagination is chronological, but the recurring exhibition strip is
         # repeated on each page and is outside .event-wrapper.
-        if dated and min(dated) >= now + timedelta(days=60):
+        if dated and min(dated) >= calendar_anchor(now) + timedelta(days=60):
             break
         next_path = '/calendar/page/' + str(page + 1) + '?date=all'
         next_link = next((a['href'] for a in soup.select('a[href]') if a['href'] == next_path), None)
@@ -4083,9 +4085,9 @@ def _nyrr_detail(item, payload, now):
             unique.append(part)
             seen.add(normalized)
     body = _body('\n'.join(unique))
-    cursor = max(first.date(), now.astimezone(ZoneInfo(ZONE)).date())
+    cursor = max(first.date(), calendar_anchor(now).astimezone(ZoneInfo(ZONE)).date())
     cursor += timedelta(days=(weekday - cursor.weekday()) % 7)
-    until = min(last.date(), (now + timedelta(days=60)).astimezone(ZoneInfo(ZONE)).date())
+    until = min(last.date(), (calendar_anchor(now) + timedelta(days=60)).astimezone(ZoneInfo(ZONE)).date())
     rows = []
     while cursor <= until:
         start = datetime.combine(cursor, clock, ZoneInfo(ZONE))
@@ -4110,7 +4112,7 @@ def _nyrr_detail(item, payload, now):
 
 
 def _bridge_manifest(fetch, now, deadline):
-    day = now.astimezone(ZoneInfo(ZONE)).date()
+    day = calendar_anchor(now).astimezone(ZoneInfo(ZONE)).date()
     _budget(deadline)
     calendar_url = 'https://brooklynbridgepark.org/wp-admin/admin-ajax.php?' + urlencode({
         'action': 'get_calendar_events', 'start': day.isoformat(), 'end': (day + timedelta(days=60)).isoformat()})
@@ -4287,7 +4289,7 @@ def _checkpoint(value, key, now):
             raise ValueError
         started = timestamp(value['started_at'])
         if (not re.fullmatch(r'20\d{2}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:\+00:00|Z)', value['started_at'])
-                or started is None or value['window_start'] != started.astimezone(ZoneInfo(ZONE)).date().isoformat()):
+                or started is None or value['window_start'] != calendar_anchor(started).astimezone(ZoneInfo(ZONE)).date().isoformat()):
             raise ValueError
         if not timedelta(0) <= now - started <= timedelta(hours=4):
             return None
@@ -4339,7 +4341,7 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
     if created:
         queue = _manifest(key, fetch, current, deadline_at)
         state = dict(version=1, source_key=key, started_at=current.astimezone(timezone.utc).isoformat(),
-                     window_start=current.astimezone(ZoneInfo(ZONE)).date().isoformat(), manifest_hash=_digest(queue),
+                     window_start=calendar_anchor(current).astimezone(ZoneInfo(ZONE)).date().isoformat(), manifest_hash=_digest(queue),
                      manifest_count=len(queue), queue=queue, cursor=0, events=[], diagnostics=[])
     anchor = timestamp(state['started_at'])
     queue, prior = state['queue'], state['cursor']

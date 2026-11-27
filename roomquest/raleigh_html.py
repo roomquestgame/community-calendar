@@ -17,6 +17,7 @@ from zoneinfo import ZoneInfo
 
 from bs4 import BeautifulSoup
 
+from roomquest.collection_window import calendar_anchor
 from roomquest.mapsee_adapter import plain, record, timestamp
 from roomquest.publisher_evidence import attach
 
@@ -402,7 +403,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
     key = source.get('source_key'); config = SOURCES.get(key)
     if not config or source.get('feed_url') != config[0] or source.get('kind') != 'html' or source.get('platform_adapter') != 'html':
         raise ValueError('unregistered_raleigh_source')
-    now = now or datetime.now(timezone.utc)
+    now = calendar_anchor(now or datetime.now(timezone.utc))
     if now.tzinfo is None:
         raise ValueError('calendar_now_timezone_missing')
     deadline = min(monotonic() + 36, deadline_at if deadline_at is not None else float('inf'))

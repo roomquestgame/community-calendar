@@ -12,6 +12,7 @@ from urllib.parse import urlsplit
 import logging
 import re
 
+from roomquest.collection_window import calendar_anchor
 from roomquest.event_description import description
 from roomquest.mapsee_adapter import plain
 
@@ -70,7 +71,7 @@ def feed_url(key: str) -> str:
 
 
 def collection_url(key: str, now=None) -> str:
-    today = (now or datetime.now(timezone.utc)).date()
+    today = (calendar_anchor(now or datetime.now(timezone.utc))).date()
     # Source identity is stable; the bounded first-party export window rolls.
     return (feed_url(key) + f"&start={today.isoformat()}"
             + f"&end={(today + timedelta(days=60)).isoformat()}")

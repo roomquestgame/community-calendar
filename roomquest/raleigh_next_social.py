@@ -8,6 +8,7 @@ their complete post bodies. All I/O uses the shared guarded transport.
 """
 from __future__ import annotations
 
+from roomquest.collection_window import calendar_anchor
 import base64
 from copy import deepcopy
 from datetime import datetime, timedelta, timezone
@@ -376,6 +377,7 @@ def _suggested_start(suggestion):
 
 
 def _discover_occurrences(state, packet, widget, anchor):
+    window_start = calendar_anchor(anchor)
     series = packet["series_id"]
     count, suggestions = widget.get("upcomingOccurrencesCount"), widget.get("upcomingOccurrencesSuggestions")
     if type(count) is not int or not 1 <= count <= 100 or not isinstance(suggestions, list) or len(suggestions) > 100:
@@ -391,7 +393,7 @@ def _discover_occurrences(state, packet, widget, anchor):
         if not event_url(BREWING, url):
             raise ValueError("raleigh_next_social_occurrences_incomplete")
         known.add(url)
-        if start >= anchor + timedelta(days=60) or start + timedelta(days=1) <= anchor:
+        if start >= window_start + timedelta(days=60) or start + timedelta(days=1) <= window_start:
             if url not in state["excluded_urls"]:
                 state["excluded_urls"].append(url)
             continue
@@ -530,7 +532,7 @@ def _checkpoint(value, key, now):
         if (type(value["version"]) is not int or value["version"] != 1 or value["source_key"] != key
                 or value["completion_profile"] != "social_v1" or value["phase"] != "details"
                 or value["listing_complete"] is not True or not -60 <= (now-anchor).total_seconds() <= 14400
-                or value["window_start"] != anchor.astimezone(ZoneInfo(ZONE)).date().isoformat()
+                or value["window_start"] != calendar_anchor(anchor).astimezone(ZoneInfo(ZONE)).date().isoformat()
                 or not isinstance(queue, list) or len(queue) > CHECKPOINT_MANIFEST_LIMITS[key]
                 or value["manifest_count"] != len(queue) or type(value["manifest_count"]) is not int
                 or value["manifest_hash"] != _digest(queue) or type(value["cursor"]) is not int
@@ -606,7 +608,7 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
         queue, listing_count = (_hotel_listing(payload, current, diagnostics) if key == LONGLEAF
                                 else _brewing_listing(payload, current, diagnostics))
         state = dict(version=1, source_key=key, started_at=current.isoformat(),
-            window_start=current.astimezone(ZoneInfo(ZONE)).date().isoformat(), completion_profile="social_v1",
+            window_start=calendar_anchor(current).astimezone(ZoneInfo(ZONE)).date().isoformat(), completion_profile="social_v1",
             phase="details", listing_complete=True, queue=queue, cursor=0, manifest_count=0, manifest_hash="",
             events=[], diagnostics=diagnostics, series_counts={}, series_urls={}, excluded_urls=[],
             source_listing_count=listing_count, api_progress={}, outcomes={}, payload_hash="")

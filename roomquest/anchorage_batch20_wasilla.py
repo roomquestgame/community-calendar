@@ -7,6 +7,7 @@ featured events, other venues, closures and unknown categories are excluded.
 """
 from __future__ import annotations
 
+from roomquest.collection_window import calendar_anchor
 from copy import deepcopy
 from hashlib import sha256
 from datetime import datetime, timedelta, timezone
@@ -80,7 +81,7 @@ def _category(title):
 
 
 def _selected_calendar_months(now):
-    local = now.astimezone(ZoneInfo(ZONE))
+    local = calendar_anchor(now).astimezone(ZoneInfo(ZONE))
     for step in range(MONTHS):
         m = local.month-1+step
         yield local.year+m//12, m%12+1
@@ -158,7 +159,7 @@ def _event(eid, html, now):
         return None
     if (end<=start or end-start>timedelta(hours=12) or
             end.astimezone(timezone.utc)<=now or
-            start.astimezone(timezone.utc)>now+timedelta(days=WINDOW_DAYS)):
+            start.astimezone(timezone.utc)>calendar_anchor(now)+timedelta(days=WINDOW_DAYS)):
         return None
     desc=_description(str(description_element)) if description_element is not None else None
     if desc is None or len(desc)>MAX_DESCRIPTION:
@@ -187,7 +188,7 @@ def _resume(checkpoint, now):
     if checkpoint is None:
         return {
             "version": 1, "source_key": KEY, "started_at": now.isoformat(),
-            "window_start": now.astimezone(ZoneInfo(ZONE)).date().isoformat(),
+            "window_start": calendar_anchor(now).astimezone(ZoneInfo(ZONE)).date().isoformat(),
             "ids": [], "manifest_hash": _manifest_hash([]), "manifest_count": MONTHS,
             "cursor": 0, "events": [], "diagnostics": [],
         }
@@ -198,7 +199,7 @@ def _resume(checkpoint, now):
     if (state["version"] != 1 or state["source_key"] != KEY
             or started.utcoffset() != timedelta(0)
             or not now - timedelta(hours=4) <= started <= now + timedelta(minutes=1)
-            or state["window_start"] != started.astimezone(ZoneInfo(ZONE)).date().isoformat()
+            or state["window_start"] != calendar_anchor(started).astimezone(ZoneInfo(ZONE)).date().isoformat()
             or not isinstance(ids, list) or len(ids) > MAX_EIDS
             or any(not isinstance(eid, str) or not re.fullmatch(r"[0-9]{3,7}", eid) for eid in ids)
             or ids != sorted(set(ids), key=lambda eid: (int(eid), eid))
@@ -261,6 +262,6 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None)
     if len(json.dumps(state, ensure_ascii=False).encode("utf-8")) > 880_000:
         raise ValueError("wasilla_checkpoint_size_limit")
     complete = state["cursor"] == state["manifest_count"]
-    events = sorted((row for row in state["events"] if datetime.fromisoformat(row["ends_at"]) > now),
+    events = sorted((row for row in state["events"] if datetime.fromisoformat(row["ends_at"]) > calendar_anchor(now)),
                     key=lambda row: (row["starts_at"], row["id"])) if complete else []
     return {"checkpoint": state, "complete": complete, "events": events}

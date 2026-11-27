@@ -15,6 +15,7 @@ from zoneinfo import ZoneInfo
 
 from bs4 import BeautifulSoup
 
+from roomquest.collection_window import calendar_anchor
 from roomquest.mapsee_adapter import plain, record, timestamp
 
 ZONE = "America/New_York"
@@ -574,7 +575,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
     if profile is None or (source.get("feed_url"), source.get("kind"), source.get("platform_adapter"),
                            source.get("timezone")) != (profile[0], "html", "html", ZONE):
         raise ValueError("unregistered_atlantic_city_venue")
-    current = now or datetime.now(timezone.utc)
+    current = calendar_anchor(now or datetime.now(timezone.utc))
     if key == JOSIE:
         rows = _josie(source, fetch, deadline_at)
     else:

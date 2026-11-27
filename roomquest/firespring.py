@@ -6,6 +6,7 @@ from time import monotonic
 from urllib.parse import urljoin, urlsplit
 from zoneinfo import ZoneInfo
 
+from roomquest.collection_window import calendar_anchor
 from roomquest.event_description import description
 from roomquest.mapsee_adapter import plain, record
 
@@ -110,7 +111,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
             profile[0], ZONE, "html", "html"):
         raise ValueError("unregistered_firespring_source")
     base, root = profile
-    today = (now or datetime.now(timezone.utc)).astimezone(ZoneInfo(ZONE)).date()
+    today = (calendar_anchor(now or datetime.now(timezone.utc))).astimezone(ZoneInfo(ZONE)).date()
     horizon = today + timedelta(days=60)
     month = today.replace(day=1)
     details = set()

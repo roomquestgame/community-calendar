@@ -13,6 +13,7 @@ import logging
 import math
 import re
 
+from roomquest.collection_window import calendar_anchor
 from roomquest.anchorage_sources import ZONE, _description, NONPUBLIC, VIRTUAL
 from roomquest.mapsee_adapter import plain, record, timestamp
 
@@ -328,7 +329,7 @@ def collect(source, fetch, *, deadline_at=None, now=None, retain_original=False)
             (source.get("feed_url"), source.get("kind"), source.get("platform_adapter")) != SOURCES[key]
             or source.get("timezone") != ZONE):
         raise ValueError("unregistered_anchorage_batch20_source")
-    now = now or datetime.now(timezone.utc)
+    now = calendar_anchor(now or datetime.now(timezone.utc))
     deadline = min(monotonic() + 36, deadline_at if deadline_at is not None else float("inf"))
     if monotonic() >= deadline:
         raise ValueError("collection_deadline")

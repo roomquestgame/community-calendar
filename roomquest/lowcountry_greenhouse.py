@@ -16,6 +16,7 @@ import re
 from urllib.parse import urlsplit
 from zoneinfo import ZoneInfo
 
+from roomquest.collection_window import calendar_anchor
 from roomquest.event_description import description
 from roomquest.mapsee_adapter import record, plain
 
@@ -133,7 +134,7 @@ def collect(source,fetch,*,deadline_at=None,now=None):
     links=_listing_links(listing)
     if not links:
         raise ValueError("publisher_event_links_missing")
-    now=now or datetime.now(timezone.utc)
+    now=calendar_anchor(now or datetime.now(timezone.utc))
     if now.tzinfo is None:
         raise ValueError("unaware_now")
     out={}

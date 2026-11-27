@@ -7,6 +7,7 @@ All network reads are delegated to the worker's guarded publisher transport.
 """
 from __future__ import annotations
 
+from roomquest.collection_window import calendar_anchor
 from copy import deepcopy
 from datetime import date, datetime, timedelta, timezone
 from hashlib import sha256
@@ -221,7 +222,8 @@ def _square_clock(node, suffix):
 
 
 def _within(start, end, now):
-    return start < now + timedelta(days=60) and (end or start + timedelta(hours=3)) > now
+    window_start = calendar_anchor(now)
+    return start < window_start + timedelta(days=60) and (end or start + timedelta(hours=3)) > window_start
 
 
 def _publisher_location(node):
@@ -722,7 +724,7 @@ def _checkpoint(value, key, now):
         raise ValueError("boston_nightlife_checkpoint_invalid")
     try:
         started = timestamp(value["started_at"])
-        if started.tzinfo is None or value["window_start"] != started.astimezone(ZoneInfo(ZONE)).date().isoformat():
+        if started.tzinfo is None or value["window_start"] != calendar_anchor(started).astimezone(ZoneInfo(ZONE)).date().isoformat():
             raise ValueError
         expected_hash = sha256(json.dumps(value["queue"], sort_keys=True, separators=(",", ":")).encode()).hexdigest()
         if expected_hash != value["manifest_hash"]:
@@ -781,7 +783,7 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
     elif key == PANDEMONIUM:
         if PANDEMONIUM_SCHEDULE not in payload:
             raise ValueError("boston_nightlife_calendar_changed")
-        day = anchor.astimezone(ZoneInfo(ZONE)).date()
+        day = calendar_anchor(anchor).astimezone(ZoneInfo(ZONE)).date()
         url = PANDEMONIUM_SCHEDULE + f"?start={day}&end={day + timedelta(days=61)}&calendar=true&show_all_course_occurrences=false"
         payload = fetch(url, "application/json")
     queue = _manifest(key, payload, anchor)
@@ -790,7 +792,7 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
         queue = _manifest(key, payload, current)
         digest = sha256(json.dumps(queue, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
         state = dict(version=1, source_key=key, started_at=current.isoformat(),
-                     window_start=current.astimezone(ZoneInfo(ZONE)).date().isoformat(),
+                     window_start=calendar_anchor(current).astimezone(ZoneInfo(ZONE)).date().isoformat(),
                      manifest_hash=digest, manifest_count=len(queue), cursor=0,
                      queue=queue, events=[], diagnostics=[])
     prior, fetched = state["cursor"], 0

@@ -9,6 +9,7 @@ from datetime import datetime,timedelta,timezone
 import re
 from urllib.parse import urlsplit
 from zoneinfo import ZoneInfo
+from roomquest.collection_window import calendar_anchor
 from roomquest.event_description import description
 from roomquest.mapsee_adapter import plain,record
 
@@ -55,7 +56,7 @@ def collect(source,fetch,*,deadline_at=None,now=None):
  soup=BeautifulSoup(html,'html.parser')
  cards=soup.select('div.card.card-hover')
  if not cards or len(cards)>MAX_RECORDS:raise ValueError('invalid_418_calendar')
- now=now or datetime.now(timezone.utc)
+ now=calendar_anchor(now or datetime.now(timezone.utc))
  rows={}
  for card in cards:
   node=card.select_one('h3 a[href]')

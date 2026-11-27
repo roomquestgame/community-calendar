@@ -7,6 +7,7 @@ from zoneinfo import ZoneInfo
 
 from bs4 import BeautifulSoup
 
+from roomquest.collection_window import calendar_anchor
 from roomquest.event_description import description
 from roomquest.mapsee_adapter import plain, record
 
@@ -83,7 +84,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
     links = page.select(selector)
     if not links:
         raise ValueError('publisher_event_listing_missing')
-    now = (now or datetime.now(ZONE)).astimezone(ZONE)
+    now = (calendar_anchor(now or datetime.now(ZONE))).astimezone(ZONE)
     stop = now + timedelta(days=60)
     seen = set()
     rows = []

@@ -6,6 +6,7 @@ from zoneinfo import ZoneInfo
 
 from bs4 import BeautifulSoup
 
+from roomquest.collection_window import collection_window
 from roomquest.mapsee_adapter import plain, record
 
 ZONE = ZoneInfo('America/New_York')
@@ -62,7 +63,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
     ):
         raise ValueError('unregistered_hampton_roads_brewery')
     now = (now or datetime.now(ZONE)).astimezone(ZONE)
-    stop = now + timedelta(days=60)
+    window = collection_window(now)
     page = BeautifulSoup(fetch(url, 'text/html'), 'html.parser')
     cards = page.select('.event-text-holder')
     if not cards:
@@ -81,7 +82,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
         if not event or not re.fullmatch(r'[0-9]{1,12}', event['data-event-id']):
             continue
         day = _field(card, '.event-day, h3:not(.event-time)')
-        start, end = _times(day, _field(card, '.event-time'), now, stop)
+        start, end = _times(day, _field(card, '.event-time'), window.start.astimezone(ZONE), window.end.astimezone(ZONE))
         if not start:
             continue
         date = _field(card, '.atc_date_start')

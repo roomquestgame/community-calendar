@@ -6,6 +6,7 @@ import json
 import math
 import re
 from urllib.parse import urljoin, urlsplit, urlunsplit
+from roomquest.collection_window import calendar_anchor
 from roomquest.event_description import description
 from roomquest.mapsee_adapter import plain, record, timestamp
 
@@ -107,7 +108,7 @@ def collect(source,fetch,*,deadline_at=None,now=None):
     check_pagination(payload,upcoming=True)
     if len(payload['upcoming'])>MAX_RECORDS:
         raise ValueError('source_record_limit')
-    now=now or datetime.now(timezone.utc)
+    now=calendar_anchor(now or datetime.now(timezone.utc))
     result={}
     for item in payload['upcoming']:
         row=_row(item,now)

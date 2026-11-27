@@ -395,8 +395,9 @@ def collect(source,profile,fetch):
     deadline=monotonic()+35;records=[]
     for page in range(1,MAX_PAGES+1):
         if monotonic()>deadline:raise ValueError("collection_deadline")
-        now=datetime.now(timezone.utc)
-        if kind=="localist":url=base.rstrip("/")+"/api/2/events?"+urlencode({"pp":100,"page":page,"days":60,"distinct":"true"})
+        from roomquest.collection_window import collection_window, localist_dates
+        now=collection_window(datetime.now(timezone.utc)).start
+        if kind=="localist":url=base.rstrip("/")+"/api/2/events?"+urlencode({"pp":100,"page":page,**localist_dates(),"distinct":"true"})
         elif kind=="opendata":
             local_now=now.astimezone(ZoneInfo(config["timezone"])) if config.get("timezone") else now
             where=str(config.get("where") or "").replace("{now}",local_now.strftime("%Y-%m-%dT%H:%M:%S")).replace("{today}",local_now.date().isoformat())

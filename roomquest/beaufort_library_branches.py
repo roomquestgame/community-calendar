@@ -13,6 +13,7 @@ from urllib.parse import urlsplit
 import logging
 import re
 
+from roomquest.collection_window import calendar_anchor
 from roomquest.event_description import description
 from roomquest.mapsee_adapter import plain
 
@@ -79,7 +80,7 @@ def collection_url(key, now=None):
     url = feed_url(key)
     if key != ST_HELENA_KEY:
         return url
-    today = (now or datetime.now(timezone.utc)).date()
+    today = (calendar_anchor(now or datetime.now(timezone.utc))).date()
     return (f"{url}&start={today.isoformat()}"
             f"&end={(today + timedelta(days=60)).isoformat()}")
 

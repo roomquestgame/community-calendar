@@ -13,6 +13,7 @@ from urllib.parse import urlsplit
 from zoneinfo import ZoneInfo
 
 from bs4 import BeautifulSoup
+from roomquest.collection_window import calendar_anchor
 from roomquest.mapsee_adapter import record
 from roomquest.publisher_evidence import attach
 from roomquest.event_description import description
@@ -119,7 +120,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
                 source.get("platform_adapter")) != SOURCES[KEY]
             or source.get("timezone") != ZONE):
         raise ValueError("goat_source_identity_mismatch")
-    now = (now or datetime.now(timezone.utc)).astimezone(timezone.utc)
+    now = (calendar_anchor(now or datetime.now(timezone.utc))).astimezone(timezone.utc)
     raw = fetch(CALENDAR, "text/html")
     if not isinstance(raw, str) or not 1000 <= len(raw) <= 600000:
         raise ValueError("goat_calendar_invalid")

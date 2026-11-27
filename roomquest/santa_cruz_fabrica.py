@@ -12,6 +12,7 @@ from zoneinfo import ZoneInfo
 import re
 from bs4 import BeautifulSoup
 
+from roomquest.collection_window import calendar_anchor
 from roomquest.event_description import description
 from roomquest.mapsee_adapter import record, plain
 
@@ -104,7 +105,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
         raise ValueError("fabrica_official_address_drift")
     if "2026" not in blog_when:
         raise ValueError("fabrica_publisher_year_missing")
-    now = now or datetime.now(timezone.utc)
+    now = calendar_anchor(now or datetime.now(timezone.utc))
     body = description(main_prose, limit=MAX_DESCRIPTION)
     if (not body or len(body) > MAX_DESCRIPTION or
             not blog_prose.startswith("Bring something to mend")):

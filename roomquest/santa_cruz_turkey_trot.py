@@ -13,6 +13,7 @@ from datetime import datetime, timedelta, timezone
 from urllib.parse import urlsplit
 from zoneinfo import ZoneInfo
 from bs4 import BeautifulSoup
+from roomquest.collection_window import calendar_anchor
 from roomquest.event_description import description
 from roomquest.mapsee_adapter import record
 
@@ -79,7 +80,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
             begin.astimezone(ZoneInfo(ZONE)).minute != 45 or
             end.astimezone(ZoneInfo(ZONE)).hour != 10):
         raise ValueError("turkey_trot_registration_date_drift")
-    now = now or datetime.now(timezone.utc)
+    now = calendar_anchor(now or datetime.now(timezone.utc))
     if not now - timedelta(hours=3) <= begin.astimezone(timezone.utc) <= now + timedelta(days=60):
         return []
     narrative = description(html.unescape(e.get("description") or ""), limit=MAX_DESCRIPTION + 1)

@@ -12,6 +12,7 @@ import json
 import re
 from bs4 import BeautifulSoup
 
+from roomquest.collection_window import calendar_anchor
 from roomquest.mapsee_adapter import record
 
 KEY = "watsonville_taiko_original_events_ca"
@@ -41,7 +42,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
             or (source.get("feed_url"), source.get("kind"), source.get("platform_adapter"))
             != SOURCES[KEY] or source.get("timezone") != ZONE):
         raise ValueError("taiko_source_identity_mismatch")
-    now = now or datetime.now(timezone.utc)
+    now = calendar_anchor(now or datetime.now(timezone.utc))
     if now.tzinfo is None:
         raise ValueError("taiko_naive_now")
     raw = fetch(FEED, "application/json")

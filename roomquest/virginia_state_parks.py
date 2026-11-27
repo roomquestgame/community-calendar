@@ -14,6 +14,7 @@ from importlib import resources
 from urllib.parse import parse_qs, unquote, urlencode, urljoin, urlparse
 from zoneinfo import ZoneInfo
 from bs4 import BeautifulSoup, Comment, NavigableString, Tag
+from roomquest.collection_window import calendar_anchor
 from roomquest.collector_errors import safe_error_code
 from roomquest.mapsee_adapter import record, timestamp
 
@@ -670,7 +671,7 @@ def listing_url(park, *, today=None, calendar_id=None):
     official_id = calendar_id or park.get("dcr_calendar_id")
     if not isinstance(official_id, str) or not EVENT_ID.fullmatch(official_id):
         raise ValueError("unverified_park_calendar_identifier")
-    begin = today or datetime.now(TZ).date()
+    begin = today or calendar_anchor(datetime.now(TZ)).date()
     until = begin + timedelta(days=60)
     return CALENDAR + "?" + urlencode({
         "park": official_id,

@@ -4,6 +4,7 @@ UTC bounds are transport/query bounds only. The public contract carries DATE
 values and explicit precision so an all-day service never becomes a midnight
 appointment. Source freshness is independent of the fact's actual end date.
 """
+from roomquest.collection_window import calendar_anchor
 from datetime import date, datetime, time, timedelta, timezone
 import re
 from urllib.parse import urlsplit
@@ -90,7 +91,7 @@ def date_notice(*, identity, title, starts_on, ends_on=None, description='', now
         zone = ZoneInfo(tz)
     except (ZoneInfoNotFoundError, TypeError, ValueError) as exc:
         raise ValueError('civic_timezone_unresolved') from exc
-    today = current.astimezone(zone).date()
+    today = calendar_anchor(current).astimezone(zone).date()
     if (last <= today and not retain_revision) or day >= today + timedelta(days=horizon_days):
         return None
     if retain_revision and day < today - timedelta(days=31):

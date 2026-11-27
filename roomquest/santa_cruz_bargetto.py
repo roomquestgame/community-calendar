@@ -15,6 +15,7 @@ from zoneinfo import ZoneInfo
 
 from bs4 import BeautifulSoup
 
+from roomquest.collection_window import calendar_anchor
 from roomquest.mapsee_adapter import record
 
 KEY = "bargetto_winery_soquel_ca"
@@ -87,7 +88,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
         raise ValueError("bargetto_unregistered_source")
     listing = _document(fetch(URL, "text/html"))
     start, end = _event_from_list(listing)
-    now = now or datetime.now(timezone.utc)
+    now = calendar_anchor(now or datetime.now(timezone.utc))
     if start.astimezone(timezone.utc) > now + timedelta(days=60) or end.astimezone(timezone.utc) < now - timedelta(hours=3):
         return []
     if not (start.year == end.year and start.month == 12 and end.month == 12

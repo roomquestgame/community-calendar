@@ -6,6 +6,7 @@ snapshot protocol. This module performs no network access of its own.
 """
 from __future__ import annotations
 
+from roomquest.collection_window import calendar_anchor
 from copy import deepcopy
 from datetime import date, datetime, timedelta, timezone
 from hashlib import sha256
@@ -152,7 +153,8 @@ def _hold(key, identity, reason, diagnostics):
 
 
 def _within(start, end, now):
-    return bool(start and start < now + timedelta(days=60) and (end or start + timedelta(hours=3)) > now)
+    window_start = calendar_anchor(now)
+    return bool(start and start < window_start + timedelta(days=60) and (end or start + timedelta(hours=3)) > window_start)
 
 
 def _offset(value):
@@ -772,7 +774,7 @@ def _central(fetch, now, deadline_at, diagnostics):
     named = datetime.strptime(f'{edition[1]} {edition[2]} {modified.year}', '%B %d %Y').date()
     if named.weekday() != 3 or not 15 <= named.day <= 21:
         raise ValueError('boston_additional_schedule_changed')
-    first = now.astimezone(ZoneInfo(ZONE)).date()
+    first = calendar_anchor(now).astimezone(ZoneInfo(ZONE)).date()
     if not first - timedelta(days=35) <= named <= first + timedelta(days=60):
         raise ValueError('boston_additional_schedule_changed')
     out = []
@@ -796,7 +798,7 @@ def _central(fetch, now, deadline_at, diagnostics):
 
 
 def _rock_manifest(now):
-    first = now.astimezone(ZoneInfo(ZONE)).date()
+    first = calendar_anchor(now).astimezone(ZoneInfo(ZONE)).date()
     return [{'url': SOURCES[ROCKSPOT][0] + '?' + urlencode({'day': (first + timedelta(days=d)).isoformat()}),
         'title': 'Rock Spot South Boston public schedule', 'day': (first + timedelta(days=d)).isoformat()}
         for d in range(0, 60, 7)]
@@ -1024,7 +1026,7 @@ def _card_valid(key, card, started):
     if key == ROCKSPOT:
         try:
             day = date.fromisoformat(card['day'])
-            first = started.astimezone(ZoneInfo(ZONE)).date()
+            first = calendar_anchor(started).astimezone(ZoneInfo(ZONE)).date()
             return bool(0 <= (day - first).days < 60 and (day - first).days % 7 == 0
                 and card['url'] == SOURCES[key][0] + '?' + urlencode({'day': card['day']}))
         except (TypeError, ValueError, KeyError):
@@ -1141,7 +1143,7 @@ def _checkpoint_valid(key, state, now):
         manifest = state['manifest']
         if (type(state['version']) is not int or state['version'] != 1 or state['source_key'] != key or not started
                 or started.utcoffset() != timedelta(0) or not -60 <= (now - started).total_seconds() <= 14400
-                or state['window_start'] != started.astimezone(ZoneInfo(ZONE)).date().isoformat()
+                or state['window_start'] != calendar_anchor(started).astimezone(ZoneInfo(ZONE)).date().isoformat()
                 or type(state['cursor']) is not int or type(state['manifest_count']) is not int
                 or not isinstance(manifest, list) or not 0 <= state['cursor'] <= len(manifest) <= MAX_MANIFEST
                 or state['manifest_count'] != len(manifest) or state['manifest_hash'] != _digest(manifest)
@@ -1194,7 +1196,7 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None)
         if len(manifest) > MAX_MANIFEST or len({c['url'] for c in manifest}) != len(manifest):
             raise ValueError('boston_additional_record_limit')
         state = {'version': 1, 'source_key': key, 'started_at': now.isoformat(),
-            'window_start': now.astimezone(ZoneInfo(ZONE)).date().isoformat(),
+            'window_start': calendar_anchor(now).astimezone(ZoneInfo(ZONE)).date().isoformat(),
             'manifest': manifest, 'manifest_hash': _digest(manifest), 'manifest_count': len(manifest),
             'cursor': 0, 'events': [], 'diagnostics': [], 'outcomes': []}
     frozen_now = _offset(state['started_at'])

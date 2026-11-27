@@ -17,6 +17,7 @@ from zoneinfo import ZoneInfo
 
 from bs4 import BeautifulSoup
 
+from roomquest.collection_window import calendar_anchor
 from roomquest.atlantic_city_reviewed_posters import _literal_objects
 from roomquest.atlantic_city_venues import narrative
 from roomquest.mapsee_adapter import record
@@ -269,7 +270,7 @@ def _craft(soup, item, days, clocks, fetch, deadline_at):
 
 def collect(source, fetch, *, deadline_at=None, now=None):
     _source(source)
-    current = now or datetime.now(timezone.utc)
+    current = calendar_anchor(now or datetime.now(timezone.utc))
     if not isinstance(current, datetime) or current.tzinfo is None:
         raise ValueError("atlantic_fair_timezone_required")
     soup = _page(_get(fetch, SOURCES[FAIR][0], "text/html", deadline_at), SOURCES[FAIR][0])

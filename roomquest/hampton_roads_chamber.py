@@ -6,6 +6,7 @@ from zoneinfo import ZoneInfo
 
 from bs4 import BeautifulSoup
 
+from roomquest.collection_window import calendar_anchor
 from roomquest.mapsee_adapter import address, plain, record
 from roomquest.south_hill_chamber import _event_json, _listing_time, _narrative
 
@@ -42,7 +43,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
     if tuple(source.get(k) for k in ('source_key', 'feed_url', 'kind', 'platform_adapter', 'timezone')) != (
             key, calendar, 'html', 'html', zone):
         raise ValueError('unregistered_growthzone_calendar')
-    now = now or datetime.now(ZoneInfo(zone))
+    now = calendar_anchor(now or datetime.now(ZoneInfo(zone)))
     end_of_window = now + timedelta(days=60)
     soup = BeautifulSoup(fetch(calendar, 'text/html'), 'html.parser')
     listing = soup.select_one('.gz-events-listing')

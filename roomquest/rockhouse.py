@@ -1,4 +1,5 @@
 """Read published performance dates and show times from Rockhouse venue pages."""
+from roomquest.collection_window import calendar_anchor
 from datetime import datetime, timedelta, timezone
 from html.parser import HTMLParser
 import re
@@ -275,7 +276,7 @@ def collect(source, fetch, *, deadline_at=None, now=None, enrich_details=False):
             profile[0], ZONE, "html", "html"):
         raise ValueError("unregistered_rockhouse_source")
     listing, suffix, venue, street = profile
-    today = (now or datetime.now(timezone.utc)).astimezone(ZoneInfo(ZONE)).date()
+    today = calendar_anchor(now or datetime.now(timezone.utc)).astimezone(ZoneInfo(ZONE)).date()
     horizon = today + timedelta(days=60)
     payload = fetch(listing, "text/html")
     links = detail_links(payload, listing, suffix)

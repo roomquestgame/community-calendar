@@ -6,6 +6,7 @@ from zoneinfo import ZoneInfo
 
 from bs4 import BeautifulSoup
 
+from roomquest.collection_window import calendar_anchor
 from roomquest.mapsee_adapter import plain, record
 
 HOST = 'www.odu.edu'
@@ -33,7 +34,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
     ):
         raise ValueError('unregistered_odu_public_calendar')
 
-    now = (now or datetime.now(ZONE)).astimezone(ZONE)
+    now = (calendar_anchor(now or datetime.now(ZONE))).astimezone(ZONE)
     stop = now + timedelta(days=60)
     month = now.date().replace(day=1)
     result = {}

@@ -5,6 +5,7 @@ aggregate is suitable for the ordinary staging/certification path. All network
 access, robots checks, pacing and persistence remain owned by the shared worker.
 """
 from copy import deepcopy
+from roomquest.collection_window import calendar_anchor
 from datetime import date, datetime, timedelta, timezone
 from hashlib import sha256
 import json
@@ -298,7 +299,7 @@ def _checkpoint(value, current):
     try:
         anchor = date.fromisoformat(value['window_start'])
         started = datetime.fromisoformat(value['started_at'])
-        if started.tzinfo is None or anchor != started.astimezone(ZoneInfo(ZONE)).date():
+        if started.tzinfo is None or anchor != calendar_anchor(started).astimezone(ZoneInfo(ZONE)).date():
             raise ValueError
     except (KeyError, TypeError, ValueError):
         raise ValueError('halifax_checkpoint_invalid') from None
@@ -390,7 +391,7 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
     associations = venue_enrichment.enabled(source)
     current = _now(now)
     state = _checkpoint(checkpoint, current)
-    anchor = date.fromisoformat(state['window_start']) if state else current.astimezone(ZoneInfo(ZONE)).date()
+    anchor = date.fromisoformat(state['window_start']) if state else calendar_anchor(current).astimezone(ZoneInfo(ZONE)).date()
     if deadline_at is not None and monotonic() >= deadline_at:
         raise ValueError('collection_deadline')
     payload = fetch(URL, 'text/html')
@@ -398,7 +399,7 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
     digest = _manifest(events, venue_associations=associations)
     if state is None or state['manifest_hash'] != digest or state['manifest_count'] != len(events):
         # Never mix facts from a removed/replaced listing with the new snapshot.
-        anchor = current.astimezone(ZoneInfo(ZONE)).date()
+        anchor = calendar_anchor(current).astimezone(ZoneInfo(ZONE)).date()
         events = _directory(payload, anchor, venue_associations=associations)
         state = {'version': CHECKPOINT_VERSION, 'source_key': KEY,
                  'started_at': current.isoformat(), 'window_start': anchor.isoformat(),
@@ -438,7 +439,7 @@ def collect(source, fetch, *, deadline_at=None):
     """Read-only single-invocation audit; prefixes never masquerade as success."""
     _validate_source(source)
     associations = venue_enrichment.enabled(source)
-    today = datetime.now(ZoneInfo(ZONE)).date()
+    today = calendar_anchor(datetime.now(ZoneInfo(ZONE))).date()
     events = _directory(fetch(URL, 'text/html'), today, venue_associations=associations)
     result, diagnostics = [], []
     for url, title, day, clock in events:
@@ -460,7 +461,7 @@ def collect_legacy(source, fetch, *, deadline_at=None):
     """
     _validate_source(source)
     associations = venue_enrichment.enabled(source)
-    today = datetime.now(ZoneInfo(ZONE)).date()
+    today = calendar_anchor(datetime.now(ZoneInfo(ZONE))).date()
     events = [item for item in _directory(fetch(URL, 'text/html'), today, venue_associations=associations)
               if item[2] < today + timedelta(days=7)]
     if len(events) > 18:

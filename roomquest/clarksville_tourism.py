@@ -23,6 +23,7 @@ from icalendar import Calendar
 
 from roomquest.mapsee_adapter import plain, record, timestamp
 from roomquest.publisher_evidence import attach, optional_description
+from roomquest.collection_window import collection_window
 
 SOURCE_KEY = 'clarksville_tourism_va'
 HOST = 'tourism.visitclarksvilleva.com'
@@ -388,6 +389,7 @@ def _status_row(title, start, end, listing):
 
 def parse_detail(payload, listing, *, now=None):
     current = now or datetime.now(timezone.utc)
+    window = collection_window(current)
     soup = BeautifulSoup(payload, 'html.parser')
     sections = soup.select('[itemtype="http://schema.org/Event"], [itemtype="https://schema.org/Event"]')
     if len(sections) != 1:
@@ -442,9 +444,9 @@ def parse_detail(payload, listing, *, now=None):
     elif full_time != plain(display.get_text()) and not terminal:
         raise EventHold('publisher_displayed_end_unresolved')
     # A start-only page's synthetic one-hour export end is deliberately ignored.
-    if (start > current + timedelta(days=LOOKAHEAD_DAYS)
-            or (terminal and start < current - timedelta(days=STATUS_LOOKBACK_DAYS))
-            or (not terminal and (end or start + timedelta(hours=3)) <= current)):
+    if (start >= window.end
+            or (terminal and start < window.start - timedelta(days=STATUS_LOOKBACK_DAYS))
+            or (not terminal and (end or start + timedelta(hours=3)) <= window.start)):
         return None
     description_node = _one(section, '[itemprop="description"]', required=False)
     narrative = _text(description_node)
@@ -609,8 +611,9 @@ def collect(source, fetch, *, deadline_at=None, now=None):
                 pending.append(link)
     if len(listings) != total:
         raise ValueError('tourism_result_count_mismatch')
-    start_day = (current - timedelta(days=STATUS_LOOKBACK_DAYS)).astimezone(ZoneInfo(TIMEZONE)).date()
-    end_day = (current + timedelta(days=LOOKAHEAD_DAYS)).astimezone(ZoneInfo(TIMEZONE)).date()
+    window = collection_window(current)
+    start_day = (window.start - timedelta(days=STATUS_LOOKBACK_DAYS)).astimezone(ZoneInfo(TIMEZONE)).date()
+    end_day = window.end.astimezone(ZoneInfo(TIMEZONE)).date()
     eligible = [event for event in listings.values() if start_day <= event.day <= end_day]
     if len(eligible) > MAX_DETAILS:
         raise ValueError('tourism_detail_limit')
@@ -633,3 +636,4 @@ def collect(source, fetch, *, deadline_at=None, now=None):
     if not rows and diagnostics['held']:
         raise ValueError('clarksville_tourism_event_evidence_unavailable')
     return sorted(rows, key=lambda row: (row['starts_at'], row['id']))
+

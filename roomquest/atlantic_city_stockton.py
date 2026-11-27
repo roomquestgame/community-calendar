@@ -18,6 +18,7 @@ from zoneinfo import ZoneInfo
 from bs4 import BeautifulSoup
 from icalendar import Calendar
 
+from roomquest.collection_window import calendar_anchor
 from roomquest.atlantic_city_community import MAX_DESCRIPTION, _full_description, _nj_address
 from roomquest.mapsee_adapter import plain, record, timestamp
 
@@ -409,7 +410,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
     profile = SOURCES.get(key)
     if profile is None or (source.get('feed_url'), source.get('kind'), source.get('platform_adapter'), source.get('timezone')) != (*profile, ZONE):
         raise ValueError('unregistered_atlantic_city_stockton_source')
-    current = now or datetime.now(timezone.utc)
+    current = calendar_anchor(now or datetime.now(timezone.utc))
     if current.tzinfo is None:
         raise ValueError('stockton_event_time_changed')
     if deadline_at is not None and monotonic() >= deadline_at:

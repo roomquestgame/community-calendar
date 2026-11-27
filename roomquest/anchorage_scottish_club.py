@@ -14,6 +14,7 @@ import json
 import re
 
 from bs4 import BeautifulSoup
+from roomquest.collection_window import calendar_anchor
 from roomquest.mapsee_adapter import plain, record
 
 KEY = "alaskan_scottish_club_eagle_river_events_ak"
@@ -125,7 +126,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
             or (source.get("feed_url"), source.get("kind"),
                 source.get("platform_adapter")) != SOURCES[KEY]):
         raise ValueError("scottish_source_mismatch")
-    now = now or datetime.now(timezone.utc)
+    now = calendar_anchor(now or datetime.now(timezone.utc))
     deadline = min(monotonic() + 38, deadline_at if deadline_at is not None else float("inf"))
     calendar = fetch(FEED, "text/html")
     if not isinstance(calendar, str) or not 50 < len(calendar) <= MAX_HTML:

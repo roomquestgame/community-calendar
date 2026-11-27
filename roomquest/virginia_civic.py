@@ -6,6 +6,7 @@ we read these values locally and never request Google. DMV Connect permits its
 default first page but forbids query/pagination routes in robots.txt. We collect
 only that declared first-page scope and never infer cancellation from absence.
 """
+from roomquest.collection_window import calendar_anchor
 from datetime import datetime, time, timedelta, timezone
 import hashlib
 import logging
@@ -90,7 +91,7 @@ def _date_row(title, day, ends_on, venue, url, identity, current):
     """Transport bounds only; civic date precision forbids a midnight event UI."""
     if ends_on <= day or (ends_on - day).days > 60:
         raise ValueError('invalid_civic_date_range')
-    local_day = current.astimezone(ZoneInfo(ZONE)).date()
+    local_day = calendar_anchor(current).astimezone(ZoneInfo(ZONE)).date()
     if ends_on <= local_day or day > local_day + timedelta(days=60):
         return None
     begins = datetime.combine(day, time(), ZoneInfo(ZONE))

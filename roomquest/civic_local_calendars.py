@@ -1,4 +1,5 @@
 """Official Tampa City Council and Howard County Council public calendars."""
+from roomquest.collection_window import calendar_anchor
 from datetime import date, datetime, timedelta, timezone
 import json
 import re
@@ -63,7 +64,7 @@ def _status(title):
 
 
 def _meeting(key, title, start, location, url, identity, now, description, status):
-    if start <= now or start >= now + timedelta(days=60):
+    if start <= calendar_anchor(now) or start >= calendar_anchor(now) + timedelta(days=60):
         return None
     jurisdiction_id, jurisdiction_name = SOURCES[key]['jurisdiction']
     row = record(title, start.isoformat(), None, *location, url, identity, 'Civic', tz=ZONE)

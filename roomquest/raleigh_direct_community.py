@@ -6,6 +6,7 @@ through the existing v1 lease-fenced checkpoint, without a second scheduler.
 """
 from __future__ import annotations
 
+from roomquest.collection_window import calendar_anchor
 from calendar import monthrange
 from copy import deepcopy
 from datetime import date, datetime, timedelta, timezone
@@ -144,8 +145,9 @@ def _body(value):
 
 
 def _within(start, end, now):
-    return bool(start and start < now + timedelta(days=60)
-                and (end or start + timedelta(hours=3)) > now)
+    window_start = calendar_anchor(now)
+    return bool(start and start < window_start + timedelta(days=60)
+                and (end or start + timedelta(hours=3)) > window_start)
 
 
 def _hold(diagnostics, identity, reason):
@@ -299,7 +301,7 @@ def _game_theory(payload, fetch, read_public_events, now, diagnostics):
     keys = re.findall(r"const (?:SUPABASE_ANON_KEY|SUPABASE_KEY)\s*=\s*'([^']+)'", frame)
     if endpoint != ['https://' + GAME_API_HOST] or len(keys) != 1 or ".from('events')" not in frame:
         raise ValueError('raleigh_direct_public_api_identity')
-    first = now.astimezone(ZoneInfo(ZONE)).date()
+    first = calendar_anchor(now).astimezone(ZoneInfo(ZONE)).date()
     raw = read_public_events(public_key=keys[0], window_start=first.isoformat(),
                              window_end=(first + timedelta(days=60)).isoformat())
     events = json.loads(raw)
@@ -346,7 +348,7 @@ def _trc(payload, now, diagnostics):
     if 'TRC Salvage Yard' not in body:
         raise ValueError('raleigh_direct_venue_unresolved')
     rows = []
-    first = now.astimezone(ZoneInfo(ZONE)).date()
+    first = calendar_anchor(now).astimezone(ZoneInfo(ZONE)).date()
     for offset in range(28):
         day = first + timedelta(days=offset)
         if day.weekday() != 1:
@@ -490,8 +492,8 @@ def _fair(payload, now, diagnostics):
         raise ValueError('raleigh_direct_calendar_changed')
     year = years.pop()
     result = []
-    window_start = now.astimezone(ZoneInfo(ZONE)).date()
-    window_end = (now + timedelta(days=60)).astimezone(ZoneInfo(ZONE)).date()
+    window_start = calendar_anchor(now).astimezone(ZoneInfo(ZONE)).date()
+    window_end = (calendar_anchor(now) + timedelta(days=60)).astimezone(ZoneInfo(ZONE)).date()
     monthly_tables, closed, unresolved = [], {}, set()
     # A January row can announce a February closure. Read the same-year
     # recurring series before filtering months, without widening its venue key.
@@ -648,7 +650,7 @@ def _state(key, queue, rows, diagnostics, now):
     proof = [{'id': row['id'], 'digest': _digest(row)} for row in rows]
     manifest = queue if queue else proof
     return dict(version=1, source_key=key, started_at=now.astimezone(timezone.utc).isoformat(),
-        window_start=now.astimezone(ZoneInfo(ZONE)).date().isoformat(),
+        window_start=calendar_anchor(now).astimezone(ZoneInfo(ZONE)).date().isoformat(),
         manifest_hash=_digest(manifest), manifest_count=len(manifest), cursor=0 if queue else len(manifest),
         queue=queue, seed_proof=proof, events=rows, diagnostics=diagnostics,
         row_hashes={row['id']: _digest(row) for row in rows})
@@ -662,7 +664,7 @@ def _checkpoint(key, value, now):
         manifest = queue if queue else state['seed_proof']
         valid = (state['version'] == 1 and state['source_key'] == key
             and -60 <= (now-started).total_seconds() < 4*60*60
-            and state['window_start'] == started.astimezone(ZoneInfo(ZONE)).date().isoformat()
+            and state['window_start'] == calendar_anchor(started).astimezone(ZoneInfo(ZONE)).date().isoformat()
             and state['manifest_hash'] == _digest(manifest)
             and state['manifest_count'] == len(manifest)
             and type(state['cursor']) is int and 0 <= state['cursor'] <= len(manifest)

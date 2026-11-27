@@ -13,6 +13,7 @@ from zoneinfo import ZoneInfo
 import re
 
 from bs4 import BeautifulSoup
+from roomquest.collection_window import calendar_anchor
 from roomquest.mapsee_adapter import record
 
 KEY = 'resource_center_nonviolence_santa_cruz_ca'
@@ -118,5 +119,5 @@ def collect(source, fetch, *, deadline_at=None, now=None):
     if not re.search(r'612\s+Ocean\s+(?:Street|St\.?)\s*,?\s*Santa\s+Cruz,?\s+CA\s+95060',
                      contact,re.I):
         raise ValueError('rcnv_official_street_missing')
-    return _parse_event(fetch(EVENT,'text/html'), now or datetime.now(timezone.utc))
+    return _parse_event(fetch(EVENT,'text/html'), calendar_anchor(now or datetime.now(timezone.utc)))
 

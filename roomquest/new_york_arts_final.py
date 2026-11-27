@@ -6,6 +6,7 @@ use bounded, replayable checkpoints; no incomplete manifest is published.
 """
 from __future__ import annotations
 
+from roomquest.collection_window import calendar_anchor
 from copy import deepcopy
 from datetime import datetime, timedelta, timezone
 from hashlib import sha256
@@ -146,7 +147,8 @@ def _body(value):
 
 
 def _within(start, end, now, days=60):
-    return start < now + timedelta(days=days) and (end or start + timedelta(hours=3)) > now
+    window_start = calendar_anchor(now)
+    return start < window_start + timedelta(days=days) and (end or start + timedelta(hours=3)) > window_start
 
 
 def _content_venue(**values):
@@ -326,7 +328,7 @@ def _bcm(fetch, deadline, now):
     # The publisher's default feed has a 50-item horizon. A rolling 30-day
     # scope is complete only while that horizon reaches the end of our window.
     dates = [e.decoded("DTSTART") for e in native if isinstance(e.decoded("DTSTART"), datetime)]
-    if len(native) >= 50 and (not dates or max(dates) < now + timedelta(days=30)):
+    if len(native) >= 50 and (not dates or max(dates) < calendar_anchor(now) + timedelta(days=30)):
         raise ValueError("nyc_final_ics_horizon_incomplete")
     by_id = {str(e["UID"]): e for e in native}
     rows = []
@@ -361,8 +363,8 @@ def _transit_manifest(fetch, deadline, now):
     queue = []
     for page in range(1, 4):
         _check(deadline)
-        params = dict(per_page=100, page=page, start_date=now.astimezone(ZoneInfo(ZONE)).date().isoformat(),
-                      end_date=(now + timedelta(days=60)).date().isoformat())
+        params = dict(per_page=100, page=page, start_date=calendar_anchor(now).astimezone(ZoneInfo(ZONE)).date().isoformat(),
+                      end_date=(calendar_anchor(now) + timedelta(days=60)).date().isoformat())
         payload = json.loads(fetch(TRANSIT_API + "?" + urlencode(params), "application/json"))
         if not isinstance(payload, dict) or not isinstance(payload.get("events"), list) or len(payload["events"]) > 100:
             raise ValueError("nyc_final_payload_changed")
@@ -422,6 +424,7 @@ def _html_manifest(key, fetch, deadline):
 
 
 def _bpl_manifest(fetch, deadline, now):
+    window_start = calendar_anchor(now)
     _check(deadline)
     soup = BeautifulSoup(fetch(SOURCES[BPL][0], "text/html"), "html.parser")
     if soup.select('nav.pager a, .pager a, a[rel="next"]'):
@@ -441,7 +444,7 @@ def _bpl_manifest(fetch, deadline, now):
             raise ValueError("nyc_final_identity_changed")
         suffix = re.search(r"(20\d{6}-\d{4}(?:am|pm))$", url)[1]
         start = datetime.strptime(suffix, "%Y%m%d-%I%M%p").replace(tzinfo=ZoneInfo(ZONE))
-        if start.date() < now.astimezone(ZoneInfo(ZONE)).date() or start >= now + timedelta(days=60):
+        if start.date() < window_start.astimezone(ZoneInfo(ZONE)).date() or start >= window_start + timedelta(days=60):
             continue
         queue[url] = dict(url=url, id="bpl:" + sha256(url.encode()).hexdigest()[:24], title=plain(title.get_text(" ")),
                           starts_at=start.isoformat(), venue_name=plain(location.get_text(" ")), labels=labels)
@@ -790,7 +793,7 @@ def _checkpoint(key, value, now):
             and re.fullmatch(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z|\+00:00)", value["started_at"])
             and len(json.dumps(value, ensure_ascii=False).encode()) <= MAX_CHECKPOINT_BYTES)
         started = timestamp(value["started_at"])
-        if not valid or value["window_start"] != started.astimezone(ZoneInfo(ZONE)).date().isoformat():
+        if not valid or value["window_start"] != calendar_anchor(started).astimezone(ZoneInfo(ZONE)).date().isoformat():
             raise ValueError
         if not started <= now <= started + timedelta(hours=4):
             return None
@@ -861,7 +864,7 @@ def _manifest(key, fetch, deadline, started):
 
 def _new_state(key, queue, started):
     return dict(version=1, source_key=key, started_at=started.isoformat(),
-                window_start=started.astimezone(ZoneInfo(ZONE)).date().isoformat(), manifest_hash=_digest(queue),
+                window_start=calendar_anchor(started).astimezone(ZoneInfo(ZONE)).date().isoformat(), manifest_hash=_digest(queue),
                 manifest_count=len(queue), cursor=0, queue=queue, events=[], diagnostics=[], manifest_verified=not queue)
 
 

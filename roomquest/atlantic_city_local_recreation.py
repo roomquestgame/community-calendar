@@ -24,6 +24,7 @@ from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
 
+from roomquest.collection_window import calendar_anchor
 from roomquest.mapsee_adapter import record, timestamp
 
 
@@ -243,7 +244,7 @@ def _brigantine_program(page, title):
 
 
 def parse_brigantine(payload, *, now=None, deadline_at=None):
-    now = now or datetime.now(timezone.utc)
+    now = calendar_anchor(now or datetime.now(timezone.utc))
     pages = _brigantine_pages(payload, deadline_at)
     cover = _normal(pages[1])
     if ('FALL PROGRAMS 2026' not in cover
@@ -322,7 +323,7 @@ def _save_the_date(value, anchor):
 
 
 def parse_njshorerun(payload, *, now=None, deadline_at=None):
-    now = now or datetime.now(timezone.utc)
+    now = calendar_anchor(now or datetime.now(timezone.utc))
     _check(deadline_at)
     soup = _html(payload)
     if 'NJShoreRun Weekly Group Runs and Local Race Meetup' not in soup.get_text(' ', strip=True):

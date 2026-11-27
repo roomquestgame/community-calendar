@@ -6,6 +6,7 @@ descriptions without changing the shared transport's strict encoding checks.
 """
 from __future__ import annotations
 
+from roomquest.collection_window import calendar_anchor
 from copy import deepcopy
 from datetime import datetime, timedelta, timezone
 from hashlib import sha256
@@ -134,7 +135,8 @@ def _held(key, identity, reason):
 
 
 def _within(start, end, now):
-    return start < now + timedelta(days=60) and (end or start + timedelta(hours=3)) > now
+    window_start = calendar_anchor(now)
+    return start < window_start + timedelta(days=60) and (end or start + timedelta(hours=3)) > window_start
 
 
 def _content_venue(**values):
@@ -258,8 +260,8 @@ def _commonpoint(fetch, deadline, now):
     rows = []
     for page in range(1, 5):
         _check(deadline)
-        params = dict(per_page=50, start_date=now.astimezone(ZoneInfo(ZONE)).date().isoformat(),
-                      end_date=(now + timedelta(days=60)).date().isoformat(), categories=4, page=page)
+        params = dict(per_page=50, start_date=calendar_anchor(now).astimezone(ZoneInfo(ZONE)).date().isoformat(),
+                      end_date=(calendar_anchor(now) + timedelta(days=60)).date().isoformat(), categories=4, page=page)
         payload = json.loads(fetch(CP_API + "?" + urlencode(params), "application/json"))
         if not isinstance(payload, dict) or not isinstance(payload.get("events"), list) or len(payload["events"]) > 50:
             raise ValueError("nyc_remaining_payload_changed")
@@ -332,8 +334,9 @@ def _commonpoint(fetch, deadline, now):
 
 
 def _nyu_url(now, page):
-    return (NYU_API + "/start_date/" + now.astimezone(ZoneInfo(ZONE)).date().isoformat()
-            + "/end_date/" + (now + timedelta(days=60)).date().isoformat()
+    window_start = calendar_anchor(now)
+    return (NYU_API + "/start_date/" + window_start.astimezone(ZoneInfo(ZONE)).date().isoformat()
+            + "/end_date/" + (window_start + timedelta(days=60)).date().isoformat()
             + "/response_fields/" + NYU_FIELDS + "?page=" + str(page))
 
 
@@ -435,7 +438,7 @@ def _bronx(fetch, deadline, now):
         if not match:
             raise ValueError("nyc_remaining_schedule_changed")
         day = datetime.strptime(match[1], "%b %d, %Y").date()
-        if not now.astimezone(ZoneInfo(ZONE)).date() <= day <= (now + timedelta(days=60)).date():
+        if not calendar_anchor(now).astimezone(ZoneInfo(ZONE)).date() <= day <= (calendar_anchor(now) + timedelta(days=60)).date():
             continue
         if not event_url(BRONX, link["href"]):
             raise ValueError("nyc_remaining_identity_changed")
@@ -502,7 +505,8 @@ def _greenlight_address(soup):
 
 
 def _greenlight_manifest(fetch, deadline, now):
-    start, last = now.astimezone(ZoneInfo(ZONE)).date(), (now + timedelta(days=60)).date()
+    window_start = calendar_anchor(now)
+    start, last = window_start.astimezone(ZoneInfo(ZONE)).date(), (window_start + timedelta(days=60)).date()
     month, seen, manifest = start.replace(day=1), set(), []
     for _ in range(3):
         _check(deadline)
@@ -633,7 +637,7 @@ def _checkpoint(value, now):
         raise ValueError("nyc_remaining_checkpoint_invalid")
     try:
         started = timestamp(value["started_at"])
-        if not started or value["window_start"] != started.astimezone(ZoneInfo(ZONE)).date().isoformat():
+        if not started or value["window_start"] != calendar_anchor(started).astimezone(ZoneInfo(ZONE)).date().isoformat():
             raise ValueError
     except (ValueError, TypeError, KeyError):
         raise ValueError("nyc_remaining_checkpoint_invalid") from None
@@ -706,7 +710,7 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
     digest = sha256(json.dumps(queue, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
     if state is None or state["manifest_hash"] != digest:
         state = dict(version=1, source_key=GREENLIGHT, started_at=current.isoformat(),
-                     window_start=current.astimezone(ZoneInfo(ZONE)).date().isoformat(),
+                     window_start=calendar_anchor(current).astimezone(ZoneInfo(ZONE)).date().isoformat(),
                      manifest_hash=digest, manifest_count=len(queue), cursor=0, queue=queue, events=[], diagnostics=[])
     prior, maximum = state["cursor"], min(3, max(1, int(max_details)))
     while state["cursor"] < len(queue) and state["cursor"] - prior < maximum:

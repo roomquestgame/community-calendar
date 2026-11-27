@@ -9,6 +9,7 @@ import re
 from datetime import datetime,timedelta,timezone
 from zoneinfo import ZoneInfo
 from bs4 import BeautifulSoup
+from roomquest.collection_window import calendar_anchor
 from roomquest.mapsee_adapter import record
 
 KEY='boulder_creek_reindeer_run_ca'
@@ -53,7 +54,7 @@ def collect(source,fetch,*,now=None,deadline_at=None):
         return []
     start=datetime(2026,12,24,9,tzinfo=ZoneInfo(ZONE))
     end=datetime(2026,12,24,12,tzinfo=ZoneInfo(ZONE))
-    now=now or datetime.now(timezone.utc)
+    now=calendar_anchor(now or datetime.now(timezone.utc))
     if start.astimezone(timezone.utc)<now-timedelta(hours=3) or start.astimezone(timezone.utc)>now+timedelta(days=60):
         return []
     park=_text(fetch(PARK_URL,'text/html'))

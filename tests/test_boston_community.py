@@ -293,3 +293,25 @@ def test_foreign_host_and_source_tuple_are_rejected_before_fetch():
         b.collect(item, lambda *_: pytest.fail("fetch must not run"), now=NOW)
     assert not b.event_url(b.FOOD_FOREST, "https://example.com/workshops/a")
     assert not b.event_url(b.FOOD_FOREST, "https://www.bostonfoodforest.org/workshops/a?format=json")
+
+
+def test_future_checkpoint_retains_real_start_and_original_event_interval(monkeypatch):
+    from roomquest.collection_window import collection_scope
+
+    selected = NOW + timedelta(days=92)
+    claim = {'collection_window': {'version': 1, 'start': selected.isoformat(),
+                                   'end': (selected + timedelta(days=60)).isoformat()}}
+    monkeypatch.setitem(globals(), 'START', selected.astimezone(ZoneInfo(b.ZONE)) + timedelta(days=2))
+    fetch, _ = transport([sq(i) for i in range(4)])
+    with collection_scope(claim):
+        first = b.collect_chunk(source(), fetch, now=NOW)
+        checkpoint = first['checkpoint']
+        assert not first['complete']
+        assert datetime.fromisoformat(checkpoint['started_at']) == NOW
+        assert checkpoint['window_start'] == selected.astimezone(ZoneInfo(b.ZONE)).date().isoformat()
+        resumed = b.collect_chunk(source(), fetch, checkpoint=checkpoint, now=NOW + timedelta(minutes=3))
+        assert resumed['complete'] and len(resumed['events']) == 4
+        with pytest.raises(ValueError, match='checkpoint_invalid'):
+            b.collect_chunk(source(), fetch, checkpoint=checkpoint, now=NOW + timedelta(hours=5))
+    with pytest.raises(ValueError, match='checkpoint_invalid'):
+        b.collect_chunk(source(), fetch, checkpoint=checkpoint, now=NOW)

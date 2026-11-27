@@ -13,6 +13,7 @@ import json
 import re
 
 from bs4 import BeautifulSoup
+from roomquest.collection_window import calendar_anchor
 from roomquest.event_description import description
 from roomquest.mapsee_adapter import record
 from roomquest.publisher_evidence import attach
@@ -70,7 +71,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
         raise ValueError("faith_calendar_invalid") from exc
     if not isinstance(data,dict) or not isinstance(data.get("upcoming"),list):
         raise ValueError("faith_calendar_invalid")
-    now_utc = (now or datetime.now(timezone.utc)).astimezone(timezone.utc)
+    now_utc = (calendar_anchor(now or datetime.now(timezone.utc))).astimezone(timezone.utc)
     out = []
     seen = set()
     for item in data["upcoming"][:100]:

@@ -23,6 +23,7 @@ from zoneinfo import ZoneInfo
 
 from bs4 import BeautifulSoup
 
+from roomquest.collection_window import calendar_anchor
 from roomquest.atlantic_city_pdf_programs import _pages
 from roomquest.atlantic_city_venues import narrative
 from roomquest.mapsee_adapter import plain, record, timestamp
@@ -221,7 +222,7 @@ def _library_item(identity, item, entities, now):
 
 
 def collect_library(fetch, *, deadline_at=None, now=None):
-    now = now or datetime.now(timezone.utc)
+    now = calendar_anchor(now or datetime.now(timezone.utc))
     seen, rows = set(), []
     expected_count = expected_pages = None
     for page in range(1, 3):
@@ -275,7 +276,7 @@ def discover_newday(payload):
 
 
 def parse_newday(payload, *, now=None, deadline_at=None):
-    now = now or datetime.now(timezone.utc)
+    now = calendar_anchor(now or datetime.now(timezone.utc))
     if not isinstance(payload, bytes) or sha256(payload).hexdigest() != NEWDAY_SHA256:
         raise ValueError('newday_calendar_edition_unreviewed')
     pages = _pages(payload, max_pages=2, max_bytes=1_000_000, deadline_at=deadline_at)

@@ -6,6 +6,7 @@ Partial snapshots remain in the durable checkpoint until all details finish.
 """
 from __future__ import annotations
 
+from roomquest.collection_window import calendar_anchor
 from copy import deepcopy
 from datetime import date, datetime, timedelta, timezone
 from hashlib import sha256
@@ -281,6 +282,7 @@ def _location(header, body):
 
 
 def _detail(url, card, payload, now):
+    window_start = calendar_anchor(now)
     soup = BeautifulSoup(payload, "html.parser")
     title = _text(soup.select_one("h1"))
     info = soup.select(".blog-post-info-detail .card-detail-icon-text")
@@ -303,7 +305,7 @@ def _detail(url, card, payload, now):
     if schedule is None:
         return None, "published_clock_missing_or_ambiguous"
     start, end = schedule
-    if (end or start + timedelta(hours=3)) <= now or start >= now + timedelta(days=60):
+    if (end or start + timedelta(hours=3)) <= window_start or start >= window_start + timedelta(days=60):
         return None, "outside_current_window"
     header = _text(info[1]) if len(info) > 1 else ""
     if header != card["location"]:
@@ -348,7 +350,7 @@ def _checkpoint(value, now):
     try:
         started = datetime.fromisoformat(value["started_at"])
         anchor = date.fromisoformat(value["window_start"])
-        if started.tzinfo is None or anchor != started.astimezone(ZoneInfo(ZONE)).date():
+        if started.tzinfo is None or anchor != calendar_anchor(started).astimezone(ZoneInfo(ZONE)).date():
             raise ValueError
     except (ValueError, TypeError, KeyError):
         raise ValueError("greatday_checkpoint_invalid") from None
@@ -387,7 +389,7 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
         raise ValueError("greatday_checkpoint_invalid")
     current = current.astimezone(timezone.utc)
     state = _checkpoint(checkpoint, current)
-    anchor = date.fromisoformat(state["window_start"]) if state else current.astimezone(ZoneInfo(ZONE)).date()
+    anchor = date.fromisoformat(state["window_start"]) if state else calendar_anchor(current).astimezone(ZoneInfo(ZONE)).date()
     manifest = _manifest(fetch, anchor, deadline_at)
     queue = sorted(manifest, key=lambda url: (manifest[url]["date"], url))
     digest = sha256(json.dumps({"contract": CONTRACT, "manifest": manifest}, sort_keys=True, separators=(",", ":")).encode()).hexdigest()

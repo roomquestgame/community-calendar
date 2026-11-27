@@ -7,6 +7,7 @@ caller's normal guarded publisher transport.
 """
 from __future__ import annotations
 
+from roomquest.collection_window import calendar_anchor
 from copy import deepcopy
 from datetime import date, datetime, time, timedelta, timezone
 from hashlib import sha256
@@ -203,9 +204,10 @@ def _text(node):
 
 
 def _within(start, end, now):
+    window_start = calendar_anchor(now)
     if not isinstance(start, datetime) or start.tzinfo is None or end and (end.tzinfo is None or end <= start):
         raise ValueError("new_york_social_final_schedule_conflict")
-    return start < now + timedelta(days=60) and (end or start + timedelta(hours=3)) > now
+    return start < window_start + timedelta(days=60) and (end or start + timedelta(hours=3)) > window_start
 
 
 def _identity(key, url, start, native):
@@ -324,6 +326,7 @@ def _meridian(hour, minute, suffix):
 
 
 def _schedule_window(now, season=None):
+    now = calendar_anchor(now)
     until = now + timedelta(days=28)
     if season:
         until = min(until, datetime.combine(season[1] + timedelta(days=1), time(), ZoneInfo(ZONE)))
@@ -332,7 +335,7 @@ def _schedule_window(now, season=None):
 
 def _weekly(weekday, clock, now, *, season=None, breaks=()):
     anchor, until = _schedule_window(now, season)
-    day = anchor.astimezone(ZoneInfo(ZONE)).date()
+    day = calendar_anchor(anchor).astimezone(ZoneInfo(ZONE)).date()
     last = until.astimezone(ZoneInfo(ZONE)).date()
     while day <= last:
         start = datetime.combine(day, clock, ZoneInfo(ZONE))
@@ -364,7 +367,7 @@ def _wild(payload, now):
             if mon.casefold()[:3] != month.strftime("%b").casefold():
                 raise ValueError("new_york_social_final_schedule_conflict")
             day = date(month.year, month.month, int(number))
-            if day < now.astimezone(ZoneInfo(ZONE)).date():
+            if day < calendar_anchor(now).astimezone(ZoneInfo(ZONE)).date():
                 continue
             if weekday.casefold()[:3] != day.strftime("%a").casefold():
                 _hold(diagnostics, native, "publisher_schedule_conflict")
@@ -502,7 +505,7 @@ def _pauper(payload, now):
 
 
 def _trivia_api_url(now):
-    day = now.astimezone(ZoneInfo(ZONE)).date()
+    day = calendar_anchor(now).astimezone(ZoneInfo(ZONE)).date()
     return TRIVIA_API + "?" + urlencode(dict(venue=230356, start_date=day.isoformat(),
         end_date=(day + timedelta(days=60)).isoformat(), per_page=100))
 
@@ -694,7 +697,7 @@ def _radegast_digest(count, started_at, *, bootstrap=False):
 def _new_radegast_state(count, current, restarts=0, *, bootstrap=False):
     started = current.astimezone(timezone.utc).isoformat()
     return dict(version=1, source_key=RADEGAST, started_at=started,
-                window_start=current.astimezone(ZoneInfo(ZONE)).date().isoformat(),
+                window_start=calendar_anchor(current).astimezone(ZoneInfo(ZONE)).date().isoformat(),
                 manifest_hash=_radegast_digest(count, started, bootstrap=bootstrap), manifest_count=count,
                 cursor=0, next_page=1, restarts=restarts, seen_ids=[], events=[], diagnostics=[],
                 phase="robots" if bootstrap else "events")
@@ -719,7 +722,7 @@ def _radegast_checkpoint(value, current):
             and isinstance(value["diagnostics"], list) and len(value["diagnostics"]) <= 400
             and re.fullmatch(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z|\+00:00)", value["started_at"])
             and -60 <= (current - started).total_seconds() <= 4 * 60 * 60
-            and value["window_start"] == started.astimezone(ZoneInfo(ZONE)).date().isoformat()
+            and value["window_start"] == calendar_anchor(started).astimezone(ZoneInfo(ZONE)).date().isoformat()
             and phase in {"robots", "events"}
             and (phase != "robots" or (count == cursor == value["restarts"] == 0 and page == 1
                                       and value["events"] == value["diagnostics"] == value["seen_ids"] == []))
@@ -765,7 +768,7 @@ def _radegast_result(state, current):
     if complete:
         active = []
         for row in state["events"]:
-            if timestamp(row["ends_at"]) > current:
+            if timestamp(row["ends_at"]) > calendar_anchor(current):
                 active.append(row)
             else:
                 state["diagnostics"].append(dict(event_url=row["event_url"], publisher_label=row["title"],
@@ -919,7 +922,7 @@ def _greenbelt_checkpoint(value, current):
             and (not value["manifest_verified"] or cursor == len(queue))
             and re.fullmatch(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z|\+00:00)", value["started_at"])
             and started is not None and -60 <= (current - started).total_seconds() <= 4 * 60 * 60
-            and value["window_start"] == started.astimezone(ZoneInfo(ZONE)).date().isoformat())
+            and value["window_start"] == calendar_anchor(started).astimezone(ZoneInfo(ZONE)).date().isoformat())
         if not valid:
             raise ValueError
         for item in queue:
@@ -973,7 +976,7 @@ def _greenbelt_checkpoint(value, current):
 def _greenbelt_result(state, current):
     complete = state["cursor"] == state["manifest_count"] and state["manifest_verified"]
     if complete:
-        expired = {row["publisher_native_id"] for row in state["events"] if timestamp(row["ends_at"]) <= current}
+        expired = {row["publisher_native_id"] for row in state["events"] if timestamp(row["ends_at"]) <= calendar_anchor(current)}
         state["events"] = [row for row in state["events"] if row["publisher_native_id"] not in expired]
         for diagnostic in state["diagnostics"]:
             if diagnostic["publisher_native_id"] in expired:
@@ -996,7 +999,7 @@ def _greenbelt_chunk(fetch, checkpoint, deadline_at, current, max_details):
         queue = _greenbelt_manifest(fetch(SOURCES[GREENBELT][0], "text/html"))
         started = current.astimezone(timezone.utc).isoformat()
         state = dict(version=1, source_key=GREENBELT, started_at=started,
-                     window_start=current.astimezone(ZoneInfo(ZONE)).date().isoformat(),
+                     window_start=calendar_anchor(current).astimezone(ZoneInfo(ZONE)).date().isoformat(),
                      manifest_hash=_greenbelt_digest(queue), manifest_count=len(queue), queue=queue,
                      cursor=0, events=[], diagnostics=[], manifest_verified=not queue)
         return _greenbelt_result(state, current)

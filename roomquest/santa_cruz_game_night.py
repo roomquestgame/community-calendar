@@ -10,6 +10,7 @@ from datetime import datetime, timedelta, timezone
 import re
 from urllib.parse import urlsplit
 from zoneinfo import ZoneInfo
+from roomquest.collection_window import calendar_anchor
 from roomquest.mapsee_adapter import plain, record
 from roomquest.event_description import description
 
@@ -58,7 +59,7 @@ def collect(source,fetch,*,deadline_at=None,now=None):
  cal=Calendar.from_ical(raw)
  events=cal.walk('VEVENT')
  if len(events)>500:raise ValueError('source_record_limit')
- now=now or datetime.now(timezone.utc)
+ now=calendar_anchor(now or datetime.now(timezone.utc))
  result={}
  for event in events:
   if event.errors:continue

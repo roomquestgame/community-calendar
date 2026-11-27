@@ -8,6 +8,7 @@ from __future__ import annotations
 from datetime import datetime,timedelta,timezone
 import json,math,re
 from urllib.parse import urljoin,urlsplit,urlunsplit
+from roomquest.collection_window import calendar_anchor
 from roomquest.mapsee_adapter import plain,record
 from roomquest.event_description import description
 
@@ -127,7 +128,7 @@ def collect(source,fetch,*,deadline_at=None,now=None):
  if (payload.get('website') or {}).get('timeZone')!=ZONE:raise ValueError('publisher_timezone_changed')
  if len(payload['upcoming'])>MAX_RECORDS:raise ValueError('source_record_limit')
  check_pagination(payload,upcoming=True)
- now=now or datetime.now(timezone.utc)
+ now=calendar_anchor(now or datetime.now(timezone.utc))
  rows={}
  for e in payload['upcoming']:
   item=_row(key,e,now)

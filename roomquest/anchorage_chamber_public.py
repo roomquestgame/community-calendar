@@ -7,6 +7,7 @@ unreviewed venues and aggregator member ads are deliberately held.
 """
 from __future__ import annotations
 
+from roomquest.collection_window import calendar_anchor
 from calendar import monthrange
 from datetime import datetime, timedelta, timezone
 from time import monotonic
@@ -87,8 +88,9 @@ def _venue(meta, title):
     return None
 
 def _months(now):
-    today = now.astimezone(ZoneInfo(ZONE)).date()
-    future = (now + timedelta(days=WINDOW_DAYS)).astimezone(ZoneInfo(ZONE)).date()
+    window_start = calendar_anchor(now)
+    today = window_start.astimezone(ZoneInfo(ZONE)).date()
+    future = (window_start + timedelta(days=WINDOW_DAYS)).astimezone(ZoneInfo(ZONE)).date()
     year, month = today.year, today.month
     result = []
     while (year, month) <= (future.year, future.month) and len(result) <= 4:
@@ -102,6 +104,7 @@ def _months(now):
     return result
 
 def _parse_detail(url, claimed_title, payload, now):
+    window_start = calendar_anchor(now)
     if not isinstance(payload, str) or not payload or len(payload) > MAX_HTML:
         raise ValueError("chamber_detail_unreadable")
     soup = BeautifulSoup(payload, "html.parser")
@@ -133,8 +136,8 @@ def _parse_detail(url, claimed_title, payload, now):
         return None
     if (starts.tzname() != printedzone.upper() or ends.tzname() != printedzone.upper()
             or not (starts < ends <= starts + timedelta(hours=8))
-            or ends.astimezone(timezone.utc) <= now
-            or starts.astimezone(timezone.utc) > now + timedelta(days=WINDOW_DAYS)):
+            or ends.astimezone(timezone.utc) <= window_start
+            or starts.astimezone(timezone.utc) > window_start + timedelta(days=WINDOW_DAYS)):
         return None
     venue = _venue(metadata, title)
     if not venue or "Location " not in metadata or NOT_PUBLIC.search(metadata.split("Location ",1)[1].split(" Fees/Admission",1)[0]):

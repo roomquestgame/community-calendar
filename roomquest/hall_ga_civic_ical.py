@@ -6,6 +6,7 @@ Publisher descriptions/images are optional; no synthetic facts or artwork.
 """
 from __future__ import annotations
 
+from roomquest.collection_window import calendar_anchor
 from datetime import date, datetime, timedelta, timezone
 from time import monotonic
 from urllib.parse import parse_qsl, urlsplit
@@ -115,7 +116,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
            or end.astimezone(ZoneInfo(ZONE)).replace(tzinfo=None) != end.replace(tzinfo=None)
            or end<=start or end-start>timedelta(hours=12)):
             _hold(key,uid,"invalid_public_schedule");continue
-        if not (now-timedelta(hours=24)<=start.astimezone(timezone.utc)<=now+timedelta(days=WINDOW_DAYS)):
+        if not (calendar_anchor(now)-timedelta(hours=24)<=start.astimezone(timezone.utc)<=calendar_anchor(now)+timedelta(days=WINDOW_DAYS)):
             continue
         venue=_location(event.get("LOCATION"))
         if venue is None:

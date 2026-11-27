@@ -7,6 +7,7 @@ guarded transport. Partial checkpoints emit no public events.
 """
 from __future__ import annotations
 
+from roomquest.collection_window import calendar_anchor
 from copy import deepcopy
 from datetime import datetime, timedelta, timezone
 from hashlib import sha256
@@ -303,7 +304,8 @@ def _narrative_identity(value):
 
 
 def _within(start, end, now):
-    return start < now + timedelta(days=60) and (end or start + timedelta(hours=3)) > now
+    window_start = calendar_anchor(now)
+    return start < window_start + timedelta(days=60) and (end or start + timedelta(hours=3)) > window_start
 
 
 def _budget(deadline):
@@ -316,7 +318,7 @@ def _digest(value):
 
 
 def _api_url(key, now, page=1):
-    day = now.astimezone(ZoneInfo(ZONE)).date()
+    day = calendar_anchor(now).astimezone(ZoneInfo(ZONE)).date()
     if key == PROSPECT:
         return PROSPECT_API + '?' + urlencode({'per_page': 50, 'start_date': str(day),
             'end_date': str(day + timedelta(days=60)), 'page': page})
@@ -654,7 +656,7 @@ def _detail(key, item, payload):
 
 def _new_state(key, queue, now):
     return dict(version=1, source_key=key, started_at=now.isoformat(),
-                window_start=now.astimezone(ZoneInfo(ZONE)).date().isoformat(),
+                window_start=calendar_anchor(now).astimezone(ZoneInfo(ZONE)).date().isoformat(),
                 manifest_hash=_digest(queue), manifest_count=len(queue), cursor=0,
                 queue=queue, events=[], row_hashes={}, diagnostics=[], manifest_verified=not queue)
 
@@ -679,7 +681,7 @@ def _checkpoint(key, value, now):
                 or len(json.dumps(value, ensure_ascii=False).encode()) > MAX_CHECKPOINT_BYTES):
             raise ValueError
         started = timestamp(value['started_at'])
-        if value['window_start'] != started.astimezone(ZoneInfo(ZONE)).date().isoformat():
+        if value['window_start'] != calendar_anchor(started).astimezone(ZoneInfo(ZONE)).date().isoformat():
             raise ValueError
         if not started <= now <= started + timedelta(hours=4):
             return None

@@ -17,6 +17,7 @@ import xml.etree.ElementTree as ET
 
 from bs4 import BeautifulSoup
 
+from roomquest.collection_window import calendar_anchor
 from roomquest.anchorage_sources import _description, ZONE
 from roomquest.mapsee_adapter import record
 
@@ -114,7 +115,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
             or source.get("timezone") != ZONE):
         raise ValueError("unregistered_anchorage_aiga_source")
     deadline = min(monotonic() + 38, deadline_at if deadline_at is not None else float("inf"))
-    now = now or datetime.now(timezone.utc)
+    now = calendar_anchor(now or datetime.now(timezone.utc))
     raw = fetch(FEED, "text/xml")
     if not isinstance(raw, str) or len(raw) > 800_000 or "<!DOCTYPE" in raw.upper():
         raise ValueError("invalid_aiga_rss_payload")

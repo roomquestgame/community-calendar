@@ -7,6 +7,7 @@ from zoneinfo import ZoneInfo
 
 from bs4 import BeautifulSoup
 
+from roomquest.collection_window import calendar_anchor
 from roomquest.jsonld_adapter import Blocks
 from roomquest.mapsee_adapter import plain, record, timestamp
 
@@ -63,7 +64,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
         source['source_key'], calendar, 'html', 'html', ZONE.key,
     ):
         raise ValueError('unregistered_virginia_beach_public_meetings')
-    today = (now or datetime.now(ZONE)).astimezone(ZONE)
+    today = (calendar_anchor(now or datetime.now(ZONE))).astimezone(ZONE)
     stop = today + timedelta(days=60)
     page = BeautifulSoup(fetch(calendar, 'text/html'), 'html.parser')
     links = page.select('main a[title][href^="/connect/events/"]')

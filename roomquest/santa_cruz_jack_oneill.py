@@ -11,6 +11,7 @@ from urllib.parse import urljoin,urlsplit,urlunsplit
 from zoneinfo import ZoneInfo
 import hashlib
 import re
+from roomquest.collection_window import calendar_anchor
 from roomquest.mapsee_adapter import plain,record
 from roomquest.event_description import description
 
@@ -82,7 +83,7 @@ def collect(source,fetch,*,deadline_at=None,now=None):
  soup=BeautifulSoup(fetch(URL,'text/html'),'html.parser')
  cards=soup.select('.card.event')
  if not cards or len(cards)>MAX_RECORDS:raise ValueError('jack_calendar_layout_changed')
- now=now or datetime.now(timezone.utc)
+ now=calendar_anchor(now or datetime.now(timezone.utc))
  results={}
  for card in cards:
   h=card.select_one('h3')

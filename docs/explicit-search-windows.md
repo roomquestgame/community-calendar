@@ -1,0 +1,18 @@
+# Explicit search windows — incomplete integration
+
+Refs EVE-177 and RoomQuestGame PR #2272. Owner requires default search for everyone and bounded future collection beginning at the selected start; exact display dates remain unchanged. No user opt-in.
+
+This draft adds a private-claim `collection_window` v1 contract (start/end, exactly 60 elapsed days). ContextVar scope isolates concurrent workers. Shared future-event filtering, iCal recurrence expansion, registered Localist requests WordPress/Tribe date parameters, Mapsee Localist/open-data request starts, and Clarksville Tourism listing/detail eligibility consume it. Ordinary claims retain a rolling window and real freshness clocks. Existing incremental Snapshot context hashes already include claim fields, separating future windows from ordinary parsed manifests.
+
+Local verification: eleven shared-window unittest cases pass, including the owner's Jan20–Feb11 range via a synthetic weekly recurrence, exact boundaries, timezone normalization, invalid-contract rejection, thread isolation and real Localist and WordPress request construction with venue selector. Python compilation passes. This is not a complete collector suite or live source verification.
+
+DO NOT MERGE OR DEPLOY independently. Database claims do not yet issue this field. Required next work: lease-fenced durable per-source window demand/freshness; publication eligibility beyond now+60; pending-window completion and retries; compatible staged-row and raw-body reuse; audit other adapters' own date bounds; source-level failure/unsupported-window reporting; full regression against existing collector tests and protected production verification. Avoid falsely certifying ordinary snapshots as coverage of a future window. No collection resubmissions or EVE-170 cohort resets were performed.
+
+Coordinate with EVE-170: collector deployment changes the conservative package fingerprint for non-scoped sources, so verify unchanged-body/bulk-publication behavior after the complete release. Keep shared queue fairness, lease and budget limits. Existing draft #417 touches Mapsee/iCal and must not overwrite this work.
+
+Clarksville Tourism is the publisher shown in the owner's screenshot. Its separate listing and detail cutoff now consumes the same window. All 62 existing Clarksville tests and four new future-boundary/collection cases pass; combined with the shared-window tests, 77 tests pass (plus nine subtests). Synthetic future variants retain corroborated date/time evidence, including DST; they are not live event claims. Ordinary parser clock injection remains intact. The calendar fixture lists 54 upcoming events across five pages; future eligibility is applied before bounded detail requests.
+
+A repository-wide search also found many specialized adapters with their own date bounds. This release is still incomplete: audit those date windows and database publication/receipt paths before claiming across-provider coverage. Do not reset real collection clocks or broadly substitute a future date for verification timestamps.
+
+
+Boston's multi-call fetch checkpoints retain the actual start time for expiry and store the requested interval separately. Clarksville Players, ODU CampusGroups, Hampton Roads SpotHopper and New York Family now apply the selected interval to event eligibility. The Boston future-date suite includes a resumed second page, wrong-window rejection and wall-clock expiry. The combined focused suite passed 182 tests plus 9 subtests. The companion app branch now issues interval-bound claims and scopes staging and publication to their receipts. Remaining specialized adapters and production deployment still require verification.

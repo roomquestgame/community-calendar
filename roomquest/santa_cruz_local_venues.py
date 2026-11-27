@@ -14,6 +14,7 @@ from datetime import datetime, timedelta, timezone
 from time import monotonic
 from urllib.parse import urlsplit, urlunsplit
 from zoneinfo import ZoneInfo
+from roomquest.collection_window import calendar_anchor
 from roomquest.mapsee_adapter import plain, record, timestamp
 from roomquest.event_description import description
 
@@ -502,7 +503,7 @@ def collect(source,fetch,*,deadline_at=None,now=None):
  if key not in SOURCES or (source.get('feed_url'),source.get('kind'),source.get('platform_adapter'))!=SOURCES[key] or source.get('timezone')!=ZONE:
   raise ValueError('unregistered_santa_cruz_local_source')
  if deadline_at and monotonic()>=deadline_at:raise ValueError('collection_deadline')
- now=now or datetime.now(timezone.utc)
+ now=calendar_anchor(now or datetime.now(timezone.utc))
  if key==TANNERY:
   return tannery_market(fetch(SOURCES[key][0],'text/html'),now)
  if key==SCCMOD:

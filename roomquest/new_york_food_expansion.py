@@ -7,6 +7,7 @@ retained. The publisher-disallowed /on/ image routes are never imported.
 """
 from __future__ import annotations
 
+from roomquest.collection_window import calendar_anchor
 from copy import deepcopy
 from datetime import datetime, timedelta, timezone
 from hashlib import sha256
@@ -308,6 +309,7 @@ def _content_envelope_valid(row):
 
 
 def _detail(item, payload, now):
+    window_start = calendar_anchor(now)
     try:
         soup, native = _eataly_native(payload)
         products = _product_fields(soup)
@@ -347,7 +349,7 @@ def _detail(item, payload, now):
             start, end = timestamp(event.get("c_eventStartDate")), timestamp(event.get("c_eventEndDate"))
             if (start is None or end is None or start.tzinfo is None or end.tzinfo is None or end <= start):
                 raise ValueError("new_york_food_schedule_changed")
-            if start >= now + timedelta(days=60) or end <= now:
+            if start >= window_start + timedelta(days=60) or end <= window_start:
                 raise ValueError("new_york_food_outside_window")
             place, point = _place(event)
             body = _body(fields.get("longDescription"))
@@ -399,7 +401,7 @@ def _checkpoint(value, now):
         started = timestamp(value["started_at"])
         if (type(value["version"]) is not int or value["version"] != 1 or value["source_key"] != EATALY
                 or started.tzinfo is None or started > now + timedelta(seconds=60)
-                or value["window_start"] != started.astimezone(ZoneInfo(ZONE)).date().isoformat()
+                or value["window_start"] != calendar_anchor(started).astimezone(ZoneInfo(ZONE)).date().isoformat()
                 or not isinstance(value["pages"], list) or not 2 <= len(value["pages"]) <= MAX_PAGES
                 or len(set(value["pages"])) != len(value["pages"]) or any(not _page_url(p) for p in value["pages"])
                 or value["manifest_count"] != len(value["pages"])
@@ -439,7 +441,7 @@ def _checkpoint(value, now):
                     or not _content_envelope_valid(row)
                     or _body(row["description"]) != row["description"]
                     or start.tzinfo is None or end.tzinfo is None or end <= start
-                    or start >= started + timedelta(days=60) or end <= started):
+                    or start >= calendar_anchor(started) + timedelta(days=60) or end <= calendar_anchor(started)):
                 raise ValueError
             seen.add(row["id"])
         for held in value["diagnostics"]:
@@ -470,7 +472,7 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
     if state is None or state["seed_hash"] != seed_hash:
         pages = class_pages + [EVENTS_URL]
         state = dict(version=1, source_key=EATALY, started_at=current.isoformat(),
-                     window_start=current.astimezone(ZoneInfo(ZONE)).date().isoformat(),
+                     window_start=calendar_anchor(current).astimezone(ZoneInfo(ZONE)).date().isoformat(),
                      pages=pages, seed_hash=seed_hash, manifest_count=len(pages), cursor=0,
                      manifest_hash=_hash({"pages": pages, "seed_hash": seed_hash}),
                      pending=[], pending_hash=_hash([]), pending_cursor=0, loaded_page=None,

@@ -10,6 +10,7 @@ from time import monotonic
 from urllib.parse import urlsplit
 from zoneinfo import ZoneInfo
 import re
+from roomquest.collection_window import calendar_anchor
 from roomquest.mapsee_adapter import plain,record
 from roomquest.event_description import description
 
@@ -89,7 +90,7 @@ def collect(source,fetch,*,deadline_at=None,now=None):
      (source.get('feed_url'),source.get('kind'),source.get('platform_adapter'))!=SOURCES[KEY]
      or source.get('timezone')!=ZONE):
   raise ValueError('unregistered_mah_source')
- now=now or datetime.now(timezone.utc)
+ now=calendar_anchor(now or datetime.now(timezone.utc))
  soup=BeautifulSoup(fetch(URL,'text/html'),'html.parser')
  cards=soup.select('article')
  if not cards or len(cards)>MAX_RECORDS:raise ValueError('mah_manifest_changed')

@@ -12,6 +12,7 @@ from datetime import datetime, timedelta, timezone
 from urllib.parse import urlsplit
 from zoneinfo import ZoneInfo
 from bs4 import BeautifulSoup
+from roomquest.collection_window import calendar_anchor
 from roomquest.event_description import description
 from roomquest.mapsee_adapter import record
 
@@ -72,7 +73,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
     entries = soup.select("li.simcal-event.simcal-events-calendar-922")
     if len(entries) > MAX_LIST_ITEMS or not entries:
         raise ValueError("melo_calendar_missing_or_oversize")
-    now = now or datetime.now(timezone.utc)
+    now = calendar_anchor(now or datetime.now(timezone.utc))
     found = {}
     for item in entries:
         name_el = item.select_one(":scope > span.simcal-event-title")

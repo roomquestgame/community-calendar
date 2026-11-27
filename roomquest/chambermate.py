@@ -14,6 +14,7 @@ from time import monotonic
 from urllib.parse import parse_qsl, urlencode, urlsplit
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
+from roomquest.collection_window import calendar_anchor
 from roomquest.mapsee_adapter import plain, record
 
 API_HOST = "api.chambermate.com"
@@ -90,7 +91,7 @@ def source_config(source):
 def events_url(config, *, now=None):
     # eventsCount describes the full public list, even when host filters hide
     # rows. Always request every host group before asserting completeness.
-    current = now if now is not None else datetime.now(timezone.utc)
+    current = calendar_anchor(now if now is not None else datetime.now(timezone.utc))
     if current.tzinfo is None:
         raise ValueError("chambermate_window_timezone_missing")
     current = current.astimezone(timezone.utc)

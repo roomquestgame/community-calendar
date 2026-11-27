@@ -15,6 +15,7 @@ from zoneinfo import ZoneInfo
 
 from bs4 import BeautifulSoup
 
+from roomquest.collection_window import calendar_anchor
 from roomquest.event_description import description
 from roomquest.mapsee_adapter import plain, record
 from roomquest.registration_formats import source_key
@@ -352,7 +353,7 @@ def _event(item):
 
 def parse(payload, *, deadline_at=None):
     _deadline(deadline_at)
-    today = datetime.now(ZoneInfo(ZONE)).date()
+    today = calendar_anchor(datetime.now(ZoneInfo(ZONE))).date()
     selected = {}
     for post in _posts(payload):
         _deadline(deadline_at)

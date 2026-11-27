@@ -14,6 +14,7 @@ from zoneinfo import ZoneInfo
 import re
 from bs4 import BeautifulSoup
 
+from roomquest.collection_window import calendar_anchor
 from roomquest.event_description import description
 from roomquest.mapsee_adapter import record
 
@@ -85,7 +86,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
     narrative = description("\n\n".join(blocks), limit=MAX_DESCRIPTION)
     if not narrative or not 80 <= len(narrative) <= MAX_DESCRIPTION:
         raise ValueError("art_league_narrative_missing")
-    now = (now or datetime.now(timezone.utc)).astimezone(timezone.utc)
+    now = (calendar_anchor(now or datetime.now(timezone.utc))).astimezone(timezone.utc)
     start = datetime(2026, 12, 4, 17, tzinfo=ZoneInfo(ZONE))
     end = datetime(2026, 12, 4, 19, 30, tzinfo=ZoneInfo(ZONE))
     if not now - timedelta(hours=3) <= start.astimezone(timezone.utc) <= now + timedelta(days=60):

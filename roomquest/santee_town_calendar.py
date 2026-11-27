@@ -14,6 +14,7 @@ from zoneinfo import ZoneInfo
 
 from bs4 import BeautifulSoup
 
+from roomquest.collection_window import calendar_anchor
 from roomquest.mapsee_adapter import plain, record
 from roomquest.mycountyparks import cancelled
 from roomquest.publisher_evidence import DETAILS_VERSION, IMAGE_VERSION
@@ -88,7 +89,7 @@ def _canonical(soup, expected):
 
 
 def _now(value):
-    result = value or datetime.now(timezone.utc)
+    result = calendar_anchor(value or datetime.now(timezone.utc))
     if not isinstance(result, datetime) or result.tzinfo is None:
         raise ValueError('santee_clock_timezone_required')
     return result

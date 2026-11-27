@@ -6,6 +6,7 @@ dated native instance is read independently; no recurrence or prose is invented.
 """
 from __future__ import annotations
 
+from roomquest.collection_window import calendar_anchor
 from copy import deepcopy
 from datetime import date, datetime, time, timedelta, timezone
 from hashlib import sha256
@@ -95,7 +96,7 @@ def photo_url(value):
 
 
 def _window(anchor):
-    first = anchor.astimezone(ZoneInfo(ZONE)).date()
+    first = calendar_anchor(anchor).astimezone(ZoneInfo(ZONE)).date()
     return first, first + timedelta(days=60)
 
 
@@ -303,7 +304,7 @@ def _detail(item, payload, anchor):
             or visible_clocks[1] is not None and (end is None or visible_clocks[1] != end.astimezone(ZoneInfo(ZONE)).time())):
         raise ValueError(PREFIX + "schedule_conflict")
     first, stop = _window(anchor)
-    if not first <= local.date() < stop or (end or start + timedelta(hours=3)) <= anchor:
+    if not first <= local.date() < stop or (end or start + timedelta(hours=3)) <= calendar_anchor(anchor):
         raise ValueError(PREFIX + "outside_window")
     place = _place(main)
     if item["place"] is not None and item["place"] != place:

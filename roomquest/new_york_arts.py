@@ -7,6 +7,7 @@ uses permitted public HTML, never its robots-disallowed JSON/ICS exports.
 """
 from __future__ import annotations
 
+from roomquest.collection_window import calendar_anchor
 from datetime import datetime, timedelta, timezone
 from copy import deepcopy
 from hashlib import sha256
@@ -192,7 +193,8 @@ def _venue_dict(profile):
 
 
 def _within(start, end, now):
-    return start < now + timedelta(days=60) and (end or start + timedelta(hours=3)) > now
+    window_start = calendar_anchor(now)
+    return start < window_start + timedelta(days=60) and (end or start + timedelta(hours=3)) > window_start
 
 
 def _source_coordinates(venue):
@@ -298,8 +300,8 @@ def _tribe(key, fetch, deadline, now):
     rows = {}
     for page in range(1, MAX_PAGES + 1):
         _check_deadline(deadline)
-        params = {"per_page": 100, "start_date": now.astimezone(ZoneInfo(ZONE)).date().isoformat(),
-                  "end_date": (now + timedelta(days=60)).date().isoformat(), "page": page}
+        params = {"per_page": 100, "start_date": calendar_anchor(now).astimezone(ZoneInfo(ZONE)).date().isoformat(),
+                  "end_date": (calendar_anchor(now) + timedelta(days=60)).date().isoformat(), "page": page}
         payload = json.loads(fetch(TRIBE_API[key] + "?" + urlencode(params), "application/json"))
         if not isinstance(payload, dict) or not isinstance(payload.get("events"), list) or len(payload["events"]) > 100:
             raise ValueError("new_york_calendar_payload_changed")
@@ -646,7 +648,7 @@ def _checkpoint(value, now):
         raise ValueError("new_york_arts_checkpoint_invalid")
     try:
         started = timestamp(value["started_at"])
-        if not started or started.tzinfo is None or value["window_start"] != started.astimezone(ZoneInfo(ZONE)).date().isoformat():
+        if not started or started.tzinfo is None or value["window_start"] != calendar_anchor(started).astimezone(ZoneInfo(ZONE)).date().isoformat():
             raise ValueError
     except (ValueError, KeyError, TypeError):
         raise ValueError("new_york_arts_checkpoint_invalid") from None
@@ -716,7 +718,7 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
     digest = sha256(json.dumps(queue, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
     if state is None or state["manifest_hash"] != digest:
         state = dict(version=1, source_key=BAZAAR, started_at=current.isoformat(),
-                     window_start=current.astimezone(ZoneInfo(ZONE)).date().isoformat(),
+                     window_start=calendar_anchor(current).astimezone(ZoneInfo(ZONE)).date().isoformat(),
                      manifest_hash=digest, manifest_count=len(queue), cursor=0,
                      queue=queue, events=[], diagnostics=[])
     prior = state["cursor"]

@@ -18,6 +18,7 @@ from zoneinfo import ZoneInfo
 
 from bs4 import BeautifulSoup
 
+from roomquest.collection_window import calendar_anchor
 from roomquest.jsonld_adapter import Blocks, types
 from roomquest.mapsee_adapter import plain, record, timestamp
 from roomquest.publisher_evidence import DETAILS_VERSION, IMAGE_VERSION
@@ -191,7 +192,7 @@ def _finish(rows, held):
 
 
 def _now(value):
-    result = value or datetime.now(timezone.utc)
+    result = calendar_anchor(value or datetime.now(timezone.utc))
     if result.tzinfo is None:
         raise ValueError('source_timezone_required')
     return result

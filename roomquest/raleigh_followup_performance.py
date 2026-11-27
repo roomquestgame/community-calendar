@@ -6,6 +6,7 @@ never part of a checkpoint. No weekly or monthly dates are inferred.
 """
 from __future__ import annotations
 
+from roomquest.collection_window import calendar_anchor
 import base64
 from copy import deepcopy
 from datetime import date, datetime, timedelta, timezone
@@ -394,10 +395,11 @@ def _venue(key, location):
 
 
 def _row(key, item, start, end, body, venue, image, anchor):
+    window_start = calendar_anchor(anchor)
     if not start or end and (end <= start or end > start + timedelta(hours=36)):
         raise ValueError("raleigh_followup_schedule_unresolved")
-    first = anchor.astimezone(ZoneInfo(ZONE)).date()
-    if not first <= start.astimezone(ZoneInfo(ZONE)).date() < first + timedelta(days=60) or (end or start + timedelta(hours=3)) <= anchor:
+    first = window_start.astimezone(ZoneInfo(ZONE)).date()
+    if not first <= start.astimezone(ZoneInfo(ZONE)).date() < first + timedelta(days=60) or (end or start + timedelta(hours=3)) <= window_start:
         raise ValueError("raleigh_followup_outside_window")
     identity = "raleigh:" + sha256(f'{key}:{item["url"]}:{start.astimezone(timezone.utc).isoformat()}'.encode()).hexdigest()
     name, street, city, lat, lng = venue
@@ -515,7 +517,7 @@ def _checkpoint(value, key, now):
         started = timestamp(value["started_at"])
         if (type(value["version"]) is not int or value["version"] != 1 or value["source_key"] != key
                 or not started or started.utcoffset() != timedelta(0) or started > now + timedelta(seconds=60)
-                or value["window_start"] != started.astimezone(ZoneInfo(ZONE)).date().isoformat()
+                or value["window_start"] != calendar_anchor(started).astimezone(ZoneInfo(ZONE)).date().isoformat()
                 or value["phase"] not in {"listing", "details"} or type(value["listing_complete"]) is not bool
                 or value["listing_complete"] != (value["phase"] == "details")
                 or not isinstance(value["queue"], list) or len(value["queue"]) > MAX_MANIFEST
@@ -619,7 +621,7 @@ def collect_chunk(source, fetch, *, read_public_events=None, checkpoint=None, de
             raise ValueError("raleigh_followup_calendar_changed") from None
     if state is None:
         state = dict(version=1, source_key=key, started_at=current.isoformat(),
-            window_start=current.astimezone(ZoneInfo(ZONE)).date().isoformat(), phase="listing", listing_complete=False,
+            window_start=calendar_anchor(current).astimezone(ZoneInfo(ZONE)).date().isoformat(), phase="listing", listing_complete=False,
             queue=[], cursor=0, manifest_count=0, manifest_hash=_hash([]), listing_pages=0, listing_total=None,
             listing_raw_count=0, listing_seen=[], listing_last_start=None, initial_manifest_hash=None,
             outside_window_count=0, nonpublic_count=0, events=[], diagnostics=[])

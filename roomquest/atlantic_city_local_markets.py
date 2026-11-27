@@ -20,6 +20,7 @@ from zoneinfo import ZoneInfo
 
 from bs4 import BeautifulSoup
 
+from roomquest.collection_window import calendar_anchor
 from roomquest.atlantic_city_venues import narrative
 from roomquest.mapsee_adapter import parse_tribe, plain, record, timestamp, tribe_timezone
 
@@ -494,7 +495,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
     if (key not in SOURCES or (source.get("feed_url"), source.get("kind"), source.get("platform_adapter"),
                               source.get("timezone")) != (*SOURCES[key], ZONE)):
         raise ValueError("unregistered_atlantic_local_markets_source")
-    now = now or datetime.now(timezone.utc)
+    now = calendar_anchor(now or datetime.now(timezone.utc))
     if not isinstance(now, datetime) or now.tzinfo is None:
         raise ValueError("local_markets_clock_invalid")
     deadline = min(deadline_at or float("inf"), monotonic() + 35)

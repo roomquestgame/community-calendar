@@ -5,6 +5,7 @@ import re
 from urllib.parse import quote, urlparse
 import xml.etree.ElementTree as ET
 from bs4 import BeautifulSoup
+from roomquest.collection_window import calendar_anchor
 from roomquest.mapsee_adapter import record, timestamp, plain
 from roomquest.publisher_evidence import attach, optional_description
 from roomquest.mycountyparks import cancelled
@@ -82,7 +83,7 @@ def collect(source, payload, *, now=None, retain_original=False):
     root=ET.fromstring(payload)
     if root.tag!='ArrayOfEventDisplay' or len(root)>(1000 if key == HALIFAX else 500):
         raise ValueError('publisher_record_limit')
-    now=now or datetime.now(timezone.utc);rows={}
+    now=calendar_anchor(now or datetime.now(timezone.utc));rows={}
     base=identity[0].removesuffix('/api/events')
     for e in root:
         if e.tag!='EventDisplay':raise ValueError('publisher_payload_changed')

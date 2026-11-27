@@ -6,6 +6,7 @@ in for missing detail. Slow bookshop hosts use durable, complete-only snapshots.
 """
 from __future__ import annotations
 
+from roomquest.collection_window import calendar_anchor
 from copy import deepcopy
 from datetime import date, datetime, timedelta, timezone
 from hashlib import sha256
@@ -142,7 +143,8 @@ def photo_url(key, value):
 
 
 def _within(start, end, now, days=60):
-    return start < now + timedelta(days=days) and (end or start + timedelta(hours=3)) > now
+    window_start = calendar_anchor(now)
+    return start < window_start + timedelta(days=days) and (end or start + timedelta(hours=3)) > window_start
 
 
 def _finish(key, row, body, labels=(), image=None):
@@ -244,8 +246,8 @@ def _tribe(key, fetch, deadline, now):
     rows = []
     for page in range(1, 6):
         _check(deadline)
-        query = urlencode(dict(per_page=100, page=page, start_date=now.astimezone(ZoneInfo(ZONE)).date().isoformat(),
-                               end_date=(now + timedelta(days=60)).date().isoformat()))
+        query = urlencode(dict(per_page=100, page=page, start_date=calendar_anchor(now).astimezone(ZoneInfo(ZONE)).date().isoformat(),
+                               end_date=(calendar_anchor(now) + timedelta(days=60)).date().isoformat()))
         api = 'https://' + ALLOWED_HOSTS[key][0] + '/wp-json/tribe/events/v1/events?'
         data = json.loads(fetch(api + query, 'application/json'))
         if not isinstance(data, dict) or not isinstance(data.get('events'), list) or len(data['events']) > 100:
@@ -416,7 +418,7 @@ def _bpl_checkpoint(value, now):
                  and (value['cursor'] != value['manifest_count'] or len(native_ids) == value['native_count'])
                  and isinstance(value['events'], list) and len(value['events']) <= MAX_RECORDS
                  and isinstance(value['diagnostics'], list) and len(value['diagnostics']) <= 400
-                 and value['window_start'] == started.astimezone(ZoneInfo(ZONE)).date().isoformat()
+                 and value['window_start'] == calendar_anchor(started).astimezone(ZoneInfo(ZONE)).date().isoformat()
                  and started.tzinfo is not None and len(json.dumps(value, ensure_ascii=False).encode()) <= MAX_CHECKPOINT_BYTES)
         seen = set()
         for row in value['events']:
@@ -451,7 +453,7 @@ def _bpl_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None):
         return dict(complete=True, events=_unique(deepcopy(state['events'])), checkpoint=state)
     if state is None:
         state = dict(version=1, source_key=BPL, started_at=current.isoformat(),
-                     window_start=current.astimezone(ZoneInfo(ZONE)).date().isoformat(),
+                     window_start=calendar_anchor(current).astimezone(ZoneInfo(ZONE)).date().isoformat(),
                      manifest_hash=_hash([]), manifest_count=0, cursor=0, queue=[], events=[], diagnostics=[],
                      native_count=None, seen_ids=[])
     prior = state['cursor']
@@ -527,6 +529,7 @@ def _book_place(soup, key):
 
 
 def _book_listing(key, payload, page, now):
+    window_start = calendar_anchor(now)
     soup = BeautifulSoup(payload, 'html.parser')
     view = soup.select_one('.view-indiecommerce-event-list')
     if not view:
@@ -549,7 +552,7 @@ def _book_listing(key, payload, page, now):
             _held(key, url, 'boston_arts_schedule_unresolved')
             continue
         day = datetime.strptime(days[0], '%m/%d/%Y').date()
-        if not now.astimezone(ZoneInfo(ZONE)).date() <= day < (now + timedelta(days=60)).date():
+        if not window_start.astimezone(ZoneInfo(ZONE)).date() <= day < (window_start + timedelta(days=60)).date():
             continue
         queue.append(dict(url=url, title=title, id=card['id'][6:], day=day.isoformat()))
     links = [urljoin(page, a['href']) for a in view.select('.pager a[rel~=next][href]')]
@@ -563,7 +566,7 @@ def _book_listing(key, payload, page, now):
         m = re.fullmatch(r'/events/(20\d{2})/(\d{1,2})', urlsplit(next_page).path)
         if not m:
             raise ValueError('boston_arts_pagination_invalid')
-        if date(int(m[1]), int(m[2]), 1) >= (now + timedelta(days=60)).date():
+        if date(int(m[1]), int(m[2]), 1) >= (window_start + timedelta(days=60)).date():
             next_page = None
     if next_page and not _listing_url(key, next_page):
         raise ValueError('boston_arts_pagination_invalid')
@@ -702,7 +705,7 @@ def _checkpoint(value, key, now):
                          and isinstance(item['id'], str) and re.fullmatch(r'20\d{2}-\d{2}-\d{2}', item['day']) for item in value['queue'])
                  and len(json.dumps(value, ensure_ascii=False).encode()) <= MAX_CHECKPOINT_BYTES)
         started = timestamp(value['started_at'])
-        valid = valid and started.tzinfo is not None and value['window_start'] == started.astimezone(ZoneInfo(ZONE)).date().isoformat()
+        valid = valid and started.tzinfo is not None and value['window_start'] == calendar_anchor(started).astimezone(ZoneInfo(ZONE)).date().isoformat()
         processed = {item['url']: item for item in value['queue'][:value['cursor']]}
         seen = set()
         for row in value['events']:
@@ -740,7 +743,7 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
     deadline = deadline_at if deadline_at is not None else monotonic() + 35
     if state is None:
         state = dict(version=1, source_key=key, started_at=current.isoformat(),
-                     window_start=current.astimezone(ZoneInfo(ZONE)).date().isoformat(),
+                     window_start=calendar_anchor(current).astimezone(ZoneInfo(ZONE)).date().isoformat(),
                      manifest_hash=_hash([]), manifest_count=0, cursor=0, queue=[], events=[], diagnostics=[],
                      listing_complete=False, next_page=SOURCES[key][0], listed_pages=[])
     anchor = timestamp(state['started_at'])

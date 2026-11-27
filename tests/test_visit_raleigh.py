@@ -140,6 +140,24 @@ class RaleighCheckpointTests(unittest.TestCase):
             return json.dumps(dict(total=count, docs=[item(n + 1) for n in range(offset, min(offset + 100, count))]))
         return fetch
 
+    def test_future_window_uses_publisher_dates_and_real_checkpoint_age(self):
+        from roomquest.collection_window import collection_scope
+
+        window = {"version": 1, "start": "2027-01-20T05:00:00Z", "end": "2027-03-21T05:00:00Z"}
+        with collection_scope({"collection_window": window}):
+            result = r.collect_chunk(SOURCE, self.fetcher(0), now=NOW)
+            checkpoint = result["checkpoint"]
+            self.assertEqual(checkpoint["started_at"], NOW.isoformat())
+            self.assertEqual((checkpoint["window_start"], checkpoint["window_end"]), ("2027-01-20", "2027-03-20"))
+            query = str(parse_qs(urlsplit(self.calls[-1]).query))
+            self.assertIn("2027-01-20", query)
+            self.assertIn("2027-03-21", query)
+            r.decode_checkpoint(checkpoint, now=NOW)
+            with self.assertRaisesRegex(ValueError, "expired"):
+                r.decode_checkpoint(checkpoint, now=NOW.replace(hour=17))
+        with self.assertRaisesRegex(ValueError, "invalid"):
+            r.decode_checkpoint(checkpoint, now=NOW)
+
     def test_multiple_pages_only_complete_after_all_occurrences(self):
         fetch = self.fetcher(205)
         first = r.collect_chunk(SOURCE, fetch, now=NOW, max_pages=1)

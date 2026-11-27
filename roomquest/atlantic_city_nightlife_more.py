@@ -11,6 +11,7 @@ manual events belonging to the calendar widgets visible on the publisher page.
 """
 from __future__ import annotations
 
+from roomquest.collection_window import calendar_anchor
 from copy import deepcopy
 from datetime import date, datetime, time, timedelta, timezone
 from hashlib import sha256
@@ -117,7 +118,8 @@ def _clock(day, value):
 
 
 def _within(start, end, now):
-    return start < now + timedelta(days=60) and (end or start + timedelta(hours=3)) > now
+    window_start = calendar_anchor(now)
+    return start < window_start + timedelta(days=60) and (end or start + timedelta(hours=3)) > window_start
 
 
 def _row(key, title, start, end, url, identity, body, category="", image=None):
@@ -273,7 +275,7 @@ def _checkpoint(value, now):
         raise ValueError("atlantic_nightlife_checkpoint_invalid")
     try:
         started = timestamp(value["started_at"])
-        if started.tzinfo is None or value["window_start"] != started.astimezone(ZoneInfo(ZONE)).date().isoformat():
+        if started.tzinfo is None or value["window_start"] != calendar_anchor(started).astimezone(ZoneInfo(ZONE)).date().isoformat():
             raise ValueError
     except (TypeError, KeyError, ValueError):
         raise ValueError("atlantic_nightlife_checkpoint_invalid") from None
@@ -324,7 +326,7 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
         queue = _hard_rock_manifest(payload, current)
         digest = sha256(json.dumps(queue, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
         state = dict(version=1, source_key=HARD_ROCK, started_at=current.isoformat(),
-                     window_start=current.astimezone(ZoneInfo(ZONE)).date().isoformat(),
+                     window_start=calendar_anchor(current).astimezone(ZoneInfo(ZONE)).date().isoformat(),
                      manifest_hash=digest, manifest_count=len(queue), cursor=0,
                      queue=queue, events=[], diagnostics=[])
     prior = state["cursor"]
