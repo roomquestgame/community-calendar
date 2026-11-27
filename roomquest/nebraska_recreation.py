@@ -8,6 +8,7 @@ from zoneinfo import ZoneInfo
 
 from lxml import html
 
+from roomquest.event_description import description
 from roomquest.mapsee_adapter import plain, record
 
 ZONE = "America/Chicago"
@@ -33,12 +34,94 @@ RUN_LOCATION = {
     "orc holiday lights run": ("10th and Harney", "10th Street and Harney Street, Omaha, NE"),
 }
 EXCLUDED = re.compile(r"\b(cancelled|canceled|postponed|closed)\b", re.I)
+MAX_DESCRIPTION = 12000
 
 
-def build(title, start, end, venue, address, city, url):
+def _narrative(value):
+    text = description(value or "", limit=MAX_DESCRIPTION + 1)
+    if len(text) > MAX_DESCRIPTION:
+        raise ValueError("publisher_description_limit")
+    return text
+
+
+def _local(value):
+    if value is None:
+        return None
+    if value.tzinfo is None:
+        value = value.replace(tzinfo=ZoneInfo(ZONE))
+    return value.astimezone(ZoneInfo(ZONE)).replace(tzinfo=None).isoformat(timespec="seconds")
+
+
+def _attach_original_content(row, *, narrative="", raw_venue=None, raw_address=None,
+                             raw_city=None, status="scheduled", attendance="in_person",
+                             image=None, categories=None):
+    facts = {
+        "title": row["title"], "description": narrative, "is_all_day": False,
+        "starts_at_local": _local(datetime.fromisoformat(row["starts_at"])),
+        "ends_at_local": _local(datetime.fromisoformat(row["ends_at"])) if row.get("ends_at") else None,
+        "source_timezone": ZONE, "event_url": row["event_url"],
+        "venue_name": plain(raw_venue), "venue_address": plain(raw_address),
+        "venue_city": plain(raw_city), "publisher_status": plain(status),
+        "attendance_mode": plain(attendance), "source_image_url": image,
+        "publisher_categories": categories,
+    }
+    row["collector_event_content_v1"] = {
+        "version": 1, "event_id": row["id"],
+        "facts": {name: value for name, value in facts.items()
+                  if value is not None and value != "" and value != []},
+    }
+
+
+def build(title, start, end, venue, address, city, url, *, narrative="",
+          raw_venue=None, raw_address=None, raw_city=None, status="scheduled",
+          attendance="in_person", image=None, categories=None):
     key = sha256(f"{url}:{start.isoformat()}".encode()).hexdigest()
-    return record(title, start.isoformat(), end.isoformat() if end and end > start else None,
-                  venue, address, city, url, key, tz=ZONE)
+    row = record(title, start.isoformat(), end.isoformat() if end and end > start else None,
+                 venue, address, city, url, key, tz=ZONE)
+    if row is not None:
+        narrative = _narrative(narrative)
+        row["description"] = narrative[:2000]
+        row["attendance_mode"] = attendance
+        row["timezone"] = ZONE
+        _attach_original_content(row, narrative=narrative, raw_venue=raw_venue,
+                                 raw_address=raw_address, raw_city=raw_city,
+                                 status=status, attendance=attendance, image=image,
+                                 categories=categories)
+    return row
+
+
+def _image(item):
+    value = item.get("image")
+    if isinstance(value, str):
+        return value
+    if isinstance(value, list):
+        value = next((entry for entry in value if isinstance(entry, (str, dict))), None)
+    if isinstance(value, dict):
+        return value.get("url") or value.get("contentUrl")
+    return None
+
+
+def _categories(item):
+    value = item.get("keywords")
+    if isinstance(value, str):
+        return [plain(entry) for entry in value.split(",") if plain(entry)]
+    if isinstance(value, list):
+        return [plain(entry) for entry in value if isinstance(entry, str) and plain(entry)]
+    return None
+
+
+def _raw_location(item):
+    place = item.get("location")
+    if not isinstance(place, dict):
+        return None, None, None
+    address = place.get("address")
+    if isinstance(address, str):
+        return place.get("name"), address, None
+    if not isinstance(address, dict):
+        return place.get("name"), None, None
+    parts = [address.get(name) for name in
+             ("streetAddress", "addressLocality", "addressRegion", "postalCode")]
+    return place.get("name"), ", ".join(plain(value) for value in parts if plain(value)), address.get("addressLocality")
 
 
 def park_events(document, fetch, today):
@@ -53,7 +136,8 @@ def park_events(document, fetch, today):
         if not url.startswith(prefix):
             continue
         title = plain(" ".join(card.xpath("./h4//text()")))
-        address_text = plain(" ".join(card.xpath("./p[contains(@class,'list-item-address')]//text()"))).casefold()
+        raw_location = plain(" ".join(card.xpath("./p[contains(@class,'list-item-address')]//text()")))
+        address_text = raw_location.casefold()
         venue = next((v for k, v in PARK_VENUES.items() if address_text.startswith(k)), None)
         if not title or EXCLUDED.search(title) or venue is None:
             continue
@@ -75,7 +159,8 @@ def park_events(document, fetch, today):
                                 for time in (start, end)))
         for start, end in dates:
             if today <= start.date() <= today + timedelta(days=365) and end > start:
-                yield build(title, start, end, venue[0], venue[1], "Lincoln", url)
+                yield build(title, start, end, venue[0], venue[1], "Lincoln", url,
+                            raw_venue=venue[0], raw_address=raw_location)
 
 
 def race_time(text):
@@ -110,7 +195,11 @@ def club_rows(document, today):
             continue
         start, end = race_time(row.get("startDate")), race_time(row.get("endDate"))
         if start and today <= start.date() <= today + timedelta(days=59):
-            yield build(title, start, end, venue[0], venue[1], "Omaha", url)
+            raw_venue, raw_address, raw_city = _raw_location(row)
+            yield build(title, start, end, venue[0], venue[1], "Omaha", url,
+                        narrative=row.get("description"), raw_venue=raw_venue,
+                        raw_address=raw_address, raw_city=raw_city, image=_image(row),
+                        categories=_categories(row))
 
 
 def hitchcock_events(document, today):
@@ -125,7 +214,9 @@ def hitchcock_events(document, today):
     for title, hour in (("Hitchcock Experience Endurance Runs", int(starts[1])),
                         ("Hitchcock Experience 50 Mile Night Start", int(starts[2]) + 12)):
         yield build(title, datetime(date.year, date.month, date.day, hour), None, "Hitchcock Nature Center",
-                    "27792 Ski Hill Loop, Honey Creek, IA 51542", "Honey Creek", SOURCES[GOATZ])
+                    "27792 Ski Hill Loop, Honey Creek, IA 51542", "Honey Creek", SOURCES[GOATZ],
+                    raw_venue="Hitchcock Nature Center" if "Hitchcock Nature Center" in text else None,
+                    raw_address="27792 Ski Hill Loop")
 
 
 def collect(source, fetch, *, deadline_at=None, now=None):
