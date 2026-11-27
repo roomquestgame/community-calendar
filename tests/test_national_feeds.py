@@ -77,7 +77,7 @@ def test_wildlife_uses_real_detail_clock_not_rss_noon_and_preserves_venue_and_te
     assert fetched == [wildlife.BCN + '/rss.xml', DETAIL]
 
 
-def test_wildlife_regional_source_requires_complete_accounted_manifest():
+def test_wildlife_regional_source_requires_complete_accounted_manifest(monkeypatch):
     fetch, fetched = publisher(19)
     checkpoint = None
     for cursor in (8, 16):
@@ -88,6 +88,9 @@ def test_wildlife_regional_source_requires_complete_accounted_manifest():
     result = wildlife.collect_chunk(WT_SOURCE, fetch, checkpoint=checkpoint, now=NOW)
     assert result['complete'] is True and len(result['events']) == 19
     assert fetched.count(wildlife.BCN + '/rss.xml') == 1
+    # The manual path uses the current clock; bind it to this recorded fixture.
+    original_now = snapshot.now
+    monkeypatch.setattr(snapshot, 'now', lambda value=None: original_now(value or NOW))
     with pytest.raises(ValueError, match='publisher_checkpoint_required'):
         wildlife.collect(WT_SOURCE, fetch)
 
@@ -555,3 +558,45 @@ def test_regional_worker_waits_for_complete_manifest_and_replays_failed_staging(
     assert result['complete'] == 1 and result['staged'] == 20
     assert len(staged) == 20 and len(previews) == 1 and saved is None
     assert len(fetched) == count
+
+
+def test_wildlife_original_facts_ignore_source_label_and_change_with_publisher():
+    item = {'url': DETAIL, 'title': 'Nature workshop', 'start': '2026-11-23', 'end': '2026-11-23'}
+    body = detail_for(DETAIL)
+    [row], reason = wildlife.parse_detail(body, item, source=WT_SOURCE)
+    assert reason == 'included'
+    envelope = row['collector_event_content_v1']
+    facts = envelope['facts']
+    assert envelope['event_id'] == row['id'] and envelope['version'] == 1
+    assert facts['title'] == 'Nature workshop' and facts['description'] == row['description']
+    assert facts['starts_at_utc'] == '2026-11-23T10:00:00+00:00'
+    assert facts['ends_at_utc'] == '2026-11-23T13:00:00+00:00'
+    assert facts['source_latitude'] == 52.251619 and facts['source_longitude'] == -0.247675
+    assert facts['source_image_url'] == row['image_url']
+    assert facts['publisher_status'] is None
+    assert 'publisher_categories' not in facts
+    [renamed], _ = wildlife.parse_detail(body, item, source=dict(WT_SOURCE, publisher_name='New label'))
+    assert renamed['collector_event_content_v1'] == envelope
+    [changed], _ = wildlife.parse_detail(body.replace('Bring a notebook', 'Bring binoculars'), item, source=WT_SOURCE)
+    assert changed['id'] == row['id']
+    assert changed['collector_event_content_v1'] != envelope
+    [no_geo], _ = wildlife.parse_detail(body.replace('<meta itemprop="longitude" content="-0.247675">', ''), item, source=WT_SOURCE)
+    assert no_geo['collector_event_content_v1']['facts']['source_latitude'] is None
+    assert no_geo['collector_event_content_v1']['facts']['source_longitude'] is None
+    assert 'collector_event_content_v1' not in national._samples([row])[0]
+
+
+def test_wildlife_original_facts_survive_complete_checkpoint_and_legacy_replay():
+    fetch, _ = publisher(2)
+    first = wildlife.collect_chunk(WT_SOURCE, fetch, now=NOW, max_details=1)
+    assert not first['complete']
+    full = wildlife.collect_chunk(WT_SOURCE, fetch, now=NOW, checkpoint=first['checkpoint'])
+    assert full['complete'] and all('collector_event_content_v1' in row for row in full['events'])
+    restored = wildlife.collect_chunk(WT_SOURCE, lambda *args: pytest.fail('terminal checkpoint fetched'), now=NOW, checkpoint=full['checkpoint'])
+    assert restored['events'] == full['events']
+    state = snapshot.decode(WT_SOURCE, first['checkpoint'], at=NOW)
+    for row in state['events']:
+        row.pop('collector_event_content_v1')
+    old = snapshot.encode(WT_SOURCE, state, phase='fetch', cursor=1, count=2, stage_cursor=0)
+    legacy = wildlife.collect_chunk(WT_SOURCE, fetch, now=NOW, checkpoint=old)
+    assert legacy['complete'] and all('collector_event_content_v1' not in row for row in legacy['events'])

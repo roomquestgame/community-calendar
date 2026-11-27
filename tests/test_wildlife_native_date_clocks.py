@@ -156,3 +156,12 @@ def test_invalid_publisher_coordinates_remain_held(field, value):
     body = BODY.replace(f'itemprop="{field}" content="{old}"',
                         f'itemprop="{field}" content="{value}"')
     assert parse(body) == ([], 'wildlife_event_location_unresolved')
+
+
+def test_wildlife_date_clock_fingerprint_retains_local_source_time():
+    [row], reason = parse()
+    assert reason == 'included'
+    facts = row['collector_event_content_v1']['facts']
+    assert facts['starts_at_local'] == '2026-11-25T19:00:00'
+    assert facts['ends_at_local'] == '2026-11-25T20:15:00'
+    assert 'starts_at_utc' not in facts

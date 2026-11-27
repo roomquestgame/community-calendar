@@ -39,7 +39,8 @@ def _ack(value, revision):
 
 
 def _samples(rows):
-    result = deepcopy(rows[:8])
+    result = [{k: deepcopy(v) for k, v in row.items() if k != 'collector_event_content_v1'}
+              for row in rows[:8]]
     while result and len(json.dumps(result, ensure_ascii=False).encode('utf-8')) > 18000:
         result.pop()
     return result
