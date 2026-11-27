@@ -252,7 +252,7 @@ def anthropic_extract(payload, *, api_key, model, deadline_at, clock=monotonic, 
     return blocks[0]["text"]
 
 
-def configured(env=None):
+def configured(env=None, *, oidc_token=None):
     """No implicit model, crawler key reuse, or provider call on disabled config."""
     env = os.environ if env is None else env
     if env.get("VENUE_RESEARCH_ENABLED") != "true":
@@ -266,7 +266,11 @@ def configured(env=None):
     if provider == "vercel_gateway":
         if not model.startswith("anthropic/"):
             return None
-        model_key = env.get("VERCEL_OIDC_TOKEN", "").strip()
+        # Vercel functions receive the short-lived token on the request, not
+        # in the build environment. The authenticated entry point passes it
+        # explicitly; never copy it into process-wide environment variables.
+        model_key = (oidc_token if oidc_token is not None
+                     else env.get("VERCEL_OIDC_TOKEN", "")).strip()
     elif provider == "anthropic":
         if "/" in model:
             return None
