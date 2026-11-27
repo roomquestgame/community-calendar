@@ -253,6 +253,26 @@ class NewYorkWorkerTests(unittest.TestCase):
                          row['collector_event_content_v1'])
         self.assertNotIn('collector_event_content_v1',result['p_samples'][0])
 
+    def test_culture_expansion_normal_and_admin_payloads_share_private_content_boundary(self):
+        row=event(event_url=culture_expansion.SOURCES[culture_expansion.ASTOR][0],collector_event_content_v1={
+            'version':1,'event_id':'native-occurrence',
+            'facts':{'title':'Public workshop','description':'Complete publisher narrative. '*140,
+                     'is_all_day':False,'starts_at_utc':'2026-12-01T23:00:00+00:00',
+                     'ends_at_utc':'2026-12-02T00:00:00+00:00',
+                     'event_url':culture_expansion.SOURCES[culture_expansion.ASTOR][0]}})
+        with patch.object(culture_expansion,'collect_chunk',return_value={
+                'checkpoint':checkpoint(culture_expansion.ASTOR,events=[row]),
+                'complete':True,'events':[row]}), \
+             patch.object(worker,'supabase_rpc',side_effect=[
+                {'revision':0,'checkpoint':None},{'checkpoint_saved':True,'revision':1}]):
+            result=worker._preview_new_york_chunk(source(culture_expansion,culture_expansion.ASTOR),
+                dict(wait_unbounded=False,crawl_delay_seconds=0,retry_after_seconds=0),
+                collection_context={'p_category':'html','p_ticket':'test-ticket'},
+                deadline_at=worker.monotonic()+50)
+        self.assertEqual(result['p_events'][0]['collector_event_content_v1'],
+                         row['collector_event_content_v1'])
+        self.assertNotIn('collector_event_content_v1',result['p_samples'][0])
+
     def test_exact_source_contract_rejects_changed_endpoint_before_fetch(self):
         bad=source(arts,arts.CMOM);bad['feed_url']='https://cmom.org/other'
         with patch.object(arts,'collect') as collect:
