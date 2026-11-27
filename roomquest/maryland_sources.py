@@ -8,6 +8,7 @@ from zoneinfo import ZoneInfo
 from bs4 import BeautifulSoup
 from icalendar import Calendar
 
+from roomquest.collection_window import calendar_anchor
 from roomquest.mapsee_adapter import plain, record, timestamp
 
 ZONE = 'America/New_York'
@@ -201,7 +202,7 @@ def collect_wordpress(source, fetch, *, now=None):
     parks = key == PG_PARKS
     require_source(source, PG_ROOT if parks else ARTS_FEED, 'json', 'wordpress')
     root = PG_ROOT + '/wp-json/tribe/events/v1/events' if parks else ARTS_FEED
-    now = now or datetime.now(timezone.utc)
+    now = calendar_anchor(now or datetime.now(timezone.utc))
     today = now.astimezone(ZoneInfo(ZONE)).date()
     # PG's complete county calendar needs eight pages and its API omits
     # addresses. Review its public Special Event category with a detail budget.
@@ -356,7 +357,7 @@ def _history_events(payload, now):
 def collect_html(source, fetch, *, deadline_at=None, now=None):
     key = source['source_key']
     require_source(source, HTML[key], 'html', 'html')
-    now = now or datetime.now(timezone.utc)
+    now = calendar_anchor(now or datetime.now(timezone.utc))
     records = (_savage_events(fetch, now) if key == SAVAGE
                else _history_events(fetch(HTML[key], 'text/html'), now))
     rows = {}

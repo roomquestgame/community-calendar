@@ -5,6 +5,7 @@ import re
 from time import monotonic
 from urllib.parse import urlencode
 from bs4 import BeautifulSoup
+from roomquest.collection_window import calendar_anchor
 from roomquest.mapsee_adapter import record, plain, timestamp
 from roomquest.publisher_evidence import attach, optional_description
 from roomquest.mycountyparks import cancelled
@@ -17,7 +18,7 @@ API_HOST = 'eyqhj2iy2m-dsn.algolia.net'
 
 
 def parse_hits(hits, *, now=None):
-    now = now or datetime.now(timezone.utc)
+    now = calendar_anchor(now or datetime.now(timezone.utc))
     rows = {}
     if not isinstance(hits, list) or len(hits) > 500:
         raise ValueError('publisher_record_limit')

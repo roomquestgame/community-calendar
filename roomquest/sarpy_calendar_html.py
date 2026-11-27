@@ -6,6 +6,7 @@ from zoneinfo import ZoneInfo
 
 from bs4 import BeautifulSoup
 
+from roomquest.collection_window import calendar_anchor
 from roomquest.mapsee_adapter import plain, record
 from roomquest.mycountyparks import cancelled
 
@@ -30,7 +31,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
             listing_url(category), "html", "html", ZONE):
         raise ValueError("unregistered_sarpy_calendar")
     zone = ZoneInfo(ZONE)
-    now = now or datetime.now(zone)
+    now = calendar_anchor(now or datetime.now(zone))
     soup = BeautifulSoup(fetch(listing_url(category), "text/html"), "html.parser")
     listing = soup.select_one(f"#CID{category}")
     if listing is None:

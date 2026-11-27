@@ -20,6 +20,7 @@ from zoneinfo import ZoneInfo
 
 from bs4 import BeautifulSoup
 
+from roomquest.collection_window import calendar_anchor
 from roomquest.event_description import description
 from roomquest.mapsee_adapter import plain, record, timestamp
 
@@ -622,7 +623,7 @@ def _ranger_row(item, now):
 
 def collect_with_diagnostics(source, fetch, *, deadline_at=None, now=None):
     key = _source(source)
-    now = now or datetime.now(timezone.utc)
+    now = calendar_anchor(now or datetime.now(timezone.utc))
     if now.tzinfo is None:
         raise ValueError('ny_outdoors_remaining_time_unverified')
     _budget(deadline_at)

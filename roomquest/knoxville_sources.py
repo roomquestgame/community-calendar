@@ -19,6 +19,7 @@ from time import monotonic
 from urllib.parse import urlencode, urlsplit
 from zoneinfo import ZoneInfo
 
+from roomquest.collection_window import calendar_anchor
 from roomquest.mapsee_adapter import plain, record, timestamp
 
 log = logging.getLogger(__name__)
@@ -218,7 +219,7 @@ def _tribe_row(source_key, item):
 def collect_tribe(source, fetch, *, deadline_at=None, now=None):
     source_key = source['source_key']
     url = SOURCES[source_key][0]
-    current = (now or datetime.now(timezone.utc)).astimezone(ZoneInfo(ZONE))
+    current = (calendar_anchor(now or datetime.now(timezone.utc))).astimezone(ZoneInfo(ZONE))
     params = {'per_page': 100, 'start_date': current.date().isoformat(),
               'end_date': (current + timedelta(days=WINDOW_DAYS)).date().isoformat()}
     deadline = min(monotonic() + 36, deadline_at or float('inf'))

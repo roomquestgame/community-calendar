@@ -9,6 +9,7 @@ from zoneinfo import ZoneInfo
 
 from bs4 import BeautifulSoup
 
+from roomquest.collection_window import calendar_anchor
 from roomquest.mapsee_adapter import plain, record, timestamp
 
 
@@ -72,7 +73,7 @@ def _attach_original_content(row, *, description='', raw_venue='', raw_address='
 
 
 def calendar_form(now=None):
-    today = (now or datetime.now(timezone.utc)).astimezone(ZoneInfo(ZONE)).date()
+    today = (calendar_anchor(now or datetime.now(timezone.utc))).astimezone(ZoneInfo(ZONE)).date()
     return {
         "searchvo_startfrom": today.isoformat(),
         "searchvo_endfrom": (today + timedelta(days=21)).isoformat(),
@@ -228,7 +229,7 @@ def collect(source, fetch, *, deadline_at=None, render_volunteers=None):
         raise ValueError("unregistered_richmond_public_calendar")
     if key == CFENGAGE:
         return volunteer_shifts(render_volunteers())
-    now = datetime.now(ZoneInfo(ZONE))
+    now = calendar_anchor(datetime.now(ZoneInfo(ZONE)))
     rows = []
     for identity, url in race_listing(fetch(config[0], "text/html"), now).items():
         payload = fetch(url, "text/html")

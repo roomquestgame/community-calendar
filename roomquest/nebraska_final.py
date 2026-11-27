@@ -8,6 +8,7 @@ from zoneinfo import ZoneInfo
 
 from lxml import html
 
+from roomquest.collection_window import calendar_anchor
 from roomquest.event_description import description
 from roomquest.mapsee_adapter import plain, record
 
@@ -318,7 +319,7 @@ def collect(source, fetch, *, deadline_at=None, fetch_localhop=None, now=None):
     if key not in SOURCES or tuple(source.get(field) for field in
             ("feed_url", "timezone", "kind", "platform_adapter")) != (SOURCES[key][0], ZONE, "html", "html"):
         raise ValueError("unregistered_nebraska_final_source")
-    now = now or datetime.now(timezone.utc)
+    now = calendar_anchor(now or datetime.now(timezone.utc))
     if key in GROUPS:
         rows = localhop(key, fetch, fetch_localhop, now)
     else:

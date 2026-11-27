@@ -11,6 +11,7 @@ import re
 from zoneinfo import ZoneInfo
 
 from bs4 import BeautifulSoup
+from roomquest.collection_window import calendar_anchor
 from roomquest.event_description import description
 from roomquest.mapsee_adapter import record
 
@@ -98,7 +99,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
     # remain linked on this site, so use only the current calendar year.
     years = {int(x) for a in soup.find_all('a', href=True)
              for x in YEAR.findall(a['href'])}
-    now = now or datetime.now(timezone.utc)
+    now = calendar_anchor(now or datetime.now(timezone.utc))
     year = max(years) if years else 0
     if year != now.astimezone(ZoneInfo(ZONE)).year:
         raise ValueError('sparkys_season_year_missing_or_ambiguous')

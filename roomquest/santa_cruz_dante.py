@@ -13,6 +13,7 @@ import json
 import re
 from bs4 import BeautifulSoup
 
+from roomquest.collection_window import calendar_anchor
 from roomquest.mapsee_adapter import record
 
 KEY = "dante_santa_cruz_coffee_ca"
@@ -43,7 +44,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
             or (source.get("feed_url"), source.get("kind"), source.get("platform_adapter"))
             != SOURCES[KEY] or source.get("timezone") != ZONE):
         raise ValueError("dante_source_identity_mismatch")
-    now = now or datetime.now(timezone.utc)
+    now = calendar_anchor(now or datetime.now(timezone.utc))
     if now.tzinfo is None:
         raise ValueError("dante_naive_now")
     index = fetch(INDEX, "text/html")
@@ -58,7 +59,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
     for url in urls:
         slug = url.split("/event-details/")[-1]
         day = datetime.fromisoformat(SLUG.fullmatch(slug).group(1))
-        localday = datetime.now(ZoneInfo(ZONE)).date() if now is None else now.astimezone(ZoneInfo(ZONE)).date()
+        localday = calendar_anchor(datetime.now(ZoneInfo(ZONE))).date() if now is None else now.astimezone(ZoneInfo(ZONE)).date()
         if localday - timedelta(days=1) <= day.date() <= localday + timedelta(days=60):
             candidates.append(url)
     if len(candidates) > MAX_RECORDS:

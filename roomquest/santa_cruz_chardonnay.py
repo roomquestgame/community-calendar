@@ -12,6 +12,7 @@ from zoneinfo import ZoneInfo
 import re
 
 from bs4 import BeautifulSoup
+from roomquest.collection_window import calendar_anchor
 from roomquest.event_description import description
 from roomquest.mapsee_adapter import record
 from roomquest.publisher_evidence import attach
@@ -83,7 +84,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
         raise ValueError("chardonnay_narrative_missing")
     start = datetime(2026, 12, 5, 17, 30, tzinfo=ZoneInfo(ZONE))
     end = datetime(2026, 12, 5, 19, 30, tzinfo=ZoneInfo(ZONE))
-    now = (now or datetime.now(timezone.utc)).astimezone(timezone.utc)
+    now = (calendar_anchor(now or datetime.now(timezone.utc))).astimezone(timezone.utc)
     if not now - timedelta(hours=3) <= start.astimezone(timezone.utc) <= now + timedelta(days=60):
         return []
     row = record("Chardonnay Sailing Charters — Lighted Boat Parade & Waterfront Cruise",

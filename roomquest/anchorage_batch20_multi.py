@@ -13,6 +13,7 @@ import re
 from time import monotonic
 from urllib.parse import urljoin, urlsplit
 
+from roomquest.collection_window import calendar_anchor
 from roomquest.mapsee_adapter import plain, record, timestamp
 from roomquest.anchorage_sources import _description, NONPUBLIC, VIRTUAL, ZONE
 
@@ -199,7 +200,7 @@ def collect(source,fetch,*,deadline_at=None,now=None):
             or (source.get("feed_url"),source.get("kind"),source.get("platform_adapter"))!=SOURCES[key]
             or source.get("timezone")!=ZONE):
         raise ValueError("unregistered_anchorage_batch20_multi_source")
-    now=now or datetime.now(timezone.utc)
+    now=calendar_anchor(now or datetime.now(timezone.utc))
     deadline=min(monotonic()+38,deadline_at if deadline_at is not None else float("inf"))
     if monotonic()>=deadline:raise ValueError("collection_deadline")
     data=json.loads(fetch(SOURCES[key][0]+"?format=json","application/json"))

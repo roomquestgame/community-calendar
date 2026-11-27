@@ -12,6 +12,7 @@ from zoneinfo import ZoneInfo
 import re
 
 from bs4 import BeautifulSoup
+from roomquest.collection_window import calendar_anchor
 from roomquest.event_description import description
 from roomquest.mapsee_adapter import record
 from roomquest.publisher_evidence import attach
@@ -97,7 +98,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
         listing = schedule.parent.find_next("ul")
     if listing is None:
         raise ValueError("shakespeare_schedule_missing")
-    now = (now or datetime.now(timezone.utc)).astimezone(timezone.utc)
+    now = (calendar_anchor(now or datetime.now(timezone.utc))).astimezone(timezone.utc)
     rows = []
     seen = set()
     tz = ZoneInfo(ZONE)

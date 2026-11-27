@@ -9,6 +9,7 @@ from zoneinfo import ZoneInfo
 
 from bs4 import BeautifulSoup
 
+from roomquest.collection_window import calendar_anchor
 from roomquest.mapsee_adapter import plain, record, timestamp
 from roomquest.maryland_sources import NONPUBLIC, ZONE, md_address, require_source
 
@@ -313,7 +314,7 @@ def _details(soup, base, key, now):
 
 
 def collect(source, fetch, *, deadline_at=None, now=None):
-    now = now or datetime.now(timezone.utc)
+    now = calendar_anchor(now or datetime.now(timezone.utc))
     key = source['source_key']
     base = SOURCES[key]
     require_source(source, base, 'html', 'html')

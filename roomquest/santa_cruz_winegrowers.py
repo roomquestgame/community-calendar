@@ -11,6 +11,7 @@ from datetime import datetime, timezone, timedelta
 from time import monotonic
 from urllib.parse import urlsplit
 from zoneinfo import ZoneInfo
+from roomquest.collection_window import calendar_anchor
 from roomquest.mapsee_adapter import record, plain
 from roomquest.event_description import description
 
@@ -61,7 +62,7 @@ def collect(source,fetch,*,deadline_at=None,now=None):
     cards=soup.select('article.grid-card.events')
     if not cards or len(cards)>MAX_RECORDS:
         raise ValueError('scmwa_manifest_invalid')
-    now=now or datetime.now(timezone.utc)
+    now=calendar_anchor(now or datetime.now(timezone.utc))
     rows={}
     for card in cards:
         link=card.select_one('a.main-link[href]')

@@ -11,6 +11,7 @@ from time import monotonic
 from urllib.parse import urlsplit
 from zoneinfo import ZoneInfo
 from bs4 import BeautifulSoup
+from roomquest.collection_window import calendar_anchor
 from roomquest.mapsee_adapter import record
 
 KEY='scotts_valley_recreation_crafts_cocoa_2026_ca'
@@ -78,4 +79,4 @@ def collect(source,fetch,*,deadline_at=None,now=None):
     text=BeautifulSoup(official,'html.parser').get_text(' ',strip=True)
     if not re.search(r'360\s+Kings\s+Village\s+Rd\.?\s+Scotts\s+Valley,?\s+Ca\s+95066',text,re.I):
         raise ValueError('scotts_cocoa_city_street_not_confirmed')
-    return _owner_event(event,now or datetime.now(timezone.utc))
+    return _owner_event(event,calendar_anchor(now or datetime.now(timezone.utc)))

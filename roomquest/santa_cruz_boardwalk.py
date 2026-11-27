@@ -9,6 +9,7 @@ import re
 from datetime import datetime,timezone,timedelta
 from zoneinfo import ZoneInfo
 from bs4 import BeautifulSoup
+from roomquest.collection_window import calendar_anchor
 from roomquest.mapsee_adapter import record
 
 KEY='santa_cruz_beach_boardwalk_events_ca'
@@ -54,7 +55,7 @@ def collect(source,fetch,*,deadline_at=None,now=None):
     if links!=[DETAIL]:raise ValueError('boardwalk_detail_identity_changed')
     start=datetime(2026,12,13,9,tzinfo=ZoneInfo(ZONE))
     end=datetime(2026,12,13,11,30,tzinfo=ZoneInfo(ZONE))
-    now=now or datetime.now(timezone.utc)
+    now=calendar_anchor(now or datetime.now(timezone.utc))
     if start.astimezone(timezone.utc)<now-timedelta(hours=3) or start.astimezone(timezone.utc)>now+timedelta(days=60):
         return []
     detail=_soup(fetch(DETAIL,'text/html')).body.get_text(' ',strip=True)

@@ -18,6 +18,7 @@ from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
 
+from roomquest.collection_window import calendar_anchor
 from roomquest.mapsee_adapter import record, timestamp
 
 ZONE = 'America/New_York'
@@ -158,7 +159,7 @@ def _row(key, identity, title, day, starts, ends, prose, venue, point, now):
 
 
 def parse_lighthouse(payload, *, now=None, deadline_at=None):
-    now = now or datetime.now(timezone.utc)
+    now = calendar_anchor(now or datetime.now(timezone.utc))
     text = _pages(payload, max_pages=1, max_bytes=1_000_000, deadline_at=deadline_at)[0]
     if not text.startswith('2026 Calendar of Events PROCEEDS BENEFIT ABSECON LIGHTHOUSE'):
         raise ValueError('atlantic_pdf_edition_unreviewed')
@@ -197,7 +198,7 @@ def discover_oceanside(payload, *, source_key=OCEANSIDE):
 
 
 def parse_oceanside(payload, *, source_key=OCEANSIDE, now=None, deadline_at=None):
-    now = now or datetime.now(timezone.utc)
+    now = calendar_anchor(now or datetime.now(timezone.utc))
     expected_hash = OCEANSIDE_SHA256 if source_key == OCEANSIDE else OCEANSIDE_TWO_SHA256
     if source_key not in (OCEANSIDE, OCEANSIDE_TWO) or not isinstance(payload, bytes) or sha256(payload).hexdigest() != expected_hash:
         raise ValueError('atlantic_pdf_edition_unreviewed')

@@ -7,6 +7,7 @@ from zoneinfo import ZoneInfo
 
 from bs4 import BeautifulSoup
 
+from roomquest.collection_window import calendar_anchor
 from roomquest.mapsee_adapter import plain, record
 
 SOURCE_KEY = 'municipal_2c72672bcb8c47b895b8cb3e'
@@ -28,7 +29,7 @@ def collect(source, fetch, *, deadline_at=None, render_calendar, now=None):
     if tuple(source.get(k) for k in ('source_key', 'feed_url', 'kind', 'platform_adapter', 'timezone')) != (
             SOURCE_KEY, CALENDAR, 'html', 'html', ZONE.key):
         raise ValueError('unregistered_virginia_beach_cultural')
-    now = now or datetime.now(ZONE)
+    now = calendar_anchor(now or datetime.now(ZONE))
     before = now + timedelta(days=60)
     payload = json.loads(render_calendar())
     productions = payload.get('productions') if isinstance(payload, dict) else None

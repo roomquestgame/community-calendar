@@ -15,6 +15,7 @@ import json
 import re
 
 from bs4 import BeautifulSoup
+from roomquest.collection_window import calendar_anchor
 from roomquest.event_description import description
 from roomquest.mapsee_adapter import plain, record
 
@@ -88,7 +89,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
     cards = soup.select(".mec-event-footer-carousel-type3")
     if not cards or len(cards) > MAX_RECORDS:
         raise ValueError("landing_missing_or_oversize_carousel")
-    now = now or datetime.now(timezone.utc)
+    now = calendar_anchor(now or datetime.now(timezone.utc))
     rows = {}
     for card in cards:
         title_node = card.select_one(".mec-event-carousel-title a[href]")

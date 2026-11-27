@@ -12,6 +12,7 @@ from zoneinfo import ZoneInfo
 import re
 
 from bs4 import BeautifulSoup
+from roomquest.collection_window import calendar_anchor
 from roomquest.mapsee_adapter import plain, record
 
 KEY = "skinny_raven_turkey_trot_ak"
@@ -64,7 +65,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
     deadline = min(monotonic() + 35, deadline_at if deadline_at is not None else float("inf"))
     if monotonic() >= deadline:
         raise ValueError("collection_deadline")
-    now = now or datetime.now(timezone.utc)
+    now = calendar_anchor(now or datetime.now(timezone.utc))
     html = fetch(FEED, "text/html")
     if not isinstance(html, str) or not html or len(html) > MAX_HTML:
         raise ValueError("turkey_trot_bad_html")

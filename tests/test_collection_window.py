@@ -149,6 +149,23 @@ class CollectionWindowTests(unittest.TestCase):
             self.assertIsNone(b.result())
         self.assertIsNone(explicit_window())
 
+    def test_regional_request_adapters_use_the_selected_clock(self):
+        from roomquest import chambermate, beaufort_library_branches
+        from roomquest.collection_window import calendar_anchor
+        from zoneinfo import ZoneInfo
+        actual = datetime(2026, 11, 27, tzinfo=timezone.utc)
+        source = chambermate.Source("sample", "calendar.example.org", "America/New_York")
+        with collection_scope(claim("2027-01-20T00:00:00-05:00")):
+            query = parse_qs(urlsplit(chambermate.events_url(source, now=actual)).query)
+            self.assertEqual(query["startDateTime"], ["2027-01-20T05:00:00+00:00"])
+            self.assertEqual(query["endDateTime"], ["2027-03-21T05:00:00+00:00"])
+            branch = beaufort_library_branches
+            days = parse_qs(urlsplit(branch.collection_url(branch.ST_HELENA_KEY, actual)).query)
+            self.assertEqual(days["start"], ["2027-01-20"])
+            self.assertEqual(days["end"], ["2027-03-21"])
+            self.assertEqual(calendar_anchor(actual.astimezone(ZoneInfo("America/Los_Angeles"))).day, 19)
+        self.assertIs(calendar_anchor(actual), actual)
+
     def test_invalid_contracts_fail_closed(self):
         valid = claim()["collection_window"]
         for invalid in [True, {}, {**valid, "version": True}, {**valid, "version": 2},

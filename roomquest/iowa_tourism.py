@@ -11,6 +11,7 @@ from zoneinfo import ZoneInfo
 from bs4 import BeautifulSoup, NavigableString
 from icalendar import Calendar
 
+from roomquest.collection_window import calendar_anchor
 from roomquest.mapsee_adapter import record, timestamp, plain
 from roomquest.publisher_evidence import attach, optional_description
 from roomquest.event_description import description
@@ -66,7 +67,7 @@ def council_times(day, value):
 
 
 def parse_council(html, *, now=None, expected_month=None):
-    now = now or datetime.now(timezone.utc)
+    now = calendar_anchor(now or datetime.now(timezone.utc))
     soup = BeautifulSoup(html, 'html.parser')
     headings = [h.get_text(' ', strip=True) for h in soup.select('h1,h2')
                 if re.fullmatch(r'Events for [A-Za-z]+ 20\d{2}', h.get_text(' ', strip=True))]
@@ -150,7 +151,7 @@ def mason_links(html):
 
 
 def parse_mason(html, url, *, now=None):
-    now = now or datetime.now(timezone.utc)
+    now = calendar_anchor(now or datetime.now(timezone.utc))
     soup = BeautifulSoup(html, 'html.parser')
     containers = soup.select('[itemtype="http://schema.org/Event"]')
     if len(containers) != 1:
@@ -219,7 +220,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
             or source.get('kind') != 'html' or source.get('platform_adapter') != 'html'
             or source.get('timezone') not in (None, '', TZ.key)):
         raise ValueError('unregistered_iowa_tourism_source')
-    now = now or datetime.now(timezone.utc)
+    now = calendar_anchor(now or datetime.now(timezone.utc))
     deadline = min(monotonic() + 34, deadline_at or float('inf'))
     if key == 'unleashcb_ia':
         # Three calendar months cover a rolling sixty-day window. Every event
@@ -269,7 +270,7 @@ def collect_think(source, fetch, *, deadline_at=None, now=None):
             or source.get('kind') != 'json' or source.get('platform_adapter') != 'wordpress'
             or source.get('timezone') != TZ.key):
         raise ValueError('unregistered_iowa_tourism_source')
-    now = now or datetime.now(timezone.utc)
+    now = calendar_anchor(now or datetime.now(timezone.utc))
     local_day = now.astimezone(TZ).date()
     deadline = min(monotonic() + 30, deadline_at or float('inf'))
     rows = []

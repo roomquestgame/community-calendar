@@ -18,6 +18,7 @@ from zoneinfo import ZoneInfo
 
 from bs4 import BeautifulSoup
 
+from roomquest.collection_window import calendar_anchor
 from roomquest.atlantic_city_community import _full_description
 from roomquest.mapsee_adapter import plain, record, timestamp
 
@@ -377,7 +378,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
     if profile is None or (source.get('feed_url'), source.get('kind'), source.get('platform_adapter'),
                            source.get('timezone')) != (*profile, ZONE):
         raise ValueError('unregistered_atlantic_cape_source')
-    current = now or datetime.now(timezone.utc)
+    current = calendar_anchor(now or datetime.now(timezone.utc))
     if current.tzinfo is None:
         raise ValueError('atlantic_cape_occurrence_time_unresolved')
     if key == EHT_TROT:

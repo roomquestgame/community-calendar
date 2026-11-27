@@ -12,6 +12,7 @@ from zoneinfo import ZoneInfo
 import json
 import re
 from bs4 import BeautifulSoup
+from roomquest.collection_window import calendar_anchor
 from roomquest.mapsee_adapter import record, plain
 
 KEY = "alaska_trappers_eagle_river_workshops_ak"
@@ -109,7 +110,7 @@ def collect(source,fetch,*,deadline_at=None,now=None):
     if (source.get("source_key")!=KEY or source.get("timezone")!=ZONE or
         (source.get("feed_url"),source.get("kind"),source.get("platform_adapter"))!=SOURCES[KEY]):
         raise ValueError("trappers_source_mismatch")
-    now=now or datetime.now(timezone.utc)
+    now=calendar_anchor(now or datetime.now(timezone.utc))
     deadline=min(monotonic()+38,deadline_at if deadline_at is not None else float("inf"))
     api=(FEED+"?start_date="+now.astimezone(ZoneInfo(ZONE)).date().isoformat()+
          "&end_date="+(now+timedelta(days=WINDOW_DAYS)).astimezone(ZoneInfo(ZONE)).date().isoformat()+

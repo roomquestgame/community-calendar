@@ -7,6 +7,7 @@ from zoneinfo import ZoneInfo
 
 from lxml import html
 
+from roomquest.collection_window import calendar_anchor
 from roomquest.event_description import description
 from roomquest.mapsee_adapter import plain, record
 
@@ -100,7 +101,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
         return collect_eleanor(profile[0], fetch, now)
     listing, venue, address, street_prefix, city = profile
     origin = urlsplit(listing)
-    today = (now or datetime.now(timezone.utc)).astimezone(ZoneInfo(ZONE)).date()
+    today = (calendar_anchor(now or datetime.now(timezone.utc))).astimezone(ZoneInfo(ZONE)).date()
     document = html.fromstring(fetch(listing, "text/html"))
     if not elements(document, "eventlist-event", "article"):
         raise ValueError("missing_squarespace_event_list")
@@ -156,7 +157,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
 
 
 def collect_eleanor(listing, fetch, now):
-    local_now = (now or datetime.now(timezone.utc)).astimezone(ZoneInfo(ELEANOR_ZONE)).replace(tzinfo=None)
+    local_now = (calendar_anchor(now or datetime.now(timezone.utc))).astimezone(ZoneInfo(ELEANOR_ZONE)).replace(tzinfo=None)
     stop = local_now + timedelta(days=60)
     document = html.fromstring(fetch(listing, "text/html"))
     links = {}

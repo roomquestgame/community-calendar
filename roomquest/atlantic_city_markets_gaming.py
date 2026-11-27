@@ -25,6 +25,7 @@ from bs4 import BeautifulSoup
 from dateutil.rrule import rrulestr
 from icalendar import Calendar, vText
 
+from roomquest.collection_window import calendar_anchor
 from roomquest.atlantic_city_community import _full_description, _nj_address
 from roomquest.atlantic_city_venues import narrative
 from roomquest.ics_adapter import _prune_expired_until_groups, parse as parse_ics
@@ -562,7 +563,7 @@ def _reeds(payload, now):
 
 def collect(source, fetch, *, deadline_at=None, now=None):
     key = _source(source)
-    now = now or datetime.now(timezone.utc)
+    now = calendar_anchor(now or datetime.now(timezone.utc))
 
     def get(url, accept="text/html"):
         if deadline_at is not None and monotonic() >= deadline_at - 1:

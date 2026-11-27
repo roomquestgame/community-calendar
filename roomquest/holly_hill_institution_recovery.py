@@ -17,6 +17,7 @@ from xml.etree import ElementTree
 
 from bs4 import BeautifulSoup
 
+from roomquest.collection_window import calendar_anchor
 from roomquest.mapsee_adapter import plain, record, timestamp
 from roomquest.mycountyparks import cancelled
 from roomquest.publisher_evidence import DETAILS_VERSION, IMAGE_VERSION
@@ -490,7 +491,7 @@ def collect(source, fetch, *, deadline_at=None, fetch_programs=None, diagnostics
 
     items = _ymca_feed(get(YMCA_RSS, 'application/rss+xml'))
     rows, held, details = [], [], 0
-    now = datetime.now(timezone.utc)
+    now = calendar_anchor(datetime.now(timezone.utc))
     for item in items:
         check()
         try:

@@ -13,6 +13,7 @@ from urllib.parse import urlsplit
 from zoneinfo import ZoneInfo
 
 from bs4 import BeautifulSoup
+from roomquest.collection_window import calendar_anchor
 from roomquest.event_description import description
 from roomquest.mapsee_adapter import record
 from roomquest.publisher_evidence import attach
@@ -103,7 +104,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
     if (not isinstance(events,list) or len(events)>MAX_RECORDS
         or data.get("total_pages") not in (None,1)):
         raise ValueError("save_our_shores_pagination_or_records_invalid")
-    now=(now or datetime.now(timezone.utc)).astimezone(timezone.utc)
+    now=(calendar_anchor(now or datetime.now(timezone.utc))).astimezone(timezone.utc)
     zone=ZoneInfo(ZONE)
     result=[]
     seen=set()

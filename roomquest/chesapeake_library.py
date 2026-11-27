@@ -5,6 +5,7 @@ import re
 from urllib.parse import urlencode
 from zoneinfo import ZoneInfo
 
+from roomquest.collection_window import calendar_anchor
 from roomquest.mapsee_adapter import plain, record, timestamp
 
 KEY = 'municipal_14cf2462473c7970657e86f4'
@@ -51,7 +52,7 @@ def collect(source, fetch, *, today=None):
     expected = (KEY, URL, 'html', 'html', ZONE)
     if tuple(source.get(key) for key in ('source_key', 'feed_url', 'kind', 'platform_adapter', 'timezone')) != expected:
         raise ValueError('unregistered_chesapeake_library_source')
-    today = today or datetime.now(ZoneInfo(ZONE)).date()
+    today = today or calendar_anchor(datetime.now(ZoneInfo(ZONE))).date()
     before = today + timedelta(days=60)
     # The calendar's date filter supports the full window in one public request.
     # This keeps the city’s advertised crawl delay within the worker budget.

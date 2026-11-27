@@ -16,6 +16,7 @@ import json
 import re
 
 from bs4 import BeautifulSoup
+from roomquest.collection_window import calendar_anchor
 from roomquest.mapsee_adapter import plain, record
 
 KEY = "winter_wonder_fest_anchorage_ak"
@@ -76,7 +77,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
     deadline = min(monotonic() + 35, deadline_at if deadline_at is not None else float("inf"))
     if monotonic() >= deadline:
         raise ValueError("collection_deadline")
-    now = now or datetime.now(timezone.utc)
+    now = calendar_anchor(now or datetime.now(timezone.utc))
     raw = fetch(FEED, "text/html")
     if not isinstance(raw, str) or len(raw) > MAX_HTML:
         raise ValueError("festival_page_missing_or_oversized")

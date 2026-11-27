@@ -6,6 +6,7 @@ from zoneinfo import ZoneInfo
 
 from bs4 import BeautifulSoup
 
+from roomquest.collection_window import calendar_anchor
 from roomquest.event_description import description
 from roomquest.jsonld_adapter import Blocks
 from roomquest.mapsee_adapter import plain, record, timestamp
@@ -148,7 +149,7 @@ def collect(source, fetch, *, deadline_at=None, now=None, listing_only=False):
     if len(links) > 45:
         raise ValueError('source_record_limit')
 
-    now = (now or datetime.now(ZONE)).astimezone(ZONE)
+    now = (calendar_anchor(now or datetime.now(ZONE))).astimezone(ZONE)
     stop = now + timedelta(days=60)
     seen_urls = set()
     rows = []

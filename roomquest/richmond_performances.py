@@ -8,6 +8,7 @@ from zoneinfo import ZoneInfo
 
 from bs4 import BeautifulSoup
 
+from roomquest.collection_window import calendar_anchor
 from roomquest.mapsee_adapter import record
 
 
@@ -73,7 +74,7 @@ def parse_month(payload, month, now):
 def collect(source, fetch, *, now=None):
     if (source.get('source_key'), source.get('feed_url'), source.get('timezone')) != (KEY, URL, ZONE):
         raise ValueError('unregistered_performance_calendar')
-    now = now or datetime.now(ZoneInfo(ZONE))
+    now = calendar_anchor(now or datetime.now(ZoneInfo(ZONE)))
     month = now.date().replace(day=1)
     following_month = date(month.year + (month.month == 12), month.month % 12 + 1, 1)
     next_url = URL + '?' + urlencode({'month': following_month.strftime('%B %Y')})

@@ -14,6 +14,7 @@ from urllib.parse import urlsplit
 import re
 from bs4 import BeautifulSoup
 
+from roomquest.collection_window import calendar_anchor
 from roomquest.event_description import description
 from roomquest.mapsee_adapter import record
 from roomquest.publisher_evidence import attach
@@ -163,7 +164,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
             (source.get("feed_url"), source.get("kind"), source.get("platform_adapter")) != SOURCES[key]
             or source.get("timezone") != ZONE):
         raise ValueError("hotel_source_identity_mismatch")
-    now = (now or datetime.now(timezone.utc)).astimezone(timezone.utc)
+    now = (calendar_anchor(now or datetime.now(timezone.utc))).astimezone(timezone.utc)
     upcoming = _chaminade_records(fetch) if key == CHAMINADE else _dream_record(fetch)
     rows = []
     for title, start_wall, end_wall, venue, street, url, identity, narrative, categories in upcoming:

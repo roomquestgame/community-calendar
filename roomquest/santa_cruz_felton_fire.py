@@ -6,6 +6,7 @@ from urllib.parse import urlsplit
 from time import monotonic
 import re
 from bs4 import BeautifulSoup
+from roomquest.collection_window import calendar_anchor
 from roomquest.mapsee_adapter import record
 
 KEY = "felton_fire_santas_shelves_2026_ca"
@@ -51,7 +52,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
     official=BeautifulSoup(fetch(CONTACT,"text/html"),"html.parser").get_text(" ",strip=True)
     if not re.search(r"131\s+Kirby\s+Street,?\s*Felton,?\s*CA\s*95018",official,re.I):
         raise ValueError("felton_fire_official_station_street_missing")
-    now=now or datetime.now(timezone.utc)
+    now=calendar_anchor(now or datetime.now(timezone.utc))
     if now.tzinfo is None:
         raise ValueError("felton_fire_naive_clock")
     output=[]

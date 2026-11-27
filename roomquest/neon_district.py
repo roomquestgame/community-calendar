@@ -6,6 +6,7 @@ from zoneinfo import ZoneInfo
 
 from bs4 import BeautifulSoup
 
+from roomquest.collection_window import calendar_anchor
 from roomquest.mapsee_adapter import plain, record
 
 SOURCE_KEY = 'municipal_749460d8567ccf71cade6771'
@@ -20,7 +21,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
     if tuple(source.get(k) for k in ('source_key', 'feed_url', 'kind', 'platform_adapter', 'timezone')) != (
             SOURCE_KEY, CALENDAR, 'html', 'html', ZONE):
         raise ValueError('unregistered_neon_district')
-    local_day = (now or datetime.now(ZoneInfo(ZONE))).astimezone(ZoneInfo(ZONE)).date()
+    local_day = (calendar_anchor(now or datetime.now(ZoneInfo(ZONE)))).astimezone(ZoneInfo(ZONE)).date()
     page = BeautifulSoup(fetch(CALENDAR, 'text/html'), 'html.parser')
     calendar = page.select_one('section.cards')
     if calendar is None or calendar.select_one('.pagination-container a[href]'):

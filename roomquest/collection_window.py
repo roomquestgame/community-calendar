@@ -73,3 +73,13 @@ def recurrence_start():
 def localist_dates():
     explicit = explicit_window()
     return {"start": explicit.start.date().isoformat(), "days": 60} if explicit else {"days": 60}
+
+
+def calendar_anchor(ordinary):
+    """Use the requested instant in the publisher clock's timezone for event selection."""
+    window = explicit_window()
+    if window is None:
+        return ordinary
+    if ordinary.tzinfo is None:
+        raise ValueError("calendar_anchor_requires_timezone")
+    return window.start.astimezone(ordinary.tzinfo)

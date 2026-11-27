@@ -13,6 +13,7 @@ from zoneinfo import ZoneInfo
 import re
 
 from bs4 import BeautifulSoup
+from roomquest.collection_window import calendar_anchor
 from roomquest.mapsee_adapter import plain, record
 
 KEY = "greater_bluffton_chamber_sc"
@@ -134,7 +135,7 @@ def _detail(url, claimed, soup, now):
 def collect(source, fetch, *, deadline_at=None, now=None):
     if not source_valid(source):
         raise ValueError("unregistered_bluffton_chamber_source")
-    now = now or datetime.now(timezone.utc)
+    now = calendar_anchor(now or datetime.now(timezone.utc))
     if now.tzinfo is None:
         raise ValueError("bluffton_chamber_unaware_now")
     deadline = min(monotonic() + 37, deadline_at if deadline_at is not None else float("inf"))

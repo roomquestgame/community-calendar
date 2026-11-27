@@ -33,7 +33,7 @@ from roomquest.publisher_pacing import (capture_publisher_pacing, observe_crawl_
                                        observe_retry_after, pacing_rpc_fields, robots_crawl_delay)
 from roomquest.incremental_snapshot import capture_snapshot, current_snapshot
 from roomquest import ical_conditional_cache
-from roomquest.collection_window import collection_scope, collection_window, recurrence_start
+from roomquest.collection_window import calendar_anchor, collection_scope, collection_window, recurrence_start
 
 MAX_BODY = 3_000_000
 MAX_PREVIEWS = 10
@@ -512,7 +512,7 @@ def _valid_boston_cares_window(start_day, end_day):
         return False
     try:
         start, end = date.fromisoformat(start_day), date.fromisoformat(end_day)
-        today = datetime.now(ZoneInfo('America/New_York')).date()
+        today = calendar_anchor(datetime.now(ZoneInfo('America/New_York'))).date()
         return (timedelta(0) < end - start <= timedelta(days=14)
                 and today - timedelta(days=1) <= start <= today + timedelta(days=14)
                 and end <= today + timedelta(days=28))
@@ -582,7 +582,7 @@ def render_old_santee_programs(*, deadline_at: float | None = None) -> str:
 
 
 def _virginia_beach_cultural_window():
-    start = datetime.now(ZoneInfo('America/New_York')).date()
+    start = calendar_anchor(datetime.now(ZoneInfo('America/New_York'))).date()
     end = start + timedelta(days=60)
     return {'startDate': f'{start.isoformat()}T00:00', 'endDate': f'{end.isoformat()}T23:59',
             'productionSeasonIdFilter': [], 'keywordIds': None}
@@ -1181,12 +1181,12 @@ def _preview(title, start, end, venue, lat, lng, url, identity="",
         end = None
     future = _future_datetime(start)
     if future is None and allow_ongoing and retain_until_end and isinstance(start, datetime) and start.tzinfo:
-        now = datetime.now(timezone.utc)
+        now = collection_window(datetime.now(timezone.utc)).start
         expires = end if isinstance(end, datetime) and end.tzinfo else start + timedelta(hours=3)
         if start <= now < expires:
             future = start.astimezone(timezone.utc)
     elif future is None and allow_ongoing and isinstance(start, datetime) and start.tzinfo and isinstance(end, datetime) and end.tzinfo:
-        now = datetime.now(timezone.utc)
+        now = collection_window(datetime.now(timezone.utc)).start
         if now-timedelta(hours=24) <= start <= now and end >= now+timedelta(minutes=60):
             future = start.astimezone(timezone.utc)
     if not future or not isinstance(title, str) or not title.strip():

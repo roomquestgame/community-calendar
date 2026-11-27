@@ -14,6 +14,7 @@ from urllib.parse import urlsplit
 import json
 
 from bs4 import BeautifulSoup
+from roomquest.collection_window import calendar_anchor
 from roomquest.mapsee_adapter import plain, record
 
 KEY = "four_valleys_girdwood_public_ak"
@@ -59,7 +60,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
             or (source.get("feed_url"), source.get("kind"),
                 source.get("platform_adapter")) != SOURCES[KEY]):
         raise ValueError("fvcs_source_mismatch")
-    now = now or datetime.now(timezone.utc)
+    now = calendar_anchor(now or datetime.now(timezone.utc))
     deadline = min(monotonic() + 38,
                    deadline_at if deadline_at is not None else float("inf"))
     index = fetch(FEED, "text/html")
