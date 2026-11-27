@@ -252,7 +252,93 @@ def _jalopy_venue(native, item, body):
     raise ValueError('venue_unreviewed')
 
 
-def _row(key, item, native_id, start, end, body, place, labels):
+def _attach_content(row, body, *, native_venue=None, native_labels=()):
+    start, end = timestamp(row.get('starts_at')), timestamp(row.get('ends_at'))
+    if start is None or start.tzinfo is None or end is None or end.tzinfo is None or end <= start:
+        raise ValueError('nyc_performance_schedule_changed')
+    facts = {
+        'title': row['title'], 'description': body, 'is_all_day': False,
+        'starts_at_utc': start.astimezone(timezone.utc).isoformat(),
+        'ends_at_utc': end.astimezone(timezone.utc).isoformat(),
+        'source_timezone': ZONE, 'event_url': row['event_url'],
+        'publisher_categories': sorted({plain(value) for value in native_labels if plain(value)}),
+        'attendance_mode': 'in_person', **(native_venue or {}),
+    }
+    facts = {name: value for name, value in facts.items()
+             if value is not None and value != '' and value != []}
+    row['collector_event_content_v1'] = {'version': 1, 'event_id': row['id'], 'facts': facts}
+    return row
+
+
+def _content_envelope_valid(key, row):
+    evidence = row.get('collector_event_content_v1')
+    if evidence is None:
+        return True
+    if (not isinstance(evidence, dict) or set(evidence) != {'version', 'event_id', 'facts'}
+            or evidence.get('version') != 1 or evidence.get('event_id') != row.get('id')
+            or not isinstance(evidence.get('facts'), dict)):
+        return False
+    facts = evidence['facts']
+    venue_fields = {'venue_name', 'venue_address', 'venue_city', 'venue_region',
+                    'venue_postal_code', 'venue_country', 'source_latitude', 'source_longitude'}
+    allowed = {'title', 'description', 'is_all_day', 'starts_at_utc', 'ends_at_utc',
+               'source_timezone', 'event_url', 'publisher_categories', 'attendance_mode'} | venue_fields
+    if not set(facts) <= allowed or ('source_latitude' in facts) != ('source_longitude' in facts):
+        return False
+    try:
+        start, end = timestamp(row.get('starts_at')), timestamp(row.get('ends_at'))
+        expected = {'title': row.get('title'), 'description': row.get('description'),
+                    'is_all_day': False, 'starts_at_utc': start.astimezone(timezone.utc).isoformat(),
+                    'ends_at_utc': end.astimezone(timezone.utc).isoformat(),
+                    'source_timezone': ZONE, 'event_url': row.get('event_url'),
+                    'attendance_mode': 'in_person'}
+    except (AttributeError, TypeError, ValueError, OverflowError):
+        return False
+    if not all(facts.get(name) == value for name, value in expected.items()):
+        return False
+    categories = facts.get('publisher_categories', [])
+    if (categories != sorted(set(categories)) or any(not isinstance(value, str) or not value for value in categories)
+            or categories and categories != sorted(set(row.get('publisher_categories') or []))):
+        return False
+    public = tuple(row.get(name) for name in ('venue_name', 'venue_address', 'venue_city', 'lat', 'lng'))
+    try:
+        place = next(name for name, venue in VENUES.items() if venue == public)
+    except StopIteration:
+        return False
+    if place == 'jalopy_estimated':
+        return not (set(facts) & venue_fields)
+    expected_locations = {
+        'jalopy': ({'Jalopy Theatre', 'The Jalopy Theatre & School of Music'},
+                   {'315 Columbia St', '315 Columbia Street'}, 'Brooklyn', {'New York', 'NY'}, '11231', 'US'),
+        'jalopy_mic': ({'Jalopy Theatre', 'The Jalopy Theatre & School of Music'},
+                       {'315 Columbia St', '315 Columbia Street'}, 'Brooklyn', {'New York', 'NY'}, '11231', 'US'),
+        'gottscheer': ({'Gottscheer Hall'}, {'6-57 Fairview Ave', '6-57 Fairview Avenue'},
+                       'Ridgewood', {'New York', 'NY'}, '11385', 'US'),
+        'art_haus': ({'Brooklyn Art Haus'}, {'24 Marcy Ave', '24 Marcy Avenue'},
+                     'Brooklyn', {'NY'}, '11211', 'US'),
+    }
+    names, streets, city, regions, postal, country = expected_locations.get(place, (set(), set(), '', set(), '', ''))
+    if (facts.get('venue_name') not in names or facts.get('venue_address') not in streets
+            or facts.get('venue_city') != city or facts.get('venue_region') not in regions
+            or facts.get('venue_postal_code') != postal or facts.get('venue_country') != country):
+        return False
+    return all(abs(float(facts[name]) - value) <= 0.000001 for name, value in
+               zip(('source_latitude', 'source_longitude'), VENUES[place][3:]))
+
+
+def _native_jalopy_venue(native):
+    location = native.get('location') or {}
+    if not location:
+        return None
+    return {'venue_name': plain(location.get('name')), 'venue_address': plain(location.get('address')),
+            'venue_city': plain(location.get('city')), 'venue_region': plain(location.get('state')),
+            'venue_postal_code': plain(str(location.get('zipcode') or '')),
+            'venue_country': plain(location.get('country')),
+            'source_latitude': float(location['latitude']),
+            'source_longitude': float(location['longitude'])}
+
+
+def _row(key, item, native_id, start, end, body, place, labels, *, native_venue=None, native_labels=()):
     venue, street, city, lat, lng = VENUES[place]
     row = record(item['title'], start.isoformat(), end.isoformat(), venue, street,
                  city, item['url'], native_id, '; '.join(labels), lat, lng, ZONE,
@@ -268,6 +354,7 @@ def _row(key, item, native_id, start, end, body, place, labels):
         elif place == 'jalopy_estimated':
             row.update(location_is_approximate=True,
                        location_provenance='reviewed_full_body_named_theatre_estimated_official_street_and_point')
+        _attach_content(row, body, native_venue=native_venue, native_labels=native_labels)
     return row
 
 
@@ -307,12 +394,15 @@ def _jalopy_detail(item, payload, now):
                       or _time(next_event.get('endsAt')) != _time(next_item['ends_at'])):
         raise ValueError('nyc_performance_schedule_changed')
     place = _jalopy_venue(native, item, body)
-    labels = [plain(native.get('categoryName'))] if plain(native.get('categoryName')) else ['Live Music']
+    native_labels = [plain(native.get('categoryName'))] if plain(native.get('categoryName')) else []
+    labels = native_labels or ['Live Music']
+    native_venue = _native_jalopy_venue(native)
     rows = []
     for occurrence in item['occurrences']:
         start, end = _time(occurrence['starts_at']), _time(occurrence['ends_at'])
         if _within(start, end, now):
-            row = _row(JALOPY, item, occurrence['id'], start, end, body, place, labels)
+            row = _row(JALOPY, item, occurrence['id'], start, end, body, place, labels,
+                       native_venue=native_venue, native_labels=native_labels)
             if row:
                 rows.append(row)
     return rows
@@ -449,7 +539,17 @@ def _art_detail(item, payload, now, fetch):
     if not _within(start, end, now):
         return []
     labels = [label for label in (context.get('taxonomies') or {}).values() if isinstance(label, str)]
-    row = _row(ART_HAUS, item, item['id'], start, end, body, 'art_haus', labels or ['Performing Arts'])
+    address = basic['venue']['address']
+    lines = address['localizedMultiLineAddressDisplay']
+    postal = re.search(r'\b(\d{5}(?:-\d{4})?)\s*$', lines[1])
+    native_venue = {'venue_name': plain(basic['venue']['name']), 'venue_address': plain(lines[0]),
+                    'venue_city': plain(address['city']), 'venue_region': plain(address['region']),
+                    'venue_postal_code': postal[1] if postal else None,
+                    'venue_country': plain(address['country']),
+                    'source_latitude': float(address['latitude']),
+                    'source_longitude': float(address['longitude'])}
+    row = _row(ART_HAUS, item, item['id'], start, end, body, 'art_haus', labels or ['Performing Arts'],
+               native_venue=native_venue, native_labels=labels)
     if row:
         row.update(publisher_organizer_id=ART_ORGANIZER,
                    description_provenance='publisher_overview_all_structured_text_modules_and_parking')
@@ -559,6 +659,7 @@ def _checkpoint(key, value, now):
             item = processed.get(row.get('event_url')) if isinstance(row, dict) else None
             if (not item or row.get('title') != item['title'] or _body(row['description']) != row['description']
                     or row.get('timezone') != ZONE or row.get('attendance_mode') != 'in_person'
+                    or not _content_envelope_valid(key, row)
                     or row.get('id') != row.get('publisher_native_id')
                     or tuple(row.get(k) for k in ('venue_name', 'venue_address', 'venue_city', 'lat', 'lng')) not in valid_venues):
                 raise ValueError
@@ -625,6 +726,8 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
     if state['manifest_verified']:
         return _result(state)
     started = _time(state['started_at'])
+    legacy_prefix = bool(state['events'] and
+                         any('collector_event_content_v1' not in row for row in state['events']))
     try:
         if state['phase'] == 'manifest':
             _check(deadline)
@@ -668,6 +771,9 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
                     raise ValueError('event_not_current')
                 payload = fetch(item['url'], 'text/html')
                 rows = _unique(_jalopy_detail(item, payload, current) if key == JALOPY else _art_detail(item, payload, current, fetch))
+                if legacy_prefix:
+                    for row in rows:
+                        row.pop('collector_event_content_v1', None)
             except ValueError as error:
                 if str(error) not in HOLD_REASONS:
                     raise

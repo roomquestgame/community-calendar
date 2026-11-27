@@ -137,6 +137,30 @@ def test_jalopy_full_utf8_text_frames_and_occurrence_ids_survive_complete_checkp
     assert len(result['checkpoint']['row_hashes'])==2
 
 
+def test_original_facts_ignore_provider_label_and_exclude_reviewed_performance_enrichment():
+    renamed={**source(ny.JALOPY),'publisher_name':'Renamed provider label'}
+    assert ny._source(renamed)==ny.JALOPY
+    c=course();result,_=finish(ny.JALOPY,jalopy_fetch([c]));row,=result['events']
+    facts=row['collector_event_content_v1']['facts']
+    assert facts['venue_name']=='Jalopy Theatre' and facts['venue_address']=='315 Columbia St'
+    assert facts['venue_address']!=row['venue_address']
+    assert (facts['source_latitude'],facts['source_longitude'])==(40.68136,-74.00432)
+    event=art_event();result,_=finish(ny.ART_HAUS,art_fetch([event]));row,=result['events']
+    facts=row['collector_event_content_v1']['facts']
+    assert facts['venue_address']=='24 Marcy Ave' and facts['venue_address']!=row['venue_address']
+    assert facts['venue_postal_code']=='11211' and facts['publisher_categories']==['Performing Arts']
+    assert 'publisher_organizer_id' not in facts
+
+
+def test_publisher_narrative_change_changes_facts_not_occurrence_id():
+    original=course(body='<p>Original complete concert narrative.</p>')
+    changed=course(body='<p>Changed complete publisher concert narrative.</p>')
+    first=finish(ny.JALOPY,jalopy_fetch([original]))[0]['events'][0]
+    second=finish(ny.JALOPY,jalopy_fetch([changed]))[0]['events'][0]
+    assert second['id']==first['id']
+    assert second['collector_event_content_v1']!=first['collector_event_content_v1']
+
+
 def test_jalopy_private_indefinite_and_multiweek_ranges_do_not_become_occurrences():
     private=course(1,name='Private Guitar Lessons');private['events'][0].update(starts_at='2022-01-01T00:00:00Z',ends_at='2029-01-01T00:00:00Z')
     multiday=course(2,slug='multiweek_class');multiday['events'][0].update(ends_at='2027-01-18T02:30:00Z')
@@ -246,6 +270,30 @@ def test_checkpoint_rejects_tampering_even_when_outer_seal_is_recomputed(mutatio
     ny._seal(state)
     with pytest.raises(ValueError,match='checkpoint_invalid'):
         ny.collect_chunk(source(ny.JALOPY),Mock(),checkpoint=state,now=NOW)
+
+
+def test_checkpoint_rejects_rehashed_fact_tampering_and_finishes_legacy_prefix():
+    first=course();second=course(2,slug='second_concert',name='Second Concert')
+    second['events'][0]['uuid']=UUID2
+    fetch=jalopy_fetch([first,second])
+    state=ny.collect_chunk(source(ny.JALOPY),fetch,now=NOW,max_details=1)['checkpoint']
+    partial=ny.collect_chunk(source(ny.JALOPY),fetch,checkpoint=state,now=NOW,max_details=1)['checkpoint']
+    tampered=deepcopy(partial)
+    tampered['events'][0]['collector_event_content_v1']['facts']['description']='Tampered facts.'
+    tampered['row_hashes'][ny._row_key(tampered['events'][0])]=ny._digest(tampered['events'][0])
+    ny._seal(tampered)
+    with pytest.raises(ValueError,match='checkpoint_invalid'):
+        ny.collect_chunk(source(ny.JALOPY),fetch,checkpoint=tampered,now=NOW,max_details=1)
+    legacy=deepcopy(partial)
+    legacy['events'][0].pop('collector_event_content_v1')
+    legacy['row_hashes'][ny._row_key(legacy['events'][0])]=ny._digest(legacy['events'][0])
+    ny._seal(legacy)
+    for _ in range(10):
+        result=ny.collect_chunk(source(ny.JALOPY),fetch,checkpoint=legacy,now=NOW,max_details=1)
+        legacy=result['checkpoint']
+        if result['complete']:break
+    assert result['complete']
+    assert all('collector_event_content_v1' not in row for row in result['events'])
 
 
 def test_manifest_change_discards_private_snapshot_and_restarts():
