@@ -4856,7 +4856,9 @@ def _preview_fetch_chunk(source, pacing, *, adapter, allowed_hosts, collection_c
                 boston_sources.validate_records(records, source)
             except ValueError as exc:
                 raise PreviewError(str(exc)) from exc
-        samples = records[:MAX_PREVIEWS]
+        samples = [{key: value for key, value in row.items()
+                    if key != "collector_event_content_v1"}
+                   for row in records[:MAX_PREVIEWS]]
         while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
             samples.pop()
         return {"p_source_key": source["source_key"], "p_samples": samples,
