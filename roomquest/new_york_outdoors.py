@@ -373,6 +373,60 @@ def _randalls_clocks(payload):
     return out
 
 
+def _attach_content(row, *, title, text, start, end, url, venue=None,
+                    categories=None, image=None, native_options=None):
+    if row is None:
+        return None
+    venue = venue if isinstance(venue, dict) else {}
+    facts = {
+        'title': title,
+        'description': text,
+        'is_all_day': False,
+        'starts_at_utc': start.astimezone(timezone.utc).isoformat(),
+        'ends_at_utc': end.astimezone(timezone.utc).isoformat() if end else None,
+        'event_url': url,
+        'venue_name': plain(venue.get('venue')),
+        'venue_address': plain(venue.get('address')),
+        'venue_city': plain(venue.get('city')),
+        'venue_region': plain(venue.get('state') or venue.get('province')),
+        'venue_postal_code': plain(str(venue.get('zip') or '')),
+        'venue_country': plain(venue.get('country')),
+        'source_image_url': image,
+        'publisher_categories': categories or None,
+        'native_options': native_options,
+    }
+    facts = {name: value for name, value in facts.items()
+             if value is not None and value != '' and value != {}}
+    row['collector_event_content_v1'] = {
+        'version': 1,
+        'event_id': row['id'],
+        'facts': facts,
+    }
+    return row
+
+
+def _content_envelope_valid(row):
+    evidence = row.get('collector_event_content_v1')
+    if evidence is None:
+        return True
+    if (not isinstance(evidence, dict) or set(evidence) != {'version', 'event_id', 'facts'}
+            or evidence.get('version') != 1 or evidence.get('event_id') != row.get('id')
+            or not isinstance(evidence.get('facts'), dict)):
+        return False
+    facts = evidence['facts']
+    expected = {
+        'title': row.get('title'),
+        'description': row.get('description'),
+        'is_all_day': False,
+        'starts_at_utc': timestamp(row.get('starts_at')).astimezone(timezone.utc).isoformat(),
+        'event_url': row.get('event_url'),
+    }
+    end = timestamp(row.get('ends_at'))
+    if end is not None:
+        expected['ends_at_utc'] = end.astimezone(timezone.utc).isoformat()
+    return all(facts.get(name) == value for name, value in expected.items())
+
+
 def _make_row(key, event, now, diagnostics, clocks=None):
     identity = str(event.get('id') or '')
     title, link = plain(event.get('title')), event.get('url')
@@ -431,7 +485,11 @@ def _make_row(key, event, now, diagnostics, clocks=None):
         candidate = event.get('image')
         if isinstance(candidate, dict) and photo_url(key, candidate.get('url')):
             row['image_url'] = candidate['url']
-    return row
+    image = event.get('image') if isinstance(event.get('image'), dict) else {}
+    categories = [plain(c.get('name')) for c in event.get('categories', []) if isinstance(c, dict)]
+    return _attach_content(row, title=title, text=text, start=start, end=end, url=link,
+                           venue=event.get('venue'), categories=categories,
+                           image=image.get('url') if photo_url(key, image.get('url')) else None)
 
 
 def _tribe(key, fetch, now, deadline_at=None):
@@ -556,6 +614,7 @@ def _squarespace_detail(key, card, payload, now, diagnostics):
                  category=', '.join(plain(a.get_text()) for a in main.select(
                      '.eventitem-meta-cats a, .eventitem-meta-tags a, a.eventitem-meta-category')),
                  lat=place['lat'], lng=place['lng'], tz=ZONE, publisher_geo=True, retain_until_end=True)
+    image = None
     if row:
         row.update(description=text, timezone=ZONE, location_provenance=place['provenance'],
                    location_evidence_url=place['evidence_url'])
@@ -563,7 +622,13 @@ def _squarespace_detail(key, card, payload, now, diagnostics):
         image = candidate.get('data-src') or candidate.get('src') if candidate else None
         if photo_url(key, image):
             row['image_url'] = image
-    return row
+    categories = [plain(a.get_text()) for a in main.select(
+        '.eventitem-meta-cats a, .eventitem-meta-tags a, a.eventitem-meta-category')]
+    return _attach_content(row, title=title, text=text, start=start, end=end,
+                           url=card['url'], categories=categories,
+                           image=image if photo_url(key, image) else None,
+                           native_options={'calendar_location': card['location'],
+                                           'venue_label': venue})
 
 
 def _source(source):
@@ -590,7 +655,8 @@ def _checkpoint_rows_valid(key, state, manifest):
                 or row.get('starts_at') != card['start'] or row.get('ends_at') != card['end']
                 or row.get('timezone') != ZONE or row.get('lat') != place['lat'] or row.get('lng') != place['lng']
                 or not isinstance(row.get('description'), str) or not row['description'].strip()
-                or len(row['description']) > MAX_DESCRIPTION):
+                or len(row['description']) > MAX_DESCRIPTION
+                or not _content_envelope_valid(row)):
             return False
         seen.add(url)
     return True
@@ -622,6 +688,8 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None)
         if not valid:
             raise ValueError('ny_outdoors_checkpoint_invalid')
         anchor = started
+    legacy_prefix = bool(state and state['events'] and
+                         any('collector_event_content_v1' not in row for row in state['events']))
     if now.tzinfo is None:
         raise ValueError('ny_outdoors_checkpoint_invalid')
     _budget(deadline_at)
@@ -649,6 +717,8 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None)
         card = manifest[index]
         row = _squarespace_detail(key, card, fetch(card['url'], 'text/html'), now, state['diagnostics'])
         if row:
+            if legacy_prefix:
+                row.pop('collector_event_content_v1', None)
             state['events'].append(row)
         state['cursor'] = index + 1
     if len(json.dumps(state).encode()) > CHECKPOINT_MAX_BYTES:
