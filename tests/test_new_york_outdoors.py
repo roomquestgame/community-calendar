@@ -72,6 +72,19 @@ def test_complete_description_over_shared_display_cap_is_preserved():
     assert row['category'] == 'Volunteer'
 
 
+def test_original_facts_ignore_source_label_and_change_with_event_details():
+    def run(src, native):
+        payload = json.dumps(dict(total=1, total_pages=1, events=[native]))
+        return ny.collect(src, lambda *_: payload, now=NOW)[0]
+    first = run(source(ny.QBG), event())
+    renamed = run({**source(ny.QBG), 'publisher_name': 'Changed provider label'}, event())
+    changed = run(source(ny.QBG), event(description='<p>The publisher changed this event.</p>'))
+    envelope = first['collector_event_content_v1']
+    assert renamed['collector_event_content_v1'] == envelope
+    assert changed['collector_event_content_v1'] != envelope
+    assert envelope['facts']['publisher_categories'] == ['Volunteer']
+
+
 def test_oversized_description_fails_instead_of_truncating():
     with pytest.raises(ValueError, match='ny_outdoors_description_limit'):
         ny._make_row(ny.QBG, event(description='<p>' + 'a' * 12001 + '</p>'), NOW, [])
@@ -171,6 +184,22 @@ def test_checkpoint_never_emits_partial_snapshot(monkeypatch):
     assert final['complete'] and len(final['events']) == 2
     assert final['checkpoint']['cursor'] == final['checkpoint']['manifest_count'] == 2
     assert final['checkpoint']['events'] == final['events']
+
+
+def test_checkpoint_keeps_one_protocol_and_rejects_tampered_facts(monkeypatch):
+    monkeypatch.setattr(ny, 'DETAILS_PER_CHUNK', 1)
+    fetch, _ = sq_fetch([sq_card(0), sq_card(1)])
+    first = ny.collect_chunk(source(ny.DYCKMAN), fetch, now=NOW)
+    assert 'collector_event_content_v1' in first['checkpoint']['events'][0]
+    bad = json.loads(json.dumps(first['checkpoint']))
+    bad['events'][0]['collector_event_content_v1']['facts']['description'] = 'Tampered facts.'
+    with pytest.raises(ValueError, match='ny_outdoors_checkpoint_invalid'):
+        ny.collect_chunk(source(ny.DYCKMAN), fetch, checkpoint=bad, now=NOW)
+    legacy = json.loads(json.dumps(first['checkpoint']))
+    legacy['events'][0].pop('collector_event_content_v1')
+    final = ny.collect_chunk(source(ny.DYCKMAN), fetch, checkpoint=legacy, now=NOW)
+    assert final['complete']
+    assert all('collector_event_content_v1' not in row for row in final['events'])
 
 
 def test_checkpoint_wire_date_and_complete_state_are_persistable():

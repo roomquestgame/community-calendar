@@ -101,7 +101,12 @@ class NewYorkWorkerTests(unittest.TestCase):
             profiles.validate_records([row],source(arts,arts.CMOM))
 
     def test_checkpoint_persists_before_returning_full_rows(self):
-        row=event();calls=[]
+        row=event(collector_event_content_v1={
+            'version':1,'event_id':'native-occurrence',
+            'facts':{'title':'Public workshop','description':'Complete publisher narrative. '*140,
+                     'is_all_day':False,'starts_at_utc':'2026-12-01T23:00:00+00:00',
+                     'ends_at_utc':'2026-12-02T00:00:00+00:00',
+                     'event_url':'https://cmom.org/event/workshop/'}});calls=[]
         def rpc(operation,payload):
             calls.append(operation)
             if operation.endswith('read_fetch_checkpoint'):return {'revision':0,'checkpoint':None}
@@ -114,6 +119,8 @@ class NewYorkWorkerTests(unittest.TestCase):
                 collection_context={'p_category':'html','p_ticket':'test-ticket'},deadline_at=worker.monotonic()+50)
         self.assertEqual(calls,['community_collector_read_fetch_checkpoint','community_collector_write_fetch_checkpoint'])
         self.assertEqual(result['p_events'][0]['description'],row['description'])
+        self.assertEqual(result['p_events'][0]['collector_event_content_v1'],row['collector_event_content_v1'])
+        self.assertNotIn('collector_event_content_v1',result['p_samples'][0])
 
     def test_partial_chunk_does_not_return_events_for_staging(self):
         chunk={'checkpoint':checkpoint(nightlife.CHILOS, manifest_count=2),'complete':False,'events':[event()]}
