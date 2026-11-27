@@ -506,6 +506,56 @@ def _snug_place(item, body):
     raise ValueError('venue_unreviewed')
 
 
+def _attach_content(row, item, body):
+    start, end = timestamp(row.get('starts_at')), timestamp(row.get('ends_at'))
+    if start is None or start.tzinfo is None or end is not None and end.tzinfo is None:
+        raise ValueError('nyc_community_schedule_changed')
+    facts = {
+        'title': row['title'], 'description': body, 'is_all_day': False,
+        'starts_at_utc': start.astimezone(timezone.utc).isoformat(),
+        'ends_at_utc': end.astimezone(timezone.utc).isoformat() if end else None,
+        'source_timezone': ZONE, 'event_url': row['event_url'],
+        'source_image_url': item.get('image'),
+        'publisher_categories': sorted(set(item.get('categories') or [])),
+        'publisher_event_type': item.get('type'), 'attendance_mode': 'in_person',
+    }
+    facts = {name: value for name, value in facts.items()
+             if value is not None and value != '' and value != []}
+    row['collector_event_content_v1'] = {'version': 1, 'event_id': row['id'], 'facts': facts}
+    return row
+
+
+def _content_envelope_valid(row):
+    evidence = row.get('collector_event_content_v1')
+    if evidence is None:
+        return True
+    if (not isinstance(evidence, dict) or set(evidence) != {'version', 'event_id', 'facts'}
+            or evidence.get('version') != 1 or evidence.get('event_id') != row.get('id')
+            or not isinstance(evidence.get('facts'), dict)):
+        return False
+    facts = evidence['facts']
+    allowed = {'title', 'description', 'is_all_day', 'starts_at_utc', 'ends_at_utc',
+               'source_timezone', 'event_url', 'source_image_url', 'publisher_categories',
+               'publisher_event_type', 'attendance_mode'}
+    if not set(facts) <= allowed:
+        return False
+    try:
+        start, end = timestamp(row.get('starts_at')), timestamp(row.get('ends_at'))
+        expected = {'title': row.get('title'), 'description': row.get('description'),
+                    'is_all_day': False, 'starts_at_utc': start.astimezone(timezone.utc).isoformat(),
+                    'source_timezone': ZONE, 'event_url': row.get('event_url'),
+                    'attendance_mode': 'in_person'}
+        if end is not None:
+            expected['ends_at_utc'] = end.astimezone(timezone.utc).isoformat()
+    except (AttributeError, TypeError, ValueError, OverflowError):
+        return False
+    if (facts.get('source_image_url') != row.get('image_url')
+            or facts.get('publisher_categories', []) != sorted(set(row.get('publisher_categories') or []))
+            or facts.get('publisher_event_type') != row.get('publisher_event_type')):
+        return False
+    return all(facts.get(name) == value for name, value in expected.items())
+
+
 def _row(key, item, body, place):
     venue = VENUES[place]
     if key == PROSPECT:
@@ -529,10 +579,15 @@ def _row(key, item, body, place):
             raise ValueError('nyc_community_detail_changed')
     row.update(description=body, timezone=ZONE, attendance_mode='in_person',
                location_provenance=LOCATION_PROVENANCE[place])
+    if item.get('categories'):
+        row['publisher_categories'] = list(dict.fromkeys(item['categories']))
+    if item.get('type'):
+        row['publisher_event_type'] = item['type']
     if '(approximate' in venue[0] or 'estimate' in LOCATION_PROVENANCE[place] or 'approximate' in LOCATION_PROVENANCE[place]:
         row['location_is_approximate'] = True
     if item.get('image'):
         row['image_url'] = item['image']
+    _attach_content(row, item, body)
     return row
 
 
@@ -654,6 +709,7 @@ def _checkpoint(key, value, now):
                     or timestamp(row.get('ends_at')) != timestamp(item['ends_at'])
                     or row.get('timezone') != ZONE or row.get('attendance_mode') != 'in_person'
                     or _body(row.get('description')) != row.get('description')
+                    or not _content_envelope_valid(row)
                     or (row.get('lat'), row.get('lng')) != reviewed_venue_location(key, row.get('venue_name'), row.get('venue_address'))
                     or row.get('location_provenance') != next((LOCATION_PROVENANCE[name] for name, place in VENUES.items() if place[:2] == (row.get('venue_name'), row.get('venue_address'))), None)
                     or value['row_hashes'].get(row['id']) != _digest(row)
@@ -693,6 +749,8 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
     started = timestamp(state['started_at']) if state else current
     if state is None:
         state = _new_state(key, _manifest(key, fetch, deadline, started), started)
+    legacy_prefix = bool(state['events'] and
+                         any('collector_event_content_v1' not in row for row in state['events']))
     queue = state['queue']
     fetched, paused = 0, False
     while state['cursor'] < len(queue):
@@ -705,6 +763,8 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
             payload = fetch(item['url'], 'text/html')
             fetched += 1
             row = _detail(key, item, payload)
+            if legacy_prefix:
+                row.pop('collector_event_content_v1', None)
         except ValueError as error:
             if _bounded_pause(error):
                 paused = True
