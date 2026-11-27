@@ -289,8 +289,10 @@ def _row(key, item, body, place, *, point=None, native="", publisher_geo=False,
             row["image_url"] = image
         if key == PRIDE:
             row["publisher_native_id"] = native
+        # `native` is the publisher occurrence identity, not a venue identity.
+        # Keep it on the outer row for stable matching; occurrence keys are not
+        # event-content facts and must never participate in the content digest.
         _attach_content(row, body, content_venue=_content_venue(place), image=image,
-                        provider_venue_id=native or None,
                         source_coordinates=source_coordinates)
     return row
 
@@ -731,10 +733,8 @@ def _checkpoint(value, key, now):
         if evidence is not None:
             facts = evidence["facts"]
             expected_venue = _content_venue((row["venue_name"], row["venue_address"], row["venue_city"]))
-            expected_provider = (str(row.get("publisher_native_id")) if key == PRIDE
-                                 else str(item.get("native")) if item.get("native") else None)
             if (any(facts.get(name) != value for name, value in expected_venue.items())
-                    or facts.get("provider_venue_id") != expected_provider):
+                    or "provider_venue_id" in facts):
                 raise ValueError("new_york_social_checkpoint_invalid")
             if key == PRIDE:
                 if ((facts.get("source_latitude"), facts.get("source_longitude"))
