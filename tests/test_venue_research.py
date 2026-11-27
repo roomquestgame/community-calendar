@@ -297,9 +297,54 @@ def test_request_token_enables_scoped_claim(monkeypatch):
     monkeypatch.delenv("VERCEL_OIDC_TOKEN", raising=False)
     db = Mock(return_value=[])
     venue_resolver.run_batch(database=db, clock=lambda: 0, deadline_seconds=28,
-                             oidc_token="fake-request-token")
-    db.assert_called_once_with("claim", {"limit": 1, "research_model": "anthropic/claude-haiku-5.5"})
+                             oidc_token="fake-request-token", trigger_ticket="fake-ticket")
+    db.assert_called_once_with("trigger_claim", {"ticket": "fake-ticket", "research_model": "anthropic/claude-haiku-5.5"})
     db.reset_mock()
     venue_resolver.run_batch(database=db, clock=lambda: 0, deadline_seconds=28,
                              oidc_token="")
     db.assert_called_once_with("claim", {"limit": 1})
+
+
+def test_periodic_claim_never_requests_paid_research(monkeypatch):
+    from roomquest import venue_resolver
+    monkeypatch.setenv("FORWARD_GEOCODER_ENABLED", "true")
+    monkeypatch.setenv("VERCEL_ENV", "production")
+    monkeypatch.setattr("roomquest.venue_research.configured", lambda **kw: CONFIG)
+    db = Mock(return_value=[])
+    venue_resolver.run_batch(database=db, clock=lambda: 0, deadline_seconds=28,
+                             oidc_token="fake-request-token")
+    db.assert_called_once_with("claim", {"limit": 1})
+
+
+def test_triggered_runner_finishes_ticket_on_failure(monkeypatch):
+    from roomquest import venue_resolver
+    monkeypatch.setenv("FORWARD_GEOCODER_ENABLED", "true")
+    monkeypatch.setenv("VERCEL_ENV", "production")
+    monkeypatch.setattr("roomquest.venue_research.configured", lambda **kw: CONFIG)
+    db = Mock()
+    runner = Mock(side_effect=ValueError("fixture"))
+    monkeypatch.setattr(venue_resolver, "run_batch", runner)
+    with pytest.raises(ValueError):
+        venue_resolver.run_triggered("fake-ticket", oidc_token="request-token", database=db)
+    db.assert_called_once_with("trigger_finish", {"ticket": "fake-ticket"})
+    assert runner.call_args.kwargs["trigger_ticket"] == "fake-ticket"
+
+
+def test_dispatch_endpoint_accepts_only_ticket(monkeypatch):
+    import io
+    from types import SimpleNamespace
+    from api import geocode
+    runner = Mock(return_value={"claimed": 1})
+    monkeypatch.setattr(geocode, "run_triggered", runner)
+    ticket = "8fcfd992-3f7d-47aa-a5b1-a0a54ed4114f"
+    def invoke(body):
+        raw = json.dumps(body).encode()
+        req = SimpleNamespace(headers={"Content-Length": str(len(raw)),
+                                       "x-vercel-oidc-token": "request-token"},
+                              rfile=io.BytesIO(raw), reply=Mock())
+        geocode.handler.invoke_venue_research(req)
+        return req.reply.call_args.args
+    assert invoke({"ticket": ticket, "url": "https://evil.example"}) == (400, {"error": "invalid_dispatch"})
+    runner.assert_not_called()
+    assert invoke({"ticket": ticket}) == (200, {"claimed": 1})
+    runner.assert_called_once_with(ticket, oidc_token="request-token")
