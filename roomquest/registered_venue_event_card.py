@@ -11,7 +11,7 @@ from urllib.parse import urlsplit
 from zoneinfo import ZoneInfo
 
 from roomquest.mapsee_adapter import record
-from roomquest.registered_native_content import attach
+from roomquest.registered_native_content import attach, retain_html_schedule
 
 
 def read(source, soup, url):
@@ -88,5 +88,6 @@ def read(source, soup, url):
         return []
     bodies = soup.select('main .fl-module-cp-content-builder')
     narrative = bodies[0].get_text(' ', strip=True) if len(bodies) == 1 else None
+    retain_html_schedule(row, name, begins, ends, local_clock=True, venue_name=venue)
     attach(row, source, description_value=narrative, evidence_url=url)
     return [row]

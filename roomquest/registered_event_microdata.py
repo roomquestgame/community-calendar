@@ -6,7 +6,7 @@ infer local zones, or combine unrelated page metadata.
 """
 from datetime import datetime
 from roomquest.mapsee_adapter import record
-from roomquest.registered_native_content import attach
+from roomquest.registered_native_content import attach, retain_html_schedule
 
 
 def parse_event_microdata(source, soup, url):
@@ -65,5 +65,8 @@ def parse_event_microdata(source, soup, url):
     description = None
     if root.select('[itemprop="description"]'):
         description = prop(root, 'description')
+    retain_html_schedule(row, name, begins, finishes if end else None, local_clock=False,
+                         venue_name=venue, venue_address=street, venue_city=city,
+                         venue_region=region, venue_postal_code=postcode)
     attach(row, source, description_value=description, evidence_url=url)
     return [row]

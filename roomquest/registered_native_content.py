@@ -144,6 +144,24 @@ def image_candidate(value, base_url='', *, _depth=0):
     return candidate if native_url(candidate) else None
 
 
+def retain_html_schedule(row, title, start, end, *, local_clock, **venue_facts):
+    """Capture the publisher's occurrence before footer and reviewed venue enrichment."""
+    clock = 'local' if local_clock else 'utc'
+
+    def value(moment):
+        if moment is None:
+            return None
+        if local_clock:
+            return moment.replace(tzinfo=None).isoformat(timespec='seconds')
+        from datetime import timezone
+        return moment.astimezone(timezone.utc).isoformat(timespec='seconds')
+
+    row['collector_event_content_v1'] = {'version': 1, 'event_id': row['id'], 'facts': {
+        'title': title, 'is_all_day': False, 'event_url': row['event_url'],
+        f'starts_at_{clock}': value(start), f'ends_at_{clock}': value(end), **venue_facts,
+    }}
+
+
 def attach(row, source, *, description_value=None, image_value=None, evidence_url=None,
            description_field='description'):
     if not enabled(source):
@@ -161,6 +179,15 @@ def attach(row, source, *, description_value=None, image_value=None, evidence_ur
     # Bound authentic text rather than rejecting the entire calendar.
     text = description(description_value, limit=MAX_DESCRIPTION)
     candidate = image_candidate(image_value, evidence)
+    if detail and 'collector_event_content_v1' in row:
+        envelope = row['collector_event_content_v1']
+        envelope['event_id'] = row['id']
+        envelope['facts'].update(description=text or None, source_image_url=candidate)
+        if isinstance(description_value, str) and len(description_value) > MAX_DESCRIPTION:
+            full = description(description_value, limit=len(description_value))
+            if len(full) > MAX_DESCRIPTION:
+                from hashlib import sha256
+                envelope['facts'].setdefault('publisher_details', {})['narrative_sha256'] = sha256(full.encode()).hexdigest()
     row['description'] = text
     row['registered_native_content'] = {
         'version': 1, 'source_key': source['source_key'],

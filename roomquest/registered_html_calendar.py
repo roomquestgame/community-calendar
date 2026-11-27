@@ -925,7 +925,7 @@ def _detail(source, payload, url, *, listing_evidence=None):
             if isinstance(value, (dict, list)):
                 event[key] = _without_events(value)
         graph = json.dumps({'@graph': [event, *references]})
-        rows = jsonld_adapter.parse(graph, url)
+        rows = jsonld_adapter.parse(graph, url, retain_original=True)
         for row in rows:
             if _url_key(row['event_url']) != _url_key(url):
                 _fail('html_calendar_detail_identity_conflict')

@@ -887,7 +887,7 @@ def test_source_hash_cannot_authorize_a_different_listing():
 
 def test_deadline_expiration_after_fetch_does_not_return_a_partial_snapshot():
     fetch = fetcher({ONE: detail(event()), TWO: detail(event(TWO))})
-    with patch.object(calendar, 'monotonic', side_effect=[0, 0, 0, 2]), \
+    with patch.object(calendar, 'monotonic', side_effect=lambda: 2 if fetch.called else 0), \
             pytest.raises(ValueError, match='collection_deadline'):
         calendar.collect(source(), fetch, listing=listing(), deadline_at=1)
     assert fetch.call_count == 1
@@ -976,3 +976,19 @@ def test_cambridge_featured_fallback_does_not_apply_to_other_publishers():
     [row] = calendar._detail(source(FEED), html.replace(CAMBRIDGE_DETAIL, ONE), ONE)
     assert row.get('image_url') is None
 
+
+
+def test_fingerprint_tracks_one_detail_and_ignores_the_listing_and_source_label():
+    first, second = event(ONE), event(TWO)
+
+    def facts(name, heading, two):
+        pages = {FEED: listing(heading=heading), ONE: detail(first), TWO: detail(two)}
+        rows = calendar.collect({**source(), 'publisher_name': name}, fetcher(pages))
+        return {row['id']: row['collector_event_content_v1'] for row in rows}
+
+    baseline = facts('First label', 'Upcoming Events', second)
+    assert baseline == facts('Renamed label', 'Events', second)
+    changed = facts('First label', 'Upcoming Events', {**second, 'description': 'New programme'})
+    assert changed[ONE + '#event'] == baseline[ONE + '#event']
+    assert changed[TWO + '#event'] != baseline[TWO + '#event']
+    assert changed[TWO + '#event']['facts']['description'] == 'New programme'

@@ -12,7 +12,7 @@ from urllib.parse import urljoin, urlsplit
 from zoneinfo import ZoneInfo
 
 from roomquest.mapsee_adapter import record
-from roomquest.registered_native_content import attach
+from roomquest.registered_native_content import attach, retain_html_schedule
 
 LABELS = {
     'date': 'date', 'dates': 'date',
@@ -305,6 +305,7 @@ def _hnm_theme_event(source, soup, main, url, title):
     if row is None:
         return []
     row['timezone'] = 'Europe/London'
+    retain_html_schedule(row, title, start, end, local_clock=True, meeting_location=location)
     attach(row, source, evidence_url=url)
     return [row]
 
@@ -338,5 +339,6 @@ def read(source, soup, url):
     if row is None:
         return []
     row['timezone'] = 'Europe/London'
+    retain_html_schedule(row, title, start, end, local_clock=True, meeting_location=fields['where'])
     attach(row, source, evidence_url=url)
     return [row]
