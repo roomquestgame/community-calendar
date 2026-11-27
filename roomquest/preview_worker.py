@@ -3567,7 +3567,9 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         except (ValueError, TypeError, KeyError, OverflowError) as exc:
             reason = str(exc)
             raise PreviewError(reason if re.fullmatch(r"[a-z_]{3,100}", reason) else "invalid_calendar_payload") from exc
-        samples = records[:MAX_PREVIEWS]
+        samples = ([{k: v for k, v in row.items() if k != 'collector_event_content_v1'}
+                    for row in records[:MAX_PREVIEWS]]
+                   if source_key in nebraska_library_ics.SOURCES else records[:MAX_PREVIEWS])
         while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
             samples.pop()
         return {"p_source_key": source["source_key"], "p_samples": samples,
