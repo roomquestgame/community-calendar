@@ -109,6 +109,9 @@ class NewYorkSocialFinalTests(unittest.TestCase):
         self.assertEqual(rows[0]["description"], body)
         self.assertGreater(len(rows[0]["description"]), 2000)
         self.assertEqual(rows[0]["venue_address"], "50 Bowery, New York, NY 10013")
+        facts = rows[0]["collector_event_content_v1"]["facts"]
+        self.assertEqual(facts["venue_name"], "50 Bowery Street")
+        self.assertNotIn("venue_address", facts)
         self.assertEqual(rows[0]["starts_at"], "2026-11-18T19:00:00-05:00")
         fetch.assert_called_once_with(ny.SOURCES[ny.OSNYC][0], "text/html")
 
@@ -118,6 +121,16 @@ class NewYorkSocialFinalTests(unittest.TestCase):
         rows, held = ny.inspect_payload(ny.OSNYC, payload, now=NOW)
         self.assertEqual(rows, [])
         self.assertEqual([x["reason"] for x in held], ["publisher_nonpublic", "publisher_nonpublic"])
+
+    def test_outer_provider_label_is_not_content_but_event_narrative_is(self):
+        with patch.object(ny, "record", side_effect=normalized_record):
+            first = ny.collect(source(ny.OSNYC), Mock(return_value=osnyc_page(osnyc_card())), now=NOW)[0]
+            changed = ny.collect(source(ny.OSNYC), Mock(return_value=osnyc_page(
+                osnyc_card(body="Changed publisher event narrative."))), now=NOW)[0]
+        before = json.dumps(first["collector_event_content_v1"]["facts"], sort_keys=True)
+        first["provider_label"] = "Renamed source label"
+        self.assertEqual(before, json.dumps(first["collector_event_content_v1"]["facts"], sort_keys=True))
+        self.assertNotEqual(before, json.dumps(changed["collector_event_content_v1"]["facts"], sort_keys=True))
 
     def test_osnyc_offsite_program_cannot_inherit_bowery_pin(self):
         rows, held = ny.inspect_payload(ny.OSNYC, osnyc_page(osnyc_card(venue="Other venue, 81 East 7th Street")), now=NOW)
@@ -292,6 +305,10 @@ class NewYorkSocialFinalTests(unittest.TestCase):
         self.assertNotEqual(row["lat"], 40.748441)
         self.assertEqual(row["starts_at"], "2026-11-18T20:00:00-05:00")
         self.assertEqual(row["image_url"], "https://radegasthall.com/wp-content/uploads/2026/11/band.png")
+        facts = row["collector_event_content_v1"]["facts"]
+        self.assertEqual(facts["provider_venue_id"], "3")
+        self.assertNotIn("venue_address", facts)
+        self.assertNotIn("source_latitude", facts)
 
     def test_radegast_room_label_is_not_an_event_description(self):
         for body in ("Bar Stage", "", "undefined", "a" * 12001):
@@ -321,6 +338,7 @@ class NewYorkSocialFinalTests(unittest.TestCase):
         cases = []
         cursor = deepcopy(first["checkpoint"]); cursor["cursor"] = 11; cases.append(cursor)
         description = deepcopy(first["checkpoint"]); description["events"][0]["description"] = ""; cases.append(description)
+        content = deepcopy(first["checkpoint"]); content["events"][0]["collector_event_content_v1"]["facts"]["description"] = "tampered"; cases.append(content)
         geo = deepcopy(first["checkpoint"]); geo["events"][0]["lat"] = 40.748441; cases.append(geo)
         window = deepcopy(first["checkpoint"]); window["window_start"] = "2026-11-15"; cases.append(window)
         for state in cases:
@@ -328,6 +346,17 @@ class NewYorkSocialFinalTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "checkpoint_invalid"):
                 ny.collect_chunk(source(ny.RADEGAST), fetch, checkpoint=state, now=NOW)
             fetch.assert_not_called()
+
+    def test_radegast_legacy_checkpoint_prefix_finishes_without_invented_originals(self):
+        with patch.object(ny, "record", side_effect=normalized_record):
+            first = ny.collect_chunk(source(ny.RADEGAST), Mock(return_value=amelia_api([amelia_event(i) for i in range(1, 13)], count=13)), now=NOW)
+            legacy = deepcopy(first["checkpoint"])
+            for row in legacy["events"]:
+                row.pop("collector_event_content_v1")
+            final = ny.collect_chunk(source(ny.RADEGAST), Mock(return_value=amelia_api([amelia_event(13)], count=13)),
+                                     checkpoint=legacy, now=NOW + timedelta(seconds=61))
+        self.assertTrue(final["complete"])
+        self.assertTrue(all("collector_event_content_v1" not in row for row in final["events"]))
 
     def test_radegast_missing_page_records_cannot_claim_complete(self):
         with patch.object(ny, "record", side_effect=normalized_record):
