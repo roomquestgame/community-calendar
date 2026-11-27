@@ -96,7 +96,7 @@ def collect(source, fetch, *, retain_original=False):
     url = urlunsplit((root.scheme, root.netloc, root.path, query_string, ''))
     payload = fetch(url, 'application/json')
     if base in SOURCES:
-        return parse(payload, source)  # Retain reviewed timezone/state/location checks.
+        return parse(payload, source, retain_original=retain_original)  # Retain reviewed timezone/state/location checks.
     return parse_registered(json.loads(payload), base, retain_original=retain_original)
 
 
@@ -202,6 +202,12 @@ def parse_registered(data, base, *, retain_original=False):
                              'Richmond', urljoin(base, path), f'{e["id"]}:{day}', '',
                              37.602130960539, -77.523501945619)
                 if row:
+                    if retain_original:
+                        from roomquest.event_description import description
+                        facts = original_content(e, row, base, description(e.get('body') or e.get('excerpt')))
+                        # Each organizer-listed session owns its own time instead of the enclosing series range.
+                        facts['facts']['ends_at_utc'] = end.astimezone(timezone.utc).isoformat()
+                        row['collector_event_content_v1'] = facts
                     out[(row['id'], row['starts_at'])] = row
             continue
         if not venue and not street:
@@ -231,7 +237,7 @@ def parse_registered(data, base, *, retain_original=False):
     return result
 
 
-def parse(payload, source):
+def parse(payload, source, *, retain_original=False):
     from roomquest.preview_worker import _preview
     base = source.get('feed_url')
     config = SOURCES.get(base)
@@ -295,6 +301,10 @@ def parse(payload, source):
                           link, identity, ', '.join(str(v) for v in event.get('categories', [])),
                           address, city, allow_ongoing=True)
         if record:
+            if retain_original:
+                from roomquest.event_description import description
+                narrative = description(event.get('body') or event.get('excerpt'))
+                record['collector_event_content_v1'] = original_content(event, record, base, narrative)
             key = (identity, record['starts_at'])
             if key in out and out[key] != record:
                 raise ValueError('conflicting_event_occurrence')

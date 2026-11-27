@@ -115,3 +115,15 @@ def test_worker_completeness_and_source_dispatch(monkeypatch):
                         lambda *args,**kwargs:[{'description':'','venue_address':'x'}])
     with pytest.raises(PreviewError,match='santa_cruz_local_incomplete_event'):
         preview_worker.preview_source(source())
+
+
+def test_woodhouse_fingerprint_ignores_reviewed_venue_and_changes_with_event(monkeypatch):
+    original = woodhouse_item()
+    first = sc.woodhouse(original, NOW)
+    monkeypatch.setitem(sc.VENUE, sc.WOODHOUSE, ('Renamed venue', 'Updated review street', 'Santa Cruz'))
+    second = sc.woodhouse(original, NOW)
+    assert first['id'] == second['id']
+    assert first['collector_event_content_v1'] == second['collector_event_content_v1']
+    changed = sc.woodhouse({**original, 'title': 'Updated concert'}, NOW)
+    assert changed['id'] == first['id']
+    assert changed['collector_event_content_v1'] != first['collector_event_content_v1']

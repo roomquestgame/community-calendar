@@ -188,6 +188,8 @@ def _row(key,e,now):
                location_provenance="publisher_event_specific_street_and_GPS")
     from roomquest.publisher_evidence import attach
     # Publisher image rights are unreviewed: no image candidates for this new source.
+    from roomquest.squarespace import original_content
+    row['collector_event_content_v1'] = original_content(e, row, SOURCES[key][0], desc)
     return attach(row,key,candidate=None if key==REFUGE else e.get("assetUrl"))
 
 
