@@ -224,6 +224,79 @@ def _within(start, end, now):
     return start < now + timedelta(days=60) and (end or start + timedelta(hours=3)) > now
 
 
+def _publisher_location(node):
+    """Return only location facts carried by this event card or detail."""
+    locations = node.select(".eventlist-meta-address,.eventitem-meta-address")
+    if not locations:
+        return {}
+    location = locations[0]
+    label = location.select_one(".eventitem-meta-address-line--title")
+    name = plain((label or location).get_text(" ")).removesuffix("(map)").strip()
+    facts = {"venue_name": name} if name else {}
+    queries = []
+    for link in location.select('a[href]'):
+        parsed = urlsplit(link["href"])
+        if parsed.hostname in {"maps.google.com", "www.google.com"}:
+            queries.extend(parse_qs(parsed.query).get("q", []))
+    if queries and len(set(queries)) == 1:
+        facts["venue_address"] = plain(queries[0])
+    return facts
+
+
+def _attach_content(row, key, item):
+    if row is None:
+        return None
+    place = item.get("content_venue") if isinstance(item.get("content_venue"), dict) else {}
+    facts = {
+        "title": item["title"],
+        "description": _validated_body(item["body"]),
+        "is_all_day": False,
+        "starts_at_utc": timestamp(item["start"]).astimezone(timezone.utc).isoformat(),
+        "ends_at_utc": (timestamp(item.get("end")).astimezone(timezone.utc).isoformat()
+                         if timestamp(item.get("end")) else None),
+        "event_url": item["url"],
+        "venue_name": place.get("venue_name"),
+        "venue_address": place.get("venue_address"),
+        "venue_city": place.get("venue_city"),
+        "venue_region": place.get("venue_region"),
+        "venue_postal_code": place.get("venue_postal_code"),
+        "venue_country": place.get("venue_country"),
+        "source_image_url": photo_url(key, item.get("image")),
+        "publisher_categories": [item["category"]] if item.get("category") else None,
+        "native_options": item.get("native_options"),
+    }
+    facts = {name: value for name, value in facts.items()
+             if value is not None and value != "" and value != {}}
+    row["collector_event_content_v1"] = {
+        "version": 1,
+        "event_id": row["id"],
+        "facts": facts,
+    }
+    return row
+
+
+def _content_envelope_valid(row):
+    evidence = row.get("collector_event_content_v1")
+    if evidence is None:
+        return True
+    if (not isinstance(evidence, dict) or set(evidence) != {"version", "event_id", "facts"}
+            or evidence.get("version") != 1 or evidence.get("event_id") != row.get("id")
+            or not isinstance(evidence.get("facts"), dict)):
+        return False
+    facts = evidence["facts"]
+    expected = {
+        "title": row.get("title"),
+        "description": row.get("description"),
+        "is_all_day": False,
+        "starts_at_utc": timestamp(row.get("starts_at")).astimezone(timezone.utc).isoformat(),
+        "event_url": row.get("event_url"),
+    }
+    end = timestamp(row.get("ends_at"))
+    if end is not None:
+        expected["ends_at_utc"] = end.astimezone(timezone.utc).isoformat()
+    return all(facts.get(name) == value for name, value in expected.items())
+
+
 def _item(key, url, title, start, end, venue_key=None, image=None):
     title = plain(title)
     if (not event_url(key, url) or not 1 <= len(title) <= 180 or not start
@@ -289,6 +362,7 @@ def _square_manifest(key, soup, now):
         image = card.select_one("img[data-src],img[src]")
         item = _item(key, urljoin(SOURCES[key][0], a["href"]), title, start, end,
                      image=(image.get("data-src") or image.get("src")) if image else None)
+        item["content_venue"] = _publisher_location(card)
         try:
             item["venue_key"] = _square_location(key, card)
         except ValueError:
@@ -326,6 +400,7 @@ def _bebop_manifest(soup, now):
                 or re.match(r"No (?:Gypsy Jazz|Bluegrass Jam)\b", plain(a.get_text()), re.I)):
             continue
         item = _item(BEBOP, url, a.get_text(), start, end)
+        item["content_venue"] = _publisher_location(node)
         # Dedicated venue calendar. Reject explicitly different map addresses.
         item["venue_key"] = _square_location(BEBOP, node)
         queue.append(item)
@@ -351,6 +426,7 @@ def _aeronaut_manifest(payload, now):
         if not _within(start, end, now):
             continue
         item = _item(AERONAUT, SOURCES[AERONAUT][0], event.get("name"), start, end, "aeronaut", event.get("img_url"))
+        item["native_options"] = {"venue_slug": event["venue_slug"]}
         try:
             item["body"] = _body(event.get("description"))
         except ValueError as exc:
@@ -381,6 +457,7 @@ def _lamplighter_manifest(soup, now):
         image = card.select_one("img[src]")
         item = _item(LAMPLIGHTER, urljoin(SOURCES[LAMPLIGHTER][0], card["href"]), values["0"], start, end, venue,
                      image.get("src") if image else None)
+        item["content_venue"] = {"venue_name": values["3"]}
         if not venue:
             item["held"] = "boston_nightlife_venue_unresolved"
         queue.append(item)
@@ -427,6 +504,19 @@ def _club_manifest(soup, now):
             continue
         loc = native.get("location") or {}
         item = _item(CLUB, a["href"], title, start, end, image=native.get("image"))
+        address = loc.get("address")
+        if isinstance(address, dict):
+            item["content_venue"] = {
+                "venue_name": plain(loc.get("name")),
+                "venue_address": plain(address.get("streetAddress")),
+                "venue_city": plain(address.get("addressLocality")),
+                "venue_region": plain(address.get("addressRegion")),
+                "venue_postal_code": plain(str(address.get("postalCode") or "")),
+                "venue_country": plain(address.get("addressCountry")),
+            }
+        elif isinstance(address, str):
+            item["content_venue"] = {"venue_name": plain(loc.get("name")),
+                                     "venue_address": plain(address)}
         if plain(loc.get("address")) == "209 Columbus Avenue, Boston, MA 02116":
             item["venue_key"] = "club"
         else:
@@ -550,6 +640,7 @@ def _detail(key, item, payload):
         if start != timestamp(item["start"]) or end != timestamp(item["end"]):
             raise ValueError("boston_nightlife_schedule_changed")
         result["venue_key"] = _square_location(key, soup)
+        result["content_venue"] = _publisher_location(soup)
         body = soup.select_one(".eventitem-column-content .sqs-layout,.eventitem-content .sqs-layout")
         if body is None:
             body = soup.select_one(".eventitem .sqs-layout")
@@ -615,7 +706,7 @@ def _row(key, item):
             row["image_url"] = item["image"]
         if item.get("category"):
             row["publisher_categories"] = [item["category"]]
-    return row
+    return _attach_content(row, key, item)
 
 
 def _checkpoint(value, key, now):
@@ -653,6 +744,7 @@ def _checkpoint(value, key, now):
                     or row.get("ends_at") != (timestamp(native["end"]).astimezone(timezone.utc).isoformat() if native.get("end") else None)
                     or _validated_body(row["description"]) != row["description"] or native.get("body") and row["description"] != native["body"]
                     or row.get("timezone") != ZONE or row.get("attendance_mode") != "in_person"
+                    or not _content_envelope_valid(row)
                     or (row.get("lat"), row.get("lng")) != (reviewed_venue_location(key, place[0], place[1]) or (None, None))
                     or row.get("image_url") is not None and photo_url(key, row["image_url"]) is None):
                 raise ValueError
@@ -676,6 +768,8 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
         raise ValueError("boston_nightlife_checkpoint_invalid")
     current = current.astimezone(timezone.utc)
     state = _checkpoint(checkpoint, key, current)
+    legacy_prefix = bool(state and state["events"] and
+                         any("collector_event_content_v1" not in row for row in state["events"]))
     anchor = timestamp(state["started_at"]) if state else current
     if deadline_at is not None and monotonic() >= deadline_at:
         raise ValueError("collection_deadline")
@@ -729,6 +823,8 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
             row = _row(key, full)
             if row is None:
                 raise ValueError("no_available_future_occurrence")
+            if legacy_prefix:
+                row.pop("collector_event_content_v1", None)
             state["events"].append(row)
         except ValueError as exc:
             if str(exc) not in HOLD_CODES | {"no_available_future_occurrence"}:
