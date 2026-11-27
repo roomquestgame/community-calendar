@@ -17,7 +17,7 @@ from zoneinfo import ZoneInfo
 from bs4 import BeautifulSoup
 
 from roomquest.event_description import description
-from roomquest.mapsee_adapter import record
+from roomquest.mapsee_adapter import record, timestamp
 
 ZONE = "America/New_York"
 ZOO = "bronx_zoo_holiday_lights_ny"
@@ -144,6 +144,26 @@ def _clock(value):
     return time(int(match[1]) % 12 + (12 if match[3].lower() == "pm" else 0), int(match[2] or 0))
 
 
+def _attach_content(row, body, venue_name, venue_address, venue_city):
+    start, end = timestamp(row.get("starts_at")), timestamp(row.get("ends_at"))
+    if start is None or start.tzinfo is None or end is None or end.tzinfo is None or end <= start:
+        raise ValueError("nyc_family_schedule_conflict")
+    postal = re.search(r"\bNY\s+(\d{5}(?:-\d{4})?)\s*$", venue_address)
+    facts = {
+        "title": row["title"], "description": body, "is_all_day": False,
+        "starts_at_utc": start.astimezone(timezone.utc).isoformat(),
+        "ends_at_utc": end.astimezone(timezone.utc).isoformat(),
+        "source_timezone": ZONE, "event_url": row["event_url"],
+        "venue_name": venue_name, "venue_address": venue_address,
+        "venue_city": venue_city, "venue_region": "NY",
+        "venue_postal_code": postal[1] if postal else None,
+        "attendance_mode": "in_person",
+    }
+    facts = {name: value for name, value in facts.items() if value not in (None, "")}
+    row["collector_event_content_v1"] = {"version": 1, "event_id": row["id"], "facts": facts}
+    return row
+
+
 def _rows(key, days, opening, closing, body, now, sensory=None):
     if closing <= opening:
         raise ValueError("nyc_family_schedule_conflict")
@@ -162,9 +182,11 @@ def _rows(key, days, opening, closing, body, now, sensory=None):
                      publisher_geo=True, retain_until_end=True)
         if row is None:
             raise ValueError("nyc_family_schedule_conflict")
-        row.update(description=_body(body), timezone=ZONE, attendance_mode="in_person",
+        native_body = _body(body)
+        row.update(description=native_body, timezone=ZONE, attendance_mode="in_person",
                    publisher_categories=[], location_provenance="publisher_contact_address_exact_nyc_pad_point",
                    schedule_provenance="publisher_explicit_season_dates_and_operating_hours")
+        _attach_content(row, native_body, name, address, city)
         rows.append(row)
     if len(rows) > MAX_RECORDS:
         raise ValueError("nyc_family_record_limit")
