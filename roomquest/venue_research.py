@@ -56,9 +56,16 @@ def allowed_url(url, hosts):
 
 def scope_for(claim, permit):
     fields = {"permit_id", "venue", "locality", "region", "country", "hosts"}
-    if not isinstance(permit, dict) or set(permit) not in (fields, fields | {"scope_version"}):
+    from roomquest import nyc_official_venue
+    if not isinstance(permit, dict):
         return None
-    if "scope_version" in permit and permit["scope_version"] != "registered_venue_v1":
+    official = permit.get("scope_version") == nyc_official_venue.VERSION
+    if official:
+        if set(permit) != fields | {"scope_version", "evidence_venue"} or not nyc_official_venue.valid_scope(claim, permit):
+            return None
+    elif set(permit) not in (fields, fields | {"scope_version"}):
+        return None
+    elif "scope_version" in permit and permit["scope_version"] != "registered_venue_v1":
         return None
     if any(not isinstance(permit[k], str) or not permit[k].strip() or len(permit[k]) > 200
            or any(ord(c) < 32 for c in permit[k])
@@ -86,16 +93,32 @@ def passages_from_page(html, url, scope):
     for node in soup.select("script,style,nav,footer,noscript,template"):
         node.decompose()
     main = soup.select_one("main,article") or soup.body or soup
+    expected = scope.get("evidence_venue", scope["venue"])
+    found = []
+    # A city directory may identify the facility in an exact table cell.
+    # Keep all identity and address evidence in the same semantic row.
+    if scope.get("scope_version") == "nyc_official_venue_v1":
+        for row in main.select("tr")[:300]:
+            cells = [x.get_text(" ", strip=True) for x in row.find_all(["td", "th"], recursive=False)]
+            if not any(norm(cell) == norm(expected) for cell in cells):
+                continue
+            passage = " | ".join(cells)
+            if len(passage) > MAX_PASSAGE or not contains(passage, scope["locality"]) or not STREET.search(passage):
+                continue
+            key = hashlib.sha256((url + "\n" + passage).encode()).hexdigest()
+            if all(p["id"] != key for p in found):
+                found.append({"id": key, "url": url, "text": passage})
+            if len(found) == 2:
+                return found
     headings = {norm(x.get_text(" ", strip=True)) for x in main.select("h1,h2")[:20]}
-    if norm(scope["venue"]) not in headings:
-        return []  # A different venue, footer, or merely fuzzy heading is not evidence.
+    if norm(expected) not in headings:
+        return found  # An unrelated heading or footer is not evidence.
     if scope["country"] == "GB":
         visible = "\n".join(" ".join(t.split()) for t in main.stripped_strings)
     else:
         visible = " ".join(main.get_text(" ", strip=True).split())
-    tokens = re.findall(r"\w+", scope["venue"])
+    tokens = re.findall(r"\w+", expected)
     pattern = re.compile(r"(?<!\w)" + r"\W+".join(re.escape(t) for t in tokens) + r"(?!\w)", re.I)
-    found = []
     for match in pattern.finditer(visible):
         start = max(0, match.start() - 100)
         passage = visible[start:start + MAX_PASSAGE].strip()
@@ -125,6 +148,7 @@ def proposal(scope, passages, *, complete, model):
     if len(streets) != 1:
         return {"status": "held", "reason": "conflicting_evidence"}
     identity = {k: scope[k] for k in ("venue", "locality", "region", "country")}
+    identity["venue"] = scope.get("evidence_venue", scope["venue"])
     try:
         raw = complete({"identity": identity, "passages": passages})
         if not isinstance(raw, str) or len(raw.encode()) > MAX_RESPONSE:
@@ -140,7 +164,7 @@ def proposal(scope, passages, *, complete, model):
         street, locality, postal, quote = (result[k].strip() for k in ("street", "locality", "postal_code", "quote"))
         if (p is None or not 8 <= len(quote) <= 700 or quote not in p["text"]
                 or not 3 <= len(street) <= 120 or norm(locality) != norm(scope["locality"])
-                or not all(contains(quote, value) for value in (scope["venue"], street, locality))
+                or not all(contains(quote, value) for value in (scope.get("evidence_venue", scope["venue"]), street, locality))
                 or any(term in street.lower() for term in ("p.o. box", "po box", "virtual"))):
             raise ValueError("unsupported_quote")
         if scope["country"] == "GB":
@@ -173,7 +197,8 @@ def research(claim, *, admit, search, fetch, complete, model, deadline, clock=mo
     scope = scope_for(claim, admit(claim))
     if scope is None:
         return {"status": "held", "reason": "budget_or_scope_not_admitted"}
-    query = " ".join(scope[k] for k in ("venue", "locality", "region", "country")) + " street address"
+    query = " ".join((scope.get("evidence_venue", scope["venue"]), scope["locality"],
+                      scope["region"], scope["country"])) + " street address"
     try:
         urls = search(query, scope["hosts"], deadline_at=deadline - 8)
     except (ValueError, requests.RequestException):
@@ -302,6 +327,7 @@ def handle_claim(database, claim, identity, config, *, fetch, deadline, clock):
     if "research_permit" not in claim:
         return None
     # A server-issued, valid permit, not an adapter label, authorizes research.
+    detail = "budget_or_scope_not_admitted"
     if config and scope_for(claim, claim.get("research_permit")) is not None:
         answer = research(claim, admit=lambda _: claim["research_permit"],
                           search=lambda query, hosts, *, deadline_at: search_urls(
@@ -311,6 +337,7 @@ def handle_claim(database, claim, identity, config, *, fetch, deadline, clock):
                               deadline_at=deadline-0.5, clock=clock,
                               provider=config.get("provider", "anthropic")),
                           model=config["model"], deadline=deadline, clock=clock)
+        detail = answer.get("reason") or "proposal_rejected"
         if answer.get("status") == "proposed":
             receipt = database("research_propose", {**identity, "proposal": answer})
             if isinstance(receipt, dict) and receipt.get("recorded") is True:
@@ -319,5 +346,12 @@ def handle_claim(database, claim, identity, config, *, fetch, deadline, clock):
                     return "resolved"
                 # A transport/contract failure is not a successful publication.
                 raise ValueError("research_submit_not_recorded")
-    database("fail", {**identity, "reason": "needs_review"})
+    # Fixed enum only; never log provider payloads, URLs or credentials.
+    if detail not in {"budget_or_scope_not_admitted", "configuration_or_deadline",
+                      "search_unavailable", "incomplete_evidence_set", "deadline",
+                      "no_scoped_passage", "conflicting_evidence", "ambiguous",
+                      "model_unavailable_or_invalid", "proposal_rejected"}:
+        detail = "unsupported_evidence"
+    database("fail", {**identity, "reason": "needs_review", "detail": detail})
+    print("venue_resolution_outcome", detail)
     return "review"

@@ -284,7 +284,7 @@ def run_batch(*, database=None, resolver=None, clock=None, deadline_seconds=15,
     if os.environ.get("FORWARD_GEOCODER_ENABLED") != "true" or os.environ.get("VERCEL_ENV") != "production":
         return stats
     database, resolver, clock = database or rpc, resolver or resolve, clock or monotonic
-    from roomquest import venue_research
+    from roomquest import venue_research, nyc_official_venue
     research_config = venue_research.configured(oidc_token=oidc_token)
     start = clock()
     # Keep ordinary work at its existing 15-second budget. A scheduled
@@ -311,15 +311,44 @@ def run_batch(*, database=None, resolver=None, clock=None, deadline_seconds=15,
             if outcome is not None:
                 stats[outcome] += 1
                 continue
-            answer = resolver(claim, deadline=ordinary_deadline)
+            official = (claim.get("research_scope") or {}).get("scope_version") == nyc_official_venue.VERSION
+            if official:
+                try:
+                    answer = nyc_official_venue.resolve_official(
+                        claim, fetch=fetch_publisher, deadline_at=ordinary_deadline)
+                except nyc_official_venue.DirectoryConflict:
+                    database("fail", {**identity, "reason": "needs_review", "detail": "conflicting_evidence"})
+                    stats["review"] += 1
+                    print("venue_resolution_outcome", "conflicting_evidence")
+                    continue
+                except PreviewError as exc:
+                    if str(exc) in {"robots_denied", "publisher_http_401", "publisher_http_403",
+                                    "publisher_wait_requires_review", "publisher_rate_limited",
+                                    "publisher_http_429"}:
+                        database("fail", {**identity, "reason": "needs_review", "detail": "directory_access_denied"})
+                        stats["review"] += 1
+                        print("venue_resolution_outcome", "directory_access_denied")
+                        continue
+                    # No original event-page retry or proxy. An unavailable
+                    # directory may use separately published city evidence.
+                    print("venue_resolution_outcome", "directory_unavailable")
+                    answer = None
+                except (ValueError, requests.RequestException, OSError):
+                    print("venue_resolution_outcome", "directory_unavailable")
+                    answer = None
+            else:
+                answer = resolver(claim, deadline=ordinary_deadline)
             if answer:
-                database("submit", {**identity, **answer})
+                receipt = database("submit", {**identity, **answer})
+                if official and (not isinstance(receipt, dict) or receipt.get("recorded") is not True):
+                    raise ValueError("official_submit_not_recorded")
                 stats["resolved"] += 1
             elif venue_research.defer_miss(database, claim, identity, research_config):
                 stats["research_deferred"] = stats.get("research_deferred", 0) + 1
             else:
-                database("fail", {**identity, "reason": "needs_review"})
+                database("fail", {**identity, "reason": "needs_review", "detail": "clean_miss"})
                 stats["review"] += 1
+                print("venue_resolution_outcome", "clean_miss")
         except PreviewError as exc:
             # Publisher deny/robots restrictions are review holds, not
             # retryable generic network outages; never test a bypass URL.
@@ -327,10 +356,13 @@ def run_batch(*, database=None, resolver=None, clock=None, deadline_seconds=15,
                 "robots_denied", "publisher_http_401", "publisher_http_403",
             }
             database("fail", {**identity, "reason":
-                              "needs_review" if blocked else "page_unavailable"})
+                              "needs_review" if blocked else "page_unavailable",
+                              "detail": "publisher_access_denied" if blocked else "page_unavailable"})
+            print("venue_resolution_outcome", "publisher_access_denied" if blocked else "page_unavailable")
             stats["review" if blocked else "errors"] += 1
         except (requests.RequestException, ValueError, OSError):
-            database("fail", {**identity, "reason": "page_unavailable"})
+            database("fail", {**identity, "reason": "page_unavailable", "detail": "page_unavailable"})
+            print("venue_resolution_outcome", "page_unavailable")
             stats["errors"] += 1
     return stats
 
