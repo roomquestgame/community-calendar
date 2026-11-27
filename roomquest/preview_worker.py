@@ -1209,7 +1209,9 @@ def parse_ics_preview(payload: str, *, allow_ongoing=False, include_images=True,
     """Use upstream combine_ics recurrence expansion and icalendar VEVENT parsing."""
     from icalendar import Calendar
     from scripts.combine_ics import expand_rrules
+    from roomquest.ical_source_semantics import capture, staging_enabled
 
+    collect_facts = include_source_semantics or staging_enabled()
     original = Calendar.from_ical(payload)
     expanded = expand_rrules(payload, window_days=LOOKAHEAD_DAYS)
     items = []
@@ -1243,9 +1245,10 @@ def parse_ics_preview(payload: str, *, allow_ongoing=False, include_images=True,
                               calendar_categories(item), image=calendar_image(item) if include_images else None,
                               allow_ongoing=allow_ongoing)
             if record:
-                if include_source_semantics:
-                    from roomquest.ical_source_semantics import capture
-                    record["source_semantics_v1"] = capture(item)
+                if collect_facts:
+                    facts = capture(item)
+                    if 0 < len(facts["original_uid"]) <= 180:
+                        record["source_semantics_v1"] = facts
                 tzid = item["DTSTART"].params.get("TZID")
                 if isinstance(tzid, str):
                     try:
@@ -1362,7 +1365,7 @@ def parse_jsonld_preview(payload: str) -> list[dict]:
     return results
 
 
-def parse_growthzone_preview(payload: str, source: dict) -> list[dict]:
+def parse_growthzone_preview(payload: str, source: dict, *, retain_original=False) -> list[dict]:
     """Call Udell's GrowthZone/ChamberMaster XML parser, without its unrestricted fetch."""
     if not source.get("timezone"):
         raise PreviewError("source_timezone_required")
@@ -1407,6 +1410,26 @@ def parse_growthzone_preview(payload: str, source: dict) -> list[dict]:
                           item.get("location"), None, None, item.get("url"), event_id,
                           category=item.get("category", ""),
                           address=item.get("address", ""), city=item.get("city", ""))
+        if record and retain_original:
+            from roomquest.event_description import description
+            publisher_times = [
+                datetime.fromisoformat(raw) if raw else None
+                for raw in (element.findtext("StartDate"), element.findtext("EndDate"))
+            ]
+            start, end = publisher_times
+            has_offset = start.tzinfo is not None
+            if end is None or (end.tzinfo is not None) == has_offset:
+                schedule = "utc" if has_offset else "local"
+                record["collector_event_content_v1"] = {
+                    "version": 1, "event_id": record["id"],
+                    "facts": {
+                        "title": record["title"], "description": description(element.findtext("Description")) or None,
+                        "is_all_day": False, "publisher_status": "scheduled",
+                        f"starts_at_{schedule}": start.isoformat(),
+                        f"ends_at_{schedule}": end.isoformat() if end else None,
+                        "event_url": record["event_url"],
+                    },
+                }
         if record:
             results.append(record)
     return results
@@ -1473,7 +1496,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                                    allowed_hosts=(urlparse(url).hostname,), **options)
         try:
             profile = provider_registration.read_profile(url, adapter, supabase_rpc)
-            records = provider_registration.collect(url, adapter, fetch, deadline=deadline, profile=profile)
+            records = provider_registration.collect(url, adapter, fetch, deadline=deadline, profile=profile,
+                                                    retain_original=adapter in ('spektrix', 'tickera', 'event_discovery', 'chambermate', 'growthzone'))
             location_claim = {**source, **{
                 key: profile.get(key) for key in (
                     'publisher_default_venue', 'publisher_default_lat',
@@ -1492,7 +1516,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
             for record in records:
                 attach(record, source, description_value=record.get('description'),
                        image_value=record.get('image_url'))
-        samples = records[:MAX_PREVIEWS]
+        samples = [{key: value for key, value in row.items() if key != 'collector_event_content_v1'}
+                   for row in records[:MAX_PREVIEWS]]
         while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
             samples.pop()
         return {**({'p_parser_capability': NATIVE_VERSION} if spektrix_native else {}),
@@ -1674,7 +1699,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
             reason = str(exc)
             raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}', reason)
                                else 'invalid_dirty_apron_payload') from exc
-        samples = records[:MAX_PREVIEWS]
+        samples = [{k: v for k, v in row.items() if k != 'collector_event_content_v1'}
+                   for row in records[:MAX_PREVIEWS]]
         while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
             samples.pop()
         return {'p_source_key': source_key, 'p_samples': samples,
@@ -1939,7 +1965,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
             reason = str(exc)
             raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}', reason)
                                else 'invalid_anchorage_batch20_multi_payload') from exc
-        samples = records[:MAX_PREVIEWS]
+        samples = [{k: v for k, v in row.items() if k != 'collector_event_content_v1'}
+                   for row in records[:MAX_PREVIEWS]]
         while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
             samples.pop()
         return {'p_source_key': source_key, 'p_samples': samples,
@@ -1985,7 +2012,7 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
             records = anchorage_batch20.collect(
                 source, lambda url, accept: fetch_publisher(
                     url, accept, respect_robots=True, deadline_at=deadline,
-                    allowed_hosts=anchorage_batch20.ALLOWED_HOSTS[source_key]), deadline_at=deadline)
+                    allowed_hosts=anchorage_batch20.ALLOWED_HOSTS[source_key]), deadline_at=deadline, retain_original=True)
             if any(not isinstance(row.get('description'), str) or not row['description'].strip()
                    or len(row['description']) > anchorage_batch20.MAX_DESCRIPTION
                    or not isinstance(row.get('venue_address'), str)
@@ -2001,7 +2028,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
             reason = str(exc)
             raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}', reason)
                                else 'invalid_anchorage_batch20_payload') from exc
-        samples = records[:MAX_PREVIEWS]
+        samples = [{k: v for k, v in row.items() if k != 'collector_event_content_v1'}
+                   for row in records[:MAX_PREVIEWS]]
         while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
             samples.pop()
         return {'p_source_key': source_key, 'p_samples': samples,
@@ -2031,7 +2059,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
             reason = str(exc)
             raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}', reason)
                                else 'invalid_anchorage_expansion_payload') from exc
-        samples = records[:MAX_PREVIEWS]
+        samples = [{k: v for k, v in row.items() if k != 'collector_event_content_v1'}
+                   for row in records[:MAX_PREVIEWS]]
         while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
             samples.pop()
         return {'p_source_key': source_key, 'p_samples': samples,
@@ -2438,7 +2467,7 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                 source, lambda url, accept: fetch_publisher(
                     url, accept, respect_robots=True, deadline_at=deadline,
                     allowed_hosts=gainesville_direct_feeds.ALLOWED_HOSTS[source_key]),
-                deadline_at=deadline)
+                deadline_at=deadline, retain_original=source_key in gainesville_direct_feeds.LIBRARY_PROFILES)
             if any(not isinstance(row.get('description'), str)
                    or len(row['description']) > gainesville_direct_feeds.MAX_DESCRIPTION
                    or not isinstance(row.get('venue_address'), str)
@@ -2450,7 +2479,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
             reason = str(exc)
             raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}', reason)
                                else 'invalid_gainesville_direct_payload') from exc
-        samples = records[:MAX_PREVIEWS]
+        samples = [{key: value for key, value in row.items() if key != 'collector_event_content_v1'}
+                   for row in records[:MAX_PREVIEWS]]
         while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
             samples.pop()
         return {'p_source_key': source_key, 'p_samples': samples,
@@ -3004,7 +3034,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
             reason=str(exc)
             raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}',reason)
                                else 'taiko_invalid_payload') from exc
-        samples=records[:MAX_PREVIEWS]
+        samples = [{k: v for k, v in row.items() if k != 'collector_event_content_v1'}
+                   for row in records[:MAX_PREVIEWS]]
         while len(json.dumps(samples,ensure_ascii=False))>18_000: samples.pop()
         return {'p_source_key':source_key,'p_samples':samples,
                 'p_future_count':len(records),'p_venue_count':0,
@@ -3288,7 +3319,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
             code=str(exc)
             raise PreviewError(code if re.fullmatch(r'[a-z_]{3,100}',code)
                                else 'invalid_santa_cruz_local_payload') from exc
-        samples=records[:MAX_PREVIEWS]
+        samples = [{k: v for k, v in row.items() if k != 'collector_event_content_v1'}
+                   for row in records[:MAX_PREVIEWS]]
         while len(json.dumps(samples,ensure_ascii=False))>18_000:samples.pop()
         return {'p_parser_capability':'publisher_event_candidates_v1',
                 'p_source_key':source_key,'p_samples':samples,
@@ -3412,7 +3444,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
             raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}', reason) else 'invalid_civic_payload') from exc
         if len(records) > 500:
             raise PreviewError('source_record_limit')
-        samples = records[:MAX_PREVIEWS]
+        samples = [{k: v for k, v in row.items() if k != 'collector_event_content_v1'}
+                   for row in records[:MAX_PREVIEWS]]
         while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
             samples.pop()
         return {'p_source_key': source_key, 'p_samples': samples,
@@ -3588,13 +3621,14 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         deadline = min(monotonic() + 30, deadline_at - 8 if deadline_at is not None else float("inf"))
         try:
             records = collect(source, lambda url, accept: fetch_publisher(
-                url, accept, respect_robots=True, deadline_at=deadline), deadline_at=deadline)
+                url, accept, respect_robots=True, deadline_at=deadline), deadline_at=deadline, retain_original=True)
         except PreviewError:
             raise
         except (ValueError, TypeError, KeyError, OverflowError) as exc:
             reason = str(exc)
             raise PreviewError(reason if re.fullmatch(r"[a-z_]{3,100}", reason) else "invalid_calendar_payload") from exc
-        samples = records[:MAX_PREVIEWS]
+        samples = [{key: value for key, value in row.items() if key != 'collector_event_content_v1'}
+                   for row in records[:MAX_PREVIEWS]]
         while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
             samples.pop()
         return {"p_source_key": source["source_key"], "p_samples": samples,
@@ -3623,7 +3657,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         except (ValueError, TypeError, KeyError, OverflowError) as exc:
             reason = str(exc)
             raise PreviewError(reason if re.fullmatch(r"[a-z_]{3,100}", reason) else "invalid_revize_payload") from exc
-        samples = records[:MAX_PREVIEWS]
+        samples = [{k: v for k, v in row.items() if k != 'collector_event_content_v1'}
+                   for row in records[:MAX_PREVIEWS]]
         while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
             samples.pop()
         return {"p_source_key": source["source_key"], "p_samples": samples,
@@ -3938,7 +3973,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         except (ValueError, TypeError, KeyError, OverflowError) as exc:
             reason = str(exc)
             raise PreviewError(reason if re.fullmatch(r"[a-z_]{3,100}", reason) else "invalid_html_event_payload") from exc
-        samples = records[:MAX_PREVIEWS]
+        samples = [{k: v for k, v in row.items() if k != 'collector_event_content_v1'}
+                   for row in records[:MAX_PREVIEWS]]
         while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
             samples.pop()
         result = {"p_source_key": source["source_key"], "p_samples": samples,
@@ -3964,13 +4000,14 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                 source, lambda url, accept: fetch_publisher(
                     url, accept, respect_robots=True, deadline_at=deadline,
                     allowed_hosts=(API_HOST,),
-                ), deadline_at=deadline)
+                ), deadline_at=deadline, retain_original=True)
         except PreviewError:
             raise
         except (ValueError, TypeError, KeyError, OverflowError) as exc:
             reason = str(exc)
             raise PreviewError(reason if re.fullmatch(r"[a-z_]{3,100}", reason) else "invalid_chambermate_payload") from exc
-        samples = records[:MAX_PREVIEWS]
+        samples = [{key: value for key, value in row.items() if key != "collector_event_content_v1"}
+                   for row in records[:MAX_PREVIEWS]]
         while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
             samples.pop()
         return {"p_source_key": source["source_key"], "p_samples": samples,
@@ -4002,7 +4039,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         except (ValueError, TypeError, KeyError, OverflowError) as exc:
             reason = str(exc)
             raise PreviewError(reason if re.fullmatch(r"[a-z_]{3,100}", reason) else "invalid_calendar_payload") from exc
-        samples = records[:MAX_PREVIEWS]
+        samples = [{key: value for key, value in row.items() if key != "collector_event_content_v1"}
+                   for row in records[:MAX_PREVIEWS]]
         while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
             samples.pop()
         from roomquest.registered_native_content import enabled as native_enabled, VERSION as NATIVE_VERSION
@@ -4046,7 +4084,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         except (ValueError, TypeError, KeyError, OverflowError) as exc:
             reason = str(exc)
             raise PreviewError(reason if re.fullmatch(r"[a-z_]{3,100}", reason) else "invalid_calendar_payload") from exc
-        samples = records[:MAX_PREVIEWS]
+        samples = [{key: value for key, value in row.items() if key != "collector_event_content_v1"}
+                   for row in records[:MAX_PREVIEWS]]
         while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
             samples.pop()
         from roomquest.registered_native_content import enabled as native_enabled, VERSION as NATIVE_VERSION
@@ -4112,14 +4151,16 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
         deadline = min(monotonic() + 20, deadline_at - 8 if deadline_at is not None else float("inf"))
         try:
             records = collect_squarespace(source, lambda url, accept: fetch_publisher(
-                url, accept, respect_robots=True, deadline_at=deadline))
+                url, accept, respect_robots=True, deadline_at=deadline),
+                retain_original=True)
         except PreviewError:
             # Transport errors are already safe, bounded codes (including HTTP digits).
             raise
         except (ValueError, TypeError, KeyError, OverflowError) as exc:
             reason = str(exc)
             raise PreviewError(reason if re.fullmatch(r"[a-z_]{3,100}", reason) else "invalid_calendar_payload") from exc
-        samples = records[:MAX_PREVIEWS]
+        samples = [{key: value for key, value in row.items() if key != "collector_event_content_v1"}
+                   for row in records[:MAX_PREVIEWS]]
         while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
             samples.pop()
         return {"p_source_key": source["source_key"], "p_samples": samples,
@@ -4141,7 +4182,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
                 raise PreviewError("collection_deadline")
             if direct_localist:
                 records = collect_localist(source['feed_url'], lambda url, accept: fetch_publisher(
-                    url, accept, respect_robots=True, deadline_at=deadline, allowed_hosts=(urlparse(source['feed_url']).hostname,)))
+                    url, accept, respect_robots=True, deadline_at=deadline, allowed_hosts=(urlparse(source['feed_url']).hostname,)),
+                    retain_original=True)
             else:
                 records = collect(source, profile, lambda url, accept: fetch_publisher(
                     url, accept, respect_robots=True, deadline_at=deadline))
@@ -4153,7 +4195,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
             if re.fullmatch(r"[a-z_]{3,100}", reason):
                 raise PreviewError(reason) from exc
             raise PreviewError("invalid_calendar_payload") from exc
-        samples = records[:MAX_PREVIEWS]
+        samples = [{key: value for key, value in row.items() if key != 'collector_event_content_v1'}
+                   for row in records[:MAX_PREVIEWS]]
         while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
             samples.pop()
         return {
@@ -4188,13 +4231,13 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
             events = parse(payload, {"url": url}, legacy=True)
         elif adapter == "squarespace":
             from roomquest.squarespace import parse
-            events = parse(payload, source)
+            events = parse(payload, source, retain_original=True)
         elif adapter == "jsonld":
             events = parse_jsonld_preview(payload)
         elif adapter == "growthzone":
             if chambermaster:
                 from roomquest.chambermaster import collect
-                events = collect(source, payload, min(monotonic() + 34, deadline_at or float("inf")))
+                events = collect(source, payload, min(monotonic() + 34, deadline_at or float("inf")), retain_original=True)
             else:
                 events = parse_growthzone_preview(payload, source)
         else:
@@ -4208,7 +4251,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
     unique = {((row.get("id") or row.get("title") or ""), row["starts_at"]): row for row in events}
     records = sorted(unique.values(), key=lambda row: (row["starts_at"], row["title"]))[:500]
     return {
-        "p_source_key": source["source_key"], "p_samples": records[:MAX_PREVIEWS],
+        "p_source_key": source["source_key"], "p_samples": [{k: v for k, v in row.items() if k != "collector_event_content_v1"}
+                                               for row in records[:MAX_PREVIEWS]],
         "p_future_count": len(records),
         "p_venue_count": sum(1 for row in records if row["lat"] is not None),
         "p_error": None,
@@ -4286,7 +4330,9 @@ def _observe_collection_phase(observer, phase, *, operation=None, error=None):
 def _process_claimed_source(source: dict, *, deadline_at=None, publisher_handoff=None,
                             observe_phase=None, collection_context=None) -> dict:
     """Process a single claimed feed with the existing private staging contract."""
-    with capture_publisher_pacing() as pacing, capture_snapshot(source, collection_context) as snapshot:
+    from roomquest.ical_source_semantics import staging_scope
+
+    with staging_scope(source), capture_publisher_pacing() as pacing, capture_snapshot(source, collection_context) as snapshot:
         with ical_conditional_cache.capture(source, snapshot, collection_context, supabase_rpc):
             return _process_claimed_source_with_pacing(
                 source, pacing, deadline_at=deadline_at, publisher_handoff=publisher_handoff,
@@ -4848,7 +4894,7 @@ def _stage_legacy_events(source, events, *, native_content, deadline, observe_ph
         _observe_collection_phase(observe_phase, "stage", operation=operation)
         written = supabase_rpc(operation, {
             "p_source_key": source["source_key"],
-            "p_events": [{k: v for k, v in event.items() if k != "source_semantics_v1"} for event in batch],
+            "p_events": batch,
             **({"p_registered_native_content_version": 1} if native_content else {})
         })
         staged += int(written or 0)
@@ -4944,7 +4990,8 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
             if not chunk["complete"]:
                 return {"complete": 0, "failed": 0, "staged": 0, "fetch_pending": True}
             records = chunk["events"]
-            samples = records[:MAX_PREVIEWS]
+            samples = [{k: v for k, v in row.items() if k != 'collector_event_content_v1'}
+                       for row in records[:MAX_PREVIEWS]]
             while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
                 samples.pop()
             output = {"p_source_key": source["source_key"], "p_samples": samples,
