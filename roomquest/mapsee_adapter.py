@@ -396,7 +396,7 @@ def collect(source,profile,fetch):
     for page in range(1,MAX_PAGES+1):
         if monotonic()>deadline:raise ValueError("collection_deadline")
         from roomquest.collection_window import collection_window, localist_dates
-        now=collection_window().start
+        now=collection_window(datetime.now(timezone.utc)).start
         if kind=="localist":url=base.rstrip("/")+"/api/2/events?"+urlencode({"pp":100,"page":page,**localist_dates(),"distinct":"true"})
         elif kind=="opendata":
             local_now=now.astimezone(ZoneInfo(config["timezone"])) if config.get("timezone") else now

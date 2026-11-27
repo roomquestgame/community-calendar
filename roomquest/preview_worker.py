@@ -1163,7 +1163,7 @@ def _future_datetime(value) -> datetime | None:
     if not isinstance(value, datetime) or value.tzinfo is None or value.utcoffset() is None:
         return None
     utc_value = value.astimezone(timezone.utc)
-    window = collection_window()
+    window = collection_window(datetime.now(timezone.utc))
     if window.start <= utc_value < window.end:
         return utc_value
     return None

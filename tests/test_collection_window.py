@@ -4,6 +4,9 @@ import json
 from pathlib import Path
 from urllib.parse import parse_qs, parse_qsl, urlencode, urlsplit, urlunsplit
 import re
+import sys
+from types import SimpleNamespace
+from unittest.mock import patch
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
 from threading import Barrier
@@ -20,6 +23,31 @@ def claim(start="2027-01-20T00:00:00+00:00"):
 
 
 class CollectionWindowTests(unittest.TestCase):
+    def test_actual_wordpress_request_uses_selected_window(self):
+        # Isolate unrelated source-specific adapters; execute the real request
+        # builder and stop at the network boundary, before parsing any response.
+        unrelated = SimpleNamespace(KEY="unrelated", URL="https://unrelated.example", ZONE="UTC", ROOT="https://unrelated.example")
+        modules = {"roomquest.event_description": SimpleNamespace(MAX_EVENT_DESCRIPTION_CHARACTERS=10000),
+                   "roomquest.registered_native_content": SimpleNamespace(enabled=lambda *args, **kwargs: False),
+                   "roomquest.mapsee_adapter": SimpleNamespace(TRIBE_UTC_DEFAULT_ZONES={}, parse_tribe=lambda *args, **kwargs: [], profiles=lambda: {}),
+                   **{"roomquest."+name: unrelated for name in
+                      ("richmond_performances", "ncma_calendar", "hurrdat_calendar", "jpb_basketball")}}
+        urls = []
+        class RequestCaptured(Exception):
+            pass
+        def fetch(url, accept):
+            urls.append(url)
+            raise RequestCaptured()
+        with patch.dict(sys.modules, modules):
+            namespace = {"__name__": "wordpress_request_test"}
+            exec(compile(Path("roomquest/wordpress_adapter.py").read_text(), "wordpress_adapter.py", "exec"), namespace)
+            source = {"source_key": "request_test", "feed_url": "https://events.example.org/wp-json/tribe/events/v1/events"}
+            with collection_scope(claim()), self.assertRaises(RequestCaptured):
+                namespace["collect"](source, fetch)
+        query = parse_qs(urlsplit(urls.pop()).query)
+        self.assertEqual(query, {"start_date": ["2027-01-20"], "end_date": ["2027-03-21"],
+                                 "per_page": ["100"], "page": ["1"]})
+
     def test_actual_localist_request_keeps_venue_and_adds_future_start(self):
         module = ast.parse(Path("roomquest/localist_registration.py").read_text())
         functions = [n for n in module.body if isinstance(n, ast.FunctionDef)]

@@ -1,17 +1,20 @@
 """Real Locable snapshot, precise occurrence evidence, and bounded failures."""
 from copy import deepcopy
+from dataclasses import replace
 from datetime import datetime, timedelta, timezone
 import base64
 import json
 from pathlib import Path
 from unittest.mock import Mock
 from urllib.parse import quote, unquote
+from zoneinfo import ZoneInfo
 
 from bs4 import BeautifulSoup
 from icalendar import Calendar
 import pytest
 
 from roomquest import clarksville_tourism as parser, preview_worker
+from roomquest.collection_window import collection_scope
 
 FIXTURES = Path(__file__).with_name('fixtures') / 'clarksville_tourism'
 NOW = datetime(2026, 11, 6, 15, tzinfo=timezone.utc)
@@ -88,6 +91,62 @@ def inline_change(soup, callback):
 
 def parse(soup=None, identity=FINAL, *, listing=None, now=NOW):
     return parser.parse_detail(str(soup or detail()), listing or listings()[identity], now=now)
+
+
+def future_detail(day):
+    """Synthetic dated variant of the real corroborated publisher fixture."""
+    original = listings()[FINAL]
+    url = original.url.replace('/2026/12/5/', f'/{day.year}/{day.month}/{day.day}/')
+    zone = datetime(day.year, day.month, day.day, 10, tzinfo=ZoneInfo(parser.TIMEZONE)).tzname()
+    listing = replace(original, day=day, url=url, visible_time=original.visible_time.replace('EST', zone))
+    soup = detail()
+    if zone != 'EST':
+        soup = BeautifulSoup(str(soup).replace(' EST', ' '+zone), 'html.parser')
+    soup.select_one('[itemprop="description"]').string = 'A public community event at the advertised venue.'
+    soup.select_one('.page-header h3').decompose()
+    for node in soup.select('[itemprop="startDate"], [itemprop="endDate"]'):
+        node.string = day.strftime('%b %d, %Y')
+    def dates(event):
+        for key in ('DTSTART', 'DTEND'):
+            if event.get(key):
+                event[key].dt = event.decoded(key).astimezone(ZoneInfo(parser.TIMEZONE)).replace(
+                    year=day.year, month=day.month, day=day.day).astimezone(timezone.utc)
+    inline_change(soup, dates)
+    return listing, soup
+
+
+def future_claim():
+    return {'collection_window': {'version': 1, 'start': '2027-01-20T00:00:00Z', 'end': '2027-03-21T00:00:00Z'}}
+
+
+def test_explicit_future_window_accepts_correlated_detail_beyond_today_horizon():
+    listing, soup = future_detail(datetime(2027, 2, 5).date())
+    assert parse(soup, listing=listing) is None
+    with collection_scope(future_claim()):
+        event = parse(soup, listing=listing)
+    assert event.row['starts_at'].startswith('2027-02-05')
+    assert event.row['event_url'] == listing.url
+
+
+@pytest.mark.parametrize('day', [datetime(2027, 1, 19).date(), datetime(2027, 3, 21).date()])
+def test_future_window_preserves_exact_detail_bounds(day):
+    listing, soup = future_detail(day)
+    with collection_scope(future_claim()):
+        assert parse(soup, listing=listing) is None
+
+
+def test_collect_filters_listing_against_requested_window():
+    listing, soup = future_detail(datetime(2027, 2, 5).date())
+    catalog = BeautifulSoup(single_page([FINAL]), 'html.parser')
+    for anchor in catalog.select('.event-block a[href]'):
+        anchor['href'] = listing.url
+    catalog.select_one('.event-block .time .date').string = 'Feb 05, 2027'
+    data = {parser.CALENDAR: str(catalog), listing.url: str(soup)}
+    calls = []
+    with collection_scope(future_claim()):
+        rows = run(data, calls=calls)
+    assert len(rows) == 1 and rows[0]['starts_at'].startswith('2027-02-05')
+    assert len(calls) == 2
 
 
 def test_real_five_page_snapshot_yields_tournaments_and_one_final_crawl(capsys):
@@ -506,3 +565,4 @@ def test_failed_detail_and_expired_deadline_cannot_return_partial_success(monkey
         return data[url]
     with pytest.raises(ValueError, match='collection_deadline'):
         parser.collect(SOURCE, slow, now=NOW)
+
