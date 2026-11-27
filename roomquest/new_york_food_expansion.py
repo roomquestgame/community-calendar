@@ -244,6 +244,69 @@ def _identity(instance, start):
     return "nyc-food:" + sha256(f"{EATALY}:{instance}:{start}".encode()).hexdigest()
 
 
+def _attach_content(row, item, event, body):
+    start, end = timestamp(row.get("starts_at")), timestamp(row.get("ends_at"))
+    if start is None or start.tzinfo is None or end is None or end.tzinfo is None or end <= start:
+        raise ValueError("new_york_food_schedule_changed")
+    facts = {
+        "title": row["title"], "description": body, "is_all_day": False,
+        "starts_at_utc": start.astimezone(timezone.utc).isoformat(),
+        "ends_at_utc": end.astimezone(timezone.utc).isoformat(),
+        "source_timezone": ZONE, "event_url": item["url"],
+        "provider_venue_id": event.get("c_eventStoreId"),
+        "venue_name": plain(event.get("c_eventVenueName")),
+        "venue_address": plain(event.get("c_eventVenueAddress")),
+        "venue_city": plain(event.get("c_eventVenueCity")),
+        "venue_region": plain(event.get("c_eventVenueRegion")),
+        "venue_postal_code": plain(event.get("c_eventVenuePostalCode")),
+        "venue_country": plain(event.get("c_eventVenueCountry")),
+        "source_latitude": float(event["c_eventVenueLatitude"]),
+        "source_longitude": float(event["c_eventVenueLongitude"]),
+        "attendance_mode": "in_person",
+    }
+    row["collector_event_content_v1"] = {"version": 1, "event_id": row["id"], "facts": facts}
+    return row
+
+
+def _content_envelope_valid(row):
+    evidence = row.get("collector_event_content_v1")
+    if evidence is None:
+        return True
+    if (not isinstance(evidence, dict) or set(evidence) != {"version", "event_id", "facts"}
+            or evidence.get("version") != 1 or evidence.get("event_id") != row.get("id")
+            or not isinstance(evidence.get("facts"), dict)):
+        return False
+    facts = evidence["facts"]
+    allowed = {"title", "description", "is_all_day", "starts_at_utc", "ends_at_utc",
+               "source_timezone", "event_url", "provider_venue_id", "venue_name",
+               "venue_address", "venue_city", "venue_region", "venue_postal_code",
+               "venue_country", "source_latitude", "source_longitude", "attendance_mode"}
+    if set(facts) != allowed:
+        return False
+    try:
+        start, end = timestamp(row.get("starts_at")), timestamp(row.get("ends_at"))
+        canonical = urlsplit(row["event_url"])._replace(query="", fragment="").geturl()
+        store = facts["provider_venue_id"]
+        if store not in VENUES or VENUES[store][:2] != (row.get("venue_name"), row.get("venue_address")):
+            return False
+        address = plain(facts["venue_address"]).casefold()
+        expected_point = NATIVE_POINT_VARIANTS.get(store, {}).get(address, POINTS[store])
+        expected = {"title": row.get("title"), "description": row.get("description"),
+                    "is_all_day": False, "starts_at_utc": start.astimezone(timezone.utc).isoformat(),
+                    "ends_at_utc": end.astimezone(timezone.utc).isoformat(),
+                    "source_timezone": ZONE, "event_url": canonical,
+                    "venue_name": VENUES[store][0], "venue_city": "New York", "venue_region": "NY",
+                    "venue_postal_code": VENUES[store][1][-5:], "venue_country": "US",
+                    "attendance_mode": "in_person"}
+        if address not in NATIVE_STREETS[store] or any(
+                abs(float(facts[name]) - expected_value) > 0.000001
+                for name, expected_value in zip(("source_latitude", "source_longitude"), expected_point)):
+            return False
+    except (AttributeError, TypeError, ValueError, OverflowError, KeyError):
+        return False
+    return all(facts.get(name) == value for name, value in expected.items())
+
+
 def _detail(item, payload, now):
     try:
         soup, native = _eataly_native(payload)
@@ -302,6 +365,7 @@ def _detail(item, payload, now):
                        lat=point[0], lng=point[1])
             if row.get("reason") == "missing_verified_venue_geo":
                 row["reason"] = None
+            _attach_content(row, item, event, body)
             # Ticket price classes are the same attendance occurrence only
             # when their complete event semantics agree. Do not lose a second
             # ticket class's narrative merely because its occurrence ID agrees.
@@ -372,6 +436,7 @@ def _checkpoint(value, now):
                     or point is None or (row.get("lat"), row.get("lng")) != point
                     or row.get("venue_city") != "New York" or row.get("timezone") != ZONE
                     or row.get("attendance_mode") != "in_person"
+                    or not _content_envelope_valid(row)
                     or _body(row["description"]) != row["description"]
                     or start.tzinfo is None or end.tzinfo is None or end <= start
                     or start >= started + timedelta(days=60) or end <= started):
@@ -410,6 +475,8 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
                      manifest_hash=_hash({"pages": pages, "seed_hash": seed_hash}),
                      pending=[], pending_hash=_hash([]), pending_cursor=0, loaded_page=None,
                      events=[], row_hashes={}, diagnostics=[], seen_urls=[])
+    legacy_prefix = bool(state["events"] and
+                         any("collector_event_content_v1" not in row for row in state["events"]))
     anchor = timestamp(state["started_at"])
     prior = (state["cursor"], state["pending_cursor"], len(state["seen_urls"]), state["loaded_page"])
     budget = MAX_FETCHES if max_details is None else min(MAX_FETCHES, max(1, int(max_details)))
@@ -449,6 +516,8 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
         try:
             rows, holds = _detail(item, payload, anchor)
             for row in rows:
+                if legacy_prefix:
+                    row.pop("collector_event_content_v1", None)
                 if row["id"] in state["row_hashes"]:
                     if state["row_hashes"][row["id"]] != _hash(row):
                         raise ValueError("new_york_food_detail_changed")
