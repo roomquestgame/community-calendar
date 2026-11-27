@@ -17,6 +17,7 @@ from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
 
+from roomquest.collection_window import collection_window
 from roomquest.mapsee_adapter import plain, record, timestamp
 from roomquest.publisher_evidence import attach
 
@@ -29,7 +30,6 @@ MAX_OCCURRENCES = 100
 MAX_SECONDS = 20
 MAX_DESCRIPTION = 2000
 MAX_FACT_TEXT = 50_000
-LOOKAHEAD_DAYS = 60
 STATUS_LOOKBACK_DAYS = 7
 THEATER_ADDRESS = '914 Virginia Avenue, Clarksville, VA 23927'
 _MONTHS = {name.lower(): n for n, name in enumerate(
@@ -188,6 +188,7 @@ def parse(payload, article_payload, *, now=None, diagnostics=None):
     current = now or datetime.now(timezone.utc)
     if current.tzinfo is None:
         raise ValueError('players_now_timezone_missing')
+    window = collection_window(current)
     diagnostics = diagnostics if diagnostics is not None else {}
     soup = BeautifulSoup(payload, 'html.parser')
     reviewed_theater = _business(soup)
@@ -262,9 +263,9 @@ def parse(payload, article_payload, *, now=None, diagnostics=None):
                 identity = _identity(title, start.isoformat())
                 if end is not None and end <= start:
                     raise EventHold('publisher_time_conflict')
-                if (start > current + timedelta(days=LOOKAHEAD_DAYS)
-                        or (terminal_status and start < current - timedelta(days=STATUS_LOOKBACK_DAYS))
-                        or (not terminal_status and (end or start + timedelta(hours=3)) <= current)):
+                if (start >= window.end
+                        or (terminal_status and start < window.start - timedelta(days=STATUS_LOOKBACK_DAYS))
+                        or (not terminal_status and (end or start + timedelta(hours=3)) <= window.start)):
                     continue
                 # A previous year's article cannot locate a newly dated show.
                 # Explicit card addresses remain independently usable.

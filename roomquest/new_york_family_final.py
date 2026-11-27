@@ -16,6 +16,7 @@ from zoneinfo import ZoneInfo
 
 from bs4 import BeautifulSoup
 
+from roomquest.collection_window import collection_window
 from roomquest.event_description import description
 from roomquest.mapsee_adapter import record, timestamp
 
@@ -165,6 +166,7 @@ def _attach_content(row, body, venue_name, venue_address, venue_city):
 
 
 def _rows(key, days, opening, closing, body, now, sensory=None):
+    window = collection_window(now)
     if closing <= opening:
         raise ValueError("nyc_family_schedule_conflict")
     name, address, city, lat, lng = VENUES[key]
@@ -172,7 +174,7 @@ def _rows(key, days, opening, closing, body, now, sensory=None):
     for day in days:
         start = datetime.combine(day, opening, ZoneInfo(ZONE))
         end = datetime.combine(day, closing, ZoneInfo(ZONE))
-        if start >= now + timedelta(days=60) or end <= now:
+        if start >= window.end or end <= window.start:
             continue
         title = "Bronx Zoo Holiday Lights" if key == ZOO else "New York Aquarium Holiday Tides"
         if day == sensory:

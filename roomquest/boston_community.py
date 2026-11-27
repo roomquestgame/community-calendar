@@ -20,6 +20,7 @@ from zoneinfo import ZoneInfo
 
 from bs4 import BeautifulSoup
 
+from roomquest.collection_window import collection_window
 from roomquest.atlantic_city_community import _google_times
 from roomquest.event_description import description
 from roomquest.mapsee_adapter import plain, record, timestamp
@@ -198,7 +199,8 @@ def _street(value):
 
 
 def _within(start, end, now):
-    return start is not None and start < now + timedelta(days=60) and (end or start + timedelta(hours=3)) > now
+    window = collection_window(now)
+    return start is not None and start < window.end and (end or start + timedelta(hours=3)) > window.start
 
 
 def _row(key, title, start, end, url, identity, body, venue, address, city, *, point=None,
@@ -445,7 +447,7 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None)
                      and isinstance(state["events"], list) and len(state["events"]) <= state["cursor"]
                      and isinstance(state["diagnostics"], list) and len(state["diagnostics"]) <= state["cursor"]
                      and started.tzinfo is not None and now.tzinfo is not None
-                     and state["window_start"] == started.astimezone(ZoneInfo(ZONE)).date().isoformat()
+                     and state["window_start"] == collection_window(started).start.astimezone(ZoneInfo(ZONE)).date().isoformat()
                      and timedelta(0) <= now - started <= timedelta(hours=4))
         except (KeyError, TypeError, ValueError):
             valid = False
@@ -467,7 +469,7 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None)
         manifest = _manifest(key, payload, now)
         digest = sha256(json.dumps(manifest, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
         state = {"version": 1, "source_key": key, "started_at": now.isoformat(),
-                 "window_start": now.astimezone(ZoneInfo(ZONE)).date().isoformat(),
+                 "window_start": collection_window(now).start.astimezone(ZoneInfo(ZONE)).date().isoformat(),
                  "manifest_hash": digest, "manifest_count": len(manifest), "cursor": 0,
                  "events": [], "diagnostics": []}
     legacy_prefix = bool(state["events"] and
@@ -586,8 +588,9 @@ def _city(payload, now, diagnostics):
 
 
 def _cyclists(fetch, now, deadline_at, diagnostics):
-    query = {"start_date": now.astimezone(ZoneInfo(ZONE)).date().isoformat(),
-             "end_date": (now.astimezone(ZoneInfo(ZONE)).date() + timedelta(days=60)).isoformat(),
+    window = collection_window(now)
+    query = {"start_date": window.start.astimezone(ZoneInfo(ZONE)).date().isoformat(),
+             "end_date": window.end.astimezone(ZoneInfo(ZONE)).date().isoformat(),
              "per_page": 100, "page": 1}
     events, seen, total, pages = [], set(), None, None
     for page in range(1, 6):

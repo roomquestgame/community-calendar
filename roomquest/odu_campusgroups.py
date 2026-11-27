@@ -1,7 +1,8 @@
 """Prepare the official ODU school-wide CampusGroups iCalendar snapshot."""
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 import re
 
+from roomquest.collection_window import collection_window
 KEY = 'municipal_2f700480d7f18ef5e8866885'
 URL = 'https://odu.campusgroups.com/ical/odu/ical_odu.ics'
 BUILDINGS = {
@@ -18,8 +19,7 @@ RECURRENCE = ('RRULE', 'RDATE', 'EXDATE', 'EXRULE', 'RECURRENCE-ID')
 def filter_snapshot(calendar, source, *, now=None):
     if source.get('url') != URL or source.get('timezone') != 'America/New_York':
         raise ValueError('unregistered_odu_campusgroups_source')
-    now = now or datetime.now(timezone.utc)
-    stop = now + timedelta(days=60)
+    window = collection_window(now or datetime.now(timezone.utc))
     addresses = {}
     keep = []
     events = calendar.walk('VEVENT')
@@ -31,7 +31,7 @@ def filter_snapshot(calendar, source, *, now=None):
         if str(event.get('STATUS', '')).upper() in {'CANCELLED', 'CANCELED'}:
             continue
         start = event.decoded('DTSTART')
-        if not isinstance(start, datetime) or start.tzinfo is None or not now <= start < stop:
+        if not isinstance(start, datetime) or start.tzinfo is None or not window.start <= start < window.end:
             continue
         venue = str(event.get('LOCATION', '')).strip()
         if RESTRICTED.search(str(event.get('DESCRIPTION', ''))) or 'sign in to download' in venue.casefold():
