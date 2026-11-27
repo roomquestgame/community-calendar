@@ -245,6 +245,80 @@ def _occurrence(start, end=None):
     return dict(start=start.isoformat(), end=end.isoformat() if end else None)
 
 
+def _content_venue(**values):
+    """Keep only location fields supplied by the publisher for this event."""
+    allowed = {"venue_name", "venue_address", "venue_city", "venue_region",
+               "venue_postal_code", "venue_country"}
+    result = {}
+    for name, value in values.items():
+        if name not in allowed:
+            raise ValueError("boston_additional_calendar_changed")
+        if value is None or value == "":
+            continue
+        if not isinstance(value, str) or len(value) > 500:
+            raise ValueError("boston_additional_calendar_changed")
+        result[name] = plain(value)
+    return result
+
+
+def _attach_content(row, item):
+    """Retain event-owned source facts before reviewed publication enrichment."""
+    place = item.get("content_venue") if isinstance(item.get("content_venue"), dict) else {}
+    facts = {
+        "title": item["title"],
+        "description": _validated_body(item["body"]),
+        "is_all_day": False,
+        "starts_at_utc": timestamp(item["start"]).astimezone(timezone.utc).isoformat(),
+        "ends_at_utc": (timestamp(item.get("end")).astimezone(timezone.utc).isoformat()
+                         if timestamp(item.get("end")) else None),
+        "event_url": item["url"],
+        "venue_name": place.get("venue_name"),
+        "venue_address": place.get("venue_address"),
+        "venue_city": place.get("venue_city"),
+        "venue_region": place.get("venue_region"),
+        "venue_postal_code": place.get("venue_postal_code"),
+        "venue_country": place.get("venue_country"),
+        "native_options": item.get("native_options"),
+    }
+    facts = {name: value for name, value in facts.items()
+             if value is not None and value != "" and value != {}}
+    row["collector_event_content_v1"] = {
+        "version": 1,
+        "event_id": row["id"],
+        "facts": facts,
+    }
+    return row
+
+
+def _content_envelope_valid(row):
+    evidence = row.get("collector_event_content_v1")
+    if evidence is None:
+        return True
+    if (not isinstance(evidence, dict) or set(evidence) != {"version", "event_id", "facts"}
+            or evidence.get("version") != 1 or evidence.get("event_id") != row.get("id")
+            or not isinstance(evidence.get("facts"), dict)):
+        return False
+    facts = evidence["facts"]
+    allowed = {
+        "title", "description", "is_all_day", "starts_at_utc", "ends_at_utc",
+        "event_url", "venue_name", "venue_address", "venue_city", "venue_region",
+        "venue_postal_code", "venue_country", "native_options",
+    }
+    if not set(facts) <= allowed:
+        return False
+    expected = {
+        "title": row.get("title"),
+        "description": row.get("description"),
+        "is_all_day": False,
+        "starts_at_utc": timestamp(row.get("starts_at")).astimezone(timezone.utc).isoformat(),
+        "event_url": row.get("event_url"),
+    }
+    end = timestamp(row.get("ends_at"))
+    if end is not None:
+        expected["ends_at_utc"] = end.astimezone(timezone.utc).isoformat()
+    return all(facts.get(name) == value for name, value in expected.items())
+
+
 def _row(key, item):
     place = VENUES[item["venue_key"]]
     point = reviewed_venue_location(key, *place[:2]) or (None, None)
@@ -259,7 +333,7 @@ def _row(key, item):
     if item.get("published_schedule"):
         row.update(schedule_provenance="publisher_declared_named_weekly_schedule",
                    published_schedule=item["published_schedule"], schedule_window_days=28)
-    return row
+    return _attach_content(row, item)
 
 
 def _jsonld(soup):
@@ -313,6 +387,10 @@ def _lizard_listing(payload, now):
                         venue.get("state") or venue.get("stateprovince"), venue.get("zip"))
         item = _packet(LIZARD, e.get("url"), title, str(e["id"]), [_occurrence(start, end)],
                        venue="lizard", body=e.get("description"))
+        item["content_venue"] = _content_venue(
+            venue_name=native_place[0], venue_address=native_place[1],
+            venue_city=native_place[2], venue_region=native_place[3],
+            venue_postal_code=native_place[4])
         if native_place != ("Lizard Lounge", "1667 Massachusetts Avenue", "Cambridge", "MA", "02138"):
             item["held"] = "boston_additional_venue_unresolved"
         queue.append(item)
@@ -358,6 +436,10 @@ def _comedy_listing(key, calendar, payload, now):
                     or native.get("eventAttendanceMode") != "https://schema.org/OfflineEventAttendanceMode"
                     or native.get("eventStatus") != "https://schema.org/EventScheduled"):
                 item["held"] = "boston_additional_schedule_conflict"
+            item["content_venue"] = _content_venue(
+                venue_name=loc.get("name"), venue_address=a.get("streetAddress"),
+                venue_city=a.get("addressLocality"), venue_region=a.get("addressRegion"),
+                venue_postal_code=a.get("postalCode"), venue_country=a.get("addressCountry"))
         queue.append(item)
     return queue
 
@@ -548,7 +630,18 @@ def _passim_detail(item, payload):
     lead = article.select_one("h2.entry-detail")
     if lead and plain(lead.get_text()) not in body:
         body = _validated_body(plain(lead.get_text()) + "\n" + body)
-    return dict(body=body, venue_key=venue)
+    schema_location = schemas[0].get("location") or {}
+    schema_address = schema_location.get("address") or {}
+    content_venue = (_content_venue(
+        venue_name=schema_location.get("name"),
+        venue_address=schema_address.get("streetAddress"),
+        venue_city=schema_address.get("addressLocality"),
+        venue_region=schema_address.get("addressRegion"),
+        venue_postal_code=schema_address.get("postalCode"),
+        venue_country=schema_address.get("addressCountry"))
+        if venue == "passim" else _content_venue(venue_name={
+            "armory": "Arts at the Armory", "arrow": "Arrow Street Arts"}[venue]))
+    return dict(body=body, venue_key=venue, content_venue=content_venue)
 
 
 def _burren_dates(soup, now):
@@ -625,7 +718,8 @@ def _burren_clocks(day, raw):
 
 def _burren_manifest(payload, now):
     soup = BeautifulSoup(payload, "html.parser")
-    if not re.search(r"247\s+ELM\s+ST\.?\s+D[aA][vV][iI][sS]\s+SQ\.?\s+SOMERVILLE\s+MA\s+02144", soup.get_text(" "), re.I):
+    address_match = re.search(r"247\s+ELM\s+ST\.?\s+D[aA][vV][iI][sS]\s+SQ\.?\s+SOMERVILLE\s+MA\s+02144", soup.get_text(" "), re.I)
+    if not address_match:
         raise ValueError("boston_additional_venue_unresolved")
     days = _burren_dates(soup, now)
     grouped = {}
@@ -660,7 +754,9 @@ def _burren_manifest(payload, now):
             # full narrative; an unlinked blank description remains held.
             native_body = _NO_BODY if not prose and url != SOURCES[BURREN][0] else str(body)
             grouped[group_key] = _packet(BURREN, url, title, identity, occurrences, venue=venue,
-                body=native_body, needs_detail=url != SOURCES[BURREN][0])
+                body=native_body, needs_detail=url != SOURCES[BURREN][0],
+                content_venue=_content_venue(venue_name=plain(room.get_text()),
+                    venue_address=plain(address_match[0])))
         else:
             grouped[group_key]["occurrences"].extend(x for x in occurrences if x not in grouped[group_key]["occurrences"])
     return list(grouped.values())
@@ -686,7 +782,8 @@ def _burren_detail(item, payload):
 def _long_live_manifest(payload, now):
     soup = BeautifulSoup(payload, "html.parser")
     visible = plain(soup.get_text(" "))
-    if not re.search(r"152 Hampden St,? Boston MA 02119", visible):
+    address_match = re.search(r"152 Hampden St,? Boston MA 02119", visible)
+    if not address_match:
         raise ValueError("boston_additional_venue_unresolved")
     rules = [re.match(r"Every Thursday\s*//\s*Live Jazz in the taproom\s*//\s*6[–-]9pm\b", plain(x.get_text(" ")), re.I) for x in soup.select("p")]
     rule = next((x[0] for x in rules if x), None)
@@ -722,7 +819,9 @@ def _long_live_manifest(payload, now):
         start, end = candidates[0]
         item = _packet(LONG_LIVE, SOURCES[LONG_LIVE][0], "Jazz Night — " + artist,
                        "jazz-night", [_occurrence(start, end)], venue="long_live", body=body,
-                       published_schedule=rule + " | " + match[0] + " " + artist)
+                       published_schedule=rule + " | " + match[0] + " " + artist,
+                       content_venue=_content_venue(venue_address=address_match[0]),
+                       native_options={"publisher_schedule": rule})
         if start.weekday() != 3:
             item["held"] = "boston_additional_schedule_conflict"
         queue.append(item)
@@ -735,6 +834,11 @@ def _validate_queue(key, queue):
     identities = set()
     for item in queue:
         _packet(key, item["url"], item["title"], item["native_id"], item["occurrences"], venue=item.get("venue_key"))
+        if item.get("content_venue") is not None:
+            if not isinstance(item["content_venue"], dict) or _content_venue(**item["content_venue"]) != item["content_venue"]:
+                raise ValueError("boston_additional_calendar_changed")
+        if item.get("native_options") is not None and not isinstance(item["native_options"], dict):
+            raise ValueError("boston_additional_calendar_changed")
         if item.get("body") is not None and _validated_body(item["body"]) != item["body"]:
             raise ValueError("boston_additional_calendar_changed")
         if item.get("held") is not None and item["held"] not in HOLD_CODES:
@@ -824,6 +928,7 @@ def _checkpoint(value, key, now):
                     or not event_url(key, row["event_url"]) or place not in places
                     or _validated_body(row["description"]) != row["description"]
                     or row.get("timezone") != ZONE or row.get("attendance_mode") != "in_person"
+                    or not _content_envelope_valid(row)
                     or not legacy_burren_point and (
                         row.get("location_evidence_url") not in {POINT_EVIDENCE.get(k, VENUE_EVIDENCE[k]) for k in VENUE_KEYS[key] if VENUES[k] == place}
                         or (row.get("lat"), row.get("lng")) != (reviewed_venue_location(key, *place[:2]) or (None, None)))):
@@ -855,6 +960,8 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
         raise ValueError("boston_additional_checkpoint_invalid")
     current = current.astimezone(timezone.utc)
     state = _checkpoint(checkpoint, key, current)
+    legacy_prefix = bool(state and state["events"] and
+                         any("collector_event_content_v1" not in row for row in state["events"]))
     anchor = timestamp(state["started_at"]) if state else current
     if deadline_at is not None and monotonic() + MIN_SECONDS >= deadline_at:
         raise ValueError("collection_deadline")
@@ -925,6 +1032,8 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
                 native = dict(item, **occurrence)
                 try:
                     row = _row(key, native)
+                    if legacy_prefix:
+                        row.pop("collector_event_content_v1", None)
                     if row["id"] not in state["row_hashes"]:
                         state["events"].append(row)
                         state["row_hashes"][row["id"]] = _hash(row)

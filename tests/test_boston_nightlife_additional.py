@@ -120,6 +120,42 @@ def test_lizard_native_full_body_and_local_utc_agreement():
         b._lizard_listing(tec_payload([bad]), NOW)
 
 
+def test_event_only_facts_ignore_provider_label_and_change_with_event_details():
+    pages = passim_pages(1)
+    fetch = lambda url, accept: pages[url]
+    first = b.collect_chunk(source(b.PASSIM), fetch, now=NOW)["events"][0]
+    renamed = b.collect_chunk({**source(b.PASSIM), "publisher_name": "Renamed provider label"},
+                              fetch, now=NOW)["events"][0]
+    changed_pages = deepcopy(pages)
+    detail_url = next(url for url in pages if url != b.SOURCES[b.PASSIM][0])
+    changed_pages[detail_url] = changed_pages[detail_url].replace(
+        "The final native participation condition.",
+        "The publisher changed the final participation condition.")
+    changed = b.collect_chunk(source(b.PASSIM), lambda url, accept: changed_pages[url],
+                              now=NOW)["events"][0]
+    assert renamed["collector_event_content_v1"] == first["collector_event_content_v1"]
+    assert changed["collector_event_content_v1"] != first["collector_event_content_v1"]
+    facts = first["collector_event_content_v1"]["facts"]
+    assert first["venue_address"] == "47 Palmer Street, Cambridge, MA 02138"
+    assert facts["venue_address"] == "47 Palmer St"
+    assert facts["venue_city"] == "Cambridge"
+
+
+def test_original_locations_and_schedule_precede_reviewed_enrichment():
+    lizard = b._lizard_listing(tec_payload([tec_event()]), NOW)[0][0]
+    lizard_row = b._row(b.LIZARD, dict(lizard, **lizard["occurrences"][0]))
+    facts = lizard_row["collector_event_content_v1"]["facts"]
+    assert lizard_row["venue_address"] == "1667 Massachusetts Avenue, Cambridge, MA 02138"
+    assert facts["venue_address"] == "1667 Massachusetts Avenue"
+    assert facts["venue_city"] == "Cambridge"
+    long_live = b._long_live_manifest(long_live_page(), NOW)[0]
+    long_live_row = b._row(b.LONG_LIVE, dict(long_live, **long_live["occurrences"][0]))
+    facts = long_live_row["collector_event_content_v1"]["facts"]
+    assert long_live_row["venue_address"] == "152 Hampden Street, Boston, MA 02119"
+    assert facts["venue_address"] == "152 Hampden St, Boston MA 02119"
+    assert facts["native_options"]["publisher_schedule"].startswith("Every Thursday")
+
+
 def test_closures_and_private_events_are_not_fake_concerts():
     queue, _ = b._lizard_listing(tec_payload([tec_event(title="No Event Tonight - Happy Thanksgiving!", description=""),
         tec_event(id=124, status="cancelled"), tec_event(id=125, hide_from_listings=True)]), NOW)
@@ -418,6 +454,26 @@ def test_checkpoint_rejects_tampering_and_aligns_to_four_hour_common_ttl():
         b._checkpoint(bad, b.PASSIM, NOW)
     with pytest.raises(ValueError, match="checkpoint_invalid"):
         b._checkpoint(saved, b.PASSIM, NOW - timedelta(seconds=61))
+
+
+def test_checkpoint_rejects_tampered_original_facts_and_preserves_legacy_prefix():
+    pages = passim_pages(3)
+    fetch = lambda url, accept: pages[url]
+    partial = b.collect_chunk(source(b.PASSIM), fetch, now=NOW, max_details=1)
+    saved = partial["checkpoint"]
+    assert "collector_event_content_v1" in saved["events"][0]
+    poison = deepcopy(saved)
+    poison["events"][0]["collector_event_content_v1"]["facts"]["description"] = "Tampered facts."
+    poison["row_hashes"][poison["events"][0]["id"]] = b._hash(poison["events"][0])
+    with pytest.raises(ValueError, match="checkpoint_invalid"):
+        b.collect_chunk(source(b.PASSIM), fetch, checkpoint=poison, now=NOW)
+    legacy = deepcopy(saved)
+    for row in legacy["events"]:
+        row.pop("collector_event_content_v1")
+        legacy["row_hashes"][row["id"]] = b._hash(row)
+    complete = b.collect_chunk(source(b.PASSIM), fetch, checkpoint=legacy, now=NOW)
+    assert complete["complete"] and len(complete["events"]) == 3
+    assert all("collector_event_content_v1" not in row for row in complete["events"])
 
 
 def test_burren_legacy_null_point_prefix_preserves_progress_and_rejects_other_location_states():

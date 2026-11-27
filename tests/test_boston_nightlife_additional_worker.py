@@ -67,6 +67,10 @@ def test_complete_only_worker_replay_matches_one_detail_reference_and_preserves_
     assert baseline["claims"] == 17 and bounded["claims"] == 2
     assert bounded["rows"] == baseline["rows"] and len(bounded["rows"]) == 17
     assert all(len(row["description"]) > 2000 and row["description"].endswith("The final native participation condition.") for row in bounded["rows"])
+    assert all("collector_event_content_v1" in row for row in bounded["rows"])
+    previews = [payload for operation, payload in bounded["calls"] if operation == RECORD]
+    assert len(previews) == 1
+    assert all("collector_event_content_v1" not in row for row in previews[0]["p_samples"])
     assert sum(op == PUBLISH for op, _ in bounded["calls"]) == 1
     assert all(bounded["fetched"].count(url) == 1 for url in pages if url != b.SOURCES[b.PASSIM][0])
 
