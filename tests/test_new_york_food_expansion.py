@@ -78,6 +78,31 @@ def test_all_native_series_occurrences_keep_their_full_narrative_and_identity():
         assert row["event_url"].endswith("eventTicketClassId=1000001")
 
 
+def test_original_facts_ignore_provider_label_and_exclude_reviewed_venue_enrichment():
+    item, payload, native = product(store="ELF 1")
+    first = ny._detail(item, payload, datetime.now(timezone.utc))[0][0]
+    renamed = {**source(), "publisher_name": "Renamed provider label"}
+    assert ny._source(renamed) == ny.EATALY
+    again = ny._detail(item, payload, datetime.now(timezone.utc))[0][0]
+    facts = first["collector_event_content_v1"]["facts"]
+    assert again["collector_event_content_v1"] == first["collector_event_content_v1"]
+    assert facts["venue_address"].casefold() in ny.NATIVE_STREETS["ELF 1"]
+    assert facts["venue_address"] != first["venue_address"]
+    assert (facts["source_latitude"], facts["source_longitude"]) == tuple(
+        float(native[0][name]) for name in ("c_eventVenueLatitude", "c_eventVenueLongitude"))
+    assert first["event_url"] != facts["event_url"]
+
+
+def test_publisher_narrative_change_changes_facts_not_occurrence_id():
+    item, first_payload, _ = product(body="Original complete class narrative.")
+    changed_payload = first_payload.replace(
+        "Original complete class narrative.", "Changed complete publisher class narrative.")
+    first = ny._detail(item, first_payload, datetime.now(timezone.utc))[0][0]
+    changed = ny._detail(item, changed_payload, datetime.now(timezone.utc))[0][0]
+    assert changed["id"] == first["id"]
+    assert changed["collector_event_content_v1"] != first["collector_event_content_v1"]
+
+
 def test_native_punctuation_and_catalog_pagination_fragment_are_safe():
     item, payload, _ = product(punctuation=True)
     assert ny.event_url(ny.EATALY, item["url"])
@@ -116,6 +141,36 @@ def test_checkpoint_resumes_without_partial_publication_or_duplicate_product_fet
         altered["events"][0][field] = value
         with pytest.raises(ValueError, match="checkpoint_invalid"):
             ny.collect_chunk(source(), fetch, checkpoint=altered, now=now)
+
+
+def test_checkpoint_rejects_tampered_facts_and_replays_legacy_prefix():
+    first, one, _ = product()
+    second, two, _ = product("2000000000002", store="ELF 1")
+    pages = {ny.SOURCES[ny.EATALY][0]: catalog([first], next_page=True),
+             ny.SOURCES[ny.EATALY][0] + "?page=2": catalog([second]),
+             ny.EVENTS_URL: catalog([first]), first["url"]: one, second["url"]: two}
+    fetch = Mock(side_effect=lambda url, accept: pages[url])
+    now = datetime.now(timezone.utc)
+    partial = ny.collect_chunk(source(), fetch, now=now, max_details=1)
+    while not partial["checkpoint"]["events"]:
+        partial = ny.collect_chunk(source(), fetch, checkpoint=partial["checkpoint"], now=now, max_details=1)
+    tampered = deepcopy(partial["checkpoint"])
+    tampered["events"][0]["collector_event_content_v1"]["facts"]["description"] = "Tampered facts."
+    tampered["row_hashes"][tampered["events"][0]["id"]] = ny._hash(tampered["events"][0])
+    with pytest.raises(ValueError, match="checkpoint_invalid"):
+        ny._checkpoint(tampered, now)
+    legacy = deepcopy(partial["checkpoint"])
+    for row in legacy["events"]:
+        row.pop("collector_event_content_v1")
+        legacy["row_hashes"][row["id"]] = ny._hash(row)
+    state = legacy
+    for _ in range(10):
+        result = ny.collect_chunk(source(), fetch, checkpoint=state, now=now, max_details=1)
+        state = result["checkpoint"]
+        if result["complete"]:
+            break
+    assert result["complete"]
+    assert all("collector_event_content_v1" not in row for row in result["events"])
 
 
 def test_blank_or_over_limit_full_description_is_held_without_using_intro_as_replacement():
