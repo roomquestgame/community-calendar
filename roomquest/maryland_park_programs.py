@@ -62,7 +62,8 @@ def _patapsco(pages, month, url, now):
         first, am, last, pm, venue = time.groups()
         date = month.replace(day=int(day))
         starts, ends = _range(date, first, last, pm.upper()+'M', am.upper()+'M' if am else None)
-        row = make_row(title.strip(), starts, ends, venue, md_address(address), url, now)
+        row = make_row(title.strip(), starts, ends, venue, md_address(address), url, now,
+                       raw_address=address)
         if row:
             rows.append(row)
     return rows
@@ -112,7 +113,8 @@ def _patuxent(layout, month, url, now):
             continue
         start, end = _range(date, *heading.groups())
         row = make_row(title, start, end, 'Patuxent River State Park Nature Center',
-                       PATUXENT_ADDRESS, url, now)
+                       PATUXENT_ADDRESS, url, now,
+                       raw_address='23222 Georgia Avenue, Brookeville, Maryland 20833')
         if row:
             out.append(row)
     return out

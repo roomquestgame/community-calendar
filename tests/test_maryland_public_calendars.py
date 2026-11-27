@@ -161,6 +161,32 @@ def test_joint_park_pdf_uses_calendar_columns_and_keeps_sites_separate(monkeypat
     assert row['starts_at'] == '2026-11-09T15:00:00+00:00'
     assert row['ends_at'] == '2026-11-09T19:00:00+00:00'
     assert row['venue_address'] == '23222 Georgia Avenue, Brookeville, MD 20833'
+    assert row['collector_event_content_v1']['event_id'] == row['id']
+    assert row['collector_event_content_v1']['facts']['venue_address'] == (
+        '23222 Georgia Avenue, Brookeville, Maryland 20833')
+
+
+def test_patapsco_pdf_retains_publisher_address_before_normalization(monkeypatch):
+    monkeypatch.setattr(preview_worker, '_future_datetime', lambda value: value.astimezone(timezone.utc))
+
+    class Page:
+        def __init__(self, text):
+            self.text = text
+
+        def extract_text(self):
+            return self.text
+
+    pages = [Page('cover'), Page("""
+      November 9: Nature Hike
+      10 a.m. - 12 p.m. at Soldiers Delight Visitor Center
+      5100 Deer Park Road, Owings Mills, MD 21117
+    """)]
+    [row] = parks._patapsco(pages, datetime(2026, 11, 1),
+                             next(iter(parks.PDFS[parks.PATAPSCO])), NOW)
+    facts = row['collector_event_content_v1']['facts']
+    assert facts['venue_name'] == 'Soldiers Delight Visitor Center'
+    assert facts['venue_address'] == '5100 Deer Park Road, Owings Mills, MD 21117'
+    assert facts['starts_at_local'] == '2026-11-09T10:00:00'
 
 
 def test_maryland_public_facts_use_v2_preview_contract(monkeypatch):
