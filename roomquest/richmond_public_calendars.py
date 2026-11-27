@@ -9,7 +9,7 @@ from zoneinfo import ZoneInfo
 
 from bs4 import BeautifulSoup
 
-from roomquest.mapsee_adapter import plain, record
+from roomquest.mapsee_adapter import plain, record, timestamp
 
 
 ZONE = "America/New_York"
@@ -34,6 +34,41 @@ PUBLIC_OPPORTUNITY = re.compile(r"https://www\.cfengage\.org/opportunity/[A-Za-z
 RACE_URL = re.compile(r"https://runsignup\.com/Race/[A-Z]{2}/[^/?#]+/[^/?#]+/?")
 RACE_ID = re.compile(r"/races/race([1-9][0-9]{0,9})-")
 NON_EVENT = re.compile(r"\b(?:mailing list|interest list|notifications?|donations? only)\b", re.I)
+MAX_DESCRIPTION = 12000
+
+
+def _narrative(value):
+    from roomquest.event_description import description
+    text = description(value or '', limit=MAX_DESCRIPTION + 1)
+    if len(text) > MAX_DESCRIPTION:
+        raise ValueError('publisher_description_limit')
+    return text
+
+
+def _attach_original_content(row, *, description='', raw_venue='', raw_address='',
+                             categories=(), publisher_event_type=None):
+    """Keep event-owned publisher facts separate from source labels and enrichment."""
+    start = timestamp(row.get('starts_at'), ZONE)
+    end = timestamp(row.get('ends_at'), ZONE)
+    if start is None or start.tzinfo is None or end is not None and end.tzinfo is None:
+        raise ValueError('richmond_public_schedule_conflict')
+    local = lambda value: (value.astimezone(ZoneInfo(ZONE)).replace(tzinfo=None)
+                           .isoformat(timespec='seconds')) if value is not None else None
+    facts = {
+        'title': row['title'], 'description': description, 'is_all_day': False,
+        'starts_at_local': local(start), 'ends_at_local': local(end),
+        'source_timezone': ZONE, 'event_url': row['event_url'],
+        'venue_name': plain(raw_venue), 'venue_address': plain(raw_address),
+        'publisher_status': 'scheduled', 'attendance_mode': 'in_person',
+        'publisher_categories': sorted({plain(value) for value in categories if plain(value)}),
+        'publisher_event_type': publisher_event_type,
+    }
+    row['collector_event_content_v1'] = {
+        'version': 1, 'event_id': row['id'],
+        'facts': {name: value for name, value in facts.items()
+                  if value is not None and value != '' and value != []},
+    }
+    return row
 
 
 def calendar_form(now=None):
@@ -79,8 +114,10 @@ def volunteer_shifts(payload):
             row = record(unescape(shift["opportunityName"]), starts, ends, organizer, street,
                          city, url, shift["occurrenceId"], "volunteering", tz=ZONE)
             if row:
-                from roomquest.event_description import description as narrative
-                row['description'] = narrative(shift.get('description'))
+                row['description'] = _narrative(shift.get('description'))
+                _attach_original_content(row, description=row['description'], raw_venue=organizer,
+                                         raw_address=street, categories=('volunteering',),
+                                         publisher_event_type='Project')
                 rows[row["id"], row["starts_at"]] = row
     return list(rows.values())
 
@@ -173,8 +210,12 @@ def race_events(payload, identity, listing_url, now):
         row = record(label, start.isoformat(), None, venue, f"{street}, {city}, VA {zip_code}",
                      city, listing_url, f"{identity}:{label}", "running")
         if row:
-            from roomquest.event_description import description
-            row['description'] = description(event.get('description'))
+            row['description'] = _narrative(event.get('description'))
+            _attach_original_content(
+                row, description=row['description'],
+                raw_venue=plain(location.get('name')) or venue,
+                raw_address=f"{street}, {city}, {state} {zip_code}",
+                categories=('running',), publisher_event_type='SportsEvent')
             rows[row["id"], row["starts_at"]] = row
     return list(rows.values())
 
