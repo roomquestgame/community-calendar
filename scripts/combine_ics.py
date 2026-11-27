@@ -439,7 +439,7 @@ def _serialize_vevent(event, original_had_rrule):
     return content
 
 
-def expand_rrules(ics_content, window_days=90):
+def expand_rrules(ics_content, window_days=90, *, window_start=None):
     """Expand recurring events in ICS content into individual instances.
 
     Returns a list of ICS VEVENT content strings (one per occurrence).
@@ -449,6 +449,7 @@ def expand_rrules(ics_content, window_days=90):
     Args:
         ics_content: Raw ICS file content string
         window_days: How many days forward to expand (default 90)
+        window_start: Optional explicit start; ordinary callers retain today's date.
 
     Returns:
         List of VEVENT content strings, or None if parsing fails
@@ -470,7 +471,7 @@ def expand_rrules(ics_content, window_days=90):
     if not uids_with_rrule:
         return None
 
-    today = date.today()
+    today = window_start if window_start is not None else date.today()
     window_end = today + timedelta(days=window_days)
 
     try:

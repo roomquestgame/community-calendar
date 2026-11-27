@@ -4,6 +4,7 @@ import re
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 from roomquest.mapsee_adapter import MAX_PAGES, MAX_RECORDS, parse_localist
+from roomquest.collection_window import localist_dates
 
 
 def is_api(url):
@@ -48,7 +49,7 @@ def collect(url, fetch, *, retain_original=False):
     seen = 0
     expected_total = None
     for page in range(1, MAX_PAGES + 1):
-        target = url + ('&' if venue else '?') + urlencode({'days':60, 'pp':50, 'page':page})
+        target = url + ('&' if venue else '?') + urlencode({**localist_dates(), 'pp':50, 'page':page})
         data = json.loads(fetch(target, 'application/json'))
         meta = data.get('page') if isinstance(data, dict) else None
         if not isinstance(meta, dict) or meta.get('current') != page or type(meta.get('total')) is not int:

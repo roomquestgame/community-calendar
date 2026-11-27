@@ -33,6 +33,7 @@ from roomquest.publisher_pacing import (capture_publisher_pacing, observe_crawl_
                                        observe_retry_after, pacing_rpc_fields, robots_crawl_delay)
 from roomquest.incremental_snapshot import capture_snapshot, current_snapshot
 from roomquest import ical_conditional_cache
+from roomquest.collection_window import collection_scope, collection_window, recurrence_start
 
 MAX_BODY = 3_000_000
 MAX_PREVIEWS = 10
@@ -1162,8 +1163,8 @@ def _future_datetime(value) -> datetime | None:
     if not isinstance(value, datetime) or value.tzinfo is None or value.utcoffset() is None:
         return None
     utc_value = value.astimezone(timezone.utc)
-    now = datetime.now(timezone.utc)
-    if now <= utc_value <= now + timedelta(days=LOOKAHEAD_DAYS):
+    window = collection_window()
+    if window.start <= utc_value < window.end:
         return utc_value
     return None
 
@@ -1213,7 +1214,7 @@ def parse_ics_preview(payload: str, *, allow_ongoing=False, include_images=True,
 
     collect_facts = include_source_semantics or staging_enabled()
     original = Calendar.from_ical(payload)
-    expanded = expand_rrules(payload, window_days=LOOKAHEAD_DAYS)
+    expanded = expand_rrules(payload, window_days=LOOKAHEAD_DAYS, window_start=recurrence_start())
     items = []
     if expanded is None:
         items = original.walk("VEVENT")
@@ -4338,7 +4339,7 @@ def _process_claimed_source(source: dict, *, deadline_at=None, publisher_handoff
     """Process a single claimed feed with the existing private staging contract."""
     from roomquest.ical_source_semantics import staging_scope
 
-    with staging_scope(source), capture_publisher_pacing() as pacing, capture_snapshot(source, collection_context) as snapshot:
+    with collection_scope(source), staging_scope(source), capture_publisher_pacing() as pacing, capture_snapshot(source, collection_context) as snapshot:
         with ical_conditional_cache.capture(source, snapshot, collection_context, supabase_rpc):
             return _process_claimed_source_with_pacing(
                 source, pacing, deadline_at=deadline_at, publisher_handoff=publisher_handoff,

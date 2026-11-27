@@ -639,7 +639,8 @@ def parse(payload, source, *, legacy=False, include_description=False):
     expanded = None
     if any(e.get("RRULE") for e in events):
         from scripts.combine_ics import expand_rrules
-        expanded = expand_rrules(payload,window_days=60)
+        from roomquest.collection_window import recurrence_start
+        expanded = expand_rrules(payload,window_days=60,window_start=recurrence_start())
         if expanded is None:
             raise ValueError("recurrence_expansion_failed")
         if mecklenburg and len(expanded) > 1000:
