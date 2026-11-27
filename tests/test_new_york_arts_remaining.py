@@ -108,6 +108,24 @@ class RemainingArtsTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "pagination_limit"):
             ny.collect(source(ny.COMMONPOINT), Mock(return_value=cp_payload(cp_event(), total_pages=38)), now=NOW)
 
+    def test_commonpoint_content_uses_native_components_not_provider_label_or_reviewed_point(self):
+        venue = dict(id=69030, venue="Commonpoint Bronx", address="1665 Hoe Ave",
+                     city="The Bronx", state="New York", zip="10460")
+        first_source = {**source(ny.COMMONPOINT), "publisher_name": "Old provider label"}
+        renamed_source = {**source(ny.COMMONPOINT), "publisher_name": "Renamed provider label"}
+        first = ny.collect(first_source, Mock(return_value=cp_payload(cp_event(venue=venue))), now=NOW)[0]
+        renamed = ny.collect(renamed_source, Mock(return_value=cp_payload(cp_event(venue=venue))), now=NOW)[0]
+        changed = ny.collect(first_source, Mock(return_value=cp_payload(cp_event(
+            venue=venue, description="A changed publisher description."))), now=NOW)[0]
+        facts = first["collector_event_content_v1"]["facts"]
+        self.assertEqual(renamed["collector_event_content_v1"], first["collector_event_content_v1"])
+        self.assertNotEqual(changed["collector_event_content_v1"], first["collector_event_content_v1"])
+        self.assertEqual(facts["venue_address"], "1665 Hoe Ave")
+        self.assertEqual(facts["venue_region"], "New York")
+        self.assertNotIn("source_latitude", facts)
+        self.assertEqual((first["lat"], first["lng"]), (40.835703, -73.887896))
+        self.assertNotIn("provider label", json.dumps(facts).lower())
+
     def test_commonpoint_bronx_point_requires_exact_native_identity_and_street(self):
         venue = dict(id=69030, venue="Commonpoint Bronx", address="1665 Hoe Ave",
                      city="The Bronx", state="NY", zip="10460")
@@ -141,6 +159,12 @@ class RemainingArtsTests(unittest.TestCase):
         self.assertIn(text, row["description"])
         self.assertEqual((row["lat"], row["lng"]), (40.729795, -73.997749))
         self.assertEqual(row["venue_address"], "566 LaGuardia Place, New York, NY 10012")
+        facts = row["collector_event_content_v1"]["facts"]
+        self.assertEqual(facts["venue_name"], "Skirball Center for the Performing Arts")
+        self.assertEqual((facts["source_latitude"], facts["source_longitude"]),
+                         (40.729795, -73.997749))
+        self.assertEqual(facts["provider_venue_id"], "471")
+        self.assertNotIn("venue_address", facts)
 
     def test_nyu_summary_cannot_replace_missing_full_body_or_oversize(self):
         data = nyu_payload(nyu_event(1, description=None, summary="Promotional excerpt"), nyu_event(2, description="x" * 12001))
@@ -181,6 +205,8 @@ class RemainingArtsTests(unittest.TestCase):
         self.assertEqual(row["description"], full.strip())
         self.assertEqual(row["starts_at"], "2026-12-04T23:00:00+00:00")
         self.assertEqual(row["venue_address"], "1040 Grand Concourse, Bronx, NY 10456")
+        self.assertEqual(row["collector_event_content_v1"]["facts"]["venue_address"],
+                         "1040 Grand Concourse The Bronx, NY 10456")
 
     def test_greenlight_uses_html_address_components_not_glued_jsonld(self):
         manifest = ny._greenlight_manifest(gl_fetch, float("inf"), NOW)
@@ -202,6 +228,21 @@ class RemainingArtsTests(unittest.TestCase):
         no_http = Mock(side_effect=AssertionError("complete retry fetched HTTP"))
         replay = ny.collect_chunk(source(ny.GREENLIGHT), no_http, checkpoint=result["checkpoint"], now=NOW)
         self.assertEqual(replay["events"], result["events"])
+        self.assertTrue(all("collector_event_content_v1" in row for row in result["events"]))
+
+    def test_greenlight_checkpoint_rejects_tampered_facts_and_preserves_legacy_prefix(self):
+        first = ny.collect_chunk(source(ny.GREENLIGHT), gl_fetch, now=NOW, max_details=1)
+        tampered = deepcopy(first["checkpoint"])
+        tampered["events"][0]["collector_event_content_v1"]["facts"]["description"] = "Tampered facts."
+        with self.assertRaisesRegex(ValueError, "checkpoint_invalid"):
+            ny.collect_chunk(source(ny.GREENLIGHT), gl_fetch, checkpoint=tampered, now=NOW)
+
+        legacy = deepcopy(first["checkpoint"])
+        legacy["events"][0].pop("collector_event_content_v1")
+        complete = ny.collect_chunk(source(ny.GREENLIGHT), gl_fetch, checkpoint=legacy,
+                                    now=NOW, max_details=1)
+        self.assertTrue(complete["complete"])
+        self.assertTrue(all("collector_event_content_v1" not in row for row in complete["events"]))
 
     def test_greenlight_checkpoint_rejects_changed_street_geo_and_identity(self):
         state = ny.collect_chunk(source(ny.GREENLIGHT), gl_fetch, now=NOW)["checkpoint"]
