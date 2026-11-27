@@ -62,6 +62,28 @@ def fad_page(url, body="Complete market details with accessibility and admission
 
 
 class NewYorkLocalExpansionTests(unittest.TestCase):
+    def test_original_facts_ignore_provider_label_and_reviewed_points(self):
+        body = "Complete musician biography and public program."
+        page = listing(square_card(body=body))
+        renamed = {**source(ny.FREDDYS), "publisher_name": "Renamed provider label"}
+        with patch.object(ny, "record", side_effect=record):
+            first = ny.collect_chunk(source(ny.FREDDYS), Mock(return_value=page), now=NOW)["events"][0]
+            again = ny.collect_chunk(renamed, Mock(return_value=page), now=NOW)["events"][0]
+        facts = first["collector_event_content_v1"]["facts"]
+        self.assertEqual(again["collector_event_content_v1"], first["collector_event_content_v1"])
+        self.assertEqual(facts["venue_name"], ny.VENUES[ny.FREDDYS][0])
+        self.assertEqual(facts["venue_address"], ny.VENUES[ny.FREDDYS][1])
+        self.assertNotIn("source_latitude", facts)
+        self.assertNotIn("source_longitude", facts)
+        self.assertEqual((first["lat"], first["lng"]), ny.POINTS[ny.FREDDYS])
+
+    def test_publisher_narrative_change_changes_fingerprint_input_not_identity(self):
+        with patch.object(ny, "record", side_effect=record):
+            first = ny.collect_chunk(source(ny.FREDDYS), Mock(return_value=listing(square_card(body="Original details."))), now=NOW)["events"][0]
+            changed = ny.collect_chunk(source(ny.FREDDYS), Mock(return_value=listing(square_card(body="Changed publisher details."))), now=NOW)["events"][0]
+        self.assertEqual(changed["id"], first["id"])
+        self.assertNotEqual(changed["collector_event_content_v1"], first["collector_event_content_v1"])
+
     def test_full_body_survives_shared_two_thousand_character_default(self):
         body = "Musician biography, access details and full performance program. " * 60 + "Final publisher paragraph."
         fetch = Mock(return_value=listing(square_card(body=body)))
@@ -156,6 +178,23 @@ class NewYorkLocalExpansionTests(unittest.TestCase):
             restarted = ny.collect_chunk(source(ny.STRONG), lambda url, accept: pages[url], now=NOW, checkpoint=first["checkpoint"])
         self.assertEqual(restarted["checkpoint"]["manifest_count"], 1)
         self.assertEqual([row["event_url"] for row in restarted["events"]], ["https://www.strongropebrewery.com" + paths[1]])
+
+    def test_checkpoint_rejects_tampered_facts_and_replays_legacy_prefix(self):
+        paths = ["/events-calendar/first", "/events-calendar/second"]
+        pages = {ny.SOURCES[ny.STRONG][0]: listing(*(square_card(p, "Food Pop-Up", "Short.", strong=True, excerpt=True) for p in paths))}
+        pages.update({"https://www.strongropebrewery.com" + p: strong_detail(p) for p in paths})
+        with patch.object(ny, "record", side_effect=record):
+            first = ny.collect_chunk(source(ny.STRONG), lambda url, accept: pages[url], now=NOW, max_details=1)
+            tampered = deepcopy(first["checkpoint"])
+            tampered["events"][0]["collector_event_content_v1"]["facts"]["description"] = "Tampered facts."
+            with self.assertRaisesRegex(ValueError, "checkpoint_invalid"):
+                ny._validate_checkpoint(tampered, ny.STRONG, NOW)
+            legacy = deepcopy(first["checkpoint"])
+            legacy["events"][0].pop("collector_event_content_v1")
+            complete = ny.collect_chunk(source(ny.STRONG), lambda url, accept: pages[url], now=NOW,
+                                        max_details=1, checkpoint=legacy)
+        self.assertTrue(complete["complete"])
+        self.assertTrue(all("collector_event_content_v1" not in row for row in complete["events"]))
 
 
 if __name__ == "__main__":
