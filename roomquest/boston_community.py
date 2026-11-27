@@ -214,6 +214,75 @@ def _row(key, title, start, end, url, identity, body, venue, address, city, *, p
     return row
 
 
+def _attach_content(row, *, title, body, start, end, url, venue_name=None,
+                    venue_address=None, venue_city=None, venue_region=None,
+                    venue_postal_code=None, venue_country=None, image=None,
+                    native_options=None):
+    """Keep only event-owned publisher facts for the shared SQL fingerprint."""
+    if row is None:
+        return None
+    facts = {
+        "title": title,
+        "description": body,
+        "is_all_day": False,
+        "starts_at_utc": start.astimezone(timezone.utc).isoformat(),
+        "ends_at_utc": end.astimezone(timezone.utc).isoformat() if end else None,
+        "event_url": url,
+        "venue_name": venue_name,
+        "venue_address": venue_address,
+        "venue_city": venue_city,
+        "venue_region": venue_region,
+        "venue_postal_code": venue_postal_code,
+        "venue_country": venue_country,
+        "source_image_url": image,
+        "native_options": native_options,
+    }
+    facts = {name: value for name, value in facts.items()
+             if value is not None and value != "" and value != {}}
+    row["collector_event_content_v1"] = {
+        "version": 1,
+        "event_id": row["id"],
+        "facts": facts,
+    }
+    return row
+
+
+def _content_envelope_valid(row, card=None):
+    evidence = row.get("collector_event_content_v1")
+    if evidence is None:
+        return True
+    if (not isinstance(evidence, dict)
+            or set(evidence) != {"version", "event_id", "facts"}
+            or evidence.get("version") != 1
+            or evidence.get("event_id") != row.get("id")
+            or not isinstance(evidence.get("facts"), dict)):
+        return False
+    facts = evidence["facts"]
+    allowed = {
+        "title", "description", "is_all_day", "starts_at_utc", "ends_at_utc",
+        "event_url", "venue_name", "venue_address", "venue_city", "venue_region",
+        "venue_postal_code", "venue_country", "source_image_url", "native_options",
+    }
+    if not set(facts) <= allowed:
+        return False
+    expected = {
+        "title": row.get("title"),
+        "description": row.get("description"),
+        "is_all_day": False,
+        "starts_at_utc": timestamp(row.get("starts_at")).astimezone(timezone.utc).isoformat(),
+        "event_url": row.get("event_url"),
+    }
+    end = timestamp(row.get("ends_at"))
+    if end is not None:
+        expected["ends_at_utc"] = end.astimezone(timezone.utc).isoformat()
+    if not all(facts.get(name) == value for name, value in expected.items()):
+        return False
+    if card is not None and (facts.get("venue_name") != card.get("venue")
+                             or facts.get("venue_address") != card.get("location")):
+        return False
+    return True
+
+
 def _manifest(key, payload, now):
     soup = BeautifulSoup(payload, "html.parser")
     if soup.select_one(".eventlist") is None:
@@ -317,10 +386,16 @@ def _squarespace_detail(key, card, payload, now, diagnostics):
     evidence = card["url"]
     if reviewed := REVIEWED_EVENT_POINTS.get((key, venue, address[0])):
         point, evidence, provenance = reviewed
+    categories = [plain(a.get_text()) for a in main.select(".eventitem-meta-cats a, .eventitem-meta-tags a")]
     row = _row(key, title, start, end, card["url"], sha256(urlsplit(card["url"]).path.encode()).hexdigest(),
                text, venue, address[0], address[1], point=point, image=image, provenance=provenance,
                evidence=evidence,
-               category=", ".join(plain(a.get_text()) for a in main.select(".eventitem-meta-cats a, .eventitem-meta-tags a")))
+               category=", ".join(categories))
+    row = _attach_content(
+        row, title=title, body=text, start=start, end=end, url=card["url"],
+        venue_name=venue, venue_address=location,
+        image=image if photo_url(key, image) else None,
+        native_options={"categories": categories} if categories else None)
     if row is None:
         _hold(key, card["url"], "outside_current_window", diagnostics)
     return row
@@ -339,6 +414,7 @@ def _checkpoint_rows_valid(key, state, manifest):
                 or row.get("venue_address") != place[0] or row.get("timezone") != ZONE
                 or not isinstance(row.get("description"), str) or not row["description"].strip()
                 or len(row["description"]) > MAX_DESCRIPTION
+                or not _content_envelope_valid(row, card)
                 or ((row.get("lat") is not None or row.get("lng") is not None)
                     and _point(row.get("lat"), row.get("lng")) is None)
                 or (row.get("image_url") and not photo_url(key, row["image_url"]))):
@@ -394,12 +470,16 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None)
                  "window_start": now.astimezone(ZoneInfo(ZONE)).date().isoformat(),
                  "manifest_hash": digest, "manifest_count": len(manifest), "cursor": 0,
                  "events": [], "diagnostics": []}
+    legacy_prefix = bool(state["events"] and
+                         any("collector_event_content_v1" not in row for row in state["events"]))
     for index in range(state["cursor"], min(len(manifest), state["cursor"] + DETAILS_PER_CHUNK)):
         if deadline_at is not None and monotonic() + 18 >= deadline_at:
             break
         card = manifest[index]
         row = _squarespace_detail(key, card, fetch(card["url"], "text/html"), now, state["diagnostics"])
         if row:
+            if legacy_prefix:
+                row.pop("collector_event_content_v1", None)
             state["events"].append(row)
         state["cursor"] = index + 1
     if len(json.dumps(state).encode()) > MAX_CHECKPOINT_BYTES:
@@ -446,6 +526,7 @@ def _city(payload, now, diagnostics):
         field = lambda selector: plain(venue_node.select_one(selector).get_text()) if venue_node.select_one(selector) else ""
         venue, street, city, postal = field(".address-line1"), field(".address-line2"), field(".locality"), field(".postal-code")
         state = field(".administrative-area")
+        publisher_street, publisher_city, publisher_region, publisher_postal = street, city, state, postal
         if state and state not in {"MA", "Massachusetts"}:
             continue
         evidence = link
@@ -487,6 +568,16 @@ def _city(payload, now, diagnostics):
             identity = sha256((urlsplit(link).path + "|" + start.isoformat()).encode()).hexdigest()
             row = _row(CITY, title, start, end, link, identity, text, venue, address[0], address[1],
                        point=point, category="Civic & Community", evidence=evidence, provenance=provenance)
+            native_address = ", ".join(value for value in (
+                publisher_street, publisher_city, publisher_region, publisher_postal) if value)
+            row = _attach_content(
+                row, title=title, body=text, start=start, end=end, url=link,
+                venue_name=venue, venue_address=native_address, venue_city=publisher_city,
+                venue_region=publisher_region, venue_postal_code=publisher_postal,
+                native_options={"publisher_address": {
+                    "street": publisher_street, "city": publisher_city,
+                    "region": publisher_region, "postal_code": publisher_postal,
+                }})
             if row:
                 if identity in out and out[identity] != row:
                     raise ValueError("boston_community_feed_changed")
@@ -551,6 +642,19 @@ def _cyclists(fetch, now, deadline_at, diagnostics):
         row = _row(CYCLISTS, title, start, end, link, identity, text, plain(venue["venue"]), address[0], address[1],
                    point=point, image=image.get("url") if isinstance(image, dict) else None,
                    category=", ".join(plain(c.get("name")) for c in event.get("categories", []) if isinstance(c, dict)))
+        category_names = [plain(c.get("name")) for c in event.get("categories", []) if isinstance(c, dict)]
+        native_address = ", ".join(value for value in (
+            plain(venue.get("address")), plain(venue.get("city")),
+            plain(venue.get("state") or venue.get("province")), plain(venue.get("zip"))) if value)
+        native_image = image.get("url") if isinstance(image, dict) else None
+        row = _attach_content(
+            row, title=title, body=text, start=start, end=end, url=link,
+            venue_name=plain(venue.get("venue")), venue_address=native_address,
+            venue_city=plain(venue.get("city")),
+            venue_region=plain(venue.get("state") or venue.get("province")),
+            venue_postal_code=plain(venue.get("zip")),
+            image=native_image if photo_url(CYCLISTS, native_image) else None,
+            native_options={"categories": category_names} if category_names else None)
         if row:
             out.append(row)
     return out

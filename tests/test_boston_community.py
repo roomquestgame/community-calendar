@@ -117,6 +117,40 @@ def test_late_detail_failure_never_emits_partial_snapshot():
     assert complete["checkpoint"]["cursor"] == 4
 
 
+def test_original_facts_ignore_source_label_and_change_only_with_event_details():
+    def run(src, body):
+        fetch, _ = transport([sq(body=body)])
+        return b.collect(src, fetch, now=NOW)[0]["collector_event_content_v1"]
+
+    first = run(source(), "<p>The publisher owns these event details.</p>")
+    renamed = run({**source(), "publisher_name": "Changed provider label"},
+                  "<p>The publisher owns these event details.</p>")
+    changed = run(source(), "<p>The publisher changed the event details.</p>")
+    assert renamed == first
+    assert changed != first
+    assert first["facts"]["venue_address"] == LOCATION
+    assert "publisher_name" not in json.dumps(first)
+
+
+def test_checkpoint_rejects_tampered_original_facts_and_keeps_legacy_protocol():
+    cards = [sq(i) for i in range(4)]
+    fetch, _ = transport(cards)
+    first = b.collect_chunk(source(), fetch, now=NOW)
+    assert all("collector_event_content_v1" in row for row in first["checkpoint"]["events"])
+
+    poisoned = deepcopy(first["checkpoint"])
+    poisoned["events"][0]["collector_event_content_v1"]["facts"]["description"] = "Tampered facts."
+    with pytest.raises(ValueError, match="boston_community_checkpoint_invalid"):
+        b.collect_chunk(source(), fetch, checkpoint=poisoned, now=NOW)
+
+    legacy = deepcopy(first["checkpoint"])
+    for row in legacy["events"]:
+        row.pop("collector_event_content_v1")
+    complete = b.collect_chunk(source(), fetch, checkpoint=legacy, now=NOW)
+    assert complete["complete"]
+    assert all("collector_event_content_v1" not in row for row in complete["events"])
+
+
 def test_checkpoint_cannot_inject_nyc_point_or_unvisited_event():
     fetch, _ = transport([sq(i) for i in range(4)])
     state = b.collect_chunk(source(), fetch, now=NOW)["checkpoint"]
@@ -178,6 +212,9 @@ def test_boston_rss_uses_visible_eastern_event_time_and_dedupes_repeated_items()
     assert datetime.fromisoformat(rows[0]["starts_at"]) == START
     assert rows[0]["description"] == body.strip()
     assert rows[0]["venue_address"] == "23 Drydock Ave, Boston, MA 02210"
+    facts = rows[0]["collector_event_content_v1"]["facts"]
+    assert facts["venue_name"] == "Meeting Hall"
+    assert facts["venue_address"] == "23 Drydock Ave, Boston, MA, 02210"
 
 
 def test_boston_wall_clock_correction_requires_visible_time_agreement():
@@ -243,6 +280,9 @@ def test_existing_cyclists_id_and_full_description_preserved():
 
     rows = b.collect(source(b.CYCLISTS), fetch, now=NOW)
     assert rows[0]["id"] == "17168" and rows[0]["description"] == prose.strip()
+    facts = rows[0]["collector_event_content_v1"]["facts"]
+    assert facts["venue_name"] == "Boston Public Library"
+    assert facts["venue_address"] == "700 Boylston Street, Boston, MA, 02116"
     assert calls[0].startswith("https://bostoncyclistsunion.org/wp-json/tribe/events/v1/events?")
 
 
