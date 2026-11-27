@@ -226,6 +226,12 @@ class AtlanticCityWorkerTests(unittest.TestCase):
         self.assertEqual(state.staged[0]["venue_address"], venues.VENUES[venues.ANCHOR][1])
         self.assertEqual(state.staged[0]["category"], "")
         self.assertNotIn("publisher_categories", state.staged[0])
+        self.assertIn("collector_event_content_v1", state.staged[0])
+        staged_facts = state.staged[0]["collector_event_content_v1"]["facts"]
+        self.assertEqual(staged_facts["description"], prose)
+        self.assertNotIn("venue_address", staged_facts)
+        preview = next(payload for operation, payload in state.calls if operation == RECORD)
+        self.assertNotIn("collector_event_content_v1", preview["p_samples"][0])
         self.assertNotIn(READ, [op for op, _ in state.calls])
 
     def test_county_ical_uses_same_description_preserving_route(self):
