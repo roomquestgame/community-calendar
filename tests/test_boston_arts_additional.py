@@ -65,6 +65,30 @@ class Contracts(unittest.TestCase):
         self.assertEqual(second['checkpoint']['started_at'],first['checkpoint']['started_at'])
         a._checkpoint(second['checkpoint'],a.HMSC,NOW)
 
+    def test_original_facts_ignore_source_label_and_change_with_event_details(self):
+        def run(src, body):
+            detail = hmsc_detail(body).replace('20261121T180000Z/20261121T210000Z',
+                                                '20261221T180000Z/20261221T210000Z')
+            fetch = lambda url, accept: hmsc_listing() if url == a.SOURCES[a.HMSC][0] else detail
+            now = datetime(2026, 11, 27, 2, tzinfo=timezone.utc)
+            listed = a.collect_chunk(src, fetch, now=now)
+            return a.collect_chunk(src, fetch, checkpoint=listed['checkpoint'], now=now)
+        first = run(source(a.HMSC), '<p>The publisher owns these event details.</p>')
+        renamed = run({**source(a.HMSC), 'publisher_name': 'Changed provider label'},
+                      '<p>The publisher owns these event details.</p>')
+        changed = run(source(a.HMSC), '<p>The publisher changed the event details.</p>')
+        envelope = first['events'][0]['collector_event_content_v1']
+        self.assertEqual(renamed['events'][0]['collector_event_content_v1'], envelope)
+        self.assertNotEqual(changed['events'][0]['collector_event_content_v1'], envelope)
+        self.assertIn('Harvard Museum of Natural History',
+                      envelope['facts']['native_options']['location_text'])
+        bad=deepcopy(first['checkpoint'])
+        bad['events'][0]['collector_event_content_v1']['facts']['description']='Tampered facts.'
+        bad['outcomes'][0]=a._outcome(bad['queue'][0],bad['events'],None)
+        bad['outcome_hash']=a._hash(bad['outcomes'])
+        with self.assertRaisesRegex(ValueError,'checkpoint_invalid'):
+            a._checkpoint(bad,a.HMSC,datetime(2026,11,27,2,tzinfo=timezone.utc))
+
     def test_checkpoint_rejects_foreign_manifest_point_address_and_clock(self):
         fetch=lambda url,accept:hmsc_listing() if url==a.SOURCES[a.HMSC][0] else hmsc_detail()
         one=a.collect_chunk(source(a.HMSC),fetch,now=NOW)
@@ -76,6 +100,29 @@ class Contracts(unittest.TestCase):
                 a.collect_chunk(source(a.HMSC),lambda *_:self.fail('invalid completed checkpoint must not fetch'),checkpoint=bad,now=NOW)
         bad=deepcopy(one['checkpoint']);bad['queue'][0]['title']='Changed'
         with self.assertRaisesRegex(ValueError,'checkpoint_invalid'):a._checkpoint(bad,a.HMSC,NOW)
+    def test_checkpoint_keeps_one_protocol_and_does_not_invent_legacy_facts(self):
+        listing = ('<h1>Upcoming Programs</h1><main>'
+                   '<a href="/calendar_event/fossil-day/">Fossil Day</a>'
+                   '<a href="/calendar_event/rock-day/">Rock Day</a></main>')
+        details = {
+            'https://hmsc.harvard.edu/calendar_event/fossil-day/':
+                hmsc_detail().replace('20261121T180000Z/20261121T210000Z','20261221T180000Z/20261221T210000Z'),
+            'https://hmsc.harvard.edu/calendar_event/rock-day/':
+                hmsc_detail().replace('Fossil Day','Rock Day').replace(
+                    '20261121T180000Z/20261121T210000Z','20261221T180000Z/20261221T210000Z'),
+        }
+        fetch=lambda url,accept: listing if url==a.SOURCES[a.HMSC][0] else details[url]
+        now=datetime(2026,11,27,2,tzinfo=timezone.utc)
+        listed=a.collect_chunk(source(a.HMSC),fetch,now=now)
+        partial=a.collect_chunk(source(a.HMSC),fetch,checkpoint=listed['checkpoint'],now=now,max_details=1)
+        self.assertIn('collector_event_content_v1',partial['checkpoint']['events'][0])
+        legacy=deepcopy(partial['checkpoint'])
+        legacy['events'][0].pop('collector_event_content_v1')
+        legacy['outcomes'][0]=a._outcome(legacy['queue'][0],legacy['events'],None)
+        legacy['outcome_hash']=a._hash(legacy['outcomes'])
+        full=a.collect_chunk(source(a.HMSC),fetch,checkpoint=legacy,now=now,max_details=1)
+        self.assertTrue(full['complete'])
+        self.assertTrue(all('collector_event_content_v1' not in row for row in full['events']))
 
     def test_checkpoint_expiry_and_deadline_reserve(self):
         fetch=lambda url,accept:hmsc_listing()
