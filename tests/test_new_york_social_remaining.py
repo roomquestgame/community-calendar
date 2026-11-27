@@ -163,7 +163,7 @@ class NewYorkSocialRemainingTests(unittest.TestCase):
         self.assertEqual(row["description"], body)
         self.assertEqual(row["starts_at"], "2026-11-18T13:00:00-05:00")
         self.assertEqual(row["venue_address"], "68 34th Street Building 6, Brooklyn, NY 11232")
-        self.assertEqual(row["collector_event_content_v1"]["facts"]["provider_venue_id"], "1")
+        self.assertNotIn("provider_venue_id", row["collector_event_content_v1"]["facts"])
         self.assertNotIn("source_latitude", row["collector_event_content_v1"]["facts"])
         self.assertIn("/wp-json/tribe/events/v1/events?", fetch.call_args_list[0].args[0])
 
@@ -236,7 +236,7 @@ class NewYorkSocialRemainingTests(unittest.TestCase):
         self.assertEqual(row["location_provenance"], "publisher_event_geo")
         facts = row["collector_event_content_v1"]["facts"]
         self.assertEqual((facts["source_latitude"], facts["source_longitude"]), (40.656, -74.007))
-        self.assertEqual(facts["provider_venue_id"], event["id"])
+        self.assertNotIn("provider_venue_id", facts)
 
     def test_event_fingerprint_input_ignores_provider_label_and_changes_with_event_details(self):
         event = industry_event()
