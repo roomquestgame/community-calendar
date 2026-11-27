@@ -335,7 +335,7 @@ def test_triggered_runner_finishes_ticket_on_failure(monkeypatch):
 def test_dispatch_endpoint_accepts_only_ticket(monkeypatch):
     import io
     from types import SimpleNamespace
-    from api import venue_research as geocode
+    from api import geocode
     runner = Mock(return_value={"claimed": 1})
     monkeypatch.setattr(geocode, "run_triggered", runner)
     ticket = "8fcfd992-3f7d-47aa-a5b1-a0a54ed4114f"
@@ -343,7 +343,7 @@ def test_dispatch_endpoint_accepts_only_ticket(monkeypatch):
         raw = json.dumps(body).encode()
         req = SimpleNamespace(headers={"Content-Length": str(len(raw)),
                                        "x-vercel-oidc-token": "request-token"},
-                              rfile=io.BytesIO(raw), reply=Mock())
+                              rfile=io.BytesIO(raw), reply=Mock(), path="/api/geocode")
         geocode.handler.do_POST(req)
         return req.reply.call_args.args
     assert invoke({"ticket": ticket, "url": "https://evil.example"}) == (400, {"error": "invalid_dispatch"})
