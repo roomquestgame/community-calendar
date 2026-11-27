@@ -29,7 +29,8 @@ class handler(BaseHTTPRequestHandler):
         if self.headers.get("Content-Length", "0") not in ("", "0"):
             return self.reply(400, {"error": "unexpected_body"})
         try:
-            return self.reply(200, run_batch())
+            return self.reply(200, run_batch(
+                oidc_token=self.headers.get("x-vercel-oidc-token", "")))
         except Exception:
             # Never serialize exceptions, HTTP request objects, or secrets.
             return self.reply(503, {"error": "geocoder_unavailable"})
