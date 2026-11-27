@@ -1,6 +1,7 @@
 from copy import deepcopy
 from datetime import datetime, timedelta, timezone
 from html import escape
+from hashlib import sha256
 import json
 import unittest
 from unittest.mock import Mock, patch
@@ -238,6 +239,19 @@ class FinalArtsTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "checkpoint_invalid"):
                 ny.collect_chunk(source(ny.TRANSIT), fetch, checkpoint=value, now=NOW)
 
+    def test_checkpoint_rejects_tampered_original_facts_and_preserves_legacy_prefix(self):
+        fetch, _ = transit_fetch(3)
+        state = ny.collect_chunk(source(ny.TRANSIT), fetch, now=NOW, max_details=1)["checkpoint"]
+        changed = deepcopy(state)
+        changed["events"][0]["collector_event_content_v1"]["facts"]["description"] = "tampered"
+        with self.assertRaisesRegex(ValueError, "checkpoint_invalid"):
+            ny.collect_chunk(source(ny.TRANSIT), fetch, checkpoint=changed, now=NOW)
+        legacy = deepcopy(state)
+        legacy["events"][0].pop("collector_event_content_v1")
+        resumed = ny.collect_chunk(source(ny.TRANSIT), fetch, checkpoint=legacy, now=NOW)
+        self.assertTrue(resumed["complete"])
+        self.assertTrue(all("collector_event_content_v1" not in row for row in resumed["events"]))
+
     def test_checkpoint_expiry_and_input_timezone_normalize_to_utc(self):
         fetch, _ = transit_fetch(3)
         first = ny.collect_chunk(source(ny.TRANSIT), fetch, now=NOW.astimezone(ny.ZoneInfo(ny.ZONE)), max_details=1)
@@ -276,6 +290,9 @@ class FinalArtsTests(unittest.TestCase):
         slug = "max-pollak-the-rumbatap-jam"
         row = ny._flushing_detail(fth_item(slug), fth_detail(body="Community Arts Grantee Location: Terraza 7 40-19 Gleane St, Elmhurst, NY 11373. Dance with us."), NOW)[0]
         self.assertEqual(row["venue_address"], "40-19 Gleane Street, Elmhurst, NY 11373")
+        facts = row["collector_event_content_v1"]["facts"]
+        self.assertEqual(facts["venue_address"], "40-19 Gleane St")
+        self.assertNotIn("source_latitude", facts)
         with self.assertRaisesRegex(ValueError, "venue_unreviewed"):
             ny._flushing_detail(fth_item(), fth_detail(body="Community Arts Grantee Location: Another venue"), NOW)
 
@@ -295,6 +312,9 @@ class FinalArtsTests(unittest.TestCase):
         self.assertTrue(row["description"].endswith("Final materials condition."))
         self.assertGreater(len(row["description"]), 2000)
         self.assertEqual(row["venue_address"], "140 58th Street Building B Unit 1C, Brooklyn, NY 11220")
+        facts = row["collector_event_content_v1"]["facts"]
+        self.assertEqual((facts["source_latitude"], facts["source_longitude"]), (40.6455001, -74.0239072))
+        self.assertEqual(facts["venue_address"], "140 58th St Building B, Unit 1C")
         context["basicInfo"]["organizer"]["id"] = "another-organizer"
         with self.assertRaisesRegex(ValueError, "identity_changed"):
             ny._maker_detail(maker_item(context), maker_detail(context), NOW)
@@ -329,6 +349,19 @@ class FinalArtsTests(unittest.TestCase):
         self.assertEqual(row["venue_address"], "10 Grand Army Plaza, Brooklyn, NY 11238")
         self.assertEqual(row["starts_at"], "2026-12-05T19:00:00-05:00")
         self.assertEqual(row["publisher_categories"], ["adults", "BPL Presents", "author talks"])
+        self.assertEqual(row["collector_event_content_v1"]["facts"]["venue_postal_code"], "11238")
+
+    def test_event_facts_ignore_outer_provider_labels_but_change_with_event_details(self):
+        item = ny._bpl_manifest(Mock(return_value=bpl_listing()), 1e99, NOW)[0]
+        row = ny._bpl_detail(item, bpl_detail(), NOW)[0]
+        envelope = deepcopy(row["collector_event_content_v1"])
+        first = sha256(json.dumps(envelope["facts"], sort_keys=True).encode()).hexdigest()
+        row["provider_label"] = "Renamed collector label"
+        second = sha256(json.dumps(row["collector_event_content_v1"]["facts"], sort_keys=True).encode()).hexdigest()
+        self.assertEqual(first, second)
+        changed = ny._bpl_detail(item, bpl_detail("Changed publisher narrative."), NOW)[0]
+        third = sha256(json.dumps(changed["collector_event_content_v1"]["facts"], sort_keys=True).encode()).hexdigest()
+        self.assertNotEqual(first, third)
 
     def test_bpl_scope_pagination_and_branch_address_fail_closed(self):
         with self.assertRaisesRegex(ValueError, "bpl_scope_changed"):
