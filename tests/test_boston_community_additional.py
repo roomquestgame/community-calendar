@@ -124,6 +124,37 @@ def test_full_body_limit_and_no_title_fallback():
         b._tracksmith_detail(card, html, NOW, [])
 
 
+def test_event_only_facts_ignore_provider_label_and_change_with_publisher_details(monkeypatch):
+    card, html = track()
+    monkeypatch.setattr(b, '_manifest', lambda *args: [card])
+
+    def run(src, payload):
+        return b.collect_chunk(src, lambda *args: payload, now=NOW)['events'][0]
+
+    first = run(source(b.TRACKSMITH), html)
+    renamed = run({**source(b.TRACKSMITH), 'publisher_name': 'Renamed provider label'}, html)
+    changed = run(source(b.TRACKSMITH), html.replace(
+        'friendly run leaders', 'publisher-updated run leaders'))
+    assert renamed['collector_event_content_v1'] == first['collector_event_content_v1']
+    assert changed['collector_event_content_v1'] != first['collector_event_content_v1']
+    assert first['collector_event_content_v1']['event_id'] == first['id']
+
+
+def test_original_location_facts_are_separate_from_reviewed_publication_location():
+    card, html = track(native_address='285 Newbury Street, Boston, MA')
+    row = b._tracksmith_detail(card, html, NOW, [])[0]
+    facts = row['collector_event_content_v1']['facts']
+    assert row['venue_address'] == '285 Newbury Street, Boston, MA 02115'
+    assert facts['venue_address'] == '285 Newbury Street, Boston, MA'
+
+    card, html = rock()
+    row = b._rock_page(card, html, NOW, [])[0]
+    facts = row['collector_event_content_v1']['facts']
+    assert row['venue_address'] == '30 Old Colony Avenue, South Boston, MA 02127'
+    assert 'venue_address' not in facts
+    assert facts['native_options']['scheduler_location_id'] == '95'
+
+
 @pytest.mark.parametrize('body', ['', '<p> </p>', '<p>https://example.com/register</p>'])
 def test_blank_description_is_held_without_teaser_fallback(body):
     card, html = track(body=body)
@@ -363,6 +394,11 @@ def test_checkpoint_complete_only_hash_binding_and_ttl(monkeypatch):
         poison = deepcopy(first['checkpoint']); poison['events'][0][field] = value
         with pytest.raises(ValueError, match='checkpoint_invalid'):
             b.collect_chunk(source(b.TRACKSMITH), fetch, checkpoint=poison, now=NOW)
+    poison = deepcopy(first['checkpoint'])
+    poison['events'][0]['collector_event_content_v1']['facts']['description'] = 'Tampered original facts.'
+    poison['outcomes'][0]['rows_hash'] = b._digest(poison['events'][:1])
+    with pytest.raises(ValueError, match='checkpoint_invalid'):
+        b.collect_chunk(source(b.TRACKSMITH), fetch, checkpoint=poison, now=NOW)
     original = deepcopy(first['checkpoint'])
     with pytest.raises(RuntimeError, match='publisher failure'):
         b.collect_chunk(source(b.TRACKSMITH), lambda *a: (_ for _ in ()).throw(RuntimeError('publisher failure')),
@@ -372,6 +408,23 @@ def test_checkpoint_complete_only_hash_binding_and_ttl(monkeypatch):
     assert final['complete'] and len(final['events']) == 10 and len(reads) == 10
     with pytest.raises(ValueError, match='checkpoint_invalid'):
         b.collect_chunk(source(b.TRACKSMITH), fetch, checkpoint=first['checkpoint'], now=NOW + timedelta(hours=5))
+
+
+def test_legacy_checkpoint_prefix_finishes_without_inventing_original_facts(monkeypatch):
+    items = [track(i) for i in range(9)]
+    monkeypatch.setattr(b, '_manifest', lambda *args: [card for card, _ in items])
+    details = {card['url']: html for card, html in items}
+    first = b.collect_chunk(source(b.TRACKSMITH), lambda url, accept: details[url], now=NOW)
+    legacy = deepcopy(first['checkpoint'])
+    for row in legacy['events']:
+        row.pop('collector_event_content_v1')
+    legacy['outcomes'] = [{'url': card['url'], 'rows_hash': b._digest(
+        [row for row in legacy['events'] if row['event_url'] == card['url']])}
+        for card in legacy['manifest'][:legacy['cursor']]]
+    complete = b.collect_chunk(source(b.TRACKSMITH), lambda url, accept: details[url],
+                               checkpoint=legacy, now=NOW)
+    assert complete['complete'] and len(complete['events']) == 9
+    assert all('collector_event_content_v1' not in row for row in complete['events'])
 
 
 def test_rehashed_checkpoint_cannot_move_the_reviewed_dojo_point(monkeypatch):
@@ -453,9 +506,12 @@ def test_actual_worker_slow_fetch_reserve_and_complete_only_staging(monkeypatch,
         if op == 'community_collector_record_staged_events':
             assert saved[0]['cursor'] == saved[0]['manifest_count']
             boston_sources.validate_records(args['p_events'], src); staged.extend(args['p_events'])
+            assert all('collector_event_content_v1' in row for row in args['p_events'])
             return len(args['p_events'])
         if op == 'community_collector_record_preview_v2':
-            assert args['p_error'] is None; previews.append(args); return {'ok': True}
+            assert args['p_error'] is None
+            assert all('collector_event_content_v1' not in row for row in args['p_samples'])
+            previews.append(args); return {'ok': True}
         raise AssertionError(op)
     monkeypatch.setattr(worker, 'fetch_publisher', fetch)
     monkeypatch.setattr(worker, 'supabase_rpc', rpc)

@@ -224,7 +224,9 @@ def _range(day, value):
 
 
 def _row(key, title, start, end, url, identity, body, venue, street, city, *, point=None,
-         categories=(), evidence=None, provenance='Publisher event-specific full street address.'):
+         categories=(), evidence=None, provenance='Publisher event-specific full street address.',
+         native_venue_name=None, native_venue_address=None, native_venue_city=None,
+         native_options=None):
     if not body or not body.strip() or plain(body).casefold() == plain(title).casefold():
         raise ValueError('boston_additional_description_missing')
     if len(body) > MAX_DESCRIPTION:
@@ -241,7 +243,80 @@ def _row(key, title, start, end, url, identity, body, venue, street, city, *, po
         row.update(description=body, timezone=ZONE, attendance_mode='in_person',
             publisher_categories=list(categories), location_evidence_url=evidence or url,
             location_provenance=provenance)
+    options = dict(native_options or {})
+    native_categories = sorted({plain(value) for value in categories if plain(value)}, key=str.casefold)
+    if native_categories:
+        options['publisher_categories'] = native_categories
+    return _attach_content(
+        row, title=title, body=body, start=start, end=end, url=url,
+        venue_name=venue if native_venue_name is None else native_venue_name,
+        venue_address=street if native_venue_address is None else native_venue_address,
+        venue_city=city if native_venue_city is None else native_venue_city,
+        native_options=options)
+
+
+def _attach_content(row, *, title, body, start, end, url, venue_name=None,
+                    venue_address=None, venue_city=None, venue_region=None,
+                    venue_postal_code=None, venue_country=None, photo=None,
+                    native_options=None):
+    """Retain event-owned publisher facts for the shared SQL fingerprint."""
+    if row is None:
+        return None
+    facts = {
+        'title': title,
+        'description': body,
+        'is_all_day': False,
+        'starts_at_utc': start.astimezone(timezone.utc).isoformat(),
+        'ends_at_utc': end.astimezone(timezone.utc).isoformat() if end else None,
+        'event_url': url,
+        'venue_name': venue_name,
+        'venue_address': venue_address,
+        'venue_city': venue_city,
+        'venue_region': venue_region,
+        'venue_postal_code': venue_postal_code,
+        'venue_country': venue_country,
+        'source_image_url': photo,
+        'native_options': native_options,
+    }
+    facts = {name: value for name, value in facts.items()
+             if value is not None and value != '' and value != {}}
+    row['collector_event_content_v1'] = {
+        'version': 1,
+        'event_id': row['id'],
+        'facts': facts,
+    }
     return row
+
+
+def _content_envelope_valid(row):
+    evidence = row.get('collector_event_content_v1')
+    if evidence is None:
+        return True
+    if (not isinstance(evidence, dict)
+            or set(evidence) != {'version', 'event_id', 'facts'}
+            or evidence.get('version') != 1
+            or evidence.get('event_id') != row.get('id')
+            or not isinstance(evidence.get('facts'), dict)):
+        return False
+    facts = evidence['facts']
+    allowed = {
+        'title', 'description', 'is_all_day', 'starts_at_utc', 'ends_at_utc',
+        'event_url', 'venue_name', 'venue_address', 'venue_city', 'venue_region',
+        'venue_postal_code', 'venue_country', 'source_image_url', 'native_options',
+    }
+    if not set(facts) <= allowed:
+        return False
+    expected = {
+        'title': row.get('title'),
+        'description': row.get('description'),
+        'is_all_day': False,
+        'starts_at_utc': timestamp(row.get('starts_at')).astimezone(timezone.utc).isoformat(),
+        'event_url': row.get('event_url'),
+    }
+    end = timestamp(row.get('ends_at'))
+    if end is not None:
+        expected['ends_at_utc'] = end.astimezone(timezone.utc).isoformat()
+    return all(facts.get(name) == value for name, value in expected.items())
 
 
 def _schemas(soup):
@@ -330,7 +405,9 @@ def _arboretum(fetch, now, deadline_at, diagnostics):
         categories = item.get('CATEGORIES')
         categories = [str(c) for c in getattr(categories, 'cats', [])]
         row = _row(ARBORETUM, title, start, end, url, 'arboretum:' + uid, body, venue,
-            street, city, point=point, categories=categories, evidence=evidence, provenance=provenance)
+            street, city, point=point, categories=categories, evidence=evidence, provenance=provenance,
+            native_venue_name='', native_venue_address='', native_venue_city='',
+            native_options={'native_location': native_location})
         if row:
             out.append(row)
     return out
@@ -590,7 +667,8 @@ def _tracksmith_detail(card, payload, now, diagnostics):
         return []
     row = _row(TRACKSMITH, card['title'], start, end, card['url'],
         'tracksmith:' + urlsplit(card['url']).path.split('/')[-1], body, venue, street, city,
-        evidence=evidence, provenance=provenance)
+        evidence=evidence, provenance=provenance, native_venue_name=venue,
+        native_venue_address=native)
     return [row] if row else []
 
 
@@ -662,7 +740,8 @@ def _trustees_detail(card, payload, now, diagnostics):
         provenance = 'Native garden address range 2–6 Leland Street contains the narrative 4 Leland entrance; exact actual garden retained.'
     row = _row(TRUSTEES, card['title'], start, end, card['url'],
         'trustees:' + urlsplit(card['url']).path.strip('/').split('/')[-1], text,
-        venue, street, city, evidence=evidence, provenance=provenance)
+        venue, street, city, evidence=evidence, provenance=provenance,
+        native_venue_name=venue, native_venue_address=streetline + ', ' + locality)
     return [row] if row else []
 
 
@@ -708,7 +787,8 @@ def _central(fetch, now, deadline_at, diagnostics):
             'centralrock:492:' + day.isoformat(), body, 'Central Rock Gym Cambridge',
             '170 Alewife Brook Parkway, Cambridge, MA 02138', 'Cambridge',
             evidence='https://centralrockgym.com/locations/',
-            provenance='Exact native Cambridge gym street; complete postal form verified against the official location directory.')
+            provenance='Exact native Cambridge gym street; complete postal form verified against the official location directory.',
+            native_options={'publisher_schedule_rule': 'third_thursday_19:00-21:00_America/New_York'})
         if row:
             row['publisher_schedule_rule'] = 'Third Thursday of every month,19:00–21:00 America/New_York;60-day expansion of explicit current publisher rule.'
             out.append(row)
@@ -787,7 +867,9 @@ def _rock_page(card, payload, now, diagnostics):
                 'rockspot:' + native_id + ':' + identifier['data-eventpartid'], body,
                 'Rock Spot Climbing South Boston', '30 Old Colony Avenue, South Boston, MA 02127', 'South Boston',
                 evidence='https://rockspotclimbing.com/locations/ma/southboston/',
-                provenance='Scheduler location95 explicitly selects South Boston; full street verified against the gym’s official location page. Other chain locations are not mapped here.')
+                provenance='Scheduler location95 explicitly selects South Boston; full street verified against the gym’s official location page. Other chain locations are not mapped here.',
+                native_venue_name='South Boston, MA', native_venue_address='', native_venue_city='',
+                native_options={'scheduler_location_id': '95'})
             if row:
                 row['publisher_schedule_page'] = card['url']
                 out.append(row)
@@ -881,7 +963,8 @@ def _harbor_detail(card, payload, now, diagnostics):
         point = None
     row = _row(HARBOR, plain(item.get('name')), start, end, card['url'],
         'harbor:' + card['url'].rsplit('-', 1)[-1], body, venue, street, city,
-        point=point, evidence=evidence, provenance=provenance)
+        point=point, evidence=evidence, provenance=provenance,
+        native_venue_name=venue, native_venue_address=native_street)
     return [row] if row else []
 
 
@@ -978,6 +1061,7 @@ def _row_valid(key, row, card, started):
     if not isinstance(row, dict) or not event_url(key, row.get('event_url')):
         return False
     if (row.get('timezone') != ZONE or row.get('attendance_mode') != 'in_person'
+            or not _content_envelope_valid(row)
             or not isinstance(row.get('description'), str) or not row['description'].strip()
             or plain(row['description']).casefold() == plain(row.get('title')).casefold()
             or len(row['description']) > MAX_DESCRIPTION or not row.get('venue_name')
@@ -1114,11 +1198,16 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None)
             'manifest': manifest, 'manifest_hash': _digest(manifest), 'manifest_count': len(manifest),
             'cursor': 0, 'events': [], 'diagnostics': [], 'outcomes': []}
     frozen_now = _offset(state['started_at'])
+    legacy_prefix = bool(state['events'] and
+                         any('collector_event_content_v1' not in row for row in state['events']))
     for index in range(state['cursor'], min(len(state['manifest']), state['cursor'] + DETAILS_PER_CHUNK)):
         if deadline_at is not None and monotonic() + 18 >= deadline_at:
             break
         card = state['manifest'][index]
         rows = _detail(key, card, fetch(card['url'], 'text/html'), frozen_now, state['diagnostics'])
+        if legacy_prefix:
+            for row in rows:
+                row.pop('collector_event_content_v1', None)
         if not rows and not any(d['id'] == card['url'] for d in state['diagnostics']):
             _hold(key, card['url'], 'boston_additional_outside_window', state['diagnostics'])
         state['events'].extend(rows)
