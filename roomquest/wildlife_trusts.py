@@ -5,7 +5,7 @@ may point to regional Trusts; transport is restricted to the publisher network
 actually observed in the national feed. No arbitrary RSS host is fetched.
 """
 from copy import deepcopy
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
 import hashlib
 import json
@@ -362,7 +362,30 @@ def parse_detail(payload, item, *, source):
     if row is None:
         return [], 'outside_window'
     row.update(description=narrative, timezone=LONDON.key)
-    return [_attach_native(row, source, node)], 'included'
+    _attach_native(row, source, node)
+    if 'registered_native_content' in row:
+        # Hash the observed occurrence, not the bounded display row or a
+        # geocoder/publisher-profile default. A date plus visible clock is
+        # local source evidence, while an aware datetime supplies an instant.
+        if re.fullmatch(r'[0-9]{4}-[0-9]{2}-[0-9]{2}', start_value):
+            schedule = {
+                'starts_at_local': local.replace(tzinfo=None).isoformat(timespec='seconds'),
+                'ends_at_local': end.astimezone(LONDON).replace(tzinfo=None).isoformat(timespec='seconds') if end else None,
+            }
+        else:
+            schedule = {'starts_at_utc': start.astimezone(timezone.utc).isoformat(),
+                        'ends_at_utc': end.astimezone(timezone.utc).isoformat() if end else None}
+        row['collector_event_content_v1'] = {
+            'version': 1, 'event_id': row['id'], 'facts': {
+                'title': title, 'description': narrative, 'is_all_day': False, **schedule,
+                'event_url': item['url'], 'publisher_status': status_value.strip() or None,
+                'venue_name': venue, 'venue_address': street, 'venue_city': city or None,
+                'source_latitude': lat if lng is not None else None,
+                'source_longitude': lng if lat is not None else None,
+                'source_image_url': row.get('image_url'),
+            },
+        }
+    return [row], 'included'
 
 
 def _manifest(source, fetch, *, listing=None, deadline_at=None):
@@ -416,6 +439,10 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
             raise ValueError('national_feed_checkpoint_invalid')
         if checkpoint['phase'] == 'stage':
             return {'complete': True, 'events': deepcopy(state['events']), 'checkpoint': checkpoint}
+    # A pre-rollout checkpoint may already contain rows without source facts.
+    # Do not reconstruct them from display fields, mix protocols on a retry,
+    # or change the identity/equality of a previously captured occurrence.
+    legacy_prefix = any('collector_event_content_v1' not in row for row in state['events'])
     first_cursor = cursor
     today = datetime.fromisoformat(state['started_at']).astimezone(LONDON).date()
     horizon = (today + timedelta(days=60)).isoformat()
@@ -443,6 +470,9 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
                     raise
                 rows, reason = [], str(exc)
             fetched += 1
+        if legacy_prefix:
+            for row in rows:
+                row.pop('collector_event_content_v1', None)
         state['events'].extend(rows)
         state['outcomes'].append({'url': url, 'reason': reason, 'count': len(rows)})
         cursor += 1
