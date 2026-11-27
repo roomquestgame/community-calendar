@@ -278,13 +278,14 @@ def rpc(action: str, payload=None):
     return supabase_rpc(RPC, {"p_action": action, "p_payload": payload or {}})
 
 
-def run_batch(*, database=None, resolver=None, clock=None, deadline_seconds=15) -> dict:
+def run_batch(*, database=None, resolver=None, clock=None, deadline_seconds=15,
+              oidc_token=None, trigger_claims=None) -> dict:
     stats = {"claimed": 0, "resolved": 0, "review": 0, "errors": 0}
     if os.environ.get("FORWARD_GEOCODER_ENABLED") != "true" or os.environ.get("VERCEL_ENV") != "production":
         return stats
     database, resolver, clock = database or rpc, resolver or resolve, clock or monotonic
     from roomquest import venue_research
-    research_config = venue_research.configured()
+    research_config = venue_research.configured(oidc_token=oidc_token)
     start = clock()
     # Keep ordinary work at its existing 15-second budget. A scheduled
     # research claim is eligible only when the route has the full research
@@ -292,13 +293,21 @@ def run_batch(*, database=None, resolver=None, clock=None, deadline_seconds=15) 
     research_ready = bool(research_config and deadline_seconds >= venue_research.RESEARCH_WORK_SECONDS)
     ordinary_deadline = start + min(15 if research_ready else 18, max(1, deadline_seconds))
     research_deadline = start + venue_research.RESEARCH_WORK_SECONDS if research_ready else ordinary_deadline
-    claims = database("claim", venue_research.claim_options(research_config if research_ready else None)) or []
+    if trigger_claims is not None:
+        if not research_ready:
+            return {**stats, "stop_reason": "research_unconfigured"}
+        claims = trigger_claims
+    else:
+        # The periodic geocoder may still do ordinary deterministic venue
+        # work and hand off a clean miss. It must never claim paid research.
+        claims = database("claim", {"limit": 1}) or []
     for claim in claims[:1]:
         stats["claimed"] += 1
         identity = {k: claim[k] for k in ("venue_key", "lease_id")}
         try:
-            outcome = venue_research.handle_claim(database, claim, identity, research_config if research_ready else None,
+            outcome = (venue_research.handle_claim(database, claim, identity, research_config,
                                                    fetch=fetch_page, deadline=research_deadline, clock=clock)
+                       if trigger_claims is not None else None)
             if outcome is not None:
                 stats[outcome] += 1
                 continue
@@ -326,7 +335,40 @@ def run_batch(*, database=None, resolver=None, clock=None, deadline_seconds=15) 
     return stats
 
 
-def run_pipeline() -> dict:
+def run_triggered(ticket, *, oidc_token, database=None):
+    """Process one database-ticketed venue lease, then notify completion.
+
+    No cron phase, global environment mutation or duplicate worker loop.
+    A rejected ticket cannot release a different active dispatch.
+    """
+    from roomquest import venue_research
+    config = venue_research.configured(oidc_token=oidc_token)
+    if (os.environ.get("VERCEL_ENV") != "production"
+            or os.environ.get("FORWARD_GEOCODER_ENABLED") != "true"
+            or not config):
+        print("venue_research_configured", False)
+        return {"stop_reason": "research_unconfigured"}
+    database = database or rpc
+    print("venue_research_configured", True)
+    receipt = database("trigger_claim", {"ticket": ticket, "research_model": config["model"]})
+    # Only the successful single-use claim receives a separate completion
+    # nonce. A duplicate delivery cannot finish an in-flight original.
+    completion = receipt.get("completion_id") if isinstance(receipt, dict) else None
+    if not isinstance(completion, str) or not re.fullmatch(r"[0-9a-f-]{36}", completion):
+        return {"claimed": 0, "stop_reason": "dispatch_not_claimed"}
+    try:
+        claims = receipt.get("claims")
+        if not isinstance(claims, list) or len(claims) > 1:
+            raise ValueError("invalid_dispatch_claim")
+        result = run_batch(database=database, deadline_seconds=venue_research.RESEARCH_WORK_SECONDS,
+                           oidc_token=oidc_token, trigger_claims=claims)
+        print("venue_research_dispatch", {k: result[k] for k in ("claimed", "resolved", "review", "errors", "research_deferred") if k in result})
+        return result
+    finally:
+        database("trigger_finish", {"ticket": ticket, "completion_id": completion})
+
+
+def run_pipeline(*, oidc_token=None) -> dict:
     """Run geocoding first; optional venue/photo stages cannot block it."""
     from roomquest.forward_geocoder import run_batch as geocode_batch
     from roomquest.event_media import dedicated_media_ready, run_batch as photo_batch
@@ -374,10 +416,11 @@ def run_pipeline() -> dict:
             # One four-second completion RPC, plus an eight-second page fetch
             # and final five-second read beyond the six-second admission guard.
             from roomquest import venue_research
-            if venue_research.configured() and deadline - monotonic() - 11 >= venue_research.RESEARCH_WORK_SECONDS:
-                result["venues"] = optional_stage(run_batch, venue_research.RESEARCH_WORK_SECONDS, 11)
-            else:
-                result["venues"] = optional_stage(run_batch, 15, 11)
+            # Scheduled geocoding retains its ordinary deterministic phase;
+            # paid research runs exclusively from committed dispatch tickets.
+            def run_venue(*, deadline_seconds):
+                return run_batch(deadline_seconds=deadline_seconds, oidc_token=oidc_token)
+            result["venues"] = optional_stage(run_venue, 15, 11)
         except Exception:
             result["venues"] = {"stop_reason": "stage_failed"}
 
