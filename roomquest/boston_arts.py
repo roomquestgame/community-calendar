@@ -156,9 +156,72 @@ def _finish(key, row, body, labels=(), image=None):
         row['location_provenance'] = 'publisher_venue_coordinates'
     if labels:
         row['publisher_categories'] = list(dict.fromkeys(labels))
-    if image := photo_url(key, image):
-        row['image_url'] = image
+    native_image = photo_url(key, image)
+    if native_image:
+        row['image_url'] = native_image
+    categories = sorted({plain(value) for value in labels if plain(value)}, key=str.casefold)
+    return _attach_content(
+        row, body=body, image=native_image,
+        native_options={'publisher_categories': categories} if categories else None)
+
+
+def _attach_content(row, *, body, image=None, native_options=None):
+    """Retain event-owned publisher facts for the shared SQL fingerprint."""
+    if row is None:
+        return None
+    start, end = timestamp(row.get('starts_at')), timestamp(row.get('ends_at'))
+    facts = {
+        'title': row.get('title'),
+        'description': body,
+        'is_all_day': False,
+        'starts_at_utc': start.astimezone(timezone.utc).isoformat(),
+        'ends_at_utc': end.astimezone(timezone.utc).isoformat() if end else None,
+        'event_url': row.get('event_url'),
+        'venue_name': row.get('venue_name'),
+        'venue_address': row.get('venue_address'),
+        'venue_city': row.get('venue_city'),
+        'source_image_url': image,
+        'native_options': native_options,
+    }
+    facts = {name: value for name, value in facts.items()
+             if value is not None and value != '' and value != {}}
+    row['collector_event_content_v1'] = {
+        'version': 1,
+        'event_id': row['id'],
+        'facts': facts,
+    }
     return row
+
+
+def _content_envelope_valid(row):
+    evidence = row.get('collector_event_content_v1')
+    if evidence is None:
+        return True
+    if (not isinstance(evidence, dict)
+            or set(evidence) != {'version', 'event_id', 'facts'}
+            or evidence.get('version') != 1
+            or evidence.get('event_id') != row.get('id')
+            or not isinstance(evidence.get('facts'), dict)):
+        return False
+    facts = evidence['facts']
+    allowed = {
+        'title', 'description', 'is_all_day', 'starts_at_utc', 'ends_at_utc',
+        'event_url', 'venue_name', 'venue_address', 'venue_city', 'venue_region',
+        'venue_postal_code', 'venue_country', 'source_image_url', 'native_options',
+    }
+    if not set(facts) <= allowed:
+        return False
+    start, end = timestamp(row.get('starts_at')), timestamp(row.get('ends_at'))
+    expected = {
+        'title': row.get('title'),
+        'description': row.get('description'),
+        'is_all_day': False,
+        'starts_at_utc': start.astimezone(timezone.utc).isoformat(),
+        'event_url': row.get('event_url'),
+    }
+    if end is not None:
+        expected['ends_at_utc'] = end.astimezone(timezone.utc).isoformat()
+    return all(facts.get(name) == value for name, value in expected.items())
 
 
 def _held(key, identity, reason):
@@ -366,7 +429,8 @@ def _bpl_checkpoint(value, now):
                      and re.search(r', MA \d{5}(?:-\d{4})?$', row['venue_address']) is not None
                      and start.tzinfo is not None and (end is None or end.tzinfo is not None and end >= start)
                      and _within(start, end, started, days=7)
-                     and row.get('timezone') == ZONE and row.get('attendance_mode') == 'in_person')
+                     and row.get('timezone') == ZONE and row.get('attendance_mode') == 'in_person'
+                     and _content_envelope_valid(row))
             seen.add(row['id'])
         for item in value['diagnostics']:
             valid = valid and event_url(BPL, item['event_url']) and item['disposition'] == 'held' and item['reason'] in HOLD_REASONS
@@ -391,6 +455,8 @@ def _bpl_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None):
                      manifest_hash=_hash([]), manifest_count=0, cursor=0, queue=[], events=[], diagnostics=[],
                      native_count=None, seen_ids=[])
     prior = state['cursor']
+    legacy_prefix = bool(state['events'] and
+                         any('collector_event_content_v1' not in row for row in state['events']))
     # A source-specific ceiling, within the existing transport deadline and
     # twelve-second reserve. Native cardinality still gates the final snapshot.
     for _ in range(BPL_PAGES_PER_CHUNK):
@@ -399,6 +465,9 @@ def _bpl_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None):
         page = state['cursor'] + 1
         payload = fetch(_bpl_url(page), 'application/json')
         rows, diagnostics, paging = _bpl_page(payload, timestamp(state['started_at']))
+        if legacy_prefix:
+            for row in rows:
+                row.pop('collector_event_content_v1', None)
         native_ids = json.loads(payload)['events']['items']
         pages = paging.get('pages')
         count = paging.get('count')
@@ -644,6 +713,7 @@ def _checkpoint(value, key, now):
             valid = valid and bool(STREET.match(row.get('venue_address', ''))) and bool(re.search(r', MA \d{5}(?:-\d{4})?$', row.get('venue_address', '')))
             valid = valid and row.get('timezone') == ZONE and row.get('attendance_mode') == 'in_person'
             valid = valid and (row.get('image_url') is None or photo_url(key, row['image_url']) is not None)
+            valid = valid and _content_envelope_valid(row)
             seen.add(row['event_url'])
         for diagnostic in value['diagnostics']:
             url = diagnostic['event_url']
@@ -699,6 +769,8 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
     if state['cursor'] == state['manifest_count']:
         return dict(complete=True, events=_unique(deepcopy(state['events'])), checkpoint=state)
     prior = state['cursor']
+    legacy_prefix = bool(state['events'] and
+                         any('collector_event_content_v1' not in row for row in state['events']))
     maximum = min(2, max(1, int(max_details)))
     while state['cursor'] < state['manifest_count'] and state['cursor'] - prior < maximum:
         if monotonic() + 12 >= deadline:
@@ -713,6 +785,8 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
                 raise
             row, reason = None, str(exc)
         if row:
+            if legacy_prefix:
+                row.pop('collector_event_content_v1', None)
             state['events'].append(row)
         else:
             state['diagnostics'].append(dict(event_url=item['url'], disposition='held', reason=reason))
