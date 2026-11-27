@@ -398,3 +398,7 @@ Do not start paid AI research from a cron phase. Reuse the current venue queue a
 ## November 26 — callback route binding correction
 
 Initial triggered pg_net dispatch 39165 reached Vercel at 00:14:55 UTC and received the handler's 404 before any claim. Bind the ticket-only POST to its own serverless entry file (same shared resolver, no path comparison on rewritten requests); the regular geocoder handler remains separate and authenticated. Ticket and completion nonce still validated by the existing Supabase RPC. No new cron, queue, source/permit or budget change. Reissue only the exact unclaimed terminal-404 dispatch after the new route is READY.
+
+## November 26 — reuse the verified geocoder endpoint
+
+Second triggered callback 39251 returned handler 404 on the dedicated route despite the exact new deployment. Stop adding route variants. Use the existing known production /api/geocode route with a ticket-only POST (no Authorization header); existing bearer/no-body operator and scheduled GET authentication remain separate. Existing RPC verifies the single-use ticket and completion nonce; no new function, queue, schedule or expanded budget. Backend forward migration changes only the fixed callback URL. Reissue the exact terminal unclaimed pilot dispatch only after both releases are verified.

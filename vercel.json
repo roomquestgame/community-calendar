@@ -60,10 +60,6 @@
     "api/venue_discovery.py": {
       "maxDuration": 60,
       "excludeFiles": "{roomquest/catalogs/**,cities/**,docs/**,reports/**,supabase/**,xmlui/**,tests/**,website/**,node_modules/**,**/*.webm,**/*.png,**/*.jpg,**/*.jpeg}"
-    },
-    "api/venue_research.py": {
-      "maxDuration": 60,
-      "excludeFiles": "{roomquest/catalogs/**,cities/**,docs/**,reports/**,supabase/**,xmlui/**,tests/**,website/**,node_modules/**,**/*.webm,**/*.png,**/*.jpg,**/*.jpeg}"
     }
   },
   "routes": [
@@ -106,10 +102,6 @@
     {
       "src": "/api/chambermaster",
       "dest": "/api/index.py"
-    },
-    {
-      "src": "/api/venue-research",
-      "dest": "/api/venue_research.py"
     },
     {
       "src": "/api/geocode",

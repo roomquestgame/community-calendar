@@ -335,7 +335,7 @@ def test_triggered_runner_finishes_ticket_on_failure(monkeypatch):
 def test_dispatch_endpoint_accepts_only_ticket(monkeypatch):
     import io
     from types import SimpleNamespace
-    from api import venue_research as geocode
+    from api import geocode
     runner = Mock(return_value={"claimed": 1})
     monkeypatch.setattr(geocode, "run_triggered", runner)
     ticket = "8fcfd992-3f7d-47aa-a5b1-a0a54ed4114f"
@@ -343,10 +343,25 @@ def test_dispatch_endpoint_accepts_only_ticket(monkeypatch):
         raw = json.dumps(body).encode()
         req = SimpleNamespace(headers={"Content-Length": str(len(raw)),
                                        "x-vercel-oidc-token": "request-token"},
-                              rfile=io.BytesIO(raw), reply=Mock())
+                              rfile=io.BytesIO(raw), reply=Mock(), path="/api/geocode")
+        req.invoke_venue_research = lambda: geocode.handler.invoke_venue_research(req)
+        req.invoke = Mock(side_effect=AssertionError("ticket used operator path"))
         geocode.handler.do_POST(req)
         return req.reply.call_args.args
     assert invoke({"ticket": ticket, "url": "https://evil.example"}) == (400, {"error": "invalid_dispatch"})
     runner.assert_not_called()
     assert invoke({"ticket": ticket}) == (200, {"claimed": 1})
     runner.assert_called_once_with(ticket, oidc_token="request-token")
+
+
+def test_existing_operator_post_stays_separate(monkeypatch):
+    from types import SimpleNamespace
+    from api import geocode
+    monkeypatch.setenv("ROOMQUEST_PREVIEW_SECRET", "fake-operator")
+    request = SimpleNamespace(path="/api/geocode", headers={"Authorization": "Bearer fake-operator",
+                                                           "Content-Length": "10"},
+                              reply=Mock(), invoke_venue_research=Mock())
+    request.invoke = lambda name: geocode.handler.invoke(request, name)
+    geocode.handler.do_POST(request)
+    request.invoke_venue_research.assert_not_called()
+    request.reply.assert_called_once_with(400, {"error": "unexpected_body"})
