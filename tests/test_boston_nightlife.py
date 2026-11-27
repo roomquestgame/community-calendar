@@ -48,6 +48,21 @@ def test_native_text_is_not_parsed_as_html_again_during_record_mapping():
     assert b._row(b.NOTCH, queue[0])["description"] == queue[0]["body"]
 
 
+def test_original_facts_ignore_source_label_and_change_with_event_details():
+    day = future_day()
+    first_page = square_card(day, "The publisher's own event details.")
+    changed_page = square_card(day, "The publisher changed the event details.")
+    now = datetime.now(timezone.utc)
+    first = b.collect_chunk(source(b.NOTCH), lambda *_: first_page, now=now)
+    renamed = b.collect_chunk({**source(b.NOTCH), "publisher_name": "Changed provider label"},
+                              lambda *_: first_page, now=now)
+    changed = b.collect_chunk(source(b.NOTCH), lambda *_: changed_page, now=now)
+    envelope = first["events"][0]["collector_event_content_v1"]
+    assert renamed["events"][0]["collector_event_content_v1"] == envelope
+    assert changed["events"][0]["collector_event_content_v1"] != envelope
+    assert envelope["facts"]["venue_name"] == "Notch Brewing"
+
+
 def test_brighton_calendar_uses_reviewed_street_and_rejects_another_location():
     day = future_day()
     queue = b._manifest(b.NOTCH, square_card(day, "A complete community run description."), datetime.now(timezone.utc))
@@ -154,6 +169,24 @@ def test_detail_checkpoint_emits_only_complete_batch_and_detects_mutation():
     bad["queue"][0]["start"] = "2030-01-01T00:00:00+00:00"
     with pytest.raises(ValueError, match="checkpoint_invalid"):
         b.collect_chunk(source(b.LAMPLIGHTER), fetch, now=now, checkpoint=bad)
+    bad = deepcopy(first["checkpoint"])
+    bad["events"][0]["collector_event_content_v1"]["facts"]["description"] = "Tampered facts."
+    with pytest.raises(ValueError, match="checkpoint_invalid"):
+        b.collect_chunk(source(b.LAMPLIGHTER), fetch, now=now, checkpoint=bad)
+
+
+def test_checkpoint_keeps_one_protocol_and_does_not_invent_legacy_facts():
+    listing, details = lamp_fixture()
+    fetch = lambda url, _accept: listing if url == b.SOURCES[b.LAMPLIGHTER][0] else details[url]
+    now = datetime.now(timezone.utc)
+    first = b.collect_chunk(source(b.LAMPLIGHTER), fetch, now=now, max_details=1)
+    assert "collector_event_content_v1" in first["checkpoint"]["events"][0]
+    legacy = deepcopy(first["checkpoint"])
+    legacy["events"][0].pop("collector_event_content_v1")
+    full = b.collect_chunk(source(b.LAMPLIGHTER), fetch, now=now,
+                           checkpoint=legacy, max_details=1)
+    assert full["complete"]
+    assert all("collector_event_content_v1" not in row for row in full["events"])
 
 
 def test_source_and_media_urls_remain_publisher_scoped():
