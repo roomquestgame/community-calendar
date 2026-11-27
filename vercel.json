@@ -104,6 +104,10 @@
       "dest": "/api/index.py"
     },
     {
+      "src": "/api/venue-research",
+      "dest": "/api/geocode.py"
+    },
+    {
       "src": "/api/geocode",
       "dest": "/api/geocode.py"
     },
