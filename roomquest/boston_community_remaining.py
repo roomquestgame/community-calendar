@@ -248,6 +248,75 @@ def _row(key, title, start, end, url, identity, body, venue, street, city, *, po
     return row
 
 
+def _attach_content(row, *, title, body, start, end, url, venue_name=None,
+                    venue_address=None, venue_city=None, venue_region=None,
+                    venue_postal_code=None, venue_country=None, photo=None,
+                    native_options=None):
+    """Retain only event-owned publisher facts for the shared SQL fingerprint."""
+    if row is None:
+        return None
+    facts = {
+        "title": title,
+        "description": body,
+        "is_all_day": False,
+        "starts_at_utc": start.astimezone(timezone.utc).isoformat(),
+        "ends_at_utc": end.astimezone(timezone.utc).isoformat() if end else None,
+        "event_url": url,
+        "venue_name": venue_name,
+        "venue_address": venue_address,
+        "venue_city": venue_city,
+        "venue_region": venue_region,
+        "venue_postal_code": venue_postal_code,
+        "venue_country": venue_country,
+        "source_image_url": photo,
+        "native_options": native_options,
+    }
+    facts = {name: value for name, value in facts.items()
+             if value is not None and value != "" and value != {}}
+    row["collector_event_content_v1"] = {
+        "version": 1,
+        "event_id": row["id"],
+        "facts": facts,
+    }
+    return row
+
+
+def _content_envelope_valid(row, card=None):
+    evidence = row.get("collector_event_content_v1")
+    if evidence is None:
+        return True
+    if (not isinstance(evidence, dict)
+            or set(evidence) != {"version", "event_id", "facts"}
+            or evidence.get("version") != 1
+            or evidence.get("event_id") != row.get("id")
+            or not isinstance(evidence.get("facts"), dict)):
+        return False
+    facts = evidence["facts"]
+    allowed = {
+        "title", "description", "is_all_day", "starts_at_utc", "ends_at_utc",
+        "event_url", "venue_name", "venue_address", "venue_city", "venue_region",
+        "venue_postal_code", "venue_country", "source_image_url", "native_options",
+    }
+    if not set(facts) <= allowed:
+        return False
+    expected = {
+        "title": row.get("title"),
+        "description": row.get("description"),
+        "is_all_day": False,
+        "starts_at_utc": timestamp(row.get("starts_at")).astimezone(timezone.utc).isoformat(),
+        "event_url": row.get("event_url"),
+    }
+    end = timestamp(row.get("ends_at"))
+    if end is not None:
+        expected["ends_at_utc"] = end.astimezone(timezone.utc).isoformat()
+    if not all(facts.get(name) == value for name, value in expected.items()):
+        return False
+    if card is not None and (facts.get("title") != card.get("title")
+                             or facts.get("event_url") != card.get("url")):
+        return False
+    return True
+
+
 # Reviewed official Localist place directory and BC's public directions. Missing
 # event streets are resolved only for exact venue identities, never a generic
 # college headquarters. Conflicting native geocodes are discarded for geocoding.
@@ -367,6 +436,18 @@ def _bc_events(events, now, diagnostics):
             row = _row(BC, title, start, end, url, f"bc:{identity}:{inst['id']}", body,
                        venue, address, city, point=point, categories=categories,
                        photo=event.get("photo_url"), provenance=provenance, evidence=evidence)
+            geo = event.get("geo") or {}
+            native_venue = ", ".join(filter(None, (
+                plain(event.get("location_name")), plain(event.get("room_number")))))
+            photo = event.get("photo_url")
+            row = _attach_content(
+                row, title=title, body=body, start=start, end=end, url=url,
+                venue_name=native_venue, venue_address=plain(event.get("address")),
+                venue_city=plain(geo.get("city")), venue_region=plain(geo.get("state")),
+                venue_postal_code=plain(geo.get("zip")),
+                photo=photo if photo_url(BC, photo) else None,
+                native_options={"categories": sorted(categories), "audiences": sorted(set(audiences)),
+                                "experience": plain(event.get("experience"))})
             if row:
                 key = (row["id"], row["starts_at"])
                 if key in output and output[key] != row:
@@ -525,7 +606,8 @@ def _greenway_detail(card, payload, now, diagnostics):
     if not _within(start, end, now):
         _hold(GREENWAY, card["url"], "boston_remaining_outside_window", diagnostics)
         return []
-    venue, raw = card["venue"], plain((query.get("location") or [""])[0])
+    native_venue = card["venue"]
+    venue, raw = native_venue, plain((query.get("location") or [""])[0])
     resolved = _street(raw)
     provenance, evidence, point = "publisher_event_export_street", card["url"], None
     if "Greenway Carousel" in card["title"] and resolved:
@@ -553,9 +635,16 @@ def _greenway_detail(card, payload, now, diagnostics):
         _hold(GREENWAY, card["url"], "boston_remaining_street_unresolved", diagnostics)
         return []
     image = soup.select_one('meta[property="og:image"]')
+    photo = image.get("content") if image else None
     row = _row(GREENWAY, card["title"], start, end, card["url"], f"greenway:{card['native_id']}",
                body, venue, resolved[0], resolved[1], point=point, categories=card["categories"],
-               photo=image.get("content") if image else None, provenance=provenance, evidence=evidence)
+               photo=photo, provenance=provenance, evidence=evidence)
+    row = _attach_content(
+        row, title=card["title"], body=body, start=start, end=end, url=card["url"],
+        venue_name=native_venue, venue_address=raw,
+        photo=photo if photo_url(GREENWAY, photo) else None,
+        native_options={"categories": sorted(set(card["categories"])),
+                        "native_id": card["native_id"]})
     return [row] if row else []
 
 
@@ -685,6 +774,11 @@ def _nature_detail(card, payload, now, diagnostics):
             or _offset_time(data.get("startDate")) not in {start for start, _ in dates}):
         raise ValueError("boston_remaining_time_conflict")
     out = []
+    native_location = data.get("location") if isinstance(data.get("location"), dict) else {}
+    native_address = native_location.get("address") if isinstance(native_location.get("address"), dict) else {}
+    native_street = ", ".join(plain(native_address.get(name)) for name in
+                              ("streetAddress", "addressLocality", "addressRegion", "postalCode")
+                              if plain(native_address.get(name)))
     for start, end in dates:
         if not _within(start, end, now):
             continue
@@ -699,6 +793,14 @@ def _nature_detail(card, payload, now, diagnostics):
         if isinstance(photo, list): photo = photo[0] if photo else None
         row = _row(NATURE, card["title"], start, end, card["url"], identity, body, venue, street, city,
                    photo=photo, provenance=provenance, evidence=evidence)
+        row = _attach_content(
+            row, title=card["title"], body=body, start=start, end=end, url=card["url"],
+            venue_name=plain(native_location.get("name")), venue_address=native_street,
+            venue_city=plain(native_address.get("addressLocality")),
+            venue_region=plain(native_address.get("addressRegion")),
+            venue_postal_code=plain(native_address.get("postalCode")),
+            venue_country=plain(native_address.get("addressCountry")),
+            photo=photo if photo_url(NATURE, photo) else None)
         if row: out.append(row)
     if not out and not any(d["id"] == card["url"] for d in diagnostics):
         _hold(NATURE, card["url"], "boston_remaining_outside_window", diagnostics)
@@ -844,6 +946,14 @@ def _cares_events(payload, now, first, last, diagnostics):
             venue, street, city, evidence, provenance = location
             row = _row(CARES, title, start, end, url, "cares:" + identity, body,
                        venue, street, city, provenance=provenance, evidence=evidence)
+            row = _attach_content(
+                row, title=title, body=body, start=start, end=end, url=url,
+                venue_name=plain(item.get("organizationServedName")),
+                venue_city=plain(item.get("locationCity")),
+                venue_region=plain(item.get("locationState")),
+                venue_postal_code=plain(item.get("locationZipCode")),
+                native_options={"location_type": plain(item.get("locationType")),
+                                "volunteers_still_needed": str(item.get("volunteersStillNeeded"))})
             if row: out.append(row)
     if len(out) > MAX_RECORDS:
         raise ValueError("boston_remaining_record_limit")
@@ -897,6 +1007,7 @@ def _checkpoint_valid(key, state, now):
             if (row.get("title") != card["title"] or row.get("timezone") != ZONE
                     or not isinstance(row.get("description"), str) or not row["description"].strip()
                     or len(row["description"]) > 12000 or not row.get("venue_name")
+                    or not _content_envelope_valid(row, card)
                     or (not _street(row.get("venue_address")) and not exact_intersection)
                     or ((row.get("lat") is not None or row.get("lng") is not None)
                         and not (exact_intersection or exact_reviewed_point))
@@ -948,12 +1059,17 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
                  "manifest": manifest, "manifest_hash": _digest(manifest),
                  "manifest_count": len(manifest), "cursor": 0, "events": [],
                  "diagnostics": [], "outcomes": []}
+    legacy_prefix = bool(state["events"] and
+                         any("collector_event_content_v1" not in row for row in state["events"]))
     for index in range(state["cursor"], min(len(state["manifest"]), state["cursor"] + DETAILS_PER_CHUNK)):
         if deadline_at is not None and monotonic() + 18 >= deadline_at:
             break
         card = state["manifest"][index]
         rows = (_greenway_detail if key == GREENWAY else _nature_detail)(
             card, fetch(card["url"], "text/html"), now, state["diagnostics"])
+        if legacy_prefix:
+            for row in rows:
+                row.pop("collector_event_content_v1", None)
         state["events"].extend(rows)
         if not rows and not any(d["id"] == card["url"] for d in state["diagnostics"]):
             _hold(key, card["url"], "boston_remaining_outside_window", state["diagnostics"])
