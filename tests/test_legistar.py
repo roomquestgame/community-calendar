@@ -12,6 +12,26 @@ FIXTURES = Path(__file__).parent / 'fixtures' / 'civic'
 NOW = datetime(2026, 11, 9, 10, tzinfo=timezone.utc)
 
 
+def test_future_claim_changes_query_and_eligibility_without_changing_verified_clock():
+    from roomquest.collection_window import collection_scope
+    source = legistar.source_payload('richmond_va_legistar')
+    item = deepcopy(data()[0])
+    item.update(EventDate='2027-02-05T00:00:00', EventTime='5:00 PM')
+    calls = []
+    def fetch(url, accept):
+        calls.append(parse_qs(urlsplit(url).query)['$filter'][0])
+        return json.dumps([item])
+    with collection_scope({'collection_window': {
+        'version': 1, 'start': '2027-01-20T00:00:00Z', 'end': '2027-03-21T00:00:00Z'
+    }}):
+        rows = legistar.collect(source, fetch, now=NOW)
+    assert len(rows) == 1
+    assert rows[0]['civic']['verified_at'] == NOW.isoformat()
+    assert '2027-01-12' in calls[0]  # local start minus cancellation lookback
+    assert '2027-03-21' in calls[0]
+    assert legistar.parse_page([item], source, now=NOW) == ([], 0)
+
+
 @pytest.fixture(autouse=True)
 def fixed_clock(monkeypatch):
     class ClockMeta(type):
@@ -192,3 +212,4 @@ def test_original_facts_ignore_check_time_and_reviewed_address():
     for row in first:
         assert 'venue_address' not in row['collector_event_content_v1']['facts']
         assert 'verified_at' not in row['collector_event_content_v1']['facts']
+

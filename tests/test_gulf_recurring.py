@@ -9,6 +9,18 @@ from roomquest import gulf_recurring as gulf
 
 
 NOW = datetime(2026, 11, 14, 14, 40, tzinfo=timezone.utc)
+
+
+def test_explicit_window_accepts_future_occurrence_and_keeps_exclusive_upper_bound():
+    from roomquest.collection_window import collection_scope
+    future = datetime(2027, 2, 5, 18, tzinfo=timezone.utc)
+    assert not gulf._window(future, None, NOW)
+    with collection_scope({'collection_window': {
+        'version': 1, 'start': '2027-01-20T00:00:00Z', 'end': '2027-03-21T00:00:00Z'
+    }}):
+        assert gulf._window(future, None, NOW)
+        assert not gulf._window(datetime(2027, 3, 21, tzinfo=timezone.utc), None, NOW)
+        assert not gulf._window(NOW, None, NOW)
 MAPLE_POLICY = ('<span>ALL SHOWS 21+</span><p>Everyone must show a valid form of ID at the door.</p>')
 
 
@@ -315,4 +327,5 @@ def test_event_and_image_guards_reject_unreviewed_hosts_and_owners():
         assert gulf.photo_url(key, candidate.replace(gulf.WIX_OWNERS[key], 'ffffff')) is None
         assert gulf.photo_url(key, candidate + '?width=300') is None
     assert gulf.photo_url(gulf.GALLERY, 'https://gallerynightpensacola.org/logo.png') is None
+
 

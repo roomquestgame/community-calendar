@@ -12,6 +12,7 @@ from urllib.parse import urlencode, urlsplit
 from zoneinfo import ZoneInfo
 
 from roomquest.mapsee_adapter import plain, record, timestamp
+from roomquest.collection_window import collection_window
 
 HOST = 'webapi.legistar.com'
 MAX_PAGES = 5
@@ -112,6 +113,7 @@ def _identity(item, spec):
 def parse_page(data, source, *, now=None, spec=None, retain_original=False):
     spec = spec if spec is not None else validate(source)
     current = _now(now)
+    window = collection_window(current)
     if not isinstance(data, list) or len(data) > PAGE_SIZE:
         raise ValueError('invalid_legistar_payload')
     rows, held, seen = [], 0, set()
@@ -127,9 +129,9 @@ def parse_page(data, source, *, now=None, spec=None, retain_original=False):
             status = plain(item.get('EventAgendaStatusName')).casefold()
             status = 'cancelled' if status in {'cancelled', 'canceled'} else (
                 'postponed' if status == 'postponed' else 'scheduled')
-            if begins > current + timedelta(days=LOOKAHEAD_DAYS):
+            if begins >= window.end:
                 continue
-            if begins < current - timedelta(days=7):
+            if begins < window.start - timedelta(days=7):
                 continue
             if not isinstance(item.get('EventBodyName'), str):
                 raise ValueError('event_title_missing')
@@ -192,12 +194,14 @@ def parse_page(data, source, *, now=None, spec=None, retain_original=False):
 def collect(source, fetch, *, deadline_at=None, now=None, spec=None):
     spec = spec if spec is not None else validate(source)
     current = _now(now)
-    local_date = current.astimezone(ZoneInfo(spec['timezone'])).date()
+    window = collection_window(current)
+    local_date = window.start.astimezone(ZoneInfo(spec['timezone'])).date()
+    end_date = window.end.astimezone(ZoneInfo(spec['timezone'])).date() + timedelta(days=1)
     rows, held, identities = [], 0, set()
     for page in range(MAX_PAGES):
         _check_deadline(deadline_at)
         params = {'$filter': f"EventDate ge datetime'{local_date - timedelta(days=7)}' and "
-                            f"EventDate lt datetime'{local_date + timedelta(days=LOOKAHEAD_DAYS + 1)}'",
+                            f"EventDate lt datetime'{end_date}'",
                   '$orderby': 'EventDate asc,EventId asc', '$top': PAGE_SIZE, '$skip': page * PAGE_SIZE}
         url = spec['url'] + '?' + urlencode(params, safe="$'")
         try:
@@ -223,3 +227,4 @@ def collect(source, fetch, *, deadline_at=None, now=None, spec=None):
                 raise ValueError('legistar_event_evidence_unavailable')
             return sorted(rows, key=lambda row: (row['starts_at'], row['id']))
     raise ValueError('legistar_pagination_limit')
+

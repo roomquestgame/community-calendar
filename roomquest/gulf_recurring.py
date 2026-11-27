@@ -153,7 +153,9 @@ def _clock(day, text):
 def _window(start, end, now):
     if end is not None and end <= start:
         raise ValueError('gulf_recurring_invalid_schedule')
-    return start < now + timedelta(days=60) and (end or start + timedelta(hours=3)) > now
+    from roomquest.collection_window import collection_window
+    window = collection_window(now)
+    return start < window.end and (end or start + timedelta(hours=3)) > window.start
 
 
 def _row(key, identity, title, start, end, venue, street, city, url, now,
@@ -451,3 +453,4 @@ def collect(source, fetch, *, deadline_at=None, now=None):
             raise ValueError('gulf_recurring_occurrence_conflict')
         result[row['id']] = row
     return sorted(result.values(), key=lambda row: (row['starts_at'], row['id']))
+
