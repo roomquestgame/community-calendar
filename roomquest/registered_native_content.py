@@ -144,7 +144,7 @@ def image_candidate(value, base_url='', *, _depth=0):
     return candidate if native_url(candidate) else None
 
 
-def retain_html_schedule(row, title, start, end, *, local_clock, **venue_facts):
+def retain_html_schedule(row, title, start, end, *, local_clock, event_url=None, **venue_facts):
     """Capture the publisher's occurrence before footer and reviewed venue enrichment."""
     clock = 'local' if local_clock else 'utc'
 
@@ -157,7 +157,7 @@ def retain_html_schedule(row, title, start, end, *, local_clock, **venue_facts):
         return moment.astimezone(timezone.utc).isoformat(timespec='seconds')
 
     row['collector_event_content_v1'] = {'version': 1, 'event_id': row['id'], 'facts': {
-        'title': title, 'is_all_day': False, 'event_url': row['event_url'],
+        'title': title, 'is_all_day': False, 'event_url': event_url or row['event_url'],
         f'starts_at_{clock}': value(start), f'ends_at_{clock}': value(end), **venue_facts,
     }}
 
