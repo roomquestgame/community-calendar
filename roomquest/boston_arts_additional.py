@@ -172,6 +172,52 @@ def _merge(items):
     return sorted(result.values(), key=lambda v: v['url'])
 
 
+def _attach_content(row, item, body, start, end, *, title=None, native_options=None):
+    if row is None:
+        return None
+    options = dict(item.get('native_options') or {})
+    options.update(native_options or {})
+    facts = {
+        'title': title or item['title'],
+        'description': body,
+        'is_all_day': False,
+        'starts_at_utc': start.astimezone(timezone.utc).isoformat(),
+        'ends_at_utc': end.astimezone(timezone.utc).isoformat() if end else None,
+        'event_url': item['url'],
+        'native_options': options or None,
+    }
+    facts = {name: value for name, value in facts.items()
+             if value is not None and value != '' and value != {}}
+    row['collector_event_content_v1'] = {
+        'version': 1,
+        'event_id': row['id'],
+        'facts': facts,
+    }
+    return row
+
+
+def _content_envelope_valid(row):
+    evidence = row.get('collector_event_content_v1')
+    if evidence is None:
+        return True
+    if (not isinstance(evidence, dict) or set(evidence) != {'version', 'event_id', 'facts'}
+            or evidence.get('version') != 1 or evidence.get('event_id') != row.get('id')
+            or not isinstance(evidence.get('facts'), dict)):
+        return False
+    facts = evidence['facts']
+    expected = {
+        'title': row.get('title'),
+        'description': row.get('description'),
+        'is_all_day': False,
+        'starts_at_utc': timestamp(row.get('starts_at')).astimezone(timezone.utc).isoformat(),
+        'event_url': row.get('event_url'),
+    }
+    end = timestamp(row.get('ends_at'))
+    if end is not None:
+        expected['ends_at_utc'] = end.astimezone(timezone.utc).isoformat()
+    return all(facts.get(name) == value for name, value in expected.items())
+
+
 def _row(key, item, body, start, end, *, venue_index=0, identity=None, title=None, room=None):
     if not start or start.tzinfo is None or end is not None and (end.tzinfo is None or end <= start):
         raise ValueError(PREFIX + 'schedule_unresolved')
@@ -193,7 +239,8 @@ def _row(key, item, body, start, end, *, venue_index=0, identity=None, title=Non
         if municipal_point:
             row.update(location_provenance='reviewed_municipal_exact_address_point',
                        location_evidence_url=ELIOT_BBR_EVIDENCE)
-    return row
+    return _attach_content(row, item, body, start, end, title=title,
+                           native_options={'room': room} if room else None)
 
 
 def _unique(rows):
@@ -290,7 +337,8 @@ def _hmsc_detail(item, payload, now):
         match = [0]  # Official museum visit page confirms26OxfordSt for this named classroom.
     if len(match) != 1:
         raise ValueError(PREFIX + 'street_unresolved')
-    return [_row(HMSC, item, body, start, end, venue_index=match[0])]
+    observed = dict(item, native_options={'location_text': plain(location)})
+    return [_row(HMSC, observed, body, start, end, venue_index=match[0])]
 
 
 def _pem_listing(payload, now):
@@ -314,7 +362,9 @@ def _pem_listing(payload, now):
             raise ValueError(PREFIX + 'identity_changed')
         if event.get('eventStatus') != 'https://schema.org/EventScheduled' or (event.get('offers') or {}).get('availability') in {'https://schema.org/SoldOut', 'https://schema.org/Discontinued'}:
             continue
-        items.append(_item(PEM, event.get('url'), event.get('name'), sessions=[dict(start=event['startDate'], end=event.get('endDate'))]))
+        item = _item(PEM, event.get('url'), event.get('name'), sessions=[dict(start=event['startDate'], end=event.get('endDate'))])
+        item['native_options'] = {'location_text': event['location']['address']['streetAddress']}
+        items.append(item)
     # Keep ended siblings for native series-envelope detection and Markdown ICS
     # identity checks, but only fetch programs with an eligible occurrence.
     items = [item for item in _merge(items) if any(shared._within(timestamp(v['start']), timestamp(v.get('end')), now, DAYS) for v in item['sessions'])]
@@ -431,7 +481,9 @@ def _trust_listing(payload, url):
         location = card.select_one('.teaser-event__location')
         if not a or not title or not location or plain(location.get_text()) != 'deCordova Sculpture Park and Museum | Lincoln':
             raise ValueError(PREFIX + 'identity_changed')
-        items.append(_item(DECORDOVA, a['href'], title.get_text(' ', strip=True)))
+        item = _item(DECORDOVA, a['href'], title.get_text(' ', strip=True))
+        item['native_options'] = {'location_text': plain(location.get_text(' ', strip=True))}
+        items.append(item)
     following = [SOURCES[DECORDOVA][0] + '&_paged=' + str(number+1)] if number < pager['total_pages'] else []
     return _merge(items), following
 
@@ -750,7 +802,8 @@ def _eliot_detail(item, payload, now):
     body = shared._body('\n'.join(str(n) for n in (course, instructor, materials) if n))
     if REMOTE.search(location_text) or UNAVAILABLE.search(item['title']):
         raise ValueError(PREFIX + 'not_public')
-    return _unique([_row(ELIOT, item, body, timestamp(v['start']), timestamp(v['end']), venue_index=venue)
+    observed = dict(item, native_options={'location_text': plain(location_text)})
+    return _unique([_row(ELIOT, observed, body, timestamp(v['start']), timestamp(v['end']), venue_index=venue)
                     for v in item['sessions'] if shared._within(timestamp(v['start']), timestamp(v['end']), now, DAYS)])
 
 
@@ -877,6 +930,8 @@ def _aquarium(fetch, now, deadline):
             venue = event.get('venue') or {}
             if (venue.get('address'), venue.get('city'), venue.get('state'), venue.get('zip')) != ('1 Central Wharf', 'Boston', 'MA', '02110'):
                 raise ValueError(PREFIX + 'street_unresolved')
+            item['native_options'] = {'location_text': ', '.join(
+                str(venue[name]) for name in ('address', 'city', 'state', 'zip'))}
             if shared._within(start, end, now, DAYS):
                 rows.append(_row(AQUARIUM, item, event.get('description'), start, end))
         if page >= data['total_pages']:
@@ -965,6 +1020,7 @@ def _checkpoint(value, key, now):
                      and bound[1]['description_sha256'] == sha256(row['description'].encode()).hexdigest()
                      and bound[1]['row_sha256'] == _hash(row)
                      and isinstance(row['description'], str) and 0 < len(row['description']) <= MAX_DESCRIPTION
+                     and _content_envelope_valid(row)
                      and len(venues) == 1 and row.get('timezone') == ZONE and row.get('attendance_mode') == 'in_person'
                      and (row.get('lat'), row.get('lng')) == (expected_point or (None, None))
                      and row.get('location_provenance') == ('reviewed_municipal_exact_address_point' if municipal_point else
@@ -1024,6 +1080,8 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
     current = now or datetime.now(timezone.utc)
     deadline = deadline_at if deadline_at is not None else monotonic() + 35
     state = _checkpoint(checkpoint, key, current)
+    legacy_prefix = bool(state and state['events'] and
+                         any('collector_event_content_v1' not in row for row in state['events']))
     if state is None:
         state = dict(version=1, source_key=key, started_at=current.isoformat(),
                      window_start=current.astimezone(ZoneInfo(ZONE)).date().isoformat(),
@@ -1071,6 +1129,9 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
         rows, reason = [], None
         try:
             rows = _detail(key, item, payload, timestamp(state['started_at']))
+            if legacy_prefix:
+                for row in rows:
+                    row.pop('collector_event_content_v1', None)
             state['events'] = _unique(state['events'] + rows)
             if len(state['events']) > CHECKPOINT_EVENT_LIMITS.get(key, 201):
                 raise ValueError(PREFIX + 'record_limit')
