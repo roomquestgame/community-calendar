@@ -295,14 +295,13 @@ def test_request_token_enables_scoped_claim(monkeypatch):
     monkeypatch.setenv("VENUE_RESEARCH_MODEL", "anthropic/claude-haiku-5.5")
     monkeypatch.setenv("VENUE_RESEARCH_TAVILY_API_KEY", "fake-search")
     monkeypatch.delenv("VERCEL_OIDC_TOKEN", raising=False)
-    db = Mock(return_value=[])
-    venue_resolver.run_batch(database=db, clock=lambda: 0, deadline_seconds=28,
-                             oidc_token="fake-request-token", trigger_ticket="fake-ticket")
+    db = Mock(return_value={"claims": []})
+    answer = venue_resolver.run_triggered("fake-ticket", oidc_token="fake-request-token", database=db)
+    assert answer["stop_reason"] == "dispatch_not_claimed"
     db.assert_called_once_with("trigger_claim", {"ticket": "fake-ticket", "research_model": "anthropic/claude-haiku-5.5"})
     db.reset_mock()
-    venue_resolver.run_batch(database=db, clock=lambda: 0, deadline_seconds=28,
-                             oidc_token="")
-    db.assert_called_once_with("claim", {"limit": 1})
+    venue_resolver.run_triggered("fake-ticket", oidc_token="", database=db)
+    db.assert_not_called()
 
 
 def test_periodic_claim_never_requests_paid_research(monkeypatch):
@@ -321,13 +320,16 @@ def test_triggered_runner_finishes_ticket_on_failure(monkeypatch):
     monkeypatch.setenv("FORWARD_GEOCODER_ENABLED", "true")
     monkeypatch.setenv("VERCEL_ENV", "production")
     monkeypatch.setattr("roomquest.venue_research.configured", lambda **kw: CONFIG)
-    db = Mock()
+    completion = "8fcfd992-3f7d-47aa-a5b1-a0a54ed4114f"
+    db = Mock(return_value={"claims": [], "completion_id": completion})
     runner = Mock(side_effect=ValueError("fixture"))
     monkeypatch.setattr(venue_resolver, "run_batch", runner)
     with pytest.raises(ValueError):
         venue_resolver.run_triggered("fake-ticket", oidc_token="request-token", database=db)
-    db.assert_called_once_with("trigger_finish", {"ticket": "fake-ticket"})
-    assert runner.call_args.kwargs["trigger_ticket"] == "fake-ticket"
+    assert [call.args for call in db.call_args_list] == [
+        ("trigger_claim", {"ticket": "fake-ticket", "research_model": CONFIG["model"]}),
+        ("trigger_finish", {"ticket": "fake-ticket", "completion_id": completion})]
+    assert runner.call_args.kwargs["trigger_claims"] == []
 
 
 def test_dispatch_endpoint_accepts_only_ticket(monkeypatch):
