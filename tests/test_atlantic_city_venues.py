@@ -1,3 +1,4 @@
+from copy import deepcopy
 from datetime import datetime, timedelta, timezone
 import json
 import unittest
@@ -25,6 +26,11 @@ class AtlanticCityVenueTests(unittest.TestCase):
         fetch = Mock(return_value=payload)
         with patch.object(venues, "record", side_effect=row_record):
             result = venues.collect(source(key), fetch, now=now)
+        for row in result:
+            self.assertEqual(row["collector_event_content_v1"]["version"], 1)
+            self.assertEqual(row["collector_event_content_v1"]["event_id"], row["id"])
+            self.assertEqual(row["collector_event_content_v1"]["facts"]["description"],
+                             row["description"])
         return result, fetch
 
     def test_anchor_preserves_complete_prose_and_ignores_hidden_cancel_label(self):
@@ -79,6 +85,39 @@ class AtlanticCityVenueTests(unittest.TestCase):
         self.assertIsNone(unresolved["lng"])
         self.assertEqual(unresolved["description"], body)
         self.assertEqual(unresolved["location_provenance"], "reviewed_venue_street_address_pending_geocode")
+
+    def test_original_facts_ignore_provider_label_and_reviewed_venue_enrichment(self):
+        now = datetime.now(timezone.utc)
+        args = (venues.ANCHOR, "Live performance", now + timedelta(days=1),
+                now + timedelta(days=1, hours=2),
+                "https://www.anchorrockclub.com/shows/live-performance",
+                "live-performance", "Complete publisher performance details.")
+        first = venues._row(*args)
+        renamed_source = {**source(venues.ANCHOR), "publisher_name": "Renamed provider label"}
+        self.assertEqual(renamed_source["source_key"], venues.ANCHOR)
+        again = venues._row(*args)
+        self.assertEqual(again["collector_event_content_v1"], first["collector_event_content_v1"])
+        facts = first["collector_event_content_v1"]["facts"]
+        self.assertNotIn("venue_name", facts)
+        self.assertNotIn("venue_address", facts)
+        self.assertNotIn("source_latitude", facts)
+        self.assertNotIn("source_longitude", facts)
+        self.assertEqual(first["venue_address"], venues.VENUES[venues.ANCHOR][1])
+        changed = venues._row(*args[:-1], "Changed publisher performance details.")
+        self.assertEqual(changed["id"], first["id"])
+        self.assertNotEqual(changed["collector_event_content_v1"],
+                            first["collector_event_content_v1"])
+
+    def test_content_envelope_event_id_and_facts_are_not_shared_mutable_state(self):
+        now = datetime.now(timezone.utc)
+        row = venues._row(venues.ANCHOR, "Live performance", now + timedelta(days=1), None,
+                          "https://www.anchorrockclub.com/shows/live-performance",
+                          "live-performance", "Complete publisher performance details.")
+        copy = deepcopy(row)
+        copy["collector_event_content_v1"]["facts"]["description"] = "Tampered."
+        self.assertEqual(row["collector_event_content_v1"]["event_id"], row["id"])
+        self.assertEqual(row["description"],
+                         row["collector_event_content_v1"]["facts"]["description"])
 
     def test_blank_or_oversized_narrative_is_not_silently_published(self):
         for body in ("<script>no event prose</script>", "a" * 12001):

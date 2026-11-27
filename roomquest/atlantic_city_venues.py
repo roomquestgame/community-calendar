@@ -152,6 +152,34 @@ def reviewed_venue_location(key, venue, address):
     return None
 
 
+def _attach_content(row, description, *, source_image_url=None, publisher_categories=()):
+    """Retain only event-owned publisher facts for the shared live fingerprint."""
+    start = timestamp(row.get("starts_at"), ZONE)
+    end = timestamp(row.get("ends_at"), ZONE)
+    if start is None or start.tzinfo is None or end is not None and end.tzinfo is None:
+        raise ValueError("atlantic_city_schedule_conflict")
+
+    def local(moment):
+        return (moment.astimezone(ZoneInfo(ZONE)).replace(tzinfo=None)
+                .isoformat(timespec="seconds")) if moment is not None else None
+
+    facts = {
+        "title": row["title"], "description": description, "is_all_day": False,
+        "starts_at_local": local(start), "ends_at_local": local(end),
+        "source_timezone": ZONE, "event_url": row["event_url"],
+        "publisher_status": "scheduled", "attendance_mode": "in_person",
+        "publisher_categories": sorted({plain(value) for value in publisher_categories
+                                         if plain(value)}),
+        "source_image_url": source_image_url,
+    }
+    row["collector_event_content_v1"] = {
+        "version": 1, "event_id": row["id"],
+        "facts": {name: value for name, value in facts.items()
+                  if value is not None and value != "" and value != []},
+    }
+    return row
+
+
 def _row(key, title, start, end, url, identity, body, *, image=None, category="",
          already_normalized=False):
     if EXCLUDED.search(title):
@@ -176,8 +204,11 @@ def _row(key, title, start, end, url, identity, body, *, image=None, category=""
         row.update(description=body, attendance_mode="in_person", timezone=ZONE,
                    location_provenance=("reviewed_venue_location" if reviewed else
                                         "reviewed_venue_street_address_pending_geocode"))
-        if candidate := photo_url(key, image):
+        candidate = photo_url(key, image)
+        if candidate:
             row["image_url"] = candidate
+        _attach_content(row, body, source_image_url=candidate,
+                        publisher_categories=(category,) if category else ())
     return row
 
 
@@ -394,8 +425,11 @@ def _josie(source, fetch, deadline_at):
         row.update(description=body, timezone=ZONE, attendance_mode="in_person",
                    location_provenance="reviewed_venue_street_address_pending_geocode")
         image = raw.get("image")
-        if isinstance(image, dict) and (candidate := photo_url(JOSIE, image.get("url"))):
+        candidate = photo_url(JOSIE, image.get("url")) if isinstance(image, dict) else None
+        if candidate:
             row["image_url"] = candidate
+        _attach_content(row, body, source_image_url=candidate,
+                        publisher_categories=row.get("publisher_categories") or ())
         yield row
 
 
