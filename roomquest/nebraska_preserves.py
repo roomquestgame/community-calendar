@@ -78,18 +78,40 @@ def glacier_events(document):
         raise ValueError("missing_glacier_creek_calendar")
     title = ""
     location_confirmed = False
+    raw_address = ""
     for node in heading[0].itersiblings():
         if node.tag == "h2":
             break
         if node.tag in {"h3", "hr"}:
             title = plain(node.text_content()) if node.tag == "h3" else ""
             location_confirmed = False
+            raw_address = ""
         elif node.tag == "p":
             text = plain(" ".join(node.itertext()))
             if text.startswith("Location:"):
                 location_confirmed = bool(re.search(r"\b14810 State St(?:reet)?\.?,\s*Bennington\b", text, re.I))
+                raw_address = plain(text.removeprefix("Location:")) if location_confirmed else ""
             elif title and location_confirmed and re.match(r"^[\w /-]*Dates?/Times?:", text, re.I):
-                yield title.removeprefix("Join us for "), text
+                yield title.removeprefix("Join us for "), text, raw_address
+
+
+def _local(value):
+    return value.isoformat(timespec="seconds")
+
+
+def _attach_original_content(row, start, end, *, raw_address=None):
+    facts = {
+        "title": row["title"], "description": "", "is_all_day": False,
+        "starts_at_local": _local(start), "ends_at_local": _local(end),
+        "source_timezone": ZONE, "event_url": row["event_url"],
+        "venue_address": plain(raw_address), "publisher_status": "scheduled",
+        "attendance_mode": "in_person",
+    }
+    row["collector_event_content_v1"] = {
+        "version": 1, "event_id": row["id"],
+        "facts": {name: value for name, value in facts.items()
+                  if value is not None and value != ""},
+    }
 
 
 def collect(source, fetch, *, deadline_at=None, now=None):
@@ -103,7 +125,9 @@ def collect(source, fetch, *, deadline_at=None, now=None):
     document = html.fromstring(fetch(url, "text/html"))
     parser = prairie_events if urlsplit(url).hostname == "prairiepines.org" else glacier_events
     events = {}
-    for title, schedule in parser(document):
+    for parsed in parser(document):
+        title, schedule, *location = parsed
+        raw_address = location[0] if location else None
         if not title or INVALID_TITLE.search(title):
             continue
         for start, end in times(schedule):
@@ -112,5 +136,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
             identity = sha256(f"{title.casefold()}:{start.isoformat()}".encode()).hexdigest()
             row = record(title, start.isoformat(), end.isoformat(), venue, address, city, url, identity, tz=ZONE)
             if row is not None:
+                row.update(attendance_mode="in_person", timezone=ZONE)
+                _attach_original_content(row, start, end, raw_address=raw_address)
                 events[row["id"]] = row
     return sorted(events.values(), key=lambda row: (row["starts_at"], row["id"]))
