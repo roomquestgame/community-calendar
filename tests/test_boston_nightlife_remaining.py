@@ -70,6 +70,31 @@ def test_eataly_native_utc_and_complete_description_and_ticket_variant():
     assert (row["lat"], row["lng"]) == b.POINTS["eataly"]
 
 
+def test_event_only_facts_ignore_provider_label_and_change_with_event_details():
+    item, product = product_fixture()
+    listing = catalog([item])
+    def run(src, detail):
+        pages = {b.SOURCES[b.EATALY][0]: listing, b.EATALY_EVENTS: catalog([]), item["url"]: detail}
+        return b.collect_chunk(src, lambda url, accept: pages[url],
+                               now=datetime.now(timezone.utc))["events"][0]
+    first = run(source(b.EATALY), product)
+    renamed = run({**source(b.EATALY), "publisher_name": "Renamed provider label"}, product)
+    changed = run(source(b.EATALY), product.replace(
+        "Complete publisher sentence.", "Publisher changed the class details.", 1))
+    assert renamed["collector_event_content_v1"] == first["collector_event_content_v1"]
+    assert changed["collector_event_content_v1"] != first["collector_event_content_v1"]
+
+
+def test_original_locations_are_separate_from_reviewed_publication_locations():
+    item, payload = product_fixture()
+    native = b._eataly_detail(item, payload, datetime.now(timezone.utc))[0]
+    row = b._row(b.EATALY, native)
+    facts = row["collector_event_content_v1"]["facts"]
+    assert row["venue_address"] == "800 Boylston Street, Boston, MA 02199"
+    assert facts["venue_address"] == "800 Boylston Street"
+    assert facts["venue_city"] == "Boston"
+
+
 def test_eataly_blank_long_description_is_held_even_with_summary():
     item, payload = product_fixture(body="")
     with pytest.raises(ValueError, match="description_missing"):
@@ -98,6 +123,31 @@ def test_paged_checkpoint_does_not_emit_partial_results_and_detects_tampering():
     with pytest.raises(ValueError, match="checkpoint_invalid"):
         b.collect_chunk(source(b.EATALY), fetch, checkpoint=bad, now=now)
     assert b._checkpoint(one_result["checkpoint"], b.EATALY, now + timedelta(hours=4, seconds=1)) is None
+
+
+def test_checkpoint_rejects_tampered_original_facts_and_preserves_legacy_prefix():
+    first, one = product_fixture()
+    second, two = product_fixture("2000000000002", "Second Class")
+    listing = catalog([first, second])
+    pages = {b.SOURCES[b.EATALY][0]: listing, b.EATALY_EVENTS: catalog([]),
+             first["url"]: one, second["url"]: two}
+    fetch = lambda url, accept: pages[url]
+    now = datetime.now(timezone.utc)
+    partial = b.collect_chunk(source(b.EATALY), fetch, now=now, max_details=1)
+    saved = partial["checkpoint"]
+    assert "collector_event_content_v1" in saved["events"][0]
+    poison = deepcopy(saved)
+    poison["events"][0]["collector_event_content_v1"]["facts"]["description"] = "Tampered facts."
+    poison["row_hashes"][poison["events"][0]["id"]] = b._hash(poison["events"][0])
+    with pytest.raises(ValueError, match="checkpoint_invalid"):
+        b.collect_chunk(source(b.EATALY), fetch, checkpoint=poison, now=now)
+    legacy = deepcopy(saved)
+    for row in legacy["events"]:
+        row.pop("collector_event_content_v1")
+        legacy["row_hashes"][row["id"]] = b._hash(row)
+    final = b.collect_chunk(source(b.EATALY), fetch, checkpoint=legacy, now=now)
+    assert final["complete"] and len(final["events"]) == 2
+    assert all("collector_event_content_v1" not in row for row in final["events"])
 
 
 def trillium_event(**changes):
@@ -167,7 +217,11 @@ def test_waverley_excerpt_hydrates_full_detail_and_matching_street():
       <div class="eventitem-column-content"><div class="sqs-layout"><p>Full rules and welcome for new players.</p></div></div>'''
     full = b._waverley_detail(item, detail)[0]
     assert full["body"] == "Full rules and welcome for new players."
-    assert b._row(b.WAVERLEY, full)["venue_address"] == "411 Waverley Oaks Road, Waltham, MA 02452"
+    row = b._row(b.WAVERLEY, full)
+    assert row["venue_address"] == "411 Waverley Oaks Road, Waltham, MA 02452"
+    facts = row["collector_event_content_v1"]["facts"]
+    assert facts["venue_address"] == "411 Waverley Oaks Road Waltham MA"
+    assert facts["venue_name"] == "Mighty Squirrel Brewing Co."
 
 
 def test_url_and_scope_restrictions_exclude_transaction_and_disallowed_routes():

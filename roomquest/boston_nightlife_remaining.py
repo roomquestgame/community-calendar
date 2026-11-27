@@ -156,6 +156,80 @@ def _item(key, url, title, start, end, venue, body=None):
     return item
 
 
+def _content_venue(**values):
+    allowed = {"venue_name", "venue_address", "venue_city", "venue_region",
+               "venue_postal_code", "venue_country"}
+    result = {}
+    for name, value in values.items():
+        if name not in allowed:
+            raise ValueError("boston_remaining_calendar_changed")
+        if value is None or value == "":
+            continue
+        if not isinstance(value, str) or len(value) > 500:
+            raise ValueError("boston_remaining_calendar_changed")
+        result[name] = plain(value)
+    return result
+
+
+def _attach_content(row, item):
+    """Retain event-owned publisher facts before reviewed venue enrichment."""
+    place = item.get("content_venue") if isinstance(item.get("content_venue"), dict) else {}
+    facts = {
+        "title": item["title"],
+        "description": _validated_body(item["body"]),
+        "is_all_day": False,
+        "starts_at_utc": timestamp(item["start"]).astimezone(timezone.utc).isoformat(),
+        "ends_at_utc": (timestamp(item.get("end")).astimezone(timezone.utc).isoformat()
+                         if timestamp(item.get("end")) else None),
+        "event_url": item["url"],
+        "venue_name": place.get("venue_name"),
+        "venue_address": place.get("venue_address"),
+        "venue_city": place.get("venue_city"),
+        "venue_region": place.get("venue_region"),
+        "venue_postal_code": place.get("venue_postal_code"),
+        "venue_country": place.get("venue_country"),
+        "source_image_url": item.get("image"),
+        "native_options": item.get("native_options"),
+    }
+    facts = {name: value for name, value in facts.items()
+             if value is not None and value != "" and value != {}}
+    row["collector_event_content_v1"] = {
+        "version": 1,
+        "event_id": row["id"],
+        "facts": facts,
+    }
+    return row
+
+
+def _content_envelope_valid(row):
+    evidence = row.get("collector_event_content_v1")
+    if evidence is None:
+        return True
+    if (not isinstance(evidence, dict) or set(evidence) != {"version", "event_id", "facts"}
+            or evidence.get("version") != 1 or evidence.get("event_id") != row.get("id")
+            or not isinstance(evidence.get("facts"), dict)):
+        return False
+    facts = evidence["facts"]
+    allowed = {
+        "title", "description", "is_all_day", "starts_at_utc", "ends_at_utc",
+        "event_url", "venue_name", "venue_address", "venue_city", "venue_region",
+        "venue_postal_code", "venue_country", "source_image_url", "native_options",
+    }
+    if not set(facts) <= allowed:
+        return False
+    expected = {
+        "title": row.get("title"),
+        "description": row.get("description"),
+        "is_all_day": False,
+        "starts_at_utc": timestamp(row.get("starts_at")).astimezone(timezone.utc).isoformat(),
+        "event_url": row.get("event_url"),
+    }
+    end = timestamp(row.get("ends_at"))
+    if end is not None:
+        expected["ends_at_utc"] = end.astimezone(timezone.utc).isoformat()
+    return all(facts.get(name) == value for name, value in expected.items())
+
+
 def _row(key, item):
     place = VENUES[item["venue_key"]]
     point = reviewed_venue_location(key, *place[:2]) or (None, None)
@@ -169,7 +243,7 @@ def _row(key, item):
         row.update(schedule_provenance="publisher_declared_weekly_schedule", published_schedule=item["published_schedule"], schedule_window_days=28)
     if item.get("image"):
         row["image_url"] = item["image"]
-    return row
+    return _attach_content(row, item)
 
 
 def _eataly_page_url(value):
@@ -275,10 +349,13 @@ def _eataly_detail(item, payload, now):
             body = _validated_body(lead_text + "\n" + body)
     result = _item(EATALY, item["url"], item["title"], start, end, "eataly")
     result["body"] = body
+    result["content_venue"] = _content_venue(
+        venue_address=e.get("c_eventVenueAddress"), venue_city=e.get("c_eventVenueCity"),
+        venue_region=e.get("c_eventVenueRegion"), venue_postal_code=e.get("c_eventVenuePostalCode"))
     return [result]
 
 
-def _waverley_venue(node):
+def _waverley_native_location(node):
     loc = node.select_one(".eventlist-meta-address,.eventitem-meta-address")
     if not loc:
         raise ValueError("boston_remaining_venue_unresolved")
@@ -286,9 +363,16 @@ def _waverley_venue(node):
     name = plain(label.get_text() if label else loc.get_text(" ")).removesuffix("(map)").strip()
     maps = [parse_qs(urlsplit(a["href"]).query).get("q", [""])[0] for a in loc.select('a[href]')
             if urlsplit(a["href"]).hostname in {"maps.google.com", "www.google.com"}]
+    if len(maps) != 1 or not name or not maps[0]:
+        raise ValueError("boston_remaining_venue_unresolved")
+    return name, plain(maps[0])
+
+
+def _waverley_venue(node):
+    name, native_address = _waverley_native_location(node)
     for key in VENUE_KEYS[WAVERLEY]:
         venue, address, city = VENUES[key]
-        if name == venue and len(maps) == 1 and maps[0].startswith(address.split(",")[0] + " ") and city in maps[0]:
+        if name == venue and native_address.startswith(address.split(",")[0] + " ") and city in native_address:
             return key
     raise ValueError("boston_remaining_venue_unresolved")
 
@@ -309,6 +393,8 @@ def _waverley_listing(payload, now):
         if not _within(start, end, now):
             continue
         item = _item(WAVERLEY, urljoin(SOURCES[WAVERLEY][0], a["href"]), title, start, end, _waverley_venue(card))
+        native_name, native_address = _waverley_native_location(card)
+        item["content_venue"] = _content_venue(venue_name=native_name, venue_address=native_address)
         img = card.select_one("img[data-src]")
         if img and (url := photo_url(WAVERLEY, img["data-src"])):
             item["image"] = url
@@ -328,6 +414,8 @@ def _waverley_detail(item, payload):
     if result["venue_key"] != item["venue_key"]:
         raise ValueError("boston_remaining_venue_unresolved")
     result["body"] = _body(soup.select_one(".eventitem-column-content .sqs-layout,.eventitem-content .sqs-layout"))
+    native_name, native_address = _waverley_native_location(soup)
+    result["content_venue"] = _content_venue(venue_name=native_name, venue_address=native_address)
     return [result]
 
 
@@ -365,6 +453,7 @@ def _trillium_listing(payload, now):
             if not venue:
                 raise ValueError("boston_remaining_venue_unresolved")
             item = _item(TRILLIUM, item["url"], title, start, end, venue, e.get("longDescription"))
+            item["content_venue"] = _content_venue(venue_name=e.get("venueName"), venue_address=loc)
             if re.fullmatch(r"Details coming soon!?", item["body"], re.I):
                 raise ValueError("boston_nightlife_description_missing")
         except ValueError as exc:
@@ -451,8 +540,10 @@ def _nightshift_detail(item, payload, now):
             continue
         native = _item(NIGHTSHIFT, item["url"], item["title"], start, end, "night_shift")
         native["body"] = body
+        native["content_venue"] = _content_venue(venue_name=item["location"])
         if recurring:
             native["published_schedule"] = item["schedule"]
+            native["native_options"] = {"publisher_schedule": item["schedule"]}
         results.append(native)
     return results
 
@@ -511,6 +602,7 @@ def _checkpoint(value, key, now):
                     or not event_url(key, row["event_url"]) or place not in places
                     or _validated_body(row["description"]) != row["description"]
                     or row.get("timezone") != ZONE or row.get("attendance_mode") != "in_person"
+                    or not _content_envelope_valid(row)
                     or (row.get("lat"), row.get("lng")) != (reviewed_venue_location(key, *place[:2]) or (None, None))):
                 raise ValueError
             seen.add(row["id"])
@@ -532,6 +624,8 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
         raise ValueError("boston_remaining_checkpoint_invalid")
     current = current.astimezone(timezone.utc)
     state = _checkpoint(checkpoint, key, current)
+    legacy_prefix = bool(state and state["events"] and
+                         any("collector_event_content_v1" not in row for row in state["events"]))
     anchor = timestamp(state["started_at"]) if state else current
     if deadline_at is not None and monotonic() >= deadline_at:
         raise ValueError("collection_deadline")
@@ -591,6 +685,8 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
                 raise ValueError("boston_remaining_outside_window")
             for native in items:
                 row = _row(key, native)
+                if legacy_prefix:
+                    row.pop("collector_event_content_v1", None)
                 if row["id"] not in state["row_hashes"]:
                     state["events"].append(row)
                     state["row_hashes"][row["id"]] = _hash(row)

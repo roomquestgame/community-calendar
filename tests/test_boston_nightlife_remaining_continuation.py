@@ -89,6 +89,10 @@ def test_larger_cap_keeps_complete_rows_and_resumes_an_unchanged_legacy_checkpoi
     assert larger["claims"] < baseline["claims"]
     assert larger["rows"] == baseline["rows"] and len(larger["rows"]) == 17
     assert all(len(row["description"]) > 2000 for row in larger["rows"])
+    assert all("collector_event_content_v1" in row for row in larger["rows"])
+    previews = [payload for operation, payload in larger["calls"] if operation == RECORD]
+    assert len(previews) == 1
+    assert all("collector_event_content_v1" not in row for row in previews[0]["p_samples"])
     assert larger["snapshots"][0]["pending_cursor"] == 12
     legacy = baseline["snapshots"][0]
     unchanged = deepcopy(legacy)
