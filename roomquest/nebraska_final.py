@@ -8,6 +8,7 @@ from zoneinfo import ZoneInfo
 
 from lxml import html
 
+from roomquest.event_description import description
 from roomquest.mapsee_adapter import plain, record
 
 ZONE = "America/Chicago"
@@ -41,6 +42,87 @@ GROUPS = {
 ID = re.compile(r"[A-Za-z0-9_-]{1,80}")
 STREET = re.compile(r"\d{1,6}\s+[A-Za-z]")
 EXCLUDED = re.compile(r"\b(cancelled|canceled|postponed|closed)\b", re.I)
+MAX_DESCRIPTION = 12000
+
+
+def _narrative(value):
+    text = description(value or "", limit=MAX_DESCRIPTION + 1)
+    if len(text) > MAX_DESCRIPTION:
+        raise ValueError("publisher_description_limit")
+    return text
+
+
+def _local(value):
+    if value is None:
+        return None
+    value = datetime.fromisoformat(value) if isinstance(value, str) else value
+    if value.tzinfo is None:
+        value = value.replace(tzinfo=ZoneInfo(ZONE))
+    return value.astimezone(ZoneInfo(ZONE)).replace(tzinfo=None).isoformat(timespec="seconds")
+
+
+def _image(item):
+    value = item.get("image") or item.get("imageUrl")
+    if isinstance(value, str):
+        return value
+    if isinstance(value, list):
+        value = next((entry for entry in value if isinstance(entry, (str, dict))), None)
+    if isinstance(value, dict):
+        return value.get("url") or value.get("contentUrl")
+    return None
+
+
+def _categories(item):
+    value = item.get("categories") or item.get("tags") or item.get("keywords")
+    if isinstance(value, str):
+        values = value.split(",")
+    elif isinstance(value, list):
+        values = [entry.get("name") if isinstance(entry, dict) else entry for entry in value]
+    else:
+        return None
+    return [plain(entry) for entry in values if isinstance(entry, str) and plain(entry)] or None
+
+
+def _raw_location(item):
+    place = item.get("location") or {}
+    if not isinstance(place, dict):
+        return None, None, None
+    address = place.get("address")
+    if isinstance(address, str):
+        return place.get("name"), address, None
+    if not isinstance(address, dict):
+        return place.get("name"), None, None
+    values = [address.get(name) for name in
+              ("streetAddress", "addressLocality", "addressRegion", "postalCode")]
+    return place.get("name"), ", ".join(plain(value) for value in values if plain(value)), address.get("addressLocality")
+
+
+def _finish(row, *, narrative="", raw_venue=None, raw_address=None, raw_city=None,
+            status="scheduled", attendance="in_person", image=None, categories=None,
+            latitude=None, longitude=None):
+    if row is None:
+        return None
+    narrative = _narrative(narrative)
+    if (latitude is None) != (longitude is None):
+        latitude = longitude = None
+    row.update(description=narrative[:2000], attendance_mode=attendance, timezone=ZONE)
+    facts = {
+        "title": row["title"], "description": narrative, "is_all_day": False,
+        "starts_at_local": _local(row["starts_at"]),
+        "ends_at_local": _local(row["ends_at"]) if row.get("ends_at") else None,
+        "source_timezone": ZONE, "event_url": row["event_url"],
+        "venue_name": plain(raw_venue), "venue_address": plain(raw_address),
+        "venue_city": plain(raw_city), "publisher_status": plain(status),
+        "attendance_mode": plain(attendance), "source_image_url": image,
+        "publisher_categories": categories, "source_latitude": latitude,
+        "source_longitude": longitude,
+    }
+    row["collector_event_content_v1"] = {
+        "version": 1, "event_id": row["id"],
+        "facts": {name: value for name, value in facts.items()
+                  if value is not None and value != "" and value != []},
+    }
+    return row
 
 
 def date_value(value):
@@ -94,9 +176,12 @@ def localhop(key, fetch, fetch_localhop, now):
                              link, instance_id, lat=geo.get("latitude"), lng=geo.get("longitude"),
                              tz=ZONE)
         if item is not None:
-            from roomquest.event_description import description
-            item['description'] = description(event.get('description'))
-            output.append(item)
+            output.append(_finish(
+                item, narrative=event.get("description"), raw_venue=place.get("place"),
+                raw_address=address, raw_city=city, status="publish",
+                image=_image(event), categories=_categories(event),
+                latitude=geo.get("latitude"), longitude=geo.get("longitude"),
+            ))
     return output
 
 
@@ -114,10 +199,11 @@ def skyybox(fetch, now):
     for offset in range((1 - day.weekday()) % 7, 35, 7):
         start = datetime.combine(day + timedelta(days=offset), time(19), ZoneInfo(ZONE))
         if start > now:
-            output.append(record("Tuesday Trivia at Skyybox", start.isoformat(), None,
-                                 "Skyybox Grill & Bar", "6720 S 168th St, Omaha, NE 68135", "Omaha",
-                                 url, start.date().isoformat(), lat=41.192416422681, lng=-96.177586580445,
-                                 tz=ZONE))
+            output.append(_finish(record(
+                "Tuesday Trivia at Skyybox", start.isoformat(), None,
+                "Skyybox Grill & Bar", "6720 S 168th St, Omaha, NE 68135", "Omaha",
+                url, start.date().isoformat(), lat=41.192416422681, lng=-96.177586580445,
+                tz=ZONE), raw_venue="Skyybox Grill and Bar", raw_address="6720 S 168th St"))
     return output
 
 
@@ -146,9 +232,8 @@ def postscript(fetch, now):
                      "1434 Silver St, Ashland, NE 68003", "Ashland", url, item["id"],
                      lat=41.039166361796, lng=-96.368784765192, tz=ZONE)
         if row is not None:
-            from roomquest.event_description import description
-            row['description'] = description(item.get('description'))
-            output.append(row)
+            output.append(_finish(row, narrative=item.get("description"),
+                                  image=_image(item), categories=_categories(item)))
     return output
 
 
@@ -172,9 +257,12 @@ def elleinad(fetch, now):
                                      "4724 Prescott Ave, Lincoln, NE 68506", "Lincoln", url, slug,
                                      lat=40.77296938801, lng=-96.655071487729, tz=ZONE)
                 if row is not None:
-                    from roomquest.event_description import description
-                    row['description'] = description(item.get('description'))
-                    output.append(row)
+                    raw_venue, raw_address, raw_city = _raw_location(item)
+                    output.append(_finish(
+                        row, narrative=item.get("description"), raw_venue=raw_venue,
+                        raw_address=raw_address, raw_city=raw_city,
+                        image=_image(item), categories=_categories(item),
+                    ))
     return output
 
 
@@ -217,10 +305,11 @@ def zoo_bar(fetch, now):
         if end is not None and end <= start:
             continue
         identity = sha256(f"{start.isoformat()}|{title.casefold()}".encode()).hexdigest()
-        output[identity] = record(title, start.isoformat(), end.isoformat() if end else None,
-                                  "The Zoo Bar", "136 N 14th St, Lincoln, NE 68508", "Lincoln",
-                                  url, identity, "Music", lat=40.814061685175, lng=-96.701083776601,
-                                  tz=ZONE)
+        output[identity] = _finish(record(
+            title, start.isoformat(), end.isoformat() if end else None,
+            "The Zoo Bar", "136 N 14th St, Lincoln, NE 68508", "Lincoln",
+            url, identity, "Music", lat=40.814061685175, lng=-96.701083776601,
+            tz=ZONE))
     return list(output.values())
 
 
