@@ -1,3 +1,4 @@
+from copy import deepcopy
 from datetime import datetime, timedelta, timezone
 from time import monotonic
 from unittest.mock import Mock
@@ -71,6 +72,32 @@ def test_aquarium_has_six_explicit_days_and_its_own_location():
     assert {r['lat'] for r in rows} == {40.574008}
     assert {r['venue_city'] for r in rows} == {'Brooklyn'}
     assert all(datetime.fromisoformat(r['ends_at'])-datetime.fromisoformat(r['starts_at']) == timedelta(hours=4) for r in rows)
+
+
+@pytest.mark.parametrize('key',[family.ZOO,family.AQUARIUM])
+def test_original_facts_ignore_source_label_and_exclude_reviewed_point(key):
+    row = collect(key)[0]
+    envelope = deepcopy(row['collector_event_content_v1'])
+    facts = envelope['facts']
+    assert facts['venue_name'] == family.VENUES[key][0]
+    assert facts['venue_address'] == family.VENUES[key][1]
+    assert facts['venue_city'] == family.VENUES[key][2]
+    assert 'source_latitude' not in facts and 'source_longitude' not in facts
+    assert (row['lat'], row['lng']) == family.VENUES[key][3:]
+    renamed = source(key)
+    renamed['publisher_name'] = 'Renamed provider label'
+    pages = fixture(key)
+    again = family.collect(renamed, lambda url, accept:pages[url],
+                           deadline_at=monotonic()+36, now=NOW)[0]
+    assert again['collector_event_content_v1'] == envelope
+
+
+def test_one_publisher_narrative_change_changes_each_affected_occurrence_only():
+    first = collect(family.AQUARIUM)
+    changed = collect(family.AQUARIUM, fixture(family.AQUARIUM, extra='<p>Bring binoculars.</p>'))
+    assert [row['id'] for row in changed] == [row['id'] for row in first]
+    assert all(new['collector_event_content_v1'] != old['collector_event_content_v1']
+               for old, new in zip(first, changed))
 
 
 @pytest.mark.parametrize('key',[family.ZOO,family.AQUARIUM])
