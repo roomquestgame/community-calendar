@@ -9,7 +9,7 @@ from zoneinfo import ZoneInfo
 
 from bs4 import BeautifulSoup
 
-from roomquest.mapsee_adapter import record, timestamp
+from roomquest.mapsee_adapter import plain, record, timestamp
 from roomquest.maryland_sources import NONPUBLIC, ZONE, md_address, require_source
 
 TZ = ZoneInfo(ZONE)
@@ -27,6 +27,7 @@ SOURCES = {
 }
 UMD_COMMUNITY = 'https://calendar.umd.edu/category/community-engagement'
 PRIVATE = re.compile(r'\b(?:student[s]? only|faculty only|staff only|campus community only|invite only)\b', re.I)
+MAX_DESCRIPTION = 12000
 
 
 
@@ -34,14 +35,81 @@ def words(node):
     return node.get_text(' ', strip=True) if node else ''
 
 
-def make_row(title, start, end, venue, address, url, now):
+def narrative(value):
+    """Keep the complete publisher narrative or reject it; never truncate facts."""
+    soup = BeautifulSoup(str(value or ''), 'html.parser')
+    for node in soup.select('script,style,template,noscript,nav'):
+        node.decompose()
+    text = '\n'.join(re.sub(r'[\t\r\f\v ]+', ' ', line).strip()
+                     for line in soup.get_text('\n').splitlines() if line.strip())
+    if len(text) > MAX_DESCRIPTION:
+        raise ValueError('publisher_description_limit')
+    return text
+
+
+def _attach_original_content(row, *, description='', raw_venue='', raw_address='',
+                             categories=(), image_url=None):
+    """Retain event-owned publisher facts apart from downstream normalization."""
+    start = timestamp(row.get('starts_at'), ZONE)
+    end = timestamp(row.get('ends_at'), ZONE)
+    if start is None or start.tzinfo is None or end is not None and end.tzinfo is None:
+        raise ValueError('maryland_public_schedule_conflict')
+
+    def local(moment):
+        return (moment.astimezone(TZ).replace(tzinfo=None)
+                .isoformat(timespec='seconds')) if moment is not None else None
+
+    facts = {
+        'title': row['title'], 'description': description, 'is_all_day': False,
+        'starts_at_local': local(start), 'ends_at_local': local(end),
+        'source_timezone': ZONE, 'event_url': row['event_url'],
+        'venue_name': plain(raw_venue), 'venue_address': plain(raw_address),
+        'publisher_status': 'scheduled', 'attendance_mode': 'in_person',
+        'publisher_categories': sorted({plain(value) for value in categories if plain(value)}),
+        'source_image_url': image_url,
+    }
+    row['collector_event_content_v1'] = {
+        'version': 1, 'event_id': row['id'],
+        'facts': {name: value for name, value in facts.items()
+                  if value is not None and value != '' and value != []},
+    }
+    return row
+
+
+def _schema_image(event):
+    value = event.get('image') if isinstance(event, dict) else None
+    if isinstance(value, list):
+        value = next((item for item in value if isinstance(item, (str, dict))), None)
+    if isinstance(value, dict):
+        value = value.get('url') or value.get('contentUrl')
+    if not isinstance(value, str):
+        return None
+    try:
+        parsed = urlsplit(value)
+        return value if (parsed.scheme == 'https' and parsed.hostname and not parsed.username
+                         and not parsed.password and parsed.fragment == '') else None
+    except ValueError:
+        return None
+
+
+def make_row(title, start, end, venue, address, url, now, *, description='',
+             raw_venue=None, raw_address=None, categories=(), image_url=None):
     if (not start or not title or not venue or not address or NONPUBLIC.search(title)
             or PRIVATE.search(title) or start >= now + timedelta(days=60)
             or (end or start + timedelta(hours=3)) <= now or (end and end <= start)):
         return None
-    return record(title, start.isoformat(), end.isoformat() if end else None,
-                  venue, address[0], address[1], url, f"{urlsplit(url).path}:{start.isoformat()}:{title}",
-                  tz=ZONE, retain_until_end=True)
+    row = record(title, start.isoformat(), end.isoformat() if end else None,
+                 venue, address[0], address[1], url,
+                 f"{urlsplit(url).path}:{start.isoformat()}:{title}",
+                 tz=ZONE, retain_until_end=True)
+    if row:
+        description = narrative(description)
+        row['description'] = description
+        _attach_original_content(row, description=description,
+                                 raw_venue=raw_venue if raw_venue is not None else venue,
+                                 raw_address=raw_address if raw_address is not None else address[0],
+                                 categories=categories, image_url=image_url)
+    return row
 
 
 def street_line(parts):
@@ -98,7 +166,11 @@ def _bowie(soup, url, now):
             continue
         start = datetime.strptime(re.sub(r'\b([ap])\.m\.', r'\1m', words(date), flags=re.I),
                                   '%B %d, %Y %I:%M %p').replace(tzinfo=TZ)
-        row = make_row(title, start, None, venue, address, url, now)
+        row = make_row(title, start, None, venue, address, url, now,
+                       description=event.get('description') or '', raw_address=address_text,
+                       categories=event.get('keywords') if isinstance(event.get('keywords'), list)
+                       else [event.get('keywords')] if event.get('keywords') else (),
+                       image_url=_schema_image(event))
         if row:
             rows.append(row)
     return rows
@@ -117,14 +189,17 @@ def _howard(soup, url, now):
     labels = [words(location.select_one('.' + cls)) for cls in
               ('address-line1', 'locality', 'administrative-area', 'postal-code')]
     street, city, state, zip_code = labels
-    address = md_address(f'{street}, {city}, {state} {zip_code}')
+    raw_address = f'{street}, {city}, {state} {zip_code}'
+    address = md_address(raw_address)
     venue = words(location.select_one('h2,h3,h4,[class*="title"]'))
     if not venue:
         venue = words(location).split(street)[0].strip() if street else ''
     date = datetime.strptime(day, '%m/%d/%Y').date()
     start = datetime.combine(date, _clock(times[0]), TZ)
     end = datetime.combine(date, _clock(times[1]), TZ) if len(times) == 2 and times[1] else None
-    return [r for r in [make_row(title, start, end, venue, address, url, now)] if r]
+    description_node = soup.select_one('.node-split--event .node-split__content, .field--name-body')
+    return [r for r in [make_row(title, start, end, venue, address, url, now,
+                                 description=description_node or '', raw_address=raw_address)] if r]
 
 
 def _anne(soup, base, now):
@@ -140,13 +215,14 @@ def _anne(soup, base, now):
         if not link or not venue or not times:
             continue
         url = _allowed_link(base, link['href'], r'/[a-z0-9/-]+')
+        raw_address = ' '.join(list(place.stripped_strings)[1:])
         address = street_line(list(place.stripped_strings)[1:])
         if not address:
             match = re.fullmatch(r'(\d{1,6} [^,]+),\s*([A-Za-z .\'-]+),\s*(MD \d{5})', ' '.join(list(place.stripped_strings)[1:]))
             address = md_address(', '.join(match.groups())) if match else None
         if url:
             row = make_row(words(link), times[0], times[1] if len(times) == 2 else None,
-                           words(venue), address, url, now)
+                           words(venue), address, url, now, raw_address=raw_address)
             if row:
                 rows.append(row)
     return rows
@@ -168,7 +244,9 @@ def _umd(soup, url, now):
     address = street_line(list(street.stripped_strings)) if street else None
     row = make_row(event.get('name', ''), timestamp(event.get('startDate'), ZONE),
                    timestamp(event.get('endDate'), ZONE), words(place.select_one('.address-title')),
-                   address, url, now)
+                   address, url, now, description=event.get('description') or '',
+                   raw_address=' '.join(street.stripped_strings), categories=audiences,
+                   image_url=_schema_image(event))
     return [row] if row else []
 
 
@@ -186,11 +264,17 @@ def _montgomery(soup, url, now):
              for line in part.splitlines() if line.strip()]
     if len(lines) < 2:
         return []
+    raw_address = ', '.join(lines[1:])
     address = street_line(lines[1:])
     date = datetime.strptime(words(when), '%A, %B %d, %Y').date()
     start_text, end_text = re.split(r'\s*[-–]\s*', words(times))
+    event = _event_schema(soup, permissive=True)
     row = make_row(words(main.select_one('h1')), datetime.combine(date, _clock(start_text), TZ),
-                   datetime.combine(date, _clock(end_text), TZ), lines[0], address, url, now)
+                   datetime.combine(date, _clock(end_text), TZ), lines[0], address, url, now,
+                   description=event.get('description') or '', raw_address=raw_address,
+                   categories=event.get('keywords') if isinstance(event.get('keywords'), list)
+                   else [event.get('keywords')] if event.get('keywords') else (),
+                   image_url=_schema_image(event))
     return [row] if row else []
 
 
