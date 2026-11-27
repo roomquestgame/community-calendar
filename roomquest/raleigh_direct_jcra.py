@@ -9,6 +9,7 @@ never the midnight placeholders in its downloadable calendar.
 """
 from __future__ import annotations
 
+from roomquest.collection_window import calendar_anchor, explicit_window
 from copy import deepcopy
 from calendar import monthrange
 from datetime import date, datetime, time, timedelta, timezone
@@ -72,7 +73,7 @@ def photo_url(value):
 
 
 def _window(anchor):
-    first = anchor.astimezone(ZoneInfo(ZONE)).date()
+    first = calendar_anchor(anchor).astimezone(ZoneInfo(ZONE)).date()
     return first, first + timedelta(days=60)
 
 
@@ -80,7 +81,7 @@ def _plans(anchor):
     first, end = _window(anchor)
     months, day = [], first.replace(day=1)
     while day < end:
-        months.append({'url': CALENDAR if not months else CALENDAR + f'?year={day.year}&month={day.month}',
+        months.append({'url': CALENDAR if not months and not explicit_window() else CALENDAR + f'?year={day.year}&month={day.month}',
                        'year': day.year, 'month': day.month})
         day = date(day.year + (day.month == 12), day.month % 12 + 1, 1)
     return months + [{'url': HOURS, 'year': None, 'month': None}]
@@ -361,7 +362,7 @@ def _detail(item, payload, anchor, hours):
     photo = next((photo_url(img.get('src')) for img in main.find_all('img') if photo_url(img.get('src'))), None)
     rows = []
     for start, end in spans:
-        if end <= anchor:
+        if end <= calendar_anchor(anchor):
             continue
         identity = 'raleigh-jcra:' + sha256(f'{item["id"]}|{start.isoformat()}'.encode()).hexdigest()
         row = record(item['title'], start.isoformat(), end.isoformat(), *VENUE,

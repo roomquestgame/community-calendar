@@ -6,6 +6,7 @@ field supplies clocks. No RSS publication date or implied recurrence is used.
 """
 from __future__ import annotations
 
+from roomquest.collection_window import calendar_anchor
 import base64
 import binascii
 from copy import deepcopy
@@ -496,7 +497,7 @@ def decode_checkpoint(checkpoint, *, now):
         started = datetime.fromisoformat(checkpoint["started_at"])
         window_start = date.fromisoformat(checkpoint["window_start"])
         window_end = date.fromisoformat(checkpoint["window_end"])
-        if (started.tzinfo is None or now.tzinfo is None or window_start != started.astimezone(ZONE).date()
+        if (started.tzinfo is None or now.tzinfo is None or window_start != calendar_anchor(started).astimezone(ZONE).date()
                 or window_end != window_start + timedelta(days=59)):
             raise ValueError
         if not started <= now <= started + MAX_AGE:
@@ -552,7 +553,7 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
             return dict(checkpoint=checkpoint, complete=True, events=state["events"])
     else:
         token, categories = calendar_configuration(fetch(CALENDAR, "text/html"))
-        first = current.astimezone(ZONE).date()
+        first = calendar_anchor(current).astimezone(ZONE).date()
         header = dict(version=1, contract=CONTRACT, source_key=SOURCE_KEY,
                       started_at=current.isoformat(), window_start=first.isoformat(),
                       window_end=(first + timedelta(days=59)).isoformat(),

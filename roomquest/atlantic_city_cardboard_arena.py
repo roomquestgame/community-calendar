@@ -8,6 +8,7 @@ provided by the worker's existing guarded transport.
 """
 from __future__ import annotations
 
+from roomquest.collection_window import calendar_anchor
 from copy import deepcopy
 from datetime import datetime, timedelta, timezone
 from hashlib import sha256
@@ -177,7 +178,8 @@ def _time(value):
 
 
 def _within(item, now):
-    return _time(item["startsAt"]) < now + timedelta(days=60) and _time(item["endsAt"]) > now
+    window_start = calendar_anchor(now)
+    return _time(item["startsAt"]) < window_start + timedelta(days=60) and _time(item["endsAt"]) > window_start
 
 
 def _metadata(item, records=None):
@@ -348,7 +350,7 @@ def _checkpoint(value, now):
         raise ValueError(invalid)
     try:
         started = datetime.fromisoformat(value["started_at"])
-        if started.tzinfo is None or value["window_start"] != started.astimezone(ZoneInfo(ZONE)).date().isoformat():
+        if started.tzinfo is None or value["window_start"] != calendar_anchor(started).astimezone(ZoneInfo(ZONE)).date().isoformat():
             raise ValueError
     except (ValueError, KeyError, TypeError):
         raise ValueError(invalid) from None
@@ -418,15 +420,15 @@ def collect_chunk(source, fetch, *, render_calendar=None, checkpoint=None, deadl
     if deadline_at is not None and monotonic() >= deadline_at:
         raise ValueError("collection_deadline")
     _store_context(fetch(FEED_URL, "text/html"))
-    lower = (anchor - timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
-    upper = (anchor + timedelta(days=60)).replace(microsecond=0)
+    lower = (calendar_anchor(anchor) - timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+    upper = (calendar_anchor(anchor) + timedelta(days=60)).replace(microsecond=0)
     payload = render_calendar(starts_at=lower.strftime("%Y-%m-%dT%H:%M:%SZ"),
                               ends_at=upper.strftime("%Y-%m-%dT%H:%M:%SZ"))
     queue = _manifest(payload, anchor)
     digest = _digest(queue)
     if state is None or state["manifest_hash"] != digest:
         state = {"version": 1, "source_key": KEY, "started_at": anchor.isoformat(),
-                 "window_start": anchor.astimezone(ZoneInfo(ZONE)).date().isoformat(),
+                 "window_start": calendar_anchor(anchor).astimezone(ZoneInfo(ZONE)).date().isoformat(),
                  "manifest_hash": digest, "manifest_count": len(queue), "cursor": 0,
                  "queue": queue, "events": [], "diagnostics": []}
     previous = state["cursor"]
@@ -447,7 +449,7 @@ def collect_chunk(source, fetch, *, render_calendar=None, checkpoint=None, deadl
     if complete:
         still_upcoming = []
         for row in state["events"]:
-            if timestamp(row["ends_at"]) <= current:
+            if timestamp(row["ends_at"]) <= calendar_anchor(current):
                 state["diagnostics"].append({"event_url": row["event_url"], "disposition": "held",
                                              "reason": "event_ended_during_collection"})
             else:

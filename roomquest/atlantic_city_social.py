@@ -6,6 +6,7 @@ do not project weekly recurrences beyond the dates present in that grid.
 """
 from __future__ import annotations
 
+from roomquest.collection_window import calendar_anchor
 import base64
 from datetime import datetime, timedelta, timezone
 import re
@@ -80,6 +81,7 @@ def _time(node, edge):
 
 
 def parse_calendar(payload, now):
+    window_start = calendar_anchor(now)
     soup = BeautifulSoup(payload, "html.parser")
     calendars = soup.select('.simcal-calendar[data-calendar-id="1642"]')
     if len(calendars) != 1:
@@ -108,7 +110,7 @@ def parse_calendar(payload, now):
                 or end <= start or end - start > timedelta(days=1)):
             raise ValueError("atlantic_social_schedule_changed")
         identity = _native_identity(item, start)
-        if not (start < now + timedelta(days=60) and end > now):
+        if not (start < window_start + timedelta(days=60) and end > window_start):
             continue
         address = item.select_one('[itemprop="address"]')
         if not address or address.get("content") != NATIVE_ADDRESS:

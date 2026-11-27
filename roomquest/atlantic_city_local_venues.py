@@ -6,6 +6,7 @@ The public HTML, rather than a search excerpt, is the source of every body.
 """
 from __future__ import annotations
 
+from roomquest.collection_window import calendar_anchor
 from copy import deepcopy
 from datetime import date, datetime, timedelta, timezone
 from hashlib import sha256
@@ -125,7 +126,8 @@ def reviewed_venue_location(key, venue, street):
 
 
 def _within(start, end, now):
-    return start < now + timedelta(days=60) and (end or start + timedelta(hours=3)) > now
+    window_start = calendar_anchor(now)
+    return start < window_start + timedelta(days=60) and (end or start + timedelta(hours=3)) > window_start
 
 
 def _clock(day, clock):
@@ -515,8 +517,8 @@ def _lizzie_manifest(soup, now):
               "type": "lizzie_tickets", "page": page, "title": "Native ticket availability", "hold": None}
              for page in range(1, MAX_TICKET_PAGES + 1)]
     month_pairs = set()
-    day = now.astimezone(ZoneInfo(ZONE)).date()
-    end = (now + timedelta(days=60)).astimezone(ZoneInfo(ZONE)).date()
+    day = calendar_anchor(now).astimezone(ZoneInfo(ZONE)).date()
+    end = (calendar_anchor(now) + timedelta(days=60)).astimezone(ZoneInfo(ZONE)).date()
     while day <= end:
         month_pairs.add((day.year, day.month))
         day += timedelta(days=1)
@@ -682,7 +684,7 @@ def _checkpoint(value, key, now):
         started = datetime.fromisoformat(value["started_at"])
         anchor = date.fromisoformat(value["window_start"])
         if (not started.tzinfo or started.utcoffset() != timedelta(0)
-                or anchor != started.astimezone(ZoneInfo(ZONE)).date()):
+                or anchor != calendar_anchor(started).astimezone(ZoneInfo(ZONE)).date()):
             raise ValueError
     except (ValueError, TypeError, KeyError):
         raise ValueError("local_venue_checkpoint_invalid") from None
@@ -789,7 +791,7 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
             queue = [unit["id"] for unit in units]
             digest = _hash({"contract": CONTRACT, "manifest": units})
         state = {"version": 1, "contract": CONTRACT, "source_key": key, "started_at": current.isoformat(),
-                 "window_start": current.astimezone(ZoneInfo(ZONE)).date().isoformat(),
+                 "window_start": calendar_anchor(current).astimezone(ZoneInfo(ZONE)).date().isoformat(),
                  "manifest_hash": digest, "manifest_count": len(units), "queue": queue, "cursor": 0,
                  "results": [], "events": [], "diagnostics": []}
     previous = state["cursor"]

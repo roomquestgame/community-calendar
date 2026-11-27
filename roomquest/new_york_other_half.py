@@ -8,6 +8,7 @@ All network work is supplied by the existing guarded publisher transport.
 """
 from __future__ import annotations
 
+from roomquest.collection_window import calendar_anchor
 from copy import deepcopy
 from datetime import date, datetime, timedelta, timezone
 from hashlib import sha256
@@ -179,7 +180,7 @@ def _manifest(payload, now):
         if printed != f"{day:%b} {day.day}":
             # Multiple-day sales/releases are not dated attendance sessions.
             continue
-        local_today = now.astimezone(ZoneInfo(ZONE)).date()
+        local_today = calendar_anchor(now).astimezone(ZoneInfo(ZONE)).date()
         if day < local_today - timedelta(days=1) or day > local_today + timedelta(days=60):
             continue
         queue.append(dict(url=url, title=title, day=day.isoformat(), location=locations[0]))
@@ -273,7 +274,7 @@ def _validate_checkpoint(value, now):
                 or len(json.dumps(value, ensure_ascii=False).encode()) > MAX_CHECKPOINT_BYTES):
             raise ValueError
         started = timestamp(value["started_at"])
-        if started.tzinfo is None or value["window_start"] != started.astimezone(ZoneInfo(ZONE)).date().isoformat():
+        if started.tzinfo is None or value["window_start"] != calendar_anchor(started).astimezone(ZoneInfo(ZONE)).date().isoformat():
             raise ValueError
         if now < started or now - started > timedelta(hours=4):
             return None
@@ -328,7 +329,7 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
     if state is None or state["queue"] != queue or state["manifest_hash"] != _digest(queue):
         queue = _manifest(payload, current)
         state = dict(version=1, source_key=OTHER, started_at=current.isoformat(),
-                     window_start=current.astimezone(ZoneInfo(ZONE)).date().isoformat(), manifest_hash=_digest(queue),
+                     window_start=calendar_anchor(current).astimezone(ZoneInfo(ZONE)).date().isoformat(), manifest_hash=_digest(queue),
                      manifest_count=len(queue), cursor=0, queue=queue, events=[], diagnostics=[])
     legacy_prefix = bool(state["events"] and
                          any("collector_event_content_v1" not in row for row in state["events"]))

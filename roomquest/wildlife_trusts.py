@@ -4,6 +4,7 @@ RSS pubDate is a date/range hint, never a session clock. National feed entries
 may point to regional Trusts; transport is restricted to the publisher network
 actually observed in the national feed. No arbitrary RSS host is fetched.
 """
+from roomquest.collection_window import calendar_anchor
 from copy import deepcopy
 from datetime import datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
@@ -444,7 +445,7 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
     # or change the identity/equality of a previously captured occurrence.
     legacy_prefix = any('collector_event_content_v1' not in row for row in state['events'])
     first_cursor = cursor
-    today = datetime.fromisoformat(state['started_at']).astimezone(LONDON).date()
+    today = calendar_anchor(datetime.fromisoformat(state['started_at'])).astimezone(LONDON).date()
     horizon = (today + timedelta(days=60)).isoformat()
     hosts = allowed_hosts(source['feed_url'])
     fetched = 0

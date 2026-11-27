@@ -5,6 +5,7 @@ Month ranges are discovery evidence; actual detail showtimes create events.
 """
 from __future__ import annotations
 
+from roomquest.collection_window import calendar_anchor
 from copy import deepcopy
 from datetime import date, datetime, timedelta, timezone
 from hashlib import sha256
@@ -130,7 +131,8 @@ def _body(value):
 
 
 def _within(start, end, now):
-    return start < now + timedelta(days=60) and (end or start + timedelta(hours=3)) > now
+    window_start = calendar_anchor(now)
+    return start < window_start + timedelta(days=60) and (end or start + timedelta(hours=3)) > window_start
 
 
 def _clock(day, text):
@@ -177,9 +179,10 @@ def _packet(key, url, title, span=None, image=None, room=None):
 
 
 def _range_in_window(span, now):
+    window_start = calendar_anchor(now)
     if span is None:
         return True
-    return date.fromisoformat(span[0]) <= (now + timedelta(days=60)).astimezone(ZoneInfo(ZONE)).date() and date.fromisoformat(span[1]) >= now.astimezone(ZoneInfo(ZONE)).date() - timedelta(days=1)
+    return date.fromisoformat(span[0]) <= (window_start + timedelta(days=60)).astimezone(ZoneInfo(ZONE)).date() and date.fromisoformat(span[1]) >= window_start.astimezone(ZoneInfo(ZONE)).date() - timedelta(days=1)
 
 
 def _arena_listing(key, payload, now):
@@ -205,7 +208,7 @@ def _arena_listing(key, payload, now):
     known = [date.fromisoformat(span[0]) for _, span in native if span]
     if key == MMC and known != sorted(known):
         raise ValueError("raleigh_performance_calendar_changed")
-    stop = (now + timedelta(days=60)).astimezone(ZoneInfo(ZONE)).date()
+    stop = (calendar_anchor(now) + timedelta(days=60)).astimezone(ZoneInfo(ZONE)).date()
     beyond = bool(native) and all(span and date.fromisoformat(span[0]) > stop for _, span in native)
     return queue, native, beyond
 
@@ -453,8 +456,8 @@ def _festival_detail(item, payload, now):
     # Thanksgiving is the fourth Thursday in November at this US venue.
     november = date(first.year, 11, 1)
     thanksgiving = november + timedelta(days=(3 - november.weekday()) % 7 + 21)
-    day = max(first, now.astimezone(ZoneInfo(ZONE)).date() - timedelta(days=1))
-    stop = min(last, (now + timedelta(days=60)).astimezone(ZoneInfo(ZONE)).date())
+    day = max(first, calendar_anchor(now).astimezone(ZoneInfo(ZONE)).date() - timedelta(days=1))
+    stop = min(last, (calendar_anchor(now) + timedelta(days=60)).astimezone(ZoneInfo(ZONE)).date())
     rows = []
     while day <= stop:
         if (day.month, day.day) != (12, 25):
@@ -520,7 +523,7 @@ def _checkpoint(value, key, now):
         started = timestamp(value["started_at"])
         if (type(value["version"]) is not int or value["version"] != 1 or value["source_key"] != key
                 or not started or started.utcoffset() != timedelta(0) or started > now + timedelta(seconds=60)
-                or value["window_start"] != started.astimezone(ZoneInfo(ZONE)).date().isoformat()
+                or value["window_start"] != calendar_anchor(started).astimezone(ZoneInfo(ZONE)).date().isoformat()
                 or value["phase"] not in {"listing", "details"} or type(value["listing_complete"]) is not bool
                 or value["listing_complete"] != (value["phase"] == "details")
                 or not isinstance(value["queue"], list) or len(value["queue"]) > MAX_MANIFEST
@@ -594,7 +597,7 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
             queue = _improv_listing(payload, current) if key == IMPROV else _koka_listing(payload)
             pending_listing = False
         state = dict(version=1, source_key=key, started_at=current.isoformat(),
-            window_start=current.astimezone(ZoneInfo(ZONE)).date().isoformat(),
+            window_start=calendar_anchor(current).astimezone(ZoneInfo(ZONE)).date().isoformat(),
             phase="listing" if pending_listing else "details", listing_complete=not pending_listing,
             queue=queue, cursor=0, manifest_count=len(queue), manifest_hash=_hash(queue),
             listing_pages=1, next_offset=12, listing_seen=[url for url, _ in native],

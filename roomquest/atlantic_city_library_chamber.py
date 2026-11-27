@@ -9,6 +9,7 @@ eligible alongside arts, games and educational events.
 """
 from __future__ import annotations
 
+from roomquest.collection_window import calendar_anchor
 from copy import deepcopy
 from datetime import date, datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
@@ -168,8 +169,9 @@ def _held(key, identity, reason):
 
 
 def _within(start, end, now):
-    return bool(start and start < now + timedelta(days=60)
-                and (end or start + timedelta(hours=3)) > now)
+    window_start = calendar_anchor(now)
+    return bool(start and start < window_start + timedelta(days=60)
+                and (end or start + timedelta(hours=3)) > window_start)
 
 
 def _row(key, identity, title, url, start, end, venue, body, now, categories=()):
@@ -436,11 +438,11 @@ def _validate_checkpoint(value, key, now):
     try:
         started = datetime.fromisoformat(value["started_at"])
         anchor = date.fromisoformat(value["window_start"])
-        if started.tzinfo is None or anchor != started.astimezone(ZoneInfo(ZONE)).date():
+        if started.tzinfo is None or anchor != calendar_anchor(started).astimezone(ZoneInfo(ZONE)).date():
             raise ValueError
     except (ValueError, TypeError, KeyError):
         raise ValueError("atlantic_library_checkpoint_invalid") from None
-    if now < started or now - started > timedelta(hours=4) or now.astimezone(ZoneInfo(ZONE)).date() != anchor:
+    if now < started or now - started > timedelta(hours=4) or calendar_anchor(now).astimezone(ZoneInfo(ZONE)).date() != anchor:
         return None
     identities = set()
     for row in value["events"]:
@@ -495,7 +497,7 @@ def _validate_checkpoint(value, key, now):
 
 def _state(key, now, count, digest):
     return {"version": 1, "contract": CONTRACT, "source_key": key,
-            "started_at": now.isoformat(), "window_start": now.astimezone(ZoneInfo(ZONE)).date().isoformat(),
+            "started_at": now.isoformat(), "window_start": calendar_anchor(now).astimezone(ZoneInfo(ZONE)).date().isoformat(),
             "cursor": 0, "manifest_count": count, "manifest_hash": digest,
             "events": [], "diagnostics": []}
 
@@ -515,7 +517,7 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
         # retry must reuse it, not request nonexistent page data_pages + 1.
         rows = sorted(state["events"], key=lambda r: (r["starts_at"], r["id"]))
         return {"complete": True, "events": deepcopy(rows), "checkpoint": state}
-    anchor = date.fromisoformat(state["window_start"]) if state else current.astimezone(ZoneInfo(ZONE)).date()
+    anchor = date.fromisoformat(state["window_start"]) if state else calendar_anchor(current).astimezone(ZoneInfo(ZONE)).date()
     if deadline_at is not None and monotonic() + MIN_FETCH_SECONDS >= deadline_at:
         raise ValueError("collection_deadline")
     if key == FED:

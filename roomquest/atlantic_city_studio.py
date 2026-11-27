@@ -9,6 +9,7 @@ partial results never enter staging.
 """
 from __future__ import annotations
 
+from roomquest.collection_window import calendar_anchor
 from copy import deepcopy
 from datetime import datetime, timedelta, timezone
 from hashlib import sha256
@@ -196,6 +197,7 @@ def _clocks(session):
 
 
 def parse_detail(payload, item, *, now):
+    window_start = calendar_anchor(now)
     soup = _html(payload)
     nodes = soup.select('script#__NEXT_DATA__')
     if len(nodes) != 1:
@@ -255,7 +257,7 @@ def parse_detail(payload, item, *, now):
     if type(session.get('denyReasonId')) is not int or session['denyReasonId'] != 0:
         raise ValueError('atlantic_studio_eligibility_invalid')
     start, end = _clocks(session)
-    if end <= now or start >= now + timedelta(days=60):
+    if end <= window_start or start >= window_start + timedelta(days=60):
         return None, 'outside_window'
     description = course.get('description')
     if not isinstance(description, str):
@@ -307,7 +309,7 @@ def _checkpoint(value, now):
         raise ValueError('atlantic_studio_checkpoint_invalid')
     try:
         started = datetime.fromisoformat(value['started_at'])
-        if started.tzinfo is None or value['window_start'] != started.astimezone(ZoneInfo(ZONE)).date().isoformat():
+        if started.tzinfo is None or value['window_start'] != calendar_anchor(started).astimezone(ZoneInfo(ZONE)).date().isoformat():
             raise ValueError
     except (KeyError, TypeError, ValueError):
         raise ValueError('atlantic_studio_checkpoint_invalid') from None
@@ -344,7 +346,7 @@ def _checkpoint(value, now):
             start, end = timestamp(row.get('starts_at')), timestamp(row.get('ends_at'))
             if (start is None or end is None or start.tzinfo is None or end.tzinfo is None
                     or end <= start or end - start > timedelta(days=1)
-                    or start >= started + timedelta(days=60) or end <= started):
+                    or start >= calendar_anchor(started) + timedelta(days=60) or end <= calendar_anchor(started)):
                 raise ValueError
         except (TypeError, ValueError, OverflowError):
             raise ValueError('atlantic_studio_checkpoint_invalid') from None
@@ -375,7 +377,7 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
     if state is None or state['manifest_hash'] != digest or state['queue'] != queue:
         state = {'version': 1, 'contract': CONTRACT, 'source_key': SOURCE_KEY,
                  'started_at': current.isoformat(),
-                 'window_start': current.astimezone(ZoneInfo(ZONE)).date().isoformat(),
+                 'window_start': calendar_anchor(current).astimezone(ZoneInfo(ZONE)).date().isoformat(),
                  'manifest_hash': digest, 'manifest_count': len(queue), 'cursor': 0,
                  'queue': queue, 'events': [], 'diagnostics': []}
     previous = state['cursor']
@@ -405,7 +407,7 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
     complete = state['cursor'] == len(queue)
     if complete:
         for row in list(state['events']):
-            if timestamp(row['ends_at']) <= current:
+            if timestamp(row['ends_at']) <= calendar_anchor(current):
                 state['events'].remove(row)
                 state['diagnostics'].append({'event_url': row['event_url'], 'disposition': 'held',
                                              'reason': 'event_ended_during_collection'})

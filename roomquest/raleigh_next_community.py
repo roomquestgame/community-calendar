@@ -6,6 +6,7 @@ Durham-only cards are outside this source's explicitly Raleigh scope.
 """
 from __future__ import annotations
 
+from roomquest.collection_window import calendar_anchor
 from copy import deepcopy
 from datetime import date, datetime, time, timedelta, timezone
 from hashlib import sha256
@@ -66,7 +67,7 @@ def _hash(value):
 
 
 def _window(anchor):
-    first = anchor.astimezone(ZoneInfo(ZONE)).date()
+    first = calendar_anchor(anchor).astimezone(ZoneInfo(ZONE)).date()
     return first, first + timedelta(days=60)
 
 
@@ -328,7 +329,7 @@ def _detail(item, payload, anchor):
     photo=photo_url(event.get('image'))
     rows=[]
     for start,end in spans:
-        if (end or start+timedelta(hours=3))<=anchor:
+        if (end or start+timedelta(hours=3))<=calendar_anchor(anchor):
             continue
         identity='raleigh-dose:'+sha256(f'{item["id"]}|{start.astimezone(timezone.utc).isoformat()}'.encode()).hexdigest()
         row=record(item['title'],start.isoformat(),end.isoformat() if end else None,

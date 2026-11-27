@@ -6,6 +6,7 @@ checkpoint exposes any records. Inert page JSON is decoded, never executed.
 """
 from __future__ import annotations
 
+from roomquest.collection_window import calendar_anchor
 from copy import deepcopy
 from datetime import datetime, timedelta, timezone
 from hashlib import sha256
@@ -113,7 +114,8 @@ def _time(value):
 
 
 def _within(start, end, now):
-    return start < now + timedelta(days=60) and end > now
+    window_start = calendar_anchor(now)
+    return start < window_start + timedelta(days=60) and end > window_start
 
 
 def _viewcy_models(payload):
@@ -580,7 +582,7 @@ def _seal(state):
 
 def _blank(key, now):
     return dict(version=1, source_key=key, started_at=now.isoformat(),
-                window_start=now.astimezone(ZoneInfo(ZONE)).date().isoformat(),
+                window_start=calendar_anchor(now).astimezone(ZoneInfo(ZONE)).date().isoformat(),
                 phase='manifest', queue=[], manifest_count=0, manifest_hash=_digest([]),
                 catalog_total=None, next_page=1, page_hashes=[], verify_page=1,
                 cursor=0, events=[], row_hashes={}, diagnostics=[], manifest_verified=False)
@@ -620,7 +622,7 @@ def _checkpoint(key, value, now):
                 or len(json.dumps(state, ensure_ascii=False).encode()) > MAX_CHECKPOINT_BYTES):
             raise ValueError
         started = _time(state['started_at'])
-        if started.utcoffset() != timedelta(0) or state['window_start'] != started.astimezone(ZoneInfo(ZONE)).date().isoformat():
+        if started.utcoffset() != timedelta(0) or state['window_start'] != calendar_anchor(started).astimezone(ZoneInfo(ZONE)).date().isoformat():
             raise ValueError
         if not started <= now <= started + timedelta(hours=4):
             return None
@@ -767,7 +769,7 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
             try:
                 if NONPUBLIC.search(item['title']) or key == ART_HAUS and item['unavailable']:
                     raise ValueError('event_not_public')
-                if key == ART_HAUS and _time(item['starts_at']) >= started + timedelta(days=60):
+                if key == ART_HAUS and _time(item['starts_at']) >= calendar_anchor(started) + timedelta(days=60):
                     raise ValueError('event_not_current')
                 payload = fetch(item['url'], 'text/html')
                 rows = _unique(_jalopy_detail(item, payload, current) if key == JALOPY else _art_detail(item, payload, current, fetch))

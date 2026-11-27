@@ -7,6 +7,7 @@ by robots, private APIs, registration forms or calendar subscriptions are used.
 """
 from __future__ import annotations
 
+from roomquest.collection_window import calendar_anchor
 from copy import deepcopy
 from datetime import date, datetime, timedelta, timezone
 from hashlib import sha256
@@ -157,9 +158,10 @@ def _clock(node, suffix):
 
 
 def _within(start, end, now):
+    window_start = calendar_anchor(now)
     if start is None or start.tzinfo is None or end and (end.tzinfo is None or end <= start):
         raise ValueError("new_york_social_schedule_conflict")
-    return start < now + timedelta(days=60) and (end or start + timedelta(hours=3)) > now
+    return start < window_start + timedelta(days=60) and (end or start + timedelta(hours=3)) > window_start
 
 
 def _id(key, url, start, native=""):
@@ -414,7 +416,7 @@ def _irish_detail(item, payload):
 
 
 def _industry_manifest(fetch, now):
-    start_day = now.astimezone(ZoneInfo(ZONE)).date()
+    start_day = calendar_anchor(now).astimezone(ZoneInfo(ZONE)).date()
     queue = []
     total, raw_ids = None, set()
     for page in range(1, 3):
@@ -545,7 +547,7 @@ def _wix_manifest(calendar, sitemap, now):
     root = ET.fromstring(sitemap)
     if root.tag.rsplit("}", 1)[-1] != "urlset" or len(root) > 5000:
         raise ValueError("new_york_social_calendar_changed")
-    day = now.astimezone(ZoneInfo(ZONE)).date()
+    day = calendar_anchor(now).astimezone(ZoneInfo(ZONE)).date()
     candidates = {}
     for entry in root:
         parts = {child.tag.rsplit("}", 1)[-1]: child.text for child in entry}
@@ -697,7 +699,7 @@ def _checkpoint(value, key, now):
         if not re.fullmatch(r"20\d{2}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:\+00:00|Z)", str(value.get("started_at", ""))):
             raise ValueError
         started = timestamp(value["started_at"])
-        if started is None or started.tzinfo is None or value["window_start"] != started.astimezone(ZoneInfo(ZONE)).date().isoformat():
+        if started is None or started.tzinfo is None or value["window_start"] != calendar_anchor(started).astimezone(ZoneInfo(ZONE)).date().isoformat():
             raise ValueError
     except (KeyError, TypeError, ValueError):
         raise ValueError("new_york_social_checkpoint_invalid") from None
@@ -785,7 +787,7 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
             queue = _manifest(key, fetch, current)
             digest = sha256(json.dumps(queue, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
         state = dict(version=1, source_key=key, started_at=current.astimezone(timezone.utc).isoformat(),
-                     window_start=current.astimezone(ZoneInfo(ZONE)).date().isoformat(), manifest_hash=digest,
+                     window_start=calendar_anchor(current).astimezone(ZoneInfo(ZONE)).date().isoformat(), manifest_hash=digest,
                      manifest_count=len(queue), queue=queue, cursor=0, events=[], diagnostics=[])
     prior, fetched = state["cursor"], 0
     source_limit = MAX_DETAILS_PER_SOURCE.get(key, MAX_DETAILS_PER_CHUNK)

@@ -4,6 +4,7 @@ Transport remains the registration/preview worker's robots-aware fetch. Linked
 public booking data uses exact source adapters; image OCR, inferred weekly
 schedules and geocoder calls are not used.
 """
+from roomquest.collection_window import calendar_anchor
 from datetime import datetime, timedelta
 import re
 from time import monotonic
@@ -225,7 +226,7 @@ def collect(source, fetch, *, deadline_at=None, listing=None):
     if url == sustainable_ow.URL:
         return sustainable_ow.collect(source, fetch, deadline_at=deadline_at, listing=listing)
     soup = BeautifulSoup(listing if listing is not None else fetch(url, 'text/html'), 'html.parser')
-    today = datetime.now(LONDON).date()
+    today = calendar_anchor(datetime.now(LONDON)).date()
     if url == WINE:
         rows = wine_rows(soup, fetch, today, deadline_at)
     elif url == eventin_listing.URL:

@@ -10,6 +10,7 @@ never manufactured or shortened to make a record publishable.
 """
 from __future__ import annotations
 
+from roomquest.collection_window import calendar_anchor
 from concurrent.futures import ThreadPoolExecutor
 from contextvars import copy_context
 from copy import deepcopy
@@ -328,6 +329,7 @@ def _squarespace_venue_point(soup, main, link, published_location):
 
 
 def _squarespace_detail(key, link, payload, now):
+    window_start = calendar_anchor(now)
     soup = BeautifulSoup(payload, 'html.parser')
     main = soup.select_one('.eventitem') or soup
     title_node = main.select_one('.eventitem-title')
@@ -345,8 +347,8 @@ def _squarespace_detail(key, link, payload, now):
     if start is None:
         _hold(key, link, 'date_only_event')
         return None, next_url, None
-    if (NONPUBLIC.search(title) or start >= now + timedelta(days=60)
-            or (end or start + timedelta(hours=3)) <= now):
+    if (NONPUBLIC.search(title) or start >= window_start + timedelta(days=60)
+            or (end or start + timedelta(hours=3)) <= window_start):
         return None, next_url, start
     if plain((facts.get('text') or [''])[0]) != title:
         raise ValueError('publisher_event_identity_changed')
@@ -414,7 +416,7 @@ def _squarespace_links(key, payload, now):
                     days.append(datetime.strptime(value, '%B %d, %Y').date())
                 except ValueError:
                     days.append(datetime.strptime(value, '%b %d, %Y').date())
-            if max(days) < now.astimezone(ZoneInfo(ZONE)).date():
+            if max(days) < calendar_anchor(now).astimezone(ZoneInfo(ZONE)).date():
                 continue
             links[urljoin(listing, anchor['href'])] = max(days)
     if len(links) > MAX_DETAILS or any(not event_url(key, link) for link in links):
@@ -448,7 +450,7 @@ def _squarespace(key, fetch, now):
                 raise ValueError('publisher_event_order_changed')
             outcomes[upcoming] = outcome
             latest = upcoming
-            if outcome[2] and outcome[2] >= now + timedelta(days=60):
+            if outcome[2] and outcome[2] >= calendar_anchor(now) + timedelta(days=60):
                 break
     rows = [outcome[0] for outcome in outcomes.values() if outcome[0] is not None]
     return sorted(rows, key=lambda row: (row['starts_at'], row['id']))
@@ -478,7 +480,7 @@ def _community_checkpoint(value, now, key=NOYES):
     try:
         start = datetime.fromisoformat(value['started_at'])
         anchor = date.fromisoformat(value['window_start'])
-        if start.tzinfo is None or anchor != start.astimezone(ZoneInfo(ZONE)).date():
+        if start.tzinfo is None or anchor != calendar_anchor(start).astimezone(ZoneInfo(ZONE)).date():
             raise ValueError
     except (KeyError, TypeError, ValueError):
         raise ValueError(invalid) from None
@@ -553,7 +555,7 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
         base = sorted(links, key=lambda url: (links[url], url))
         digest = _noyes_manifest_digest(links, base)
         state = {'version': 1, 'source_key': NOYES, 'started_at': current.isoformat(),
-                 'window_start': current.astimezone(ZoneInfo(ZONE)).date().isoformat(),
+                 'window_start': calendar_anchor(current).astimezone(ZoneInfo(ZONE)).date().isoformat(),
                  'manifest_hash': digest, 'manifest_count': len(base), 'cursor': 0,
                  'base_urls': base, 'queue': list(base), 'edges': [], 'events': [], 'diagnostics': []}
     previous = state['cursor']
@@ -569,7 +571,7 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
             state['diagnostics'].append({'event_url': url, 'disposition': 'held',
                                          'reason': 'publisher_record_not_eligible'})
         state['edges'].append({'from': url, 'next': next_url})
-        if next_url and (start is None or start < anchor + timedelta(days=60)):
+        if next_url and (start is None or start < calendar_anchor(anchor) + timedelta(days=60)):
             if next_url not in state['queue']:
                 if len(state['queue']) >= MAX_DETAILS:
                     raise ValueError('publisher_detail_limit')
@@ -688,7 +690,7 @@ def _municipal_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=No
         raise ValueError('municipal_checkpoint_invalid')
     current = current.astimezone(timezone.utc)
     state = _community_checkpoint(checkpoint, current, CITY)
-    anchor = date.fromisoformat(state['window_start']) if state else current.astimezone(ZoneInfo(ZONE)).date()
+    anchor = date.fromisoformat(state['window_start']) if state else calendar_anchor(current).astimezone(ZoneInfo(ZONE)).date()
     if deadline_at is not None and monotonic() >= deadline_at:
         raise ValueError('collection_deadline')
     listing = 'https://www.acnj.gov/api/data/GetCalendarData?' + urlencode({
@@ -700,7 +702,7 @@ def _municipal_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=No
     digest = sha256(json.dumps(encoded, separators=(',', ':'), sort_keys=True).encode()).hexdigest()
     if state is None or state['manifest_hash'] != digest or state['base_urls'] != base:
         state = {'version': 1, 'source_key': CITY, 'started_at': current.isoformat(),
-                 'window_start': current.astimezone(ZoneInfo(ZONE)).date().isoformat(),
+                 'window_start': calendar_anchor(current).astimezone(ZoneInfo(ZONE)).date().isoformat(),
                  'manifest_hash': digest, 'manifest_count': len(base), 'cursor': 0,
                  'base_urls': base, 'queue': list(base), 'edges': [], 'events': [], 'diagnostics': []}
     if state['queue'] != base:
@@ -810,14 +812,14 @@ def _styled_ical(payload, *, now=None):
                 # avoids counting expired historical rules toward the shared
                 # normalizer's 50-active-series safety ceiling.
                 candidate = rrulestr(rule.removeprefix('RRULE:'),
-                                     dtstart=start.astimezone(ZoneInfo(ZONE))).after(now - (end - start), inc=True)
-                if candidate is None or candidate >= now + timedelta(days=60):
+                                     dtstart=start.astimezone(ZoneInfo(ZONE))).after(calendar_anchor(now) - (end - start), inc=True)
+                if candidate is None or candidate >= calendar_anchor(now) + timedelta(days=60):
                     break
             else:
                 candidate = start if not recurrence else candidate
-            if recurrence and (candidate is None or candidate >= now + timedelta(days=60)):
+            if recurrence and (candidate is None or candidate >= calendar_anchor(now) + timedelta(days=60)):
                 continue
-            if not recurrence and (end <= now or start >= now + timedelta(days=60)):
+            if not recurrence and (end <= calendar_anchor(now) or start >= calendar_anchor(now) + timedelta(days=60)):
                 continue
             props = item.get('extendedProps') or {}
             location = _city_library_location(props.get('location', ''))

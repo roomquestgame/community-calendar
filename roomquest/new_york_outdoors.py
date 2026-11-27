@@ -8,6 +8,7 @@ All requests go through the caller's normal robots/SSRF guarded transport.
 """
 from __future__ import annotations
 
+from roomquest.collection_window import calendar_anchor
 from copy import deepcopy
 from datetime import datetime, timedelta, timezone
 from hashlib import sha256
@@ -428,6 +429,7 @@ def _content_envelope_valid(row):
 
 
 def _make_row(key, event, now, diagnostics, clocks=None):
+    window_start = calendar_anchor(now)
     identity = str(event.get('id') or '')
     title, link = plain(event.get('title')), event.get('url')
     if not identity or not title or not event_url(key, link):
@@ -456,7 +458,7 @@ def _make_row(key, event, now, diagnostics, clocks=None):
     if start is None or (end is not None and end <= start):
         _hold(key, identity, 'ny_outdoors_time_unverified', diagnostics)
         return None
-    if start >= now + timedelta(days=60) or (end or start + timedelta(hours=3)) <= now:
+    if start >= window_start + timedelta(days=60) or (end or start + timedelta(hours=3)) <= window_start:
         return None
     # Publisher-specific contradictions found in the current calendar. Keep
     # truthful full narrative rather than taking the header or body on faith.
@@ -494,7 +496,7 @@ def _make_row(key, event, now, diagnostics, clocks=None):
 
 def _tribe(key, fetch, now, deadline_at=None):
     base = 'https://' + ALLOWED_HOSTS[key][0] + '/wp-json/tribe/events/v1/events'
-    local_day = now.astimezone(ZoneInfo(ZONE)).date()
+    local_day = calendar_anchor(now).astimezone(ZoneInfo(ZONE)).date()
     query = {'start_date': local_day.isoformat(), 'end_date': (local_day + timedelta(days=60)).isoformat(),
              'per_page': 100, 'page': 1}
     events, seen, total, pages = [], set(), None, None
@@ -537,6 +539,7 @@ def _tribe(key, fetch, now, deadline_at=None):
 
 
 def _manifest(key, payload, now):
+    window_start = calendar_anchor(now)
     soup = BeautifulSoup(payload, 'html.parser')
     if soup.select_one('.eventlist') is None:
         raise ValueError('ny_outdoors_calendar_changed')
@@ -549,7 +552,7 @@ def _manifest(key, payload, now):
         if not event_url(key, link):
             raise ValueError('ny_outdoors_calendar_changed')
         start, end, facts = _google_times(card)
-        if start is None or start >= now + timedelta(days=60) or (end or start + timedelta(hours=3)) <= now:
+        if start is None or start >= window_start + timedelta(days=60) or (end or start + timedelta(hours=3)) <= window_start:
             continue
         title = plain(anchor.get_text())
         if plain((facts.get('text') or [''])[0]).casefold() != title.casefold():
@@ -680,7 +683,7 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None)
                      and isinstance(state['diagnostics'], list)
                      and len(state['diagnostics']) <= MAX_MANIFEST
                      and started.tzinfo is not None and now.tzinfo is not None
-                     and state['window_start'] == started.astimezone(ZoneInfo(ZONE)).date().isoformat()
+                     and state['window_start'] == calendar_anchor(started).astimezone(ZoneInfo(ZONE)).date().isoformat()
                      and timedelta(0) <= now - started <= timedelta(hours=4)
                      and all(isinstance(e, dict) and event_url(key, e.get('event_url')) for e in state['events']))
         except (KeyError, TypeError, ValueError):
@@ -708,7 +711,7 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None)
         manifest = _manifest(key, payload, now)
         digest = sha256(json.dumps(manifest, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
         state = {'version': 1, 'source_key': key, 'started_at': now.isoformat(),
-                 'window_start': now.astimezone(ZoneInfo(ZONE)).date().isoformat(), 'manifest_hash': digest,
+                 'window_start': calendar_anchor(now).astimezone(ZoneInfo(ZONE)).date().isoformat(), 'manifest_hash': digest,
                  'manifest_count': len(manifest), 'cursor': 0, 'events': [], 'diagnostics': []}
     stop = min(len(manifest), state['cursor'] + DETAILS_PER_CHUNK)
     for index in range(state['cursor'], stop):

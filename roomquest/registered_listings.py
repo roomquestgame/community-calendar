@@ -1,4 +1,5 @@
 """Exact publisher calendars reviewed for URL-only feed registration."""
+from roomquest.collection_window import calendar_anchor
 import calendar
 from datetime import datetime, timedelta
 import re
@@ -70,13 +71,14 @@ def broadway(soup):
                      address, 'New York', url, url, tz=EASTERN.key)
 
 
-def boplex(listing, fetch, today):
+def boplex(listing, fetch, today, *, observed_day=None):
     home = 'https://www.boplex.com/'
     if not any(urljoin(BOPLEX, a['href']) == home for a in listing.select('a[href]')):
         raise ValueError('boplex_listing_changed')
     soup = BeautifulSoup(fetch(home, 'text/html'), 'html.parser')
     dates = {(today + timedelta(days=i)).strftime('%a, %b %d').upper().replace(' 0', ' '):
-             today + timedelta(days=i) for i in range(61)}
+             today + timedelta(days=i) for i in range(61)
+             if not observed_day or 0 <= (today - observed_day).days + i < 365}
     locations = {}
     for card in soup.select('article.bp-card-carousel__card'):
         title = card.select_one('a:has(.bp-card-carousel-card__title)')
@@ -440,7 +442,7 @@ def _shank_current_schedule(schedule, facts):
         _shank_fact(facts, day, titles[0], times[0])
 
 
-def shank(home, fetch, today):
+def shank(home, fetch, today, *, observed_day=None):
     """Reconcile allowed publisher pages without crawling disallowed routes.
 
     robots.txt disallows `/shows/`, `/feed/shows/`, and `/schedule/?...`.
@@ -453,7 +455,7 @@ def shank(home, fetch, today):
     _shank_home_facts(home, facts)
     _shank_ticket_facts(BeautifulSoup(fetch(SHANK + 'tickets/', 'text/html'), 'html.parser'), facts)
     _shank_current_schedule(BeautifulSoup(fetch(SHANK + 'schedule/', 'text/html'), 'html.parser'), facts)
-    inventory = [(day, title, url) for day, title, url in _shank_inventory(home, today)
+    inventory = [(day, title, url) for day, title, url in _shank_inventory(home, observed_day or today)
                  if today <= day <= today + timedelta(days=60)]
     matched = 0
     for day, title, url in inventory:
@@ -543,9 +545,10 @@ def collect(source, fetch, *, deadline_at=None, listing=None):
     if url in uk_registered_listings.URLS:
         return uk_registered_listings.collect(source, fetch, deadline_at=deadline_at, listing=listing)
     soup = BeautifulSoup(listing if listing is not None else fetch(url, 'text/html'), 'html.parser')
-    today = datetime.now(EASTERN).date()
+    observed = datetime.now(EASTERN)
+    today = calendar_anchor(observed).date()
     if url == BOPLEX:
-        rows = boplex(soup, fetch, today)
+        rows = boplex(soup, fetch, today, observed_day=observed.date())
     elif url == INDY:
         rows = indy(soup, today)
     elif url == BROADWAY:
@@ -555,7 +558,7 @@ def collect(source, fetch, *, deadline_at=None, listing=None):
     elif url == STATE_THEATRE:
         rows = state_theatre(soup, fetch, today)
     elif url == SHANK:
-        rows = shank(soup, fetch, today)
+        rows = shank(soup, fetch, today, observed_day=observed.date())
     elif url == MAINE_JEWISH:
         rows = maine_jewish(soup, today)
     elif url == schedules.FOREST:

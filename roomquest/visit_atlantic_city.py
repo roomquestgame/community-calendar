@@ -5,6 +5,7 @@ available to this collector. The publisher sitemap supplies the bounded event
 manifest. Detail reads resume through the existing private checkpoint gateway;
 only a completely visited manifest can enter ordinary staging/publication.
 """
+from roomquest.collection_window import calendar_anchor
 from copy import deepcopy
 from datetime import date, datetime, time, timedelta, timezone
 from hashlib import sha256
@@ -369,7 +370,7 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
         try:
             started = datetime.fromisoformat(checkpoint["started_at"])
             if (started.tzinfo is None or started.utcoffset() is None
-                    or checkpoint["window_start"] != started.astimezone(ZONE).date().isoformat()):
+                    or checkpoint["window_start"] != calendar_anchor(started).astimezone(ZONE).date().isoformat()):
                 raise ValueError
         except (TypeError, ValueError, KeyError):
             raise ValueError("visit_atlantic_checkpoint_invalid") from None
@@ -394,7 +395,7 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
                 raise ValueError("visit_atlantic_checkpoint_invalid")
     if state is None:
         state = {"version": 1, "contract": CONTRACT, "source_key": SOURCE_KEY,
-                 "started_at": current.isoformat(), "window_start": current.astimezone(ZONE).date().isoformat(),
+                 "started_at": current.isoformat(), "window_start": calendar_anchor(current).astimezone(ZONE).date().isoformat(),
                  "manifest_hash": digest, "manifest_count": len(urls), "cursor": 0,
                  "events": [], "diagnostics": []}
     previous = state["cursor"]

@@ -7,6 +7,7 @@ until every manifest item is resolved and the full manifest is revalidated.
 """
 from __future__ import annotations
 
+from roomquest.collection_window import calendar_anchor
 from copy import deepcopy
 from calendar import Calendar
 from datetime import datetime, timedelta, timezone
@@ -159,10 +160,12 @@ def _aware(value):
 
 
 def _within(start, end, now):
-    return start < now + timedelta(days=60) and (end or start + timedelta(hours=3)) > now
+    window_start = calendar_anchor(now)
+    return start < window_start + timedelta(days=60) and (end or start + timedelta(hours=3)) > window_start
 
 
 def _astor_manifest(fetch, deadline, now):
+    window_start = calendar_anchor(now)
     _check(deadline)
     soup = BeautifulSoup(fetch(SOURCES[ASTOR][0], 'text/html'), 'html.parser')
     if not soup.select_one('.calendar-month-day') or not soup.select_one('a.date-title'):
@@ -185,7 +188,7 @@ def _astor_manifest(fetch, deadline, now):
                 day = month.replace(day=int(cell.select_one('span.day').get_text(strip=True))).date()
             except (AttributeError, ValueError):
                 raise ValueError('nyc_culture_listing_changed') from None
-            if not now.astimezone(ZoneInfo(ZONE)).date() <= day <= (now + timedelta(days=60)).date():
+            if not window_start.astimezone(ZoneInfo(ZONE)).date() <= day <= (window_start + timedelta(days=60)).date():
                 continue
             title = plain(link.get_text())
             item = {'id': urlsplit(url).path[1:-3], 'url': url, 'title': title, 'dates': [day.isoformat()]}
@@ -277,8 +280,8 @@ def _greenwood_page(payload, expected_month, now):
 
 
 def _greenwood_manifest(fetch, deadline, now):
-    month = now.astimezone(ZoneInfo(ZONE)).date().replace(day=1)
-    end_month = (now + timedelta(days=60)).astimezone(ZoneInfo(ZONE)).date().replace(day=1)
+    month = calendar_anchor(now).astimezone(ZoneInfo(ZONE)).date().replace(day=1)
+    end_month = (calendar_anchor(now) + timedelta(days=60)).astimezone(ZoneInfo(ZONE)).date().replace(day=1)
     url, queue = SOURCES[GREENWOOD][0], {}
     for _ in range(3):
         _check(deadline)
@@ -544,7 +547,7 @@ def _unique(rows):
 
 def _new_state(key, queue, now):
     return dict(version=1, source_key=key, started_at=now.isoformat(),
-                window_start=now.astimezone(ZoneInfo(ZONE)).date().isoformat(),
+                window_start=calendar_anchor(now).astimezone(ZoneInfo(ZONE)).date().isoformat(),
                 manifest_hash=_digest(queue), manifest_count=len(queue), cursor=0,
                 queue=queue, events=[], row_hashes={}, diagnostics=[], manifest_verified=not queue)
 
@@ -568,7 +571,7 @@ def _checkpoint(key, value, now):
                 or len(json.dumps(value, ensure_ascii=False).encode()) > MAX_CHECKPOINT_BYTES):
             raise ValueError
         started = timestamp(value['started_at'])
-        if value['window_start'] != started.astimezone(ZoneInfo(ZONE)).date().isoformat():
+        if value['window_start'] != calendar_anchor(started).astimezone(ZoneInfo(ZONE)).date().isoformat():
             raise ValueError
         if not started <= now <= started + timedelta(hours=4):
             return None

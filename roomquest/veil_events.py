@@ -1,4 +1,5 @@
 """Collect the Norfolk taproom's timed events from The Veil's shared calendar."""
+from roomquest.collection_window import calendar_anchor
 from datetime import datetime, timedelta
 import re
 from zoneinfo import ZoneInfo
@@ -30,7 +31,8 @@ def collect(source, fetch, *, deadline_at=None, now=None):
         KEY, URL, ZONE, "html", "html",
     ):
         raise ValueError("unregistered_veil_calendar")
-    now = (now or datetime.now(ZoneInfo(ZONE))).astimezone(ZoneInfo(ZONE)).replace(tzinfo=None)
+    observed = (now or datetime.now(ZoneInfo(ZONE))).astimezone(ZoneInfo(ZONE))
+    now = calendar_anchor(observed).replace(tzinfo=None)
     stop = now + timedelta(days=60)
     page = BeautifulSoup(fetch(URL, "text/html"), "html.parser")
     cards = page.select(".event-tile")
@@ -45,7 +47,7 @@ def collect(source, fetch, *, deadline_at=None, now=None):
         clock = re.fullmatch(rf"({CLOCK})(?:\s*[-–]\s*({CLOCK}))?", text(card, "event-time"), re.I)
         if not title or not day or not clock or re.search(r"\b(cancelled|canceled|postponed)\b", title, re.I):
             continue
-        for year in {now.year, stop.year}:
+        for year in {observed.year, (observed + timedelta(days=365)).year}:
             when = datetime.strptime(f"{day} {year}", "%a %b %d %Y")
             if when.strftime("%a") != day.split()[0]:
                 continue

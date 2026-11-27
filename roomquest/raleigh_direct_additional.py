@@ -5,6 +5,7 @@ Fortnight was inspected separately and is held: its calendars omit event prose.
 """
 from __future__ import annotations
 
+from roomquest.collection_window import calendar_anchor
 from copy import deepcopy
 from datetime import datetime, time, timedelta, timezone
 from hashlib import sha256
@@ -78,7 +79,7 @@ def _body(value):
 
 
 def _plans(anchor):
-    first = anchor.astimezone(ZoneInfo(ZONE)).date()
+    first = calendar_anchor(anchor).astimezone(ZoneInfo(ZONE)).date()
     end = first + timedelta(days=60)
     def utc(day):
         return datetime.combine(day,time(),ZoneInfo(ZONE)).astimezone(timezone.utc).isoformat(timespec='milliseconds').replace('+00:00','Z')
@@ -163,6 +164,7 @@ def _identity(item,start):
 
 
 def _row(item,anchor):
+    window_start = calendar_anchor(anchor)
     title = plain(item.get('artistTitle'))
     if not title or len(title)>180:
         raise ValueError(PREFIX+'identity_changed')
@@ -176,8 +178,8 @@ def _row(item,anchor):
             or end and (end<=start or end-start>timedelta(days=1)
                         or item.get('localEndDate') not in {None,end.astimezone(ZoneInfo(ZONE)).date().isoformat()})):
         raise ValueError(PREFIX+'schedule_unresolved')
-    first = anchor.astimezone(ZoneInfo(ZONE)).date()
-    if not first <= local.date() < first+timedelta(days=60) or (end or start+timedelta(hours=3))<=anchor:
+    first = window_start.astimezone(ZoneInfo(ZONE)).date()
+    if not first <= local.date() < first+timedelta(days=60) or (end or start+timedelta(hours=3))<=window_start:
         raise ValueError(PREFIX+'outside_window')
     if ((item.get('eventCity'),item.get('eventState'),item.get('eventZipCode'),item.get('eventCountry'))
             != ('Raleigh','NC','27603','US') or item.get('eventAddress') not in {None,'','300 Glenwood Ave'}):
@@ -219,7 +221,7 @@ def _checkpoint(value,now):
         anchor=timestamp(value['started_at']);plans=_plans(anchor)
         valid=(type(value['version']) is int and value['version']==1 and value['source_key']==TIN_ROOF
             and anchor.utcoffset()==timedelta(0) and anchor<=now+timedelta(seconds=60)
-            and value['window_start']==anchor.astimezone(ZoneInfo(ZONE)).date().isoformat()
+            and value['window_start']==calendar_anchor(anchor).astimezone(ZoneInfo(ZONE)).date().isoformat()
             and isinstance(value['listed_pages'],list) and 1<=len(value['listed_pages'])<=3
             and value['listed_pages']==plans[:len(value['listed_pages'])]
             and value['pending_pages']==plans[len(value['listed_pages']):]
@@ -266,7 +268,7 @@ def collect_chunk(source,fetch,*,checkpoint=None,deadline_at=None,now=None,max_f
     state=_checkpoint(checkpoint,current)
     if state is None:
         state=dict(version=1,source_key=TIN_ROOF,started_at=current.isoformat(),
-            window_start=current.astimezone(ZoneInfo(ZONE)).date().isoformat(),queue=[],manifest_count=0,
+            window_start=calendar_anchor(current).astimezone(ZoneInfo(ZONE)).date().isoformat(),queue=[],manifest_count=0,
             manifest_hash=_hash([]),cursor=0,listing_complete=False,pending_pages=_plans(current),listed_pages=[],
             events=[],diagnostics=[],outcomes=[])
     anchor=timestamp(state['started_at'])
