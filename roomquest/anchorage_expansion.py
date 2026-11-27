@@ -110,6 +110,8 @@ def _row(key, item, title, category, times, venue, point, desc):
                publisher_categories=_labels(item),
                location_provenance="publisher_venue_point_verified_street")
     from roomquest.publisher_evidence import attach
+    from roomquest.squarespace import original_content
+    row["collector_event_content_v1"] = original_content(item, row, SOURCES[key][0], desc)
     return attach(row, key, candidate=item.get("assetUrl"))
 
 def _zoo_category(title):

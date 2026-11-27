@@ -128,6 +128,8 @@ def _row(event, group, fetch, now, deadline):
                location_provenance=VENUE_GEO_EVIDENCE,
                lat=VENUE_LAT, lng=VENUE_LNG)
     from roomquest.publisher_evidence import attach
+    from roomquest.squarespace import original_content
+    row['collector_event_content_v1'] = original_content(event, row, group, description)
     return attach(row, KEY, candidate=None)
 
 

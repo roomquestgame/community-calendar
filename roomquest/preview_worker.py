@@ -1697,7 +1697,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
             reason = str(exc)
             raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}', reason)
                                else 'invalid_dirty_apron_payload') from exc
-        samples = records[:MAX_PREVIEWS]
+        samples = [{k: v for k, v in row.items() if k != 'collector_event_content_v1'}
+                   for row in records[:MAX_PREVIEWS]]
         while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
             samples.pop()
         return {'p_source_key': source_key, 'p_samples': samples,
@@ -1962,7 +1963,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
             reason = str(exc)
             raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}', reason)
                                else 'invalid_anchorage_batch20_multi_payload') from exc
-        samples = records[:MAX_PREVIEWS]
+        samples = [{k: v for k, v in row.items() if k != 'collector_event_content_v1'}
+                   for row in records[:MAX_PREVIEWS]]
         while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
             samples.pop()
         return {'p_source_key': source_key, 'p_samples': samples,
@@ -2055,7 +2057,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
             reason = str(exc)
             raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}', reason)
                                else 'invalid_anchorage_expansion_payload') from exc
-        samples = records[:MAX_PREVIEWS]
+        samples = [{k: v for k, v in row.items() if k != 'collector_event_content_v1'}
+                   for row in records[:MAX_PREVIEWS]]
         while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
             samples.pop()
         return {'p_source_key': source_key, 'p_samples': samples,
@@ -3029,7 +3032,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
             reason=str(exc)
             raise PreviewError(reason if re.fullmatch(r'[a-z_]{3,100}',reason)
                                else 'taiko_invalid_payload') from exc
-        samples=records[:MAX_PREVIEWS]
+        samples = [{k: v for k, v in row.items() if k != 'collector_event_content_v1'}
+                   for row in records[:MAX_PREVIEWS]]
         while len(json.dumps(samples,ensure_ascii=False))>18_000: samples.pop()
         return {'p_source_key':source_key,'p_samples':samples,
                 'p_future_count':len(records),'p_venue_count':0,
@@ -3313,7 +3317,8 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
             code=str(exc)
             raise PreviewError(code if re.fullmatch(r'[a-z_]{3,100}',code)
                                else 'invalid_santa_cruz_local_payload') from exc
-        samples=records[:MAX_PREVIEWS]
+        samples = [{k: v for k, v in row.items() if k != 'collector_event_content_v1'}
+                   for row in records[:MAX_PREVIEWS]]
         while len(json.dumps(samples,ensure_ascii=False))>18_000:samples.pop()
         return {'p_parser_capability':'publisher_event_candidates_v1',
                 'p_source_key':source_key,'p_samples':samples,
@@ -4224,7 +4229,7 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
             events = parse(payload, {"url": url}, legacy=True)
         elif adapter == "squarespace":
             from roomquest.squarespace import parse
-            events = parse(payload, source)
+            events = parse(payload, source, retain_original=True)
         elif adapter == "jsonld":
             events = parse_jsonld_preview(payload)
         elif adapter == "growthzone":

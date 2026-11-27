@@ -110,6 +110,8 @@ def collect(source, fetch, *, deadline_at=None, now=None):
                    location_provenance="owner_calendar_event_named_hall_official_street",
                    location_evidence_url=url, schedule_evidence_url=url)
         from roomquest.publisher_evidence import attach
+        from roomquest.squarespace import original_content
+        row['collector_event_content_v1'] = original_content(item, row, FEED, description)
         result.append(attach(row, KEY, evidence_url=url))
         if len(result) > MAX_RECORDS:
             raise ValueError("taiko_too_many_valid_events")

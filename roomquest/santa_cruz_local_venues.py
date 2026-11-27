@@ -123,6 +123,12 @@ def woodhouse(item,now):
  row.update(description=prose,timezone=ZONE,publisher_categories=labels,
             location_provenance='reviewed_official_venue_street')
  from roomquest.publisher_evidence import attach
+ row['collector_event_content_v1'] = {'version': 1, 'event_id': uid, 'facts': {
+     'title': title, 'description': prose, 'is_all_day': False,
+     'starts_at_utc': start.isoformat(), 'ends_at_utc': end.isoformat(),
+     'event_url': link, 'source_image_url': photo_url(WOODHOUSE,item.get('image')),
+     'publisher_categories': [plain(value) for value in item.get('categories') or [] if isinstance(value,str)],
+ }}
  return attach(row,WOODHOUSE,candidate=item.get('image'))
 
 def local_clock(day,h,minute,ampm):
