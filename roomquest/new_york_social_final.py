@@ -212,7 +212,78 @@ def _identity(key, url, start, native):
     return "nyc-final:" + sha256(f"{key}:{url}:{start.astimezone(timezone.utc).isoformat()}:{native}".encode()).hexdigest()
 
 
-def _row(key, title, start, end, body, place, *, native, url=None, image=None, category="", schedule_window=None):
+def _content_venue(**values):
+    allowed = {"venue_name", "venue_address", "venue_city", "venue_region",
+               "venue_postal_code", "venue_country"}
+    result = {}
+    for name, value in values.items():
+        if name not in allowed or value not in (None, "") and not isinstance(value, (str, int)):
+            raise ValueError("new_york_social_final_location_unresolved")
+        if value not in (None, ""):
+            result[name] = plain(str(value))
+    return result
+
+
+def _attach_content(row, body, *, content_venue=None, image=None, labels=(),
+                    provider_venue_id=None):
+    start, end = timestamp(row.get("starts_at")), timestamp(row.get("ends_at"))
+    if start is None or start.tzinfo is None or end is not None and end.tzinfo is None:
+        raise ValueError("new_york_social_final_schedule_conflict")
+    facts = {
+        "title": row["title"], "description": body, "is_all_day": False,
+        "starts_at_utc": start.astimezone(timezone.utc).isoformat(),
+        "ends_at_utc": end.astimezone(timezone.utc).isoformat() if end else None,
+        "source_timezone": ZONE, "event_url": row["event_url"],
+        "provider_venue_id": str(provider_venue_id) if provider_venue_id is not None else None,
+        "source_image_url": image,
+        "publisher_categories": sorted({plain(value) for value in labels if plain(value)}),
+        "attendance_mode": "in_person", **(content_venue or {}),
+    }
+    facts = {name: value for name, value in facts.items()
+             if value is not None and value != "" and value != [] and value != {}}
+    row["collector_event_content_v1"] = {"version": 1, "event_id": row["id"], "facts": facts}
+    return row
+
+
+def _content_envelope_valid(row):
+    value = row.get("collector_event_content_v1")
+    if value is None:
+        return True
+    if (not isinstance(value, dict) or set(value) != {"version", "event_id", "facts"}
+            or value.get("version") != 1 or value.get("event_id") != row.get("id")
+            or not isinstance(value.get("facts"), dict)):
+        return False
+    facts = value["facts"]
+    allowed = {"title", "description", "is_all_day", "starts_at_utc", "ends_at_utc",
+               "source_timezone", "event_url", "provider_venue_id", "venue_name",
+               "venue_address", "venue_city", "venue_region", "venue_postal_code",
+               "venue_country", "source_image_url", "publisher_categories", "attendance_mode"}
+    if not set(facts) <= allowed:
+        return False
+    try:
+        start, end = timestamp(row.get("starts_at")), timestamp(row.get("ends_at"))
+        expected = {"title": row.get("title"), "description": row.get("description"),
+                    "is_all_day": False, "starts_at_utc": start.astimezone(timezone.utc).isoformat(),
+                    "source_timezone": ZONE, "event_url": row.get("event_url"),
+                    "attendance_mode": "in_person"}
+        if end is not None:
+            expected["ends_at_utc"] = end.astimezone(timezone.utc).isoformat()
+    except (AttributeError, TypeError, ValueError, OverflowError):
+        return False
+    if (facts.get("source_image_url") != row.get("image_url")
+            or facts.get("publisher_categories", []) != sorted(set(row.get("publisher_categories") or []))
+            or not all(facts.get(name) == expected_value for name, expected_value in expected.items())):
+        return False
+    if "radegasthall.com" in str(row.get("event_url")):
+        locations = [str(location_id) if location_id is not None else None
+                     for location_id, place in RADEGAST_VENUES.items()
+                     if (row.get("venue_name"), row.get("venue_address")) == place[:2]]
+        return len(locations) == 1 and facts.get("provider_venue_id") == locations[0]
+    return True
+
+
+def _row(key, title, start, end, body, place, *, native, url=None, image=None, category="", schedule_window=None,
+         content_venue=None, provider_venue_id=None, labels=()):
     url = url or SOURCES[key][0]
     if not event_url(key, url) or not isinstance(title, str) or not 1 <= len(title) <= 180:
         raise ValueError("new_york_social_final_identity")
@@ -226,13 +297,18 @@ def _row(key, title, start, end, body, place, *, native, url=None, image=None, c
         row.update(description=body, timezone=ZONE, attendance_mode="in_person",
                    lat=point[0], lng=point[1], reason=None,
                    location_provenance="reviewed_nyc_pad_address_point")
-        if image := photo_url(key, image):
-            row["image_url"] = image
+        photo = photo_url(key, image)
+        if photo:
+            row["image_url"] = photo
+        if labels:
+            row["publisher_categories"] = list(dict.fromkeys(labels))
         if schedule_window:
             row.update(schedule_provenance="reviewed_publisher_weekly_schedule",
                        schedule_policy_reviewed_at=REVIEWED_AT.isoformat(),
                        schedule_reviewed_at=schedule_window[0].astimezone(timezone.utc).isoformat(),
                        schedule_materialized_until=schedule_window[1].astimezone(timezone.utc).isoformat())
+        _attach_content(row, body, content_venue=content_venue, image=photo,
+                        labels=labels, provider_venue_id=provider_venue_id)
     return row
 
 
@@ -404,7 +480,8 @@ def _pauper(payload, now):
         lines = card.find_all("p")
         if day not in DAYS or len(lines) != 2:
             raise ValueError("new_york_social_final_calendar_changed")
-        street = re.sub(r"^Address:\s*", "", _text(lines[0])).replace("Pierrepont St,", "Pierrepont Street,")
+        native_street = re.sub(r"^Address:\s*", "", _text(lines[0]))
+        street = native_street.replace("Pierrepont St,", "Pierrepont Street,")
         if street != PAUPER_VENUES[venue][0]:
             _hold(diagnostics, venue, "publisher_venue_changed")
             continue
@@ -416,7 +493,9 @@ def _pauper(payload, now):
         body = str(heading) + "\n" + "\n".join(str(p) for p in lines + included)
         for start in _weekly(DAYS[day], clock, now, season=season, breaks=breaks):
             row = _row(PAUPER, "NYC Pauper League at " + venue, start, None, body,
-                       (venue, *PAUPER_VENUES[venue]), native=venue, category="Magic: The Gathering Pauper", schedule_window=_schedule_window(now, season))
+                       (venue, *PAUPER_VENUES[venue]), native=venue, category="Magic: The Gathering Pauper",
+                       schedule_window=_schedule_window(now, season),
+                       content_venue=_content_venue(venue_name=venue, venue_address=native_street))
             if row:
                 rows.append(row)
     return rows, diagnostics
@@ -459,7 +538,10 @@ def _bronx(payload, now):
         if not _within(start, end, now):
             continue
         row = _row(BRONX, "Let's Go Trivia at Bronx Alehouse", start, end, body, VENUES[BRONX],
-                   native=str(native["id"]), url=native["url"], category="Trivia", image=(venue.get("image") or {}).get("url"))
+                   native=str(native["id"]), url=native["url"], category="Trivia", image=(venue.get("image") or {}).get("url"),
+                   content_venue=_content_venue(venue_name=venue.get("venue"), venue_address=venue.get("address"),
+                                                venue_city=venue.get("city"), venue_region=venue.get("state"),
+                                                venue_postal_code=venue.get("zip"), venue_country="US"))
         if row:
             rows.append(row)
     return rows, diagnostics
@@ -508,7 +590,8 @@ def _osnyc(payload, now):
             continue
         image = node.select_one("img.eventlist-thumbnail")
         row = _row(OSNYC, title, start, end, body, VENUES[OSNYC], native=url,
-                   url=url, image=image.get("data-image") if image else None, category="Gaming and social events")
+                   url=url, image=image.get("data-image") if image else None, category="Gaming and social events",
+                   content_venue=_content_venue(venue_name=supplied))
         if row:
             rows.append(row)
     return rows, diagnostics
@@ -589,7 +672,8 @@ def _radegast_event(event, now):
             hold("publisher_schedule_conflict")
             continue
         row = _row(RADEGAST, title, start, end, body, place,
-                   native=f"{identity}:{native_period}", url=url, image=image, category="Live music and social events")
+                   native=f"{identity}:{native_period}", url=url, image=image, category="Live music and social events",
+                   provider_venue_id=location)
         if row:
             row.update(publisher_native_id=identity, publisher_period_id=native_period,
                        schedule_provenance="reviewed_publisher_local_wall_clock")
@@ -653,6 +737,7 @@ def _radegast_checkpoint(value, current):
                     or row["id"] != _identity(RADEGAST, row["event_url"], start, f"{native}:{period}")
                     or row["id"] in row_ids or point != (row.get("lat"), row.get("lng"))
                     or _body(row["description"]) != row["description"]
+                    or not _content_envelope_valid(row)
                     or row.get("attendance_mode") != "in_person" or row.get("timezone") != ZONE
                     or row.get("location_provenance") != "reviewed_nyc_pad_address_point"
                     or not isinstance(row.get("title"), str) or not 1 <= len(row["title"]) <= 180):
@@ -796,8 +881,15 @@ def _greenbelt_detail(item, payload, current):
                   for image in images if isinstance(image, dict)
                   and photo_url(GREENBELT, image.get("url") or image.get("croppedLogoUrl600"))), None)
     labels = [str(label) for label in (context.get("taxonomies") or {}).values() if isinstance(label, str)]
+    native_address = " ".join(plain(value) for value in lines)
+    postal = re.search(r"\b\d{5}(?:-\d{4})?\b", native_address)
     row = _row(GREENBELT, item["title"], start, end, body, place[:3], native=item["id"],
-               url=item["url"], image=image, category="; ".join(labels))
+               url=item["url"], image=image, category="; ".join(labels), labels=labels,
+               content_venue=_content_venue(venue_name=native_venue.get("name"),
+                                            venue_address=plain(lines[0]), venue_city=address.get("city"),
+                                            venue_region=address.get("region"),
+                                            venue_postal_code=postal[0] if postal else None,
+                                            venue_country=address.get("country")))
     if row:
         row.update(publisher_native_id=item["id"], publisher_organizer_id=GREENBELT_ORGANIZER,
                    description_provenance="publisher_overview_and_all_structured_text_modules",
@@ -853,6 +945,7 @@ def _greenbelt_checkpoint(value, current):
                     or row.get("attendance_mode") != "in_person"
                     or row.get("location_provenance") != "reviewed_official_nyc_parks_named_facility_point"
                     or _body(row["description"]) != row["description"]
+                    or not _content_envelope_valid(row)
                     or type(row.get("native_text_module_count")) is not int or row["native_text_module_count"] < 0
                     or (row.get("image_url") is not None and photo_url(GREENBELT, row["image_url"]) != row["image_url"])):
                 raise ValueError
@@ -893,6 +986,8 @@ def _greenbelt_result(state, current):
 
 def _greenbelt_chunk(fetch, checkpoint, deadline_at, current, max_details):
     state = _greenbelt_checkpoint(checkpoint, current)
+    legacy_prefix = bool(state and state["events"] and
+                         any("collector_event_content_v1" not in row for row in state["events"]))
     if state and state["manifest_verified"]:
         return _greenbelt_result(state, current)
     if deadline_at is not None and monotonic() + 12 >= deadline_at:
@@ -919,6 +1014,8 @@ def _greenbelt_chunk(fetch, checkpoint, deadline_at, current, max_details):
         item = state["queue"][state["cursor"]]
         row, reason = _greenbelt_detail(item, fetch(item["url"], "text/html"), current)
         if row:
+            if legacy_prefix:
+                row.pop("collector_event_content_v1", None)
             state["events"].append(row)
         state["diagnostics"].append(dict(event_url=item["url"], publisher_label=item["title"],
             publisher_native_id=item["id"], disposition="accepted" if row else "held", reason=reason))
@@ -935,6 +1032,8 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
     if key == GREENBELT:
         return _greenbelt_chunk(fetch, checkpoint, deadline_at, current, max_details)
     state = _radegast_checkpoint(checkpoint, current)
+    legacy_prefix = bool(state and state["events"] and
+                         any("collector_event_content_v1" not in row for row in state["events"]))
     if state is not None and state.get("phase", "events") != "robots" and state["cursor"] == state["manifest_count"]:
         return _radegast_result(state, current)
     if deadline_at is not None and monotonic() + 12 >= deadline_at:
@@ -960,6 +1059,9 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
         return dict(complete=count == 0, events=[], checkpoint=state)
     for native in native_events:
         rows, diagnostics = _radegast_event(native, current)
+        if legacy_prefix:
+            for row in rows:
+                row.pop("collector_event_content_v1", None)
         state["events"].extend(rows)
         state["diagnostics"].extend(diagnostics)
         state["seen_ids"].append(native["id"])
