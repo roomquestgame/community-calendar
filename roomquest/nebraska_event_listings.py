@@ -33,6 +33,7 @@ QUIZ_VENUES = {
     ("Bison Witches Bar & Deli", "1320 P St #100, Lincoln, NE 68508, Lincoln, NE"):
         ("1320 P Street, Lincoln, NE 68508", None, None),
 }
+MAX_DESCRIPTION = 12000
 
 
 def elements(node, name, tag="*"):
@@ -49,10 +50,68 @@ def clocks(text, day):
             for value, period in CLOCK.findall(text)]
 
 
-def event(title, start, end, venue, address, city, url, *, lat=None, lng=None):
+def _narrative(value):
+    text = description(value or "", limit=MAX_DESCRIPTION + 1)
+    if len(text) > MAX_DESCRIPTION:
+        raise ValueError("publisher_description_limit")
+    return text
+
+
+def _local(value):
+    if value is None:
+        return None
+    if value.tzinfo is None:
+        value = value.replace(tzinfo=ZoneInfo(ZONE))
+    return value.astimezone(ZoneInfo(ZONE)).replace(tzinfo=None).isoformat(timespec="seconds")
+
+
+def _attach_original_content(row, *, narrative="", raw_venue=None, raw_address=None,
+                             raw_city=None, status="scheduled", attendance="in_person",
+                             image=None, categories=None):
+    facts = {
+        "title": row["title"], "description": narrative, "is_all_day": False,
+        "starts_at_local": _local(datetime.fromisoformat(row["starts_at"])),
+        "ends_at_local": _local(datetime.fromisoformat(row["ends_at"])) if row.get("ends_at") else None,
+        "source_timezone": ZONE, "event_url": row["event_url"],
+        "venue_name": plain(raw_venue), "venue_address": plain(raw_address),
+        "venue_city": plain(raw_city), "publisher_status": plain(status),
+        "attendance_mode": plain(attendance), "source_image_url": image,
+        "publisher_categories": categories,
+    }
+    row["collector_event_content_v1"] = {
+        "version": 1, "event_id": row["id"],
+        "facts": {name: value for name, value in facts.items()
+                  if value is not None and value != "" and value != []},
+    }
+
+
+def event(title, start, end, venue, address, city, url, *, lat=None, lng=None,
+          narrative="", raw_venue=None, raw_address=None, raw_city=None,
+          status="scheduled", attendance="in_person", image=None, categories=None):
     identity = sha256(f"{url}:{start.isoformat()}".encode()).hexdigest()
-    return record(title, start.isoformat(), end.isoformat() if end and end > start else None,
-                  venue, address, city, url, identity, lat=lat, lng=lng, tz=ZONE)
+    row = record(title, start.isoformat(), end.isoformat() if end and end > start else None,
+                 venue, address, city, url, identity, lat=lat, lng=lng, tz=ZONE)
+    if row is not None:
+        narrative = _narrative(narrative)
+        row["description"] = narrative[:2000]
+        row["attendance_mode"] = attendance
+        row["timezone"] = ZONE
+        _attach_original_content(row, narrative=narrative, raw_venue=raw_venue,
+                                 raw_address=raw_address, raw_city=raw_city,
+                                 status=status, attendance=attendance, image=image,
+                                 categories=categories)
+    return row
+
+
+def _image(item):
+    value = item.get("image")
+    if isinstance(value, str):
+        return value
+    if isinstance(value, list):
+        value = next((entry for entry in value if isinstance(entry, (str, dict))), None)
+    if isinstance(value, dict):
+        return value.get("url") or value.get("contentUrl")
+    return None
 
 
 def meetup(document, today):
@@ -85,11 +144,22 @@ def meetup(document, today):
             end = datetime.fromisoformat(item["endDate"]) if item.get("endDate") else None
             if start.tzinfo is None or end is not None and end.tzinfo is None:
                 continue
-            row = event(item["name"], start, end, "Spielbound Board Game Cafe",
-                        "3229 Harney St, Omaha, NE 68131", "Omaha", url, lat=41.2566, lng=-95.9612)
-            if row is not None:
-                row["description"] = description(item.get("description"))
-                yield row
+            raw_venue = place.get("name") if isinstance(place, dict) else None
+            raw_city = address.get("addressLocality")
+            raw_address = address.get("streetAddress")
+            categories = item.get("keywords")
+            if isinstance(categories, str):
+                categories = [plain(value) for value in categories.split(",") if plain(value)]
+            elif isinstance(categories, list):
+                categories = [plain(value) for value in categories if isinstance(value, str) and plain(value)]
+            else:
+                categories = None
+            yield event(item["name"], start, end, "Spielbound Board Game Cafe",
+                        "3229 Harney St, Omaha, NE 68131", "Omaha", url,
+                        lat=41.2566, lng=-95.9612, narrative=item.get("description"),
+                        raw_venue=raw_venue, raw_address=raw_address, raw_city=raw_city,
+                        status="scheduled", attendance="in_person", image=_image(item),
+                        categories=categories)
     if not found and not re.search(r"no upcoming events", document.text_content(), re.I):
         raise ValueError("missing_meetup_event_data")
 
@@ -134,7 +204,9 @@ def quiz(document, today):
             continue
         address = f"{addresses[0]}, {addresses[1]}"
         address, lat, lng = QUIZ_VENUES.get((venue, address), (address, None, None))
-        yield event(f"{label} at {venue}", start[0], None, venue, address, city[1], url, lat=lat, lng=lng)
+        yield event(f"{label} at {venue}", start[0], None, venue, address, city[1], url,
+                    lat=lat, lng=lng, raw_venue=venue,
+                    raw_address=f"{addresses[0]}, {addresses[1]}", raw_city=city[1])
 
 
 def audubon(document, today):
@@ -167,7 +239,8 @@ def audubon(document, today):
             times = clocks(field(card, "event-time"), day)
             if len(times) == 2 and times[0] < times[1]:
                 yield event(title, times[0], times[1], venue,
-                            "11700 SW 100th St, Denton, NE 68339", "Denton", url)
+                            "11700 SW 100th St, Denton, NE 68339", "Denton", url,
+                            raw_venue=venue, raw_city=city)
 
 
 def collect(source, fetch, *, deadline_at=None, now=None):
