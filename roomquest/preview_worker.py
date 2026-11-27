@@ -5038,6 +5038,11 @@ def _process_claimed_source_with_pacing(source, pacing, *, deadline_at=None, pub
         if pacing["wait_unbounded"]:
             raise PreviewError("publisher_wait_requires_review")
         events = output.pop("p_events", [])
+        # Event fingerprints are created once at the shared collector boundary.
+        # Existing specialist envelopes remain authoritative; the common writer
+        # fills only missing publisher facts and never includes provider labels.
+        from roomquest.event_content import attach_original_event_content
+        attach_original_event_content(events, source)
         if native_content:
             if output.get('p_parser_capability') != NATIVE_VERSION:
                 raise PreviewError('registered_native_evidence_invalid')
