@@ -171,7 +171,7 @@ def test_unconfigured_or_invalid_permit_does_not_call_provider(monkeypatch, conf
     db = Mock()
     assert handle_claim(db, claim, IDENTITY, config, fetch=Mock(), deadline=15, clock=lambda: 0) == "review"
     lookup.assert_not_called()
-    db.assert_called_once_with("fail", {**IDENTITY, "reason": "needs_review"})
+    db.assert_called_once_with("fail", {**IDENTITY, "reason": "needs_review", "detail": "budget_or_scope_not_admitted"})
 
 
 def test_admitted_research_persists_proposal_before_submit(monkeypatch):
@@ -190,7 +190,9 @@ def test_no_submit_on_held_or_rejected_proposal(monkeypatch, answer, receipt):
     db = Mock(return_value=receipt)
     assert handle_claim(db, WORKER_CLAIM, IDENTITY, CONFIG, fetch=Mock(), deadline=15, clock=lambda: 0) == "review"
     assert all(c.args[0] != "submit" for c in db.call_args_list)
-    assert db.call_args.args == ("fail", {**IDENTITY, "reason": "needs_review"})
+    assert db.call_args.args[0] == "fail"
+    assert db.call_args.args[1]["reason"] == "needs_review"
+    assert db.call_args.args[1]["detail"] in {"proposal_rejected", "no_scoped_passage", "unsupported_evidence"}
 
 
 def test_gateway_oidc_explicit_model_and_search_opt_in(monkeypatch):
