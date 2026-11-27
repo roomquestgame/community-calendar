@@ -67,6 +67,27 @@ def snug_pages(*events):
 
 
 class NewYorkCommunityExpansionTests(unittest.TestCase):
+    def test_original_facts_ignore_provider_label_and_reviewed_location(self):
+        event = prospect(body='Complete program, accessibility and registration information.')
+        pages = prospect_pages(event)
+        renamed = {**source(), 'publisher_name': 'Renamed provider label'}
+        first = ny.collect_chunk(source(), lambda url, accept: pages[url], now=NOW)['events'][0]
+        again = ny.collect_chunk(renamed, lambda url, accept: pages[url], now=NOW)['events'][0]
+        facts = first['collector_event_content_v1']['facts']
+        self.assertEqual(again['collector_event_content_v1'], first['collector_event_content_v1'])
+        self.assertEqual(facts['publisher_categories'], ['Birding'])
+        self.assertNotIn('venue_address', facts)
+        self.assertNotIn('source_latitude', facts)
+        self.assertEqual((first['lat'], first['lng']), ny.VENUES['prospect_audubon'][3:])
+
+    def test_publisher_narrative_change_changes_facts_not_occurrence_id(self):
+        first_event = snug()
+        item = ny._snug_item(first_event, NOW)
+        first = ny._detail(ny.SNUG, item, snug_detail(first_event, narrative='Original workshop details.'))
+        changed = ny._detail(ny.SNUG, item, snug_detail(first_event, narrative='Changed publisher workshop details.'))
+        self.assertEqual(changed['id'], first['id'])
+        self.assertNotEqual(changed['collector_event_content_v1'], first['collector_event_content_v1'])
+
     def test_prospect_full_native_body_and_actual_feature_point(self):
         body = 'Program activities, meeting details and accessibility. ' * 70 + 'Final cancellation policy.'
         event = prospect(body=body)
@@ -164,6 +185,23 @@ class NewYorkCommunityExpansionTests(unittest.TestCase):
             altered['row_hashes'][altered['events'][0]['id']] = ny._digest(altered['events'][0])
             with self.subTest(field=field), self.assertRaisesRegex(ValueError, 'checkpoint_invalid'):
                 ny._checkpoint(ny.PROSPECT, altered, NOW)
+
+    def test_checkpoint_rejects_tampered_facts_and_replays_legacy_prefix(self):
+        events = [prospect(101), prospect(102)]
+        pages = prospect_pages(*events)
+        fetch = lambda url, accept: pages[url]
+        first = ny.collect_chunk(source(), fetch, now=NOW, max_details=1)
+        tampered = deepcopy(first['checkpoint'])
+        tampered['events'][0]['collector_event_content_v1']['facts']['description'] = 'Tampered facts.'
+        tampered['row_hashes'][tampered['events'][0]['id']] = ny._digest(tampered['events'][0])
+        with self.assertRaisesRegex(ValueError, 'checkpoint_invalid'):
+            ny._checkpoint(ny.PROSPECT, tampered, NOW)
+        legacy = deepcopy(first['checkpoint'])
+        legacy['events'][0].pop('collector_event_content_v1')
+        legacy['row_hashes'][legacy['events'][0]['id']] = ny._digest(legacy['events'][0])
+        complete = ny.collect_chunk(source(), fetch, now=NOW, checkpoint=legacy)
+        self.assertTrue(complete['complete'])
+        self.assertTrue(all('collector_event_content_v1' not in row for row in complete['events']))
 
     def test_healthy_partner_identity_excludes_future_mirrors(self):
         event = snug(900, "Staten Island Children’s Museum: New Future Workshop",
