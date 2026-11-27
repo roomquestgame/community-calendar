@@ -101,6 +101,21 @@ def _publisher_body_limit(url, accept, allowed_hosts, respect_robots):
     return MAX_BODY
 
 
+def _read_timeout_for_publisher(url, accept, allowed_hosts, respect_robots, remaining):
+    """Give the exact Bookwhen RPDE streams more of the existing fetch budget.
+
+    The shared 18-second network deadline and publisher pacing remain unchanged.
+    This affects only the socket read timeout, not the overall response budget.
+    """
+    from roomquest import openactive
+    if (respect_robots and accept == 'application/json'
+            and allowed_hosts == ('bookwhen.com',)
+            and any(openactive.page_url(url, stream)
+                    for stream in openactive.PROFILES['bookwhen']['streams'])):
+        return min(11, max(0.1, remaining - 1))
+    return min(7, remaining / 2)
+
+
 class RejectRedirects(HTTPRedirectHandler):
     def redirect_request(self, request, fp, code, msg, headers, newurl):
         raise PreviewError("redirect_blocked")
@@ -1000,7 +1015,7 @@ def _fetch_publisher_request(url: str, accept: str, *, respect_robots: bool = Fa
                 network_started = True
             try:
                 remaining = max(0.1, deadline - monotonic())
-                timeout = (min(3,remaining/2), min(7,remaining/2)) if respect_robots else (5,12)
+                timeout = (min(3, remaining/2), _read_timeout_for_publisher(current, accept, allowed_hosts, respect_robots, remaining)) if respect_robots else (5, 12)
                 activity_before_request(current, redirect=current != url)
                 if liberty_action_id is not None:
                     response = session.post(current, data=b'[]', headers=headers,
