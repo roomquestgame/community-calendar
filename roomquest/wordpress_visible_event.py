@@ -13,7 +13,7 @@ from zoneinfo import ZoneInfo
 from bs4 import BeautifulSoup
 
 from roomquest.mapsee_adapter import record
-from roomquest.registered_native_content import attach
+from roomquest.registered_native_content import attach, retain_html_schedule
 
 
 MONTHS = {name.casefold(): number for number, name in enumerate(
@@ -82,7 +82,7 @@ def _date(raw):
         return None
 
 
-def _row(source, soup, url, title, day, raw_time, venue, address="", description=""):
+def _row(source, soup, url, title, day, raw_time, venue, address="", description="", *, location_fact=None):
     times = _moments(day, raw_time)
     if not title or not venue or times is None:
         return None
@@ -93,6 +93,8 @@ def _row(source, soup, url, title, day, raw_time, venue, address="", description
         return []
     row["timezone"] = "Europe/London"
     images = soup.select('meta[property="og:image"][content]')
+    retain_html_schedule(row, title, start, end, local_clock=True,
+                         meeting_location=location_fact or venue)
     attach(row, source, description_value=description,
            image_value=images[0].get("content") if len(images) == 1 else None,
            evidence_url=url)
@@ -166,7 +168,8 @@ def _labeled_blocks(source, soup, url):
         result = _row(source, soup, url, _plain(titles[0].get_text(" ", strip=True)), day,
                       start + "-" + end, venue, address,
                       _plain((main.select_one(".page--header__introduction") or "").get_text(
-                          " ", strip=True)) if main.select_one(".page--header__introduction") else "")
+                          " ", strip=True)) if main.select_one(".page--header__introduction") else "",
+                      location_fact=fields["where"])
         if result:
             result[0]["id"] += ":" + str(session["session_id"])
             # Native proof binds identity too; reattach after session suffix.
@@ -269,7 +272,7 @@ def _entry_header(source, soup, url, evidence=None):
     if day is None or len(candidates) != 1:
         return None
     return _row(source, soup, url, _plain(titles[0].get_text(" ", strip=True)), day,
-                shown[3], venue, candidates[0], meta)
+                shown[3], venue, candidates[0], meta, location_fact=venue)
 
 
 def _nested_heading(source, soup, url):
@@ -301,7 +304,7 @@ def _nested_heading(source, soup, url):
     body = main.select(".article-body")
     description = _plain(body[0].get_text(" ", strip=True)) if len(body) == 1 else ""
     return _row(source, soup, url, title, day, match[4],
-                site + " — " + next(iter(locations)), "", description)
+                site + " — " + next(iter(locations)), "", description, location_fact=next(iter(locations)))
 
 
 def read(source, soup, url, *, listing=None):

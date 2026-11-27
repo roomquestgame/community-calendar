@@ -288,7 +288,7 @@ def test_scoped_endpoint_and_all_pages_keep_existing_filters():
     def fetch(url, _):
         calls.append(url)
         page = int(parse_qs(urlsplit(url).query)['page'][0])
-        return json.dumps({'events': [item(page)], 'total_pages': 2,
+        return json.dumps({'events': [item(page)], 'total': 2, 'total_pages': 2,
                            'next_rest_url': 'https://unrelated.example.org/ignored' if page == 1 else None})
     rows = wordpress_adapter.collect(source(), fetch)
     assert len(rows) == 2 and len(calls) == 2

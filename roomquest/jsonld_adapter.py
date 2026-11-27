@@ -141,7 +141,7 @@ def _original_event_content(event, venue, postal, geo, row, resolve):
     }}
 
 
-def parse(payload, base='', *, native_source=None):
+def parse(payload, base='', *, native_source=None, retain_original=False):
     if payload.lstrip().startswith(('{', '[')):
         blocks = [decode(payload)]
     else:
@@ -302,12 +302,13 @@ def parse(payload, base='', *, native_source=None):
                 image = e.get('image')
                 image = [resolve(value) for value in image[:5]] if isinstance(image, list) else resolve(image)
                 attach(row, native_source, description_value=e.get('description'), image_value=image)
-                facts = _original_event_content(e, v, a, g, row, resolve)
-                if facts is not None:
-                    row['collector_event_content_v1'] = facts
             else:
                 from roomquest.event_description import description
                 row['description'] = description(e.get('description'))
+            if native_source is not None or retain_original:
+                facts = _original_event_content(e, v, a, g, row, resolve)
+                if facts is not None:
+                    row['collector_event_content_v1'] = facts
             key = (row['id'], row['starts_at'])
             if key in out and out[key] != row:
                 raise ValueError('conflicting_event_occurrence')
