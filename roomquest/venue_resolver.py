@@ -278,13 +278,14 @@ def rpc(action: str, payload=None):
     return supabase_rpc(RPC, {"p_action": action, "p_payload": payload or {}})
 
 
-def run_batch(*, database=None, resolver=None, clock=None, deadline_seconds=15) -> dict:
+def run_batch(*, database=None, resolver=None, clock=None, deadline_seconds=15,
+              oidc_token=None) -> dict:
     stats = {"claimed": 0, "resolved": 0, "review": 0, "errors": 0}
     if os.environ.get("FORWARD_GEOCODER_ENABLED") != "true" or os.environ.get("VERCEL_ENV") != "production":
         return stats
     database, resolver, clock = database or rpc, resolver or resolve, clock or monotonic
     from roomquest import venue_research
-    research_config = venue_research.configured()
+    research_config = venue_research.configured(oidc_token=oidc_token)
     start = clock()
     # Keep ordinary work at its existing 15-second budget. A scheduled
     # research claim is eligible only when the route has the full research
@@ -326,7 +327,7 @@ def run_batch(*, database=None, resolver=None, clock=None, deadline_seconds=15) 
     return stats
 
 
-def run_pipeline() -> dict:
+def run_pipeline(*, oidc_token=None) -> dict:
     """Run geocoding first; optional venue/photo stages cannot block it."""
     from roomquest.forward_geocoder import run_batch as geocode_batch
     from roomquest.event_media import dedicated_media_ready, run_batch as photo_batch
@@ -374,10 +375,16 @@ def run_pipeline() -> dict:
             # One four-second completion RPC, plus an eight-second page fetch
             # and final five-second read beyond the six-second admission guard.
             from roomquest import venue_research
-            if venue_research.configured() and deadline - monotonic() - 11 >= venue_research.RESEARCH_WORK_SECONDS:
-                result["venues"] = optional_stage(run_batch, venue_research.RESEARCH_WORK_SECONDS, 11)
+            configured = bool(venue_research.configured(oidc_token=oidc_token))
+            # Boolean only: no credential, request header, or model response
+            # is logged. Keep the original cron and deadline limits.
+            print("venue_research_configured", configured)
+            def run_venue(*, deadline_seconds):
+                return run_batch(deadline_seconds=deadline_seconds, oidc_token=oidc_token)
+            if configured and deadline - monotonic() - 11 >= venue_research.RESEARCH_WORK_SECONDS:
+                result["venues"] = optional_stage(run_venue, venue_research.RESEARCH_WORK_SECONDS, 11)
             else:
-                result["venues"] = optional_stage(run_batch, 15, 11)
+                result["venues"] = optional_stage(run_venue, 15, 11)
         except Exception:
             result["venues"] = {"stop_reason": "stage_failed"}
 
