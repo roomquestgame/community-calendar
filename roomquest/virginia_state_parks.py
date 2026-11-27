@@ -538,7 +538,7 @@ def parse_schedule(value):
     return start, end
 
 
-def parse_event(html, url, park):
+def parse_event(html, url, park, *, retain_original=False):
     """Extract actual DCR fields; park catalog supplies the approved park-level GPS."""
     soup = BeautifulSoup(html, "html.parser")
     main = soup.select_one("main") or soup.select_one("article") or soup.body
@@ -611,6 +611,21 @@ def parse_event(html, url, park):
         item["image_url"] = image
         item["image_provenance"] = IMAGE_EXTRACTOR_VERSION
         item["image_evidence_url"] = evidence_url
+    if retain_original:
+        from roomquest.registered_native_content import retain_html_schedule
+        retain_html_schedule(item, title, start, end, local_clock=True, event_url=evidence_url,
+                             meeting_location=where or None, venue_address=alternate_address or None)
+        facts = item['collector_event_content_v1']['facts']
+        details = item['publisher_details']
+        facts.update(description=desc[:12000] or None, source_image_url=item.get('image_url'),
+                     publisher_categories=item['publisher_categories'],
+                     registration_text=details.get('registration_required'),
+                     registration_urls=details.get('registration_urls', []),
+                     audience=[details['children_welcome']] if details.get('children_welcome') else [],
+                     cost_text=' | '.join(f'{key}: {details[key]}' for key in ('standard_fee', 'extra_fee') if key in details) or None)
+        if len(desc) > 12000:
+            from hashlib import sha256
+            facts['publisher_details'] = {'narrative_sha256': sha256(desc.encode()).hexdigest()}
     return item
 
 
@@ -766,7 +781,7 @@ def collect(source, fetch, *, deadline_at=None):
         # any off-domain redirect will be rejected there.
         try:
             detail = fetch(url, "text/html")
-            item = parse_event(detail, url, park)
+            item = parse_event(detail, url, park, retain_original=True)
         except ValueError as exc:
             # This public event ID and registered source key identify the
             # failing page without logging publisher bodies or exception text.

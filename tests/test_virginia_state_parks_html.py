@@ -252,7 +252,7 @@ def test_unverified_park_guid_uses_only_official_selector_and_per_park_listing()
         return details
     source = {"source_key": "virginia_state_parks_do", "kind": "html",
               "platform_adapter": "html", "feed_url": va.registered_calendar_url(park)}
-    with patch.object(va, "record", return_value={"title": "Douthat hike"}):
+    with patch.object(va, "record", return_value={"id": "vsp:do:" + event_id, "title": "Douthat hike"}):
         result = va.collect(source, fetch)
     assert len(result) == 1
     assert len(calls) == 3
@@ -522,3 +522,15 @@ def test_html_route_uses_only_its_own_ticket_category():
     assert status==200
     assert body=={"outcome":"idle"}
     dispatcher.assert_called_once_with("html",ticket)
+
+
+def test_only_publisher_event_changes_affect_park_fingerprint():
+    def facts(html, profile):
+        staged = {'id': 'vsp:oc:' + ID, 'event_url': CAL_LINK}
+        with patch.object(va, 'record', return_value=staged):
+            return va.parse_event(html, CAL_LINK, profile, retain_original=True)['collector_event_content_v1']
+
+    original = facts(PAGE, PARK)
+    moved_pin = dict(PARK, lat=PARK['lat'] + 0.01, address='Reviewed park office address')
+    assert facts(PAGE, moved_pin) == original
+    assert facts(PAGE.replace('Terrace Gardens', 'Visitor Center'), PARK) != original

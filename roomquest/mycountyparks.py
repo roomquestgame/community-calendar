@@ -390,7 +390,7 @@ def verified_summary_end(title, summary, start):
     return ends if begins == start and start < ends <= start + timedelta(hours=12) else None
 
 
-def parse_event(html, event, *, now=None):
+def parse_event(html, event, *, now=None, retain_original=False):
     """Parse one listing-linked detail, ignoring parent park map coordinates."""
     if not isinstance(event, ListingEvent):
         raise ValueError("mycountyparks_event_identity_unverified")
@@ -440,6 +440,8 @@ def parse_event(html, event, *, now=None):
         raise ValueError('mycountyparks_exhibition_hours_unresolved')
     effective_end = event.end or verified_summary_end(title, description, start)
     venue, address, city = _location(main)
+    original_venue = venue
+    original_summary = description
     room_note = ''
     if (re.search(r',\s*Lower Level$', venue, re.I)
             and re.search(r'\bmeet upstairs in the Discovery Lab\b', description, re.I)):
@@ -468,6 +470,16 @@ def parse_event(html, event, *, now=None):
     item["publisher_categories"] = [category[:100]] if category else []
     attach(item, 'mycountyparks_ia_' + event.county,
            facts={'cost': cost, 'registration': registration}, candidate=image_url)
+    if retain_original:
+        from roomquest.registered_native_content import retain_html_schedule
+        retain_html_schedule(item, title, start, effective_end, local_clock=True,
+                             venue_name=original_venue, venue_address=address, venue_city=city)
+        facts = item['collector_event_content_v1']['facts']
+        facts.update(description=original_summary[:12000] or None, cost_text=cost or None,
+                     registration_text=registration or None, source_image_url=image_url,
+                     publisher_categories=[category] if category else [])
+        if len(original_summary) > 12000:
+            facts['publisher_details'] = {'narrative_sha256': sha256(original_summary.encode()).hexdigest()}
     variant = _VARIANT.fullmatch(title)
     if variant:
         base, label = clean(variant.group(1)), variant.group(2).upper()
@@ -522,6 +534,18 @@ def combine_registration_options(records):
         primary['publisher_details']['registration_options'] = [
             {'label': option['label'], 'cost': option['cost'], 'registration': option['registration']}
             for option in ordered]
+        # Registration variants describe one public occurrence. Retain each offered option's
+        # original facts before replacing the rendered primary title and combining its text.
+        primary.pop('collector_event_content_v1', None)
+        if all('collector_event_content_v1' in item for item in values):
+            original = values[0]['collector_event_content_v1']['facts']
+            options = []
+            for row in values:
+                facts = row['collector_event_content_v1']['facts']
+                differences = {key: value for key, value in facts.items() if original.get(key) != value}
+                options.append({'label': row['_option']['label'], 'url': row['event_url'], **differences})
+            combined = dict(original, title=primary['title'], registration_options=options)
+            primary['collector_event_content_v1'] = {'version': 1, 'event_id': identity, 'facts': combined}
         primary.pop("_option", None)
         primary.pop("_summary", None)
         ordinary.append(primary)
@@ -572,7 +596,7 @@ def collect(source, fetch, *, deadline_at=None, today=None, now=None):
     for event in listings:
         html = request(event.url)
         try:
-            item = parse_event(html, event, now=current)
+            item = parse_event(html, event, now=current, retain_original=True)
         except ValueError as exc:
             reason = str(exc)
             if reason == "mycountyparks_event_venue_requires_address":
