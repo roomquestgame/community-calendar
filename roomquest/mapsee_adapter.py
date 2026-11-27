@@ -379,8 +379,49 @@ def parse_ics(payload, source):
     return parse(payload, source)
 
 
+def within_collection_horizon(records, now=None):
+    """Keep only events intersecting the shared 60-day collection window.
+
+    Filtering is not truncation: every publisher page must still be fetched,
+    and a feed exceeding the limit *inside* the window remains a hard failure.
+    """
+    now = now or datetime.now(timezone.utc)
+    horizon = now + timedelta(days=60)
+    kept = []
+    for row in records:
+        start = row.get("starts_at")
+        end = row.get("ends_at") or start
+        if not isinstance(start, str):
+            raise ValueError("invalid_event_start")
+        try:
+            begins = datetime.fromisoformat(start.replace("Z", "+00:00"))
+            finishes = datetime.fromisoformat(end.replace("Z", "+00:00"))
+        except (TypeError, ValueError, AttributeError) as exc:
+            raise ValueError("invalid_event_time") from exc
+        if begins.tzinfo is None or finishes.tzinfo is None:
+            raise ValueError("timezone_unresolved")
+        if finishes < begins:
+            raise ValueError("invalid_event_end")
+        if begins <= horizon and finishes >= now:
+            kept.append(row)
+    return kept
+
+
+def is_single_event_page(url):
+    """Known publisher detail route is not a reusable calendar collection."""
+    parts = urlsplit(url)
+    return (parts.scheme == "https" and parts.hostname == "mdpls.org"
+            and re.fullmatch(r"/event/[0-9]+/?", parts.path) is not None)
+
+
 def collect(source,profile,fetch):
     """At most five requests/500 facts; truncation is a failure, never healthy empty."""
+    if (source.get("source_key", "").startswith("municipal_mapsee_")
+            and profile.get("type") == "jsonld"
+            and is_single_event_page(source.get("feed_url", ""))):
+        # Avoid re-fetching dozens of individual publisher events as separate
+        # permanent feeds. Recover via a verified collection URL instead.
+        raise ValueError("single_event_page")
     if profile["type"] == "tribe":
         from roomquest.wordpress_adapter import collect as collect_wordpress
         return collect_wordpress(source, fetch)
@@ -413,6 +454,7 @@ def collect(source,profile,fetch):
             records.extend(parse_localist(data));last=page>=int((data.get("page") or {}).get("total",1))
         else:
             records.extend(parse_open_data(data,{**config,"publisher_url":base}));last=len(data)<500
+        records = within_collection_horizon(records, now)
         if len(records)>MAX_RECORDS:raise ValueError("source_record_limit")
         if last:break
         if page==MAX_PAGES:raise ValueError("pagination_limit")
