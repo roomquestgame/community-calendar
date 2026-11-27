@@ -110,6 +110,49 @@ def _identity(url, start):
     return "nyc:" + sha256(f"{OTHER}:{url}:{timestamp(start).astimezone(timezone.utc).isoformat()}".encode()).hexdigest()
 
 
+def _attach_content(row, body, native_venue, image=None):
+    start, end = timestamp(row.get("starts_at")), timestamp(row.get("ends_at"))
+    if start is None or start.tzinfo is None or end is None or end.tzinfo is None or end <= start:
+        raise ValueError("new_york_other_half_schedule_conflict")
+    facts = {
+        "title": row["title"], "description": body, "is_all_day": False,
+        "starts_at_utc": start.astimezone(timezone.utc).isoformat(),
+        "ends_at_utc": end.astimezone(timezone.utc).isoformat(),
+        "source_timezone": ZONE, "event_url": row["event_url"],
+        "venue_name": native_venue, "source_image_url": image,
+        "attendance_mode": "in_person",
+    }
+    facts = {name: value for name, value in facts.items() if value not in (None, "")}
+    row["collector_event_content_v1"] = {"version": 1, "event_id": row["id"], "facts": facts}
+    return row
+
+
+def _content_envelope_valid(row, item):
+    evidence = row.get("collector_event_content_v1")
+    if evidence is None:
+        return True
+    if (not isinstance(evidence, dict) or set(evidence) != {"version", "event_id", "facts"}
+            or evidence.get("version") != 1 or evidence.get("event_id") != row.get("id")
+            or not isinstance(evidence.get("facts"), dict)):
+        return False
+    facts = evidence["facts"]
+    allowed = {"title", "description", "is_all_day", "starts_at_utc", "ends_at_utc",
+               "source_timezone", "event_url", "venue_name", "source_image_url", "attendance_mode"}
+    if not set(facts) <= allowed:
+        return False
+    try:
+        start, end = timestamp(row.get("starts_at")), timestamp(row.get("ends_at"))
+        expected = {"title": row.get("title"), "description": row.get("description"),
+                    "is_all_day": False, "starts_at_utc": start.astimezone(timezone.utc).isoformat(),
+                    "ends_at_utc": end.astimezone(timezone.utc).isoformat(),
+                    "source_timezone": ZONE, "event_url": row.get("event_url"),
+                    "venue_name": item["location"], "attendance_mode": "in_person"}
+    except (AttributeError, TypeError, ValueError, OverflowError, KeyError):
+        return False
+    return (facts.get("source_image_url") == row.get("image_url")
+            and all(facts.get(name) == value for name, value in expected.items()))
+
+
 def _manifest(payload, now):
     soup = BeautifulSoup(payload, "html.parser")
     cards = soup.select("a.excerpt-box.event[href]")
@@ -204,8 +247,10 @@ def _detail(item, payload, now):
         if row.get("reason") == "missing_verified_venue_geo":
             row["reason"] = None
         image = main.select_one(".fl-module-photo img[src]")
-        if image and (candidate := photo_url(OTHER, image.get("src"))):
+        candidate = photo_url(OTHER, image.get("src")) if image else None
+        if candidate:
             row["image_url"] = candidate
+        _attach_content(row, body, item["location"], candidate)
         return [row]
     return []
 
@@ -253,6 +298,7 @@ def _validate_checkpoint(value, now):
                     or (row.get("lat"), row.get("lng")) != POINTS.get(item["location"])
                     or _body(row.get("description")) != row.get("description")
                     or row.get("timezone") != ZONE or row.get("attendance_mode") != "in_person"
+                    or not _content_envelope_valid(row, item)
                     or row.get("image_url") is not None and photo_url(OTHER, row["image_url"]) is None
                     or not _within(start, end, started)):
                 raise ValueError
@@ -284,6 +330,8 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
         state = dict(version=1, source_key=OTHER, started_at=current.isoformat(),
                      window_start=current.astimezone(ZoneInfo(ZONE)).date().isoformat(), manifest_hash=_digest(queue),
                      manifest_count=len(queue), cursor=0, queue=queue, events=[], diagnostics=[])
+    legacy_prefix = bool(state["events"] and
+                         any("collector_event_content_v1" not in row for row in state["events"]))
     prior, fetched = state["cursor"], 0
     limit = min(MAX_DETAILS_PER_CHUNK, max(1, int(max_details)))
     while state["cursor"] < len(queue):
@@ -294,6 +342,9 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
         fetched += 1
         try:
             rows = _detail(item, payload, current)
+            if legacy_prefix:
+                for row in rows:
+                    row.pop("collector_event_content_v1", None)
             state["events"].extend(rows)
             if not rows:
                 state["diagnostics"].append(dict(event_url=item["url"], disposition="held", reason="no_available_future_occurrence"))
