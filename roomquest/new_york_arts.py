@@ -195,6 +195,33 @@ def _within(start, end, now):
     return start < now + timedelta(days=60) and (end or start + timedelta(hours=3)) > now
 
 
+def _source_coordinates(venue):
+    """Return only coordinates stated by this event's native venue object."""
+    if not isinstance(venue, dict):
+        return None, None
+    try:
+        lat = float(venue.get("geo_lat"))
+        lng = float(venue.get("geo_lng"))
+    except (TypeError, ValueError):
+        return None, None
+    return (lat, lng) if -90 <= lat <= 90 and -180 <= lng <= 180 else (None, None)
+
+
+def _attach_content(row, **facts):
+    """Attach event-owned facts before EventQuest enrichment or source labels."""
+    if row is None:
+        return None
+    compact = {key: value for key, value in facts.items()
+               if value is not None and value != "" and value != [] and value != {}}
+    compact["is_all_day"] = False
+    row["collector_event_content_v1"] = {
+        "version": 1,
+        "event_id": row["id"],
+        "facts": compact,
+    }
+    return row
+
+
 def _enrich(key, row, body, image=None):
     if row is None:
         return None
@@ -306,6 +333,7 @@ def _tribe(key, fetch, deadline, now):
             except ValueError as exc:
                 _held(key, identity, str(exc))
                 continue
+            native_venue = item.get("venue") if isinstance(item.get("venue"), dict) else {}
             reviewed = dict(item, venue=venue)
             parsed = parse_tribe({"events": [reviewed]}, strict_public=True, retain_description=False)
             if not parsed:
@@ -320,6 +348,32 @@ def _tribe(key, fetch, deadline, now):
             row["location_provenance"] = ("reviewed_park_entrance_address_pending_geocode"
                                            if key == SI_MUSEUM and venue.get("id") == 4741
                                            else row["location_provenance"])
+            source_lat, source_lng = _source_coordinates(native_venue)
+            source_image = photo_url(key, image.get("url")) if isinstance(image, dict) else None
+            _attach_content(
+                row,
+                title=title,
+                description=body,
+                starts_at_utc=start.astimezone(timezone.utc).isoformat(),
+                ends_at_utc=end.astimezone(timezone.utc).isoformat(),
+                source_timezone=ZONE,
+                publisher_status=item.get("status"),
+                event_url=item.get("url"),
+                venue_name=plain(native_venue.get("venue")),
+                venue_address=plain(native_venue.get("address")),
+                venue_city=plain(native_venue.get("city")),
+                venue_region=plain(native_venue.get("state") or native_venue.get("stateprovince")
+                                   or native_venue.get("province")),
+                venue_postal_code=plain(native_venue.get("zip")),
+                venue_country=plain(native_venue.get("country")),
+                provider_venue_id=str(native_venue.get("id")) if native_venue.get("id") is not None else None,
+                source_latitude=source_lat,
+                source_longitude=source_lng,
+                source_image_url=source_image,
+                publisher_categories=sorted(categories),
+                cost_text=plain(item.get("cost")),
+                attendance_mode="in_person",
+            )
             occurrence = (row["id"], row["starts_at"])
             if occurrence in rows and rows[occurrence] != row:
                 raise ValueError("new_york_conflicting_occurrence")
@@ -387,8 +441,10 @@ def _squarespace(key, fetch, deadline, now):
         detail = BeautifulSoup(fetch(url, "text/html"), "html.parser")
         heading = detail.select_one("h1.eventitem-title")
         canonical = detail.select_one('link[rel="canonical"]')
+        detail_schedule = _square_schedule(detail, "eventitem")
         if (not heading or plain(heading.get_text(" ")) != title or not canonical
-                or canonical.get("href") != url or _square_schedule(detail, "eventitem")[:2] != (start, end)):
+                or canonical.get("href") != url or detail_schedule[:2] != (start, end)
+                or detail_schedule[2] != native_address):
             raise ValueError("new_york_square_identity_changed")
         content = detail.select(".eventitem-column-content .sqs-layout")
         if len(content) != 1:
@@ -416,6 +472,19 @@ def _squarespace(key, fetch, deadline, now):
         image = card.select_one("img[data-src], img[src]")
         row = _enrich(key, row, body, (image.get("data-src") or image.get("src")) if image else None)
         if row:
+            _attach_content(
+                row,
+                title=title,
+                description=body,
+                starts_at_utc=start.astimezone(timezone.utc).isoformat(),
+                ends_at_utc=end.astimezone(timezone.utc).isoformat(),
+                source_timezone=ZONE,
+                publisher_status="publish",
+                event_url=url,
+                venue_address=plain(native_address),
+                source_image_url=photo_url(key, (image.get("data-src") or image.get("src")) if image else None),
+                attendance_mode="in_person",
+            )
             rows.append(row)
     return rows
 
@@ -521,7 +590,25 @@ def _powerhouse_detail(url, payload, now):
     row = record(title, start.isoformat(), end.isoformat(), venue, _address(street, city, "NY", postal), city,
                  url, native, "Books & Literature", tz=ZONE, retain_until_end=True)
     image = event.select_one(".event-image img[src]")
-    return _enrich(POWERHOUSE, row, body, image.get("src") if image else None)
+    row = _enrich(POWERHOUSE, row, body, image.get("src") if image else None)
+    return _attach_content(
+        row,
+        title=title,
+        description=body,
+        starts_at_utc=start.astimezone(timezone.utc).isoformat(),
+        ends_at_utc=end.astimezone(timezone.utc).isoformat(),
+        source_timezone=ZONE,
+        publisher_status="publish",
+        event_url=url,
+        venue_name=venue,
+        venue_address=street,
+        venue_city=city,
+        venue_region="NY",
+        venue_postal_code=postal,
+        source_image_url=photo_url(POWERHOUSE, image.get("src") if image else None),
+        publisher_categories=["Books & Literature"],
+        attendance_mode="in_person",
+    )
 
 
 def _html_calendar(key, fetch, deadline, now):

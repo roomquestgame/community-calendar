@@ -105,6 +105,25 @@ class NewYorkArtsTests(unittest.TestCase):
             unknown = self.collect(ny.CMOM, payload(event(venue={"id": 2222, "venue": "Off-site school"})))
         self.assertEqual(unknown, [])
 
+    def test_event_content_uses_original_facts_not_reviewed_source_enrichment(self):
+        item = event(venue={"id": 1006, "venue": "PlayWorks"})
+        first = self.collect(ny.CMOM, payload(item))[0]
+        facts = first["collector_event_content_v1"]["facts"]
+        self.assertEqual(facts["venue_name"], "PlayWorks")
+        self.assertNotIn("venue_address", facts)
+        self.assertEqual(first["venue_name"], "Children's Museum of Manhattan (PlayWorks)")
+        self.assertEqual(first["venue_address"], "212 West 83rd Street, New York, NY 10024")
+
+        renamed_source = source(ny.CMOM)
+        renamed_source["publisher_name"] = "A provider label that changed"
+        second = ny.collect(renamed_source, Mock(return_value=payload(item)), now=NOW)[0]
+        self.assertEqual(second["collector_event_content_v1"], first["collector_event_content_v1"])
+
+        changed = event(venue={"id": 1006, "venue": "PlayWorks"},
+                        body="The publisher changed this event's own details.")
+        third = self.collect(ny.CMOM, payload(changed))[0]
+        self.assertNotEqual(third["collector_event_content_v1"], first["collector_event_content_v1"])
+
     def test_closed_virtual_and_members_only_not_assigned_museum_address(self):
         data = payload(event(identity=1, title="Museum Closed", body="", all_day=True),
                        event(identity=2, title="Virtual art workshop"),
@@ -204,6 +223,9 @@ class NewYorkArtsTests(unittest.TestCase):
         self.assertNotIn("Truncated excerpt", row["description"])
         self.assertTrue(all("format=" not in call.args[0] for call in fetch.call_args_list))
         self.assertEqual(row["venue_address"], "34-41 137th Street, Flushing, NY 11354")
+        facts = row["collector_event_content_v1"]["facts"]
+        self.assertEqual(facts["venue_address"], "34-41 137th Street, Queens, NY, 11354, United States")
+        self.assertNotIn("venue_name", facts)
 
     def test_squarespace_offsite_does_not_inherit_host_address(self):
         fetch = Mock(side_effect=[square_listing(), square_detail("Bring your family.").replace("Lewis Latimer House 34-41 137th Street", "Queens Museum Flushing Meadows Corona Park")])

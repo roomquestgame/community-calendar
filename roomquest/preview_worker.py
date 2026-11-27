@@ -1586,7 +1586,9 @@ def preview_source(source: dict, *, deadline_at=None) -> dict:
             code = str(exc)
             raise PreviewError(code if code in new_york_sources.diagnostic_codes()
                                else 'invalid_new_york_payload') from exc
-        samples = records[:MAX_PREVIEWS]
+        samples = [{key: value for key, value in row.items()
+                    if key != 'collector_event_content_v1'}
+                   for row in records[:MAX_PREVIEWS]]
         while len(json.dumps(samples, ensure_ascii=False)) > 18_000:
             samples.pop()
         return {'p_source_key': source_key, 'p_samples': samples,
