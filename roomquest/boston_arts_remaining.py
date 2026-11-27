@@ -92,7 +92,8 @@ def event_url(key, value):
         return False
 
 
-def _finish(key, row, body, labels=()):
+def _finish(key, row, body, labels=(), *, native_venue_name=None,
+            native_venue_address=None, native_venue_city=None, native_options=None):
     if row is None:
         return None
     if not event_url(key, row.get('event_url')):
@@ -103,6 +104,43 @@ def _finish(key, row, body, labels=()):
         row['location_provenance'] = 'publisher_partner_museum_geo'
     if labels:
         row['publisher_categories'] = list(dict.fromkeys(labels))
+    options = dict(native_options or {})
+    categories = sorted({plain(value) for value in labels if plain(value)}, key=str.casefold)
+    if categories:
+        options['publisher_categories'] = categories
+    return _attach_content(
+        row, body=body,
+        venue_name=row.get('venue_name') if native_venue_name is None else native_venue_name,
+        venue_address=row.get('venue_address') if native_venue_address is None else native_venue_address,
+        venue_city=row.get('venue_city') if native_venue_city is None else native_venue_city,
+        native_options=options)
+
+
+def _attach_content(row, *, body, venue_name=None, venue_address=None,
+                    venue_city=None, native_options=None):
+    """Retain event-owned publisher facts before reviewed location enrichment."""
+    if row is None:
+        return None
+    start, end = timestamp(row.get('starts_at')), timestamp(row.get('ends_at'))
+    facts = {
+        'title': row.get('title'),
+        'description': body,
+        'is_all_day': False,
+        'starts_at_utc': start.astimezone(timezone.utc).isoformat(),
+        'ends_at_utc': end.astimezone(timezone.utc).isoformat() if end else None,
+        'event_url': row.get('event_url'),
+        'venue_name': venue_name,
+        'venue_address': venue_address,
+        'venue_city': venue_city,
+        'native_options': native_options,
+    }
+    facts = {name: value for name, value in facts.items()
+             if value is not None and value != '' and value != {}}
+    row['collector_event_content_v1'] = {
+        'version': 1,
+        'event_id': row['id'],
+        'facts': facts,
+    }
     return row
 
 
@@ -178,7 +216,9 @@ def _brookline(payload, now):
         labels = [str(v) for v in native['CATEGORIES'].cats] if native.get('CATEGORIES') else []
         row = record(title, start.isoformat(), end.isoformat(), venue,
                      address, city, link, uid, tz=ZONE, retain_until_end=True)
-        row = _finish(BROOKLINE, row, body, labels)
+        row = _finish(BROOKLINE, row, body, labels, native_venue_name=location,
+                      native_venue_address='', native_venue_city='',
+                      native_options={'native_location': location})
         if row:
             rows.append(row)
     return shared._unique(rows)
@@ -274,7 +314,9 @@ def _mfa_detail(item, payload, now):
     row = record(item['title'], start.isoformat(), end.isoformat(), 'Museum of Fine Arts, Boston',
                  '465 Huntington Avenue, Boston, MA 02115', 'Boston', item['url'], item['id'],
                  lat=MFA_VENUE_POINT[0], lng=MFA_VENUE_POINT[1], tz=ZONE, publisher_geo=True, retain_until_end=True)
-    return [row] if (row := _finish(MFA, row, body, labels)) else []
+    return [row] if (row := _finish(
+        MFA, row, body, labels, native_venue_name='Museum of Fine Arts, Boston',
+        native_venue_address=location, native_venue_city='')) else []
 
 
 def _ica_listing(payload):
@@ -352,7 +394,9 @@ def _ica_detail(item, payload, fetch, now):
         row = record(item['title'], start.isoformat(), end.isoformat() if end else None,
                      'Institute of Contemporary Art/Boston', '25 Harbor Shore Drive, Boston, MA 02210',
                      'Boston', item['url'], identity, tz=ZONE, retain_until_end=True)
-        row = _finish(ICA, row, body, item.get('labels', []))
+        row = _finish(ICA, row, body, item.get('labels', []),
+                      native_venue_name=plain(where.get('name')),
+                      native_venue_address=plain(where.get('address')), native_venue_city='')
         if row:
             rows.append(row)
     return rows
@@ -432,7 +476,10 @@ def _bca_detail(item, payload, now):
     row = record(item['title'], start.isoformat(), end.isoformat() if end else None,
                  plain(venue.get_text(' ')), complete, cityline[1], item['url'],
                  urlsplit(item['url']).path.split('/')[-2] + ':' + day.isoformat(), tz=ZONE, retain_until_end=True)
-    return [row] if (row := _finish(BCA, row, body, item.get('labels', []))) else []
+    return [row] if (row := _finish(
+        BCA, row, body, item.get('labels', []), native_venue_name=plain(venue.get_text(' ')),
+        native_venue_address=' | '.join(plain(value) for value in address_lines),
+        native_venue_city='')) else []
 
 
 def _checkpoint(value, key, now):
@@ -472,7 +519,8 @@ def _checkpoint(value, key, now):
                      and (key != MFA or ((row.get('lat'), row.get('lng')) == MFA_VENUE_POINT
                          and row.get('location_provenance') == 'publisher_partner_museum_geo'))
                      and start.tzinfo is not None and (end is None or end.tzinfo is not None and end >= start)
-                     and shared._within(start, end, started, DAYS))
+                     and shared._within(start, end, started, DAYS)
+                     and shared._content_envelope_valid(row))
             identities.add(identity)
         for item in value['diagnostics']:
             valid = valid and item['event_url'] in processed and item['disposition'] == 'held' and item['reason'] in HOLD_REASONS
@@ -538,6 +586,8 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
     if state['cursor'] == state['manifest_count']:
         return dict(complete=True, events=shared._unique(deepcopy(state['events'])), checkpoint=state)
     prior = state['cursor']
+    legacy_prefix = bool(state['events'] and
+                         any('collector_event_content_v1' not in row for row in state['events']))
     for _ in range(min(max_details, DETAILS_PER_CHUNK[key])):
         if state['cursor'] == state['manifest_count'] or monotonic() + 12 >= deadline:
             break
@@ -548,6 +598,9 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
             rows = (_mfa_detail(item, payload, anchor) if key == MFA else
                     _ica_detail(item, payload, fetch, anchor) if key == ICA else
                     _bca_detail(item, payload, anchor))
+            if legacy_prefix:
+                for row in rows:
+                    row.pop('collector_event_content_v1', None)
             state['events'] = shared._unique(state['events'] + rows)
             if len(state['events']) > CHECKPOINT_EVENT_LIMITS.get(key, 201):
                 raise ValueError('boston_arts_remaining_record_limit')
@@ -662,7 +715,10 @@ def _sowa_season(payload, now):
                 row = record('SoWa Christmas Market', start.isoformat(), end.isoformat(), 'SoWa Power Station',
                              '550 Harrison Avenue, Boston, MA 02118', 'Boston', SOURCES[SOWA][0],
                              'sowa-christmas-2026:' + day.date().isoformat(), tz=ZONE, retain_until_end=True)
-                row = _finish(SOWA, row, body, ['Markets', 'Makers', 'Food & Drink', 'Family'])
+                row = _finish(SOWA, row, body, ['Markets', 'Makers', 'Food & Drink', 'Family'],
+                              native_venue_name='SoWa Boston',
+                              native_venue_address='550 Harrison Ave., Boston, MA 02118',
+                              native_venue_city='')
                 if row:
                     rows.append(row)
         day += timedelta(days=1)

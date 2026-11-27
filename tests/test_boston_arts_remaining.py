@@ -94,6 +94,9 @@ class BostonArtsRemainingTests(unittest.TestCase):
         self.assertEqual(b.EXISTING_SOURCE_IDS[b.BROOKLINE],3718)
         self.assertEqual(row['description'],body)
         self.assertEqual(row['venue_address'],'361 Washington Street, Brookline, MA 02445')
+        facts=row['collector_event_content_v1']['facts']
+        self.assertNotIn('venue_address',facts)
+        self.assertEqual(facts['native_options']['native_location'],'Hunneman Hall - Brookline Village, Brookline Village')
         row=b._brookline(library_ics(location='Meeting Room - Putterham, Putterham'),NOW)[0]
         self.assertEqual(row['venue_address'],'959 West Roxbury Parkway, Chestnut Hill, MA 02467')
 
@@ -117,6 +120,20 @@ class BostonArtsRemainingTests(unittest.TestCase):
         self.assertEqual((row['lat'],row['lng']),(42.339381,-71.094048))
         self.assertEqual(row['location_provenance'],'publisher_partner_museum_geo')
         self.assertEqual(row['starts_at'],'2026-11-18T10:00:00-05:00')
+        self.assertEqual(row['collector_event_content_v1']['facts']['venue_address'],
+                         'Museum of Fine Arts, Boston, 465 Huntington Ave, Boston, MA 02115, USA')
+
+    def test_event_only_facts_ignore_provider_label_and_change_with_event_details(self):
+        def run(src, body):
+            fetch=Mock(side_effect=[mfa_listing(),mfa_detail(body=body)])
+            listed=b.collect_chunk(src,fetch,now=NOW)
+            return b.collect_chunk(src,fetch,checkpoint=listed['checkpoint'],now=NOW)['events'][0]
+        original='Complete publisher description.'
+        first=run(source(b.MFA),original)
+        renamed=run({**source(b.MFA),'publisher_name':'Renamed provider label'},original)
+        changed=run(source(b.MFA),'Publisher changed this event description.')
+        self.assertEqual(renamed['collector_event_content_v1'],first['collector_event_content_v1'])
+        self.assertNotEqual(changed['collector_event_content_v1'],first['collector_event_content_v1'])
 
     def test_mfa_rejects_selected_id_and_timezone_conflicts(self):
         item=b._mfa_listing(mfa_listing(),b.SOURCES[b.MFA][0],NOW)[0][0]
@@ -140,6 +157,21 @@ class BostonArtsRemainingTests(unittest.TestCase):
         changed=deepcopy(final['checkpoint']);changed['events'][0]['lat']=42.36
         with self.assertRaisesRegex(ValueError,'checkpoint_invalid'):b._checkpoint(changed,b.MFA,NOW)
         fetch.reset_mock();b.collect_chunk(source(b.MFA),fetch,checkpoint=final['checkpoint'],now=NOW);fetch.assert_not_called()
+
+    def test_checkpoint_rejects_tampered_original_facts_and_preserves_legacy_prefix(self):
+        listing=''.join(mfa_listing(n) for n in (1,2)).replace('</main><main>','')
+        fetch=Mock(side_effect=[listing,mfa_detail(1),mfa_detail(2)])
+        state=b.collect_chunk(source(b.MFA),fetch,now=NOW)['checkpoint']
+        partial=b.collect_chunk(source(b.MFA),fetch,checkpoint=state,now=NOW,max_details=1)
+        poison=deepcopy(partial['checkpoint'])
+        poison['events'][0]['collector_event_content_v1']['facts']['description']='Tampered facts.'
+        with self.assertRaisesRegex(ValueError,'checkpoint_invalid'):
+            b.collect_chunk(source(b.MFA),Mock(),checkpoint=poison,now=NOW)
+        legacy=deepcopy(partial['checkpoint'])
+        for row in legacy['events']:row.pop('collector_event_content_v1')
+        done=b.collect_chunk(source(b.MFA),fetch,checkpoint=legacy,now=NOW)
+        self.assertTrue(done['complete']);self.assertEqual(len(done['events']),2)
+        self.assertTrue(all('collector_event_content_v1' not in row for row in done['events']))
 
     def test_ica_full_html_hydrates_all_native_ics_occurrences_and_stable_identity(self):
         item=dict(url='https://www.icaboston.org/events/family-day/',title='Family day',labels=['ICA Kids'])
@@ -207,6 +239,8 @@ class BostonArtsRemainingTests(unittest.TestCase):
         self.assertIn('The full visitor FAQ is preserved.',rows[0]['description'])
         self.assertNotIn('8th annual',rows[0]['description'])
         self.assertEqual(rows[0]['venue_address'],'550 Harrison Avenue, Boston, MA 02118')
+        self.assertEqual(rows[0]['collector_event_content_v1']['facts']['venue_address'],
+                         '550 Harrison Ave., Boston, MA 02118')
         self.assertEqual(b._sowa_season(sowa_page(),datetime(2027,11,14,tzinfo=timezone.utc)),[])
         for changed in (sowa_page().replace('December 27, 2026','December 27, 2027'),sowa_page().replace('Christmas Eve (Dec 24): 10 AM – 4 PM','Christmas Eve (Dec 24): 10 AM – 6 PM')):
             with self.assertRaisesRegex(ValueError,'season_changed'):b._sowa_season(changed,NOW)
