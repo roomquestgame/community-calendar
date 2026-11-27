@@ -62,6 +62,10 @@ def test_complete_description_over_shared_2000_cap_survives():
     assert len(row['description']) > 2000 and row['description'] == body
     assert row['venue_address'] == 'Jackson Street & Cherry Street, New York, NY 10002'
     assert 'approximate meeting point' in row['venue_name']
+    facts = row['collector_event_content_v1']['facts']
+    assert facts['venue_name'] == 'Manhattan'
+    assert 'venue_address' not in facts
+    assert 'source_latitude' not in facts
 
 
 @pytest.mark.parametrize('body,reason', [('', 'description_missing'), ('x' * 12001, 'description_limit')])
@@ -150,6 +154,13 @@ def test_older_occurrence_uses_native_date_and_full_source_link_and_age_scope():
     assert row['age_min'] == 60 and row['audience'] == 'Adults 60+'
     assert row['native_is_recurring'] == 'Yes'
     assert row['accessibility'] == 'Wheelchair Accessible'
+    facts = row['collector_event_content_v1']['facts']
+    assert facts['venue_address'] == '102-19 34 Avenue'
+    assert facts['provider_venue_id'] == 'C2501'
+    assert facts['audience'] == ['Adults 60+']
+    assert (facts['source_latitude'], facts['source_longitude']) == (40.755742, -73.865988)
+    assert facts['native_options'] == {
+        'accessibility': 'Wheelchair Accessible', 'is_recurring': 'Yes'}
     assert ny._older_row(older_event(starttime=(START + timedelta(days=22)).isoformat(),
                                     endtime=(START + timedelta(days=22, hours=1)).isoformat()), NOW) is None
 
@@ -194,6 +205,11 @@ def test_older_virtual_or_unreviewed_physical_locations_do_not_inherit_center_pi
 def test_typed_socrata_link_unwraps_and_upgrades_only_exact_official_event_url():
     row = ny._ranger_row(ranger_event(), NOW)
     assert row['event_url'].startswith('https://www.nycgovparks.org/events/')
+    facts = row['collector_event_content_v1']['facts']
+    assert facts['venue_name'] == ny.RANGER_PLACES[0]['native_location']
+    assert 'venue_address' not in facts
+    assert facts['registration_text'] == 'Registration not required.'
+    assert 'provider_venue_id' not in facts
     assert ny._parks_link({'url': 'http://attacker.test/events/2026/11/22/a'}) is None
     assert ny._parks_link({'url': 'http://www.nycgovparks.org.attacker.test/events/2026/11/22/a'}) is None
     assert ny._parks_link({'url': 'http://www.nycgovparks.org/admin/'}) is None
@@ -233,3 +249,15 @@ def test_changed_source_registration_and_expired_budget_prevent_fetching():
         ny.collect(changed, fetch, now=NOW)
     with pytest.raises(ValueError, match='deadline'):
         ny.collect(source(ny.OLDER), fetch, now=NOW, deadline_at=0)
+
+
+def test_provider_label_is_outside_fingerprint_but_event_details_change_it():
+    first_source = {**source(ny.OLDER), 'publisher_name': 'Old provider label'}
+    renamed_source = {**source(ny.OLDER), 'publisher_name': 'Renamed provider label'}
+    payload = json.dumps([older_event()])
+    first = ny.collect(first_source, lambda *_: payload, now=NOW)[0]
+    renamed = ny.collect(renamed_source, lambda *_: payload, now=NOW)[0]
+    changed = ny.collect(first_source, lambda *_: json.dumps([
+        older_event(description='Changed event participation details.')]), now=NOW)[0]
+    assert renamed['collector_event_content_v1'] == first['collector_event_content_v1']
+    assert changed['collector_event_content_v1'] != first['collector_event_content_v1']

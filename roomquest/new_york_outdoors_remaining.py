@@ -352,7 +352,69 @@ def _hold(diagnostics, item, reason):
                             starts_at=item.get('start_date') or item.get('starttime'), reason=reason))
 
 
-def _row(key, item, title, body, place, start, end, url, identity, category):
+def _content_venue(**values):
+    """Keep publisher event venue facts separate from reviewed map enrichment."""
+    allowed = {'venue_name', 'venue_address', 'venue_city', 'venue_region',
+               'venue_postal_code', 'venue_country'}
+    result = {}
+    for name, value in values.items():
+        if name not in allowed:
+            raise ValueError('ny_outdoors_remaining_feed_changed')
+        if value in (None, ''):
+            continue
+        if not isinstance(value, (str, int)) or len(str(value)) > 500:
+            raise ValueError('ny_outdoors_remaining_feed_changed')
+        result[name] = plain(str(value))
+    return result
+
+
+def _attach_content(row, body, *, content_venue=None, image=None, labels=(),
+                    provider_venue_id=None, source_coordinates=None, audience=(),
+                    registration_text=None, native_options=None):
+    """Retain event-owned facts before reviewed addresses and points are applied."""
+    start, end = timestamp(row.get('starts_at')), timestamp(row.get('ends_at'))
+    if start is None or start.tzinfo is None or end is not None and end.tzinfo is None:
+        raise ValueError('ny_outdoors_remaining_time_unverified')
+    facts = {
+        'title': row['title'],
+        'description': body,
+        'is_all_day': False,
+        'starts_at_utc': start.astimezone(timezone.utc).isoformat(),
+        'ends_at_utc': end.astimezone(timezone.utc).isoformat() if end else None,
+        'source_timezone': ZONE,
+        'event_url': row['event_url'],
+        'provider_venue_id': str(provider_venue_id) if provider_venue_id else None,
+        'source_image_url': image,
+        'publisher_categories': sorted({plain(value) for value in labels if plain(value)}),
+        'audience': sorted({plain(value) for value in audience if plain(value)}),
+        'attendance_mode': 'in_person',
+        'registration_text': plain(registration_text),
+        'native_options': native_options if native_options else None,
+        **(content_venue or {}),
+    }
+    if source_coordinates is not None:
+        try:
+            lat, lng = map(float, source_coordinates)
+        except (TypeError, ValueError, OverflowError):
+            raise ValueError('ny_outdoors_remaining_location_unresolved') from None
+        if not (math.isfinite(lat) and math.isfinite(lng)
+                and -90 <= lat <= 90 and -180 <= lng <= 180):
+            raise ValueError('ny_outdoors_remaining_location_unresolved')
+        facts.update(source_latitude=lat, source_longitude=lng)
+    facts = {name: value for name, value in facts.items()
+             if value is not None and value != '' and value != [] and value != {}}
+    row['collector_event_content_v1'] = {
+        'version': 1,
+        'event_id': row['id'],
+        'facts': facts,
+    }
+    return row
+
+
+def _row(key, item, title, body, place, start, end, url, identity, category, *,
+         content_venue=None, image=None, labels=(), provider_venue_id=None,
+         source_coordinates=None, audience=(), registration_text=None,
+         native_options=None):
     if not event_url(key, url):
         raise ValueError('ny_outdoors_remaining_link_unresolved')
     if not title or len(title) > 180 or NONPUBLIC.search(title):
@@ -363,6 +425,14 @@ def _row(key, item, title, body, place, start, end, url, identity, category):
     if row:
         row.update(description=body, timezone=ZONE, attendance_mode='in_person',
                    location_provenance=place['provenance'], location_evidence_url=place['evidence_url'])
+        photo = photo_url(key, image)
+        if photo:
+            row['image_url'] = photo
+        _attach_content(row, body, content_venue=content_venue, image=photo,
+                        labels=labels, provider_venue_id=provider_venue_id,
+                        source_coordinates=source_coordinates, audience=audience,
+                        registration_text=registration_text,
+                        native_options=native_options)
     return row
 
 
@@ -436,13 +506,11 @@ def _city_row(item, now, cancelled):
         raise ValueError('ny_outdoors_remaining_location_unresolved')
     if _name(place['park']) == 'mckinley park' or re.search(r'Leif Ericson Park', body, re.I):
         raise ValueError('ny_outdoors_remaining_schedule_conflict')
-    row = _row(CITY, item, title, body, place, start, end, item.get('url'), str(item['id']),
-               ', '.join(plain(c.get('name')) for c in item.get('categories', []) if isinstance(c, dict)))
-    if row:
-        image = (item.get('image') or {}).get('url') if isinstance(item.get('image'), dict) else None
-        if photo_url(CITY, image):
-            row['image_url'] = image
-    return row
+    labels = [plain(c.get('name')) for c in item.get('categories', []) if isinstance(c, dict)]
+    image = (item.get('image') or {}).get('url') if isinstance(item.get('image'), dict) else None
+    return _row(CITY, item, title, body, place, start, end, item.get('url'), str(item['id']),
+                ', '.join(labels), content_venue=_content_venue(venue_name=venue.get('venue')),
+                image=image, labels=labels)
 
 
 def _soda_query(key, now):
@@ -489,8 +557,22 @@ def _older_row(item, now):
     title, body = plain(item.get('eventname')), _body(item.get('description'))
     identity = 'nyc-oac:' + sha256(json.dumps([item.get('dfta_id'), title, start.isoformat(),
                 end.isoformat(), place['venue_address']], separators=(',', ':')).encode()).hexdigest()
-    row = _row(OLDER, item, title, body, place, start, end, SOURCES[OLDER][0], identity,
-               ', '.join(filter(None, [plain(item.get('eventtype')), plain(item.get('topics'))])))
+    labels = [plain(item.get('eventtype'))]
+    labels.extend(plain(value) for value in str(item.get('topics') or '').split(';'))
+    row = _row(
+        OLDER, item, title, body, place, start, end, SOURCES[OLDER][0], identity,
+        ', '.join(value for value in labels if value),
+        content_venue=_content_venue(
+            venue_address=item.get('eventlocation'), venue_city=item.get('city'),
+            venue_region=item.get('state'), venue_postal_code=item.get('zipcode'),
+            venue_country='US'),
+        labels=labels, provider_venue_id=item.get('dfta_id'), source_coordinates=point,
+        audience=['Adults 60+'],
+        native_options={
+            'accessibility': plain(item.get('eventaccessibility')),
+            'is_recurring': plain(item.get('isrecurring')),
+        },
+    )
     if row:
         row.update(age_min=60, audience='Adults 60+', accessibility=plain(item.get('eventaccessibility')),
                    native_provider_id=item.get('dfta_id'), native_is_recurring=item.get('isrecurring'),
@@ -524,8 +606,14 @@ def _ranger_row(item, now):
         raise ValueError('ny_outdoors_remaining_location_unresolved')
     if not re.fullmatch(r'\d+', str(item.get('guid', ''))):
         raise ValueError('ny_outdoors_remaining_feed_changed')
-    row = _row(RANGERS, item, plain(item.get('title')), _body(item.get('description')), place,
-               start, end, _parks_link(item.get('link')), str(item['guid']), plain(item.get('categories')))
+    labels = [plain(value) for value in str(item.get('categories') or '').split('|')]
+    row = _row(
+        RANGERS, item, plain(item.get('title')), _body(item.get('description')), place,
+        start, end, _parks_link(item.get('link')), str(item['guid']), plain(item.get('categories')),
+        content_venue=_content_venue(venue_name=item.get('location')),
+        labels=labels, source_coordinates=point,
+        registration_text=item.get('registration_description'),
+    )
     if row:
         row.update(native_location=plain(item.get('location')),
                    registration_description=plain(item.get('registration_description')))
