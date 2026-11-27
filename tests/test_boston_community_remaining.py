@@ -40,6 +40,9 @@ def test_bc_uses_full_native_description_and_actual_geo():
     assert len(rows[0]["description"]) > 2000
     assert rows[0]["venue_address"] == "300 Hammond Street, Chestnut Hill, MA 02467"
     assert rows[0]["lat"] == 42.331478
+    facts = rows[0]["collector_event_content_v1"]["facts"]
+    assert facts["venue_name"] == "Connolly House"
+    assert facts["venue_address"] == "300 Hammond Street, Chestnut Hill, MA 02467"
     boston_sources.validate_records(rows, source(b.BC))
 
 
@@ -118,11 +121,47 @@ def test_durable_snapshot_only_emits_complete_and_rejects_mutations(monkeypatch)
     poisoned["events"][0]["description"] = "Changed checkpoint narrative"
     with pytest.raises(ValueError, match="checkpoint_invalid"):
         b.collect_chunk(source(b.GREENWAY), fetch, checkpoint=poisoned, now=NOW)
+    poisoned = deepcopy(first["checkpoint"])
+    poisoned["events"][0]["collector_event_content_v1"]["facts"]["description"] = "Tampered facts."
+    poisoned["outcomes"][0]["rows_hash"] = b._digest(poisoned["events"][:1])
+    with pytest.raises(ValueError, match="checkpoint_invalid"):
+        b.collect_chunk(source(b.GREENWAY), fetch, checkpoint=poisoned, now=NOW)
     complete = b.collect_chunk(source(b.GREENWAY), fetch, checkpoint=first["checkpoint"], now=NOW)
     assert complete["complete"] and len(complete["events"]) == 9 and len(calls) == 9
     boston_sources.validate_records(complete["events"], source(b.GREENWAY))
     with pytest.raises(ValueError, match="checkpoint_invalid"):
         b.collect_chunk(source(b.GREENWAY), fetch, checkpoint=first["checkpoint"], now=NOW + timedelta(hours=5))
+
+
+def test_provider_label_is_excluded_event_changes_update_facts_and_legacy_prefix_stays_legacy(monkeypatch):
+    items = [greenway(i) for i in range(9)]
+    monkeypatch.setattr(b, "_greenway_manifest", lambda *args: [item[0] for item in items])
+
+    def collect(src, changed=False):
+        details = {card["url"]: html for card, html in items}
+        if changed:
+            details[items[0][0]["url"]] = details[items[0][0]["url"]].replace(
+                "guided hands-on workshop", "publisher-updated hands-on workshop")
+        fetch = lambda url, accept: details[url]
+        first = b.collect_chunk(src, fetch, now=NOW)
+        return first, b.collect_chunk(src, fetch, checkpoint=first["checkpoint"], now=NOW)
+
+    first_partial, first = collect(source(b.GREENWAY))
+    _, renamed = collect({**source(b.GREENWAY), "publisher_name": "Changed provider label"})
+    _, changed = collect(source(b.GREENWAY), changed=True)
+    assert renamed["events"][0]["collector_event_content_v1"] == first["events"][0]["collector_event_content_v1"]
+    assert changed["events"][0]["collector_event_content_v1"] != first["events"][0]["collector_event_content_v1"]
+
+    legacy = deepcopy(first_partial["checkpoint"])
+    for row in legacy["events"]:
+        row.pop("collector_event_content_v1")
+    legacy["outcomes"] = [{"url": card["url"], "rows_hash": b._digest(
+        [row for row in legacy["events"] if row["event_url"] == card["url"]])}
+        for card in legacy["manifest"][:legacy["cursor"]]]
+    complete = b.collect_chunk(source(b.GREENWAY), lambda url, accept: dict(
+        (card["url"], html) for card, html in items)[url], checkpoint=legacy, now=NOW)
+    assert complete["complete"]
+    assert all("collector_event_content_v1" not in row for row in complete["events"])
 
 
 def nature(body=None, title="Forest discovery workshop", starts=None, address=None):
@@ -164,6 +203,8 @@ def test_nature_meeting_directions_override_reused_park_address():
     row = b._nature_detail(card, detail, NOW, [])[0]
     assert row["venue_address"] == "2080 William J Day Boulevard, South Boston, MA 02127"
     assert (row["lat"], row["lng"]) == (42.338845, -71.013235)
+    facts = row["collector_event_content_v1"]["facts"]
+    assert facts["venue_address"] == "2010 Day Blvd., South Boston, MA, 02127"
 
 
 def nature_point_fixture(place):
@@ -374,6 +415,10 @@ def test_cares_preserves_full_native_prose_and_fills_only_actual_venue():
     assert row["description"] == body and len(body) > 2000
     assert row["venue_address"] == "105 Spring Street, Cambridge, MA 02141"
     assert row["venue_name"] == "East End House Community Food Pantry"
+    facts = row["collector_event_content_v1"]["facts"]
+    assert facts["venue_name"] == "East End House"
+    assert facts["venue_city"] == "Cambridge"
+    assert "venue_address" not in facts
     boston_sources.validate_records([row], source(b.CARES))
 
 
