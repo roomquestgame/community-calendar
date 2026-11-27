@@ -34,6 +34,27 @@ def detail(url=URL, title="Stout Season 2026", location="Centre Street", body="E
 
 
 class NewYorkOtherHalfTests(unittest.TestCase):
+    def test_original_facts_ignore_provider_label_and_reviewed_location(self):
+        pages = {ny.SOURCES[ny.OTHER][0]: card(), URL: detail()}
+        renamed = {**source(), "publisher_name": "Renamed provider label"}
+        with patch.object(ny, "record", side_effect=record):
+            first = ny.collect_chunk(source(), lambda url, accept: pages[url], now=NOW)["events"][0]
+            again = ny.collect_chunk(renamed, lambda url, accept: pages[url], now=NOW)["events"][0]
+        facts = first["collector_event_content_v1"]["facts"]
+        self.assertEqual(again["collector_event_content_v1"], first["collector_event_content_v1"])
+        self.assertEqual(facts["venue_name"], "Centre Street")
+        self.assertNotIn("venue_address", facts)
+        self.assertNotIn("source_latitude", facts)
+        self.assertEqual((first["lat"], first["lng"]), ny.POINTS["Centre Street"])
+
+    def test_publisher_narrative_change_changes_facts_not_identity(self):
+        item = ny._manifest(card(), NOW)[0]
+        with patch.object(ny, "record", side_effect=record):
+            first = ny._detail(item, detail(body="Original public festival details."), NOW)[0]
+            changed = ny._detail(item, detail(body="Changed publisher festival details."), NOW)[0]
+        self.assertEqual(changed["id"], first["id"])
+        self.assertNotEqual(changed["collector_event_content_v1"], first["collector_event_content_v1"])
+
     def test_native_full_body_and_reviewed_address_point_survive(self):
         body = "Complete festival schedule and ticket conditions. " * 65 + "Final brewery: Xul Beer Company."
         pages = {ny.SOURCES[ny.OTHER][0]: card(), URL: detail(body=body)}
@@ -95,6 +116,24 @@ class NewYorkOtherHalfTests(unittest.TestCase):
             altered["events"][0][field] = value
             with self.assertRaisesRegex(ValueError, "checkpoint_invalid"):
                 ny._validate_checkpoint(altered, NOW)
+
+    def test_checkpoint_rejects_tampered_facts_and_replays_legacy_prefix(self):
+        second = URL.replace("stout-season-2026", "lager-festival-2026")
+        page = card() + card(second, "Lager Festival")
+        pages = {ny.SOURCES[ny.OTHER][0]: page, URL: detail(),
+                 second: detail(second, "Lager Festival")}
+        with patch.object(ny, "record", side_effect=record):
+            first = ny.collect_chunk(source(), lambda url, accept: pages[url], now=NOW, max_details=1)
+            tampered = deepcopy(first["checkpoint"])
+            tampered["events"][0]["collector_event_content_v1"]["facts"]["description"] = "Tampered facts."
+            with self.assertRaisesRegex(ValueError, "checkpoint_invalid"):
+                ny._validate_checkpoint(tampered, NOW)
+            legacy = deepcopy(first["checkpoint"])
+            legacy["events"][0].pop("collector_event_content_v1")
+            complete = ny.collect_chunk(source(), lambda url, accept: pages[url], now=NOW,
+                                        max_details=1, checkpoint=legacy)
+        self.assertTrue(complete["complete"])
+        self.assertTrue(all("collector_event_content_v1" not in row for row in complete["events"]))
 
     def test_new_pagination_and_unregistered_source_do_not_produce_partial_publication(self):
         with self.assertRaisesRegex(ValueError, "calendar_changed"):
