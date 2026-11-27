@@ -82,7 +82,23 @@ class NewYorkNightlifeTests(unittest.TestCase):
         self.assertEqual(result["events"][0]["description"], full)
         self.assertGreater(len(full), 2000)
         self.assertEqual(result["events"][0]["venue_address"], "1186 Broadway, Brooklyn, NY 11221")
+        facts = result["events"][0]["collector_event_content_v1"]["facts"]
+        self.assertEqual(facts["venue_name"], "Wonderville")
+        self.assertEqual(facts["venue_address"], "1186 Broadway Brooklyn, NY, 11221 United States")
         fetch.assert_called_once_with(ny.SOURCES[ny.WONDER][0], "text/html")
+
+    def test_original_facts_ignore_source_label_and_change_with_event_details(self):
+        page = listing(square_card())
+        with patch.object(ny, "record", side_effect=record):
+            first = ny.collect_chunk(source(ny.WONDER), Mock(return_value=page), now=NOW)
+            renamed = ny.collect_chunk({**source(ny.WONDER), "publisher_name": "Changed label"},
+                                       Mock(return_value=page), now=NOW)
+            changed = ny.collect_chunk(source(ny.WONDER),
+                                       Mock(return_value=listing(square_card(body="Changed event details."))),
+                                       now=NOW)
+        envelope = first["events"][0]["collector_event_content_v1"]
+        self.assertEqual(renamed["events"][0]["collector_event_content_v1"], envelope)
+        self.assertNotEqual(changed["events"][0]["collector_event_content_v1"], envelope)
 
     def test_overnight_native_clocks_preserve_next_day_and_duplicate_24_hour_clock(self):
         queue = ny._manifest(ny.WONDER, listing(square_card(overnight=True)), NOW)
@@ -217,6 +233,27 @@ class NewYorkNightlifeTests(unittest.TestCase):
             two = ny.collect_chunk(source(ny.WONDER), fetch, now=NOW, checkpoint=one["checkpoint"])
         self.assertEqual([row["title"] for row in two["events"]], ["Replacement"])
 
+    def test_checkpoint_keeps_one_protocol_and_does_not_invent_legacy_facts(self):
+        pages = {
+            ny.SOURCES[ny.WONDER][0]: listing(
+                square_card("/events/first", "First", "Short", excerpt=True),
+                square_card("/events/second", "Second", "Short", excerpt=True)),
+            "https://www.wonderville.nyc/events/first":
+                square_detail("https://www.wonderville.nyc/events/first", "First", "Full first."),
+            "https://www.wonderville.nyc/events/second":
+                square_detail("https://www.wonderville.nyc/events/second", "Second", "Full second."),
+        }
+        fetch = Mock(side_effect=lambda url, accept: pages[url])
+        with patch.object(ny, "record", side_effect=record):
+            first = ny.collect_chunk(source(ny.WONDER), fetch, now=NOW, max_details=1)
+            self.assertIn("collector_event_content_v1", first["checkpoint"]["events"][0])
+            legacy = deepcopy(first["checkpoint"])
+            legacy["events"][0].pop("collector_event_content_v1")
+            full = ny.collect_chunk(source(ny.WONDER), fetch, now=NOW,
+                                    checkpoint=legacy, max_details=1)
+        self.assertTrue(full["complete"])
+        self.assertTrue(all("collector_event_content_v1" not in row for row in full["events"]))
+
     def test_checkpoint_and_source_url_are_bound_to_registered_venue(self):
         with patch.object(ny, "record", side_effect=record):
             result = ny.collect_chunk(source(ny.WONDER), Mock(return_value=listing(square_card())), now=NOW)
@@ -242,6 +279,10 @@ class NewYorkNightlifeTests(unittest.TestCase):
                     ny.collect_chunk(source(ny.WONDER), Mock(), now=NOW, checkpoint=invalid)
         invalid = deepcopy(result["checkpoint"])
         invalid["events"] = []
+        with self.assertRaisesRegex(ValueError, "checkpoint_invalid"):
+            ny.collect_chunk(source(ny.WONDER), Mock(), now=NOW, checkpoint=invalid)
+        invalid = deepcopy(result["checkpoint"])
+        invalid["events"][0]["collector_event_content_v1"]["facts"]["description"] = "Tampered facts."
         with self.assertRaisesRegex(ValueError, "checkpoint_invalid"):
             ny.collect_chunk(source(ny.WONDER), Mock(), now=NOW, checkpoint=invalid)
 
