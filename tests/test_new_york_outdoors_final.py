@@ -1,4 +1,5 @@
 """Full native bodies, exact reviewed venues, complete scopes and durable chunks."""
+from copy import deepcopy
 from datetime import datetime, timedelta, timezone
 import json
 from urllib.parse import parse_qs, urlsplit
@@ -70,6 +71,33 @@ def test_complete_rich_body_replaces_truncated_jsonld_and_preserves_all_terms():
     assert all(x in row['description'] for x in ('Complete coach biography.','Late cancellations cost $10.','pass or membership','Ages 13+, waiver required.'))
 
 
+def test_original_facts_ignore_source_label_and_exclude_reviewed_location_enrichment():
+    body = 'Complete safety, admission and accessibility instructions.'
+    url = 'https://www.bkup.nyc/events/11111111-0000-0000-0000-000000000000'
+    row = ny._bkup_detail({'url': url}, bk_page(url, body), NOW)[0]
+    envelope = deepcopy(row['collector_event_content_v1'])
+    facts = envelope['facts']
+    assert facts['venue_name'] == 'Brooklyn Uprising'
+    assert facts['venue_address'] == '20 John St'
+    assert row['venue_address'] == '20 John Street, Brooklyn, NY 11201'
+    assert 'source_latitude' not in facts and 'source_longitude' not in facts
+    row['provider_label'] = 'Renamed source label'
+    assert row['collector_event_content_v1'] == envelope
+    changed = ny._bkup_detail({'url': url}, bk_page(url, body + ' Bring a helmet.'), NOW)[0]
+    assert changed['collector_event_content_v1'] != envelope
+
+
+def test_parks_original_facts_keep_native_point_name_and_park_id_only():
+    event = park_event()
+    row = ny._parks_rows(event, NOW)[0]
+    facts = row['collector_event_content_v1']['facts']
+    assert facts['venue_name'] == event['location']
+    assert facts['provider_venue_id'] == event['parkids']
+    assert (facts['source_latitude'], facts['source_longitude']) == tuple(
+        float(value) for value in event['coordinates'].split(','))
+    assert facts.get('venue_address') != row['venue_address']
+
+
 @pytest.mark.parametrize('body,reason', [('', 'description_missing'), ('x'*12001, 'description_limit')])
 def test_native_missing_or_oversize_description_is_never_invented_or_truncated(body,reason):
     with pytest.raises(ValueError, match=reason): ny._body(body)
@@ -109,6 +137,23 @@ def test_chunks_use_local_date_complete_wire_and_immutable_retry():
     before=len(calls)
     assert ny.collect_chunk(source(ny.BKUP),fetch,now=NOW+timedelta(minutes=2),checkpoint=second['checkpoint'])==second
     assert len(calls)==before
+
+
+def test_complete_checkpoint_rejects_tampered_facts_and_replays_legacy_prefix():
+    fetch, _, _ = bk_fetch(2)
+    complete = ny.collect_chunk(source(ny.BKUP), fetch, now=NOW, max_details=2)
+    assert complete['complete'] and all('collector_event_content_v1' in row for row in complete['events'])
+    tampered = deepcopy(complete['checkpoint'])
+    tampered['events'][0]['collector_event_content_v1']['facts']['description'] = 'Tampered facts.'
+    with pytest.raises(ValueError, match='nyc_final_checkpoint_invalid'):
+        ny.collect_chunk(source(ny.BKUP), lambda *_: pytest.fail('tampered checkpoint fetched'),
+                         now=NOW + timedelta(minutes=1), checkpoint=tampered)
+    legacy = deepcopy(complete['checkpoint'])
+    for row in legacy['events']:
+        row.pop('collector_event_content_v1')
+    replay = ny.collect_chunk(source(ny.BKUP), lambda *_: pytest.fail('terminal checkpoint fetched'),
+                              now=NOW + timedelta(minutes=1), checkpoint=legacy)
+    assert replay['complete'] and all('collector_event_content_v1' not in row for row in replay['events'])
 
 
 @pytest.mark.parametrize('change', ['timestamp_window','altered_queue','altered_point','description_empty','wrong_id'])

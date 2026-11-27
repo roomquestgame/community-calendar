@@ -3519,7 +3519,87 @@ def _id(key, native, start):
     return 'nyc-outdoors-final:' + sha256((key + '|' + str(native) + '|' + start.astimezone(timezone.utc).isoformat()).encode()).hexdigest()
 
 
-def _row(key, native, title, start, end, body, place, url, now, category='', image=None):
+def _content_venue(**values):
+    allowed = {'venue_name', 'venue_address', 'venue_city', 'venue_region',
+               'venue_postal_code', 'venue_country'}
+    result = {}
+    for name, value in values.items():
+        if name not in allowed or value not in (None, '') and not isinstance(value, (str, int)):
+            raise ValueError('venue_conflict')
+        if value not in (None, ''):
+            result[name] = plain(str(value))
+    return result
+
+
+def _attach_content(row, body, *, content_venue=None, image=None, labels=(),
+                    provider_venue_id=None, source_coordinates=None):
+    start, end = timestamp(row.get('starts_at')), timestamp(row.get('ends_at'))
+    if start is None or start.tzinfo is None or end is not None and end.tzinfo is None:
+        raise ValueError('time_unverified')
+    facts = {
+        'title': row['title'], 'description': body, 'is_all_day': False,
+        'starts_at_utc': start.astimezone(timezone.utc).isoformat(),
+        'ends_at_utc': end.astimezone(timezone.utc).isoformat() if end else None,
+        'source_timezone': ZONE, 'event_url': row['event_url'],
+        'provider_venue_id': str(provider_venue_id) if provider_venue_id not in (None, '') else None,
+        'source_image_url': image,
+        'publisher_categories': sorted({plain(str(value)) for value in labels if plain(str(value))}),
+        'attendance_mode': 'in_person', **(content_venue or {}),
+    }
+    if source_coordinates is not None:
+        try:
+            lat, lng = map(float, source_coordinates)
+        except (TypeError, ValueError, OverflowError):
+            raise ValueError('point_unresolved') from None
+        if not (math.isfinite(lat) and math.isfinite(lng)
+                and -90 <= lat <= 90 and -180 <= lng <= 180):
+            raise ValueError('point_unresolved')
+        facts.update(source_latitude=lat, source_longitude=lng)
+    facts = {name: value for name, value in facts.items()
+             if value is not None and value != '' and value != [] and value != {}}
+    row['collector_event_content_v1'] = {'version': 1, 'event_id': row['id'], 'facts': facts}
+    return row
+
+
+def _content_envelope_valid(row):
+    value = row.get('collector_event_content_v1')
+    if value is None:
+        return True
+    if (not isinstance(value, dict) or set(value) != {'version', 'event_id', 'facts'}
+            or value.get('version') != 1 or value.get('event_id') != row.get('id')
+            or not isinstance(value.get('facts'), dict)):
+        return False
+    facts = value['facts']
+    allowed = {'title', 'description', 'is_all_day', 'starts_at_utc', 'ends_at_utc',
+               'source_timezone', 'event_url', 'provider_venue_id', 'venue_name',
+               'venue_address', 'venue_city', 'venue_region', 'venue_postal_code',
+               'venue_country', 'source_latitude', 'source_longitude',
+               'source_image_url', 'publisher_categories', 'attendance_mode'}
+    if not set(facts) <= allowed:
+        return False
+    try:
+        start, end = timestamp(row.get('starts_at')), timestamp(row.get('ends_at'))
+        expected = {'title': row.get('title'), 'description': row.get('description'),
+                    'is_all_day': False, 'starts_at_utc': start.astimezone(timezone.utc).isoformat(),
+                    'source_timezone': ZONE, 'event_url': row.get('event_url'),
+                    'attendance_mode': 'in_person'}
+        if end is not None:
+            expected['ends_at_utc'] = end.astimezone(timezone.utc).isoformat()
+    except (AttributeError, TypeError, ValueError, OverflowError):
+        return False
+    if (facts.get('source_image_url') != row.get('image_url')
+            or facts.get('publisher_categories', []) != sorted(set(row.get('publisher_categories') or []))
+            or not all(facts.get(name) == expected_value for name, expected_value in expected.items())):
+        return False
+    for name in ('source_latitude', 'source_longitude'):
+        if name in facts and (isinstance(facts[name], bool) or not isinstance(facts[name], (int, float))
+                              or not math.isfinite(facts[name])):
+            return False
+    return True
+
+
+def _row(key, native, title, start, end, body, place, url, now, category='', image=None,
+         *, content_venue=None, provider_venue_id=None, source_coordinates=None, labels=()):
     if not _within(start, end, now):
         raise ValueError('event_not_current')
     title = plain(title)
@@ -3542,8 +3622,14 @@ def _row(key, native, title, start, end, body, place, url, now, category='', ima
         result.update(description=body, timezone=ZONE, attendance_mode='in_person',
                       publisher_native_id=str(native), location_provenance=place['provenance'],
                       location_evidence_url=place['evidence_url'])
-        if photo_url(key, image):
-            result['image_url'] = image
+        photo = image if photo_url(key, image) else None
+        if photo:
+            result['image_url'] = photo
+        if labels:
+            result['publisher_categories'] = list(dict.fromkeys(plain(str(value)) for value in labels
+                                                              if plain(str(value))))
+        _attach_content(result, body, content_venue=content_venue, image=photo, labels=labels,
+                        provider_venue_id=provider_venue_id, source_coordinates=source_coordinates)
     return result
 
 
@@ -3603,15 +3689,22 @@ def _fordham_rows(item, now):
     if len(venue['venue_name']) > 120:
         raise ValueError('venue_conflict')
     body = _body(event.get('description'))
-    categories = ', '.join(plain(x.get('name')) for x in event.get('filters', {}).get('event_types', []))
+    labels = [plain(x.get('name')) for x in event.get('filters', {}).get('event_types', []) if plain(x.get('name'))]
+    categories = ', '.join(labels)
     rows = []
     for wrapper in event.get('event_instances', []):
         occurrence = wrapper.get('event_instance', {})
         if occurrence.get('all_day'):
             raise ValueError('all_day_without_hours')
         start, end = _times(occurrence.get('start'), occurrence.get('end'))
+        native_name = plain(event.get('location_name'))
+        if room:
+            native_name = plain(native_name + ', ' + room)
         row = _row(FORDHAM, occurrence.get('id'), event.get('title'), start, end, body, venue,
-                   event.get('localist_url'), now, categories, event.get('photo_url'))
+                   event.get('localist_url'), now, categories, event.get('photo_url'),
+                   content_venue=_content_venue(venue_name=native_name,
+                                                venue_address=event.get('address')),
+                   labels=labels)
         if row:
             rows.append(row)
     return rows
@@ -3697,10 +3790,16 @@ def _tribe_rows(event, now):
         raise ValueError('venue_not_reviewed')
     if native and place.get('native_venue') != plain(native.get('venue')):
         raise ValueError('venue_conflict')
+    labels = [plain(x.get('name')) for x in event.get('categories', []) if plain(x.get('name'))]
+    native_address = native.get('address') if isinstance(native.get('address'), str) else native.get('address') or ''
     return [r] if (r := _row(CB6, event.get('id'), event.get('title'), start, end, body, place,
-                            event.get('url'), now,
-                            ', '.join(plain(x.get('name')) for x in event.get('categories', [])),
-                            (event.get('image') or {}).get('url') if isinstance(event.get('image'), dict) else None)) else []
+                            event.get('url'), now, ', '.join(labels),
+                            (event.get('image') or {}).get('url') if isinstance(event.get('image'), dict) else None,
+                            content_venue=_content_venue(
+                                venue_name=native.get('venue'), venue_address=native_address,
+                                venue_city=native.get('city'), venue_region=native.get('state'),
+                                venue_postal_code=native.get('zip'), venue_country=native.get('country')),
+                            provider_venue_id=native.get('id'), labels=labels)) else []
 
 
 def _jsonld(soup, wanted):
@@ -3814,10 +3913,12 @@ def _bronx_detail(item, payload, now):
     title = plain(soup.title.get_text()).removesuffix(' - Bronx River Alliance')
     body = _body(str(content))
     place = _place(BRONX, fields['Location'])
-    category = ', '.join(dict.fromkeys(plain(a.get_text()) for a in soup.select('a[rel="tag"]')))
+    labels = list(dict.fromkeys(plain(a.get_text()) for a in soup.select('a[rel="tag"]') if plain(a.get_text())))
+    category = ', '.join(labels)
     image = soup.select_one('meta[property="og:image"]')
     row = _row(BRONX, item['url'], title, start, end, body, place, item['url'], now,
-               category, image.get('content') if image else None)
+               category, image.get('content') if image else None,
+               content_venue=_content_venue(venue_name=fields['Location']), labels=labels)
     return [row] if row else []
 
 
@@ -3872,8 +3973,18 @@ def _bkup_detail(item, payload, now):
     category = plain(type_node.get_text()) if type_node else ''
     if re.search(r'\b(?:physical therapy|private coaching|1:1 appointment)\b', title, re.I):
         raise ValueError('event_not_public')
+    native_location = event.get('location') if isinstance(event.get('location'), dict) else {}
+    native_geo = native_location.get('geo') if isinstance(native_location.get('geo'), dict) else {}
+    coordinates = None
+    if native_geo.get('latitude') not in (None, '') and native_geo.get('longitude') not in (None, ''):
+        coordinates = (native_geo['latitude'], native_geo['longitude'])
     row = _row(BKUP, item['url'].rsplit('/', 1)[-1], title, start, end, '\n'.join(parts), place,
-               item['url'], now, category)
+               item['url'], now, category,
+               content_venue=_content_venue(
+                   venue_name=native_location.get('name'), venue_address=native.get('streetAddress'),
+                   venue_city=native.get('addressLocality'), venue_region=native.get('addressRegion'),
+                   venue_postal_code=native.get('postalCode'), venue_country=native.get('addressCountry')),
+               source_coordinates=coordinates, labels=(category,) if category else ())
     return [row] if row else []
 
 
@@ -3904,7 +4015,8 @@ def _wave_detail(item, payload, now):
     if 'Price' in details:
         parts.append(str(details['Price']))
     body = _body('\n'.join(parts))
-    categories = ', '.join(plain(x.get_text()) for x in root.select('.page__categories-item'))
+    labels = [plain(x.get_text()) for x in root.select('.page__categories-item') if plain(x.get_text())]
+    categories = ', '.join(labels)
     image = root.select_one('.page__background img[src]')
     image_url = urljoin(item['url'], image['src']) if image else None
     rows = []
@@ -3912,7 +4024,8 @@ def _wave_detail(item, payload, now):
         if occurrence['all_day']:
             raise ValueError('all_day_without_hours')
         start, end = _times(occurrence['start'], occurrence['end'])
-        row = _row(WAVE, item['url'], title, start, end, body, place, item['url'], now, categories, image_url)
+        row = _row(WAVE, item['url'], title, start, end, body, place, item['url'], now, categories, image_url,
+                   content_venue=_content_venue(venue_name=venue), labels=labels)
         if row:
             rows.append(row)
     return rows
@@ -3977,8 +4090,15 @@ def _nyrr_detail(item, payload, now):
     while cursor <= until:
         start = datetime.combine(cursor, clock, ZoneInfo(ZONE))
         if _within(start, None, now):
+            native_address = native.get('address') if isinstance(native.get('address'), dict) else {}
             row = _row(NYRR, item['url'], event.get('name') + ' Open Run', start, None, body, place,
-                       item['url'], now, 'Community Run / Walk')
+                       item['url'], now, 'Community Run / Walk',
+                       content_venue=_content_venue(
+                           venue_name=native.get('name'), venue_address=native_address.get('streetAddress'),
+                           venue_city=native_address.get('addressLocality'),
+                           venue_region=native_address.get('addressRegion'),
+                           venue_postal_code=native_address.get('postalCode'),
+                           venue_country=native_address.get('addressCountry')))
             if row:
                 row.update(schedule_provenance='publisher_explicit_bounded_weekly_schedule',
                            recurrence_first=first.isoformat(), recurrence_last=last.isoformat())
@@ -4051,8 +4171,16 @@ def _bridge_rows(item, now):
     body = _body('\n'.join(str(x or '') for x in parts))
     photos = post.get('yoast_head_json', {}).get('og_image', [])
     photo = photos[0].get('url') if photos else None
+    native_location = item['locations'].get(ids[0], {})
+    native_title = native_location.get('title', {})
+    native_title = native_title.get('rendered') if isinstance(native_title, dict) else native_title
+    native_coordinates = (native.get('latitude'), native.get('longitude'))
+    label = plain(listing.get('category'))
     row = _row(BRIDGE, post['id'], post.get('title', {}).get('rendered'), start, end, body, place,
-               post['link'], now, plain(listing.get('category')), photo)
+               post['link'], now, label, photo,
+               content_venue=_content_venue(venue_name=native_title),
+               provider_venue_id=ids[0], source_coordinates=native_coordinates,
+               labels=(label,) if label else ())
     return [row] if row else []
 
 
@@ -4110,8 +4238,20 @@ def _transalt_rows(event, now):
             raise ValueError('time_unverified') from None
         if not _within(start, end, now):
             continue
+        native_geo = native.get('location') if isinstance(native.get('location'), dict) else {}
+        coordinates = None
+        if native_geo.get('latitude') not in (None, '') and native_geo.get('longitude') not in (None, ''):
+            coordinates = (native_geo['latitude'], native_geo['longitude'])
+        address_lines = native.get('address_lines')
+        native_address = ', '.join(address_lines) if isinstance(address_lines, list) else address_lines
+        label = plain(event.get('event_type'))
         row = _row(TRANSALT, str(event['id']) + ':' + str(timeslot['id']), event.get('title'), start, end,
-                   body, place, event.get('browser_url'), now, event.get('event_type', ''), event.get('featured_image_url'))
+                   body, place, event.get('browser_url'), now, label, event.get('featured_image_url'),
+                   content_venue=_content_venue(
+                       venue_name=native.get('venue'), venue_address=native_address,
+                       venue_city=native.get('locality'), venue_region=native.get('region'),
+                       venue_postal_code=native.get('postal_code'), venue_country=native.get('country')),
+                   source_coordinates=coordinates, labels=(label,) if label else ())
         if row:
             rows.append(row)
     if not rows:
@@ -4164,6 +4304,7 @@ def _checkpoint(value, key, now):
             if (row.get('id') in ids or row.get('id') != _id(key, row.get('publisher_native_id'), start)
                     or row.get('timezone') != ZONE or row.get('attendance_mode') != 'in_person'
                     or not isinstance(row.get('description'), str) or _body(row['description']) != row['description']
+                    or not _content_envelope_valid(row)
                     or not row.get('venue_name') or not row.get('venue_address')
                     or _point(row.get('lat'), row.get('lng')) is None
                     or reviewed_venue_location(key, row['venue_name'], row['venue_address']) != {'lat': row['lat'], 'lng': row['lng']}
@@ -4192,6 +4333,8 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
     if current.tzinfo is None:
         raise ValueError('nyc_final_checkpoint_invalid')
     state = _checkpoint(checkpoint, key, current)
+    legacy_prefix = bool(state and state['events'] and
+                         any('collector_event_content_v1' not in row for row in state['events']))
     created = state is None
     if created:
         queue = _manifest(key, fetch, current, deadline_at)
@@ -4214,6 +4357,9 @@ def collect_chunk(source, fetch, *, checkpoint=None, deadline_at=None, now=None,
             rows = parser(item, payload, anchor)
             if not rows:
                 raise ValueError('event_not_current')
+            if legacy_prefix:
+                for row in rows:
+                    row.pop('collector_event_content_v1', None)
             state['events'].extend(rows)
         except ValueError as exc:
             if str(exc) not in HOLD_REASONS:
@@ -4308,8 +4454,13 @@ def _parks_rows(event, now):
         image = image.get('url')
     if isinstance(image, str) and image.startswith('http://www.nycgovparks.org/'):
         image = image.replace('http://', 'https://', 1)
+    native_parts = [x.strip() for x in str(event.get('coordinates') or '').split(',')]
+    native_point = _point(*native_parts) if len(native_parts) == 2 else None
     row = _row(PARKS, event.get('guid'), title, start, end, '\n\n'.join(parts), place, url, now,
-               ', '.join(categories), image)
+               ', '.join(categories), image,
+               content_venue=_content_venue(venue_name=native_name),
+               provider_venue_id=event.get('parkids'), source_coordinates=native_point,
+               labels=categories)
     return [row] if row else []
 
 
