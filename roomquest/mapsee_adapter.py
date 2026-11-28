@@ -316,8 +316,12 @@ def parse_tribe(data, *, strict_public=False, retain_description=False, utc_defa
         venue=e.get("venue") or {}; venue=venue if isinstance(venue,dict) else {}
         if strict_public and re.search(r"\b(zoom|online|virtual)\b", plain(venue.get("venue")), re.I):continue
         street=address({"street":venue.get("address"),"city":venue.get("city"),"state":venue.get("state") or venue.get("stateprovince") or venue.get("province"),"zip":venue.get("zip"),"country":venue.get("country")})
+        # A supplied finish keeps a multi-day occurrence live after its first
+        # 24 hours. Missing/equal ends must not acquire the generic 3-hour fallback.
+        retain_until_end = bool(end and timestamp(end, "UTC") > timestamp(start, "UTC"))
         r=record(e.get("title"),start,end,venue.get("venue"),street,venue.get("city"),e.get("url"),e.get("id"),
-                 ", ".join(x.get("name","") for x in e.get("categories",[]) if isinstance(x,dict)),venue.get("geo_lat"),venue.get("geo_lng"),tz, publisher_geo=strict_public)
+                 ", ".join(x.get("name","") for x in e.get("categories",[]) if isinstance(x,dict)),venue.get("geo_lat"),venue.get("geo_lng"),tz,
+                 publisher_geo=strict_public, retain_until_end=retain_until_end)
         if r:
             if native_source is not None:
                 from roomquest.registered_native_content import attach

@@ -8,21 +8,25 @@ from email.utils import parsedate_to_datetime
 import json
 import math
 import os
+import re
 import struct
 from time import monotonic
-from urllib.parse import urljoin, urlparse
+from urllib.parse import unquote, urljoin, urlparse
 
 from bs4 import BeautifulSoup
 import requests
 
 from roomquest.preview_worker import event_image, public_source_url, validate_public_dns, supabase_rpc, PreviewError
-from roomquest.preview_worker import robots_allowed, _robots_request_path, pace_publisher
+from roomquest.preview_worker import robots_allowed, _robots_request_path, pace_publisher, fetch_publisher
 from roomquest.publisher_pacing import capture_publisher_pacing
 from roomquest.venue_resolver import fetch_page, json_nodes, words
 
 MIMES = {'image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif'}
 MAX_IMAGE = 10_000_000
 PROBE_SECONDS = 8
+DETAIL_PAGE_SECONDS = 10
+DETAIL_IMAGE_CAPABILITY = 'event_detail_image_version'
+DETAIL_IMAGE_VERSION = 1
 
 
 class MediaDeferred(PreviewError):
@@ -34,6 +38,22 @@ class MediaDeferred(PreviewError):
         self.host = canonical_host(host) if host else None
         self.retry_after_seconds = max(1, min(3600, int(retry_after_seconds)))
         self.attempted = bool(attempted)
+
+
+class MediaPageUnavailable(PreviewError):
+    """A denied/unavailable page does not prove the event has no photograph."""
+
+
+def detail_image_claim(claim):
+    """Accept only the backend's exact, separately negotiated detail-page work."""
+    return (type(claim.get(DETAIL_IMAGE_CAPABILITY)) is int
+            and claim[DETAIL_IMAGE_CAPABILITY] == DETAIL_IMAGE_VERSION
+            and claim.get('candidate_only') is False
+            and 'candidate_url' in claim and claim['candidate_url'] is None
+            and isinstance(claim.get('source_key'), str) and bool(claim['source_key'])
+            and isinstance(claim.get('title'), str) and bool(claim['title'].strip())
+            and public_source_url(claim.get('event_url'))
+            and claim.get('extraction_url') == claim['event_url'])
 
 
 def canonical_host(host: str) -> str:
@@ -56,22 +76,151 @@ def retry_after_seconds(value, *, default=60):
         return default
 
 
-def extract_photo(html: str, url: str, title: str) -> str | None:
+def _same_detail_url(value, url):
+    """Compare declared event identity without authorizing another request."""
+    if not isinstance(value, str) or not value.strip():
+        return False
+    expected, actual = urlparse(url), urlparse(urljoin(url, value))
+    return (actual.scheme == expected.scheme
+            and canonical_host(actual.hostname) == canonical_host(expected.hostname)
+            and actual.port == expected.port
+            and (actual.path.rstrip('/') or '/') == (expected.path.rstrip('/') or '/')
+            and actual.query == expected.query)
+
+
+def _specific_title_prefix(expected, actual):
+    shortened = words(actual)
+    return (len(shortened) >= 12 and len(set(shortened.split())) >= 3
+            and expected.startswith(shortened + ' '))
+
+
+def _page_image_candidate(value, url):
+    from roomquest.registered_native_content import image_candidate
+
+    candidate = image_candidate(value, url)
+    if candidate and re.search(r'(?:^|[-_.])(?:logo|favicon|avatar|icon|map)(?:[-_.]|$)',
+                               unquote(urlparse(candidate).path).rsplit('/', 1)[-1], re.I):
+        return None
+    if candidate and re.search(
+            r'/(?:og[-_]?(?:image|default)|site[-_]logo|default(?:[-_]image)?|default[-_]event[-_]image|placeholder|'
+            r'social[-_](?:image|thumbnail|share))(?:[-_](?:default|image|\d+(?:x\d+)?|v\d+))*\.[a-z0-9]{2,5}$',
+            unquote(urlparse(candidate).path), re.I):
+        return None
+    return candidate
+
+
+def _primary_artwork_element(tag, expected):
+    for parent in [tag, *tag.parents]:
+        if parent.name in ('nav', 'aside', 'footer') or parent.get('role') in ('navigation', 'complementary', 'contentinfo'):
+            return False
+        labels = (' '.join(parent.get('class') or []) + ' ' + (parent.get('id') or '')
+                  + ' ' + (parent.get('aria-label') or ''))
+        if re.search(r'(?:^|[-_\s])(sidebar|related|recommended|sponsor|advertisement)(?:[-_\s]|$)', labels, re.I):
+            return False
+    article = tag.find_parent('article')
+    if article is not None:
+        headings = article.select('h1,h2,h3,h4,h5,h6')[:5]
+        if headings and not any(words(heading.get_text(' ', strip=True)) == expected
+                                or words(heading.get_text(' ', strip=True)).startswith(expected + ' ')
+                                or _specific_title_prefix(expected, heading.get_text(' ', strip=True))
+                                for heading in headings):
+            return False
+    labels = ' '.join(tag.get('class') or []) + ' ' + (tag.get('alt') or '') + ' ' + (tag.get('aria-label') or '')
+    return not re.search(r'\b(?:logo|map|icon|avatar|tracking)\b', labels, re.I)
+
+
+def _heading_hero_photo(soup, url, expected):
+    headings = [tag for tag in soup.select('h1')[:5]
+                if words(tag.get_text(' ', strip=True)) == expected
+                or words(tag.get_text(' ', strip=True)).startswith(expected + ' ')
+                or _specific_title_prefix(expected, tag.get_text(' ', strip=True))]
+    if len(headings) != 1:
+        return None, False
+    # A bounded ancestor of the event heading can own a hero/banner picture.
+    # Never search stylesheets or page-wide backgrounds, cards or sidebars.
+    for parent in list(headings[0].parents)[:4]:
+        if parent.name in ('main', 'article', 'body', 'html'):
+            break
+        labels = ' '.join(parent.get('class') or [])
+        if not re.search(r'(?:^|[-_\s])(?:hero|banner)(?:[-_\s]|$)', labels, re.I):
+            continue
+        if len(parent.select('h1')) != 1:
+            return None, True
+        candidates = set()
+        for tag in [parent, *parent.select('img,[style]')][:20]:
+            if not _primary_artwork_element(tag, expected):
+                continue
+            values = [tag.get(name) for name in ('data-src', 'data-lazy-src', 'src')] if tag.name == 'img' else []
+            style = tag.get('style', '')
+            if re.search(r'(?:^|;)\s*background(?:-image)?\s*:', style, re.I):
+                values += [quoted or plain for quoted, plain in re.findall(
+                    r'url\(\s*(?:[\"\']([^\"\']+)[\"\']|([^\s)]+))\s*\)', style, re.I)]
+            for value in values:
+                if candidate := _page_image_candidate(value, url):
+                    candidates.add(candidate)
+                    if tag.name == 'img':
+                        break
+        if len(candidates) == 1:
+            return candidates.pop(), False
+        if candidates:
+            return None, True
+    return None, False
+
+
+def extract_photo(html: str, url: str, title: str, *, allow_heading_prefix=False) -> str | None:
     soup = BeautifulSoup(html, 'html.parser')
+    expected = words(title)
     for script in soup.select('script[type="application/ld+json"]')[:30]:
         try:
             for item in json_nodes(json.loads(script.string or script.get_text())):
                 types = item.get('@type', [])
                 types = types if isinstance(types, list) else [types]
-                if any(str(t).split('/')[-1].endswith('Event') for t in types) and words(item.get('name')) == words(title):
-                    if image := event_image(item.get('image'), url):
+                if any(str(t).split('/')[-1].endswith('Event') for t in types):
+                    identity = item.get('url') or item.get('@id')
+                    if identity is not None and not _same_detail_url(identity, url):
+                        continue
+                    if not (words(item.get('name')) == expected
+                            or allow_heading_prefix and identity is not None
+                            and _specific_title_prefix(expected, item.get('name'))):
+                        continue
+                    if image := _page_image_candidate(item.get('image'), url):
                         return image
         except (ValueError, TypeError, RecursionError):
             continue
     headings = [tag.get('content') or tag.get_text(' ', strip=True)
                 for tag in soup.select('title,h1,meta[property="og:title"]')[:15]]
-    expected = words(title)
-    if len(expected) < 4 or not any(words(h) == expected or words(h).startswith(expected + ' ') for h in headings):
+    full_title = any(words(h) == expected or words(h).startswith(expected + ' ') for h in headings)
+    # A trusted exact event URL may have a shorter publisher heading than an
+    # accepted display title. In that case require a specific primary heading
+    # and semantic event/featured artwork; never fall back to generic OG art.
+    short_heading = (allow_heading_prefix and any(
+        _specific_title_prefix(expected, tag.get_text(' ', strip=True)) for tag in soup.select('h1')[:5]))
+    if len(expected) < 4 or not (full_title or short_heading):
+        return None
+    if allow_heading_prefix:
+        image, ambiguous = _heading_hero_photo(soup, url, expected)
+        if ambiguous:
+            return None
+        if image:
+            return image
+    # A page's explicit event/featured artwork is stronger evidence than the
+    # publisher-wide Open Graph default. Keep the existing semantic selectors;
+    # do not scan arbitrary page images, backgrounds or related-event links.
+    for selector in ('.tribe-events-event-image img', 'img.wp-post-image', '[itemprop="image"][src]'):
+        candidates = set()
+        for tag in soup.select(selector)[:5]:
+            if not _primary_artwork_element(tag, expected):
+                continue
+            for attribute in ('data-src', 'data-lazy-src', 'src'):
+                dimensions = {key: tag[key] for key in ('width', 'height') if tag.has_attr(key)}
+                if image := _page_image_candidate({'url': tag.get(attribute), **dimensions}, url):
+                    candidates.add(image)
+                    break
+        if len(candidates) == 1:
+            return candidates.pop()
+        if len(candidates) > 1:
+            return None
+    if not full_title:
         return None
     for tag in soup.select('meta[property="og:image"],meta[name="twitter:image"],meta[property="twitter:image"]')[:5]:
         width = soup.select_one('meta[property="og:image:width"]')
@@ -81,12 +230,49 @@ def extract_photo(html: str, url: str, title: str) -> str | None:
                 continue
         except ValueError:
             continue
-        if image := event_image(tag.get('content'), url):
-            return image
-    for tag in soup.select('.tribe-events-event-image img[src], img.wp-post-image[src], [itemprop="image"][src]')[:5]:
-        if image := event_image(tag.get('src'), url):
+        if image := _page_image_candidate(tag.get('content'), url):
             return image
     return None
+
+
+def fetch_detail_page(claim, *, deadline, clock, host_limiter=None):
+    """Fetch the claimed page through the existing publisher policy/transport."""
+    if not detail_image_claim(claim):
+        raise MediaPageUnavailable('page_unavailable')
+    url = claim['event_url']
+    host = urlparse(url).hostname or ''
+    canonical = canonical_host(host)
+    # A www canonical redirect remains the same publisher. Other origins need
+    # their own accepted event URL; this task never discovers or follows links.
+    hosts = tuple(dict.fromkeys((host, canonical, 'www.' + canonical)))
+    permit = host_limiter.request(host) if host_limiter is not None else nullcontext()
+    with permit, capture_publisher_pacing() as pacing:
+        try:
+            return fetch_publisher(url, 'text/html', respect_robots=True,
+                                   deadline_at=min(deadline, clock() + DETAIL_PAGE_SECONDS),
+                                   allowed_hosts=hosts)
+        except PreviewError as error:
+            code = error.args[0] if error.args else None
+            wait = max(pacing['crawl_delay_seconds'], pacing['retry_after_seconds'])
+            if (code in ('robots_denied', 'publisher_wait_requires_review')
+                    or pacing['wait_unbounded'] or wait > 3600
+                    or code in ('publisher_http_400', 'publisher_http_401', 'publisher_http_403',
+                                'publisher_http_404', 'publisher_http_410', 'redirect_host_not_approved',
+                                'invalid_redirect_url', 'non_public_dns', 'source_too_large',
+                                'source_unavailable_or_oversized')):
+                raise MediaPageUnavailable('page_unavailable') from error
+            reason = {'source_fetch_deadline': 'deadline',
+                      'publisher_pacing_deferred': 'host_busy',
+                      'publisher_rate_limited': 'transient_http',
+                      'publisher_http_429': 'transient_http',
+                      'publisher_http_408': 'transient_http',
+                      'publisher_http_425': 'transient_http'}.get(code, 'network_error')
+            if isinstance(code, str) and code.startswith('publisher_http_5'):
+                reason = 'transient_http'
+            raise MediaDeferred(reason, host=host, retry_after_seconds=max(30, wait),
+                                attempted=reason != 'host_busy') from error
+        except (requests.RequestException, OSError) as error:
+            raise MediaDeferred('network_error', host=host, attempted=True) from error
 
 
 def image_signature(data: bytes, mime: str) -> bool:
@@ -202,12 +388,18 @@ def probe_image(url: str, *, candidate_validator=None, deadline=None, clock=None
 
 def resolve_photo(claim: dict, *, fetcher=None, probe=None, clock=None, deadline=None,
                   host_limiter=None, session=None, strict_deadline=False):
-    fetcher, clock = fetcher or fetch_page, clock or monotonic
+    clock = clock or monotonic
     deadline = deadline if deadline is not None else clock() + 20
     candidate_validator = None
     native_content = False
+    detail_content = False
     from roomquest.registered_native_content import CAPABILITY, media_claim, image_candidate
-    if CAPABILITY in claim:
+    if DETAIL_IMAGE_CAPABILITY in claim:
+        if not detail_image_claim(claim):
+            return None
+        detail_content = native_content = True
+        candidate_validator = image_candidate
+    elif CAPABILITY in claim:
         if not media_claim(claim):
             return None
         candidate_validator = image_candidate
@@ -236,11 +428,18 @@ def resolve_photo(claim: dict, *, fetcher=None, probe=None, clock=None, deadline
         # that page again or substitute its generic Open Graph artwork.
         if claim.get('candidate_only') is True:
             return None
-        if clock() + 9 >= deadline:
+        required = DETAIL_PAGE_SECONDS + PROBE_SECONDS if detail_content else 9
+        if clock() + required >= deadline:
             if strict_deadline:
                 raise MediaDeferred('deadline')
             return None
-        candidate = extract_photo(fetcher(claim['event_url']), claim['event_url'], claim['title'])
+        if detail_content:
+            html = (fetcher(claim['event_url']) if fetcher is not None else fetch_detail_page(
+                claim, deadline=deadline - PROBE_SECONDS, clock=clock, host_limiter=host_limiter))
+        else:
+            html = (fetcher or fetch_page)(claim['event_url'])
+        candidate = extract_photo(html, claim['event_url'], claim['title'],
+                                  allow_heading_prefix=detail_content)
     if not candidate or clock() + 8 >= deadline:
         if candidate and strict_deadline:
             raise MediaDeferred('deadline')

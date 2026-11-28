@@ -49,7 +49,8 @@ class PhotoTests(unittest.TestCase):
         for candidate in [None, '', '  ', 'http://example.org/photo.jpg', 'https://127.0.0.1/photo.jpg',
                           'https://example.org/logo.png', PLATE]:
             fetch = MagicMock(); probe = MagicMock()
-            result = m.resolve_photo({**CLAIM, 'candidate_only': True, 'candidate_url': candidate},
+            result = m.resolve_photo({**CLAIM, 'source_key': 'virginia_state_parks_fixture',
+                                      'candidate_only': True, 'candidate_url': candidate},
                                      fetcher=fetch, probe=probe, clock=lambda: 0, deadline=30)
             self.assertIsNone(result)
             fetch.assert_not_called(); probe.assert_not_called()
@@ -76,7 +77,8 @@ class PhotoTests(unittest.TestCase):
 
     def test_candidate_only_rejects_generic_final_redirect_result(self):
         fetch = MagicMock()
-        result = m.resolve_photo({**CLAIM, 'candidate_only': True, 'candidate_url': PHOTO},
+        result = m.resolve_photo({**CLAIM, 'source_key': 'virginia_state_parks_fixture',
+                                  'candidate_only': True, 'candidate_url': PHOTO},
                                  fetcher=fetch, probe=lambda _: (PLATE, 'image/jpeg'), clock=lambda: 0, deadline=30)
         self.assertIsNone(result)
         fetch.assert_not_called()
@@ -86,7 +88,8 @@ class PhotoTests(unittest.TestCase):
         response.headers = {'Location': PLATE}; response.__enter__.return_value = response
         session = MagicMock(); session.get.return_value = response; session.__enter__.return_value = session
         with patch.object(m.requests, 'Session', return_value=session), patch.object(m, 'validate_public_dns'):
-            self.assertIsNone(m.resolve_photo({**CLAIM, 'candidate_only': True, 'candidate_url': PHOTO},
+            self.assertIsNone(m.resolve_photo({**CLAIM, 'source_key': 'virginia_state_parks_fixture',
+                                              'candidate_only': True, 'candidate_url': PHOTO},
                                              clock=lambda: 0, deadline=30))
         session.get.assert_called_once()
 

@@ -1,8 +1,8 @@
 """Ticketed, bounded image verification independent of the geocoder runtime.
 
 The database owns eligibility, freshness, leases and continuation. This worker
-only probes already selected publisher images; it never fetches event HTML or
-copies image files into storage.
+probes selected publisher images and, only under a separately negotiated claim,
+checks one exact event detail page. It never discovers URLs or copies images.
 """
 from __future__ import annotations
 
@@ -16,7 +16,9 @@ from time import monotonic
 import requests
 
 from roomquest.event_media import (
-    MediaDeferred, PROBE_SECONDS, canonical_host, resolve_photo,
+    MediaDeferred, MediaPageUnavailable, PROBE_SECONDS, DETAIL_PAGE_SECONDS,
+    DETAIL_IMAGE_CAPABILITY, DETAIL_IMAGE_VERSION, detail_image_claim,
+    canonical_host, resolve_photo,
 )
 from roomquest.preview_worker import PreviewError, supabase_rpc
 
@@ -34,6 +36,7 @@ RESULT_TIMEOUT = 3
 FINISH_TIMEOUT = 5
 # A fresh claim must have time for its entire bounded probe and result RPC.
 ADMISSION_HEADROOM = CLAIM_TIMEOUT + PROBE_SECONDS + RESULT_TIMEOUT + 1
+DETAIL_ADMISSION_HEADROOM = ADMISSION_HEADROOM + DETAIL_PAGE_SECONDS
 
 
 def rpc(action, payload, *, timeout=4):
@@ -129,12 +132,15 @@ def _process(claim, *, common, database, resolver, clock, deadline, limiter, ses
     temporary = None
     result = None
     unexpected = False
+    unavailable_reason = 'no_event_image'
     try:
-        if claim.get('candidate_only') is not True:
-            # This lane has no permission to crawl a missing candidate's page.
+        detail_content = detail_image_claim(claim)
+        if claim.get('candidate_only') is not True and not detail_content:
+            # Missing candidates never implicitly authorize a page request.
             unexpected = True
             raise MediaDeferred('network_error')
-        if clock() + PROBE_SECONDS + RESULT_TIMEOUT + 1 >= deadline:
+        required = PROBE_SECONDS + (DETAIL_PAGE_SECONDS if detail_content else 0)
+        if clock() + required + RESULT_TIMEOUT + 1 >= deadline:
             raise MediaDeferred('deadline')
         result = resolver(claim, clock=clock, deadline=deadline - RESULT_TIMEOUT - 1,
                           strict_deadline=True, host_limiter=limiter, session=sessions.get())
@@ -145,6 +151,8 @@ def _process(claim, *, common, database, resolver, clock, deadline, limiter, ses
             raise MediaDeferred('network_error', attempted=True)
     except MediaDeferred as error:
         temporary = error
+    except MediaPageUnavailable:
+        unavailable_reason = 'page_unavailable'
     except (PreviewError, requests.RequestException, ValueError, OSError):
         temporary = MediaDeferred('network_error', attempted=True)
     except Exception:
@@ -167,7 +175,7 @@ def _process(claim, *, common, database, resolver, clock, deadline, limiter, ses
         action, payload, metric = 'submit', {
             **identity, **{key: result[key] for key in ('image_url', 'mime_type', 'evidence_url')}}, 'ready'
     else:
-        action, payload, metric = 'fail', {**identity, 'reason': 'no_event_image'}, 'unavailable'
+        action, payload, metric = 'fail', {**identity, 'reason': unavailable_reason}, 'unavailable'
 
     try:
         recorded = _record(database, action, payload)
@@ -198,7 +206,8 @@ def collect_media(ticket, *, database=None, resolver=None, clock=None):
     run = database('start', {'ticket': ticket, 'worker_version': WORKER_VERSION,
                             'candidate_only_version': CANDIDATE_VERSION,
                             'publisher_candidates_version': 'publisher_event_candidates_v1',
-                            'registered_native_content_version': 1}, timeout=4)
+                            'registered_native_content_version': 1,
+                            DETAIL_IMAGE_CAPABILITY: DETAIL_IMAGE_VERSION}, timeout=4)
     if not run:
         stats['stop_reason'] = 'not_admitted'
         return stats
@@ -230,6 +239,8 @@ def collect_media(ticket, *, database=None, resolver=None, clock=None):
                     try:
                         claims = database('claim', {**common, 'limit': free,
                                                     'registered_native_content_version': 1,
+                                                    DETAIL_IMAGE_CAPABILITY: (
+                                                        DETAIL_IMAGE_VERSION if clock() + DETAIL_ADMISSION_HEADROOM < deadline else 0),
                                                     'exclude_hosts': limiter.excluded_hosts()}, timeout=CLAIM_TIMEOUT) or []
                     except (PreviewError, requests.RequestException, ValueError, OSError):
                         # An initial claim failure means the dispatch could not

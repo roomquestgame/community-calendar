@@ -112,7 +112,8 @@ class WorkerTests(unittest.TestCase):
         self.assertEqual(db.calls[0][1], {'ticket': TICKET, 'worker_version': 'media_demand_v1',
                                         'candidate_only_version': 'publisher_event_html_v2',
                                         'publisher_candidates_version': 'publisher_event_candidates_v1',
-                                        'registered_native_content_version': 1})
+                                        'registered_native_content_version': 1,
+                                        'event_detail_image_version': 1})
         self.assertTrue(all(payload['registered_native_content_version'] == 1
                             for action, payload, _ in db.calls if action == 'claim'))
         self.assertEqual(db.calls[-1][0], 'finish')
