@@ -219,6 +219,61 @@ def research(claim, *, admit, search, fetch, complete, model, deadline, clock=mo
     return proposal(scope, passages, complete=complete, model=model)
 
 
+PROVIDER_ERROR_CODES = frozenset({
+    "customer_verification_required", "authentication_error", "insufficient_funds",
+    "quota_for_entity_exceeded", "access_denied", "permission_error", "forbidden",
+    "rate_limit_error", "invalid_request_error", "no_providers_available",
+})
+MAX_PROVIDER_ERROR_BYTES = 4096
+
+
+class ProviderError(ValueError):
+    """Keep the old failure contract while retaining safe diagnostic fields."""
+    def __init__(self, status, code="unclassified"):
+        super().__init__("provider_unavailable")
+        self.status = status if type(status) is int and 100 <= status <= 599 else 0
+        self.code = (code if isinstance(code, str) and code in PROVIDER_ERROR_CODES
+                     else "unclassified")
+
+    def safe_details(self):
+        return {"status": self.status, "code": self.code}
+
+
+def _provider_error_code(response, *, deadline_at, max_body, clock):
+    """Read a small bounded error envelope; never retain free-form messages."""
+    body = bytearray()
+    maximum = min(MAX_PROVIDER_ERROR_BYTES, max_body)
+    if clock() >= deadline_at or maximum <= 0:
+        return "unclassified"
+    try:
+        chunks = iter(response.iter_content(chunk_size=min(1024, maximum)))
+        while True:
+            if clock() >= deadline_at:
+                return "unclassified"
+            try:
+                chunk = next(chunks)
+            except StopIteration:
+                break
+            if clock() >= deadline_at or len(body) + len(chunk) > maximum:
+                return "unclassified"
+            body.extend(chunk)
+            if len(body) == maximum:
+                return "unclassified"
+        envelope = json.loads(body)
+    except (ValueError, TypeError, OSError, RecursionError):
+        return "unclassified"
+    if not isinstance(envelope, dict):
+        return "unclassified"
+    for error in (envelope.get("error"), envelope):
+        if not isinstance(error, dict):
+            continue
+        for field in ("code", "type"):
+            code = error.get(field)
+            if isinstance(code, str) and code in PROVIDER_ERROR_CODES:
+                return code
+    return "unclassified"
+
+
 def bounded_json(endpoint, headers, payload, *, deadline_at, max_body, timeout, clock=monotonic):
     if clock() + 1 >= deadline_at:
         raise ValueError("deadline")
@@ -226,7 +281,8 @@ def bounded_json(endpoint, headers, payload, *, deadline_at, max_body, timeout, 
                        timeout=min(timeout, max(.1, deadline_at - clock())),
                        allow_redirects=False, stream=True) as response:
         if response.status_code != 200:
-            raise ValueError("provider_unavailable")
+            raise ProviderError(response.status_code, _provider_error_code(
+                response, deadline_at=deadline_at, max_body=max_body, clock=clock))
         body = bytearray()
         for chunk in response.iter_content(chunk_size=4096):
             body.extend(chunk)
