@@ -127,3 +127,29 @@ def test_rover_excludes_single_event_exports_and_scope_loss():
                        'https://venue.example/?venue=west')
     assert len(links) == 1
     assert links[0]["url"] == "https://venue.example/calendar?venue=west"
+
+
+def test_rover_gateway_requires_explicit_enable_and_request_identity():
+    from roomquest.rover import configured
+    env = {"VENUE_RESEARCH_MODEL_PROVIDER": "vercel_gateway",
+           "VENUE_RESEARCH_MODEL": "anthropic/fixture"}
+    assert configured(env, oidc_token="fixture") is None
+    env["ROVER_CALENDAR_ENABLED"] = "true"
+    assert configured(env, oidc_token="") is None
+    assert configured(env, oidc_token="fixture") == {
+        "model": "anthropic/fixture", "model_key": "fixture"}
+    env["VENUE_RESEARCH_MODEL_PROVIDER"] = "anthropic"
+    assert configured(env, oidc_token="fixture") is None
+
+
+def test_rover_model_transport_failure_is_not_a_clean_miss():
+    from roomquest.rover import research_clean_miss
+    from time import monotonic
+    result = research_clean_miss(
+        {"name": "Example Venue"}, "https://venue.example/",
+        '<a href="/program">Program</a>', ticket="t",
+        admit=lambda ticket: {"permit_id": "398adf59-2255-4351-8972-8f507a10b305"},
+        complete=lambda *args: (_ for _ in ()).throw(OSError("network")),
+        fetch=lambda *args, **kw: (_ for _ in ()).throw(AssertionError("no fetch")),
+        deadline=monotonic()+10)
+    assert result == {"status": "retry", "reason": "rover_model_unavailable"}
