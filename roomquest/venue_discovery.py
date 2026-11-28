@@ -121,7 +121,7 @@ def venue_proof(page, url, lead):
     return None
 
 
-def discover(lead, fetch=fetch_publisher, *, deadline_at=None):
+def discover(lead, fetch=fetch_publisher, *, deadline_at=None, research=None):
     """A bounded first-party proof and at most one linked calendar-page check."""
     if not isinstance(lead, dict) or not lead.get("name"):
         return {"p_outcome": "review", "p_reason": "missing_venue_name"}
@@ -135,7 +135,10 @@ def discover(lead, fetch=fetch_publisher, *, deadline_at=None):
         # A ticketing/publisher event URL is not necessarily owned by its venue.
         # Without a supplied venue website, require a matching brand in the
         # domain *before* attempting the site's home page.
-        brand_words = [word for word in name_forms(lead["name"])[-1].split()
+        forms = name_forms(lead["name"])
+        if not forms:
+            return {"p_outcome": "review", "p_reason": "official_venue_website_needed"}
+        brand_words = [word for word in forms[-1].split()
                        if len(word) >= 5]
         compact_host = re.sub(r"[^a-z0-9]", "", host(evidence))
         if not brand_words or not any(word in compact_host for word in brand_words):
@@ -151,7 +154,24 @@ def discover(lead, fetch=fetch_publisher, *, deadline_at=None):
     if not proof:
         return {"p_outcome": "review", "p_reason": "publisher_identity_unverified"}
     feed, finding = find_calendar(
-        html, official, evidence, fetch, deadline)
+        html, official, evidence, fetch, deadline,
+        strict_probe_errors=research is not None)
+    # Rover is deliberately dependency-injected. Ordinary production calls
+    # remain unchanged until a dedicated durable admission/model adapter exists.
+    if finding == "none" and research is not None:
+        researched = research(lead, official, html, fetch=fetch, deadline=deadline)
+        status = researched.get("status") if isinstance(researched, dict) else None
+        if status == "candidate":
+            candidate = researched.get("url")
+            kind = researched.get("kind")
+            if (isinstance(candidate, str) and public_source_url(candidate)
+                    and host(candidate) == host(official)
+                    and kind in ("ical", "wordpress", "squarespace", "html_listing")):
+                feed, finding = candidate, kind
+        elif status == "retry":
+            return {"p_outcome": "retry", "p_reason": researched["reason"]}
+        elif status == "denied":
+            finding = "access_denied"
     # The receiving registry independently checks the proposed endpoint.
     # Never supply an inferred URL that was not visited and validated.
     if finding == "access_denied":
@@ -170,14 +190,32 @@ def discover(lead, fetch=fetch_publisher, *, deadline_at=None):
             "p_proof": proof, "p_reason": reason}
 
 
-def run(ticket):
+def run(ticket, *, research=None, oidc_token=None):
     candidate = supabase_rpc("community_collector_claim_api_venue_discovery",
                              {"p_ticket": ticket}, timeout=6)
     if not candidate:
         return {"outcome": "idle"}
+    # The database, not caller input, determines exact canary eligibility.
+    # Old database/collector releases remain compatible and no paid research
+    # occurs on an ordinary lead or if task configuration is missing.
+    if research is None and candidate.get("rover_eligible") is True:
+        from roomquest import rover
+        config = rover.configured(oidc_token=oidc_token)
+        if config:
+            def research(lead, website, html, *, fetch, deadline):
+                return rover.research_clean_miss(
+                    lead, website, html, ticket=ticket, fetch=fetch,
+                    deadline=deadline,
+                    admit=lambda claimed: supabase_rpc(
+                        "community_collector_admit_rover_calendar",
+                        {"p_ticket": claimed, "p_model": config["model"]},
+                        timeout=4),
+                    complete=lambda permit, system, payload, until:
+                        rover.model_completion(config, permit, system,
+                                               payload, until))
     with capture_publisher_pacing() as pacing:
         try:
-            result = discover(candidate)
+            result = discover(candidate, research=research)
         except PreviewError as exc:
             reason = str(exc)
             if reason in DENIALS:
