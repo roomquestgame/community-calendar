@@ -297,14 +297,16 @@ def parse(payload, base='', *, native_source=None, retain_original=False):
         if row:
             if zone:
                 row['timezone'] = zone
+            image = e.get('image')
+            image = [resolve(value) for value in image[:5]] if isinstance(image, list) else resolve(image)
             if native_source is not None:
                 from roomquest.registered_native_content import attach
-                image = e.get('image')
-                image = [resolve(value) for value in image[:5]] if isinstance(image, list) else resolve(image)
                 attach(row, native_source, description_value=e.get('description'), image_value=image)
             else:
                 from roomquest.event_description import description
+                from roomquest.registered_native_content import image_candidate
                 row['description'] = description(e.get('description'))
+                row['image_url'] = image_candidate(image, base or row['event_url'])
             if native_source is not None or retain_original:
                 facts = _original_event_content(e, v, a, g, row, resolve)
                 if facts is not None:

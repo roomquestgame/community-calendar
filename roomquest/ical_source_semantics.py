@@ -8,7 +8,9 @@ from contextvars import ContextVar
 from datetime import date, datetime, timezone
 
 
-NORMALIZATION_VERSION = "ical-publisher-facts-1"
+# Version 2 retains native occurrence images independently of legacy content
+# mode, including explicit absence when a publisher removes an image.
+NORMALIZATION_VERSION = "ical-publisher-facts-2"
 
 
 _staging_ical = ContextVar("staging_ical_source_facts", default=False)

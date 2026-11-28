@@ -1293,6 +1293,8 @@ def event_image(value, base_url="") -> str | None:
 
 
 def calendar_image(item) -> str | None:
+    from roomquest.registered_native_content import image_candidate
+
     base = str(item.get("URL", ""))
     for field in ("IMAGE", "X-IMAGE", "X-WP-IMAGES-URL", "ATTACH"):
         values = item.get(field, [])
@@ -1300,14 +1302,14 @@ def calendar_image(item) -> str | None:
             mime = str(getattr(value, 'params', {}).get('FMTTYPE', '')).lower()
             if field == 'ATTACH' and not (mime.startswith('image/') or re.search(r'\.(png|jpe?g|webp|gif|avif)(\?|$)', str(value), re.I)):
                 continue
-            if candidate := event_image(str(value), base):
+            if candidate := image_candidate(str(value), base):
                 return candidate
     from bs4 import BeautifulSoup
     for field in ("X-ALT-DESC", "DESCRIPTION"):
         html = str(item.get(field, ""))[:50_000]
         if '<img' in html.lower():
             for image in BeautifulSoup(html, 'html.parser').select('img[src]')[:5]:
-                if candidate := event_image(image.get('src'), base):
+                if candidate := image_candidate(image.get('src'), base):
                     return candidate
     return None
 

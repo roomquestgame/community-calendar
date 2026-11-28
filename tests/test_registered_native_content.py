@@ -76,7 +76,8 @@ def test_no_exact_capability_preserves_the_legacy_contract(value):
     row = collect([item(description='x' * 3000)], claim)[0]
     assert len(row['description']) == 3000
     assert 'registered_native_content' not in row
-    assert 'image_extractor_version' not in row and 'image_url' not in row
+    assert 'image_extractor_version' not in row
+    assert row['image_url'] == PHOTO
 
 
 def test_absent_capability_preserves_legacy_staging_and_receipt():

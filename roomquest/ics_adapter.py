@@ -652,9 +652,10 @@ def parse(payload, source, *, legacy=False, include_description=False):
     if original_event_count>1000:
         raise ValueError("source_record_limit")
     date_notices = _civic_dates(cal, source)
-    # Narrative retention is independent of the legacy image/venue contract.
-    # Enabling the older include_description switch also changes those fields.
-    result=parse_ics_preview(payload,allow_ongoing=True,include_images=legacy, include_description=True,
+    # Keep the occurrence's own native image on every ICS path. The shared
+    # normalizer reads already-fetched VEVENT fields after recurrence expansion;
+    # image retention must not depend on the legacy venue/description switch.
+    result=parse_ics_preview(payload,allow_ongoing=True,include_images=True, include_description=True,
                              sanitize_description=not include_description,
                              include_source_semantics=source.get('ical_optimization_enabled') is True)
     if not result and not date_notices and unsupported:raise ValueError(unsupported[0])
@@ -695,6 +696,9 @@ def parse(payload, source, *, legacy=False, include_description=False):
             detail_urls[uid] = civicplus_detail_url(str(event.get('DESCRIPTION', '')), uid, source['url'])
 
     for e in result:
+        # A successful native parse also records absence, so a removed publisher
+        # image cannot remain cached as though it were present in this snapshot.
+        e.setdefault('image_url', None)
         from roomquest.reviewed_venue_addresses import complete_address
         complete_address(e, source)
         source_key = source.get('source_key')
@@ -722,8 +726,6 @@ def parse(payload, source, *, legacy=False, include_description=False):
         if legacy and not include_description:
             e['publisher_categories'] = categories.get(e['id'].split('__', 1)[0], [])
             continue
-        if not mecklenburg:
-            e.pop("image_url",None)
         e["publisher_categories"]=categories.get(e["id"].split("__",1)[0], [])
         e["category"]=", ".join(e["publisher_categories"])[:80]
         if not e.get("venue_address") and e.get("venue_name"):e["venue_address"]=e["venue_name"]
