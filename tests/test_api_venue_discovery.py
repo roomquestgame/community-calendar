@@ -313,3 +313,45 @@ def test_squarespace_calendar_json_is_validated_before_handoff():
     assert result["p_feed_url"]==api
     assert result["p_reason"]=="reusable_squarespace"
     assert seen==[source["website"],api]
+
+
+def test_rover_only_runs_after_verified_clean_miss():
+    source=lead("Example Venue", "https://examplevenue.com/",
+                "https://examplevenue.com/show", "400 Main Street, Charlotte, NC")
+    calls=[]
+    def fetch(url, accept, **opts):
+        assert url==source["website"]
+        return '<h1>Example Venue</h1><p>400 Main Street</p><a href="/program">Program</a>'
+    def research(candidate, website, html, **opts):
+        calls.append(website)
+        return {"status":"candidate","url":"https://examplevenue.com/calendar.ics","kind":"ical"}
+    result=discover(source,fetch=fetch,research=research)
+    assert result["p_feed_url"]=="https://examplevenue.com/calendar.ics"
+    assert result["p_reason"]=="reusable_ical"
+    assert calls==[source["website"]]
+
+
+def test_rover_is_not_called_after_transient_calendar_probe_failure():
+    source=lead()
+    def fetch(url, accept, **opts):
+        if url==source["website"]:
+            return '<h1>Bojangles Coliseum Charlotte</h1><a href="/events">All Events</a>'
+        raise PreviewError("source_network_error")
+    with pytest.raises(PreviewError,match="source_network_error"):
+        discover(source,fetch=fetch,research=lambda *a,**kw: pytest.fail("no research"))
+
+
+def test_rover_is_not_called_after_access_denial_or_ambiguous_subscriptions():
+    source=lead()
+    for home in (
+        '<h1>Bojangles Coliseum Charlotte</h1><a href="/events">All Events</a>',
+        '<h1>Bojangles Coliseum Charlotte</h1><a href="/events/first.ics">Subscribe to Sports Calendar</a>'
+        '<a href="/events/second.ics">Subscribe to Concert Calendar</a>',
+    ):
+        def fetch(url,accept,**opts):
+            if url==source["website"]:
+                return home
+            raise PreviewError("robots_denied")
+        result=discover(source,fetch=fetch,research=lambda *a,**kw: pytest.fail("no research"))
+        assert result["p_feed_url"] is None
+        assert result["p_reason"] in ("calendar_access_denied","multiple_calendar_links")
