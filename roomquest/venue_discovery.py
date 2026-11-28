@@ -190,11 +190,29 @@ def discover(lead, fetch=fetch_publisher, *, deadline_at=None, research=None):
             "p_proof": proof, "p_reason": reason}
 
 
-def run(ticket, *, research=None):
+def run(ticket, *, research=None, oidc_token=None):
     candidate = supabase_rpc("community_collector_claim_api_venue_discovery",
                              {"p_ticket": ticket}, timeout=6)
     if not candidate:
         return {"outcome": "idle"}
+    # The database, not caller input, determines exact canary eligibility.
+    # Old database/collector releases remain compatible and no paid research
+    # occurs on an ordinary lead or if task configuration is missing.
+    if research is None and candidate.get("rover_eligible") is True:
+        from roomquest import rover
+        config = rover.configured(oidc_token=oidc_token)
+        if config:
+            def research(lead, website, html, *, fetch, deadline):
+                return rover.research_clean_miss(
+                    lead, website, html, ticket=ticket, fetch=fetch,
+                    deadline=deadline,
+                    admit=lambda claimed: supabase_rpc(
+                        "community_collector_admit_rover_calendar",
+                        {"p_ticket": claimed, "p_model": config["model"]},
+                        timeout=4),
+                    complete=lambda permit, system, payload, until:
+                        rover.model_completion(config, permit, system,
+                                               payload, until))
     with capture_publisher_pacing() as pacing:
         try:
             result = discover(candidate, research=research)
