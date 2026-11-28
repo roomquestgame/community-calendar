@@ -196,7 +196,7 @@ def research_clean_miss(lead, website_url, html, *, ticket, admit, complete,
         nonlocal model_failure
         try:
             return complete(permit["permit_id"], system, payload, deadline)
-        except (ValueError, TypeError, TimeoutError):
+        except (ValueError, TypeError, OSError):
             model_failure = True
             return None
     selected = propose(lead.get("name"), links, complete=invoke)
