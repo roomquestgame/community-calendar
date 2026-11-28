@@ -7,12 +7,15 @@ through the normal robots-aware registration pipeline.
 import hashlib
 import json
 from html.parser import HTMLParser
+from time import monotonic
+from uuid import UUID
 from urllib.parse import urldefrag, urljoin, urlsplit
 
 from roomquest.preview_worker import public_source_url
 from roomquest.preview_worker import PreviewError
-from roomquest.feed_registration import classify
-from roomquest.venue_calendar_locator import find_calendar
+from roomquest.feed_registration import classify, is_event_export
+from roomquest.registration_formats import scoped_endpoint
+from roomquest.venue_calendar_locator import find_calendar, ONE_OFF
 
 MAX_HTML = 750_000
 MAX_LINKS = 80
@@ -43,7 +46,8 @@ class _Links(HTMLParser):
             url = urldefrag(urljoin(self.base, href)).url
             parts = urlsplit(url)
             if (not public_source_url(url) or parts.username or parts.password
-                    or parts.hostname != urlsplit(self.base).hostname):
+                    or parts.hostname != urlsplit(self.base).hostname
+                    or is_event_export(url) or not scoped_endpoint(self.base, url)):
                 return
         except (TypeError, ValueError):
             return
@@ -58,7 +62,8 @@ class _Links(HTMLParser):
             url, label = self.current
             self.current = None
             label = " ".join(label.split())
-            if not label or any(x["url"] == url for x in self.links):
+            if (not label or ONE_OFF.search(label)
+                    or any(x["url"] == url for x in self.links)):
                 return
             identity = hashlib.sha256(url.encode()).hexdigest()[:24]
             self.links.append({"id": identity, "url": url, "label": label})
@@ -123,7 +128,9 @@ def inspect_selection(website_url, event_url, selected, *, fetch, deadline):
     url = selected.get("url")
     try:
         if (not isinstance(url, str) or not public_source_url(url)
-                or urlsplit(url).hostname != urlsplit(website_url).hostname):
+                or urlsplit(url).hostname != urlsplit(website_url).hostname
+                or urlsplit(url).username or urlsplit(url).password
+                or is_event_export(url) or not scoped_endpoint(website_url, url)):
             return {"status": "review", "reason": "invalid_selection"}
         content = fetch(url, "text/calendar,application/json,text/html",
                         respect_robots=True, allowed_hosts=(urlsplit(website_url).hostname,),
@@ -134,9 +141,13 @@ def inspect_selection(website_url, event_url, selected, *, fetch, deadline):
         if not isinstance(content, str) or not content.lstrip().startswith("<"):
             return {"status": "review", "reason": "not_calendar"}
         feed, kind = find_calendar(content, url, event_url, fetch, deadline,
-                                   require_unique_calendar_page=True)
+                                   require_unique_calendar_page=True,
+                                   strict_probe_errors=True)
+        if kind == "access_denied":
+            return {"status": "denied", "reason": "calendar_access_denied"}
         if (feed and kind in ("ical", "wordpress", "squarespace", "html_listing")
-                and urlsplit(feed).hostname == urlsplit(website_url).hostname):
+                and urlsplit(feed).hostname == urlsplit(website_url).hostname
+                and scoped_endpoint(url, feed) and not is_event_export(feed)):
             return {"status": "candidate", "url": feed, "kind": kind}
         return {"status": "review", "reason": "calendar_not_verified"}
     except PreviewError as exc:
@@ -146,3 +157,40 @@ def inspect_selection(website_url, event_url, selected, *, fetch, deadline):
         return {"status": "retry", "reason": "publisher_unavailable"}
     except (TypeError, ValueError):
         return {"status": "review", "reason": "invalid_selection"}
+
+
+def research_clean_miss(lead, website_url, html, *, ticket, admit, complete,
+                        fetch, deadline):
+    """Run the bounded second stage only after the caller proves a clean miss.
+
+    The injected admission adapter must atomically spend a durable, task-specific
+    permit for this claimed ticket. This function does not create permits or
+    treat a venue-address research permit as authorization. The adapter must
+    return a UUID permit_id or no permit. A spent permit is never refunded.
+    """
+    if monotonic() >= deadline:
+        return {"status": "retry", "reason": "source_fetch_deadline"}
+    links = candidates(html, website_url)
+    if not links:
+        return {"status": "review", "reason": "rover_no_candidates"}
+    try:
+        permit = admit(ticket)
+        if not isinstance(permit, dict) or not isinstance(permit.get("permit_id"), str):
+            return {"status": "review", "reason": "rover_not_admitted"}
+        UUID(permit["permit_id"])
+    except (ValueError, TypeError, TimeoutError, PreviewError):
+        return {"status": "retry", "reason": "rover_admission_unavailable"}
+    if monotonic() >= deadline:
+        return {"status": "retry", "reason": "source_fetch_deadline"}
+    try:
+        selected = propose(lead.get("name"), links,
+                           complete=lambda system, payload: complete(
+                               permit["permit_id"], system, payload, deadline))
+    except PreviewError:
+        return {"status": "retry", "reason": "rover_model_unavailable"}
+    if not selected:
+        return {"status": "review", "reason": "rover_no_verified_selection"}
+    if monotonic() >= deadline:
+        return {"status": "retry", "reason": "source_fetch_deadline"}
+    return inspect_selection(website_url, lead.get("event_url") or "",
+                             selected, fetch=fetch, deadline=deadline)
