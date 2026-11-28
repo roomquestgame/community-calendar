@@ -35,7 +35,7 @@ class handler(BaseHTTPRequestHandler):
         except (ValueError, TypeError):
             return self.reply(400, {'error': 'invalid_ticket'})
         try:
-            return self.reply(200, run(body['ticket']))
+            return self.reply(200, run(body['ticket'], oidc_token=self.headers.get('x-vercel-oidc-token', '')))
         except PreviewError:
             return self.reply(503, {'error': 'collector_unavailable'})
         except Exception:
