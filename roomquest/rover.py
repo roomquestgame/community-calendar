@@ -197,8 +197,14 @@ def research_clean_miss(lead, website_url, html, *, ticket, admit, complete,
         nonlocal model_failure
         try:
             return complete(permit["permit_id"], system, payload, deadline)
-        except (ValueError, TypeError, OSError):
+        except (ValueError, TypeError, OSError) as exc:
             model_failure = True
+            from roomquest.venue_research import ProviderError
+            if isinstance(exc, ProviderError):
+                # Numeric status and fixed enums only: no provider body, URL,
+                # prompt, token, or free-form exception text enters the log.
+                print("rover_model_failure", json.dumps(
+                    exc.safe_details(), sort_keys=True, separators=(",", ":")))
             return None
     selected = propose(lead.get("name"), links, complete=invoke)
     if model_failure:
