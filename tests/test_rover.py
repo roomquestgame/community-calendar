@@ -76,3 +76,54 @@ def test_selected_foreign_host_is_never_fetched():
                                fetch=lambda *a, **k: (_ for _ in ()).throw(AssertionError()),
                                deadline=999999999)
     assert result == {'status': 'review', 'reason': 'invalid_selection'}
+
+
+def test_rover_never_calls_model_without_valid_permit():
+    from roomquest.rover import research_clean_miss
+    from time import monotonic
+    calls = []
+    result = research_clean_miss(
+        {"name": "Example Venue"}, "https://venue.example/",
+        '<a href="/program">Program</a>', ticket="test-ticket",
+        admit=lambda ticket: calls.append(ticket),
+        complete=lambda *args: (_ for _ in ()).throw(AssertionError("no model")),
+        fetch=lambda *args, **kw: (_ for _ in ()).throw(AssertionError("no fetch")),
+        deadline=monotonic()+10)
+    assert result == {"status": "review", "reason": "rover_not_admitted"}
+    assert calls == ["test-ticket"]
+
+
+def test_rover_admission_then_single_model_then_independent_fetch():
+    from roomquest.rover import research_clean_miss
+    from time import monotonic
+    html = '<a href="/calendar.ics">Program</a>'
+    link = candidates(html, "https://venue.example/")[0]
+    permit = "398adf59-2255-4351-8972-8f507a10b305"
+    calls = []
+    def admit(ticket):
+        calls.append("admit")
+        return {"permit_id": permit}
+    def complete(permit_id, system, payload, deadline):
+        assert permit_id == permit
+        calls.append("model")
+        return json.dumps({"candidate_id": link["id"]})
+    def fetch(url, accept, **opts):
+        calls.append("fetch")
+        assert opts["respect_robots"] is True
+        return ("BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nUID:x\n"
+                "DTSTART:20271201T190000Z\nSUMMARY:Concert\nEND:VEVENT\nEND:VCALENDAR")
+    result = research_clean_miss({"name": "Example Venue"}, "https://venue.example/",
+                                 html, ticket="t", admit=admit, complete=complete,
+                                 fetch=fetch, deadline=monotonic()+10)
+    assert result == {"status": "candidate", "url": link["url"], "kind": "ical"}
+    assert calls == ["admit", "model", "fetch"]
+
+
+def test_rover_excludes_single_event_exports_and_scope_loss():
+    links = candidates('<a href="/calendar?venue=west">Program</a>'
+                       '<a href="/calendar">All venues</a>'
+                       '<a href="/calendar?venue=west&event_id=1">Export</a>'
+                       '<a href="/calendar?venue=west&ical=1">Add to Calendar</a>',
+                       'https://venue.example/?venue=west')
+    assert len(links) == 1
+    assert links[0]["url"] == "https://venue.example/calendar?venue=west"
