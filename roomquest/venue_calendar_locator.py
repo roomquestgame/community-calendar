@@ -27,6 +27,7 @@ DATE = re.compile(
 SINGLE_EVENT = re.compile(r"/(?:events?|shows?)/[^/?#]{4,}/?$", re.I)
 ONE_OFF = re.compile(r"\b(?:add to (?:my |your )?calendar|download event|"
                      r"add this event|save this event)\b", re.I)
+SUBSCRIPTION_LABEL = re.compile(r"\bsubscribe\b.{0,80}\bcalendar\b", re.I)
 TEC_HINTS = ("tribe-events", "the-events-calendar", "tribe_events")
 MAX_SOURCE_BYTES = 1_000_000
 MAX_PAGES = 2
@@ -72,7 +73,8 @@ def _feed_type(url, attrs, label):
             (attrs.get("type", "").lower() == "text/calendar" and
              ("calendar" in low_label or attrs.get("rel", "").lower() == "alternate"))):
         # An event-detail iCal download is NOT a venue-wide subscription.
-        if SINGLE_EVENT.search(parts.path) and not EVENT_LABEL.search(low_label):
+        if (SINGLE_EVENT.search(parts.path) and not EVENT_LABEL.search(low_label)
+                and not SUBSCRIPTION_LABEL.search(low_label)):
             return None
         return "ical"
     return None
@@ -276,7 +278,8 @@ def _wp_candidate(html, site):
                        "/wp-json/tribe/events/v1/events", "", ""))
 
 
-def find_calendar(website_html, website_url, event_url, fetch, deadline, *, require_unique_calendar_page=False):
+def find_calendar(website_html, website_url, event_url, fetch, deadline, *,
+                  require_unique_calendar_page=False, strict_probe_errors=False):
     """Return (URL, finding) from at most four additional first-party requests.
 
     'ical'/'wordpress': actual validated response, eligible for registration.
@@ -333,6 +336,10 @@ def find_calendar(website_html, website_url, event_url, fetch, deadline, *, requ
                 or (base != website_url and parsed.is_dated_listing(html))):
             if best_html is None:
                 best_html = base
+            # A publisher-linked, independently verified filtered listing is
+            # already scoped. Do not broaden it to the generic parent page.
+            if urlsplit(base).query and not endpoints:
+                return best_html, "html_listing"
         for u, score in sorted(parsed.pages.items(), key=lambda x: (-x[1], x[0])):
             if u not in pages and u != base:
                 pages.append(u)
@@ -361,7 +368,9 @@ def find_calendar(website_html, website_url, event_url, fetch, deadline, *, requ
                              deadline_at=deadline)
             except PreviewError as e:
                 if str(e) in ("robots_denied", "publisher_http_401", "publisher_http_403"):
-                    return best_html, "access_denied" if best_html else "access_denied"
+                    return best_html, "access_denied"
+                if strict_probe_errors:
+                    raise
                 continue
             check = classify(url, data, endpoint_only=True)
             if check.get("p_outcome") == "verified" and check.get("p_type") in ("ical", "wordpress"):
@@ -390,7 +399,8 @@ def find_calendar(website_html, website_url, event_url, fetch, deadline, *, requ
                                        respect_robots=True, allowed_hosts=(_host(website_url),),
                                        deadline_at=deadline)
                 except PreviewError:
-                    pass
+                    if strict_probe_errors:
+                        raise
                 else:
                     capability = inspect_rest_index(api_root, index_body)
                     endpoint = capability.get('endpoint') if capability else None
@@ -404,7 +414,8 @@ def find_calendar(website_html, website_url, event_url, fetch, deadline, *, requ
                                          respect_robots=True, allowed_hosts=(_host(website_url),),
                                          deadline_at=deadline)
                         except PreviewError:
-                            pass
+                            if strict_probe_errors:
+                                raise
                         else:
                             checked = classify(endpoint, data, endpoint_only=True)
                             if (checked.get("p_outcome") == "verified"
@@ -425,6 +436,8 @@ def find_calendar(website_html, website_url, event_url, fetch, deadline, *, requ
             except PreviewError as e:
                 if str(e) in ("robots_denied", "publisher_http_401", "publisher_http_403"):
                     return best_html, "access_denied"
+                if strict_probe_errors:
+                    raise
                 continue
             if data.lstrip().startswith("<"):
                 candidates.append((page_url, data))
