@@ -33,6 +33,9 @@ MAX_SOURCE_BYTES = 1_000_000
 MAX_PAGES = 2
 MAX_FEEDS = 2
 MAX_REQUESTS = 4   # Beyond the verified website page already fetched.
+# A visited optional endpoint can be definitively absent. Transport failures
+# and publisher denials still prevent Rover from treating the visit as a miss.
+PROBE_MISSES = {"publisher_http_404", "publisher_http_410"}
 
 
 def _host(url):
@@ -279,12 +282,16 @@ def _wp_candidate(html, site):
 
 
 def find_calendar(website_html, website_url, event_url, fetch, deadline, *,
-                  require_unique_calendar_page=False, strict_probe_errors=False):
+                  require_unique_calendar_page=False, strict_probe_errors=False,
+                  publisher_linked_page=False):
     """Return (URL, finding) from at most four additional first-party requests.
 
     'ical'/'wordpress': actual validated response, eligible for registration.
     'html_listing': dated first-party events collection for adapter review.
     'none'/'access_denied': no reusable public calendar evidenced.
+    publisher_linked_page permits an independently evidenced HTML listing at
+    the initial URL, even when its path is unconventional. It never admits a
+    generic homepage or substitutes a model choice for collection evidence.
     """
     inspected = set()
     inspected_api_roots = set()
@@ -332,8 +339,18 @@ def find_calendar(website_html, website_url, event_url, fetch, deadline, *,
         square = _squarespace_candidate(html, base)
         if square and square not in endpoints:
             endpoints.append(square)
+        selected_listing = False
+        if (publisher_linked_page and base == website_url
+                and urlsplit(base).path not in ("", "/")
+                and parsed.is_dated_listing(html)):
+            # Rover's link provenance lets an unconventional path be inspected
+            # as a collection. Reuse registration's single-event and featured-
+            # only guards; the model's choice is never evidence by itself.
+            from roomquest.registered_html_calendar import supports_listing
+            selected_listing = supports_listing(base, html)
         if (_reusable_html_index(parsed, html, base, event_url)
-                or (base != website_url and parsed.is_dated_listing(html))):
+                or (base != website_url and parsed.is_dated_listing(html))
+                or selected_listing):
             if best_html is None:
                 best_html = base
             # A publisher-linked, independently verified filtered listing is
@@ -369,7 +386,7 @@ def find_calendar(website_html, website_url, event_url, fetch, deadline, *,
             except PreviewError as e:
                 if str(e) in ("robots_denied", "publisher_http_401", "publisher_http_403"):
                     return best_html, "access_denied"
-                if strict_probe_errors:
+                if strict_probe_errors and str(e) not in PROBE_MISSES:
                     raise
                 continue
             check = classify(url, data, endpoint_only=True)
@@ -398,8 +415,8 @@ def find_calendar(website_html, website_url, event_url, fetch, deadline, *,
                     index_body = fetch(api_root, "application/json",
                                        respect_robots=True, allowed_hosts=(_host(website_url),),
                                        deadline_at=deadline)
-                except PreviewError:
-                    if strict_probe_errors:
+                except PreviewError as e:
+                    if strict_probe_errors and str(e) not in PROBE_MISSES:
                         raise
                 else:
                     capability = inspect_rest_index(api_root, index_body)
@@ -413,8 +430,8 @@ def find_calendar(website_html, website_url, event_url, fetch, deadline, *,
                             data = fetch(endpoint, "application/json",
                                          respect_robots=True, allowed_hosts=(_host(website_url),),
                                          deadline_at=deadline)
-                        except PreviewError:
-                            if strict_probe_errors:
+                        except PreviewError as e:
+                            if strict_probe_errors and str(e) not in PROBE_MISSES:
                                 raise
                         else:
                             checked = classify(endpoint, data, endpoint_only=True)
@@ -436,7 +453,7 @@ def find_calendar(website_html, website_url, event_url, fetch, deadline, *,
             except PreviewError as e:
                 if str(e) in ("robots_denied", "publisher_http_401", "publisher_http_403"):
                     return best_html, "access_denied"
-                if strict_probe_errors:
+                if strict_probe_errors and str(e) not in PROBE_MISSES:
                     raise
                 continue
             if data.lstrip().startswith("<"):

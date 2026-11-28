@@ -1,8 +1,8 @@
-"""Evidence-bound calendar research primitives; no network, model or DB calls.
+"""Permit-gated calendar research over verified publisher link evidence.
 
-This module is intentionally not wired to production. Its caller must hold an
-appropriate research lease and budget and must independently probe any result
-through the normal robots-aware registration pipeline.
+The ticketed venue worker enables this path only for an exact eligible pilot.
+Every model call spends its own durable permit, and selected links still pass
+independent collection checks and the normal robots-aware registration path.
 """
 import hashlib
 import json
@@ -145,7 +145,8 @@ def inspect_selection(website_url, event_url, selected, *, fetch, deadline):
             return {"status": "review", "reason": "not_calendar"}
         feed, kind = find_calendar(content, url, event_url, fetch, deadline,
                                    require_unique_calendar_page=True,
-                                   strict_probe_errors=True)
+                                   strict_probe_errors=True,
+                                   publisher_linked_page=True)
         if kind == "access_denied":
             return {"status": "denied", "reason": "calendar_access_denied"}
         if (feed and kind in ("ical", "wordpress", "squarespace", "html_listing")
