@@ -1,8 +1,9 @@
 """Factual Mapsee catalog intake through RoomQuest's bounded Python transport.
 
 Mapsee's MIT adapters are an extraction reference. Publisher defaults, generated
-hours, market schedules, geocoders, descriptions and images are deliberately not
-part of this adapter. All network I/O goes through the existing SSRF gate.
+hours, market schedules and geocoders are deliberately not part of this adapter.
+Event-owned descriptions and native image candidates come from the fetched
+response. All network I/O goes through the existing SSRF gate.
 """
 from __future__ import annotations
 
@@ -136,6 +137,9 @@ def parse_localist(data, *, registered=False, retain_original=False):
             if r and registered:
                 from roomquest.event_description import description
                 r['description'] = description(event.get('description_text') or event.get('description'))
+            if r:
+                from roomquest.registered_native_content import image_candidate
+                r['image_url'] = image_candidate(event.get('photo_url'), r['event_url'])
             if r and retain_original:
                 lat, lng = r.get('lat'), r.get('lng')
                 if (lat is None) != (lng is None):
@@ -323,14 +327,17 @@ def parse_tribe(data, *, strict_public=False, retain_description=False, utc_defa
                     facts = _tribe_original_content(e, venue, r, zone)
                     if facts is not None:
                         r["collector_event_content_v1"] = facts
-            elif retain_description:
-                from roomquest.event_description import description
-                value = e.get("description")
-                if value is not None and not isinstance(value, str):
-                    raise ValueError("invalid_wordpress_description")
-                # Use the shared bounded narrative contract.
-                # Missing publisher prose stays empty; never copy title/category.
-                r["description"] = description(value)
+            else:
+                from roomquest.registered_native_content import image_candidate
+                r['image_url'] = image_candidate(e.get('image'), r['event_url'])
+                if retain_description:
+                    from roomquest.event_description import description
+                    value = e.get("description")
+                    if value is not None and not isinstance(value, str):
+                        raise ValueError("invalid_wordpress_description")
+                    # Use the shared bounded narrative contract.
+                    # Missing publisher prose stays empty; never copy title/category.
+                    r["description"] = description(value)
             if strict_public and tz_name:
                 r["timezone"] = tz_name
             elif isinstance(zone, ZoneInfo):

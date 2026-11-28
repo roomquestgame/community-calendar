@@ -150,6 +150,7 @@ def original_content(event, row, base, description_text):
 def parse_registered(data, base, *, retain_original=False):
     """Preserve Mapsee factual identities and reuse shared record normalization."""
     from roomquest.mapsee_adapter import record
+    from roomquest.registered_native_content import image_candidate
     if not isinstance(data, dict):
         raise ValueError('unsupported_squarespace_payload')
     if 'upcoming' in data and not isinstance(data['upcoming'], list):
@@ -202,6 +203,7 @@ def parse_registered(data, base, *, retain_original=False):
                              'Richmond', urljoin(base, path), f'{e["id"]}:{day}', '',
                              37.602130960539, -77.523501945619)
                 if row:
+                    row['image_url'] = image_candidate(e.get('assetUrl'), base)
                     if retain_original:
                         from roomquest.event_description import description
                         facts = original_content(e, row, base, description(e.get('body') or e.get('excerpt')))
@@ -225,6 +227,7 @@ def parse_registered(data, base, *, retain_original=False):
         if row:
             from roomquest.event_description import description
             row['description'] = description(e.get('body')) or description(e.get('excerpt'))
+            row['image_url'] = image_candidate(e.get('assetUrl'), base)
             if retain_original:
                 row['collector_event_content_v1'] = original_content(e, row, base, row['description'])
             key = (row['id'], row['starts_at'])
@@ -239,6 +242,7 @@ def parse_registered(data, base, *, retain_original=False):
 
 def parse(payload, source, *, retain_original=False):
     from roomquest.preview_worker import _preview
+    from roomquest.registered_native_content import image_candidate
     base = source.get('feed_url')
     config = SOURCES.get(base)
     if not config:
@@ -301,6 +305,7 @@ def parse(payload, source, *, retain_original=False):
                           link, identity, ', '.join(str(v) for v in event.get('categories', [])),
                           address, city, allow_ongoing=True)
         if record:
+            record['image_url'] = image_candidate(event.get('assetUrl'), base)
             if retain_original:
                 from roomquest.event_description import description
                 narrative = description(event.get('body') or event.get('excerpt'))

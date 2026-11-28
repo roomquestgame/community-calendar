@@ -50,7 +50,7 @@ class MapseeTests(unittest.TestCase):
         self.assertEqual(len(rows),3)
         self.assertEqual(len({x["starts_at"] for x in rows}),3)
         self.assertTrue(all(r["event_url"]=="https://publisher.example.org/event/1" for r in rows))
-        self.assertTrue(all(r["lat"] is None and r["description"] == "Do not copy this" and "image_url" not in r for r in rows))
+        self.assertTrue(all(r["lat"] is None and r["description"] == "Do not copy this" and r["image_url"] == "https://publisher.example.org/image.jpg" for r in rows))
         self.assertIn("Music",rows[0]["category"])
 
     def test_empty_parse_recurrence_and_timezone_are_distinct(self):
@@ -94,7 +94,7 @@ class MapseeTests(unittest.TestCase):
         rows=parse_jsonld('<script type="application/ld+json">'+json.dumps(d)+'</script>')
         self.assertEqual(rows[0]["venue_address"],"123 Main Street, Raleigh, NC, 27601")
         self.assertIsNone(rows[0]["lat"]);self.assertEqual(rows[0]["description"],"Do not copy")
-        self.assertNotIn("image_url",rows[0])
+        self.assertEqual(rows[0]["image_url"],"https://publisher.example.org/image.jpg")
 
     def test_wordpress_utc_and_squarespace_and_open_data(self):
         d={"events":[{"id":4,"title":"Actual Workshop","utc_start_date":self.start.strftime("%Y-%m-%d %H:%M:%S"),
