@@ -248,11 +248,14 @@ def search_urls(query, hosts, *, api_key, deadline_at, clock=monotonic):
     return [r.get("url") for r in data["results"] if isinstance(r, dict) and allowed_url(r.get("url"), hosts)]
 
 
-def anthropic_extract(payload, *, api_key, model, deadline_at, clock=monotonic, provider="anthropic"):
+def anthropic_extract(payload, *, api_key, model, deadline_at, clock=monotonic,
+                      provider="anthropic", system=SYSTEM, max_tokens=512):
     if not api_key or not model:
         raise ValueError("model_not_configured")
     serialized = json.dumps(payload)
-    if len(SYSTEM.encode()) + len(serialized.encode()) > MAX_MODEL_INPUT_BYTES:
+    if (not isinstance(system, str) or type(max_tokens) is not int
+            or not 1 <= max_tokens <= 512
+            or len(system.encode()) + len(serialized.encode()) > MAX_MODEL_INPUT_BYTES):
         raise ValueError("model_input_bound")
     headers = {"anthropic-version": "2023-06-01"}
     if provider == "vercel_gateway" and model.startswith("anthropic/"):
@@ -263,7 +266,7 @@ def anthropic_extract(payload, *, api_key, model, deadline_at, clock=monotonic, 
         headers["x-api-key"] = api_key
     else:
         raise ValueError("model_provider_mismatch")
-    body = {"model": model, "max_tokens": 512, "system": SYSTEM,
+    body = {"model": model, "max_tokens": max_tokens, "system": system,
             "messages": [{"role": "user", "content": serialized}]}
     if provider == "vercel_gateway":
         body["thinking"] = {"type": "disabled"}
