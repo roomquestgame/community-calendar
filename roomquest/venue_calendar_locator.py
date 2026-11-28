@@ -339,7 +339,7 @@ def find_calendar(website_html, website_url, event_url, fetch, deadline, *,
             # A publisher-linked, independently verified filtered listing is
             # already scoped. Do not broaden it to the generic parent page.
             if urlsplit(base).query and not endpoints:
-                return best_html, "html_listing"
+                return base, "html_listing"
         for u, score in sorted(parsed.pages.items(), key=lambda x: (-x[1], x[0])):
             if u not in pages and u != base:
                 pages.append(u)
